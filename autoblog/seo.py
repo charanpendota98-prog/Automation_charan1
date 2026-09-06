@@ -161,8 +161,9 @@ def schema_jsonld(
     date_published: str,
     slug: str,
     category: str = "",
+    list_items: Optional[List[str]] = None,
 ) -> str:
-    """Google rich results: FAQPage + Article + BreadcrumbList JSON-LD."""
+    """Google rich results: FAQPage + Article + BreadcrumbList (+ItemList)."""
     import json as _json
 
     if not config.SEO_SCHEMA_ENABLED:
@@ -195,6 +196,17 @@ def schema_jsonld(
         "mainEntityOfPage": f"{config.WP_SITE}/{slug}/",
         "inLanguage": "te",
     })
+    if list_items:
+        scripts.append({
+            "@context": "https://schema.org",
+            "@type": "ItemList",
+            "name": title[:110],
+            "numberOfItems": len(list_items),
+            "itemListElement": [
+                {"@type": "ListItem", "position": i, "name": name[:110]}
+                for i, name in enumerate(list_items, 1)
+            ],
+        })
     scripts.append({
         "@context": "https://schema.org",
         "@type": "BreadcrumbList",
@@ -227,10 +239,11 @@ def enhance(
     description: str = "",
     category: str = "",
     source_domains: Optional[List[str]] = None,
+    list_items: Optional[List[str]] = None,
 ) -> str:
     """Full top-level SEO pipeline: reading badge -> quick answer -> keyword
     intro (varied) -> TOC -> internal/external links -> E-E-A-T box ->
-    FAQ+Article+Breadcrumb JSON-LD schema."""
+    FAQ+Article+Breadcrumb(+ItemList) JSON-LD schema."""
     from . import validator as _v
 
     words = _v.word_count(html)
@@ -244,7 +257,8 @@ def enhance(
     html = add_external_links(html, external_links)
     html += trust_box(date_str, source_domains)
     html += schema_jsonld(title or focus_keyword, description or "", faq or [],
-                          date_str, slug, category=category)
+                          date_str, slug, category=category,
+                          list_items=list_items)
     log.info("SEO enhanced: %d words, keyword=%r", words, focus_keyword)
     if words < 1200:
         log.warning("Word count takkuva (%d) — Rank Math full score kosari 1500+ kavali", words)
@@ -278,3 +292,35 @@ def rankmath_meta(
         "rank_math_twitter_description": description[:160],
         "rank_math_twitter_use_open_graph": "on",
     }
+
+
+def insert_ad_shortcodes(html: str, shortcode: str, max_ads: int = 3) -> str:
+    """In-content ad shortcodes (AdSense-safe positions).
+
+    Legit in-content ad placement: after intro (~3rd para), mid-article,
+    before last section. Site lo ad plugin (WP Quads / Advanced Ads)
+    shortcode ni AD_SHORTCODE lo config cheyandi. Max 3 — policy safe.
+    """
+    if not shortcode:
+        return html
+    import re as _re
+
+    paras = list(_re.finditer(r"</p>", html))
+    if not paras:
+        return html
+    positions = []
+    if len(paras) >= 3:
+        positions.append(paras[2].end())          # after 3rd paragraph
+    if len(paras) >= 8:
+        positions.append(paras[len(paras) // 2].end())  # mid article
+    faq_idx = html.find("FAQ")
+    if faq_idx > 0:
+        positions.append(faq_idx)                 # before FAQ section
+    positions = sorted(set(positions))[:max_ads]
+    out, last = [], 0
+    for pos in positions:
+        out.append(html[last:pos])
+        out.append(f"\n{shortcode}\n")
+        last = pos
+    out.append(html[last:])
+    return "".join(out)

@@ -32,6 +32,8 @@ def init(db_path: Path) -> None:
                 status TEXT,
                 qa_score REAL,
                 orig_score REAL,
+                wp_id INTEGER,
+                refreshed_at TEXT,
                 created_at TEXT DEFAULT (datetime('now', 'localtime'))
             );
             CREATE UNIQUE INDEX IF NOT EXISTS idx_posts_title_norm
@@ -58,9 +60,10 @@ def init(db_path: Path) -> None:
             """
         )
         # old DBs kosam column upgrade (idempotent)
-        for col in ("qa_score", "orig_score"):
+        for col, coltype in (("qa_score", "REAL"), ("orig_score", "REAL"),
+                             ("wp_id", "INTEGER"), ("refreshed_at", "TEXT")):
             try:
-                conn.execute(f"ALTER TABLE posts ADD COLUMN {col} REAL")
+                conn.execute(f"ALTER TABLE posts ADD COLUMN {col} {coltype}")
             except sqlite3.OperationalError:
                 pass  # already exists
 
@@ -97,14 +100,44 @@ def record_post(
     status: str,
     qa_score: float = None,
     orig_score: float = None,
+    wp_id: int = None,
 ) -> None:
     with _connect(db_path) as conn:
         conn.execute(
             "INSERT OR IGNORE INTO posts (title, title_norm, slug, category, link, "
-            "status, qa_score, orig_score) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            "status, qa_score, orig_score, wp_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
             (title, normalize_title(title), slug, category, link, status,
-             qa_score, orig_score),
+             qa_score, orig_score, wp_id),
         )
+
+
+def record_refresh(db_path: Path, wp_id: int) -> None:
+    """Post refresh ayyaka mark (next refresh selection kosam)."""
+    with _connect(db_path) as conn:
+        conn.execute(
+            "UPDATE posts SET refreshed_at = datetime('now', 'localtime') "
+            "WHERE wp_id = ?",
+            (wp_id,),
+        )
+
+
+def posts_to_refresh(db_path: Path, older_days: int = 14, limit: int = 1) -> list:
+    """Auto-refresh selection: purana + publish ayyina + WP id unna posts.
+
+    Priority: never-refreshed first (oldest first), then least-recently refreshed.
+    """
+    with _connect(db_path) as conn:
+        rows = conn.execute(
+            """
+            SELECT wp_id, title, link FROM posts
+            WHERE status = 'publish' AND wp_id IS NOT NULL
+              AND created_at <= datetime('now', 'localtime', ?)
+            ORDER BY (refreshed_at IS NULL) DESC, refreshed_at ASC, created_at ASC
+            LIMIT ?
+            """,
+            (f"-{older_days} days", limit),
+        ).fetchall()
+    return [dict(r) for r in rows]
 
 
 def avg_scores(db_path: Path) -> dict:

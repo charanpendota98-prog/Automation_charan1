@@ -54,6 +54,15 @@ INDEXNOW_KEY = _get("INDEXNOW_KEY", "")
 KEEP_IMAGES = _get("KEEP_IMAGES", "0") not in ("0", "false", "no")
 # Scheduler watchdog: itne hours run ledu ante Telegram lo alert
 WATCHDOG_HOURS = int(_get("WATCHDOG_HOURS", "26"))
+# Trending listicles ("stories"): roju intha count, auto schedule lo
+LISTICLES_PER_DAY = int(_get("LISTICLES_PER_DAY", "2"))
+# Daily auto-refresh: prathi roju intha purana posts ni refresh chestundi
+AUTO_REFRESH_PER_DAY = int(_get("AUTO_REFRESH_PER_DAY", "1"))
+AUTO_REFRESH_MIN_AGE_DAYS = int(_get("AUTO_REFRESH_MIN_AGE_DAYS", "14"))
+AUTO_REFRESH_HOUR = int(_get("AUTO_REFRESH_HOUR", "21"))
+# In-content ad shortcode (site lo ad plugin active unte; empty = off)
+# Example: AD_SHORTCODE=[quads id=1]  or  [advanced_ads_severities]
+AD_SHORTCODE = _get("AD_SHORTCODE", "")
 # CallMeBot free WhatsApp alerts (text only):
 # https://api.callmebot.com/whatsapp.php?phone=+91XXXX&apikey=XXXX
 WHATSAPP_CALLMEBOT_URL = _get("WHATSAPP_CALLMEBOT_URL", "")

@@ -31,6 +31,8 @@ RESPONSE_SCHEMA = {
         "secondary_keywords": {"type": "ARRAY", "items": {"type": "STRING"}},
         "seo_title": {"type": "STRING"},
         "quick_answer": {"type": "STRING"},
+        "list_items": {"type": "ARRAY", "items": {"type": "STRING"}},
+        "update_notes": {"type": "STRING"},
         "faq": {
             "type": "ARRAY",
             "items": {
@@ -270,6 +272,43 @@ ALSO RETURN (same JSON schema):
 - update_notes: 2-4 short Telugu bullets summarizing WHAT NEW INFO was added (e.g. "• Fee details add chesayi • New exam date update").
 
 Return ONLY valid JSON."""
+
+
+LISTICLE_PROMPT_TEMPLATE = """You are a top Telugu viral-content writer for studentup.in (education/jobs portal like Adda247 style).
+
+TASK: Write a TRENDING listicle ("story" style) article: {topic} {year} edition.
+
+LISTICLE RULES (very important):
+- NUMBERED <h2> sections — one per item: "<h2>1. Item Name – short hook</h2>" etc.
+- Each item: 2-3 paragraphs (what it is, eligibility/salary/details, why students love it) + a <ul> quick-facts list where natural.
+- Catchy intro (2 paragraphs) explaining WHY this list matters to Telugu students.
+- After the numbered items: one comparison <table> (item, eligibility, salary/scope).
+- A "Evariki Best?" (who should choose what) short section.
+- Conclusion + FAQ (4-5 <h3> questions).
+- TOTAL: 2000-3000 words. Only REAL, well-known jobs/schemes/apps — no invented data, no fake salary numbers beyond well-known pay levels (use pay matrix levels like "Level-4 (25,500-81,100)").
+- LANGUAGE: TELUGU SCRIPT + natural English terms, Adda247/Telugu news style — engaging, short paragraphs, strong hooks.
+- focus_keyword: the list topic itself (e.g. "Central Government Jobs 2026") — in title, first para, 2+ h2s.
+- list_items: return the N item names as an array (same as your h2 items, short names).
+- Title format: "Top N {topic} 2026 – Complete List Telugu lo" style, 55-80 chars, number included.
+- tags/banner_text/seo_title/quick_answer/faq/external_links: same rules as before.
+
+Return ONLY valid JSON."""
+
+
+def generate_listicle(topic: str, recent_titles: List[str], year: int) -> Dict:
+    """Trending listicle article (Top 10 jobs lanti stories)."""
+    if not config.GEMINI_API_KEY:
+        raise GeminiError("GEMINI_API_KEY not set")
+    avoid_block = ""
+    if recent_titles:
+        sample = "\n".join(f"- {t}" for t in recent_titles[:30])
+        avoid_block = ("Your TITLE must be different from these already published:\n" + sample)
+    prompt = LISTICLE_PROMPT_TEMPLATE.format(topic=topic, year=year)
+    if avoid_block:
+        prompt += "\n" + avoid_block
+    article = _generate_with_retries(prompt)
+    article["article_type"] = "listicle"
+    return article
 
 
 def generate_update(

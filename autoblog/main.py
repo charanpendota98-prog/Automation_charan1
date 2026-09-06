@@ -82,7 +82,8 @@ def generate_one(category: str, mock: bool, mock_index: int = 0) -> dict:
 
 
 def run(dry_run: bool, force: bool, mock: bool, category: str = "",
-        source_url: str = "", process_queue: int = 0, update_id: int = 0) -> int:
+        source_url: str = "", process_queue: int = 0, update_id: int = 0,
+        listicle: str = "", auto_refresh_n: int = 0) -> int:
     now = _now()
     today = now.date()
     now_hour = now.hour
@@ -108,6 +109,18 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
                 log.error("Queue URL failed (%s): %s — skip", url[:60], exc)
             finally:
                 sources.mark_done_and_clean(url)
+        return 0
+
+    # --- manual listicle mode (--listicle "Top 10 ...") ---------------------
+    if listicle:
+        result = pipeline.create_listicle(topic=listicle, mock=mock)
+        log.info("LISTICLE READY ✔ %s (status=%s)", result["link"], result["status"])
+        return 0
+
+    # --- manual auto-refresh (--auto-refresh N) ------------------------------
+    if auto_refresh_n:
+        done = pipeline.auto_refresh(limit=auto_refresh_n)
+        log.info("AUTO-REFRESH complete — %d posts updated", len(done))
         return 0
 
     # --- update mode: existing post ni kotha info tho improve --------------
@@ -138,11 +151,38 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
             config.ACTIVE_HOUR_START, config.ACTIVE_HOUR_END,
             config.DAILY_MIN, config.DAILY_MAX,
         )
+        # daily auto-refresh (maintenance — plan lo leda parvaledu)
+        if (config.AUTO_REFRESH_PER_DAY > 0
+                and now_hour == config.AUTO_REFRESH_HOUR
+                and not state.meta_get(config.STATE_PATH, f"autorefresh:{today.isoformat()}")):
+            try:
+                pipeline.auto_refresh(limit=config.AUTO_REFRESH_PER_DAY)
+                state.meta_set(config.STATE_PATH, f"autorefresh:{today.isoformat()}", "1")
+            except Exception:
+                log.exception("Daily auto-refresh failed")
         if now_hour not in plan:
             log.info("Hour %02d:00 not in today's plan %s — nothing to do.", now_hour, plan)
             return 0
         log.info("Hour %02d:00 in plan %s — generating post (%d done today).",
                  now_hour, plan, count)
+
+        # trending listicle quota: roju LISTICLES_PER_DAY stories
+        lkey = f"listiclecount:{today.isoformat()}"
+        lcount = int(state.meta_get(config.STATE_PATH, lkey) or 0)
+        if lcount < config.LISTICLES_PER_DAY:
+            log.info("Listicle slot (%d/%d today) — trending story mode",
+                     lcount + 1, config.LISTICLES_PER_DAY)
+            if not mock and not config.GEMINI_API_KEY:
+                log.error("GEMINI_API_KEY ledu — listicle skip")
+            else:
+                try:
+                    result = pipeline.create_listicle(mock=mock)
+                    state.meta_set(config.STATE_PATH, lkey, str(lcount + 1))
+                    log.info("LISTICLE READY ✔ %s (status=%s)",
+                             result["link"], result["status"])
+                    return 0
+                except Exception:
+                    log.exception("Listicle failed — normal post ki veltanu")
 
     # --- source queue check (sources_queue.txt lo URLs unnaye priority) ----
     queued = sources.pending_from_queue()
@@ -315,6 +355,11 @@ def main() -> int:
                         help="sources_queue.txt lo first N URLs ippude process chey")
     parser.add_argument("--update", type=int, default=0, metavar="POST_ID",
                         help="existing post ni kotha info tho improve chesi update chey")
+    parser.add_argument("--listicle", nargs="?", const="auto", default=None,
+                        metavar="TOPIC",
+                        help="trending listicle post (Top 10 jobs lanti stories); topic optional")
+    parser.add_argument("--auto-refresh", type=int, default=0, metavar="N",
+                        help="purana N posts ni kotha info tho refresh chey")
     parser.add_argument("--add-source", default="",
                         help="--update tho extra source URL (kotha info)")
     parser.add_argument("--status", action="store_true", help="show stats & today's plan")
@@ -332,9 +377,13 @@ def main() -> int:
         return notify_test()
     try:
         src = args.add_source or args.url
+        listicle_arg = args.listicle or ""
+        if listicle_arg == "auto":
+            listicle_arg = ""  # bot idea pick chestundi
         return run(dry_run=args.dry_run, force=args.force, mock=args.mock,
                    category=args.category, source_url=src,
-                   process_queue=args.process_queue, update_id=args.update)
+                   process_queue=args.process_queue, update_id=args.update,
+                   listicle=listicle_arg, auto_refresh_n=args.auto_refresh)
     except wordpress_client.WordPressAuthError as exc:
         log.error("%s", exc)
         return 3

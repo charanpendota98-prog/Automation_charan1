@@ -101,7 +101,11 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
         description=article["meta_description"],
         category=article.get("category", ""),
         source_domains=article.get("_source_domains"),
+        list_items=article.get("list_items") if article.get("article_type") == "listicle" else None,
     )
+    # in-content ads (AdSense-safe positions; AD_SHORTCODE set unte matrame)
+    if config.AD_SHORTCODE:
+        final_html = seo.insert_ad_shortcodes(final_html, config.AD_SHORTCODE)
 
     # --- QA step 2: validation score + originality proof ---
     qa = validator.validate_article(article, final_html)
@@ -152,7 +156,7 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
     state.record_post(config.STATE_PATH, article["title"], article["slug"],
                       article["category"], result["link"], result["status"],
                       qa_score=(article.get("_qa") or {}).get("score"),
-                      orig_score=article.get("_orig"))
+                      orig_score=article.get("_orig"), wp_id=result.get("id"))
     state.bump_today_count(config.STATE_PATH, day or date.today())
     if article.get("source_url"):
         state.mark_source_done(config.STATE_PATH, article["source_url"], result.get("id"))
@@ -426,6 +430,10 @@ def update_post(post_id: int, new_source_urls=None, mock: bool = False) -> Dict:
     log.info("POST UPDATED ✔ id=%s link=%s", post_id, result.get("link"))
     article["source_url"] = None
     try:
+        state.record_refresh(config.STATE_PATH, post_id)
+    except Exception:
+        pass
+    try:
         from . import indexnow
 
         indexnow.submit(result.get("link", ""))
@@ -436,3 +444,53 @@ def update_post(post_id: int, new_source_urls=None, mock: bool = False) -> Dict:
     except Exception:
         log.exception("Update notification failed (post update safe)")
     return result
+
+
+# ------------------------------------------------------------------ listicles
+
+def create_listicle(topic: str = "", mock: bool = False) -> Dict:
+    """Trending listicle post (Top 10 jobs lanti 'stories')."""
+    from . import topic_engine
+
+    idea = topic or topic_engine.pick_listicle_idea(
+        state.recent_titles(config.STATE_PATH, limit=30))
+    log.info("Listicle idea: %s", idea)
+
+    if mock:
+        article = topic_engine.mock_listicle(idea,
+                                             state.today_count(config.STATE_PATH, date.today()))
+    else:
+        if not config.GEMINI_API_KEY:
+            raise ValueError("GEMINI_API_KEY ledu — listicle generate avvaledu")
+        recent = state.recent_titles(config.STATE_PATH, limit=30)
+        article = gemini_client.generate_listicle(idea, recent, date.today().year)
+
+    from .main import _safe_slug
+    article["slug"] = _safe_slug(article.get("slug", ""), article["title"])
+    for k, v in (("focus_keyword", idea), ("external_links", []),
+                 ("secondary_keywords", []), ("quick_answer", ""),
+                 ("faq", []), ("seo_title", ""), ("list_items", None)):
+        article.setdefault(k, v)
+    return publish_article(article)
+
+
+# ------------------------------------------------------------------ auto refresh
+
+def auto_refresh(limit: int = 1, older_days: int = None) -> list:
+    """Purana published posts ni kotha research tho refresh (daily maintenance).
+
+    Google freshness signal — rankings long-term lo stable.
+    """
+    older = older_days if older_days is not None else config.AUTO_REFRESH_MIN_AGE_DAYS
+    targets = state.posts_to_refresh(config.STATE_PATH, older_days=older, limit=limit)
+    if not targets:
+        log.info("Auto-refresh: eligible posts levu (min %d days old)", older)
+        return []
+    results = []
+    for t in targets:
+        try:
+            log.info("Auto-refresh: post %s '%s'", t["wp_id"], t["title"][:50])
+            results.append(update_post(t["wp_id"]))
+        except Exception:
+            log.exception("Auto-refresh fail: post %s", t["wp_id"])
+    return results

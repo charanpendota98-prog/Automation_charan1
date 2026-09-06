@@ -217,6 +217,38 @@ Oka post already publish ayyaka, **kotha information dorikithe** danini same pos
 
 > SEO Tip: Google "content freshness" ni premistundi — 2-3 months old top posts ni monthly once refresh cheyandi. Rankings long-term lo stable ga untayi.
 
+## 📰 Trending Stories (Listicles) + Daily Auto-Refresh + Ads (v5)
+
+### Trending Stories — Adda247 style "Top 10" posts
+- **Top 10 Central Government Jobs**, **Top 7 Scholarships**, **Top 5 Railway Jobs**, **Top 10 Work From Home**... 16 rotating ideas
+- Roju **LISTICLES_PER_DAY=2** stories automatic (scheduled slots lo) — trending traffic ki best
+- **ItemList JSON-LD schema** automatic (4th schema!) — Google lo list rich results eligibility
+- Manual: `.venv/bin/python run.py --listicle "Top 10 Bank Jobs"` (topic ivvakkarledu — bot idea pick chestundi)
+
+### Daily Auto-Refresh (Google freshness signal)
+- Prathi roju **AUTO_REFRESH_HOUR** (default 21:00) lo **purana published posts** (14+ days) ni select chesi
+  kotha web research tho **refresh** chestundi (never-refreshed posts ki priority)
+- Rankings long-term lo stable — top websites idi exact ga chestayi
+- Manual: `.venv/bin/python run.py --auto-refresh 3`
+
+### In-Content Ads (ADSENSE-SAFE positions)
+- `AD_SHORTCODE=[quads id=1]` set cheste — bot 3 policy-safe positions lo ads insert chestundi:
+  intro tarvata, mid-article, FAQ mundu (Max 3 — accidental-click policy safe)
+
+### ⚠️ AdSense Safety — MEERU adigina "click → new page → back → new ads" pattern GURTHU PETTANDI:
+Ee pattern (**forced navigation for ad impressions**, **back-navigation ad refresh**) —
+**Google AdSense policy violation**. Ban risk perigite mottam revenue pothundi.
+SAFE alternatives (bot already implement chesindi):
+1. ✅ In-content ads (3 safe positions) — impressions perakuthayi, policy safe
+2. ✅ Listicles + Related articles + internal links — **legit pageviews peruguthayi**
+   (user natural ga inko post open chestadu = kotha page = kotha ads — idi 100% allowed)
+3. ✅ Daily refresh — repeat visitors ki fresh content (fresh ads automatic ga vastayi new page lo)
+4. ✅ Reading time + TOC + Quick Answer — dwell time perigindi = scroll depth = viewability perugutundi
+5. ✅ Site-side (dashboard cheyandi): AdSense **Auto Ads** ON cheyandi, **anchor ads** (mobile sticky)
+   allow cheyandi, **Web Stories plugin** install cheyandi (stories format lo kotha ad inventory)
+6. ❌ Cheyakudadu: own ads click, "click here" arrows deggara ads, timer-based ad refresh,
+   back-button ad refresh, thin pages only-for-ads
+
 ## 🎯 SEO / Rank Math 100% Score — Top 0.001% Level Tricks
 
 Prathi post lo automatic ga:
@@ -253,6 +285,8 @@ Prathi post lo automatic ga:
 .venv/bin/python run.py --force     # ippude oka post publish cheyali ante
 .venv/bin/python run.py --url "https://site.com/article"   # URL -> original rewrite post
 .venv/bin/python run.py --process-queue 5                    # queue lo 5 URLs bulk process
+.venv/bin/python run.py --listicle "Top 10 Bank Jobs 2026"    # trending story post
+.venv/bin/python run.py --auto-refresh 3                      # 3 purana posts refresh
 .venv/bin/python run.py --dry-run   # WordPress touch avvakunda local test
 .venv/bin/python run.py --dry-run --mock   # offline test (API key kavali kadu)
 

@@ -26,6 +26,76 @@ MOCK_TOPICS = [
     ("Education News", "SWAYAM & NPTEL Free Courses – Certificate Value emito"),
 ]
 
+# Trending listicle ("stories") ideas — Adda247 style, rotate avtayi
+LISTICLE_IDEAS = [
+    "Top 10 Central Government Jobs",
+    "Top 10 Sarkari Jobs Without Exam",
+    "Top 7 Scholarships for Telugu Students",
+    "Top 8 Government Internships for Students",
+    "Top 5 Railway Jobs for 12th Pass",
+    "Top 10 Work From Home Jobs for Students",
+    "Top 7 Free Online Courses with Certificates",
+    "Top 9 Highest Paying Government Jobs",
+    "Top 6 Bank Jobs After Degree",
+    "Top 5 Defence Jobs After Intermediate",
+    "Top 8 Study Apps for Competitive Exams",
+    "Top 7 Websites for Free Government Job Alerts",
+    "Top 10 Skills Students ki 2026 lo Necessity",
+    "Top 6 Part Time Jobs for College Students",
+    "Top 5 SSC Exams After Degree",
+    "Top 7 Telangana Government Schemes for Students",
+]
+
+
+def pick_listicle_idea(recent_titles=None) -> str:
+    recent = set(t.lower() for t in (recent_titles or []))
+    for _ in range(len(LISTICLE_IDEAS) * 3):
+        idea = random.choice(LISTICLE_IDEAS)
+        if not any(idea.lower() in t for t in recent):
+            return idea
+    return random.choice(LISTICLE_IDEAS)
+
+
+def mock_listicle(topic: str, index: int = 0) -> dict:
+    items = [
+        ("SSC CGL", "Level-6 pay, graduation tho apply"),
+        ("IBPS PO", "Banking lo top job"),
+        ("RRB NTPC", "Railway central jobs"),
+        ("UPSC CSE", "Top civil service"),
+        ("LIC AAO", "Insurance sector"),
+    ]
+    sections = "".join(
+        f"<h2>{i}. {name} – {hook}</h2><p>{name} gurinchi details para. "
+        f"Eligibility and process ikkada untundi.</p>"
+        f"<ul><li>Qualification: Degree</li><li>Pay: {hook}</li></ul>"
+        for i, (name, hook) in enumerate(items, 1)
+    )
+    return {
+        "title": f"{topic} 2026 – Complete List Telugu lo (Top 5)",
+        "slug": "test-listicle-" + str(index),
+        "meta_description": f"{topic} 2026 — Telugu lo complete top list, salary, eligibility antha oke chote.",
+        "tags": ["Top 10", "2026", "Govt Jobs", "Telugu", "Students", "List"],
+        "banner_text": "Top Jobs 2026 List",
+        "content_html": (
+            f"<p>{topic} 2026 gurinchi mana complete list — Telugu students ki "
+            "ekkuva useful ga untundi.</p><p>Ee list lo prathi item details "
+            "ikkaada unnayi.</p>" + sections +
+            "<h2>Comparison Table</h2><table><thead><tr><th>Job</th><th>Pay</th></tr></thead>"
+            "<tbody><tr><td>SSC CGL</td><td>Level-6</td></tr></tbody></table>"
+            "<h2>FAQ</h2><h3>Q1?</h3><p>A1</p><h3>Q2?</h3><p>A2</p>"
+            "<h3>Q3?</h3><p>A3</p>"
+        ),
+        "category": "Govt Jobs",
+        "model": "mock",
+        "focus_keyword": topic,
+        "secondary_keywords": [topic + " list", "top jobs telugu"],
+        "quick_answer": f"{topic} 2026 — mana top list lo best options ikkada.",
+        "faq": [{"question": "Q1?", "answer": "A1"}, {"question": "Q2?", "answer": "A2"}],
+        "external_links": [{"text": "SSC Official", "url": "https://ssc.gov.in"}],
+        "article_type": "listicle",
+        "list_items": [name for name, _ in items],
+    }
+
 MOCK_ARTICLE_HTML = """<p>EE article lo manam {topic} gurinchi complete ga telusukuntamu. Students ki ee information chala useful ga untundi — mundu basics nunchi start cheddam.</p>
 <h2>Key Details</h2>
 <ul><li><strong>Eligibility:</strong> Indian students ki apply cheyochu.</li><li><strong>Process:</strong> motham online lo jarugutundi.</li><li><strong>Fee:</strong> chala schemes lo application free.</li></ul>
