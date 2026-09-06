@@ -8,6 +8,7 @@
   python run.py --status      show today's plan and stats
   python run.py --check-wp    test WordPress credentials
   python run.py --notify-test test Telegram/WhatsApp notifications
+  python run.py --url LINK    source URL -> 100% original SEO rewrite post
 
 Review flow (recommended): DEFAULT_POST_STATUS=draft in .env
   - Posts WordPress lo DRAFT lo vastayi

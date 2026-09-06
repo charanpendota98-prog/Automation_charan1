@@ -122,6 +122,26 @@ class WordPressClient:
 
     # ---------------------------------------------------------------- post
 
+    def get_recent_published(self, per_page: int = 8) -> List[Dict]:
+        """Recent live posts — internal linking kosam."""
+        try:
+            resp = self._request(
+                "GET", "posts",
+                params={"status": "publish", "per_page": per_page, "orderby": "date",
+                        "order": "desc", "_fields": "id,link,title,categories"},
+            )
+            if resp.status_code != 200:
+                return []
+            out = []
+            for p in resp.json():
+                title = (p.get("title") or {}).get("rendered", "")
+                out.append({"id": p.get("id"), "link": p.get("link", ""),
+                            "title": title, "categories": p.get("categories", [])})
+            return out
+        except Exception:
+            log.exception("get_recent_published failed")
+            return []
+
     def create_post(
         self,
         title: str,
@@ -132,6 +152,7 @@ class WordPressClient:
         excerpt: str,
         media_id: Optional[int],
         status: Optional[str] = None,
+        meta: Optional[Dict[str, str]] = None,
     ) -> Dict:
         payload: Dict = {
             "title": title,
@@ -147,8 +168,16 @@ class WordPressClient:
             payload["tags"] = tag_ids
         if media_id:
             payload["featured_media"] = media_id
+        if meta:
+            payload["meta"] = meta
 
         resp = self._request("POST", "posts", json=payload)
+        if resp.status_code == 400 and meta and "meta" in resp.text.lower():
+            # Rank Math plugin active ledu -> meta keys register avvaledu;
+            # post content lo SEO already untundi kabbatti meta leni retry
+            log.info("Rank Math meta REST lo accept avvaledu — meta leni retry")
+            payload.pop("meta", None)
+            resp = self._request("POST", "posts", json=payload)
         if resp.status_code not in (200, 201):
             raise WordPressError(
                 f"Post creation failed: HTTP {resp.status_code}: {resp.text[:400]}"

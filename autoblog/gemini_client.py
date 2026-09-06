@@ -27,6 +27,16 @@ RESPONSE_SCHEMA = {
         "tags": {"type": "ARRAY", "items": {"type": "STRING"}},
         "banner_text": {"type": "STRING"},
         "content_html": {"type": "STRING"},
+        "focus_keyword": {"type": "STRING"},
+        "seo_title": {"type": "STRING"},
+        "external_links": {
+            "type": "ARRAY",
+            "items": {
+                "type": "OBJECT",
+                "properties": {"text": {"type": "STRING"}, "url": {"type": "STRING"}},
+                "required": ["text", "url"],
+            },
+        },
     },
     "required": ["title", "slug", "meta_description", "tags", "banner_text", "content_html"],
 }
@@ -104,11 +114,57 @@ ARTICLE STRUCTURE (HTML):
 
 ALSO RETURN:
 - slug: English kebab-case URL slug for this post ( transliterate the topic, e.g. "ssc-cgl-preparation-guide" ), max 60 chars, lowercase, hyphens only.
-- meta_description: 140-160 characters Telugu summary for SEO.
+- meta_description: 140-160 characters Telugu summary for SEO (focus keyword MUST be in it).
 - tags: 5 to 8 tags, mix of Telugu and English keywords.
 - banner_text: short ENGLISH text (max 6 words) suitable for a featured image banner, e.g. "Scholarships 2026 Apply Online".
+- focus_keyword: ONE main SEO keyword phrase (Telugu + English mix, e.g. "SSC CGL 2026 ప్రిపరేషన్"). It must appear: in the title, in the FIRST paragraph, in at least 2 <h2> headings, and naturally 5-8 times in the body (density ~1%).
+- seo_title: SEO title with focus keyword at the START, under 60 characters, include the year and a power word (Complete/Guide/Best).
+- external_links: 1-3 REAL official websites related to the topic (e.g. https://ssc.gov.in) with short Telugu anchor text. ONLY well-known official portals — never invent URLs.
 
 Return ONLY valid JSON matching the schema."""
+
+
+REWRITE_PROMPT_TEMPLATE = """You are an expert Telugu education-content writer for studentup.in.
+
+TASK: Below is a REFERENCE ARTICLE from another website. Write a COMPLETELY NEW, 100% ORIGINAL article in your own words about the same topic for studentup.in.
+
+=============== REFERENCE ARTICLE (facts only — do NOT copy) ===============
+SOURCE URL: {url}
+SOURCE SITE: {site}
+SOURCE TITLE: {src_title}
+SOURCE CONTENT:
+{src_text}
+============================================================================
+
+STRICT ORIGINALITY RULES (copyright safe — very important):
+- Do NOT copy any sentence, phrase structure, or paragraph from the source.
+- Use ONLY the FACTS/information from the source (scheme names, eligibility, process, numbers).
+- Everything must be freshly written by you in a completely different structure and wording.
+- Write it as if you are an independent expert explaining the topic from scratch.
+
+IMPROVE & EXPAND (advanced content — very important):
+- ADD extra valuable sections the source may not have: detailed step-by-step process, required documents list, common mistakes to avoid, pro tips, comparison table, extra background context.
+- Total length: 1800-2500 words — richer and more useful than the source.
+- LANGUAGE: TELUGU SCRIPT with natural English terms mixed (scholarship, apply, eligibility, official website...) like Telugu news sites.
+
+ACCURACY RULES:
+- Keep only facts from the source + well-known real information. Do NOT invent dates/deadlines/vacancy numbers beyond what the source states.
+- Official website links: mention only well-known real portals.
+
+ARTICLE STRUCTURE (HTML only — h2 h3 p ul ol li strong em table thead tbody tr th td a):
+- 2-3 intro paragraphs (focus keyword in FIRST paragraph).
+- <h2> sections: overview, eligibility/details, benefits, step-by-step how to apply/check (as lists), documents required, tips & common mistakes, one <table> summary.
+- Conclusion paragraph + FAQ section (4 <h3> questions with answers).
+- End with a Telugu call-to-action (share + comment).
+
+ALSO RETURN (same JSON schema):
+- title: SEO Telugu+English title, 50-70 chars, focus keyword at start, year {year} if relevant.
+- slug, meta_description (keyword included, 140-160 chars), tags (5-8), banner_text (English, max 6 words).
+- focus_keyword: ONE main keyword phrase — in title, first para, 2+ h2 headings, ~1% density.
+- seo_title: keyword at start, under 60 chars, year + power word.
+- external_links: 1-3 real official portals for this topic with Telugu anchor text.
+
+Return ONLY valid JSON."""
 
 
 class GeminiError(Exception):
@@ -212,6 +268,61 @@ def generate_article(
                     continue
                 last_err = exc
                 break  # retryable error -> go to next attempt (with backoff)
+            except (json.JSONDecodeError, ValueError) as exc:
+                last_err = GeminiError(f"JSON parse failed: {exc}")
+                break
+        time.sleep(min(45, 5 * (2 ** (attempt - 1))))
+    raise GeminiError(f"All attempts failed: {last_err}")
+
+
+def generate_article_from_source(
+    source,
+    recent_titles: List[str],
+    year: int,
+) -> Dict:
+    """100% original rewrite from a SourceArticle (facts only, no copying)."""
+    if not config.GEMINI_API_KEY:
+        raise GeminiError("GEMINI_API_KEY not set")
+
+    avoid_block = ""
+    if recent_titles:
+        sample = "\n".join(f"- {t}" for t in recent_titles[:30])
+        avoid_block = ("Also make sure your new TITLE is different from these "
+                       "already-published titles:\n" + sample)
+
+    prompt = REWRITE_PROMPT_TEMPLATE.format(
+        url=source.url,
+        site=source.site_name,
+        src_title=source.title,
+        src_text=source.text or "(text extraction takkuva ayyindi — title base ga rayandi)",
+        year=year,
+    )
+    if avoid_block:
+        prompt += "\n" + avoid_block
+
+    models = _models()
+    last_err: Optional[Exception] = None
+    for attempt in range(1, config.GEMINI_MAX_RETRIES + 1):
+        for model in models:
+            try:
+                raw = _call_model(model, prompt)
+                article = _parse_json(raw)
+                for field in ("title", "slug", "meta_description", "content_html"):
+                    if not article.get(field):
+                        raise GeminiError(f"Empty field in response: {field}")
+                article["tags"] = [str(t).strip() for t in article.get("tags", []) if str(t).strip()][:8]
+                article["category"] = article.get("category", "Education News")
+                article["model"] = model
+                article["source_url"] = source.url
+                article["source_title"] = source.title
+                return article
+            except GeminiError as exc:
+                msg = str(exc)
+                if msg.startswith("MODEL_NOT_FOUND"):
+                    log.warning("Model %s unavailable, trying fallback...", model)
+                    continue
+                last_err = exc
+                break
             except (json.JSONDecodeError, ValueError) as exc:
                 last_err = GeminiError(f"JSON parse failed: {exc}")
                 break

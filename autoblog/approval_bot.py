@@ -80,19 +80,62 @@ class ApprovalBot:
                 "text": ("👋 Namaskaram! studentup.in Auto-Blogger lo ki welcome!\n\n"
                          "Prathi draft post ki ikkada message vastundi — "
                          "✅ Publish / 🗑️ Delete buttons tho.\n\n"
+                         "🔗 VERE SITE URL paste cheyandi — aa article ni 100% "
+                         "original ga (no copy) advanced SEO article ga marchi draft "
+                         "chestundi!\n\n"
                          "Commands:\n/pending – review avasaram leni drafts\n"
-                         "/stats – statistics"),
+                         "/stats – statistics\n/help – help"),
             })
         elif text.startswith("/pending"):
             self.send_pending(chat_id)
         elif text.startswith("/stats"):
             self.send_stats(chat_id)
         elif text.startswith("/help"):
-            self.tg("sendMessage", {"chat_id": chat_id,
-                                    "text": "Commands: /pending, /stats, /help"})
+            self.tg("sendMessage", {
+                "chat_id": chat_id,
+                "text": ("Commands: /pending, /stats, /help\n\n"
+                         "URL paste cheyste → source article ni 100% original "
+                         "SEO article ga marchi draft create chestundi "
+                         "(✅ Publish button tho approve cheyochu)."),
+            })
+        elif text.startswith("http://") or text.startswith("https://"):
+            self.handle_source_url(chat_id, text)
         else:
             self.tg("sendMessage", {"chat_id": chat_id,
                                     "text": "Ardham kaledu 🤔 — /help try cheyandi."})
+
+    def handle_source_url(self, chat_id: str, url: str) -> None:
+        """User pasted URL -> 100% original rewrite -> draft + buttons."""
+        from . import pipeline, sources as sources_mod
+
+        url = url.split()[0]  # URL tarvata extra text unte drop
+        if not sources_mod.is_valid_source_url(url):
+            self.tg("sendMessage", {"chat_id": chat_id,
+                                    "text": "⚠️ URL valid kadu — http/https link ivvandi."})
+            return
+        if state.source_done(config.STATE_PATH, url):
+            self.tg("sendMessage", {"chat_id": chat_id,
+                                    "text": "ℹ️ Ee URL already process chesayi."})
+            return
+        self.tg("sendMessage", {
+            "chat_id": chat_id,
+            "text": ("🌐 Source article teegutunnanu...\n"
+                     "✍️ 100% original rewrite + advanced SEO content "
+                     "tayar avutundi (1-2 nimishalu)."),
+        })
+        try:
+            mock = not config.GEMINI_API_KEY
+            pipeline.create_from_source(url, mock=mock)
+            # draft aite notify_new_post buttons tho message already pampestundi
+        except ValueError as exc:
+            self.tg("sendMessage", {"chat_id": chat_id,
+                                    "text": f"⚠️ {exc}"})
+        except Exception as exc:
+            log.exception("Source URL processing failed")
+            self.tg("sendMessage", {
+                "chat_id": chat_id,
+                "text": f"❌ Source process cheyaledu: {str(exc)[:200]}",
+            })
 
     def on_callback(self, cb: dict) -> None:
         cb_id = cb.get("id", "")

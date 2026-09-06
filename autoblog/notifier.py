@@ -30,6 +30,11 @@ def send_telegram(
     """Send HTML-formatted message. buttons = inline keyboard dict."""
     token = config.TELEGRAM_BOT_TOKEN
     chat = chat_id or config.TELEGRAM_CHAT_ID
+    if not chat:
+        # approval bot /start tho register ayyina chat id fallback
+        from . import state
+
+        chat = state.meta_get(config.STATE_PATH, "telegram_chat_id") or ""
     if not token or not chat:
         log.info("Telegram not configured — skipping notification")
         return False
@@ -118,9 +123,10 @@ def notify_new_post(article: dict, result: dict) -> None:
         f"<b>{esc(title)}</b>",
         f"📂 Category: {esc(cat)}",
         f"🏷️ Tags: {esc(tags)}",
-        "",
-        f"{esc(excerpt)}",
     ]
+    if article.get("source_url"):
+        lines.append(f"📰 Source (original rewrite): {esc(article['source_url'])}")
+    lines += ["", f"{esc(excerpt)}"]
     if result.get("link"):
         lines += ["", f"🔗 {esc(result['link'])}"]
     if status == "draft":

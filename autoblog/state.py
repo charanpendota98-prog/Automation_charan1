@@ -46,6 +46,13 @@ def init(db_path: Path) -> None:
                 wp_id INTEGER NOT NULL,
                 PRIMARY KEY (name, type)
             );
+
+            CREATE TABLE IF NOT EXISTS sources (
+                url TEXT PRIMARY KEY,
+                status TEXT NOT NULL DEFAULT 'done',
+                post_id INTEGER,
+                created_at TEXT DEFAULT (datetime('now', 'localtime'))
+            );
             """
         )
 
@@ -159,6 +166,25 @@ def save_term_id(db_path: Path, name: str, term_type: str, wp_id: int) -> None:
         conn.execute(
             "INSERT OR REPLACE INTO wp_terms (name, type, wp_id) VALUES (?, ?, ?)",
             (name, term_type, wp_id),
+        )
+
+
+# --- sources ---------------------------------------------------------------
+
+def source_done(db_path: Path, url: str) -> bool:
+    with _connect(db_path) as conn:
+        row = conn.execute(
+            "SELECT 1 FROM sources WHERE url = ? AND status = 'done'", (url,)
+        ).fetchone()
+    return row is not None
+
+
+def mark_source_done(db_path: Path, url: str, post_id: Optional[int] = None) -> None:
+    with _connect(db_path) as conn:
+        conn.execute(
+            "INSERT INTO sources (url, status, post_id) VALUES (?, 'done', ?) "
+            "ON CONFLICT(url) DO UPDATE SET status='done', post_id=excluded.post_id",
+            (url, post_id),
         )
 
 

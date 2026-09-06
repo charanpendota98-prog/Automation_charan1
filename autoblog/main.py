@@ -18,7 +18,7 @@ import unicodedata
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
-from . import config, gemini_client, image_gen, notifier, state, topic_engine, wordpress_client
+from . import config, gemini_client, image_gen, notifier, pipeline, sources, state, topic_engine, wordpress_client
 
 log = logging.getLogger("autoblog")
 
@@ -81,10 +81,20 @@ def generate_one(category: str, mock: bool, mock_index: int = 0) -> dict:
     raise RuntimeError("Could not generate a non-duplicate title after retries")
 
 
-def run(dry_run: bool, force: bool, mock: bool, category: str = "") -> int:
+def run(dry_run: bool, force: bool, mock: bool, category: str = "",
+        source_url: str = "") -> int:
     today = _now().date()
     now_hour = _now().hour
     state.init(config.STATE_PATH)
+
+    # --- explicit source URL mode (--url / Telegram) -----------------------
+    if source_url:
+        if not mock and not config.GEMINI_API_KEY:
+            log.error("GEMINI_API_KEY set kavali! .env file lo key pettandi.")
+            return 2
+        result = pipeline.create_from_source(source_url, mock=mock)
+        log.info("SOURCE POST READY ✔ %s (status=%s)", result["link"], result["status"])
+        return 0
 
     # --- schedule check ----------------------------------------------------
     if not (force or dry_run):
@@ -103,7 +113,24 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "") -> int:
         log.info("Hour %02d:00 in plan %s — generating post (%d done today).",
                  now_hour, plan, count)
 
-    # --- generate ----------------------------------------------------------
+    # --- source queue check (sources_queue.txt lo URLs unnaye priority) ----
+    queued = sources.pending_from_queue()
+    if queued:
+        log.info("Sources queue lo URL dorikindi — original rewrite mode: %s", queued)
+        if not mock and not config.GEMINI_API_KEY:
+            log.error("GEMINI_API_KEY ledu — queue URL skip, auto-topic ki try chestanu")
+        else:
+            try:
+                result = pipeline.create_from_source(queued, mock=mock)
+                log.info("SOURCE POST READY ✔ %s (status=%s)", result["link"], result["status"])
+                return 0
+            except Exception as exc:
+                log.error("Queue URL failed (%s) — mark chesi normal post ki veltanu: %s",
+                          queued, exc)
+            finally:
+                sources.mark_done_and_clean(queued)
+
+    # --- generate (auto topic) ---------------------------------------------
     cat = category or topic_engine.pick_category(config.STATE_PATH)
     log.info("Category selected: %s%s", cat, " (forced)" if category else "")
 
@@ -113,20 +140,23 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "") -> int:
 
     mock_index = state.today_count(config.STATE_PATH, today)
     article = generate_one(cat, mock, mock_index)
+    article.setdefault("focus_keyword", "")
+    article.setdefault("external_links", [])
+    article.setdefault("seo_title", "")
     log.info("Article ready: %s (slug=%s, model=%s)",
              article["title"], article["slug"], article.get("model"))
 
-    # --- featured image ----------------------------------------------------
+    # --- featured image (dry-run kosam; real publish lo pipeline chestundi) --
     image_path: Path = Path(
         config.OUTPUT_DIR / "images" / f"{article['slug']}.jpg"
     )
-    media_id = None
-    if config.IMAGE_ENABLED:
-        generated = image_gen.generate_featured_image(
+    if dry_run and config.IMAGE_ENABLED:
+        if not image_gen.generate_featured_image(
             article["banner_text"], article["category"], image_path
-        )
-        if not generated:
+        ):
             image_path = None
+    else:
+        image_path = None
 
     # --- publish / dry-run -------------------------------------------------
     if dry_run:
@@ -147,6 +177,9 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "") -> int:
                     "category": article["category"],
                     "tags": article["tags"],
                     "meta_description": article["meta_description"],
+                    "focus_keyword": article.get("focus_keyword"),
+                    "seo_title": article.get("seo_title"),
+                    "external_links": article.get("external_links"),
                     "image": image_path.name if image_path else None,
                 },
                 ensure_ascii=False,
@@ -166,36 +199,9 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "") -> int:
     wp = wordpress_client.WordPressClient()
     wp.check_connection()
 
-    category_id = wp.get_or_create_term(article["category"], "categories")
-    tag_ids = [wp.get_or_create_term(t, "tags") for t in article["tags"]]
-
-    if config.IMAGE_ENABLED and image_path and image_path.exists():
-        media_id = wp.upload_media(
-            image_path,
-            title=article["title"],
-            alt_text=f"{article['banner_text']} - {article['category']} 2026 studentup",
-        )
-
-    result = wp.create_post(
-        title=article["title"],
-        content_html=article["content_html"],
-        slug=article["slug"],
-        category_id=category_id,
-        tag_ids=tag_ids,
-        excerpt=article["meta_description"],
-        media_id=media_id,
-    )
-    state.record_post(config.STATE_PATH, article["title"], article["slug"],
-                      article["category"], result["link"], result["status"])
-    state.bump_today_count(config.STATE_PATH, today)
+    result = pipeline.publish_article(article, day=today)
     if result["status"] == "draft":
-        log.info("DRAFT saved (review kosam) id=%s — notification pampistunnanu", result["id"])
-    else:
-        log.info("PUBLISHED ✔  %s", result["link"])
-    try:
-        notifier.notify_new_post(article, result)
-    except Exception:
-        log.exception("Notification failed (post safe ga save ayyindi)")
+        log.info("DRAFT saved (review kosam) id=%s", result["id"])
     return 0
 
 
@@ -256,6 +262,7 @@ def main() -> int:
     parser.add_argument("--force", action="store_true", help="ignore schedule & post now")
     parser.add_argument("--mock", action="store_true", help="offline mock article (no Gemini)")
     parser.add_argument("--category", default="", help="force a category")
+    parser.add_argument("--url", default="", help="source URL -> 100% original rewrite post")
     parser.add_argument("--status", action="store_true", help="show stats & today's plan")
     parser.add_argument("--check-wp", action="store_true", help="verify WP credentials")
     parser.add_argument("--notify-test", action="store_true", help="send test notification")
@@ -271,7 +278,7 @@ def main() -> int:
         return notify_test()
     try:
         return run(dry_run=args.dry_run, force=args.force, mock=args.mock,
-                   category=args.category)
+                   category=args.category, source_url=args.url)
     except wordpress_client.WordPressAuthError as exc:
         log.error("%s", exc)
         return 3

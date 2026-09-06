@@ -2,6 +2,7 @@
 .env
 state.db
 state.db-journal
+sources_queue.txt
 log/
 output/
 images/

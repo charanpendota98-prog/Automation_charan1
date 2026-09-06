@@ -3,11 +3,13 @@
 24/7 automatic blog posting system for **studentup.in** (WordPress) — runs on your Oracle Cloud instance.
 
 - **AI content:** Google Gemini (free tier) generates Telugu + English mix articles
+- **URL → 100% Original:** vere site article URL ivvandi → facts teesi **complete ga original ga rewrite** (no copy) + **extra advanced info** add chesi post
+- **SEO + Rank Math 100%:** focus keyword, TOC, internal links, external links, meta tags — anni automatic
 - **Review flow:** posts **DRAFT** lo vastayi → **Telegram ki message** (✅ Publish / 🗑️ Delete buttons) → **one tap lo approve**
 - **Categories:** Scholarships, Govt Jobs, Education News, Exam Updates, Admissions, Results, Internships, Study Tips
 - **Auto-publish:** WordPress REST API — post + category + tags + featured image + SEO meta
 - **Schedule:** 10–15 posts/day, spread across 6 AM – 10 PM IST, hourly runs via systemd/cron
-- **No duplicates:** SQLite state tracks every posted title
+- **No duplicates:** SQLite state tracks every posted title + source URL
 - **WhatsApp alerts** too (optional)
 
 ---
@@ -102,6 +104,55 @@ Draft create ayyaka **Telegram ki message vastundi** — ✅ Publish button clic
 
 ---
 
+## 🔥 Advanced Mode: URL → 100% Original Article (No Copy)
+
+Vere valla site article ni **copy cheyakunda** daani nunchi mana own original article raayadam — 3 methods:
+
+### Method 1: Telegram lo URL paste cheyandi (easiest!)
+1. Mi bot chat loki vere site article URL ni paste cheyandi
+2. Bot: source nunchi **facts** teesi → **100% original** Telugu article (1800-2500 words) → **extra advanced sections** (documents, mistakes, tips, tables, FAQ) add chesi → **SEO optimize** chesi → **DRAFT** create chestundi
+3. ✅ Publish button press cheyandi — done!
+
+### Method 2: Command line
+```bash
+.venv/bin/python run.py --url "https://example.com/news/article-link"
+```
+
+### Method 3: Queue file (bulk)
+`sources_queue.txt` file lo URLs okka line okati paste cheyandi:
+```
+https://somesite.com/ssc-notification-article
+https://othersite.com/scholarship-news
+```
+Scheduler prathi hour lo queue lo unna URL ni priority ga process chesi original post chestundi. Process ayyina URL automatic ga remove avtundi + gurthu pettukundi (malli duplicate cheyadu).
+
+### Ee mode lo em avtundi?
+| Step | Em chestundi |
+|---|---|
+| 1. Fetch | Source article read chesi text extract (ads/menu junk vadiyesi) |
+| 2. Facts only | Sentences copy cheyadu — **facts matrame** teesukuntundi (copyright safe) |
+| 3. Rewrite | Complete ga fresh structure + fresh wording lo Telugu article |
+| 4. Enhance | Extra sections: documents list, common mistakes, pro tips, comparison table, FAQ |
+| 5. SEO | Focus keyword + TOC + internal links + external official links + Rank Math meta |
+| 6. Draft | WordPress draft + Telegram review buttons |
+
+## 🎯 SEO / Rank Math 100% Score — Bot em chestundi?
+
+Prathi post lo automatic ga:
+- ✅ **Focus keyword** — title lo, first paragraph lo, 2+ headings lo, meta description lo (~1% density)
+- ✅ **SEO title** — keyword start lo + year + power word (60 chars lopala)
+- ✅ **Table of Contents** — automatic TOC + anchor links (Rank Math readability)
+- ✅ **Internal links** — mi site recent posts ki "Related Articles" links (same category priority)
+- ✅ **External links** — official portals (ssc.gov.in lanti vi) nofollow links tho
+- ✅ **Image alt text** — focus keyword tho alt text
+- ✅ **Rank Math meta** — `rank_math_focus_keyword`, `rank_math_description`, `rank_math_title` direct REST API dwara set (plugin active unte; lekapothe content-level SEO work avtundi)
+- ✅ **Content length** — 1800-2500 words (Rank Math full score kosari)
+- ✅ **Meta description** — 140-160 chars keyword tho
+
+> Tip: WordPress lo **Rank Math plugin active cheyandi** — bot automatic ga plugin meta fill chestundi, editor lo open chuste 90-100/100 score kanipistundi.
+
+---
+
 ## Daily working style
 
 - Prathi గంట (hourly) scheduler bot ni run chestundi
@@ -114,6 +165,7 @@ Draft create ayyaka **Telegram ki message vastundi** — ✅ Publish button clic
 ```bash
 .venv/bin/python run.py --status    # inka entha posts ayyayi, plan emito
 .venv/bin/python run.py --force     # ippude oka post publish cheyali ante
+.venv/bin/python run.py --url "https://site.com/article"   # URL -> original rewrite post
 .venv/bin/python run.py --dry-run   # WordPress touch avvakunda local test
 .venv/bin/python run.py --dry-run --mock   # offline test (API key kavali kadu)
 
@@ -195,17 +247,20 @@ Marpali te: `.env` edit chesi scheduler ni restart cheyandi: `sudo systemctl res
 ```
 ├── run.py                  # CLI entry point
 ├── setup_oracle.sh         # One-command Oracle Cloud installer
-├── requirements.txt        # requests + pillow
+├── requirements.txt        # requests + pillow + beautifulsoup4
 ├── .env.example            # Config template
 ├── autoblog/
 │   ├── config.py           # Settings loader
 │   ├── main.py             # Orchestrator + schedule logic
-│   ├── gemini_client.py    # Gemini REST client + Telugu prompt
-│   ├── wordpress_client.py # WP REST publish (post/media/terms)
+│   ├── pipeline.py         # Shared publish flow (SEO+image+meta+notify)
+│   ├── gemini_client.py    # Gemini REST client + Telugu prompts (auto + rewrite)
+│   ├── wordpress_client.py # WP REST publish (post/media/terms/RankMath meta)
+│   ├── sources.py          # URL fetch + text extraction + queue file
+│   ├── seo.py              # TOC + keyword + internal/external links enhancer
 │   ├── notifier.py         # Telegram (buttons) + WhatsApp alerts
-│   ├── approval_bot.py     # 24/7 Telegram review bot (one-tap publish)
+│   ├── approval_bot.py     # 24/7 Telegram bot (publish buttons + URL rewrite)
 │   ├── topic_engine.py     # Category rotation + mock generator
 │   ├── image_gen.py        # Featured image (PIL, no API)
-│   └── state.py            # SQLite state (dedupe, plan, counts)
-└── tests/                  # end-to-end tests (fake WP/Telegram servers)
+│   └── state.py            # SQLite state (dedupe, plan, sources)
+└── tests/                  # end-to-end tests (fake WP/Telegram/source servers)
 ```

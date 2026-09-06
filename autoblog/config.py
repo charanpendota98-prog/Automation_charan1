@@ -88,3 +88,8 @@ STATE_PATH = Path(_get("STATE_PATH", str(BASE_DIR / "state.db")))
 LOG_DIR = Path(_get("LOG_DIR", str(BASE_DIR / "log")))
 OUTPUT_DIR = Path(_get("OUTPUT_DIR", str(BASE_DIR / "output")))
 HTTP_TIMEOUT = int(_get("HTTP_TIMEOUT", "90"))
+
+# --- Sources (URL -> original rewrite) ------------------------------------
+SOURCES_QUEUE_PATH = Path(_get("SOURCES_QUEUE_PATH", str(BASE_DIR / "sources_queue.txt")))
+# Rank Math meta REST dwara set cheyadam (plugin active unte automatic)
+RANK_MATH_META_ENABLED = _get("RANK_MATH_META_ENABLED", "1") not in ("0", "false", "no")
