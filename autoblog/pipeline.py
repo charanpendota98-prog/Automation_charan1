@@ -421,7 +421,9 @@ def update_post(post_id: int, new_source_urls=None, mock: bool = False) -> Dict:
         external_links=article.get("external_links", []),
         quick_answer=article.get("quick_answer", ""),
         faq=article.get("faq", []),
-        date_str=date.today().isoformat(),
+        # Google freshness rule: original datePublished preserve, dateModified new
+        date_str=(post.get("date") or date.today().isoformat())[:10],
+        date_modified=date.today().isoformat(),
         slug=slug,
         title=title,
         description=article["meta_description"],

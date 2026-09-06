@@ -7,6 +7,7 @@ Also provides a mock generator so the full pipeline can be tested
 without a Gemini API key (see `run.py --mock`).
 """
 
+import logging
 import random
 import sqlite3
 from collections import Counter
@@ -14,6 +15,8 @@ from pathlib import Path
 from typing import List
 
 from . import config
+
+log = logging.getLogger("autoblog.topics")
 
 MOCK_TOPICS = [
     ("Scholarships", "NSP Scholarship 2026 – National Scholarship Portal lo Apply elaa cheyali"),
@@ -192,3 +195,64 @@ def mock_article(category: str, index: int) -> dict:
         "category": category,
         "model": "mock",
     }
+
+
+# ------------------------------------------------------------------ Google Trends
+# Google official daily-trending RSS -> education topics real-time.
+# "Google vaalla trick": trend lo unna topic ni mana category lo ravadam.
+
+TREND_EDU_PATTERNS = [
+    "exam", "result", "results", "admission", "admissions", "scholarship",
+    "scholarships", "job", "jobs", "recruitment", "notification", "vacancy",
+    "syllabus", "admit card", "hall ticket", "answer key", "counselling",
+    "university", "college", "board", "ssc", "upsc", "rrb", "ibps",
+    "neet", "jee", "cuet", "cat exam", "degree", "btech", "inter",
+    "ఉద్యోగాలు", "ఫలితాలు", "నోటిఫికేషన్", "స్కాలర్‌షిప్", "హాల్‌టికెట్",
+]
+
+
+def fetch_trending_topics(rss_url: str = "", limit: int = 25) -> list:
+    """Google Trends daily RSS parse -> [(title, traffic, news_title), ...].
+
+    Network fail ayite empty list (bot safe ga continue avtundi).
+    """
+    import xml.etree.ElementTree as ET
+
+    import requests
+
+    url = rss_url or config.TRENDS_RSS
+    try:
+        resp = requests.get(url, timeout=10, headers={"User-Agent": "Mozilla/5.0"})
+        resp.raise_for_status()
+        root = ET.fromstring(resp.text)
+    except Exception as exc:
+        log.warning("Trends RSS fetch fail: %s", exc)
+        return []
+
+    out = []
+    for item in root.iter("item"):
+        title = (item.findtext("title") or "").strip()
+        if not title:
+            continue
+        traffic = (item.findtext("ht:approx_traffic")
+                   or item.findtext("{*}approx_traffic") or "").strip()
+        # news item title (context kosam)
+        news_title = ""
+        for nt in item.iter():
+            if nt.tag.endswith("news_item_title") and (nt.text or "").strip():
+                news_title = nt.text.strip()
+                break
+        out.append({"title": title, "traffic": traffic, "news_title": news_title})
+        if len(out) >= limit:
+            break
+    return out
+
+
+def filter_edu_trends(topics: list) -> list:
+    """Trends lo education-relevant ones maathrame (sports/politics filter)."""
+    edu = []
+    for t in topics:
+        hay = f"{t['title']} {t['news_title']}".lower()
+        if any(p in hay for p in TREND_EDU_PATTERNS):
+            edu.append(t)
+    return edu

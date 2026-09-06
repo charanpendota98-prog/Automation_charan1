@@ -292,6 +292,26 @@ SAFE alternatives (bot already implement chesindi):
 
 **Honest note:** ad CLICKS ni artificially peragalera — adi policy violation (ban). Nenu build chesindi: viewability (ads kanipistayi), relevance (value ads match), slots (eka page ki ekkuva legit slots), money pages (high-CPC views). Idi real revenue growth formula.
 
+## 🔥 v9: Google-Native Traffic Pack (Discover + Trends + Freshness)
+
+Google mida ee 3 tricks miss ayyayi — ippati varaku:
+
+1. **Google Discover readiness** — Rank Math per-post robots
+   `max-image-preview:large` (bot automatic ga pampistundi) + 1200x675
+   featured images already. Discover = mobile lo lakala views (Adda247
+   mukhyam ga Discover meede). Site-side kuda set cheyandi:
+   Rank Math > Titles & Meta > Global Robots > Image Preview: **Large**.
+2. **Google Trends daily RSS** — Google thana real-time trending searches
+   free ga RSS lo istundi. Bot:
+   - `run.py --trends` — India top-10 + education-relevant trends display
+   - Scheduler: roju 1 post auto ga **trending education topic** meeda
+     (USE_TRENDS=1). Trend ni mana education angle tho connect chestundi —
+     "SSC GD Result" trend aithe aa roje SSC article!
+   - Network fail → normal topic (safe fallback)
+3. **Freshness dates (Google rule fix)** — refresh chesinappudu
+   `datePublished` preserve + `dateModified` matrame update. Google
+   guideline exact ga — mundu rendu overwrite ayyevi (freshness signal loss).
+
 ## ✍️ v8: "Article Write" Rank Math Tricks (write chesetappude score perugutundi)
 
 Content **rastesetappudu ne** Rank Math checks pass avtaye — idhe real trick:

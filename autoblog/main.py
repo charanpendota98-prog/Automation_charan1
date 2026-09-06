@@ -61,7 +61,8 @@ def _safe_slug(slug: str, fallback_title: str) -> str:
     return slug
 
 
-def generate_one(category: str, mock: bool, mock_index: int = 0) -> dict:
+def generate_one(category: str, mock: bool, mock_index: int = 0,
+                 trend_topic: str = "") -> dict:
     """Generate an article with duplicate-avoidance retries."""
     recent = state.recent_titles(config.STATE_PATH, limit=50)
     avoid_extra = None
@@ -70,7 +71,8 @@ def generate_one(category: str, mock: bool, mock_index: int = 0) -> dict:
             article = topic_engine.mock_article(category, mock_index + attempt)
         else:
             article = gemini_client.generate_article(category, recent, year=_now().year,
-                                                     avoid_extra=avoid_extra)
+                                                     avoid_extra=avoid_extra,
+                                                     trend_topic=trend_topic)
         title = article["title"].strip()
         if not state.title_exists(config.STATE_PATH, title):
             article["title"] = title
@@ -214,8 +216,20 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
         log.error("GEMINI_API_KEY set kavali! .env file lo key pettandi.")
         return 2
 
+    # --- Google Trends trending topic (roju 1 post trend meeda) ---
+    trend_topic = ""
+    if not mock and config.USE_TRENDS and not state.meta_get(config.STATE_PATH, f"trend:{today}"):
+        try:
+            edu = topic_engine.filter_edu_trends(topic_engine.fetch_trending_topics())
+            if edu:
+                trend_topic = edu[0]["title"]
+                state.meta_set(config.STATE_PATH, f"trend:{today}", trend_topic)
+                log.info("🔥 Google Trends topic: %s", trend_topic)
+        except Exception:
+            log.exception("Trends fetch error (continue normal topic)")
+
     mock_index = state.today_count(config.STATE_PATH, today)
-    article = generate_one(cat, mock, mock_index)
+    article = generate_one(cat, mock, mock_index, trend_topic=trend_topic)
     article.setdefault("focus_keyword", "")
     article.setdefault("external_links", [])
     article.setdefault("seo_title", "")
@@ -329,6 +343,31 @@ def check_wp() -> int:
         return 1
 
 
+def trends_check() -> int:
+    """Google Trends India daily — education-relevant trends display."""
+    print("=" * 62)
+    print("  GOOGLE TRENDS (India) — TODAY")
+    print("=" * 62)
+    topics = topic_engine.fetch_trending_topics()
+    if not topics:
+        print("  (fetch fail / empty — network check cheyandi)")
+        return 1
+    print("\n  TOP 10 (anni):")
+    for i, t in enumerate(topics[:10], 1):
+        print(f"  {i:2}. {t['title']}  [{t['traffic'] or '?'} searches]")
+    edu = topic_engine.filter_edu_trends(topics)
+    print(f"\n  EDUCATION-RELEVANT ({len(edu)}):")
+    for t in edu:
+        print(f"  🎓 {t['title']}  [{t['traffic'] or '?'}]")
+        if t["news_title"]:
+            print(f"      ↳ {t['news_title'][:70]}")
+    if edu:
+        print("\n  ↳ USE_TRENDS=1 unte bot automatically ee topic meeda article"
+              " rashtundi (1/day).")
+    print("=" * 62)
+    return 0
+
+
 def revenue_check() -> int:
     """Revenue setup audit — em set ayyindi, em missing o cheptundi."""
     state.init(config.STATE_PATH)
@@ -355,6 +394,10 @@ def revenue_check() -> int:
          config.AUTO_REFRESH_PER_DAY >= 1),
         ("INDEXNOW_KEY set (instant indexing)",
          bool(config.INDEXNOW_KEY)),
+        (f"Google Trends topics ON (USE_TRENDS={config.USE_TRENDS})",
+         bool(config.USE_TRENDS)),
+        (f"Discover max-image-preview meta ({'ON' if config.DISCOVER_META_ENABLED else 'OFF'})",
+         bool(config.DISCOVER_META_ENABLED)),
     ]
     score = 0
     print("\nBOT-SIDE (.env):")
@@ -376,6 +419,7 @@ def revenue_check() -> int:
         "Caching plugin (LiteSpeed / WP-Optimize) — speed = viewability",
         "Search Console lo sitemap submit",
         "30+ posts ayaka Google News Publisher apply",
+        "Rank Math > Titles & Meta > Global Robots: 'Large' image preview set cheyandi (Discover)",
         "10K+ pageviews ayaka Ezoic / Monumetric apply (RPM 50-150% up)",
     ]:
         print(f"  🔧 {item}")
@@ -432,6 +476,8 @@ def main() -> int:
     parser.add_argument("--notify-test", action="store_true", help="send test notification")
     parser.add_argument("--revenue-check", action="store_true",
                         help="revenue setup audit — em missing o cheptundi")
+    parser.add_argument("--trends", action="store_true",
+                        help="Google Trends India education trends chupinchindi")
     args = parser.parse_args()
 
     _setup_logging()
@@ -444,6 +490,8 @@ def main() -> int:
         return notify_test()
     if args.revenue_check:
         return revenue_check()
+    if args.trends:
+        return trends_check()
     try:
         src = args.add_source or args.url
         listicle_arg = args.listicle or ""

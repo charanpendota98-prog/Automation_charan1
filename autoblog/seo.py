@@ -160,6 +160,7 @@ def schema_jsonld(
     faq: List[Dict[str, str]],
     date_published: str,
     slug: str,
+    date_modified: str = "",
     category: str = "",
     list_items: Optional[List[str]] = None,
 ) -> str:
@@ -188,8 +189,9 @@ def schema_jsonld(
         "@type": "Article",
         "headline": title[:110],
         "description": description[:300],
+        # Google guideline: datePublished preserve, dateModified matrame update
         "datePublished": date_published,
-        "dateModified": date_published,
+        "dateModified": date_modified or date_published,
         "author": {"@type": "Organization", "name": "studentup.in"},
         "publisher": {"@type": "Organization", "name": "studentup.in",
                       "url": config.WP_SITE},
@@ -234,6 +236,7 @@ def enhance(
     quick_answer: str = "",
     faq: Optional[List[Dict[str, str]]] = None,
     date_str: str = "",
+    date_modified: str = "",
     slug: str = "",
     title: str = "",
     description: str = "",
@@ -258,7 +261,7 @@ def enhance(
     html += trust_box(date_str, source_domains)
     html += schema_jsonld(title or focus_keyword, description or "", faq or [],
                           date_str, slug, category=category,
-                          list_items=list_items)
+                          date_modified=date_modified, list_items=list_items)
     log.info("SEO enhanced: %d words, keyword=%r", words, focus_keyword)
     if words < 1200:
         log.warning("Word count takkuva (%d) — Rank Math full score kosari 1500+ kavali", words)
@@ -281,7 +284,7 @@ def rankmath_meta(
         extras = ", ".join(k.strip() for k in secondary_keywords if k.strip())[:120]
         if extras:
             keywords = f"{keywords}, {extras}"[:240]
-    return {
+    meta = {
         "rank_math_focus_keyword": keywords,
         "rank_math_description": description[:160],
         "rank_math_title": seo_title[:160],
@@ -292,6 +295,11 @@ def rankmath_meta(
         "rank_math_twitter_description": description[:160],
         "rank_math_twitter_use_open_graph": "on",
     }
+    # Google Discover eligibility: big image preview allow
+    # (Rank Math > Titles & Meta lo kuda set cheyandi — idhi per-post)
+    if config.DISCOVER_META_ENABLED:
+        meta["rank_math_robots"] = ["index, follow, max-image-preview:large"]
+    return meta
 
 
 def insert_ad_shortcodes(html: str, shortcode: str, max_ads: int = 3,

@@ -404,8 +404,13 @@ def generate_article(
     recent_titles: List[str],
     year: int,
     avoid_extra: Optional[str] = None,
+    trend_topic: str = "",
 ) -> Dict:
-    """Generate one article dict. Raises GeminiError on failure."""
+    """Generate one article dict. Raises GeminiError on failure.
+
+    trend_topic: Google Trends nunchi vachina trending topic (optional) —
+    aa topic meede article rastundi (fresh trending content).
+    """
     if not config.GEMINI_API_KEY:
         raise GeminiError("GEMINI_API_KEY not set")
 
@@ -425,6 +430,14 @@ def generate_article(
         year=year,
         avoid_block=avoid_block,
     )
+    if trend_topic:
+        # Google Trends real-time topic — searches ekkuvuntayi, rank fast
+        prompt += (
+            "\n\nTRENDING NOW (Google Trends India): \"" + trend_topic + "\"\n"
+            "Write THE article on this exact trending topic (mana style lo, "
+            "Telugu+English mix, ee category: " + category + "). "
+            "Trend context ni mana education angle tho connect cheyandi."
+        )
 
     models = _models()
     last_err: Optional[Exception] = None
