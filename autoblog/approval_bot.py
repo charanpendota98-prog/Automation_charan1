@@ -242,6 +242,12 @@ class ApprovalBot:
             self.tg("sendMessage", {"chat_id": chat_id,
                                     "text": "✅ Emi pending drafts ledu — antha clear!"})
             return
+        found = resp.json() if isinstance(resp, list) else posts
+        total_found = len(found) if isinstance(found, list) else len(posts)
+        if total_found > len(posts):
+            self.tg("sendMessage", {
+                "chat_id": chat_id,
+                "text": f"📝 {total_found} drafts unnayi —latest {len(posts)} isthunnanu:"})
         for p in posts:
             pid = p["id"]
             title = (p.get("title") or {}).get("rendered", f"post {pid}")
@@ -254,8 +260,12 @@ class ApprovalBot:
 
     def send_stats(self, chat_id: str) -> None:
         summary = state.status_summary(config.STATE_PATH)
+        avgs = state.avg_scores(config.STATE_PATH)
         lines = ["📊 <b>studentup.in Auto-Blogger</b>", "",
                  f"Total posts: <b>{summary['total']}</b>"]
+        if avgs["n"]:
+            lines.append(f"Avg QA: <b>{avgs['qa']}/100</b> · Avg Originality: "
+                         f"<b>{avgs['orig']}%</b> ({avgs['n']} posts)")
         for p in summary["last"][:5]:
             lines.append(f"• [{p['status']}] {notifier.esc(p['title'][:60])}")
         self.tg("sendMessage", {"chat_id": chat_id, "parse_mode": "HTML",
@@ -283,14 +293,46 @@ class ApprovalBot:
             state.meta_set(config.STATE_PATH, OFFSET_KEY, str(upd["update_id"] + 1))
         return len(updates)
 
+    def check_watchdog(self) -> None:
+        """Scheduler 26+ hours run avvakapote owner ki alert (roju okke sari)."""
+        from datetime import datetime, timedelta
+
+        hb = state.meta_get(config.STATE_PATH, "heartbeat")
+        if not hb:
+            return
+        try:
+            last = datetime.fromisoformat(hb)
+        except ValueError:
+            return
+        age_h = (datetime.now(last.tzinfo) - last).total_seconds() / 3600
+        if age_h < config.WATCHDOG_HOURS:
+            return
+        today_key = f"watchdog:{datetime.now().date().isoformat()}"
+        if state.meta_get(config.STATE_PATH, today_key):
+            return  # roju okke alert
+        chat = self.registered_chat()
+        if chat:
+            self.tg("sendMessage", {
+                "chat_id": chat,
+                "text": (f"⚠️ <b>WATCHDOG ALERT</b>\n\nScheduler {int(age_h)} గంటలుగా "
+                         "run avvaledu!\n\nCheck cheyandi:\n"
+                         "<code>systemctl status studentup-autoblog.timer</code>\n"
+                         "<code>tail -50 log/autoblog.log</code>"),
+            })
+            state.meta_set(config.STATE_PATH, today_key, "1")
+
     def run(self) -> None:
         log.info("Approval bot started (long-polling Telegram)...")
         if not config.TELEGRAM_BOT_TOKEN:
             log.error("TELEGRAM_BOT_TOKEN ledu — bot start avvalemu.")
             sys.exit(2)
+        last_watchdog = 0.0
         while True:
             try:
                 self.poll_once()
+                if time.time() - last_watchdog > 1800:  # 30 min ki okkasari
+                    self.check_watchdog()
+                    last_watchdog = time.time()
             except requests.RequestException as exc:
                 log.warning("Network error: %s — 10s tarvata retry", exc)
                 time.sleep(10)

@@ -25,6 +25,9 @@ wp_created = []
 tg_sent = []
 
 
+ddg_paths = []
+
+
 class FakeDDG(BaseHTTPRequestHandler):
     def log_message(self, *a):
         pass
@@ -32,6 +35,7 @@ class FakeDDG(BaseHTTPRequestHandler):
     def do_GET(self):
         from urllib.parse import urlparse, parse_qs
 
+        ddg_paths.append(self.path)
         q = parse_qs(urlparse(self.path).query).get("q", [""])[0]
         results = [
             # extra source (uddg redirect format)
@@ -158,7 +162,9 @@ def main():
     urls = [r["url"] for r in results]
     assert "https://competitor1.com/ssc-2026" in urls, urls  # uddg unwrapped
     assert all(u.startswith("http") for u in urls)
-    print("  1. search_web (DDG parse + uddg unwrap) ✔")
+    # double-encoding bug fix proof: %25 (encoded percent) undakudadhu
+    assert all("%25" not in pth for pth in ddg_paths), ddg_paths
+    print("  1. search_web (DDG parse + uddg unwrap + no double-encode) ✔")
 
     # ---- 2. research_topic ----
     primary = sources.SourceArticle(

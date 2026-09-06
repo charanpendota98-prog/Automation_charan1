@@ -111,6 +111,10 @@ def daily_digest(count: int, last_posts: list) -> None:
             lines.append(f"{mark} {esc(str(p.get('title', ''))[:60])}")
     lines += ["", "Pending drafts: /pending"]
     send_telegram("\n".join(lines))
+    if config.WHATSAPP_CALLMEBOT_URL:
+        plain = (f"Daily Digest: {count} posts create ayyayi. "
+                 + " · ".join(str(p.get("title", ""))[:40] for p in (last_posts or [])[:3]))
+        send_whatsapp(plain)
 
 
 def notify_new_post(article: dict, result: dict) -> None:

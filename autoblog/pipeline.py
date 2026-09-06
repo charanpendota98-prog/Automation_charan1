@@ -17,6 +17,59 @@ from .wordpress_client import WordPressClient, WordPressError
 
 log = logging.getLogger("autoblog.pipeline")
 
+# ---------------------------------------------------------------- auto category
+
+CATEGORY_RULES = [
+    ("Govt Jobs", ["job", "vacancy", "recruitment", "bharti", "notification",
+                   "ఉద్యోగ", "నియామక", "ఖాళీల", "posts", "si ", "constable"]),
+    ("Scholarships", ["scholarship", "fellowship", "nsp", "fee reimbursement",
+                      "స్కాలర్", "రుసుము", "pragati", "saksham", "yasasvi"]),
+    ("Results", ["result", "ఫలిత", "marks list", "manabadi", "grade"]),
+    ("Exam Updates", ["admit card", "hall ticket", "answer key", "exam date",
+                      "cutoff", "cut-off", "పరీక్ష", "హాల్ టికెట్"]),
+    ("Admissions", ["admission", "counselling", "counseling", "web options",
+                    "dost", "eamcet", "eapcet", "icet", "pgecet", "ప్రవేశ"]),
+    ("Internships", ["internship", "ఇంటర్న్"]),
+    ("Study Tips", ["preparation", "study plan", "time table", "syllabus",
+                    "how to prepare", "tips"]),
+]
+
+
+def classify_category(title: str, text: str = "") -> str:
+    """URL mode lo category auto-detect (Telugu + English keywords)."""
+    blob = f"{title} {title} {text[:600]}".lower()
+    best, best_hits = "Education News", 0
+    for cat, words in CATEGORY_RULES:
+        hits = sum(1 for w in words if w in blob)
+        if hits > best_hits:
+            best, best_hits = cat, hits
+    return best
+
+
+def _hygiene(article: Dict) -> Dict:
+    """Chinna chinna quality fixes publish mundhe."""
+    # title too long -> seo_title use cheyi (Rank Math 60-75 chars ideal)
+    title = article.get("title", "")
+    seo_title = article.get("seo_title", "")
+    if len(title) > 85 and seo_title and 20 <= len(seo_title) <= 85:
+        article["title"] = seo_title
+    # tags: dedupe + max 32 chars + max 8
+    seen, tags = set(), []
+    for t in article.get("tags", []):
+        t = str(t).strip()[:32]
+        if t and t.lower() not in seen:
+            seen.add(t.lower())
+            tags.append(t)
+    article["tags"] = tags[:8]
+    # meta description fallback: quick_answer or first para nunchi
+    md = (article.get("meta_description") or "").strip()
+    if len(md) < 120:
+        base = article.get("quick_answer") or validator.strip_tags(
+            article.get("content_html", ""))
+        base = " ".join(base.split())
+        article["meta_description"] = (base[:155].rsplit(" ", 1)[0]) if base else md
+    return article
+
 
 def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
     """Full publish flow for a generated article dict. Returns WP result."""
@@ -25,6 +78,7 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
 
     # --- QA step 1: HTML sanitize (Gemini bad tags strip) ---
     article["content_html"] = validator.sanitize_html(article["content_html"])
+    article = _hygiene(article)
 
     category_id = wp.get_or_create_term(article["category"], "categories")
     tag_ids = [wp.get_or_create_term(t, "tags") for t in article["tags"]]
@@ -71,6 +125,9 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
                 title=article["title"],
                 alt_text=f"{fk} – {article['category']} {year} | studentup.in",
             )
+            # disk full avvakunda — upload ayyaka local file delete
+            if media_id and not config.KEEP_IMAGES:
+                image_path.unlink(missing_ok=True)
 
     # --- Rank Math meta (plugin active unte) ---
     meta = None
@@ -93,10 +150,16 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
         meta=meta,
     )
     state.record_post(config.STATE_PATH, article["title"], article["slug"],
-                      article["category"], result["link"], result["status"])
+                      article["category"], result["link"], result["status"],
+                      qa_score=(article.get("_qa") or {}).get("score"),
+                      orig_score=article.get("_orig"))
     state.bump_today_count(config.STATE_PATH, day or date.today())
     if article.get("source_url"):
         state.mark_source_done(config.STATE_PATH, article["source_url"], result.get("id"))
+    try:
+        state.meta_cleanup(config.STATE_PATH)  # purana rojuvella keys tidy
+    except Exception:
+        pass
 
     log.info("POST CREATED ✔ id=%s status=%s link=%s",
              result.get("id"), result.get("status"), result.get("link"))
@@ -134,8 +197,11 @@ def _after_publish_push(article: Dict, result: Dict) -> None:
         log.exception("Channel auto-post failed")
 
 
-def create_from_source(url: str, mock: bool = False) -> Dict:
-    """Vere site URL -> 100% original SEO article -> draft post."""
+def create_from_source(url: str, mock: bool = False, category: str = "") -> Dict:
+    """Vere site URL -> 100% original SEO article -> draft post.
+
+    category empty aite auto-classify (Telugu+English keywords tho).
+    """
     if not sources.is_valid_source_url(url):
         raise ValueError("URL valid kadu (http/https link ivvandi)")
 
@@ -173,7 +239,7 @@ def create_from_source(url: str, mock: bool = False) -> Dict:
                 "<h2>Process</h2><ol><li>Step one</li><li>Step two</li></ol>"
                 "<h2>FAQ</h2><h3>Question?</h3><p>Answer</p>"
             ),
-            "category": "Education News",
+            "category": category or classify_category(src.title, src.text),
             "model": "mock",
             "focus_keyword": "test guide 2026",
             "seo_title": "Test Guide 2026 – Complete Details",
@@ -194,6 +260,11 @@ def create_from_source(url: str, mock: bool = False) -> Dict:
             src, recent, date.today().year, extras=extras,
             competitor_titles=competitor_titles,
         )
+        if category:
+            article["category"] = category
+        elif article.get("category", "Education News") == "Education News":
+            article["category"] = classify_category(
+                f"{src.title} {article['title']}", src.text)
         # --- originality guard: 70% kante takkuva aite OKKO regenerate ---
         source_texts = [src.text] + [e.text for e in extras]
         article["content_html"] = validator.sanitize_html(article["content_html"])

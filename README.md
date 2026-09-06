@@ -161,6 +161,34 @@ Prathi post lo **publish mundhe** automatic checks:
 - **Telegram Channel auto-post** (optional): publish ayyaka mi channel lo automatic post — instant traffic + social signals (`TELEGRAM_CHANNEL_CHAT_ID`)
 - **Daily Digest**: roji chivari lo Telegram ki summary (enta posts, em pending)
 
+## 🔧 Round 3: 20+ Chinna Mistakes Fix + Features (v3)
+
+**Bugs fix chesayi:**
+1. **Search double-encoding bug** — DDG query `%2520` la pampindi → ippudu clean
+2. **Dry-run dedupe pollution** — test posts DB lo block cheyyevi → fix
+3. **Disk full risk** — upload ayyaka local images delete (`KEEP_IMAGES=0`)
+4. **systemd timeout** — research mode long runs kosam 600s → 1200s
+5. **Midnight race** — schedule check lo time double-read fix
+6. **Old DB upgrade** — new columns automatic add (DB delete avvakkarledu)
+7. **Meta DB growth** — 7+ rojula purana keys automatic cleanup
+
+**Kotha features:**
+8. **Auto-categorization** — URL mode lo Telugu+English keywords tho category automatic (SSC job → Govt Jobs, scholarship → Scholarships...)
+9. **Scheduler Watchdog** — bot 26 hours run avvakapote Telegram ki ⚠️ alert (roju okke sari, false spam ledu)
+10. **Quality trend tracking** — avg QA score + avg originality % — `/stats` lo mariyu `--status` lo kanipistundi
+11. **Title hygiene** — 85+ chars title → seo_title automatic swap (Rank Math penalty avoid)
+12. **Tag hygiene** — duplicates remove, 32 char cap, max 8
+13. **Meta description fallback** — short aite quick_answer/first para nunchi auto-build
+14. **`--process-queue N`** — queue lo N URLs okka command lo bulk process
+15. **`--url --category X`** — URL mode lo category force cheyochu
+16. **Search fallback endpoint** — DDG block aite lite.duckduckgo.com automatic try
+17. **Image palette variety** — kotha image prathi sari different colors (repeat ledu)
+18. **WhatsApp daily digest** — roju summary WhatsApp ki kuda
+19. **`/pending` draft count** — "12 drafts unnayi — latest 5 isthunnanu"
+20. **sources_queue.txt auto-create** — setup script ne file ready chestundi
+21. **Image disk cleanup** — valla footage megabytes save
+22. **`.env` docs** — ani kotha keys documented
+
 ## 🎯 SEO / Rank Math 100% Score — Top 0.001% Level Tricks
 
 Prathi post lo automatic ga:
@@ -196,6 +224,7 @@ Prathi post lo automatic ga:
 .venv/bin/python run.py --status    # inka entha posts ayyayi, plan emito
 .venv/bin/python run.py --force     # ippude oka post publish cheyali ante
 .venv/bin/python run.py --url "https://site.com/article"   # URL -> original rewrite post
+.venv/bin/python run.py --process-queue 5                    # queue lo 5 URLs bulk process
 .venv/bin/python run.py --dry-run   # WordPress touch avvakunda local test
 .venv/bin/python run.py --dry-run --mock   # offline test (API key kavali kadu)
 

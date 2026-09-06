@@ -30,6 +30,8 @@ def init(db_path: Path) -> None:
                 category TEXT,
                 link TEXT,
                 status TEXT,
+                qa_score REAL,
+                orig_score REAL,
                 created_at TEXT DEFAULT (datetime('now', 'localtime'))
             );
             CREATE UNIQUE INDEX IF NOT EXISTS idx_posts_title_norm
@@ -55,6 +57,12 @@ def init(db_path: Path) -> None:
             );
             """
         )
+        # old DBs kosam column upgrade (idempotent)
+        for col in ("qa_score", "orig_score"):
+            try:
+                conn.execute(f"ALTER TABLE posts ADD COLUMN {col} REAL")
+            except sqlite3.OperationalError:
+                pass  # already exists
 
 
 def normalize_title(title: str) -> str:
@@ -87,13 +95,28 @@ def record_post(
     category: str,
     link: str,
     status: str,
+    qa_score: float = None,
+    orig_score: float = None,
 ) -> None:
     with _connect(db_path) as conn:
         conn.execute(
-            "INSERT OR IGNORE INTO posts (title, title_norm, slug, category, link, status) "
-            "VALUES (?, ?, ?, ?, ?, ?)",
-            (title, normalize_title(title), slug, category, link, status),
+            "INSERT OR IGNORE INTO posts (title, title_norm, slug, category, link, "
+            "status, qa_score, orig_score) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            (title, normalize_title(title), slug, category, link, status,
+             qa_score, orig_score),
         )
+
+
+def avg_scores(db_path: Path) -> dict:
+    """Avg QA + originality (quality trend tracking)."""
+    with _connect(db_path) as conn:
+        row = conn.execute(
+            "SELECT AVG(qa_score) qa, AVG(orig_score) orig, COUNT(qa_score) n "
+            "FROM posts WHERE qa_score IS NOT NULL"
+        ).fetchone()
+    return {"qa": round(row["qa"], 1) if row["qa"] else None,
+            "orig": round(row["orig"], 1) if row["orig"] else None,
+            "n": row["n"] or 0}
 
 
 # --- daily plan -----------------------------------------------------------
@@ -119,6 +142,23 @@ def meta_get(db_path: Path, key: str) -> Optional[str]:
 
 def meta_set(db_path: Path, key: str, value: str) -> None:
     _meta_set(db_path, key, value)
+
+
+def meta_cleanup(db_path: Path, keep_days: int = 7) -> None:
+    """Purana rojuvella keys (slots:/count:/digest:) clean — DB tidy."""
+    import re as _re
+    from datetime import date as _date, timedelta as _td
+
+    cutoff = (_date.today() - _td(days=keep_days)).isoformat()
+    with _connect(db_path) as conn:
+        rows = conn.execute("SELECT key FROM meta").fetchall()
+        stale = []
+        for r in rows:
+            m = _re.match(r"^(slots|count|digest):(\d{4}-\d{2}-\d{2})$", r["key"])
+            if m and m.group(2) < cutoff:
+                stale.append(r["key"])
+        if stale:
+            conn.executemany("DELETE FROM meta WHERE key = ?", [(k,) for k in stale])
 
 
 def today_plan(db_path: Path, day: date, hour_start: int, hour_end: int,

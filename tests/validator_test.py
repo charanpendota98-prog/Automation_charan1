@@ -68,6 +68,26 @@ def main():
     assert qa_bad["score"] <= 20 and len(qa_bad["issues"]) >= 5
     print(f"  3. validate_article (good={qa['score']}/100, bad={qa_bad['score']}/100) ✔")
 
+    # ---- 4. state: avg scores + meta cleanup ----
+    from datetime import date, timedelta
+    from autoblog import state as st
+
+    db = Path("/tmp/test_validator_state.db")
+    db.unlink(missing_ok=True)
+    st.init(db)
+    st.record_post(db, "T1", "t1", "Govt Jobs", "l1", "draft", qa_score=80, orig_score=95)
+    st.record_post(db, "T2", "t2", "Results", "l2", "publish", qa_score=90, orig_score=85)
+    avgs = st.avg_scores(db)
+    assert avgs == {"qa": 85.0, "orig": 90.0, "n": 2}, avgs
+    old_date = (date.today() - timedelta(days=10)).isoformat()
+    st.meta_set(db, f"slots:{old_date}", "[6,7]")
+    st.meta_set(db, "slots:2099-01-01", "[8]")  # future key — keep
+    st.meta_cleanup(db, keep_days=7)
+    assert st.meta_get(db, f"slots:{old_date}") is None
+    assert st.meta_get(db, "slots:2099-01-01") == "[8]"
+    db.unlink(missing_ok=True)
+    print("  4. state (avg QA/orig + meta cleanup + column upgrade) ✔")
+
     print("ALL VALIDATOR TESTS PASSED ✔")
 
 

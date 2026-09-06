@@ -82,17 +82,40 @@ def generate_one(category: str, mock: bool, mock_index: int = 0) -> dict:
 
 
 def run(dry_run: bool, force: bool, mock: bool, category: str = "",
-        source_url: str = "") -> int:
-    today = _now().date()
-    now_hour = _now().hour
+        source_url: str = "", process_queue: int = 0) -> int:
+    now = _now()
+    today = now.date()
+    now_hour = now.hour
     state.init(config.STATE_PATH)
+    try:  # scheduler heartbeat (watchdog kosam)
+        state.meta_set(config.STATE_PATH, "heartbeat", now.isoformat())
+    except Exception:
+        pass
+
+    # --- bulk queue mode: --process-queue N (N URLs ippude process) ---------
+    if process_queue:
+        done = 0
+        while done < process_queue:
+            url = sources.pending_from_queue()
+            if not url:
+                log.info("Queue empty — %d URLs process ayyayi", done)
+                break
+            try:
+                result = pipeline.create_from_source(url, mock=mock, category=category)
+                log.info("QUEUE POST ✔ %s -> %s", url[:60], result["link"])
+                done += 1
+            except Exception as exc:
+                log.error("Queue URL failed (%s): %s — skip", url[:60], exc)
+            finally:
+                sources.mark_done_and_clean(url)
+        return 0
 
     # --- explicit source URL mode (--url / Telegram) -----------------------
     if source_url:
         if not mock and not config.GEMINI_API_KEY:
             log.error("GEMINI_API_KEY set kavali! .env file lo key pettandi.")
             return 2
-        result = pipeline.create_from_source(source_url, mock=mock)
+        result = pipeline.create_from_source(source_url, mock=mock, category=category)
         log.info("SOURCE POST READY ✔ %s (status=%s)", result["link"], result["status"])
         return 0
 
@@ -122,7 +145,8 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
             sources.mark_done_and_clean(queued)
         else:
             try:
-                result = pipeline.create_from_source(queued, mock=mock)
+                result = pipeline.create_from_source(queued, mock=mock,
+                                                     category=category)
                 log.info("SOURCE POST READY ✔ %s (status=%s)", result["link"], result["status"])
                 return 0
             except Exception as exc:
@@ -192,9 +216,8 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
             import shutil
 
             shutil.copy(image_path, out_dir / "featured.jpg")
-        state.record_post(config.STATE_PATH, article["title"], article["slug"],
-                          article["category"], f"dry-run:{out_dir}", "dryrun")
-        log.info("DRY-RUN saved to %s", out_dir)
+        log.info("DRY-RUN saved to %s (state lo record cheyaledu — dedupe "
+                 "pollution avoid)", out_dir)
         return 0
 
     wp = wordpress_client.WordPressClient()
@@ -231,6 +254,10 @@ def show_status() -> int:
     print(f"Today        : {today}  (now {_now().strftime('%H:%M')})")
     print(f"Today plan   : {plan}  -> posts done: {state.today_count(config.STATE_PATH, today)}")
     print(f"Total posts  : {summary['total']}")
+    avgs = state.avg_scores(config.STATE_PATH)
+    if avgs["n"]:
+        print(f"Quality      : avg QA {avgs['qa']}/100 · avg originality {avgs['orig']}%"
+              f"  ({avgs['n']} posts measured)")
     print("Last posts:")
     for p in summary["last"]:
         print(f"  [{p['created_at']}] ({p['status']}) {p['title']}  ->  {p['link']}")
@@ -276,6 +303,8 @@ def main() -> int:
     parser.add_argument("--mock", action="store_true", help="offline mock article (no Gemini)")
     parser.add_argument("--category", default="", help="force a category")
     parser.add_argument("--url", default="", help="source URL -> 100% original rewrite post")
+    parser.add_argument("--process-queue", type=int, default=0, metavar="N",
+                        help="sources_queue.txt lo first N URLs ippude process chey")
     parser.add_argument("--status", action="store_true", help="show stats & today's plan")
     parser.add_argument("--check-wp", action="store_true", help="verify WP credentials")
     parser.add_argument("--notify-test", action="store_true", help="send test notification")
@@ -291,7 +320,8 @@ def main() -> int:
         return notify_test()
     try:
         return run(dry_run=args.dry_run, force=args.force, mock=args.mock,
-                   category=args.category, source_url=args.url)
+                   category=args.category, source_url=args.url,
+                   process_queue=args.process_queue)
     except wordpress_client.WordPressAuthError as exc:
         log.error("%s", exc)
         return 3

@@ -24,6 +24,9 @@ PALETTES = [
     ((20, 40, 80), (70, 130, 60)),     # blue-green mix
 ]
 
+# kotha image prathi sari veedu marali — vanda posts lo okka color repeat avvakunda
+_LAST_PALETTE = {"i": -1}
+
 FONT_CANDIDATES = [
     "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
     "/usr/share/fonts/dejavu/DejaVuSans-Bold.ttf",
@@ -66,7 +69,9 @@ def generate_featured_image(
     """Render a 1200x675 featured image. Returns path or None on failure."""
     try:
         w, h = config.IMAGE_WIDTH, config.IMAGE_HEIGHT
-        c1, c2 = random.choice(PALETTES)
+        idx = (_LAST_PALETTE["i"] + 1 + random.randint(0, len(PALETTES) - 2)) % len(PALETTES)
+        _LAST_PALETTE["i"] = idx
+        c1, c2 = PALETTES[idx]
 
         base = Image.new("RGB", (w, h))
         px = base.load()

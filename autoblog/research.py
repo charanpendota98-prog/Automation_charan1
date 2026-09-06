@@ -8,7 +8,7 @@ miss ayyina info kuda add avtundi. Still 100% original writing.
 
 import logging
 import time
-from urllib.parse import parse_qs, quote_plus, unquote, urlparse
+from urllib.parse import parse_qs, unquote, urlparse
 
 import requests
 from bs4 import BeautifulSoup
@@ -41,33 +41,42 @@ def _unwrap_ddg_url(href: str) -> str:
 
 
 def search_web(query: str, max_results: int = 6) -> list:
-    """DuckDuckGo HTML search (no API key). Returns [{url, title}]."""
-    endpoint = config.SEARCH_ENDPOINT
-    try:
-        resp = requests.get(
-            endpoint, params={"q": quote_plus(query)}, headers=HEADERS,
-            timeout=config.HTTP_TIMEOUT,
-        )
-        if resp.status_code != 200:
-            log.warning("Search failed: HTTP %s — research skip", resp.status_code)
-            return []
-        soup = BeautifulSoup(resp.text, "html.parser")
-        results = []
-        seen = set()
-        for a in soup.select("a.result__a"):
-            href = _unwrap_ddg_url(a.get("href", ""))
-            title = a.get_text(strip=True)
-            if not href.startswith("http") or href in seen:
+    """DuckDuckGo HTML search (no API key). Returns [{url, title}].
+
+    Primary endpoint fail/block aite lite fallback try chestundi.
+    NOTE: requests params automatic encode chestundi — raw query
+    pampali (double-encoding bug fix).
+    """
+    endpoints = [config.SEARCH_ENDPOINT]
+    if config.SEARCH_FALLBACK_ENDPOINT:
+        endpoints.append(config.SEARCH_FALLBACK_ENDPOINT)
+
+    results: list = []
+    seen = set()
+    for endpoint in endpoints:
+        try:
+            resp = requests.get(endpoint, params={"q": query}, headers=HEADERS,
+                                timeout=config.HTTP_TIMEOUT)
+            if resp.status_code != 200:
+                log.warning("Search %s -> HTTP %s", endpoint, resp.status_code)
                 continue
-            seen.add(href)
-            results.append({"url": href, "title": title})
-            if len(results) >= max_results:
+            soup = BeautifulSoup(resp.text, "html.parser")
+            for a in soup.select("a.result__a") + soup.select("a.result-link"):
+                href = _unwrap_ddg_url(a.get("href", ""))
+                title = a.get_text(strip=True)
+                if not href.startswith("http") or href in seen or not title:
+                    continue
+                seen.add(href)
+                results.append({"url": href, "title": title})
+                if len(results) >= max_results:
+                    break
+            if results:
                 break
-        log.info("Search '%s' -> %d results", query[:50], len(results))
-        return results
-    except Exception:
-        log.exception("Search error — research skip (primary source tho continue)")
-        return []
+        except Exception:
+            log.exception("Search error (%s) — next endpoint", endpoint)
+            continue
+    log.info("Search '%s' -> %d results", query[:50], len(results))
+    return results
 
 
 def _clean_query(title: str) -> str:

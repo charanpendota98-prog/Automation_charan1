@@ -50,6 +50,10 @@ TELEGRAM_CHANNEL_CHAT_ID = _get("TELEGRAM_CHANNEL_CHAT_ID", "")
 TELEGRAM_API_BASE = _get("TELEGRAM_API_BASE", "https://api.telegram.org")
 # IndexNow instant indexing (Bing/Yandex) — key file site root lo host cheyandi
 INDEXNOW_KEY = _get("INDEXNOW_KEY", "")
+# Upload ayyaka local featured image file ni delete (disk full avvakunda)
+KEEP_IMAGES = _get("KEEP_IMAGES", "0") not in ("0", "false", "no")
+# Scheduler watchdog: itne hours run ledu ante Telegram lo alert
+WATCHDOG_HOURS = int(_get("WATCHDOG_HOURS", "26"))
 # CallMeBot free WhatsApp alerts (text only):
 # https://api.callmebot.com/whatsapp.php?phone=+91XXXX&apikey=XXXX
 WHATSAPP_CALLMEBOT_URL = _get("WHATSAPP_CALLMEBOT_URL", "")
@@ -101,6 +105,9 @@ SOURCES_QUEUE_PATH = Path(_get("SOURCES_QUEUE_PATH", str(BASE_DIR / "sources_que
 RESEARCH_ENABLED = _get("RESEARCH_ENABLED", "1") not in ("0", "false", "no")
 RESEARCH_MAX_SOURCES = int(_get("RESEARCH_MAX_SOURCES", "3"))
 SEARCH_ENDPOINT = _get("SEARCH_ENDPOINT", "https://html.duckduckgo.com/html/")
+SEARCH_FALLBACK_ENDPOINT = _get(
+    "SEARCH_FALLBACK_ENDPOINT", "https://lite.duckduckgo.com/lite/"
+)
 # Rank Math meta REST dwara set cheyadam (plugin active unte automatic)
 RANK_MATH_META_ENABLED = _get("RANK_MATH_META_ENABLED", "1") not in ("0", "false", "no")
 # FAQ + Article JSON-LD schema (Google rich results)

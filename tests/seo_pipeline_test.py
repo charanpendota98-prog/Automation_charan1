@@ -97,6 +97,8 @@ class FakeWP(BaseHTTPRequestHandler):
             self._json(201, {"id": 88})
         elif path == "/wp-json/wp/v2/tags":
             self._json(201, {"id": 51, "name": json.loads(raw)["name"]})
+        elif path == "/wp-json/wp/v2/categories":
+            self._json(201, {"id": 60, "name": json.loads(raw)["name"]})
         elif path == "/wp-json/wp/v2/posts":
             payload = json.loads(raw)
             if payload.get("meta") and not wp_state["meta_mode"]:
@@ -174,12 +176,18 @@ def test_source_fetch():
 
 def test_full_pipeline(url, wp_base):
     db = config.STATE_PATH
-    result = __import__("autoblog.pipeline", fromlist=["pipeline"]).create_from_source(
-        url, mock=True
-    )
+    pl = __import__("autoblog.pipeline", fromlist=["pipeline"])
+    # auto-classifier: SSC recruitment title -> Govt Jobs
+    assert pl.classify_category(
+        "SSC New Recruitment 2026 Notification Released"
+    ) == "Govt Jobs", pl.classify_category("SSC New Recruitment 2026")
+    assert pl.classify_category("NSP Scholarship Apply Online 2026") == "Scholarships"
+    assert pl.classify_category("Random Education Topic") == "Education News"
+    result = pl.create_from_source(url, mock=True)
     assert result["status"] == "draft"
     # WP post created with Rank Math meta + internal link + TOC in content
     payload = wp_state["created"][-1]
+    assert payload["categories"] == [60]  # auto-classified -> Govt Jobs id
     fk = payload["meta"]["rank_math_focus_keyword"]
     assert fk.startswith("test guide 2026") and "," in fk  # multi-keyword (secondary)
     assert payload["status"] == "draft"

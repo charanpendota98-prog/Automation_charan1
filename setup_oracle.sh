@@ -73,6 +73,10 @@ else
 fi
 
 mkdir -p log output
+# sources queue file (user URLs paste cheyochu — okka line okati)
+if [ ! -f sources_queue.txt ]; then
+    printf "# Vere site article URLs okka line okati ivvandi — scheduler priority ga process chestundi\n" > sources_queue.txt
+fi
 
 # ---------- 4) WordPress connection test ----------
 echo "[4/6] WordPress connection test..."
@@ -99,7 +103,7 @@ Type=oneshot
 User=${RUN_USER}
 WorkingDirectory=${PROJECT_DIR}
 ExecStart=${PROJECT_DIR}/.venv/bin/python ${PROJECT_DIR}/run.py
-TimeoutStartSec=600
+TimeoutStartSec=1200
 EOF
     sudo tee /etc/systemd/system/studentup-autoblog.timer >/dev/null <<EOF
 [Unit]
