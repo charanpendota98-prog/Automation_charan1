@@ -120,8 +120,10 @@ class ApprovalBot:
         self.tg("sendMessage", {
             "chat_id": chat_id,
             "text": ("🌐 Source article teegutunnanu...\n"
-                     "✍️ 100% original rewrite + advanced SEO content "
-                     "tayar avutundi (1-2 nimishalu)."),
+                     "🔍 Internet lo same topic research (extra sources)...\n"
+                     "✍️ 100% original + MERGE & BEAT: anni sources kante "
+                     "complete article + Rank Math 100% SEO\n"
+                     "(2-3 nimishalu patinchandi)"),
         })
         try:
             mock = not config.GEMINI_API_KEY

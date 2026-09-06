@@ -10,7 +10,7 @@ from datetime import date
 from pathlib import Path
 from typing import Dict, Optional
 
-from . import config, gemini_client, image_gen, notifier, seo, sources, state
+from . import config, gemini_client, image_gen, notifier, research, seo, sources, state
 from .wordpress_client import WordPressClient, WordPressError
 
 log = logging.getLogger("autoblog.pipeline")
@@ -24,15 +24,22 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
     category_id = wp.get_or_create_term(article["category"], "categories")
     tag_ids = [wp.get_or_create_term(t, "tags") for t in article["tags"]]
 
-    # --- SEO: internal links + TOC + keyword intro + external links ---
+    # --- SEO: quick answer + internal links + TOC + schema ---
     recent = wp.get_recent_published(per_page=8)
     same_cat = [p for p in recent if category_id in p.get("categories", [])]
     internal = (same_cat or recent)[:4]
+    today_str = (day or date.today()).isoformat()
     final_html = seo.enhance(
         article["content_html"],
         focus_keyword=article.get("focus_keyword", ""),
         internal_links=[{"link": p["link"], "title": p["title"]} for p in internal],
         external_links=article.get("external_links", []),
+        quick_answer=article.get("quick_answer", ""),
+        faq=article.get("faq", []),
+        date_str=today_str,
+        slug=article["slug"],
+        title=article["title"],
+        description=article["meta_description"],
     )
 
     # --- featured image (alt text lo focus keyword) ---
@@ -55,6 +62,7 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
             focus_keyword=article.get("focus_keyword", article["title"][:60]),
             description=article["meta_description"],
             seo_title=article.get("seo_title") or article["title"],
+            secondary_keywords=article.get("secondary_keywords", []),
         )
 
     result = wp.create_post(
@@ -94,6 +102,19 @@ def create_from_source(url: str, mock: bool = False) -> Dict:
     src = sources.fetch_source(url)
     log.info("Source ready: %s (%d chars)", src.title[:60], len(src.text))
 
+    # --- multi-source research: internet lo same topic articles ---
+    extras = []
+    if config.RESEARCH_ENABLED and not mock:
+        try:
+            extras = research.research_topic(src, config.RESEARCH_MAX_SOURCES)
+            if extras:
+                log.info("Research: +%d extra sources merge avtayi (MERGE & BEAT mode)",
+                         len(extras))
+            else:
+                log.info("Research: extra sources levu — primary source tho rewrite")
+        except Exception:
+            log.exception("Research step failed — primary source tho continue")
+
     if mock:
         article = {
             "title": f"{src.title[:80]} – Complete Guide 2026 (Original)",
@@ -112,18 +133,31 @@ def create_from_source(url: str, mock: bool = False) -> Dict:
             "model": "mock",
             "focus_keyword": "test guide 2026",
             "seo_title": "Test Guide 2026 – Complete Details",
+            "secondary_keywords": ["test guide details", "2026 guide telugu"],
+            "quick_answer": ("Test guide 2026 gurinchi menu thelisi untundi — "
+                             "ee quick answer featured snippet test kosam."),
+            "faq": [
+                {"question": "Ee guide em gurinchi?", "answer": "Test guide gurinchi."},
+                {"question": "Ela apply cheyali?", "answer": "Online lo apply cheyali."},
+            ],
             "external_links": [{"text": "Official Site", "url": "https://www.gov.in"}],
             "source_url": url,
             "source_title": src.title,
         }
     else:
         recent = state.recent_titles(config.STATE_PATH, limit=30)
-        article = gemini_client.generate_article_from_source(src, recent, date.today().year)
+        article = gemini_client.generate_article_from_source(
+            src, recent, date.today().year, extras=extras
+        )
 
-    # slug safe ga
+    # slug safe ga + new fields default
     from .main import _safe_slug
     article["slug"] = _safe_slug(article.get("slug", ""), article["title"])
     article.setdefault("focus_keyword", "")
     article.setdefault("external_links", [])
+    article.setdefault("secondary_keywords", [])
+    article.setdefault("quick_answer", "")
+    article.setdefault("faq", [])
+    article.setdefault("seo_title", "")
 
     return publish_article(article)

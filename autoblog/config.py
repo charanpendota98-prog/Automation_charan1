@@ -91,5 +91,12 @@ HTTP_TIMEOUT = int(_get("HTTP_TIMEOUT", "90"))
 
 # --- Sources (URL -> original rewrite) ------------------------------------
 SOURCES_QUEUE_PATH = Path(_get("SOURCES_QUEUE_PATH", str(BASE_DIR / "sources_queue.txt")))
+# Multi-source research: internet lo same topic articles search chesi
+# extra facts teesukuni article ni super-complete chestundi (no API key)
+RESEARCH_ENABLED = _get("RESEARCH_ENABLED", "1") not in ("0", "false", "no")
+RESEARCH_MAX_SOURCES = int(_get("RESEARCH_MAX_SOURCES", "3"))
+SEARCH_ENDPOINT = _get("SEARCH_ENDPOINT", "https://html.duckduckgo.com/html/")
 # Rank Math meta REST dwara set cheyadam (plugin active unte automatic)
 RANK_MATH_META_ENABLED = _get("RANK_MATH_META_ENABLED", "1") not in ("0", "false", "no")
+# FAQ + Article JSON-LD schema (Google rich results)
+SEO_SCHEMA_ENABLED = _get("SEO_SCHEMA_ENABLED", "1") not in ("0", "false", "no")

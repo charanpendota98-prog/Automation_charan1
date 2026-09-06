@@ -180,10 +180,13 @@ def test_full_pipeline(url, wp_base):
     assert result["status"] == "draft"
     # WP post created with Rank Math meta + internal link + TOC in content
     payload = wp_state["created"][-1]
-    assert payload["meta"]["rank_math_focus_keyword"] == "test guide 2026"
+    fk = payload["meta"]["rank_math_focus_keyword"]
+    assert fk.startswith("test guide 2026") and "," in fk  # multi-keyword (secondary)
     assert payload["status"] == "draft"
     content = payload["content"]
     assert "విషయ సూచిక" in content
+    assert "quick-answer" in content          # featured snippet block
+    assert "FAQPage" in content               # JSON-LD schema
     assert "https://studentup.in/prev-post/" in content  # internal link added
     assert "https://www.gov.in" in content                # external link added
     assert payload["featured_media"] == 88

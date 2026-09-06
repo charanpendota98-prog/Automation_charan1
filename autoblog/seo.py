@@ -13,6 +13,8 @@ import re
 from typing import Dict, List, Optional
 from urllib.parse import urlparse
 
+from . import config
+
 log = logging.getLogger("autoblog.seo")
 
 
@@ -103,17 +105,87 @@ def word_count(html: str) -> int:
     return len([w for w in text.split() if w])
 
 
+def quick_answer_block(focus_keyword: str, quick_answer: str, updated: str) -> str:
+    """Featured-snippet bait: direct answer top lo + fresh date."""
+    if not quick_answer:
+        return ""
+    return (
+        f'<h2 id="quick-answer">Quick Answer – {focus_keyword}</h2>'
+        f"<p><strong>{quick_answer.strip()}</strong></p>"
+        f'<p><em>Last Updated: {updated} | studentup.in</em></p>'
+    )
+
+
+def schema_jsonld(
+    title: str,
+    description: str,
+    faq: List[Dict[str, str]],
+    date_published: str,
+    slug: str,
+) -> str:
+    """Google rich results: FAQPage + Article JSON-LD schema."""
+    import json as _json
+
+    if not config.SEO_SCHEMA_ENABLED:
+        return ""
+    scripts = []
+    clean_faq = [f for f in (faq or []) if f.get("question") and f.get("answer")]
+    if clean_faq:
+        scripts.append({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": [
+                {
+                    "@type": "Question",
+                    "name": f["question"],
+                    "acceptedAnswer": {"@type": "Answer", "text": f["answer"]},
+                }
+                for f in clean_faq
+            ],
+        })
+    scripts.append({
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": title[:110],
+        "description": description[:300],
+        "datePublished": date_published,
+        "dateModified": date_published,
+        "author": {"@type": "Organization", "name": "studentup.in"},
+        "publisher": {"@type": "Organization", "name": "studentup.in",
+                      "url": config.WP_SITE},
+        "mainEntityOfPage": f"{config.WP_SITE}/{slug}/",
+        "inLanguage": "te",
+    })
+    return "".join(
+        '<script type="application/ld+json">'
+        + _json.dumps(s, ensure_ascii=False)
+        + "</script>"
+        for s in scripts
+    )
+
+
 def enhance(
     html: str,
     focus_keyword: str,
     internal_links: List[Dict[str, str]],
     external_links: List[Dict[str, str]],
+    quick_answer: str = "",
+    faq: Optional[List[Dict[str, str]]] = None,
+    date_str: str = "",
+    slug: str = "",
+    title: str = "",
+    description: str = "",
 ) -> str:
-    """Full SEO pipeline: keyword intro -> TOC -> internal + external links."""
+    """Full top-level SEO pipeline: quick answer -> keyword intro -> TOC ->
+    internal/external links -> FAQ+Article JSON-LD schema."""
     html = ensure_keyword_first_para(html, focus_keyword)
+    if quick_answer:
+        html = quick_answer_block(focus_keyword, quick_answer, date_str) + html
     html = add_table_of_contents(html)
     html = add_internal_links(html, internal_links)
     html = add_external_links(html, external_links)
+    html += schema_jsonld(title or focus_keyword, description or "", faq or [],
+                          date_str, slug)
     n = word_count(html)
     log.info("SEO enhanced: %d words, keyword=%r", n, focus_keyword)
     if n < 1200:
@@ -125,10 +197,20 @@ def rankmath_meta(
     focus_keyword: str,
     description: str,
     seo_title: str,
+    secondary_keywords: Optional[List[str]] = None,
 ) -> Dict[str, str]:
-    """Rank Math REST meta payload (plugin active unte work avtundi)."""
+    """Rank Math REST meta payload (plugin active unte work avtundi).
+
+    Focus keyword field lo primary + secondary keywords comma tho —
+    Rank Math anni track chestundi.
+    """
+    keywords = focus_keyword[:120]
+    if secondary_keywords:
+        extras = ", ".join(k.strip() for k in secondary_keywords if k.strip())[:120]
+        if extras:
+            keywords = f"{keywords}, {extras}"[:240]
     return {
-        "rank_math_focus_keyword": focus_keyword[:120],
+        "rank_math_focus_keyword": keywords,
         "rank_math_description": description[:160],
         "rank_math_title": seo_title[:160],
     }

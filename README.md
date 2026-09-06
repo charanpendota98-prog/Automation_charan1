@@ -4,7 +4,8 @@
 
 - **AI content:** Google Gemini (free tier) generates Telugu + English mix articles
 - **URL → 100% Original:** vere site article URL ivvandi → facts teesi **complete ga original ga rewrite** (no copy) + **extra advanced info** add chesi post
-- **SEO + Rank Math 100%:** focus keyword, TOC, internal links, external links, meta tags — anni automatic
+- **Multi-source research:** internet lo same topic articles **search chesi merge** chestundi (MERGE & BEAT strategy — competitors kante complete article)
+- **SEO + Rank Math 100%:** focus + secondary keywords, Quick Answer (featured snippet), TOC, internal/external links, FAQ/Article schema, meta tags — anni automatic
 - **Review flow:** posts **DRAFT** lo vastayi → **Telegram ki message** (✅ Publish / 🗑️ Delete buttons) → **one tap lo approve**
 - **Categories:** Scholarships, Govt Jobs, Education News, Exam Updates, Admissions, Results, Internships, Study Tips
 - **Auto-publish:** WordPress REST API — post + category + tags + featured image + SEO meta
@@ -110,7 +111,7 @@ Vere valla site article ni **copy cheyakunda** daani nunchi mana own original ar
 
 ### Method 1: Telegram lo URL paste cheyandi (easiest!)
 1. Mi bot chat loki vere site article URL ni paste cheyandi
-2. Bot: source nunchi **facts** teesi → **100% original** Telugu article (1800-2500 words) → **extra advanced sections** (documents, mistakes, tips, tables, FAQ) add chesi → **SEO optimize** chesi → **DRAFT** create chestundi
+2. Bot: source nunchi **facts** teesi → **100% original** Telugu article (2200-3000 words) → **extra advanced sections** (documents, mistakes, tips, tables, FAQ) add chesi → **SEO optimize** chesi → **DRAFT** create chestundi
 3. ✅ Publish button press cheyandi — done!
 
 ### Method 2: Command line
@@ -130,24 +131,31 @@ Scheduler prathi hour lo queue lo unna URL ni priority ga process chesi original
 | Step | Em chestundi |
 |---|---|
 | 1. Fetch | Source article read chesi text extract (ads/menu junk vadiyesi) |
-| 2. Facts only | Sentences copy cheyadu — **facts matrame** teesukuntundi (copyright safe) |
-| 3. Rewrite | Complete ga fresh structure + fresh wording lo Telugu article |
-| 4. Enhance | Extra sections: documents list, common mistakes, pro tips, comparison table, FAQ |
-| 5. SEO | Focus keyword + TOC + internal links + external official links + Rank Math meta |
-| 6. Draft | WordPress draft + Telegram review buttons |
+| 2. **Research** | **Internet lo aa same topic meeda inko articles search** (DuckDuckGo — API key ledu) — top competitor sources fetch |
+| 3. **Merge & Beat** | Anni sources facts **merge** — mi URL lo **miss ayyina info kuda add** (fee, salary, selection stages, documents) |
+| 4. Rewrite | Complete ga fresh structure + fresh wording lo Telugu article (2200-3000 words), no copy |
+| 5. Enhance | Extra sections: documents list, common mistakes, pro tips, comparison table, key dates |
+| 6. SEO | Quick Answer + focus/secondary keywords + TOC + internal/external links + FAQ/Article schema + Rank Math meta |
+| 7. Draft | WordPress draft + Telegram review buttons |
 
-## 🎯 SEO / Rank Math 100% Score — Bot em chestundi?
+> Idhe **"MERGE & BEAT" strategy** — internet lo already unna articles kante MII article ekkuva complete. Same topic search lo mii post top lo randaniki idhe main Google trick. DuckDuckGo fail aite bot primary source tho graceful ga continue chestundi.
+
+## 🎯 SEO / Rank Math 100% Score — Top 0.001% Level Tricks
 
 Prathi post lo automatic ga:
 - ✅ **Focus keyword** — title lo, first paragraph lo, 2+ headings lo, meta description lo (~1% density)
-- ✅ **SEO title** — keyword start lo + year + power word (60 chars lopala)
+- ✅ **Secondary keywords** — 3-5 related search phrases kuda Rank Math lo set (multi-keyword tracking)
+- ✅ **SEO title** — keyword start lo + year + power word + number (60 chars lopala)
+- ✅ **Quick Answer block** — article top lo 40-60 word direct answer (**featured snippet bait** — Google position 0 kosam main trick!) + "Last Updated" fresh date
 - ✅ **Table of Contents** — automatic TOC + anchor links (Rank Math readability)
 - ✅ **Internal links** — mi site recent posts ki "Related Articles" links (same category priority)
 - ✅ **External links** — official portals (ssc.gov.in lanti vi) nofollow links tho
+- ✅ **FAQ + Article JSON-LD schema** — Google rich results eligibility — `te` language tag tho
 - ✅ **Image alt text** — focus keyword tho alt text
-- ✅ **Rank Math meta** — `rank_math_focus_keyword`, `rank_math_description`, `rank_math_title` direct REST API dwara set (plugin active unte; lekapothe content-level SEO work avtundi)
-- ✅ **Content length** — 1800-2500 words (Rank Math full score kosari)
+- ✅ **Rank Math meta** — `rank_math_focus_keyword` (primary + secondary), `rank_math_description`, `rank_math_title` direct REST API dwara
+- ✅ **Content length** — 2200-3000 words, short paragraphs, transition words (readability full)
 - ✅ **Meta description** — 140-160 chars keyword tho
+- ✅ **Tables + lists** — snippet-eligible formats
 
 > Tip: WordPress lo **Rank Math plugin active cheyandi** — bot automatic ga plugin meta fill chestundi, editor lo open chuste 90-100/100 score kanipistundi.
 
@@ -256,7 +264,8 @@ Marpali te: `.env` edit chesi scheduler ni restart cheyandi: `sudo systemctl res
 │   ├── gemini_client.py    # Gemini REST client + Telugu prompts (auto + rewrite)
 │   ├── wordpress_client.py # WP REST publish (post/media/terms/RankMath meta)
 │   ├── sources.py          # URL fetch + text extraction + queue file
-│   ├── seo.py              # TOC + keyword + internal/external links enhancer
+│   ├── research.py         # Web search (DuckDuckGo) + multi-source gathering
+│   ├── seo.py              # Quick Answer + TOC + links + FAQ/Article JSON-LD schema
 │   ├── notifier.py         # Telegram (buttons) + WhatsApp alerts
 │   ├── approval_bot.py     # 24/7 Telegram bot (publish buttons + URL rewrite)
 │   ├── topic_engine.py     # Category rotation + mock generator

@@ -28,7 +28,17 @@ RESPONSE_SCHEMA = {
         "banner_text": {"type": "STRING"},
         "content_html": {"type": "STRING"},
         "focus_keyword": {"type": "STRING"},
+        "secondary_keywords": {"type": "ARRAY", "items": {"type": "STRING"}},
         "seo_title": {"type": "STRING"},
+        "quick_answer": {"type": "STRING"},
+        "faq": {
+            "type": "ARRAY",
+            "items": {
+                "type": "OBJECT",
+                "properties": {"question": {"type": "STRING"}, "answer": {"type": "STRING"}},
+                "required": ["question", "answer"],
+            },
+        },
         "external_links": {
             "type": "ARRAY",
             "items": {
@@ -117,8 +127,11 @@ ALSO RETURN:
 - meta_description: 140-160 characters Telugu summary for SEO (focus keyword MUST be in it).
 - tags: 5 to 8 tags, mix of Telugu and English keywords.
 - banner_text: short ENGLISH text (max 6 words) suitable for a featured image banner, e.g. "Scholarships 2026 Apply Online".
-- focus_keyword: ONE main SEO keyword phrase (Telugu + English mix, e.g. "SSC CGL 2026 ప్రిపరేషన్"). It must appear: in the title, in the FIRST paragraph, in at least 2 <h2> headings, and naturally 5-8 times in the body (density ~1%).
-- seo_title: SEO title with focus keyword at the START, under 60 characters, include the year and a power word (Complete/Guide/Best).
+- focus_keyword: ONE main SEO keyword phrase (Telugu + English mix). It must appear: in the title, in the FIRST paragraph, in at least 2 <h2> headings, and naturally 5-8 times in the body (density ~1%).
+- secondary_keywords: 3-5 related keyword phrases people also search (mix Telugu/English).
+- seo_title: SEO title with focus keyword at the START, under 60 characters, include the year and a power word (Complete/Guide/Best) and a number if natural.
+- quick_answer: 40-60 word direct answer in Telugu summarizing the article (featured snippet bait). Must contain the focus keyword.
+- faq: 4-6 objects with "question" and "answer" string fields — "People Also Ask" style questions (Telugu) with short 2-3 sentence answers.
 - external_links: 1-3 REAL official websites related to the topic (e.g. https://ssc.gov.in) with short Telugu anchor text. ONLY well-known official portals — never invent URLs.
 
 Return ONLY valid JSON matching the schema."""
@@ -165,6 +178,65 @@ ALSO RETURN (same JSON schema):
 - external_links: 1-3 real official portals for this topic with Telugu anchor text.
 
 Return ONLY valid JSON."""
+
+
+RESEARCH_PROMPT_TEMPLATE = """You are a top-level Telugu SEO content strategist for studentup.in (education/jobs/scholarships site).
+
+TASK: Below are MULTIPLE research sources about the SAME topic/notification. Merge ALL their facts and write ONE definitive, 100% ORIGINAL article that is BETTER and MORE COMPLETE than every single source — so it can outrank them all on Google.
+
+=============== PRIMARY SOURCE (user's URL — main base) ===============
+URL: {url} | SITE: {site}
+TITLE: {src_title}
+CONTENT:
+{src_text}
+=======================================================================
+{extra_sources_block}
+STRICT ORIGINALITY RULES (copyright safe — very important):
+- Do NOT copy any sentence/phrase from ANY source. Facts only, fresh original writing.
+- Write as an independent expert explaining the topic from scratch.
+- If sources CONFLICT on a number/date, use the most repeated/official value and phrase it as "notification prakaram" (as per notification).
+
+MERGE & BEAT STRATEGY (very important):
+- Start from the PRIMARY source's facts, then ADD every useful fact the other sources have that primary misses (extra eligibility points, fee details, salary, selection stages, documents, dates mentioned).
+- Include everything a reader could want: overview, eligibility, benefits/salary, application steps, documents, fee, selection process, important tips, common mistakes, comparison table, key dates table (only if in sources).
+- Total length: 2200-3000 words. Short paragraphs (2-3 sentences), transition words — top readability.
+- LANGUAGE: TELUGU SCRIPT with natural English terms (scholarship, apply, eligibility, official website, vacancy, notification...) like Telugu news sites.
+
+ARTICLE STRUCTURE (HTML only — h2 h3 p ul ol li strong em table thead tbody tr th td a):
+- 2-3 intro paragraphs (focus keyword in FIRST paragraph).
+- <h2> sections for each major area + step-by-step process as lists + at least one <table>.
+- Conclusion + FAQ (<h3> questions — must match the faq JSON you return).
+
+ALSO RETURN (same JSON schema):
+- title: 50-75 chars, focus keyword at start, year {year}, power word + number if natural.
+- slug (English kebab-case), meta_description (140-160 chars, keyword included), tags (6-8), banner_text (English, max 6 words).
+- focus_keyword: main keyword — in title, first para, 2+ h2s, ~1% density.
+- secondary_keywords: 3-5 related search phrases (Telugu+English).
+- seo_title: keyword at start, under 60 chars, year + power word + number.
+- quick_answer: 40-60 word Telugu direct answer (featured snippet bait) with keyword.
+- faq: 5-6 objects with "question" and "answer" string fields — People-Also-Ask style.
+- external_links: 1-3 real official portals with Telugu anchor text.
+
+Return ONLY valid JSON."""
+
+
+def _format_extra_sources(extras) -> str:
+    if not extras:
+        return ""
+    blocks = []
+    for i, s in enumerate(extras, 1):
+        blocks.append(
+            f"--------------- RESEARCH SOURCE {i} ---------------\n"
+            f"URL: {s.url} | SITE: {s.site_name}\n"
+            f"TITLE: {s.title}\n"
+            f"CONTENT:\n{s.text[:3000]}\n"
+        )
+    return (
+        "=======================================================================\n"
+        "ADDITIONAL RESEARCH SOURCES (competitors — merge their EXTRA facts):\n"
+        + "\n".join(blocks)
+        + "======================================================================="
+    )
 
 
 class GeminiError(Exception):
@@ -279,8 +351,14 @@ def generate_article_from_source(
     source,
     recent_titles: List[str],
     year: int,
+    extras: Optional[List] = None,
 ) -> Dict:
-    """100% original rewrite from a SourceArticle (facts only, no copying)."""
+    """100% original rewrite from a SourceArticle (facts only, no copying).
+
+    extras = additional research SourceArticles (internet lo dorikina
+    same-topic competitor articles). Ivvi unte MERGE & BEAT prompt use
+    avtundi — anni sources facts merge chesi super-complete article.
+    """
     if not config.GEMINI_API_KEY:
         raise GeminiError("GEMINI_API_KEY not set")
 
@@ -290,13 +368,23 @@ def generate_article_from_source(
         avoid_block = ("Also make sure your new TITLE is different from these "
                        "already-published titles:\n" + sample)
 
-    prompt = REWRITE_PROMPT_TEMPLATE.format(
-        url=source.url,
-        site=source.site_name,
-        src_title=source.title,
-        src_text=source.text or "(text extraction takkuva ayyindi — title base ga rayandi)",
-        year=year,
-    )
+    if extras:
+        prompt = RESEARCH_PROMPT_TEMPLATE.format(
+            url=source.url,
+            site=source.site_name,
+            src_title=source.title,
+            src_text=source.text or "(text extraction takkuva — title base ga rayandi)",
+            extra_sources_block=_format_extra_sources(extras),
+            year=year,
+        )
+    else:
+        prompt = REWRITE_PROMPT_TEMPLATE.format(
+            url=source.url,
+            site=source.site_name,
+            src_title=source.title,
+            src_text=source.text or "(text extraction takkuva — title base ga rayandi)",
+            year=year,
+        )
     if avoid_block:
         prompt += "\n" + avoid_block
 
