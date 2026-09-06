@@ -3,10 +3,12 @@
 24/7 automatic blog posting system for **studentup.in** (WordPress) — runs on your Oracle Cloud instance.
 
 - **AI content:** Google Gemini (free tier) generates Telugu + English mix articles
+- **Review flow:** posts **DRAFT** lo vastayi → **Telegram ki message** (✅ Publish / 🗑️ Delete buttons) → **one tap lo approve**
 - **Categories:** Scholarships, Govt Jobs, Education News, Exam Updates, Admissions, Results, Internships, Study Tips
 - **Auto-publish:** WordPress REST API — post + category + tags + featured image + SEO meta
 - **Schedule:** 10–15 posts/day, spread across 6 AM – 10 PM IST, hourly runs via systemd/cron
 - **No duplicates:** SQLite state tracks every posted title
+- **WhatsApp alerts** too (optional)
 
 ---
 
@@ -32,7 +34,15 @@
 
 > **Ila block ayyinda?** Application Password section kanipisthe: `install-plugins` capability ledu ante, mi account full admin kadu anni — admin account tho cheyandi. Ekkuva security plugins (Wordfence lanti) unnayi ante REST block cheyyochu — plugin settings lo REST API allow cheyandi.
 
-### Step 3: Oracle Cloud instance lo deploy cheyali
+### Step 3: Telegram bot create cheyali (review buttons kosam — 3 nimishalu)
+
+1. Telegram lo **@BotFather** open cheyandi
+2. `/newbot` ani pampandi → peru ivvandi (example: `studentup_review_bot`)
+3. BotFather **token** istundi (`123456:ABC-DEF...` format) — copy cheyandi
+4. (WhatsApp kuda kavali ante: `https://callmebot.com` — WhatsApp lo `+34 644 66 32 62` ki
+   "I allow call mebot to send me messages" ani pampi, vachhina apikey ni URL ga save cheyandi)
+
+### Step 4: Oracle Cloud instance lo deploy cheyali
 
 SSH chesi instance loki velli:
 
@@ -58,19 +68,37 @@ Idhi cheyindi:
 4. WordPress connection test
 5. **Hourly scheduler** install (systemd timer — 24/7 automatic)
 
-### Step 4: Test cheyandi
+### Step 5: Test cheyandi
 
 ```bash
 # WordPress connection correct aa?
 .venv/bin/python run.py --check-wp
 
-# Oka real test post publish cheyali ante:
-.venv/bin/python run.py --force
+# Notification test (Telegram ki message vastunda chudandi):
+.venv/bin/python run.py --notify-test
 
-# WordPress lo check cheyandi — post vacchinda!
+# Oka real test post (DRAFT lo vastundi):
+.venv/bin/python run.py --force
 ```
 
-Post కనిపించిందా? **అయిపోయింది! Bot 24/7 automatic ga post chestundi.** 🎉
+Draft create ayyaka **Telegram ki message vastundi** — ✅ Publish button click cheyte post live avtundi!
+
+**Mundhu cheyali:** setup chesina tarvata, mi kotha Telegram bot chat loki velli **`/start`** ani pampandi — bot automatic ga register aytundi. (Approval bot setup_oracle.sh dwara 24/7 run avtundi.)
+
+## Review workflow (idi important!)
+
+```
+┌─────────────┐    ┌──────────────┐    ┌─────────────────┐    ┌──────────┐
+│ Bot article │───▶│  WordPress   │───▶│  Telegram msg   │───▶│  LIVE!   │
+│  generate   │    │ DRAFT lo save│    │ ✅ Publish btn  │    │ (1 tap)  │
+└─────────────┘    └──────────────┘    └─────────────────┘    └──────────┘
+```
+
+- Prathi post **draft** loney save avtundi — site lo kanipinchadu
+- Telegram ki message: title, category, tags, summary + buttons
+- **✅ Publish** → post live · **🗑️ Delete** → trash · **✏️ Edit in WordPress** → manual edit
+- Bot commands: `/pending` (review avasaram leni drafts), `/stats` (poster stats)
+- Direct ga publish avvali ante (review ledu) → `.env` lo `DEFAULT_POST_STATUS=publish`
 
 ---
 
@@ -106,7 +134,10 @@ tail -f log/autoblog.log
 | `WP_USERNAME` | — | WordPress admin username |
 | `WP_APP_PASSWORD` | — | Application Password (Step 2) |
 | `GEMINI_API_KEY` | — | Gemini API key (Step 1) |
-| `DEFAULT_POST_STATUS` | `publish` | `draft` pette review kosam wait chestundi |
+| `DEFAULT_POST_STATUS` | `draft` | `draft` = Telegram review flow · `publish` = direct live |
+| `TELEGRAM_BOT_TOKEN` | — | @BotFather token — buttons tho review messages |
+| `TELEGRAM_CHAT_ID` | auto | `/start` cheythe bot automatic ga register avtundi |
+| `WHATSAPP_CALLMEBOT_URL` | — | WhatsApp text alerts (callmebot.com free) |
 | `DAILY_MIN` / `DAILY_MAX` | `10` / `15` | Posts per day range |
 | `ACTIVE_HOUR_START` / `ACTIVE_HOUR_END` | `6` / `22` | Posting window (24h IST) |
 | `CATEGORIES` | 8 categories | Site sections |
@@ -134,6 +165,25 @@ Marpali te: `.env` edit chesi scheduler ni restart cheyandi: `sudo systemctl res
 **Bot status em cheyalo teleefda?**
 - `.venv/bin/python run.py --status` run cheyandi.
 
+## Monetization (AdSense) — automation problem istunda? 😟
+
+**Short answer: review flow unte problem undadu.** Kani rules telusukovali:
+
+1. **Google AI content ni ban cheyadu** — kani "low value content" ni reject chestundi. Idi matram important:
+   - ✅ **Review flow** (mi bot default ga idi untundi!) — prathi post miree approve chestunnaru
+   - ✅ Original content — Gemini prathi article fresh ga write chestundi (copy paste kadu)
+   - ✅ Original images — bot eee images generate chestundi (Google Images nunchi visheshanga ledu, copyright ledu)
+   - ❌ Fake deadlines/vacancy numbers — bot prompt lo strict ga ban chesanu
+2. **AdSense approval kosari:**
+   - Privacy Policy, About Us, Contact pages undali
+   - 20-30 quality posts unnappudu apply cheyandi
+   - Site new aite **mundu 5-8 posts/day chala** — approval tarvata 10-15 ki penchandi
+   - ChinnA human-written posts kuda add cheyandi (menually raayandi)
+3. **Google News/Discover lo rank avvali ante:** pure AI spam ga ledu — human review + original value undali. Mi draft-review flow idi guarantee chestundi.
+4. **Telugu keyword SEO:** bot already Telugu+English mix lo rastundi — local search ki idi best.
+
+**Bottom line:** Review lekunda site lo auto-publish cheyakandi — mee current setup (draft + approve) safe & sustainable. 📈
+
 ## Important notes
 
 - AI-generated content — **occasionally review cheyandi**. Bot fake deadlines/vacancy numbers rasanivvakunda strict rules pettanu, kani manam verify cheyadam better.
@@ -152,8 +202,10 @@ Marpali te: `.env` edit chesi scheduler ni restart cheyandi: `sudo systemctl res
 │   ├── main.py             # Orchestrator + schedule logic
 │   ├── gemini_client.py    # Gemini REST client + Telugu prompt
 │   ├── wordpress_client.py # WP REST publish (post/media/terms)
+│   ├── notifier.py         # Telegram (buttons) + WhatsApp alerts
+│   ├── approval_bot.py     # 24/7 Telegram review bot (one-tap publish)
 │   ├── topic_engine.py     # Category rotation + mock generator
 │   ├── image_gen.py        # Featured image (PIL, no API)
 │   └── state.py            # SQLite state (dedupe, plan, counts)
-└── tests/fake_wp_test.py   # WP client end-to-end test
+└── tests/                  # end-to-end tests (fake WP/Telegram servers)
 ```

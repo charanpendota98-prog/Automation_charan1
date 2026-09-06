@@ -106,6 +106,14 @@ def _meta_set(db_path: Path, key: str, value: str) -> None:
         )
 
 
+def meta_get(db_path: Path, key: str) -> Optional[str]:
+    return _meta_get(db_path, key)
+
+
+def meta_set(db_path: Path, key: str, value: str) -> None:
+    _meta_set(db_path, key, value)
+
+
 def today_plan(db_path: Path, day: date, hour_start: int, hour_end: int,
                daily_min: int, daily_max: int) -> List[int]:
     """Return today's planned posting hours, generating them once per day."""

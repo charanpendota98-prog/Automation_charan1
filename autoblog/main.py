@@ -18,7 +18,7 @@ import unicodedata
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
-from . import config, gemini_client, image_gen, state, topic_engine, wordpress_client
+from . import config, gemini_client, image_gen, notifier, state, topic_engine, wordpress_client
 
 log = logging.getLogger("autoblog")
 
@@ -188,7 +188,14 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "") -> int:
     state.record_post(config.STATE_PATH, article["title"], article["slug"],
                       article["category"], result["link"], result["status"])
     state.bump_today_count(config.STATE_PATH, today)
-    log.info("PUBLISHED ✔  %s (status=%s)", result["link"], result["status"])
+    if result["status"] == "draft":
+        log.info("DRAFT saved (review kosam) id=%s — notification pampistunnanu", result["id"])
+    else:
+        log.info("PUBLISHED ✔  %s", result["link"])
+    try:
+        notifier.notify_new_post(article, result)
+    except Exception:
+        log.exception("Notification failed (post safe ga save ayyindi)")
     return 0
 
 
@@ -225,6 +232,24 @@ def check_wp() -> int:
         return 1
 
 
+def notify_test() -> int:
+    """Send a test notification to all configured channels."""
+    ok_any = False
+    if config.TELEGRAM_BOT_TOKEN:
+        ok = notifier.send_telegram(
+            "🧪 <b>Test message</b> — studentup.in auto-blogger Telegram connect ayyindi ✔"
+        )
+        ok_any = ok_any or ok
+    if config.WHATSAPP_CALLMEBOT_URL:
+        ok = notifier.send_whatsapp("🧪 Test — studentup auto-blogger WhatsApp connect ayyindi ✔")
+        ok_any = ok_any or ok
+    if not ok_any:
+        print("Emi channel configure cheyaledu (.env lo TELEGRAM_BOT_TOKEN / WHATSAPP_CALLMEBOT_URL)")
+        return 1
+    print("Test notification pampinchi!" if ok_any else "Notification fail ayyindi — log chudandi")
+    return 0 if ok_any else 4
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="studentup.in auto-blogger")
     parser.add_argument("--dry-run", action="store_true", help="generate locally, no publishing")
@@ -233,6 +258,7 @@ def main() -> int:
     parser.add_argument("--category", default="", help="force a category")
     parser.add_argument("--status", action="store_true", help="show stats & today's plan")
     parser.add_argument("--check-wp", action="store_true", help="verify WP credentials")
+    parser.add_argument("--notify-test", action="store_true", help="send test notification")
     args = parser.parse_args()
 
     _setup_logging()
@@ -241,6 +267,8 @@ def main() -> int:
         return show_status()
     if args.check_wp:
         return check_wp()
+    if args.notify_test:
+        return notify_test()
     try:
         return run(dry_run=args.dry_run, force=args.force, mock=args.mock,
                    category=args.category)

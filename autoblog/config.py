@@ -37,8 +37,17 @@ WP_SITE = _get("WP_SITE", "https://studentup.in").rstrip("/")
 WP_USERNAME = _get("WP_USERNAME", "")
 WP_APP_PASSWORD = _get("WP_APP_PASSWORD", "")
 
-# "publish" = posts go live instantly. Use "draft" while testing/reviewing.
-DEFAULT_POST_STATUS = _get("DEFAULT_POST_STATUS", "publish")
+# "draft" = review flow (Telegram lo approve cheyandi tarvata publish).
+# "publish" = posts direct ga live avtavvi.
+DEFAULT_POST_STATUS = _get("DEFAULT_POST_STATUS", "draft")
+
+# --- Notifications -------------------------------------------------------
+TELEGRAM_BOT_TOKEN = _get("TELEGRAM_BOT_TOKEN", "")
+TELEGRAM_CHAT_ID = _get("TELEGRAM_CHAT_ID", "")  # empty = /start tho auto-register
+TELEGRAM_API_BASE = _get("TELEGRAM_API_BASE", "https://api.telegram.org")
+# CallMeBot free WhatsApp alerts (text only):
+# https://api.callmebot.com/whatsapp.php?phone=+91XXXX&apikey=XXXX
+WHATSAPP_CALLMEBOT_URL = _get("WHATSAPP_CALLMEBOT_URL", "")
 
 # --- Gemini AI -----------------------------------------------------------
 GEMINI_API_KEY = _get("GEMINI_API_KEY", "")

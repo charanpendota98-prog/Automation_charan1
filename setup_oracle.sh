@@ -44,12 +44,14 @@ if [ ! -f .env ]; then
     read -rp "WordPress username (admin login name): " WP_USERNAME
     read -rp "WordPress Application Password: " WP_APP_PASSWORD
     read -rp "Gemini API key (aistudio.google.com): " GEMINI_API_KEY
+    read -rp "Telegram bot token (@BotFather /newbot — Enter to skip): " TELEGRAM_BOT_TOKEN
+    read -rp "WhatsApp CallMeBot URL (optional — Enter to skip): " WHATSAPP_CALLMEBOT_URL
 
     cat > .env <<EOF
 WP_SITE=${WP_SITE}
 WP_USERNAME=${WP_USERNAME}
 WP_APP_PASSWORD=${WP_APP_PASSWORD}
-DEFAULT_POST_STATUS=publish
+DEFAULT_POST_STATUS=draft
 GEMINI_API_KEY=${GEMINI_API_KEY}
 GEMINI_MODEL=gemini-2.5-flash
 GEMINI_FALLBACK_MODELS=gemini-2.0-flash,gemini-1.5-flash
@@ -60,6 +62,9 @@ ACTIVE_HOUR_END=22
 TIMEZONE=Asia/Kolkata
 IMAGE_ENABLED=1
 SITE_BRAND=studentup.in
+TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+TELEGRAM_CHAT_ID=
+WHATSAPP_CALLMEBOT_URL=${WHATSAPP_CALLMEBOT_URL}
 EOF
     chmod 600 .env
     echo "     .env file created."
@@ -110,7 +115,31 @@ WantedBy=timers.target
 EOF
     sudo systemctl daemon-reload
     sudo systemctl enable --now studentup-autoblog.timer
-    echo "     systemd timer install ayyindi — prathi okka గంట (hourly) run avtundi."
+
+    # approval bot service (Telegram review buttons) — token untey matrame
+    if grep -q "^TELEGRAM_BOT_TOKEN=..*" .env; then
+        sudo tee /etc/systemd/system/studentup-approval.service >/dev/null <<EOF
+[Unit]
+Description=studentup.in Telegram approval bot
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=${RUN_USER}
+WorkingDirectory=${PROJECT_DIR}
+ExecStart=${PROJECT_DIR}/.venv/bin/python -m autoblog.approval_bot
+Restart=always
+RestartSec=15
+
+[Install]
+WantedBy=multi-user.target
+EOF
+        sudo systemctl daemon-reload
+        sudo systemctl enable --now studentup-approval.service
+        echo "     systemd timer + Telegram approval bot install ayyayi."
+    else
+        echo "     systemd timer install ayyindi (Telegram token ledu — approval bot skip)."
+    fi
 else
     CRON_LINE="0 * * * * cd ${PROJECT_DIR} && ${PROJECT_DIR}/.venv/bin/python run.py >> ${PROJECT_DIR}/log/cron.log 2>&1"
     (crontab -l 2>/dev/null | grep -v "studentup" ; echo "$CRON_LINE") | crontab -
@@ -120,10 +149,18 @@ fi
 # ---------- 6) done ----------
 echo "[6/6] SETUP COMPLETE! 🎉"
 echo ""
+if grep -q "^TELEGRAM_BOT_TOKEN=..*" .env 2>/dev/null; then
+    echo " IMPORTANT (Telegram approval flow):"
+    echo "   1. Phone lo Telegram open cheyandi — mi kotha bot search cheyandi"
+    echo "   2. Bot chat loki velli /start ani pampandi"
+    echo "      -> Bot automatic ga register aytundi, ippudu prathi draft ki"
+    echo "         ✅ Publish / 🗑️ Delete buttons tho message vastundi!"
+fi
 echo " Useful commands:"
- echo "   Test post immediate ga (WordPress lo publish):  .venv/bin/python run.py --force"
- echo "   Offline test (WordPress touch avvakunda):        .venv/bin/python run.py --dry-run --mock"
- echo "   Status chudatam:                                .venv/bin/python run.py --status"
+ echo "   Test post immediate ga (draft lo):            .venv/bin/python run.py --force"
+ echo "   Offline test (WordPress touch avvakunda):     .venv/bin/python run.py --dry-run --mock"
+ echo "   Status chudatam:                              .venv/bin/python run.py --status"
+ echo "   Notification test:                            .venv/bin/python run.py --notify-test"
  echo "   Scheduler stop:            sudo systemctl stop studentup-autoblog.timer"
  echo "   Scheduler start:           sudo systemctl start studentup-autoblog.timer"
 echo ""

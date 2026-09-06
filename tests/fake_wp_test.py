@@ -125,7 +125,7 @@ def main():
     assert payload["categories"] == [5]
     assert payload["tags"] == [9, tag_new]
     assert payload["featured_media"] == 77
-    assert payload["status"] == "publish"
+    assert payload["status"] == "draft", "default status must be draft (review flow)"
     assert payload["excerpt"]["raw"] == "meta desc"
 
     server.shutdown()
