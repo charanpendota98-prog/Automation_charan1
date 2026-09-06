@@ -74,7 +74,10 @@ def generate_one(category: str, mock: bool, mock_index: int = 0) -> dict:
         title = article["title"].strip()
         if not state.title_exists(config.STATE_PATH, title):
             article["title"] = title
-            article["slug"] = _safe_slug(article.get("slug", ""), title)
+            from . import seo as _seo
+            article["slug"] = _seo.optimize_slug(
+                _safe_slug(article.get("slug", ""), title),
+                focus_keyword=article.get("focus_keyword", ""))
             return article
         log.warning("Duplicate title generated (%s) — retrying", title)
         avoid_extra = f"Already tried (do NOT repeat): {title}"

@@ -344,6 +344,19 @@ def _models() -> List[str]:
     return models
 
 
+# Rank Math writing rules — prathi prompt ki append (article write chesetappude
+# score perugutundi: keyword placement, numbers, short paras, link anchors)
+WRITING_RULES = """
+
+RANK MATH WRITING RULES (follow exactly):
+- Put the focus keyword in the FIRST HALF of the title and include a NUMBER (year/vacancies/count).
+- Focus keyword: first paragraph lo + at least 2 <h2> subheadings lo + naturally 8-15 times total (1-2% density) — keyword stuffing cheyakudadu.
+- Prathi paragraph 120 words kanna takkuva (2-4 sentences max).
+- Consecutive sentences same word tho start cheyakudadu.
+- At least 2-3 internal-link-friendly phrases (mana site related topics peru mention cheyandi - " SSC CGL notification", " scholarship guide" lanti anchors) and 1-2 official site names (text anchor kosam).
+- Content lo table kavali + numbered/bulleted lists kavali (snippet eligibility).
+"""
+
 def _call_model(model: str, prompt: str) -> str:
     payload = {
         "contents": [{"role": "user", "parts": [{"text": prompt}]}],
@@ -443,6 +456,7 @@ def generate_article(
 
 def _generate_with_retries(prompt: str, category: str = "", source=None) -> Dict:
     """Common retry loop for all prompts. Returns article dict."""
+    prompt = prompt + WRITING_RULES
     models = _models()
     last_err: Optional[Exception] = None
     for attempt in range(1, config.GEMINI_MAX_RETRIES + 1):

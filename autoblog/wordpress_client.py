@@ -142,6 +142,16 @@ class WordPressClient:
             log.exception("get_recent_published failed")
             return []
 
+    def get_term_link(self, term_id: int, term_type: str = "categories") -> Optional[str]:
+        """Category/tag archive URL (internal-link fallback kosam)."""
+        try:
+            resp = self._request("GET", f"{term_type}/{term_id}", params={"_fields": "link"})
+            if resp.status_code == 200:
+                return resp.json().get("link")
+        except Exception:
+            pass
+        return None
+
     def get_post(self, post_id: int) -> Dict:
         """Edit context lo post teesukovali (update flow kosam)."""
         resp = self._request("GET", f"posts/{post_id}", params={"context": "edit"})

@@ -91,6 +91,15 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
     from . import monetize as _mz
 
     internal = _mz.prioritize_money_pages(internal)[:4]
+    # Internal-link fallback: kotha site lo published posts levu ->
+    # category archive links istundi (Rank Math internal-link check pass)
+    if len(internal) < 2:
+        cat_link = wp.get_term_link(category_id, "categories")
+        if cat_link:
+            internal.append({"link": cat_link,
+                             "title": f"{article['category']} – Latest Articles"})
+        if len(internal) < 2:
+            internal.append({"link": f"{config.WP_SITE}/", "title": "studentup.in – Home"})
     today_str = (day or date.today()).isoformat()
     final_html = seo.enhance(
         article["content_html"],
@@ -307,9 +316,11 @@ def create_from_source(url: str, mock: bool = False, category: str = "") -> Dict
         + [urlparse(e.url).netloc.replace("www.", "") for e in extras]
     ]
 
-    # slug safe ga + new fields default
+    # slug safe ga + Rank Math optimize (keyword tokens + stopwords)
     from .main import _safe_slug
-    article["slug"] = _safe_slug(article.get("slug", ""), article["title"])
+    article["slug"] = seo.optimize_slug(
+        _safe_slug(article.get("slug", ""), article["title"]),
+        focus_keyword=article.get("focus_keyword", ""))
     article.setdefault("focus_keyword", "")
     article.setdefault("external_links", [])
     article.setdefault("secondary_keywords", [])
@@ -476,7 +487,9 @@ def create_listicle(topic: str = "", mock: bool = False) -> Dict:
         article = gemini_client.generate_listicle(idea, recent, date.today().year)
 
     from .main import _safe_slug
-    article["slug"] = _safe_slug(article.get("slug", ""), article["title"])
+    article["slug"] = seo.optimize_slug(
+        _safe_slug(article.get("slug", ""), article["title"]),
+        focus_keyword=article.get("focus_keyword", "") or idea)
     for k, v in (("focus_keyword", idea), ("external_links", []),
                  ("secondary_keywords", []), ("quick_answer", ""),
                  ("faq", []), ("seo_title", ""), ("list_items", None)):

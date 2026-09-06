@@ -93,8 +93,13 @@ def validate_article(article: Dict, final_html: str = "") -> Dict:
     score = 0
     score += add(bool(kw), 5, "focus_keyword ledu")
     if kw:
-        score += add(kw.lower() in article.get("title", "").lower(), 10,
-                     "focus keyword title lo ledu")
+        title = article.get("title", "")
+        tlow = title.lower()
+        score += add(kw.lower() in tlow, 6, "focus keyword title lo ledu")
+        # Rank Math: keyword title FIRST HALF lo + number in title
+        half = tlow[: max(1, len(tlow) // 2)]
+        score += add(kw.lower() in half, 3, "focus keyword title first-half lo ledu")
+        score += add(bool(re.search(r"\d", title)), 3, "title lo number ledu (year/vacancies)")
         first_p = re.search(r"<p>(.*?)</p>", html, flags=re.S)
         first_txt = strip_tags(first_p.group(1)) if first_p else ""
         score += add(kw.lower() in first_txt.lower(), 10,
@@ -102,21 +107,38 @@ def validate_article(article: Dict, final_html: str = "") -> Dict:
         h2s = re.findall(r"<h2[^>]*>(.*?)</h2>", html, flags=re.S)
         kw_in_h2 = sum(1 for h in h2s if kw.lower() in strip_tags(h).lower())
         score += add(kw_in_h2 >= 1, 10, "focus keyword subheadings lo ledu")
+        # Rank Math sweet spot ~1-2.5%
         density = plain.lower().count(kw.lower()) / max(1, words)
-        score += add(0.004 <= density <= 0.03, 5,
+        score += add(0.008 <= density <= 0.025, 5,
                      f"keyword density out of range ({density:.3f})")
 
-    score += add(words >= 1500, 15, f"word count takkuva ({words} < 1500)")
+    score += add(words >= 1500, 10, f"word count takkuva ({words} < 1500)")
     score += add("<table" in html, 5, "table ledu (snippet eligibility)")
     score += add(len(article.get("faq") or []) >= 3, 10, "FAQ 3+ kavali")
-    score += add(bool(article.get("external_links")), 5, "external links ledu")
+    score += add(bool(article.get("external_links")), 4, "external links ledu")
+    site_host = ""
+    try:
+        from urllib.parse import urlparse as _up
+        from . import config as _cfg
+        site_host = _up(_cfg.WP_SITE).netloc
+    except Exception:
+        pass
+    links = re.findall(r'href="(http[^"]+)"', html)
+    n_internal = sum(1 for l in links if site_host and site_host in l) if site_host else (1 if links else 0)
+    score += add(n_internal >= 1, 4, "internal links ledu (Rank Math check)")
     meta_desc = article.get("meta_description") or ""
     score += add(120 <= len(meta_desc) <= 170 and (not kw or kw.lower() in meta_desc.lower()),
-                 10, "meta description length/keyword problem")
-    score += add(5 <= len(article.get("tags") or []) <= 8, 5, "tags 5-8 kavali")
+                 8, "meta description length/keyword problem")
+    score += add(5 <= len(article.get("tags") or []) <= 8, 4, "tags 5-8 kavali")
     score += add(bool(article.get("quick_answer")), 5, "quick_answer ledu (snippet bait)")
-    score += add(len(article.get("secondary_keywords") or []) >= 3, 5,
+    score += add(len(article.get("secondary_keywords") or []) >= 3, 4,
                  "secondary keywords 3+ kavali")
+    # Rank Math readability: prathi paragraph 160 words kanna takkuva
+    para_words = [len(strip_tags(m).split()) for m in re.findall(r"<p>(.*?)</p>", html, flags=re.S)]
+    long_paras = sum(1 for w_ in para_words if w_ > 160)
+    score += add(long_paras == 0 and len(para_words) >= 3, 6,
+                 f"{long_paras} paragraphs too long (160+ words)" if long_paras else
+                 "paragraphs structure weak")
 
     return {
         "score": score,

@@ -338,3 +338,41 @@ def insert_ad_shortcodes(html: str, shortcode: str, max_ads: int = 3,
         last = pos
     out.append(html[last:])
     return "".join(out)
+
+
+# ------------------------------------------------------------------ slug optimizer
+
+# Rank Math URL check: stopwords penalty + focus keyword in URL
+SLUG_STOPWORDS = {
+    "a", "an", "the", "and", "or", "but", "in", "on", "at", "to", "for",
+    "of", "with", "by", "from", "is", "are", "was", "were", "be", "been",
+    "how", "what", "when", "where", "who", "why", "will", "that", "this",
+    "it", "its", "as", "your", "you", "elaa", "andhu",
+}
+
+
+def optimize_slug(slug: str, focus_keyword: str = "", max_len: int = 60) -> str:
+    """Rank Math-friendly slug: stopwords strip + keyword tokens include.
+
+    Trick: focus keyword lo English tokens (ssc, cgl, 2026...) slug lo
+    pakka untayi -> 'Focus Keyword in URL' check pass avtundi.
+    """
+    words = [w for w in (slug or "").lower().split("-") if w]
+    cleaned = [w for w in words if w not in SLUG_STOPWORDS]
+    base = "-".join(cleaned)[:max_len].strip("-")
+
+    fk_tokens = [t.lower() for t in re.findall(r"[a-zA-Z0-9]+", focus_keyword or "")]
+    fk_tokens = [t for t in fk_tokens if t and t not in SLUG_STOPWORDS]
+    if fk_tokens:
+        have = set(base.split("-"))
+        missing = [t for t in fk_tokens if t not in have]
+        if missing:
+            prefix = "-".join(missing)
+            if base and len(prefix) + 1 + len(base) <= max_len:
+                base = f"{prefix}-{base}"
+            elif not base:
+                base = prefix[:max_len]
+            else:
+                # slug full ayyindi -> keyword prefix ki priority
+                base = f"{prefix}-{base}"[:max_len]
+    return (base or "-".join(words))[:max_len].strip("-") or "studentup-post"

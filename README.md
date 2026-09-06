@@ -292,6 +292,21 @@ SAFE alternatives (bot already implement chesindi):
 
 **Honest note:** ad CLICKS ni artificially peragalera — adi policy violation (ban). Nenu build chesindi: viewability (ads kanipistayi), relevance (value ads match), slots (eka page ki ekkuva legit slots), money pages (high-CPC views). Idi real revenue growth formula.
 
+## ✍️ v8: "Article Write" Rank Math Tricks (write chesetappude score perugutundi)
+
+Content **rastesetappudu ne** Rank Math checks pass avtaye — idhe real trick:
+
+| Trick | Em chestundi | RM Check |
+|---|---|---|
+| **Slug optimizer** | Focus keyword English tokens slug lo pakka (`ssc-cgl-2026-...`) + stopwords strip (`how,the,and,in...` penalty radu) | Focus Keyword in URL ✔ |
+| **Internal-link fallback** | Kotha site lo published posts lekapote **category archive links** automatic (site age lo ledu inka excuse) | Internal Links ✔ |
+| **Title rules** | Keyword title FIRST HALF lo + number (year/vacancies) — prompt + validator rendu | Keyword in Title + Number ✔ |
+| **Density window** | 1–2.5% sweet spot (stuffing radu, thin radu) | Keyword Density ✔ |
+| **Short paragraphs** | 160+ words paragraphs validator catch chestundi + prompt lo 120 words rule | Readability ✔ |
+| **WRITING_RULES** | Prathi Gemini prompt ki Rank Math rules append — AI ne RM-friendly ga rastundi | Anni ✔ |
+
+`run.py --revenue-check` + Telegram QA score tho mee post Rank Math readiness venakala nunchi monitor avtundi.
+
 ## 🎯 SEO / Rank Math 100% Score — Top 0.001% Level Tricks
 
 Prathi post lo automatic ga:
