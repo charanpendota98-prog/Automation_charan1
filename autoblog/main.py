@@ -1,0 +1,255 @@
+"""Main orchestrator: schedule -> generate -> image -> publish.
+
+Usage (see run.py):
+  python run.py               # scheduled run (used by cron/systemd hourly)
+  python run.py --force       # post immediately, ignore schedule
+  python run.py --dry-run     # generate locally, do NOT touch WordPress
+  python run.py --mock        # offline test article (no Gemini key needed)
+  python run.py --status      # show today's plan & stats
+  python run.py --check-wp    # verify WordPress credentials only
+"""
+
+import argparse
+import json
+import logging
+import re
+import sys
+import unicodedata
+from datetime import date, datetime, timedelta, timezone
+from pathlib import Path
+
+from . import config, gemini_client, image_gen, state, topic_engine, wordpress_client
+
+log = logging.getLogger("autoblog")
+
+KOLKATA_OFFSET = timezone(timedelta(hours=5, minutes=30))
+
+
+def _now() -> datetime:
+    try:
+        from zoneinfo import ZoneInfo
+
+        return datetime.now(ZoneInfo(config.TIMEZONE))
+    except Exception:
+        return datetime.now(KOLKATA_OFFSET)
+
+
+def _setup_logging() -> None:
+    config.LOG_DIR.mkdir(parents=True, exist_ok=True)
+    fmt = logging.Formatter("%(asctime)s %(levelname)-7s %(name)s: %(message)s")
+    root = logging.getLogger()
+    root.setLevel(logging.INFO)
+    console = logging.StreamHandler(sys.stdout)
+    console.setFormatter(fmt)
+    root.addHandler(console)
+    from logging.handlers import TimedRotatingFileHandler
+
+    filehandler = TimedRotatingFileHandler(
+        config.LOG_DIR / "autoblog.log", when="midnight", backupCount=7, encoding="utf-8"
+    )
+    filehandler.setFormatter(fmt)
+    root.addHandler(filehandler)
+
+
+def _safe_slug(slug: str, fallback_title: str) -> str:
+    slug = (slug or "").strip().lower()
+    slug = re.sub(r"[^a-z0-9-]+", "-", slug).strip("-")[:60]
+    if not slug:
+        # transliteration fallback: strip non-ascii from title (English words in Telugu titles)
+        ascii_part = unicodedata.normalize("NFKD", fallback_title).encode("ascii", "ignore").decode()
+        slug = re.sub(r"[^a-z0-9]+", "-", ascii_part.lower()).strip("-")[:60] or "studentup-post"
+    return slug
+
+
+def generate_one(category: str, mock: bool, mock_index: int = 0) -> dict:
+    """Generate an article with duplicate-avoidance retries."""
+    recent = state.recent_titles(config.STATE_PATH, limit=50)
+    avoid_extra = None
+    for attempt in range(1, config.GEMINI_MAX_RETRIES + 1):
+        if mock:
+            article = topic_engine.mock_article(category, mock_index + attempt)
+        else:
+            article = gemini_client.generate_article(category, recent, year=_now().year,
+                                                     avoid_extra=avoid_extra)
+        title = article["title"].strip()
+        if not state.title_exists(config.STATE_PATH, title):
+            article["title"] = title
+            article["slug"] = _safe_slug(article.get("slug", ""), title)
+            return article
+        log.warning("Duplicate title generated (%s) — retrying", title)
+        avoid_extra = f"Already tried (do NOT repeat): {title}"
+    raise RuntimeError("Could not generate a non-duplicate title after retries")
+
+
+def run(dry_run: bool, force: bool, mock: bool, category: str = "") -> int:
+    today = _now().date()
+    now_hour = _now().hour
+    state.init(config.STATE_PATH)
+
+    # --- schedule check ----------------------------------------------------
+    if not (force or dry_run):
+        count = state.today_count(config.STATE_PATH, today)
+        if count >= config.DAILY_MAX:
+            log.info("Daily limit reached (%d/%d) — stopping.", count, config.DAILY_MAX)
+            return 0
+        plan = state.today_plan(
+            config.STATE_PATH, today,
+            config.ACTIVE_HOUR_START, config.ACTIVE_HOUR_END,
+            config.DAILY_MIN, config.DAILY_MAX,
+        )
+        if now_hour not in plan:
+            log.info("Hour %02d:00 not in today's plan %s — nothing to do.", now_hour, plan)
+            return 0
+        log.info("Hour %02d:00 in plan %s — generating post (%d done today).",
+                 now_hour, plan, count)
+
+    # --- generate ----------------------------------------------------------
+    cat = category or topic_engine.pick_category(config.STATE_PATH)
+    log.info("Category selected: %s%s", cat, " (forced)" if category else "")
+
+    if not mock and not config.GEMINI_API_KEY:
+        log.error("GEMINI_API_KEY set kavali! .env file lo key pettandi.")
+        return 2
+
+    mock_index = state.today_count(config.STATE_PATH, today)
+    article = generate_one(cat, mock, mock_index)
+    log.info("Article ready: %s (slug=%s, model=%s)",
+             article["title"], article["slug"], article.get("model"))
+
+    # --- featured image ----------------------------------------------------
+    image_path: Path = Path(
+        config.OUTPUT_DIR / "images" / f"{article['slug']}.jpg"
+    )
+    media_id = None
+    if config.IMAGE_ENABLED:
+        generated = image_gen.generate_featured_image(
+            article["banner_text"], article["category"], image_path
+        )
+        if not generated:
+            image_path = None
+
+    # --- publish / dry-run -------------------------------------------------
+    if dry_run:
+        out_dir = config.OUTPUT_DIR / today.isoformat() / article["slug"]
+        out_dir.mkdir(parents=True, exist_ok=True)
+        html = (
+            f"<!doctype html><html><head><meta charset='utf-8'>"
+            f"<title>{article['title']}</title></head><body>"
+            f"<h1>{article['title']}</h1>"
+            f"{article['content_html']}</body></html>"
+        )
+        (out_dir / "article.html").write_text(html, encoding="utf-8")
+        (out_dir / "meta.json").write_text(
+            json.dumps(
+                {
+                    "title": article["title"],
+                    "slug": article["slug"],
+                    "category": article["category"],
+                    "tags": article["tags"],
+                    "meta_description": article["meta_description"],
+                    "image": image_path.name if image_path else None,
+                },
+                ensure_ascii=False,
+                indent=2,
+            ),
+            encoding="utf-8",
+        )
+        if image_path and image_path.exists():
+            import shutil
+
+            shutil.copy(image_path, out_dir / "featured.jpg")
+        state.record_post(config.STATE_PATH, article["title"], article["slug"],
+                          article["category"], f"dry-run:{out_dir}", "dryrun")
+        log.info("DRY-RUN saved to %s", out_dir)
+        return 0
+
+    wp = wordpress_client.WordPressClient()
+    wp.check_connection()
+
+    category_id = wp.get_or_create_term(article["category"], "categories")
+    tag_ids = [wp.get_or_create_term(t, "tags") for t in article["tags"]]
+
+    if config.IMAGE_ENABLED and image_path and image_path.exists():
+        media_id = wp.upload_media(
+            image_path,
+            title=article["title"],
+            alt_text=f"{article['banner_text']} - {article['category']} 2026 studentup",
+        )
+
+    result = wp.create_post(
+        title=article["title"],
+        content_html=article["content_html"],
+        slug=article["slug"],
+        category_id=category_id,
+        tag_ids=tag_ids,
+        excerpt=article["meta_description"],
+        media_id=media_id,
+    )
+    state.record_post(config.STATE_PATH, article["title"], article["slug"],
+                      article["category"], result["link"], result["status"])
+    state.bump_today_count(config.STATE_PATH, today)
+    log.info("PUBLISHED ✔  %s (status=%s)", result["link"], result["status"])
+    return 0
+
+
+def show_status() -> int:
+    state.init(config.STATE_PATH)
+    today = _now().date()
+    plan = state.today_plan(
+        config.STATE_PATH, today,
+        config.ACTIVE_HOUR_START, config.ACTIVE_HOUR_END,
+        config.DAILY_MIN, config.DAILY_MAX,
+    )
+    summary = state.status_summary(config.STATE_PATH)
+    print(f"Site         : {config.WP_SITE}")
+    print(f"Today        : {today}  (now {_now().strftime('%H:%M')})")
+    print(f"Today plan   : {plan}  -> posts done: {state.today_count(config.STATE_PATH, today)}")
+    print(f"Total posts  : {summary['total']}")
+    print("Last posts:")
+    for p in summary["last"]:
+        print(f"  [{p['created_at']}] ({p['status']}) {p['title']}  ->  {p['link']}")
+    return 0
+
+
+def check_wp() -> int:
+    state.init(config.STATE_PATH)
+    try:
+        wp = wordpress_client.WordPressClient()
+        me = wp.check_connection()
+        print(f"OK! Connected as {me.get('name')} — roles: {me.get('roles')}")
+        cats = wp.ensure_categories()
+        print(f"Categories ready: {len(cats)} ids")
+        return 0
+    except wordpress_client.WordPressError as exc:
+        print(f"FAILED: {exc}")
+        return 1
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description="studentup.in auto-blogger")
+    parser.add_argument("--dry-run", action="store_true", help="generate locally, no publishing")
+    parser.add_argument("--force", action="store_true", help="ignore schedule & post now")
+    parser.add_argument("--mock", action="store_true", help="offline mock article (no Gemini)")
+    parser.add_argument("--category", default="", help="force a category")
+    parser.add_argument("--status", action="store_true", help="show stats & today's plan")
+    parser.add_argument("--check-wp", action="store_true", help="verify WP credentials")
+    args = parser.parse_args()
+
+    _setup_logging()
+
+    if args.status:
+        return show_status()
+    if args.check_wp:
+        return check_wp()
+    try:
+        return run(dry_run=args.dry_run, force=args.force, mock=args.mock,
+                   category=args.category)
+    except wordpress_client.WordPressAuthError as exc:
+        log.error("%s", exc)
+        return 3
+    except (wordpress_client.WordPressError, gemini_client.GeminiError) as exc:
+        log.error("Publishing failed: %s", exc)
+        return 4
+    except Exception:
+        log.exception("Unexpected error")
+        return 5

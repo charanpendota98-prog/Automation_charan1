@@ -1,0 +1,167 @@
+"""SQLite-backed state: posted articles, daily plan, WordPress term ids.
+
+Everything lives in state.db next to the project so the bot survives
+restarts and never duplicates posts.
+"""
+
+import json
+import sqlite3
+from datetime import date
+from pathlib import Path
+from typing import List, Optional
+
+
+def _connect(db_path: Path) -> sqlite3.Connection:
+    conn = sqlite3.connect(str(db_path))
+    conn.row_factory = sqlite3.Row
+    return conn
+
+
+def init(db_path: Path) -> None:
+    db_path.parent.mkdir(parents=True, exist_ok=True)
+    with _connect(db_path) as conn:
+        conn.executescript(
+            """
+            CREATE TABLE IF NOT EXISTS posts (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                title TEXT NOT NULL,
+                title_norm TEXT NOT NULL,
+                slug TEXT,
+                category TEXT,
+                link TEXT,
+                status TEXT,
+                created_at TEXT DEFAULT (datetime('now', 'localtime'))
+            );
+            CREATE UNIQUE INDEX IF NOT EXISTS idx_posts_title_norm
+                ON posts(title_norm);
+
+            CREATE TABLE IF NOT EXISTS meta (
+                key TEXT PRIMARY KEY,
+                value TEXT NOT NULL
+            );
+
+            CREATE TABLE IF NOT EXISTS wp_terms (
+                name TEXT NOT NULL,
+                type TEXT NOT NULL,
+                wp_id INTEGER NOT NULL,
+                PRIMARY KEY (name, type)
+            );
+            """
+        )
+
+
+def normalize_title(title: str) -> str:
+    """Lowercase + keep only unicode letters/digits -> Telugu safe."""
+    import re
+
+    return re.sub(r"\s+", " ", re.sub(r"[^\w\d\u0c00-\u0c7f]+", " ", title.lower())).strip()
+
+
+def title_exists(db_path: Path, title: str) -> bool:
+    with _connect(db_path) as conn:
+        row = conn.execute(
+            "SELECT 1 FROM posts WHERE title_norm = ?", (normalize_title(title),)
+        ).fetchone()
+    return row is not None
+
+
+def recent_titles(db_path: Path, limit: int = 60) -> List[str]:
+    with _connect(db_path) as conn:
+        rows = conn.execute(
+            "SELECT title FROM posts ORDER BY id DESC LIMIT ?", (limit,)
+        ).fetchall()
+    return [r["title"] for r in rows]
+
+
+def record_post(
+    db_path: Path,
+    title: str,
+    slug: str,
+    category: str,
+    link: str,
+    status: str,
+) -> None:
+    with _connect(db_path) as conn:
+        conn.execute(
+            "INSERT OR IGNORE INTO posts (title, title_norm, slug, category, link, status) "
+            "VALUES (?, ?, ?, ?, ?, ?)",
+            (title, normalize_title(title), slug, category, link, status),
+        )
+
+
+# --- daily plan -----------------------------------------------------------
+
+def _meta_get(db_path: Path, key: str) -> Optional[str]:
+    with _connect(db_path) as conn:
+        row = conn.execute("SELECT value FROM meta WHERE key = ?", (key,)).fetchone()
+    return row["value"] if row else None
+
+
+def _meta_set(db_path: Path, key: str, value: str) -> None:
+    with _connect(db_path) as conn:
+        conn.execute(
+            "INSERT INTO meta (key, value) VALUES (?, ?) "
+            "ON CONFLICT(key) DO UPDATE SET value = excluded.value",
+            (key, value),
+        )
+
+
+def today_plan(db_path: Path, day: date, hour_start: int, hour_end: int,
+               daily_min: int, daily_max: int) -> List[int]:
+    """Return today's planned posting hours, generating them once per day."""
+    key = f"slots:{day.isoformat()}"
+    raw = _meta_get(db_path, key)
+    if raw:
+        return json.loads(raw)
+
+    import random
+
+    window = list(range(max(0, hour_start), min(23, hour_end) + 1))
+    if not window:
+        window = list(range(6, 23))
+    n = max(1, min(len(window), random.randint(min(daily_min, daily_max), daily_max)))
+    slots = sorted(random.sample(window, n))
+    _meta_set(db_path, key, json.dumps(slots))
+    return slots
+
+
+def today_count(db_path: Path, day: date) -> int:
+    raw = _meta_get(db_path, f"count:{day.isoformat()}")
+    return json.loads(raw) if raw else 0
+
+
+def bump_today_count(db_path: Path, day: date) -> None:
+    count = today_count(db_path, day) + 1
+    _meta_set(db_path, f"count:{day.isoformat()}", json.dumps(count))
+
+
+# --- WordPress term id cache ----------------------------------------------
+
+def get_term_id(db_path: Path, name: str, term_type: str) -> Optional[int]:
+    with _connect(db_path) as conn:
+        row = conn.execute(
+            "SELECT wp_id FROM wp_terms WHERE name = ? AND type = ?",
+            (name, term_type),
+        ).fetchone()
+    return row["wp_id"] if row else None
+
+
+def save_term_id(db_path: Path, name: str, term_type: str, wp_id: int) -> None:
+    with _connect(db_path) as conn:
+        conn.execute(
+            "INSERT OR REPLACE INTO wp_terms (name, type, wp_id) VALUES (?, ?, ?)",
+            (name, term_type, wp_id),
+        )
+
+
+# --- stats ----------------------------------------------------------------
+
+def status_summary(db_path: Path, limit: int = 10) -> dict:
+    with _connect(db_path) as conn:
+        last = conn.execute(
+            "SELECT title, category, link, status, created_at FROM posts "
+            "ORDER BY id DESC LIMIT ?",
+            (limit,),
+        ).fetchall()
+        total = conn.execute("SELECT COUNT(*) c FROM posts").fetchone()["c"]
+    return {"total": total, "last": [dict(r) for r in last]}

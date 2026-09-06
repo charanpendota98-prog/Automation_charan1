@@ -1,0 +1,13 @@
+# secrets & local data
+.env
+state.db
+state.db-journal
+log/
+output/
+images/
+
+# python
+__pycache__/
+*.pyc
+.venv/
+venv/
