@@ -304,3 +304,135 @@ def create_from_source(url: str, mock: bool = False, category: str = "") -> Dict
     article.setdefault("seo_title", "")
 
     return publish_article(article)
+
+
+# ------------------------------------------------------------------ update flow
+
+def update_post(post_id: int, new_source_urls=None, mock: bool = False) -> Dict:
+    """Already-published/draft post ni kotha info tho IMPROVE chesi update.
+
+    Same URL (slug preserve) — Google lo freshness boost + SEO juice safe.
+    new_source_urls: user ichina kotha source URLs (optional).
+    Levu ante post title meeda auto web research chestundi.
+    """
+    wp = WordPressClient()
+    wp.check_connection()
+    post = wp.get_post(post_id)
+    title = (post.get("title") or {}).get("raw") or (post.get("title") or {}).get("rendered", "")
+    existing_html = (post.get("content") or {}).get("raw", "") or (post.get("content") or {}).get("rendered", "")
+    slug = post.get("slug", "")
+    link = post.get("link", "")
+    existing_text = validator.strip_tags(existing_html)
+    log.info("Update mode: post %s '%s' (%d chars)", post_id, title[:50], len(existing_text))
+
+    # --- kotha sources gather ---
+    extras = []
+    from .sources import SourceArticle as SA
+
+    for u in (new_source_urls or []):
+        try:
+            extras.append(sources.fetch_source(u))
+        except Exception as exc:
+            log.warning("New source fetch fail (%s): %s", u[:60], exc)
+    if config.RESEARCH_ENABLED and not mock and len(extras) < 2:
+        try:
+            pseudo = SA(url=link or f"{config.WP_SITE}/?p={post_id}",
+                        title=title, site_name="studentup.in", text="")
+            more, _unused = research.research_topic(pseudo, config.RESEARCH_MAX_SOURCES)
+            extras.extend(more)
+        except Exception:
+            log.exception("Auto research fail — manual sources tho continue")
+    if not extras and not mock:
+        raise ValueError("Kotha information dorakaledu — source URL ivvandi "
+                         "or konchem rojulu tarvata try cheyandi")
+
+    # --- generate updated version ---
+    if mock:
+        article = {
+            "title": title,
+            "slug": slug or "keep",
+            "meta_description": f"{title[:100]} — updated version.",
+            "tags": ["2026", "Students", "Telugu", "Guide"],
+            "banner_text": "Updated Guide",
+            "content_html": (
+                "<p>Ee updated test article — kotha info merge ayyindi.</p>"
+                "<h2>Key Details</h2><ul><li>Old point</li><li>Kotha point add ayyindi</li></ul>"
+                "<h2>Process</h2><ol><li>Step one</li><li>Step two</li></ol>"
+                "<h2>FAQ</h2><h3>Q?</h3><p>A</p>"
+            ),
+            "category": "Education News",
+            "model": "mock",
+            "focus_keyword": "test guide 2026",
+            "secondary_keywords": ["update test"],
+            "quick_answer": "Updated quick answer for the test.",
+            "faq": [{"question": "Q?", "answer": "A"}],
+            "update_notes": "• Kotha fee details add chesayi (test)",
+        }
+    else:
+        fk = ""
+        try:
+            fk = (post.get("meta") or {}).get("rank_math_focus_keyword", "") or ""
+            fk = fk.split(",")[0].strip()
+        except Exception:
+            pass
+        article = gemini_client.generate_update(
+            title, existing_text, fk, extras, date.today().year,
+        )
+
+    # identity preserve — URL marakudadu
+    article["title"] = title
+    article["slug"] = slug
+    article["content_html"] = validator.sanitize_html(article["content_html"])
+    article = _hygiene(article)
+    article.setdefault("update_notes", "")
+
+    # --- SEO re-enhance (fresh TOC/quick answer/schema) ---
+    recent = wp.get_recent_published(per_page=8)
+    internal = [p for p in recent if p.get("id") != post_id][:4]
+    final_html = seo.enhance(
+        article["content_html"],
+        focus_keyword=article.get("focus_keyword", ""),
+        internal_links=[{"link": p["link"], "title": p["title"]} for p in internal],
+        external_links=article.get("external_links", []),
+        quick_answer=article.get("quick_answer", ""),
+        faq=article.get("faq", []),
+        date_str=date.today().isoformat(),
+        slug=slug,
+        title=title,
+        description=article["meta_description"],
+        category=article.get("category", ""),
+        source_domains=[e.site_name for e in extras],
+    )
+    qa = validator.validate_article(article, final_html)
+    article["_qa"] = qa
+    log.info("Update QA %s/100 words=%d", qa["score"], qa["words"])
+
+    meta = None
+    if config.RANK_MATH_META_ENABLED:
+        meta = seo.rankmath_meta(
+            focus_keyword=article.get("focus_keyword", title[:60]),
+            description=article["meta_description"],
+            seo_title=article.get("seo_title") or title,
+            secondary_keywords=article.get("secondary_keywords", []),
+        )
+
+    result = wp.update_post(
+        post_id,
+        content_html=final_html,
+        title=title,  # same title enforce (URL + identity safe)
+        excerpt=article["meta_description"],
+        meta=meta,
+    )
+    log.info("POST UPDATED ✔ id=%s link=%s", post_id, result.get("link"))
+    article["source_url"] = None
+    try:
+        from . import indexnow
+
+        indexnow.submit(result.get("link", ""))
+    except Exception:
+        pass
+    try:
+        notifier.notify_updated_post(article, result)
+    except Exception:
+        log.exception("Update notification failed (post update safe)")
+    return result

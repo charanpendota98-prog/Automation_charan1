@@ -189,6 +189,34 @@ Prathi post lo **publish mundhe** automatic checks:
 21. **Image disk cleanup** — valla footage megabytes save
 22. **`.env` docs** — ani kotha keys documented
 
+## 🔄 Content Refresh: Published Post ni Improve cheyadam (v4)
+
+Oka post already publish ayyaka, **kotha information dorikithe** danini same post lo add chesi better ga cheyochu — **URL maradu** (Google lo freshness boost, SEO juice safe!):
+
+### Method 1: Telegram (easiest)
+- Prathi draft/post message lo **🔄️ Improve + Research** button — one tap lo:
+  bot internet lo kotha info search chesi → merge chesi → same post update
+- Leda command: `/update POST_ID` (manual ga kotha source isthe: `/update 123 https://site.com/new-info`)
+
+### Method 2: Command line
+```bash
+# Auto research (post title meeda web search):
+.venv/bin/python run.py --update 1234
+
+# Specific kotha source URL tho:
+.venv/bin/python run.py --update 1234 --add-source "https://site.com/new-notification"
+```
+(`POST_ID` — WordPress editor URL lo `post=1234` ga kanipistundi)
+
+### Update flow lo em avtundi?
+1. Existing post content teesi → auto web research / mi source URL fetch
+2. Gemini: **kotha facts matrame add** chestundi (old info remove cheyadu, title/URL same)
+3. Fresh SEO re-enhance (kotha TOC, Quick Answer, Last Updated date, schema — duplicates levu)
+4. Rank Math meta refresh + IndexNow ping + Telegram ki "🔄 POST UPDATED" message
+   (kotha info em add ayyindo "update notes" lo kanipistundi!)
+
+> SEO Tip: Google "content freshness" ni premistundi — 2-3 months old top posts ni monthly once refresh cheyandi. Rankings long-term lo stable ga untayi.
+
 ## 🎯 SEO / Rank Math 100% Score — Top 0.001% Level Tricks
 
 Prathi post lo automatic ga:

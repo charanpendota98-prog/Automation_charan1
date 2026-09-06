@@ -142,6 +142,43 @@ class WordPressClient:
             log.exception("get_recent_published failed")
             return []
 
+    def get_post(self, post_id: int) -> Dict:
+        """Edit context lo post teesukovali (update flow kosam)."""
+        resp = self._request("GET", f"posts/{post_id}", params={"context": "edit"})
+        if resp.status_code != 200:
+            raise WordPressError(
+                f"Post {post_id} teeyaledi: HTTP {resp.status_code}: {resp.text[:200]}")
+        return resp.json()
+
+    def update_post(
+        self,
+        post_id: int,
+        content_html: str,
+        title: Optional[str] = None,
+        excerpt: Optional[str] = None,
+        meta: Optional[Dict[str, str]] = None,
+    ) -> Dict:
+        """Existing post ni update cheyadam (URL/slug same untundi — SEO safe)."""
+        payload: Dict = {"content": content_html}
+        if title:
+            payload["title"] = title
+        if excerpt:
+            payload["excerpt"] = {"raw": excerpt}
+        if meta:
+            payload["meta"] = meta
+        resp = self._request("POST", f"posts/{post_id}", json=payload)
+        if resp.status_code == 400 and meta and "meta" in resp.text.lower():
+            log.info("Rank Math meta accept avvaledu — meta leni retry")
+            payload.pop("meta", None)
+            resp = self._request("POST", f"posts/{post_id}", json=payload)
+        if resp.status_code not in (200, 201):
+            raise WordPressError(
+                f"Post update failed: HTTP {resp.status_code}: {resp.text[:400]}"
+            )
+        data = resp.json()
+        return {"id": data.get("id"), "link": data.get("link"),
+                "status": data.get("status")}
+
     def create_post(
         self,
         title: str,

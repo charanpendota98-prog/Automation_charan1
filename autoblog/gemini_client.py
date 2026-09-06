@@ -239,6 +239,59 @@ def _format_extra_sources(extras) -> str:
     )
 
 
+UPDATE_PROMPT_TEMPLATE = """You are a top-level Telugu SEO content editor for studentup.in.
+
+TASK: Below is an ALREADY-PUBLISHED article and NEW RESEARCH SOURCES with fresh information. Produce an IMPROVED, UPDATED version of the article that keeps the same topic and structure but integrates ALL new useful facts.
+
+=============== EXISTING ARTICLE (currently published) ===============
+TITLE: {title}
+FOCUS KEYWORD: {focus_keyword}
+CONTENT:
+{existing_text}
+=======================================================================
+
+=============== NEW RESEARCH SOURCES (fresh information) ==============
+{extra_sources_block}
+=======================================================================
+
+UPDATE RULES (very important):
+- KEEP the same title and topic (minor polish ok, meaning must not change).
+- Integrate every NEW fact from the research sources that the existing article is MISSING (new dates, fee changes, vacancy updates, extra steps, documents, official links). Do NOT remove existing correct information.
+- If sources conflict with the existing article, prefer the newer/official info.
+- The existing article may contain helper sections like "విషయ సూచిక (Table of Contents)", "Quick Answer", "About This Article", "Related Articles", "Official Links", "Reading Time" — EXCLUDE all of them from your output. Produce ONLY the main article body.
+- LANGUAGE: same TELUGU + English mix style as the existing article.
+- Length: keep or improve (2200-3000 words). Short paragraphs, lists, one table.
+
+ALSO RETURN (same JSON schema):
+- title: SAME as existing title (or lightly polished, under 75 chars).
+- slug: "keep" (do not change the URL).
+- meta_description, tags, banner_text: same as existing style.
+- focus_keyword / secondary_keywords / quick_answer / faq: same as existing, updated only if the new info changes them.
+- update_notes: 2-4 short Telugu bullets summarizing WHAT NEW INFO was added (e.g. "• Fee details add chesayi • New exam date update").
+
+Return ONLY valid JSON."""
+
+
+def generate_update(
+    existing_title: str,
+    existing_text: str,
+    focus_keyword: str,
+    extras: List,
+    year: int,
+) -> Dict:
+    """Published article + kotha research -> improved version (same URL)."""
+    if not config.GEMINI_API_KEY:
+        raise GeminiError("GEMINI_API_KEY not set")
+    prompt = UPDATE_PROMPT_TEMPLATE.format(
+        title=existing_title,
+        focus_keyword=focus_keyword or "(unknown)",
+        existing_text=existing_text[:9000],
+        extra_sources_block=_format_extra_sources(extras),
+        year=year,
+    )
+    return _generate_with_retries(prompt)
+
+
 class GeminiError(Exception):
     pass
 

@@ -18,6 +18,7 @@ Commands:
 import json
 import logging
 import sys
+import threading
 import time
 
 import requests
@@ -83,8 +84,10 @@ class ApprovalBot:
                          "🔗 VERE SITE URL paste cheyandi — aa article ni 100% "
                          "original ga (no copy) advanced SEO article ga marchi draft "
                          "chestundi!\n\n"
-                         "Commands:\n/pending – review avasaram leni drafts\n"
-                         "/stats – statistics\n/help – help"),
+                         "Commands:\n/pending – pending drafts\n"
+                         "/stats – statistics\n"
+                         "/update ID [url] – post ni kotha info tho improve\n"
+                         "/help – help"),
             })
         elif text.startswith("/pending"):
             self.send_pending(chat_id)
@@ -98,6 +101,23 @@ class ApprovalBot:
                          "SEO article ga marchi draft create chestundi "
                          "(✅ Publish button tho approve cheyochu)."),
             })
+        elif text.startswith("/update"):
+            parts = text.split()
+            if len(parts) < 2 or not parts[1].isdigit():
+                self.tg("sendMessage", {
+                    "chat_id": chat_id,
+                    "text": "Usage: /update POST_ID [source_url]\n"
+                            "(POST_ID — post link lo kanipistundi: ?p=123 or post=123)",
+                })
+                return
+            pid = int(parts[1])
+            extra = parts[2] if len(parts) > 2 and parts[2].startswith("http") else ""
+            self.tg("sendMessage", {
+                "chat_id": chat_id,
+                "text": "🔄 Update start chesayi — research + rewrite (2-3 min)...",
+            })
+            threading.Thread(target=self.run_update,
+                             args=(pid, chat_id, extra), daemon=True).start()
         elif text.startswith("http://") or text.startswith("https://"):
             self.handle_source_url(chat_id, text)
         else:
@@ -161,6 +181,14 @@ class ApprovalBot:
             self.do_publish(cb, post_id)
         elif action == "del":
             self.do_delete(cb, post_id)
+        elif action == "upd":
+            self.tg("answerCallbackQuery", {
+                "callback_query_id": cb_id,
+                "text": "🔄 Update start chesayi — research + rewrite (2-3 min)...",
+            })
+            chat = cb.get("message", {}).get("chat", {}).get("id")
+            threading.Thread(target=self.run_update, args=(post_id, str(chat)),
+                             daemon=True).start()
         else:
             self.tg("answerCallbackQuery", {"callback_query_id": cb_id,
                                             "text": "Unknown action"})
@@ -227,6 +255,27 @@ class ApprovalBot:
             log.error("Delete failed for %s: %s", post_id, exc)
             self.tg("answerCallbackQuery", {"callback_query_id": cb.get("id", ""),
                                             "text": f"Failed: {str(exc)[:150]}"})
+
+    # ------------------------------------------------------------- update flow
+
+    def run_update(self, post_id: int, chat_id: str, extra_url: str = "") -> None:
+        """Post ni kotha research tho improve chesi update (background thread)."""
+        from . import pipeline
+
+        try:
+            urls = [extra_url] if extra_url else None
+            result = pipeline.update_post(post_id, new_source_urls=urls,
+                                          mock=not config.GEMINI_API_KEY)
+            self.tg("sendMessage", {
+                "chat_id": chat_id,
+                "text": (f"🔄 Post update ayyindi ✔\n{result.get('link', '')}"),
+            })
+        except Exception as exc:
+            log.exception("Update failed for post %s", post_id)
+            self.tg("sendMessage", {
+                "chat_id": chat_id,
+                "text": f"❌ Update fail: {str(exc)[:200]}",
+            })
 
     # ------------------------------------------------------------- commands
 

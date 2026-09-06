@@ -91,6 +91,10 @@ def post_buttons(post_id: int, link: str) -> dict:
                  "url": f"{config.WP_SITE}/wp-admin/post.php?post={post_id}&action=edit"},
                 {"text": "🏠 Site", "url": config.WP_SITE},
             ],
+            [
+                {"text": "🔄️ Improve + Research (kotha info add)",
+                 "callback_data": f"upd:{post_id}"},
+            ],
         ]
     }
 
@@ -115,6 +119,29 @@ def daily_digest(count: int, last_posts: list) -> None:
         plain = (f"Daily Digest: {count} posts create ayyayi. "
                  + " · ".join(str(p.get("title", ""))[:40] for p in (last_posts or [])[:3]))
         send_whatsapp(plain)
+
+
+def notify_updated_post(article: dict, result: dict) -> None:
+    """Post update notification (content refresh)."""
+    if not (config.TELEGRAM_BOT_TOKEN or config.WHATSAPP_CALLMEBOT_URL):
+        return
+    qa = article.get("_qa") or {}
+    notes = (article.get("update_notes") or "").strip()
+    lines = [
+        "🔄 <b>POST UPDATED</b> <i>(content refresh — same URL)</i>",
+        "",
+        f"<b>{esc(article.get('title', ''))}</b>",
+    ]
+    if notes:
+        lines += ["🆕 <b>Kotha info add ayyindi:</b>", esc(notes), ""]
+    if qa:
+        lines.append(f"📊 QA: <b>{qa.get('score', '-')}/100</b> · "
+                     f"📝 {qa.get('words', '-')} words · ⏱️ ~{qa.get('reading_min', '-')} min")
+    if result.get("link"):
+        lines += ["", f"🔗 {esc(result['link'])}"]
+    send_telegram("\n".join(lines))
+    if config.WHATSAPP_CALLMEBOT_URL:
+        send_whatsapp(f"Post updated: {article.get('title', '')[:80]}\n{result.get('link', '')}")
 
 
 def notify_new_post(article: dict, result: dict) -> None:

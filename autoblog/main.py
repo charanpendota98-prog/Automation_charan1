@@ -82,7 +82,7 @@ def generate_one(category: str, mock: bool, mock_index: int = 0) -> dict:
 
 
 def run(dry_run: bool, force: bool, mock: bool, category: str = "",
-        source_url: str = "", process_queue: int = 0) -> int:
+        source_url: str = "", process_queue: int = 0, update_id: int = 0) -> int:
     now = _now()
     today = now.date()
     now_hour = now.hour
@@ -108,6 +108,14 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
                 log.error("Queue URL failed (%s): %s — skip", url[:60], exc)
             finally:
                 sources.mark_done_and_clean(url)
+        return 0
+
+    # --- update mode: existing post ni kotha info tho improve --------------
+    if update_id:
+        result = pipeline.update_post(update_id,
+                                      new_source_urls=[source_url] if source_url else None,
+                                      mock=mock)
+        log.info("POST UPDATED ✔ %s", result.get("link"))
         return 0
 
     # --- explicit source URL mode (--url / Telegram) -----------------------
@@ -302,9 +310,13 @@ def main() -> int:
     parser.add_argument("--force", action="store_true", help="ignore schedule & post now")
     parser.add_argument("--mock", action="store_true", help="offline mock article (no Gemini)")
     parser.add_argument("--category", default="", help="force a category")
-    parser.add_argument("--url", default="", help="source URL -> 100% original rewrite post")
+    parser.add_argument("--url", default="", help="source URL -> 100%% original rewrite post")
     parser.add_argument("--process-queue", type=int, default=0, metavar="N",
                         help="sources_queue.txt lo first N URLs ippude process chey")
+    parser.add_argument("--update", type=int, default=0, metavar="POST_ID",
+                        help="existing post ni kotha info tho improve chesi update chey")
+    parser.add_argument("--add-source", default="",
+                        help="--update tho extra source URL (kotha info)")
     parser.add_argument("--status", action="store_true", help="show stats & today's plan")
     parser.add_argument("--check-wp", action="store_true", help="verify WP credentials")
     parser.add_argument("--notify-test", action="store_true", help="send test notification")
@@ -319,9 +331,10 @@ def main() -> int:
     if args.notify_test:
         return notify_test()
     try:
+        src = args.add_source or args.url
         return run(dry_run=args.dry_run, force=args.force, mock=args.mock,
-                   category=args.category, source_url=args.url,
-                   process_queue=args.process_queue)
+                   category=args.category, source_url=src,
+                   process_queue=args.process_queue, update_id=args.update)
     except wordpress_client.WordPressAuthError as exc:
         log.error("%s", exc)
         return 3
