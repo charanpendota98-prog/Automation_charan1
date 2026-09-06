@@ -276,6 +276,22 @@ SAFE alternatives (bot already implement chesindi):
 - KEY: consistency (bot 24/7), quality (QA layer), freshness (auto-refresh) — already built!
 - Affiliate + Ezoic add ayite same traffic lo 2-3x revenue
 
+## 💸 v7: Ad Revenue Maximizer (viewability + relevance + money pages)
+
+**Bot-side (automatic):**
+- **Viewability-optimized ad slots**: after 2nd para (above-fold), after tables (natural pause), mid-article, before FAQ — users actually SEE these ads → viewable impressions perugutayi → CPC perugutundi
+- **CLS-safe wrapper**: `min-height:280px` tho ad space reserve — layout shift radu → Core Web Vitals green + ad viewability better
+- **`MAX_AD_SLOTS`** (default 3, long articles ki 4-5 set cheyochu — news site standard, policy safe)
+- **Money-page internal linking**: traffic posts (results/admit cards) nunchi high-CPC posts (salary/loan/bank lists) ki automatic link priority — high-CPC pageviews ekkuva avtayi
+- **Commercial depth prompts**: fee/salary/stipend/loan/comparison angles articles lo — relevant high-value ads attract avtayi
+- **`--revenue-check` command**: bot-side + site-side setup audit — em missing o okka command lo
+
+```bash
+.venv/bin/python run.py --revenue-check
+```
+
+**Honest note:** ad CLICKS ni artificially peragalera — adi policy violation (ban). Nenu build chesindi: viewability (ads kanipistayi), relevance (value ads match), slots (eka page ki ekkuva legit slots), money pages (high-CPC views). Idi real revenue growth formula.
+
 ## 🎯 SEO / Rank Math 100% Score — Top 0.001% Level Tricks
 
 Prathi post lo automatic ga:

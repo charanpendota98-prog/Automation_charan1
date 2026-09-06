@@ -326,6 +326,68 @@ def check_wp() -> int:
         return 1
 
 
+def revenue_check() -> int:
+    """Revenue setup audit — em set ayyindi, em missing o cheptundi."""
+    state.init(config.STATE_PATH)
+    print("=" * 62)
+    print("  STUDENTUP.IN REVENUE AUDIT")
+    print("=" * 62)
+
+    checks = [
+        ("TELEGRAM_CHANNEL_URL set (repeat traffic CTA)",
+         bool(config.TELEGRAM_CHANNEL_URL)),
+        ("AFFILIATE_LINKS set (affiliate income)",
+         bool(config.AFFILIATE_LINKS)),
+        ("AD_SHORTCODE set (in-content ads)",
+         bool(config.AD_SHORTCODE)),
+        (f"MAX_AD_SLOTS = {config.MAX_AD_SLOTS} (3-5 ideal long articles)",
+         1 <= config.MAX_AD_SLOTS <= 5),
+        (f"CLS wrapper ON (layout-shift protection)",
+         config.AD_CLS_WRAPPER),
+        (f"HIGH_CPC_SHARE = {config.HIGH_CPC_SHARE}% (30 recommended)",
+         20 <= config.HIGH_CPC_SHARE <= 50),
+        (f"LISTICLES_PER_DAY = {config.LISTICLES_PER_DAY} (trending stories)",
+         config.LISTICLES_PER_DAY >= 1),
+        (f"Daily auto-refresh ON ({config.AUTO_REFRESH_PER_DAY}/day)",
+         config.AUTO_REFRESH_PER_DAY >= 1),
+        ("INDEXNOW_KEY set (instant indexing)",
+         bool(config.INDEXNOW_KEY)),
+    ]
+    score = 0
+    print("\nBOT-SIDE (.env):")
+    for label, ok in checks:
+        mark = "✅" if ok else "⚠️ "
+        print(f"  {mark} {label}")
+        score += 1 if ok else 0
+    avgs = state.avg_scores(config.STATE_PATH)
+    if avgs["n"]:
+        print(f"  📊 Quality: avg QA {avgs['qa']}/100 · originality {avgs['orig']}%")
+
+    print(f"\n  Bot-side score: {score}/{len(checks)}")
+
+    print("\nSITE-SIDE (WordPress dashboard — manual cheyali):")
+    for item in [
+        "AdSense Auto Ads ON cheyandi",
+        "Anchor ads (mobile sticky) allow cheyandi",
+        "Rank Math / Yoast plugin active + sitemap",
+        "Caching plugin (LiteSpeed / WP-Optimize) — speed = viewability",
+        "Search Console lo sitemap submit",
+        "30+ posts ayaka Google News Publisher apply",
+        "10K+ pageviews ayaka Ezoic / Monumetric apply (RPM 50-150% up)",
+    ]:
+        print(f"  🔧 {item}")
+
+    print("\nPOLICY REMINDERS (ban risk nunchi kapadutayi):")
+    for item in [
+        "Own ads click cheyakudadu (instant ban)",
+        "Forced navigation / back-refresh ad tricks cheyakudadu",
+        "'Click here' arrows deggara ads pettakudadu",
+    ]:
+        print(f"  🚫 {item}")
+    print("=" * 62)
+    return 0
+
+
 def notify_test() -> int:
     """Send a test notification to all configured channels."""
     ok_any = False
@@ -365,6 +427,8 @@ def main() -> int:
     parser.add_argument("--status", action="store_true", help="show stats & today's plan")
     parser.add_argument("--check-wp", action="store_true", help="verify WP credentials")
     parser.add_argument("--notify-test", action="store_true", help="send test notification")
+    parser.add_argument("--revenue-check", action="store_true",
+                        help="revenue setup audit — em missing o cheptundi")
     args = parser.parse_args()
 
     _setup_logging()
@@ -375,6 +439,8 @@ def main() -> int:
         return check_wp()
     if args.notify_test:
         return notify_test()
+    if args.revenue_check:
+        return revenue_check()
     try:
         src = args.add_source or args.url
         listicle_arg = args.listicle or ""

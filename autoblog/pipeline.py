@@ -87,6 +87,10 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
     recent = wp.get_recent_published(per_page=8)
     same_cat = [p for p in recent if category_id in p.get("categories", [])]
     internal = (same_cat or recent)[:4]
+    # Money-page strategy: traffic posts nunchi high-CPC posts ki link priority
+    from . import monetize as _mz
+
+    internal = _mz.prioritize_money_pages(internal)[:4]
     today_str = (day or date.today()).isoformat()
     final_html = seo.enhance(
         article["content_html"],
@@ -103,9 +107,11 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
         source_domains=article.get("_source_domains"),
         list_items=article.get("list_items") if article.get("article_type") == "listicle" else None,
     )
-    # in-content ads (AdSense-safe positions; AD_SHORTCODE set unte matrame)
+    # in-content ads (viewability-optimized slots; AD_SHORTCODE set unte matrame)
     if config.AD_SHORTCODE:
-        final_html = seo.insert_ad_shortcodes(final_html, config.AD_SHORTCODE)
+        final_html = seo.insert_ad_shortcodes(
+            final_html, config.AD_SHORTCODE,
+            max_ads=config.MAX_AD_SLOTS, cls_safe=config.AD_CLS_WRAPPER)
     # revenue blocks: affiliate section + channel CTA (schema mundu insert)
     from . import monetize
 

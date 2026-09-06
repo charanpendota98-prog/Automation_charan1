@@ -85,6 +85,48 @@ def main():
     db.unlink(missing_ok=True)
     print(f"  4. seasonal boost + high-CPC share ({hc}/200 = {hc//2}%) ✔")
 
+    # ---- 5. money-page prioritization ----
+    posts = [
+        {"title": "SSC Result 2026 Check Here", "link": "l1"},
+        {"title": "Top 5 Bank Jobs with Highest Salary 2026", "link": "l2"},
+        {"title": "Admit Card Download Guide", "link": "l3"},
+        {"title": "Education Loan Options Compared", "link": "l4"},
+    ]
+    ordered = monetize.prioritize_money_pages(posts)
+    titles = [p["title"] for p in ordered]
+    assert titles.index("Top 5 Bank Jobs with Highest Salary 2026") < \
+        titles.index("SSC Result 2026 Check Here")
+    assert titles.index("Education Loan Options Compared") < \
+        titles.index("Admit Card Download Guide")
+    assert len(ordered) == 4
+    print("  5. prioritize_money_pages (money pages first) ✔")
+
+    # ---- 6. ad slots: table position + CLS wrapper + cap ----
+    from autoblog import seo as _seo
+
+    html = ("<p>one</p><p>two</p><p>three</p>"
+            "<table><tr><td>x</td></tr></table>"
+            + "".join(f"<p>para {i}</p>" for i in range(8))
+            + "<h2>FAQ</h2><p>faq</p>")
+    out = _seo.insert_ad_shortcodes(html, "[ad1]", max_ads=3, cls_safe=True)
+    assert out.count("[ad1]") == 3
+    assert out.count('min-height:280px') == 3          # CLS wrapper on each
+    table_end = html.find("</table>") + len("</table>")
+    first_ad = out.find("[ad1]")
+    assert first_ad < table_end                          # early slot (after 2nd para)
+    out5 = _seo.insert_ad_shortcodes(html, "[ad2]", max_ads=5, cls_safe=False)
+    assert out5.count("[ad2]") >= 4 and "min-height" not in out5  # cap 5 + no wrapper
+    print("  6. ad slots (early+table+mid+FAQ, CLS wrapper, cap) ✔")
+
+    # ---- 7. --revenue-check smoke ----
+    import subprocess
+
+    r = subprocess.run([str(Path(".venv/bin/python")), "run.py", "--revenue-check"],
+                       capture_output=True, text=True, timeout=60)
+    assert "REVENUE AUDIT" in r.stdout and "SITE-SIDE" in r.stdout
+    assert "Bot-side score:" in r.stdout and "POLICY" in r.stdout
+    print("  7. --revenue-check command ✔")
+
     print("ALL REVENUE TESTS PASSED ✔")
 
 

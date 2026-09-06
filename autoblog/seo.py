@@ -294,33 +294,47 @@ def rankmath_meta(
     }
 
 
-def insert_ad_shortcodes(html: str, shortcode: str, max_ads: int = 3) -> str:
-    """In-content ad shortcodes (AdSense-safe positions).
+def insert_ad_shortcodes(html: str, shortcode: str, max_ads: int = 3,
+                         cls_safe: bool = True) -> str:
+    """In-content ad shortcodes — viewability-optimized positions.
 
-    Legit in-content ad placement: after intro (~3rd para), mid-article,
-    before last section. Site lo ad plugin (WP Quads / Advanced Ads)
-    shortcode ni AD_SHORTCODE lo config cheyandi. Max 3 — policy safe.
+    High-viewability slots (users actually SEE these ads):
+      after 2nd paragraph (above-fold-ish), after each </table> (natural
+    pause point), mid-article, before FAQ. Max ads capped (default 3) —
+    content-dominance policy safe. Long articles ki 4-5 ok (news standard).
+
+    cls_safe: min-height wrapper tho ad space reserve chestundi —
+    layout shift (CLS) radu -> Core Web Vitals + ad viewability better.
     """
     if not shortcode:
         return html
     import re as _re
 
-    paras = list(_re.finditer(r"</p>", html))
-    if not paras:
-        return html
     positions = []
-    if len(paras) >= 3:
-        positions.append(paras[2].end())          # after 3rd paragraph
+    paras = list(_re.finditer(r"</p>", html))
+    if len(paras) >= 2:
+        positions.append(paras[1].end())            # after 2nd para
+    for m in _re.finditer(r"</table>", html):
+        positions.append(m.end())                   # tables tarvata (pause point)
     if len(paras) >= 8:
         positions.append(paras[len(paras) // 2].end())  # mid article
-    faq_idx = html.find("FAQ")
-    if faq_idx > 0:
-        positions.append(faq_idx)                 # before FAQ section
-    positions = sorted(set(positions))[:max_ads]
+    faq_m = _re.search(r"<h2[^>]*>[^<]*FAQ", html)
+    if faq_m:
+        positions.append(faq_m.start())             # FAQ mundu
+    positions = sorted(set(positions))[:max(max_ads, 0)]
+    if not positions:
+        return html
+
+    if cls_safe:
+        open_w = '<div style="min-height:280px">'
+        close_w = "</div>"
+    else:
+        open_w = close_w = ""
+
     out, last = [], 0
     for pos in positions:
         out.append(html[last:pos])
-        out.append(f"\n{shortcode}\n")
+        out.append(f"\n{open_w}{shortcode}{close_w}\n")
         last = pos
     out.append(html[last:])
     return "".join(out)

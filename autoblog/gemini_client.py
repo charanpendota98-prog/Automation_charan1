@@ -115,6 +115,7 @@ ACCURACY RULES (very important):
 - Mention only REAL, well-known exams/schemes/portals. Do NOT invent new scheme names, fake vacancy numbers, fake dates or fake deadlines.
 - Do NOT state specific application dates or deadlines. Instead write guidance like "official website lo latest notification check cheyandi" (in Telugu).
 - Structure the post as a helpful evergreen guide/update that stays useful.
+- COMMERCIAL DEPTH (important): wherever natural, include fee/salary/stipend/loan/cost details and comparison angles — this commercial information attracts relevant high-value ads and reader interest.
 
 ARTICLE STRUCTURE (HTML):
 - 2-3 intro paragraphs (no heading).
@@ -202,6 +203,7 @@ MERGE & BEAT STRATEGY (very important):
 - Start from the PRIMARY source's facts, then ADD every useful fact the other sources have that primary misses (extra eligibility points, fee details, salary, selection stages, documents, dates mentioned).
 - Include everything a reader could want: overview, eligibility, benefits/salary, application steps, documents, fee, selection process, important tips, common mistakes, comparison table, key dates table (only if in sources).
 - Total length: 2200-3000 words. Short paragraphs (2-3 sentences), transition words — top readability.
+- COMMERCIAL DEPTH: include salary/fee/stipend/loan/cost figures (only well-known real values, pay matrix levels) and comparison tables — attracts high-value relevant ads.
 - LANGUAGE: TELUGU SCRIPT with natural English terms (scholarship, apply, eligibility, official website, vacancy, notification...) like Telugu news sites.
 
 ARTICLE STRUCTURE (HTML only — h2 h3 p ul ol li strong em table thead tbody tr th td a):

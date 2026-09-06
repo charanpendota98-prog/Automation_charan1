@@ -80,3 +80,20 @@ def append_blocks(html: str, article: Dict) -> str:
     if idx == -1:
         return html + blocks
     return html[:idx] + blocks + html[idx:]
+
+
+# Money-page keywords — ee titles match aina posts ki internal link priority
+# (traffic pages nunchi money pages ki link -> high-CPC pageviews perugutayi)
+MONEY_KEYWORDS = [
+    "loan", "salary", "fee", "fees", "stipend", "bank", "compare",
+    "best", "top 5", "top 7", "top 10", "highest paying", "course",
+    "ఫీజు", "జీతం", "లోన్", "బ్యాంక్",
+]
+
+
+def prioritize_money_pages(posts: List[Dict]) -> List[Dict]:
+    """Internal link selection: money pages (high-CPC) first, rest recent."""
+    def is_money(p):
+        t = (p.get("title") or "").lower()
+        return any(k in t for k in MONEY_KEYWORDS)
+    return sorted(posts, key=lambda p: not is_money(p))
