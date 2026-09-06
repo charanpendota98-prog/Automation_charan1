@@ -176,13 +176,14 @@ def main():
         url=url, title="SSC 2026 Article", site_name="Competitor1",
         text="detail paragraph " * 60,
     )
-    extras = research.research_topic(primary, max_extra=2)
+    extras, comp_titles = research.research_topic(primary, max_extra=2)
     research.fetch_source = orig_fetch
     config.WP_SITE = local_wp
     assert len(extras) == 1, [e.url for e in extras]
     assert "primarysite.com" not in extras[0].url
     assert "studentup.in" not in extras[0].url
-    print("  2. research_topic (domain skip + extra fetch) ✔")
+    assert comp_titles and any("SSC" in t for t in comp_titles), comp_titles
+    print("  2. research_topic (domain skip + extra fetch + keyword intel) ✔")
 
     # ---- 3. seo features ----
     html = ("<p>Intro para mundu.</p>"
@@ -200,18 +201,21 @@ def main():
         title="SSC Bharti 2026 Test",
         description="desc",
     )
-    assert out.startswith('<h2 id="quick-answer')
+    assert "Reading Time" in out                          # reading badge top
+    assert out.index("quick-answer") < out.index("విషయ సూచిక")
     assert "Quick Answer – SSC Bharti 2026" in out
     assert "Last Updated: 2026-09-07" in out
+    assert "About This Article" in out                     # E-E-A-T trust box
     # JSON-LD valid
     import re as _re
 
     scripts = _re.findall(r'<script type="application/ld\+json">(.*?)</script>', out, _re.S)
-    assert len(scripts) == 2, len(scripts)
+    assert len(scripts) == 3, len(scripts)  # FAQ + Article + Breadcrumb
     faq_schema = json.loads(scripts[0])
     assert faq_schema["@type"] == "FAQPage" and len(faq_schema["mainEntity"]) == 2
     art_schema = json.loads(scripts[1])
     assert art_schema["@type"] == "Article" and art_schema["inLanguage"] == "te"
+    assert json.loads(scripts[2])["@type"] == "BreadcrumbList"
     # rankmath meta comma keywords
     meta = seo.rankmath_meta("SSC Bharti 2026", "desc", "Title", ["ssc 2026 apply", "ssc fee"])
     assert meta["rank_math_focus_keyword"] == "SSC Bharti 2026, ssc 2026 apply, ssc fee"

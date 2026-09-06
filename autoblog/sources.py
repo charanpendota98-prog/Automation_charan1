@@ -42,18 +42,43 @@ def is_valid_source_url(url: str) -> bool:
         return False
 
 
-def fetch_source(url: str) -> SourceArticle:
-    """Fetch a web page and extract title + readable main text."""
-    headers = {
-        "User-Agent": ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                       "AppleWebKit/537.36 (KHTML, like Gecko) "
-                       "Chrome/124.0 Safari/537.36"),
-        "Accept-Language": "te,en;q=0.8",
-    }
-    resp = requests.get(url, headers=headers, timeout=config.HTTP_TIMEOUT, allow_redirects=True)
-    resp.raise_for_status()
+def fetch_source(url: str, retries: int = 2) -> SourceArticle:
+    """Fetch a web page and extract title + readable main text.
+
+    Retries: normal browser UA -> Googlebot UA (chala sites bot ki
+    full content istayi). Encoding auto-detect (Telugu sites safe).
+    """
+    import time
+
+    uas = [
+        ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+         "(KHTML, like Gecko) Chrome/124.0 Safari/537.36"),
+        "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
+    ]
+    last_exc: Exception = None
+    resp = None
+    for attempt in range(retries):
+        headers = {
+            "User-Agent": uas[attempt % len(uas)],
+            "Accept-Language": "te,en;q=0.8",
+        }
+        try:
+            resp = requests.get(url, headers=headers, timeout=config.HTTP_TIMEOUT,
+                                allow_redirects=True)
+            if resp.status_code == 200:
+                break
+            last_exc = ValueError(f"HTTP {resp.status_code}")
+        except Exception as exc:
+            last_exc = exc
+        time.sleep(1.5)
+    if resp is None or resp.status_code != 200:
+        raise ValueError(f"Source fetch fail: {last_exc}")
+
+    # encoding fix: chala Indian sites wrong charset declare chestayi
+    if not resp.encoding or resp.encoding.lower() == "iso-8859-1":
+        resp.encoding = resp.apparent_encoding or "utf-8"
     ctype = resp.headers.get("content-type", "")
-    if "html" not in ctype and "text" not in ctype:
+    if "html" not in ctype and "text" not in ctype and ctype:
         raise ValueError(f"Not an HTML page: {ctype[:60]}")
 
     soup = BeautifulSoup(resp.text, "html.parser")

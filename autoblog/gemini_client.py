@@ -347,11 +347,45 @@ def generate_article(
     raise GeminiError(f"All attempts failed: {last_err}")
 
 
+def _generate_with_retries(prompt: str, category: str = "", source=None) -> Dict:
+    """Common retry loop for all prompts. Returns article dict."""
+    models = _models()
+    last_err: Optional[Exception] = None
+    for attempt in range(1, config.GEMINI_MAX_RETRIES + 1):
+        for model in models:
+            try:
+                raw = _call_model(model, prompt)
+                article = _parse_json(raw)
+                for field in ("title", "slug", "meta_description", "content_html"):
+                    if not article.get(field):
+                        raise GeminiError(f"Empty field in response: {field}")
+                article["tags"] = [str(t).strip() for t in article.get("tags", []) if str(t).strip()][:8]
+                article["category"] = category or article.get("category", "Education News")
+                article["model"] = model
+                if source is not None:
+                    article["source_url"] = source.url
+                    article["source_title"] = source.title
+                return article
+            except GeminiError as exc:
+                msg = str(exc)
+                if msg.startswith("MODEL_NOT_FOUND"):
+                    log.warning("Model %s unavailable, trying fallback...", model)
+                    continue
+                last_err = exc
+                break
+            except (json.JSONDecodeError, ValueError) as exc:
+                last_err = GeminiError(f"JSON parse failed: {exc}")
+                break
+        time.sleep(min(45, 5 * (2 ** (attempt - 1))))
+    raise GeminiError(f"All attempts failed: {last_err}")
+
+
 def generate_article_from_source(
     source,
     recent_titles: List[str],
     year: int,
     extras: Optional[List] = None,
+    competitor_titles: Optional[List[str]] = None,
 ) -> Dict:
     """100% original rewrite from a SourceArticle (facts only, no copying).
 
@@ -387,32 +421,13 @@ def generate_article_from_source(
         )
     if avoid_block:
         prompt += "\n" + avoid_block
-
-    models = _models()
-    last_err: Optional[Exception] = None
-    for attempt in range(1, config.GEMINI_MAX_RETRIES + 1):
-        for model in models:
-            try:
-                raw = _call_model(model, prompt)
-                article = _parse_json(raw)
-                for field in ("title", "slug", "meta_description", "content_html"):
-                    if not article.get(field):
-                        raise GeminiError(f"Empty field in response: {field}")
-                article["tags"] = [str(t).strip() for t in article.get("tags", []) if str(t).strip()][:8]
-                article["category"] = article.get("category", "Education News")
-                article["model"] = model
-                article["source_url"] = source.url
-                article["source_title"] = source.title
-                return article
-            except GeminiError as exc:
-                msg = str(exc)
-                if msg.startswith("MODEL_NOT_FOUND"):
-                    log.warning("Model %s unavailable, trying fallback...", model)
-                    continue
-                last_err = exc
-                break
-            except (json.JSONDecodeError, ValueError) as exc:
-                last_err = GeminiError(f"JSON parse failed: {exc}")
-                break
-        time.sleep(min(45, 5 * (2 ** (attempt - 1))))
-    raise GeminiError(f"All attempts failed: {last_err}")
+    if competitor_titles:
+        prompt += (
+            "\nKEYWORD INTELLIGENCE — Google lo ee topic meeda already top lo "
+            "unna titles ivi (keyword research kosam — manam kante better "
+            "title/keywords ravali):\n"
+            + "\n".join(f"- {t}" for t in competitor_titles[:8])
+            + "\n(Ee titles ni exact ga copy cheyakudadu — vatikante catchy & "
+              "keyword-rich title manadi ravali.)"
+        )
+    return _generate_with_retries(prompt, source=source)

@@ -58,29 +58,49 @@ def add_table_of_contents(html: str) -> str:
     return re.sub(r"<h2([^>]*)>(.*?)</h2>", lambda m: _add_id(m), html, flags=re.S)
 
 
-def ensure_keyword_first_para(html: str, keyword: str) -> str:
-    """Focus keyword first paragraph lo leda ante natural intro para add."""
+INTRO_TEMPLATES = [
+    "<p><strong>{kw}</strong> గురించి మీరు వెతుకుతున్న పూర్తి వివరాలు — ఎలిజిబిలిటీ, అప్లై విధానం, ఫీ, డాక్యుమెంట్స్ — అన్నీ ఈ ఆర్టికల్‌లో స్టెప్ బై స్టెప్‌గా ఉన్నాయి.</p>",
+    "<p><strong>{kw}</strong> సంపూర్ణ సమాచారం ఒకే చోట — స్కీమ్ వివరాలు, అప్లై స్టెప్స్, ముఖ్యమైన అంశాలు చివరి వరకూ తెలుసుకోండి.</p>",
+    "<p><strong>{kw}</strong> తో ముడిపడిన ప్రతి ముఖ్యమైన అంశం ఈ గైడ్‌లో స్పష్టంగా వివరించబడింది — పూర్తిగా చదవండి.</p>",
+    "<p><strong>{kw}</strong> లేటెస్ట్ అప్డేట్ పూర్తి సమాచారం ఇక్కడ — ఎలిజిబిలిటీ నుంచి అప్లై ప్రాసెస్ వరకు అన్నీ ఉన్నాయి.</p>",
+]
+
+RELATED_HEADINGS = [
+    "మరిన్ని ఉపయోగకరమైన ఆర్టికల్స్",
+    "ఇవి కూడా చదవండి",
+    "సంబంధిత ఆర్టికల్స్",
+]
+
+
+def _pick(seq, seed: str):
+    return seq[hash(seed) % len(seq)] if seed else seq[0]
+
+
+def ensure_keyword_first_para(html: str, keyword: str, seed: str = "") -> str:
+    """Focus keyword first paragraph lo leda ante VARIED intro para add.
+
+    Templates rotate avtayi — prathi post lo oke para repeat avvakunda
+    (boilerplate/spam footprint avoid — important!).
+    """
     if not keyword:
         return html
     m = re.search(r"<p>(.*?)</p>", html, flags=re.S)
     first = re.sub(r"<[^>]+>", "", m.group(1)).lower() if m else ""
     if keyword.lower() in first:
         return html
-    intro = (f"<p><strong>{keyword}</strong> గురించి పూర్తి వివరాలు — ఎలిజిబిలిటీ, "
-             "అప్లై చేసే విధానం, ముఖ్యమైన తేదీలు, టిప్స్ అన్నీ ఈ ఆర్టికల్‌లో "
-             "స్టెప్ బై స్టెప్‌గా తెలుసుకోండి.</p>")
+    intro = _pick(INTRO_TEMPLATES, (seed or keyword)).format(kw=keyword)
     return intro + html
 
 
-def add_internal_links(html: str, links: List[Dict[str, str]]) -> str:
-    """Related articles section (internal links) add."""
+def add_internal_links(html: str, links: List[Dict[str, str]], seed: str = "") -> str:
+    """Related articles section (internal links) — heading rotate avtundi."""
     if not links:
         return html
     items = "".join(
         f'<li><a href="{l["link"]}">{l["title"]}</a></li>' for l in links
     )
-    section = ('<h2 id="related-articles">మరిన్ని ఉపయోగకరమైన ఆర్టికల్స్</h2>'
-               f"<ul>{items}</ul>")
+    heading = _pick(RELATED_HEADINGS, seed)
+    section = f'<h2 id="related-articles">{heading}</h2><ul>{items}</ul>'
     return html + section
 
 
@@ -116,14 +136,33 @@ def quick_answer_block(focus_keyword: str, quick_answer: str, updated: str) -> s
     )
 
 
+def reading_badge(words: int, minutes: int) -> str:
+    """Top lo reading time badge — UX signal + dwell time."""
+    return (f'<p><em>⏱️ Reading Time: ~{minutes} నిమిషాలు · {words} పదాలు · '
+            f'తెలుగు + English</em></p>')
+
+
+def trust_box(date_str: str, source_domains: Optional[List[str]] = None) -> str:
+    """E-E-A-T trust signals: editorial review + sources + freshness."""
+    domains = ", ".join(source_domains[:4]) if source_domains else "official notification"
+    return (
+        '<h2 id="about-this-article">About This Article</h2>'
+        "<p>ఈ ఆర్టికల్ <strong>studentup.in</strong> ఎడిటోరియల్ టీమ్ తయారు చేసింది — "
+        "అధికారిక నోటిఫికేషన్ & ప్రముఖ వార్తా సంస్థల సమాచారం ఆధారంగా "
+        f"({domains}) సమీక్షించబడింది. తేదీ: {date_str}. "
+        "ఏమైనా సందేహాలు ఉంటే అధికారిక వెబ్‌సైట్‌లో ధృవీకరించండి.</p>"
+    )
+
+
 def schema_jsonld(
     title: str,
     description: str,
     faq: List[Dict[str, str]],
     date_published: str,
     slug: str,
+    category: str = "",
 ) -> str:
-    """Google rich results: FAQPage + Article JSON-LD schema."""
+    """Google rich results: FAQPage + Article + BreadcrumbList JSON-LD."""
     import json as _json
 
     if not config.SEO_SCHEMA_ENABLED:
@@ -156,6 +195,17 @@ def schema_jsonld(
         "mainEntityOfPage": f"{config.WP_SITE}/{slug}/",
         "inLanguage": "te",
     })
+    scripts.append({
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {"@type": "ListItem", "position": 1, "name": "Home",
+             "item": config.WP_SITE},
+            {"@type": "ListItem", "position": 2, "name": category or "Articles",
+             "item": f"{config.WP_SITE}/"},
+            {"@type": "ListItem", "position": 3, "name": title[:110]},
+        ],
+    })
     return "".join(
         '<script type="application/ld+json">'
         + _json.dumps(s, ensure_ascii=False)
@@ -175,21 +225,29 @@ def enhance(
     slug: str = "",
     title: str = "",
     description: str = "",
+    category: str = "",
+    source_domains: Optional[List[str]] = None,
 ) -> str:
-    """Full top-level SEO pipeline: quick answer -> keyword intro -> TOC ->
-    internal/external links -> FAQ+Article JSON-LD schema."""
-    html = ensure_keyword_first_para(html, focus_keyword)
+    """Full top-level SEO pipeline: reading badge -> quick answer -> keyword
+    intro (varied) -> TOC -> internal/external links -> E-E-A-T box ->
+    FAQ+Article+Breadcrumb JSON-LD schema."""
+    from . import validator as _v
+
+    words = _v.word_count(html)
+    minutes = _v.reading_minutes(words)
+    html = reading_badge(words, minutes) + html
+    html = ensure_keyword_first_para(html, focus_keyword, seed=slug)
     if quick_answer:
         html = quick_answer_block(focus_keyword, quick_answer, date_str) + html
     html = add_table_of_contents(html)
-    html = add_internal_links(html, internal_links)
+    html = add_internal_links(html, internal_links, seed=slug)
     html = add_external_links(html, external_links)
+    html += trust_box(date_str, source_domains)
     html += schema_jsonld(title or focus_keyword, description or "", faq or [],
-                          date_str, slug)
-    n = word_count(html)
-    log.info("SEO enhanced: %d words, keyword=%r", n, focus_keyword)
-    if n < 1200:
-        log.warning("Word count takkuva (%d) — Rank Math full score kosari 1500+ kavali", n)
+                          date_str, slug, category=category)
+    log.info("SEO enhanced: %d words, keyword=%r", words, focus_keyword)
+    if words < 1200:
+        log.warning("Word count takkuva (%d) — Rank Math full score kosari 1500+ kavali", words)
     return html
 
 
@@ -213,4 +271,10 @@ def rankmath_meta(
         "rank_math_focus_keyword": keywords,
         "rank_math_description": description[:160],
         "rank_math_title": seo_title[:160],
+        # Social sharing (Facebook/WhatsApp/Twitter preview) — CTR boost
+        "rank_math_facebook_title": seo_title[:160],
+        "rank_math_facebook_description": description[:160],
+        "rank_math_twitter_title": seo_title[:160],
+        "rank_math_twitter_description": description[:160],
+        "rank_math_twitter_use_open_graph": "on",
     }

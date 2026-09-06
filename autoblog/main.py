@@ -118,7 +118,8 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
     if queued:
         log.info("Sources queue lo URL dorikindi — original rewrite mode: %s", queued)
         if not mock and not config.GEMINI_API_KEY:
-            log.error("GEMINI_API_KEY ledu — queue URL skip, auto-topic ki try chestanu")
+            log.error("GEMINI_API_KEY ledu — ee URL skip chesi mark chestanu")
+            sources.mark_done_and_clean(queued)
         else:
             try:
                 result = pipeline.create_from_source(queued, mock=mock)
@@ -202,6 +203,18 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
     result = pipeline.publish_article(article, day=today)
     if result["status"] == "draft":
         log.info("DRAFT saved (review kosam) id=%s", result["id"])
+
+    # --- end-of-day digest (roji chivari slot lo summary message) ---
+    if not (force or dry_run) and now_hour >= config.ACTIVE_HOUR_END:
+        digest_key = f"digest:{today.isoformat()}"
+        if not state.meta_get(config.STATE_PATH, digest_key):
+            count = state.today_count(config.STATE_PATH, today)
+            summary = state.status_summary(config.STATE_PATH, limit=5)
+            try:
+                notifier.daily_digest(count, summary.get("last", []))
+                state.meta_set(config.STATE_PATH, digest_key, "1")
+            except Exception:
+                log.exception("Daily digest failed")
     return 0
 
 

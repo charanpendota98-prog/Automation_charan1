@@ -97,6 +97,22 @@ def post_buttons(post_id: int, link: str) -> dict:
 
 # ------------------------------------------------------------------ main API
 
+def daily_digest(count: int, last_posts: list) -> None:
+    """Roji end-of-day summary (scheduler pampistundi)."""
+    if not (config.TELEGRAM_BOT_TOKEN or config.WHATSAPP_CALLMEBOT_URL):
+        return
+    lines = ["📅 <b>Daily Digest — studentup.in</b>", "",
+             f"Aaj posts create ayyayi: <b>{count}</b>"]
+    if last_posts:
+        lines += ["", "Latest:"]
+        for p in last_posts[:5]:
+            status = p.get("status", "")
+            mark = "🟢" if status == "publish" else "📝"
+            lines.append(f"{mark} {esc(str(p.get('title', ''))[:60])}")
+    lines += ["", "Pending drafts: /pending"]
+    send_telegram("\n".join(lines))
+
+
 def notify_new_post(article: dict, result: dict) -> None:
     """Notify about a newly created post (draft or published)."""
     if not (config.TELEGRAM_BOT_TOKEN or config.WHATSAPP_CALLMEBOT_URL):
@@ -124,6 +140,16 @@ def notify_new_post(article: dict, result: dict) -> None:
         f"📂 Category: {esc(cat)}",
         f"🏷️ Tags: {esc(tags)}",
     ]
+    # QA report — review easy ga avtaniki
+    qa = article.get("_qa") or {}
+    qa_bits = []
+    if qa:
+        qa_bits.append(f"📊 QA: <b>{qa.get('score', '-')}/100</b>")
+        qa_bits.append(f"📝 {qa.get('words', '-')} words · ⏱️ ~{qa.get('reading_min', '-')} min")
+    if article.get("_orig") is not None:
+        qa_bits.append(f"🛡️ Originality: <b>{article['_orig']}%</b> (no-copy proof)")
+    if qa_bits:
+        lines.append(" · ".join(qa_bits))
     if article.get("source_url"):
         lines.append(f"📰 Source (original rewrite): {esc(article['source_url'])}")
     lines += ["", f"{esc(excerpt)}"]

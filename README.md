@@ -140,6 +140,27 @@ Scheduler prathi hour lo queue lo unna URL ni priority ga process chesi original
 
 > Idhe **"MERGE & BEAT" strategy** — internet lo already unna articles kante MII article ekkuva complete. Same topic search lo mii post top lo randaniki idhe main Google trick. DuckDuckGo fail aite bot primary source tho graceful ga continue chestundi.
 
+## 🛡️ QA & Safety Layer (kothena — 100x level)
+
+Prathi post lo **publish mundhe** automatic checks:
+
+| Check | Em chestundi |
+|---|---|
+| **Originality Proof** | Final article vs sources — 5-gram shingle analysis tho **measurable no-copy %**. 70% kante takkuva aite article **automatic regenerate**! Telegram message lo "Originality: 94%" ani kanipistundi |
+| **QA Score /100** | Rank Math-style 15 checks — keyword placement, density, word count, FAQ, table, meta length, tags... Telegram lo score kanipistundi |
+| **HTML Sanitizer** | Gemini script/div/markdown waste ichina automatic strip — only clean SEO tags |
+| **Keyword Intelligence** | Google lo already top-lo unna competitor titles ni kuda analyze chesi **vatikante strong title/keywords** generate |
+| **Boilerplate Footprint Fix** | Intro paragraphs & headings prathi post lo **rotate avtayi** — Google duplicate-pattern spam signal risk zero |
+| **E-E-A-T Trust Box** | "About This Article" — editorial review + sources + date (Google trust signals) |
+| **Reading Time Badge** | ⏱️ words + minutes — UX + dwell time signal |
+| **Smart Source Fetch** | Site block cheste Googlebot UA tho retry + Telugu encoding auto-fix |
+
+## 🚀 Traffic & Indexing Boosters
+
+- **IndexNow** (optional): publish ayyaka Bing/Yandex ki instant ping — `INDEXNOW_KEY` set cheyandi (key file site root lo host cheyali)
+- **Telegram Channel auto-post** (optional): publish ayyaka mi channel lo automatic post — instant traffic + social signals (`TELEGRAM_CHANNEL_CHAT_ID`)
+- **Daily Digest**: roji chivari lo Telegram ki summary (enta posts, em pending)
+
 ## 🎯 SEO / Rank Math 100% Score — Top 0.001% Level Tricks
 
 Prathi post lo automatic ga:
@@ -150,7 +171,8 @@ Prathi post lo automatic ga:
 - ✅ **Table of Contents** — automatic TOC + anchor links (Rank Math readability)
 - ✅ **Internal links** — mi site recent posts ki "Related Articles" links (same category priority)
 - ✅ **External links** — official portals (ssc.gov.in lanti vi) nofollow links tho
-- ✅ **FAQ + Article JSON-LD schema** — Google rich results eligibility — `te` language tag tho
+- ✅ **FAQ + Article + Breadcrumb JSON-LD schema** — Google rich results eligibility — `te` language tag tho
+- ✅ **Social OG/Twitter meta** — Facebook/WhatsApp/Twitter preview titles (CTR boost)
 - ✅ **Image alt text** — focus keyword tho alt text
 - ✅ **Rank Math meta** — `rank_math_focus_keyword` (primary + secondary), `rank_math_description`, `rank_math_title` direct REST API dwara
 - ✅ **Content length** — 2200-3000 words, short paragraphs, transition words (readability full)

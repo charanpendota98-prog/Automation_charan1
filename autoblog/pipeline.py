@@ -9,8 +9,10 @@ import logging
 from datetime import date
 from pathlib import Path
 from typing import Dict, Optional
+from urllib.parse import urlparse
 
-from . import config, gemini_client, image_gen, notifier, research, seo, sources, state
+from . import config, gemini_client, image_gen, notifier, research, seo, sources, state, validator
+from .notifier import esc, send_telegram
 from .wordpress_client import WordPressClient, WordPressError
 
 log = logging.getLogger("autoblog.pipeline")
@@ -20,6 +22,9 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
     """Full publish flow for a generated article dict. Returns WP result."""
     wp = WordPressClient()
     wp.check_connection()
+
+    # --- QA step 1: HTML sanitize (Gemini bad tags strip) ---
+    article["content_html"] = validator.sanitize_html(article["content_html"])
 
     category_id = wp.get_or_create_term(article["category"], "categories")
     tag_ids = [wp.get_or_create_term(t, "tags") for t in article["tags"]]
@@ -40,7 +45,19 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
         slug=article["slug"],
         title=article["title"],
         description=article["meta_description"],
+        category=article.get("category", ""),
+        source_domains=article.get("_source_domains"),
     )
+
+    # --- QA step 2: validation score + originality proof ---
+    qa = validator.validate_article(article, final_html)
+    article["_qa"] = qa
+    if article.get("_source_texts"):
+        article["_orig"] = validator.originality_score(
+            final_html, article["_source_texts"])
+    log.info("QA score %s/100 (words=%d) originality=%s%% issues=%s",
+             qa["score"], qa["words"], article.get("_orig", "n/a"),
+             qa["issues"][:3] or "none")
 
     # --- featured image (alt text lo focus keyword) ---
     image_path = Path(config.OUTPUT_DIR / "images" / f"{article['slug']}.jpg")
@@ -83,11 +100,38 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
 
     log.info("POST CREATED ✔ id=%s status=%s link=%s",
              result.get("id"), result.get("status"), result.get("link"))
+    if result.get("status") == "publish":
+        _after_publish_push(article, result)
     try:
         notifier.notify_new_post(article, result)
     except Exception:
         log.exception("Notification failed (post safe ga save ayyindi)")
     return result
+
+
+def _after_publish_push(article: Dict, result: Dict) -> None:
+    """Publish ayyaka instant traffic/indexing push (best-effort)."""
+    # 1) IndexNow (Bing/Yandex instant indexing)
+    try:
+        from . import indexnow
+
+        if indexnow.submit(result.get("link", "")):
+            article["_indexnow"] = True
+    except Exception:
+        log.exception("IndexNow push failed")
+    # 2) Telegram channel auto-post (instant traffic + social signal)
+    try:
+        if config.TELEGRAM_CHANNEL_CHAT_ID:
+            qa = article.get("_qa") or {}
+            send_telegram(
+                f"🆕 <b>{esc(article['title'])}</b>\n\n"
+                f"{esc((article.get('meta_description') or '')[:180])}\n\n"
+                f"🔗 {esc(result.get('link', ''))}\n"
+                f"📊 QA {qa.get('score', '-')}/100 · ~{qa.get('reading_min', '-')} min read",
+                chat_id=config.TELEGRAM_CHANNEL_CHAT_ID,
+            )
+    except Exception:
+        log.exception("Channel auto-post failed")
 
 
 def create_from_source(url: str, mock: bool = False) -> Dict:
@@ -103,13 +147,13 @@ def create_from_source(url: str, mock: bool = False) -> Dict:
     log.info("Source ready: %s (%d chars)", src.title[:60], len(src.text))
 
     # --- multi-source research: internet lo same topic articles ---
-    extras = []
+    extras, competitor_titles = [], []
     if config.RESEARCH_ENABLED and not mock:
         try:
-            extras = research.research_topic(src, config.RESEARCH_MAX_SOURCES)
+            extras, competitor_titles = research.research_topic(
+                src, config.RESEARCH_MAX_SOURCES)
             if extras:
-                log.info("Research: +%d extra sources merge avtayi (MERGE & BEAT mode)",
-                         len(extras))
+                log.info("Research: +%d extra sources (MERGE & BEAT mode)", len(extras))
             else:
                 log.info("Research: extra sources levu — primary source tho rewrite")
         except Exception:
@@ -147,8 +191,36 @@ def create_from_source(url: str, mock: bool = False) -> Dict:
     else:
         recent = state.recent_titles(config.STATE_PATH, limit=30)
         article = gemini_client.generate_article_from_source(
-            src, recent, date.today().year, extras=extras
+            src, recent, date.today().year, extras=extras,
+            competitor_titles=competitor_titles,
         )
+        # --- originality guard: 70% kante takkuva aite OKKO regenerate ---
+        source_texts = [src.text] + [e.text for e in extras]
+        article["content_html"] = validator.sanitize_html(article["content_html"])
+        orig = validator.originality_score(article["content_html"], source_texts)
+        if orig < 70.0:
+            log.warning("Originality %.1f%% takkuva — inko sari regenerate", orig)
+            try:
+                retry_article = gemini_client.generate_article_from_source(
+                    src, recent, date.today().year, extras=extras,
+                    competitor_titles=competitor_titles,
+                )
+                retry_article["content_html"] = validator.sanitize_html(
+                    retry_article["content_html"])
+                retry_orig = validator.originality_score(
+                    retry_article["content_html"], source_texts)
+                if retry_orig > orig:
+                    log.info("Regenerate better: %.1f%% -> %.1f%%", orig, retry_orig)
+                    article, orig = retry_article, retry_orig
+            except gemini_client.GeminiError:
+                log.exception("Regenerate failed — first version e continue")
+
+    # --- QA data (notification + trust box kosam) ---
+    article["_source_texts"] = [src.text] + [e.text for e in extras]
+    article["_source_domains"] = [
+        d for d in [urlparse(src.url).netloc.replace("www.", "")]
+        + [urlparse(e.url).netloc.replace("www.", "") for e in extras]
+    ]
 
     # slug safe ga + new fields default
     from .main import _safe_slug

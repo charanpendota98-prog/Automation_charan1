@@ -44,7 +44,12 @@ DEFAULT_POST_STATUS = _get("DEFAULT_POST_STATUS", "draft")
 # --- Notifications -------------------------------------------------------
 TELEGRAM_BOT_TOKEN = _get("TELEGRAM_BOT_TOKEN", "")
 TELEGRAM_CHAT_ID = _get("TELEGRAM_CHAT_ID", "")  # empty = /start tho auto-register
+# Publish ayyaka auto-post to mi Telegram CHANNEL (optional — channel chat id,
+# example -1001234... ; channel lo bot admin ga add cheyandi)
+TELEGRAM_CHANNEL_CHAT_ID = _get("TELEGRAM_CHANNEL_CHAT_ID", "")
 TELEGRAM_API_BASE = _get("TELEGRAM_API_BASE", "https://api.telegram.org")
+# IndexNow instant indexing (Bing/Yandex) — key file site root lo host cheyandi
+INDEXNOW_KEY = _get("INDEXNOW_KEY", "")
 # CallMeBot free WhatsApp alerts (text only):
 # https://api.callmebot.com/whatsapp.php?phone=+91XXXX&apikey=XXXX
 WHATSAPP_CALLMEBOT_URL = _get("WHATSAPP_CALLMEBOT_URL", "")

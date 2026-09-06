@@ -82,19 +82,29 @@ def _clean_query(title: str) -> str:
 def research_topic(
     primary: SourceArticle,
     max_extra: int = 3,
-) -> list:
+):
     """Primary article topic meeda web search -> extra source articles.
 
-    Returns list[SourceArticle] (primary domain + studentup.in skip avtai).
+    Returns (extras, competitor_titles):
+      extras            -> list[SourceArticle] (fetch avtayina sources)
+      competitor_titles -> search result titles (KEYWORD INTELLIGENCE —
+                           Google lo already ranking titles; prompt ki
+                           istamu better keywords kosam)
     """
     query = _clean_query(primary.title)
     if not query:
-        return []
+        return [], []
     results = search_web(query)
 
     own_domain = urlparse(config.WP_SITE).netloc.replace("www.", "")
-    skip_domains = {urlparse(primary.url).netloc.replace("www.", ""), own_domain}
-    extras: list = []
+    primary_domain = urlparse(primary.url).netloc.replace("www.", "")
+    skip_domains = {primary_domain, own_domain}
+    competitor_titles = [
+        r["title"] for r in results
+        if urlparse(r["url"]).netloc.replace("www.", "") not in skip_domains
+    ][:8]
+
+    extras = []
     for r in results:
         if len(extras) >= max_extra:
             break
@@ -111,4 +121,4 @@ def research_topic(
             log.debug("Research fetch skip %s: %s", r["url"][:60], exc)
             continue
         time.sleep(1.0)  # polite crawling
-    return extras
+    return extras, competitor_titles

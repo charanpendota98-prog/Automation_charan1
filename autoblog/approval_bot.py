@@ -191,6 +191,23 @@ class ApprovalBot:
             link = data.get("link", "")
             title = (data.get("title") or {}).get("rendered", f"post {post_id}")
             log.info("Approved & published post %s: %s", post_id, link)
+            # instant indexing + channel push (best-effort)
+            try:
+                from . import indexnow
+
+                indexnow.submit(link)
+            except Exception:
+                pass
+            try:
+                if config.TELEGRAM_CHANNEL_CHAT_ID:
+                    self.tg("sendMessage", {
+                        "chat_id": config.TELEGRAM_CHANNEL_CHAT_ID,
+                        "parse_mode": "HTML",
+                        "text": (f"🆕 <b>{notifier.esc(title)}</b>\n\n"
+                                 f"🔗 {notifier.esc(link)}"),
+                    })
+            except Exception:
+                pass
             self._finish(
                 cb,
                 f"🚀 <b>PUBLISHED ✔</b>\n\n<b>{notifier.esc(title)}</b>\n🔗 {notifier.esc(link)}",
@@ -237,7 +254,7 @@ class ApprovalBot:
 
     def send_stats(self, chat_id: str) -> None:
         summary = state.status_summary(config.STATE_PATH)
-        lines = [f"📊 <b>studentup.in Auto-Blogger</b>", "",
+        lines = ["📊 <b>studentup.in Auto-Blogger</b>", "",
                  f"Total posts: <b>{summary['total']}</b>"]
         for p in summary["last"][:5]:
             lines.append(f"• [{p['status']}] {notifier.esc(p['title'][:60])}")
