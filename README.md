@@ -249,6 +249,33 @@ SAFE alternatives (bot already implement chesindi):
 6. ❌ Cheyakudadu: own ads click, "click here" arrows deggara ads, timer-based ad refresh,
    back-button ad refresh, thin pages only-for-ads
 
+## 💰 Smart Revenue Maximization (v6) — 100% Policy-Safe
+
+### Bot automatic chestundi (already built):
+| Technique | Em chestundi | Revenue impact |
+|---|---|---|
+| **High-CPC targeting** | `HIGH_CPC_SHARE=30` — 30% daily posts high-CPC themes (education loans, bank jobs salary, IT courses, insurance jobs) | CPC 2-5x ekkuva topics |
+| **Seasonal calendar** | Month prakaram topics (Mar-May results, Jun-Jul admissions, exam season) | Traffic 3-10x seasonal spikes |
+| **Channel CTA block** | Prathi post end lo "Join Telegram" CTA | Repeat visitors = free pageviews lifetime |
+| **Affiliate section** | Relevant posts lo `AFFILIATE_LINKS` (rel=sponsored + disclosure) | AdSense revenue + affiliate income |
+| **Long content** | 2200-3000 words | More ad slots per page |
+| **Dwell time** | Quick Answer, TOC, Reading badge | Viewability-based CPC perugutundi |
+
+### Meeru site lo cheyali (WordPress dashboard — 30 nimishalu):
+1. **AdSense Auto Ads ON** — Google automatic optimal placements chestundi
+2. **Anchor ads allow cheyandi** (mobile sticky) — AdSense > Ads > By ad unit
+3. **Ezoic / Monumetric apply** — 10,000+ monthly pageviews ayite; AdSense RPM 50-150% perugutundi (mediation automatic)
+4. **Google News Publisher submit** — 30+ quality posts unnaka; news sites ki massive Discover traffic
+5. **Google Search Console submit** — sitemap add cheyandi (yoast/rankmath auto sitemap)
+6. **WP-Optimize / LiteSpeed cache** — page speed = Core Web Vitals = higher ad viewability + rankings
+
+### Revenue realistic ga ela perugutundi (honest math):
+- AdSense Telugu education traffic: ~$0.5-2 RPM (1000 pageviews = $0.5-2)
+- TARGET: 6 months lo 50,000 pageviews/month = $25-100/month
+- 12-18 months lo 200,000+ pageviews = $100-400/month
+- KEY: consistency (bot 24/7), quality (QA layer), freshness (auto-refresh) — already built!
+- Affiliate + Ezoic add ayite same traffic lo 2-3x revenue
+
 ## 🎯 SEO / Rank Math 100% Score — Top 0.001% Level Tricks
 
 Prathi post lo automatic ga:

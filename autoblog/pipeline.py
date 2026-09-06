@@ -106,6 +106,10 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
     # in-content ads (AdSense-safe positions; AD_SHORTCODE set unte matrame)
     if config.AD_SHORTCODE:
         final_html = seo.insert_ad_shortcodes(final_html, config.AD_SHORTCODE)
+    # revenue blocks: affiliate section + channel CTA (schema mundu insert)
+    from . import monetize
+
+    final_html = monetize.append_blocks(final_html, article)
 
     # --- QA step 2: validation score + originality proof ---
     qa = validator.validate_article(article, final_html)

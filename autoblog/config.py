@@ -63,6 +63,14 @@ AUTO_REFRESH_HOUR = int(_get("AUTO_REFRESH_HOUR", "21"))
 # In-content ad shortcode (site lo ad plugin active unte; empty = off)
 # Example: AD_SHORTCODE=[quads id=1]  or  [advanced_ads_severities]
 AD_SHORTCODE = _get("AD_SHORTCODE", "")
+# Revenue: prathi post end lo Telegram channel CTA (repeat traffic engine)
+TELEGRAM_CHANNEL_URL = _get("TELEGRAM_CHANNEL_URL", "")
+# Affiliate links: 'label|url|keywords' okka line okati (empty = off)
+# keywords optional — post title/category match aithe matrame vastundi
+# Example: Free Resume Builder|https://example.com/?ref=studentup|internship,job
+AFFILIATE_LINKS = _get("AFFILIATE_LINKS", "")
+# High-CPC content: roju intha posts high-CPC topics meeda (30% default)
+HIGH_CPC_SHARE = int(_get("HIGH_CPC_SHARE", "30"))
 # CallMeBot free WhatsApp alerts (text only):
 # https://api.callmebot.com/whatsapp.php?phone=+91XXXX&apikey=XXXX
 WHATSAPP_CALLMEBOT_URL = _get("WHATSAPP_CALLMEBOT_URL", "")

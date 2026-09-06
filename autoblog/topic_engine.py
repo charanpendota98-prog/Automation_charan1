@@ -47,13 +47,52 @@ LISTICLE_IDEAS = [
 ]
 
 
-def pick_listicle_idea(recent_titles=None) -> str:
+# HIGH-CPC topics — ee themes meeda ads ekkuva CPC istayi (education loan,
+# banking, IT courses, insurance sector). Smart revenue targeting.
+HIGH_CPC_LISTICLE_IDEAS = [
+    "Top 7 Education Loan Options for Students",
+    "Top 5 Bank Jobs with Highest Salary",
+    "Top 8 Online Courses that Get You Hired",
+    "Top 6 IT Jobs for Freshers 2026",
+    "Top 5 Insurance Sector Jobs",
+    "Top 7 Free Courses with Job-Ready Certificates",
+    "Top 5 Government Jobs with Best Salary",
+]
+
+# Seasonal calendar — India education cycle prakaram topic priority
+SEASONAL_CATEGORIES = {
+    1: ["Exam Updates", "Study Tips"],        # exam season
+    2: ["Exam Updates", "Results"],           # board exams start
+    3: ["Results", "Admissions"],             # results season
+    4: ["Admissions", "Exam Updates"],        # EAMCET/entrance season
+    5: ["Results", "Scholarships"],           # results + scholarship windows
+    6: ["Admissions", "Scholarships"],        # admissions peak
+    7: ["Admissions", "Internships"],         # degree admissions
+    8: ["Scholarships", "Study Tips"],        # new semesters
+    9: ["Govt Jobs", "Exam Updates"],         # recruitment season
+    10: ["Govt Jobs", "Festivals"],
+    11: ["Govt Jobs", "Internships"],         # placement season
+    12: ["Govt Jobs", "Exam Updates"],        # year-end notifications
+}
+
+
+def pick_listicle_idea(recent_titles=None, month=None) -> str:
+    """HIGH_CPC_SHARE% chances high-CPC idea — smart revenue targeting."""
+    from . import config as _cfg
+    import datetime as _dt
+
     recent = set(t.lower() for t in (recent_titles or []))
-    for _ in range(len(LISTICLE_IDEAS) * 3):
-        idea = random.choice(LISTICLE_IDEAS)
+    month = month or _dt.date.today().month
+    all_ideas = LISTICLE_IDEAS + HIGH_CPC_LISTICLE_IDEAS
+    for _ in range(len(all_ideas) * 3):
+        if random.randint(1, 100) <= _cfg.HIGH_CPC_SHARE:
+            pool = HIGH_CPC_LISTICLE_IDEAS
+        else:
+            pool = LISTICLE_IDEAS
+        idea = random.choice(pool)
         if not any(idea.lower() in t for t in recent):
             return idea
-    return random.choice(LISTICLE_IDEAS)
+    return random.choice(all_ideas)
 
 
 def mock_listicle(topic: str, index: int = 0) -> dict:
@@ -111,8 +150,11 @@ MOCK_ARTICLE_HTML = """<p>EE article lo manam {topic} gurinchi complete ga telus
 <p>Comments lo adagandi — mana team reply chestaru.</p>"""
 
 
-def pick_category(db_path: Path) -> str:
-    """Pick next category weighted towards least-used ones."""
+def pick_category(db_path: Path, month: int = None) -> str:
+    """Pick next category weighted towards least-used + seasonal ones."""
+    import datetime as _dt
+
+    month = month or _dt.date.today().month
     try:
         conn = sqlite3.connect(str(db_path))
         rows = conn.execute(
@@ -123,10 +165,13 @@ def pick_category(db_path: Path) -> str:
     except sqlite3.Error:
         counts = Counter()
 
+    seasonal = SEASONAL_CATEGORIES.get(month, [])
     weighted: List[str] = []
     for cat in config.CATEGORIES:
-        # fewer posts -> more tickets; +1 so new categories appear immediately
+        # fewer posts -> more tickets; seasonal categories ki +8 tickets boost
         tickets = max(1, 20 - min(19, counts.get(cat, 0)))
+        if cat in seasonal:
+            tickets += 8
         weighted.extend([cat] * tickets)
     return random.choice(weighted)
 
