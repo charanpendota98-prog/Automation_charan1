@@ -6,7 +6,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from autoblog import seo, validator  # noqa: E402
+from autoblog import config, seo, validator  # noqa: E402
 
 
 def main():
@@ -71,6 +71,37 @@ def main():
 
     assert hasattr(WordPressClient, "get_term_link")
     print("  3. get_term_link available (category fallback) ✔")
+
+    # ---- 4. v10: visible-date fix + read-also block + E-E-A-T schema ----
+    html_out = seo.enhance(
+        "<p>body text ok</p>", focus_keyword="SSC CGL 2026",
+        internal_links=[{"link": "https://studentup.in/a/", "title": "Related A"},
+                        {"link": "https://studentup.in/b/", "title": "Related B"}],
+        external_links=[], quick_answer="Quick answer here friends.",
+        faq=[{"question": "q", "answer": "a"}],
+        date_str="2026-01-10", date_modified="2026-09-07",
+        slug="ssc-cgl-2026", title="SSC CGL 2026 Guide",
+        description="desc", category="Govt Jobs")
+    # visible badge = modified date (NOT old published)
+    assert "Last Updated: 2026-09-07" in html_out
+    assert "Last Updated: 2026-01-10" not in html_out
+    # schema dates: published preserved, modified updated
+    assert '"datePublished": "2026-01-10"' in html_out
+    assert '"dateModified": "2026-09-07"' in html_out
+    # read-also block at end
+    assert "వీటిని కూడా చదవండి" in html_out
+    assert 'href="https://studentup.in/a/"' in html_out
+    # E-E-A-T author
+    assert '"@type": "Person"' in html_out and "Editorial Team" in html_out
+    assert '"editor"' in html_out
+    # publisher logo: set -> present; empty -> absent
+    config.SITE_LOGO_URL = "https://studentup.in/logo.png"
+    html_logo = seo.schema_jsonld("T", "d", [], "2026-01-10", "t")
+    assert '"logo"' in html_logo
+    config.SITE_LOGO_URL = ""
+    html_nologo = seo.schema_jsonld("T", "d", [], "2026-01-10", "t")
+    assert '"logo"' not in html_nologo
+    print("  4. v10 fixes (visible date, read-also, E-E-A-T, logo gate) ✔")
 
     print("ALL RANK MATH TRICK TESTS PASSED ✔")
 

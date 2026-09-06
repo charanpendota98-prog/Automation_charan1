@@ -136,7 +136,8 @@ def generate_featured_image(
                   brand, font=brand_font, fill=(255, 255, 255, 220))
 
         out_path.parent.mkdir(parents=True, exist_ok=True)
-        img.convert("RGB").save(str(out_path), "JPEG", quality=88, optimize=True)
+        img.convert("RGB").save(str(out_path), "JPEG", quality=86,
+                             optimize=True, progressive=True)
         return out_path
     except Exception:
         log.exception("Featured image generation failed — continuing without image")

@@ -125,6 +125,10 @@ def word_count(html: str) -> int:
     return len([w for w in text.split() if w])
 
 
+def _esc(t: str) -> str:
+    return (t or "").replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+
+
 def quick_answer_block(focus_keyword: str, quick_answer: str, updated: str) -> str:
     """Featured-snippet bait: direct answer top lo + fresh date."""
     if not quick_answer:
@@ -192,9 +196,19 @@ def schema_jsonld(
         # Google guideline: datePublished preserve, dateModified matrame update
         "datePublished": date_published,
         "dateModified": date_modified or date_published,
-        "author": {"@type": "Organization", "name": "studentup.in"},
+        # E-E-A-T: Person author (editorial team) + publisher logo rich-results
+        "author": {
+            "@type": "Person",
+            "name": "StudentUp Editorial Team",
+            "url": config.WP_SITE.rstrip("/") + "/about/",
+            "worksFor": {"@type": "Organization", "name": "studentup.in"},
+        },
+        "editor": {"@type": "Person", "name": "StudentUp Editorial Team"},
         "publisher": {"@type": "Organization", "name": "studentup.in",
-                      "url": config.WP_SITE},
+                      "url": config.WP_SITE,
+                      **({"logo": {"@type": "ImageObject",
+                                   "url": config.SITE_LOGO_URL}}
+                         if config.SITE_LOGO_URL else {})},
         "mainEntityOfPage": f"{config.WP_SITE}/{slug}/",
         "inLanguage": "te",
     })
@@ -254,11 +268,22 @@ def enhance(
     html = reading_badge(words, minutes) + html
     html = ensure_keyword_first_para(html, focus_keyword, seed=slug)
     if quick_answer:
-        html = quick_answer_block(focus_keyword, quick_answer, date_str) + html
+        # visible badge: modified date (fresh look); schema published original
+        html = quick_answer_block(focus_keyword, quick_answer,
+                                  date_modified or date_str) + html
     html = add_table_of_contents(html)
     html = add_internal_links(html, internal_links, seed=slug)
     html = add_external_links(html, external_links)
-    html += trust_box(date_str, source_domains)
+    # Read-also block: article end lo related posts (session time + crawl)
+    if internal_links:
+        items = "".join(
+            f'<li><a href="{l["link"]}" internal="true">'
+            f'{_esc(l["title"])}</a></li>'
+            for l in internal_links[:4]
+        )
+        html += ('<h2 id="read-also">వీటిని కూడా చదవండి</h2>'
+                 f'<ul>{items}</ul>')
+    html += trust_box(date_modified or date_str, source_domains)
     html += schema_jsonld(title or focus_keyword, description or "", faq or [],
                           date_str, slug, category=category,
                           date_modified=date_modified, list_items=list_items)

@@ -292,6 +292,20 @@ SAFE alternatives (bot already implement chesindi):
 
 **Honest note:** ad CLICKS ni artificially peragalera — adi policy violation (ban). Nenu build chesindi: viewability (ads kanipistayi), relevance (value ads match), slots (eka page ki ekkuva legit slots), money pages (high-CPC views). Idi real revenue growth formula.
 
+## 🔧 v10: Audit Fixes (bug fix + E-E-A-T + engagement)
+
+- 🐛 **Visible-date bug fix** — refresh chesinappudu page meedha "Last Updated"
+  badge ippudu **kotha date** chupistundi (v9 lo bug: old publish date
+  chupinchindi — freshness look pothundi). Schema `datePublished` original
+  preserve + visible badge + `dateModified` = today. Idi exact Google pattern.
+- 👤 **E-E-A-T author schema** — Article JSON-LD lo `Person` author +
+  `editor` + `worksFor` (Google E-E-A-T signal). Publisher logo
+  (`SITE_LOGO_URL` set cheste `logo` kuda schema lo — rich results eligible).
+- 📖 **"వీటిని కూడా చదవండి" block** — prathi article end lo 4 related posts
+  (session time perugutundi + Google crawl depth + internal link juice).
+- 🖼️ **Progressive JPEG** — featured images ippudu progressive render
+  (mobile lo fast perceived load — CWV).
+
 ## 🔥 v9: Google-Native Traffic Pack (Discover + Trends + Freshness)
 
 Google mida ee 3 tricks miss ayyayi — ippati varaku:
