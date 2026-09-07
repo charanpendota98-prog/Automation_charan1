@@ -343,6 +343,82 @@ def check_wp() -> int:
         return 1
 
 
+def gsc_opportunities(csv_path: str) -> int:
+    """Search Console 'Top queries' export -> striking-distance opportunities.
+
+    Top revenue trick (real data driven): rank 5-20 lo unna queries =
+    page-1/2 lo untayi kani clicks takkuva. Veeti posts ni improve cheyali
+    (update + optimize) -> fastest traffic gain. Idi guess-work kadu —
+    me own Google data.
+    """
+    import csv as _csv
+
+    path = Path(csv_path)
+    if not path.exists():
+        print(f"❌ file ledu: {csv_path}")
+        print("   Search Console > Performance > Queries > Export CSV download cheyandi")
+        return 1
+
+    rows = list(_csv.reader(path.open(encoding="utf-8-sig", errors="replace")))
+    # GSC export: first row header ("Top queries"/"Queries"), second row maybe dates group
+    if not rows or "quer" not in (rows[0][0] if rows[0] else "").lower():
+        print("❌ idi 'Top queries' export kadu (first column 'Top queries' kavali)."
+              "\n   Search Console > Performance > Export (Queries) cheyandi.")
+        return 1
+    data_rows = [r for r in rows[1:] if len(r) >= 5 and r[0].strip()]
+    # skip group-date row (Clicks header repeat)
+    data_rows = [r for r in data_rows if not r[1].lower().startswith("clicks")]
+
+    queries = []
+    for r in data_rows:
+        try:
+            clicks = int(r[1])
+            impressions = int(r[2])
+            ctr_s = r[3].strip().rstrip("%")
+            ctr = float(ctr_s) / 100.0   # GSC export always percentage format
+            position = float(r[4])
+        except (ValueError, IndexError):
+            continue
+        queries.append({"query": r[0].strip(), "clicks": clicks,
+                        "impressions": impressions, "ctr": ctr,
+                        "position": position})
+
+    if not queries:
+        print("❌ parse ayye rows levu — GSC 'Queries' export check cheyandi")
+        return 1
+
+    # striking distance filter: impressions 100+, position 4-20, low CTR
+    opps = [q for q in queries
+            if q["impressions"] >= 100 and 4 <= q["position"] <= 20 and q["ctr"] < 0.05]
+    opps.sort(key=lambda q: q["impressions"] * (21 - q["position"]), reverse=True)
+
+    print("=" * 70)
+    print(f"  SEARCH CONSOLE OPPORTUNITIES ({len(queries)} queries, "
+          f"{len(opps)} striking-distance)")
+    print("=" * 70)
+    if not opps:
+        print("  Ippudu striking-distance queries levu — inka traffic early stage."
+              "\n  2-3 nelalu posts perigaka malli run cheyandi.")
+        return 0
+
+    print(f"  {'QUERY':38} {'IMPR':>7} {'POS':>5} {'CTR':>6}")
+    print("  " + "-" * 66)
+    for q in opps[:20]:
+        print(f"  {q['query'][:36]:38} {q['impressions']:>7} "
+              f"{q['position']:>5.1f} {q['ctr']*100:>5.1f}%")
+    print("-" * 70)
+    top3 = [q["query"] for q in opps[:3]]
+    print("  🎯 ACTION PLAN (top 3 — immediate):")
+    for i, q in enumerate(top3, 1):
+        print(f"   {i}. \"{q}\" — ee query meeda already rank {opps[i-1]['position']:.0f}")
+        print(f"      -> matching post ni --update cheyandi OR fresh deep article")
+        print(f"         ravadam (title/desc/content optimize -> CTR perugutundi)")
+    print("\n  Formula: veeti posts improve cheste 2-4 nelallo traffic 30-100%+ "
+          "perugutundi (industry-proven striking-distance strategy).")
+    print("=" * 70)
+    return 0
+
+
 def doctor() -> int:
     """Deployment health check — Oracle lo first run mundu okka command."""
     import requests as _rq
@@ -582,6 +658,8 @@ def main() -> int:
     parser.add_argument("--notify-test", action="store_true", help="send test notification")
     parser.add_argument("--revenue-check", action="store_true",
                         help="revenue setup audit — em missing o cheptundi")
+    parser.add_argument("--gsc", default="", metavar="CSV",
+                        help="Search Console queries CSV -> striking-distance opportunities")
     parser.add_argument("--doctor", action="store_true",
                         help="deployment health check — anni dependencies verify")
     parser.add_argument("--trends", action="store_true",
@@ -598,6 +676,8 @@ def main() -> int:
         return notify_test()
     if args.revenue_check:
         return revenue_check()
+    if args.gsc:
+        return gsc_opportunities(args.gsc)
     if args.doctor:
         return doctor()
     if args.trends:

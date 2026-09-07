@@ -390,12 +390,14 @@ def optimize_slug(slug: str, focus_keyword: str = "", max_len: int = 60) -> str:
     Trick: focus keyword lo English tokens (ssc, cgl, 2026...) slug lo
     pakka untayi -> 'Focus Keyword in URL' check pass avtundi.
     """
-    words = [w for w in (slug or "").lower().split("-") if w]
+    fk_tokens = [t.lower() for t in re.findall(r"[a-zA-Z0-9]+", focus_keyword or "")]
+    fk_tokens = [t for t in fk_tokens if t and t not in SLUG_STOPWORDS]
+    # defensive input sanitize (1000x audit: raw spaces/quotes leak avvakudadu)
+    slug = re.sub(r"[^a-z0-9-]+", "-", (slug or "").lower()).strip("-")
+    words = [w for w in slug.split("-") if w]
     cleaned = [w for w in words if w not in SLUG_STOPWORDS]
     base = "-".join(cleaned)[:max_len].strip("-")
 
-    fk_tokens = [t.lower() for t in re.findall(r"[a-zA-Z0-9]+", focus_keyword or "")]
-    fk_tokens = [t for t in fk_tokens if t and t not in SLUG_STOPWORDS]
     if fk_tokens:
         have = set(base.split("-"))
         missing = [t for t in fk_tokens if t not in have]

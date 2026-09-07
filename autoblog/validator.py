@@ -63,6 +63,12 @@ def sanitize_html(html: str) -> str:
         return m.group(0) if m.group(1).lower() in ALLOWED_TAGS else ""
 
     html = re.sub(r"</?([a-zA-Z][a-zA-Z0-9]*)[^>]*>", _keep, html)
+    # XSS hardening: event-handler attributes + javascript:/data: URLs strip
+    # (allowed tags kuda attributes lo danger untayi — 1000x audit finding)
+    html = re.sub(r"\s+on[a-zA-Z]+\s*=\s*(\"[^\"]*\"|'[^']*'|[^\s>]+)", "", html,
+                  flags=re.I)
+    html = re.sub(r"(href|src)\s*=\s*(\"|')?\s*(javascript|vbscript|data):[^\s\"'>]*[\"']?",
+                  r'\1="#"', html, flags=re.I)
     # empty paragraphs / excess newlines clean
     html = re.sub(r"<p>\s*</p>", "", html)
     html = re.sub(r"\n{3,}", "\n\n", html)

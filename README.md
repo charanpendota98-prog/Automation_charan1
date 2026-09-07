@@ -292,6 +292,30 @@ SAFE alternatives (bot already implement chesindi):
 
 **Honest note:** ad CLICKS ni artificially peragalera — adi policy violation (ban). Nenu build chesindi: viewability (ads kanipistayi), relevance (value ads match), slots (eka page ki ekkuva legit slots), money pages (high-CPC views). Idi real revenue growth formula.
 
+## 🧪 v12: 1000x Stress Audit + Search Console Opportunities
+
+**1000x audit** (fuzz suite `tests/stress_test.py` — 3,800+ calls):
+- optimize_slug 300× random inputs, ad-inserter 200×, JSON-LD validity 100×,
+  validator 200×, XSS battery, pickers 1000×, full mock pipeline 5×
+- **2 real bugs FOUND + FIXED**:
+  1. `sanitize_html` XSS gap — event-handler attributes (`onclick`,
+     `onerror`...) + `javascript:`/`vbscript:`/`data:` URLs strip chesanu
+     (URL-research mode lo external content risk — postublish XSS zero)
+  2. `optimize_slug` raw-input leak — spaces/quotes slug lo vachi
+     potential URL break — defensive sanitize add chesanu
+
+**`--gsc` — Search Console opportunities (top real revenue trick):**
+
+```bash
+# Search Console > Performance > Queries > Export CSV
+.venv/bin/python run.py --gsc queries.csv
+```
+
+Striking-distance queries (impressions 100+, rank 4–20, low CTR) list
+chestundi + action plan — **veeti posts improve cheyadam = fastest proven
+traffic gain** (page-1 lo already unna queries — ippudu CTR matrame
+peragali). Idi guess-work kadu, me own Google data.
+
 ## 🩺 v11: `--doctor` — Deployment Health Check + flaky test fix
 
 Oracle server lo deploy chesaka bot start cheyandi mundu okka command:
