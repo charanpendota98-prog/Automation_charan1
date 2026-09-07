@@ -161,7 +161,8 @@ def main():
     from autoblog import topic_engine as te
 
     idea = te.pick_listicle_idea(["Old Top 10 Central Government Jobs 2026 post"])
-    assert idea in te.LISTICLE_IDEAS
+    # note: HIGH_CPC_SHARE% valla high-CPC pool nunchi kuda vastundi (valid)
+    assert idea in te.LISTICLE_IDEAS or idea in te.HIGH_CPC_LISTICLE_IDEAS
     print("  4. pick_listicle_idea ✔")
 
     db.unlink(missing_ok=True)

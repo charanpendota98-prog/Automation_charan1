@@ -292,6 +292,28 @@ SAFE alternatives (bot already implement chesindi):
 
 **Honest note:** ad CLICKS ni artificially peragalera — adi policy violation (ban). Nenu build chesindi: viewability (ads kanipistayi), relevance (value ads match), slots (eka page ki ekkuva legit slots), money pages (high-CPC views). Idi real revenue growth formula.
 
+## 🩺 v11: `--doctor` — Deployment Health Check + flaky test fix
+
+Oracle server lo deploy chesaka bot start cheyandi mundu okka command:
+
+```bash
+.venv/bin/python run.py --doctor
+```
+
+Anni dependencies live ga verify chestundi:
+- **Gemini API** — key valid aa? models endpoint live test
+- **WordPress REST** — auth + categories count
+- **Telegram bot** — getMe token validation (intrusive kadu)
+- **IndexNow** — key format
+- **Storage** — state DB + output dir writable
+- **Disk** — free space (images perugutayi kada)
+- Plan summary (posts/day, listicles, refresh, trends, ads)
+
+Anni ✅ → `ALL SYSTEMS GO 🚀`. Edo fail aithe exact error chupistundi —
+debug time save, deploy nunchi bot first-day failure risk zero.
+
+Plus: listicle test flaky assertion fix (high-CPC pool ideas valid kada).
+
 ## 🔧 v10: Audit Fixes (bug fix + E-E-A-T + engagement)
 
 - 🐛 **Visible-date bug fix** — refresh chesinappudu page meedha "Last Updated"

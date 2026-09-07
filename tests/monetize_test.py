@@ -127,6 +127,16 @@ def main():
     assert "Bot-side score:" in r.stdout and "POLICY" in r.stdout
     print("  7. --revenue-check command ✔")
 
+    # ---- 8. --doctor health check ----
+    r2 = subprocess.run([str(Path(".venv/bin/python")), "run.py", "--doctor"],
+                        capture_output=True, text=True, timeout=120)
+    assert "DOCTOR" in r2.stdout
+    assert "Gemini API" in r2.stdout and "WordPress REST" in r2.stdout
+    assert "Storage" in r2.stdout and "Disk" in r2.stdout
+    assert "Plan:" in r2.stdout
+    assert r2.returncode in (0, 1)  # 1 = missing keys (sandbox) — graceful
+    print("  8. --doctor command (structure + graceful) ✔")
+
     print("ALL REVENUE TESTS PASSED ✔")
 
 

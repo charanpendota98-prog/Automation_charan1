@@ -343,6 +343,112 @@ def check_wp() -> int:
         return 1
 
 
+def doctor() -> int:
+    """Deployment health check — Oracle lo first run mundu okka command."""
+    import requests as _rq
+    import shutil as _sh
+
+    ok = True
+    results = []
+
+    def check(label, fn):
+        nonlocal ok
+        try:
+            detail = fn()
+            results.append((True, label, detail or "OK"))
+        except Exception as exc:
+            ok = False
+            results.append((False, label, f"FAIL: {exc}"))
+
+    print("=" * 62)
+    print("  DOCTOR — Deployment Health Check")
+    print("=" * 62)
+
+    # 1) Gemini key + live validation
+    def _gemini():
+        if not config.GEMINI_API_KEY:
+            raise RuntimeError("GEMINI_API_KEY ledu (.env)")
+        r = _rq.get(f"{config.GEMINI_API_BASE}/models",
+                    params={"key": config.GEMINI_API_KEY}, timeout=15)
+        if r.status_code != 200:
+            raise RuntimeError(f"API {r.status_code} — key invalid?")
+        n = len(r.json().get("models", []))
+        return f"key valid, {n} models (model={config.GEMINI_MODEL})"
+    check("Gemini API", _gemini)
+
+    # 2) WordPress REST + auth
+    def _wp():
+        from .wordpress_client import WordPressClient
+        wp = WordPressClient()
+        me = wp.check_connection()
+        cats = wp.list_categories()
+        return f"{me.get('name', '?')} @ {config.WP_SITE} | {len(cats)} categories"
+    check("WordPress REST", _wp)
+
+    # 3) Telegram bot token (getMe — non-intrusive)
+    def _tg():
+        if not config.TELEGRAM_BOT_TOKEN:
+            raise RuntimeError("TELEGRAM_BOT_TOKEN ledu")
+        r = _rq.get(f"{config.TELEGRAM_API_BASE}/bot{config.TELEGRAM_BOT_TOKEN}/getMe",
+                    timeout=10)
+        data = r.json()
+        if not data.get("ok"):
+            raise RuntimeError(f"getMe fail ({r.status_code})")
+        if not config.TELEGRAM_CHAT_ID:
+            raise RuntimeError("TELEGRAM_CHAT_ID ledu")
+        return f"@{data['result'].get('username', '?')} -> chat {config.TELEGRAM_CHAT_ID}"
+    check("Telegram bot", _tg)
+
+    # 4) IndexNow key format
+    def _in():
+        if not config.INDEXNOW_KEY:
+            return "not set (optional — instant indexing ki set cheyandi)"
+        k = config.INDEXNOW_KEY.strip()
+        if not (8 <= len(k) <= 128) or not re.fullmatch(r"[A-Za-z0-9-]+", k):
+            raise RuntimeError("key format wrong (A-Za-z0-9- chars only)")
+        return f"set ({len(k)} chars)"
+    check("IndexNow", _in)
+
+    # 5) state DB + output dirs writable
+    def _db():
+        state.init(config.STATE_PATH)
+        state.meta_set(config.STATE_PATH, "doctor:ping", "1")
+        assert state.meta_get(config.STATE_PATH, "doctor:ping") == "1"
+        config.OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+        (config.OUTPUT_DIR / ".ping").write_text("ok")
+        (config.OUTPUT_DIR / ".ping").unlink()
+        return f"{config.STATE_PATH} + {config.OUTPUT_DIR} writable"
+    check("Storage", _db)
+
+    # 6) disk space (Oracle free VM 25GB; images + DB perugutayi)
+    def _disk():
+        free_gb = _sh.disk_usage(str(config.OUTPUT_DIR)).free / 1e9
+        if free_gb < 1:
+            raise RuntimeError(f"only {free_gb:.1f} GB free — clean cheyandi!")
+        return f"{free_gb:.1f} GB free"
+    check("Disk", _disk)
+
+    for good, label, detail in results:
+        print(f"  {'✅' if good else '❌'} {label:14} {detail}")
+
+    # config summary
+    print("-" * 62)
+    print(f"  Plan: {config.DAILY_MIN}-{config.DAILY_MAX} posts/day + "
+          f"{config.LISTICLES_PER_DAY} listicles | auto-refresh "
+          f"{config.AUTO_REFRESH_PER_DAY}/day @ {config.AUTO_REFRESH_HOUR}:00")
+    print(f"  Trends {'ON' if config.USE_TRENDS else 'OFF'} | Discover meta "
+          f"{'ON' if config.DISCOVER_META_ENABLED else 'OFF'} | ads "
+          f"{config.MAX_AD_SLOTS} slots"
+          + (" (shortcode set)" if config.AD_SHORTCODE else " (NO shortcode!)"))
+    print("=" * 62)
+    if ok:
+        print("  ALL SYSTEMS GO 🚀  — bot ready, start: systemctl --user start autoblog")
+    else:
+        print("  ❌ problems unna — ventane fix cheyandi (upper errors chudu)")
+    print("=" * 62)
+    return 0 if ok else 1
+
+
 def trends_check() -> int:
     """Google Trends India daily — education-relevant trends display."""
     print("=" * 62)
@@ -476,6 +582,8 @@ def main() -> int:
     parser.add_argument("--notify-test", action="store_true", help="send test notification")
     parser.add_argument("--revenue-check", action="store_true",
                         help="revenue setup audit — em missing o cheptundi")
+    parser.add_argument("--doctor", action="store_true",
+                        help="deployment health check — anni dependencies verify")
     parser.add_argument("--trends", action="store_true",
                         help="Google Trends India education trends chupinchindi")
     args = parser.parse_args()
@@ -490,6 +598,8 @@ def main() -> int:
         return notify_test()
     if args.revenue_check:
         return revenue_check()
+    if args.doctor:
+        return doctor()
     if args.trends:
         return trends_check()
     try:
