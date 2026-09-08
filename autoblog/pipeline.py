@@ -13,7 +13,7 @@ from urllib.parse import urlparse
 
 from . import config, gemini_client, image_gen, notifier, research, seo, sources, state, validator
 from .notifier import esc, send_telegram
-from .wordpress_client import WordPressClient, WordPressError
+from .wordpress_client import WordPressClient
 
 log = logging.getLogger("autoblog.pipeline")
 

@@ -8,7 +8,7 @@
 
 import logging
 import re
-from typing import Dict, List, Optional
+from typing import Dict, List
 
 log = logging.getLogger("autoblog.validator")
 

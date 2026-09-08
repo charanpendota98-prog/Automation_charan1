@@ -13,7 +13,7 @@ from urllib.parse import parse_qs, unquote, urlparse
 import requests
 from bs4 import BeautifulSoup
 
-from . import config, sources
+from . import config
 from .sources import SourceArticle, fetch_source, is_valid_source_url
 
 log = logging.getLogger("autoblog.research")

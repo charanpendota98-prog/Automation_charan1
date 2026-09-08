@@ -7,8 +7,8 @@ extra advanced sections tho, Telugu+English mix lo rewrite chestundi.
 
 import logging
 import re
-from dataclasses import dataclass, field
-from typing import List, Optional
+from dataclasses import dataclass
+from typing import Optional
 from urllib.parse import urlparse
 
 import requests

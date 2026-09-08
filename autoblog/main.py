@@ -15,7 +15,7 @@ import logging
 import re
 import sys
 import unicodedata
-from datetime import date, datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from . import config, gemini_client, image_gen, notifier, pipeline, sources, state, topic_engine, wordpress_client
@@ -411,8 +411,8 @@ def gsc_opportunities(csv_path: str) -> int:
     print("  🎯 ACTION PLAN (top 3 — immediate):")
     for i, q in enumerate(top3, 1):
         print(f"   {i}. \"{q}\" — ee query meeda already rank {opps[i-1]['position']:.0f}")
-        print(f"      -> matching post ni --update cheyandi OR fresh deep article")
-        print(f"         ravadam (title/desc/content optimize -> CTR perugutundi)")
+        print("      -> matching post ni --update cheyandi OR fresh deep article")
+        print("         ravadam (title/desc/content optimize -> CTR perugutundi)")
     print("\n  Formula: veeti posts improve cheste 2-4 nelallo traffic 30-100%+ "
           "perugutundi (industry-proven striking-distance strategy).")
     print("=" * 70)
@@ -566,7 +566,7 @@ def revenue_check() -> int:
          bool(config.AD_SHORTCODE)),
         (f"MAX_AD_SLOTS = {config.MAX_AD_SLOTS} (3-5 ideal long articles)",
          1 <= config.MAX_AD_SLOTS <= 5),
-        (f"CLS wrapper ON (layout-shift protection)",
+        ("CLS wrapper ON (layout-shift protection)",
          config.AD_CLS_WRAPPER),
         (f"HIGH_CPC_SHARE = {config.HIGH_CPC_SHARE}% (30 recommended)",
          20 <= config.HIGH_CPC_SHARE <= 50),

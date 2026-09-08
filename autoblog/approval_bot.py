@@ -344,7 +344,7 @@ class ApprovalBot:
 
     def check_watchdog(self) -> None:
         """Scheduler 26+ hours run avvakapote owner ki alert (roju okke sari)."""
-        from datetime import datetime, timedelta
+        from datetime import datetime
 
         hb = state.meta_get(config.STATE_PATH, "heartbeat")
         if not hb:
