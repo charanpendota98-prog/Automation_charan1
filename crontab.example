@@ -1,6 +1,0 @@
-# Alternative to systemd timer (setup_oracle.sh eppudu automatic ga idi use chestundi)
-# Manual ga install cheyali ante:
-#   crontab -e
-# mariyu ee line add cheyandi (path ni mi project path tho marchandi):
-
-0 * * * * cd /opt/studentup-autoblog && /opt/studentup-autoblog/.venv/bin/python run.py >> /opt/studentup-autoblog/log/cron.log 2>&1
