@@ -42,9 +42,22 @@ ask TELEGRAM_BOT_TOKEN   "Telegram bot token" "@BotFather ichhina token"
 ask TELEGRAM_CHAT_ID     "Telegram chat ID" "123456789 (telegram bot start chesina chat id)"
 
 # optional revenue defaults (water lo levu ante ignore)
-grep -q "^AD_SHORTCODE="        .env || echo "AD_SHORTCODE=[adinsert block=1]" >> .env
-grep -q "^TELEGRAM_CHANNEL_URL=" .env || echo "TELEGRAM_CHANNEL_URL=" >> .env
-grep -q "^MAX_AD_SLOTS="        .env || echo "MAX_AD_SLOTS=3" >> .env
+grep -q "^AD_SHORTCODE=" .env || echo "AD_SHORTCODE=[adinsert block=1]" >> .env
+grep -q "^MAX_AD_SLOTS=" .env || echo "MAX_AD_SLOTS=3" >> .env
+
+# Telegram channel (private/public rendu work avtayi)
+if ! grep -q "^TELEGRAM_CHANNEL_URL=" .env; then
+    read -r -p "  Channel invite/public link (articles lo CTA kosam; skip=Enter): " churl
+    echo "TELEGRAM_CHANNEL_URL=$churl" >> .env
+fi
+if ! grep -q "^TELEGRAM_CHANNEL_CHAT_ID=" .env; then
+    echo "  Channel lo bot admin aite, chat ID ela teeskovali:"
+    echo "    1) Channel lo eaina okka message post cheyandi (test ani)"
+    echo "    2) Browser lo: https://api.telegram.org/bot<BOT_TOKEN>/getUpdates"
+    echo "    3) \"channel_post\" -> \"chat\":{\"id\":-100xxxxxxxxxx} -> aa number"
+    read -r -p "  Channel chat ID (-100... format; bot admin cheste matrame; skip=Enter): " chid
+    echo "TELEGRAM_CHANNEL_CHAT_ID=$chid" >> .env
+fi
 echo "  .env ready (tariku marali ante: nano .env)"
 
 say "4/6 HEALTH CHECK (doctor)"
