@@ -292,6 +292,15 @@ SAFE alternatives (bot already implement chesindi):
 
 **Honest note:** ad CLICKS ni artificially peragalera — adi policy violation (ban). Nenu build chesindi: viewability (ads kanipistayi), relevance (value ads match), slots (eka page ki ekkuva legit slots), money pages (high-CPC views). Idi real revenue growth formula.
 
+## ⚖️ v13: Category Priority Weighting (revenue strategy default)
+
+`CATEGORY_PRIORITY` env (default `Govt Jobs:4,Results:3,Internships:2,Education News:2`) —
+topic engine lo ee categories ki extra tickets. Strategy:
+**Govt Jobs** = high-CPC ads (salary/bank content), **Results** = high search
+volume (telugu students). Least-used balance + seasonal boosts untouched —
+idi extra layer matrame. Marali ante `.env` lo value marchandi, code touch
+avvakkarledu.
+
 ## 🧪 v12: 1000x Stress Audit + Search Console Opportunities
 
 **1000x audit** (fuzz suite `tests/stress_test.py` — 3,800+ calls):

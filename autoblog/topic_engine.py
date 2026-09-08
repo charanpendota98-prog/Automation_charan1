@@ -171,10 +171,12 @@ def pick_category(db_path: Path, month: int = None) -> str:
     seasonal = SEASONAL_CATEGORIES.get(month, [])
     weighted: List[str] = []
     for cat in config.CATEGORIES:
-        # fewer posts -> more tickets; seasonal categories ki +8 tickets boost
+        # fewer posts -> more tickets; seasonal +8; priority categories
+        # +CATEGORY_PRIORITY[cat] (revenue weighting — Jobs/Results ekkuva)
         tickets = max(1, 20 - min(19, counts.get(cat, 0)))
         if cat in seasonal:
             tickets += 8
+        tickets += int(config.CATEGORY_PRIORITY.get(cat, 0))
         weighted.extend([cat] * tickets)
     return random.choice(weighted)
 

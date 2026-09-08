@@ -114,6 +114,19 @@ CATEGORIES = [
     if c.strip()
 ]
 
+# Category priority — ee categories ki extra tickets (revenue strategy:
+# Jobs high-CPC ads attract chestundi, Results high search volume).
+# Format: "Govt Jobs:4,Results:3,Education News:2" (0 = boost ledu)
+CATEGORY_PRIORITY = {}
+for _pair in _get("CATEGORY_PRIORITY",
+                  "Govt Jobs:4,Results:3,Internships:2,Education News:2").split(","):
+    if ":" in _pair:
+        _k, _v = _pair.split(":", 1)
+        try:
+            CATEGORY_PRIORITY[_k.strip()] = int(_v.strip())
+        except ValueError:
+            pass
+
 # --- Images --------------------------------------------------------------
 IMAGE_ENABLED = _get("IMAGE_ENABLED", "1") not in ("0", "false", "no")
 IMAGE_WIDTH = int(_get("IMAGE_WIDTH", "1200"))
