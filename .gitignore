@@ -1,0 +1,14 @@
+# secrets & local data
+.env
+state.db
+state.db-journal
+sources_queue.txt
+log/
+output/
+images/
+
+# python
+__pycache__/
+*.pyc
+.venv/
+venv/
