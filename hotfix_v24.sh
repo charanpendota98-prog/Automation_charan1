@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
 # ============================================================
-#  v24 HOTFIX — studentup.in  (crop-proof thumbnails + Design Kit)
-#  Usage (server lo, repo root nunchi):  bash hotfix_v24.sh
-#  Idempotent — anni fixes GitHub PR lo merge ayithe ee script skip cheyochu.
-#  NOTE: first `git pull` (PR #2 merge taruvatha) — v24 patches aa tree meeda raji.
+#  v24+v25 HOTFIX — studentup.in
+#  crop-proof thumbnails + site-wide Design Kit + menu dedupe
+#  Usage (server repo root lo):  bash hotfix_v24.sh
+#  Idempotent. GitHub PR merge + `git pull` cheste need ledu.
 # ============================================================
 set -euo pipefail
 cd "$(dirname "$0")"
-[ -d autoblog ] || { echo "❌ repo root nunchi run cheyandi"; exit 1; }
-if grep -q "v24 CROP-PROOF" autoblog/image_gen.py; then
-  echo "✅ v24 already applied — nothing to do"; exit 0
+[ -d autoblog ] || { echo "repo root nunchi run cheyandi"; exit 1; }
+if grep -q "v24 CROP-PROOF" autoblog/image_gen.py && [ -f autoblog/design_kit.py ]; then
+  echo "v24+v25 already applied — nothing to do"; exit 0
 fi
-echo "→ autoblog/image_gen.py (v24 crop-proof layouts)..."
+echo "-> autoblog/image_gen.py (v24 crop-proof layouts)..."
 cat > autoblog/image_gen.py <<'IG_EOF'
 """Featured-image generator using Pillow (no external API needed).
 
@@ -261,7 +261,8 @@ def generate_featured_image(
         log.exception("Featured image generation failed — continuing without image")
         return None
 IG_EOF
-echo "→ autoblog/design_kit.py (site-wide Design Kit)..."
+
+echo "-> autoblog/design_kit.py (Design Kit + v25 up-to-date + sidecar)..."
 cat > autoblog/design_kit.py <<'DK_EOF'
 """v24 — Site-wide Design Kit: makes studentup.in look like a top news site
 WITHOUT touching theme files.
@@ -279,6 +280,7 @@ language of Adda247/ABP Ananda class sites.
 from __future__ import annotations
 
 import logging
+from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
 log = logging.getLogger("autoblog.design")
@@ -307,6 +309,12 @@ blockquote{border-left:4px solid var(--su-accent);background:#FAF7F2;padding:12p
 .pagination,.nav-links{clear:both;padding:24px 0}
 .pagination a,.pagination span.current,.nav-links .page-numbers{border-radius:8px!important;margin:0 3px;font-weight:600}
 .site-footer,.footer{font-size:14px}
+.archive .entry-title,.blog .entry-title,.wp-block-post-template .wp-block-post-title{font-size:clamp(19px,4.6vw,24px)!important;line-height:1.35;margin:.2em 0 .4em}
+.archive .wp-post-image,.blog .wp-post-image,.wp-block-post-template .wp-block-post-featured-image img{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:0}
+.archive article,.blog article,.wp-block-post-template>li{border:1px solid #EAEFF6;border-radius:16px;overflow:hidden;background:#fff;transition:box-shadow .18s ease,transform .18s ease}
+.archive article:hover,.blog article:hover,.wp-block-post-template>li:hover{box-shadow:0 10px 28px rgba(18,53,107,.10);transform:translateY(-2px)}
+.archive .entry-summary,.archive .entry-meta,.archive .entry-footer{padding-left:16px;padding-right:16px}
+.widget-title,.widgettitle,aside .wp-block-heading{font-size:15px;text-transform:uppercase;letter-spacing:.08em;color:var(--su-navy);border-bottom:2px solid var(--su-accent);padding-bottom:6px}
 @media (max-width:640px){
 .entry-content p{font-size:15.5px;line-height:1.8}
 .entry-content table{font-size:13.5px}
@@ -318,6 +326,30 @@ blockquote{border-left:4px solid var(--su-accent);background:#FAF7F2;padding:12p
 
 def build_css() -> str:
     return f'<style id="su-design-kit">/*{MARKER}*/{CSS}</style>'
+
+
+def _sidecar():
+    """widget id memory next to state.db — survives marker edits (no dupes)."""
+    from . import config
+    return Path(config.STATE_PATH).with_name("design_kit.json")
+
+
+def _load_id() -> Optional[str]:
+    try:
+        import json
+        return json.loads(_sidecar().read_text(encoding="utf-8")).get("widget_id")
+    except Exception:
+        return None
+
+
+def _save_id(wid: str) -> None:
+    try:
+        import json
+        f = _sidecar()
+        f.parent.mkdir(parents=True, exist_ok=True)
+        f.write_text(json.dumps({"widget_id": wid}), encoding="utf-8")
+    except Exception:
+        pass
 
 
 def _find_widget(wp) -> Tuple[Optional[str], List[Dict]]:
@@ -363,13 +395,24 @@ def install(wp, dry: bool = False) -> Tuple[str, str]:
         sid = sidebars[0]["id"]
 
     enc = urlencode({"title": "", "text": css, "filter": ""})
-    existing, _items = _find_widget(wp)
+    existing, items = _find_widget(wp)
+    if not existing:
+        # marker missing (user edited widget?) → sidecar-remembered id still ours
+        known = _load_id()
+        if known and any(i.get("id") == known for i in items):
+            existing = known
     try:
         if existing:
+            cur = next((i for i in items if i.get("id") == existing), None)
+            enc_old = str(((cur or {}).get("instance") or {})
+                          .get("encoded") or "")
+            if enc_old == enc:
+                return "ok", f"design kit up to date ({existing})"
             r = wp._request("POST", f"widgets/{existing}",
                             json={"instance": {"encoded": enc},
                                   "sidebar_id": sid})
             if r.ok:
+                _save_id(existing)
                 return "ok", f"design kit refreshed ({existing} @ {sid})"
             return "warn", f"widget update fail: {r.status_code}"
         r = wp._request("POST", "widgets",
@@ -377,6 +420,7 @@ def install(wp, dry: bool = False) -> Tuple[str, str]:
                               "instance": {"encoded": enc}})
         if r.ok:
             nid = r.json().get("id", "?")
+            _save_id(nid)
             return "ok", f"design kit installed ({nid} @ {sid})"
         return "warn", f"widget create fail: {r.status_code}"
     except Exception as exc:  # noqa: BLE001
@@ -420,7 +464,8 @@ def broken_footer_token(wp) -> Tuple[str, str]:
     return "skip", "footer token widget lo ledu — theme option lo fix kavali "\
         "(Appearance→Customize→Footer text: 'Copyright © 2026 StudentUp.in')"
 DK_EOF
-echo "→ tests/design_test.py..."
+
+echo "-> tests/design_test.py (7-section suite)..."
 cat > tests/design_test.py <<'DT_EOF'
 """v24 design kit tests — crop-proof thumbs, widget install/update, footer
 token fix, CSS content, CLI wiring. No network."""
@@ -487,7 +532,10 @@ def t1_css():
                   "Noto Sans Telugu", "Inter", "border-radius:14px",
                   "object-fit:cover", "max-height:420px",
                   "border-collapse:separate", "nth-child(even)",
-                  "more-link", "line-height:1.85", "@media (max-width:640px)"):
+                  "more-link", "line-height:1.85", "@media (max-width:640px)",
+                  # v25 cards + widget heads
+                  ".archive .entry-title", "aspect-ratio:16/9",
+                  "translateY(-2px)", "widget-title", "box-shadow"):
         assert token in css, token
     print("1. kit CSS tokens ✅")
 
@@ -499,12 +547,28 @@ def t2_install_update():
     wid = re.search(r"\((text-\d+)", det).group(1)
     enc = wp.widgets[wid]["encoded"]
     assert "sukit24" in enc and "%3Cstyle" in enc
-    # re-run → refresh existing (no second create)
+    # re-run → SAME css → up-to-date skip (no POST at all beyond GETs)
     n_before = wp.n
+    calls_before = len(wp.calls)
     st2, det2 = design_kit.install(wp)
-    assert st2 == "ok" and "refreshed" in det2 and wid in det2
+    assert st2 == "ok" and "up to date" in det2 and wid in det2
     assert wp.n == n_before
-    print("2. widget install → idempotent refresh ✅")
+    posts = [c for c in wp.calls[calls_before:] if c[0] == "POST"]
+    assert not posts, posts
+    # stale widget (marker edited away) → sidecar id → refresh, NO dupe create
+    import tempfile
+    from unittest import mock
+    from autoblog import config
+    tmpdir = Path(tempfile.mkdtemp())
+    with mock.patch.object(config, "STATE_PATH", tmpdir / "state.db"):
+        wp.widgets.pop(wid)  # first: simulate wipe → recreate + save id
+        st2b, det2b = design_kit.install(wp)
+        wid = re.search(r"\((text-\d+)", det2b).group(1)
+        wp.widgets[wid] = {"encoded": "title=&text=user-edited-no-marker"}
+        st3, det3 = design_kit.install(wp)
+        assert st3 == "ok" and "refreshed" in det3, (st3, det3)
+        assert wp.n == n_before + 1  # only the recreate above, no dupes
+    print("2. install → up-to-date skip → stale refresh (no dupes) ✅")
 
 
 def t3_fallbacks():
@@ -569,9 +633,32 @@ def t6_wiring():
     setup_src = (Path(__file__).resolve().parent.parent
                  / "autoblog/site_setup.py").read_text(encoding="utf-8")
     assert "Design kit" in setup_src and "broken_footer_token" in setup_src
+    assert "_menu_dedupe" in setup_src and "duplicate items removed" in setup_src
     rot = image_gen.generate_featured_image.__doc__
     assert "bottom" in rot or "rotate" in (image_gen.__doc__ or "")
     print("6. --polish CLI + setup auto-install wiring ✅")
+
+
+def t7_menu_dedupe():
+    class FakeMenuWP:
+        def __init__(self):
+            self.deleted = []
+        def get_menu_items(self, mid):
+            return [{"id": 1, "title": "About Us"}, {"id": 2, "title": "Privacy Policy"},
+                    {"id": 3, "title": "Terms"}, {"id": 4, "title": " Privacy Policy "},
+                    {"id": 5, "title": "Contact"}, {"id": 6, "title": "Terms"}]
+        def _request(self, m, path, **kw):
+            self.deleted.append(path)
+            class R:
+                ok = True
+            return R()
+    from autoblog import site_setup
+    wp = FakeMenuWP()
+    n = site_setup._menu_dedupe(wp, 55)
+    assert n == 2 and wp.deleted == ["menu-items/4", "menu-items/6"], (n, wp.deleted)
+    # dedupe must never delete first occurrences
+    assert "menu-items/1" not in wp.deleted
+    print("7. footer menu duplicate auto-removal ✅")
 
 
 if __name__ == "__main__":
@@ -581,12 +668,12 @@ if __name__ == "__main__":
     t4_footer_token()
     t5_layouts()
     t6_wiring()
+    t7_menu_dedupe()
     print("ALL v24 TESTS PASSED ✔")
 DT_EOF
-echo "→ main.py / site_setup.py / radar_test.py patches..."
-python3 - <<'PY_EOF'
 
-import re
+echo "-> main.py / site_setup.py / radar_test.py patches..."
+python3 - <<'PY_EOF'
 from pathlib import Path
 
 def patch(path, old, new, guard):
@@ -597,11 +684,9 @@ def patch(path, old, new, guard):
     p.write_text(s.replace(old, new, 1), encoding="utf-8")
     print("patched:", path)
 
-# --- site_setup: design-kit step in run_setup ---
 ss_old = """    print("-" * 64)
     if dry:
         print("  Preview matrame. Apply cheyadaniki: run.py --setup")"""
-ss_new = ss_old.replace('"""', '@@')  # placeholder guard, replaced below
 ss_new = """    if not dry:
         # v24 DESIGN KIT — site-wide CSS via footer text widget (all pages)
         try:
@@ -611,7 +696,7 @@ ss_new = """    if not dry:
             f_stat, f_detail = design_kit.broken_footer_token(wp)
             if f_stat != "skip":
                 print(f"  \U0001f9b6 {'Footer token':28.28s} {f_stat}: {f_detail[:120]}")
-        except Exception as exc:
+        except Exception as exc:  # noqa: BLE001
             print(f"  \U0001f3a8 Design kit failed (harmless): {str(exc)[:100]}")
     print("-" * 64)
     if dry:
@@ -619,7 +704,54 @@ ss_new = """    if not dry:
         print("  (apply lo v24 Design kit site-wide CSS kuda install avutundi)")"""
 patch("autoblog/site_setup.py", ss_old, ss_new, "design_kit")
 
-# --- main.py: --polish flag + handler ---
+md_old = """        have_titles = set()
+        if menu:
+            try:
+                have_titles = {(it.get("title") or "")
+                               for it in wp.get_menu_items(menu["id"])}
+            except Exception:
+                pass"""
+md_new = md_old + """
+        n_dupes = _menu_dedupe(wp, menu["id"]) if (menu and not dry) else 0"""
+patch("autoblog/site_setup.py", md_old, md_new, "_menu_dedupe")
+
+md2_old = """            out.append(_line("OK", "Footer legal menu", "anni links unnayi"))"""
+md2_new = """            out.append(_line("OK", "Footer legal menu",
+                             "anni links unnayi"
+                             + (f" — {n_dupes} duplicate items removed"
+                                if n_dupes else "")))"""
+patch("autoblog/site_setup.py", md2_old, md2_new, "duplicate items removed")
+
+md3_old = """def audit_and_fix(wp, dry: bool = True)"""
+md3_new = '''def _menu_dedupe(wp, menu_id: int) -> int:
+    """v25: same title repeated in a menu (dup Terms/Privacy from past runs)
+    — keep first occurrence, DELETE extras via core REST. Returns removed."""
+    removed = 0
+    try:
+        items = wp.get_menu_items(menu_id) or []
+    except Exception:
+        return 0
+    seen = set()
+    for it in items:
+        title = (it.get("title") or "").strip()
+        if not title:
+            continue
+        if title in seen:
+            try:
+                r = wp._request("DELETE", f"menu-items/{it.get('id')}",
+                                params={"force": "true"})
+                if r.ok:
+                    removed += 1
+            except Exception:
+                pass
+        else:
+            seen.add(title)
+    return removed
+
+
+def audit_and_fix(wp, dry: bool = True)'''
+patch("autoblog/site_setup.py", md3_old, md3_new, "v25: same title repeated")
+
 mn_old = """    parser.add_argument("--keywords", action="store_true",
                         help="keyword dominance engine: matrix + coverage + autocomplete")
     args = parser.parse_args()"""
@@ -639,7 +771,7 @@ mn2_new = """    if args.polish:
         wp = WordPressClient()
         try:
             wp.check_connection()
-        except Exception as exc:
+        except Exception as exc:  # noqa: BLE001
             print(f"WP connect kaDU ({str(exc)[:70]}...) — "
                   "Appearance→Customize→Additional CSS lo paste cheyandi:")
             print(design_kit.build_css())
@@ -653,7 +785,6 @@ mn2_new = """    if args.polish:
     if args.rebuild_hubs:"""
 patch("autoblog/main.py", mn2_old, mn2_new, "if args.polish:")
 
-# --- radar_test: v24 layout names + crop-safety ---
 rt_old = """    blobs = {}
     for v in ("left", "bottom", "right"):
         out = tmp / f"thumb_{v}.jpg"
@@ -674,8 +805,11 @@ rt_new = """    blobs = {}
         assert r and out.exists() and out.stat().st_size > 5000, v
         with Image.open(out) as im:
             assert im.size == (config.IMAGE_WIDTH, config.IMAGE_HEIGHT), im.size
-            rgb = im.convert("RGB"); px = rgb.load()
-            W, H = rgb.size; minx, maxx = W, 0
+            # v24 CROP-PROOF: all bright text pixels inside center 60% band
+            rgb = im.convert("RGB")
+            px = rgb.load()
+            W, H = rgb.size
+            minx, maxx = W, 0
             for yy in range(0, H, 3):
                 for xx in range(0, W, 3):
                     cr, cg, cb = px[xx, yy]
@@ -686,11 +820,13 @@ rt_new = """    blobs = {}
     assert blobs["bottom"] != blobs["center"] != blobs["top"]"""
 patch("tests/radar_test.py", rt_old, rt_new, '"bottom", "center", "top"')
 print("PATCHES_DONE")
-
 PY_EOF
-echo "→ tests run chestunna..."
-python3 tests/design_test.py && python3 tests/radar_test.py >/dev/null 2>&1 && echo "design+radar OK" || echo "⚠️ pillo tests check: pip install pillow"
+
 echo ""
-echo "🎉 v24 hotfix complete!"
-echo "   Next:  python run.py --polish     (site-wide CSS install)"
-echo "          Footer token auto-fix avutundi; Customizer lo unte instructions chupistundi."
+echo "=== hotfix tests (PIL lekha poTE skip) ==="
+python3 tests/design_test.py || echo "(pillow required: pip install pillow)"
+echo ""
+echo "v24+v25 hotfix complete! Next:"
+echo "  1) python run.py --setup   # audit + design kit auto-install"
+echo "     (mariste: python run.py --polish)"
+echo "  2) site choodandi — cards/thumbs/footer anni polish ayi undali"
