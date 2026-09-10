@@ -13,3 +13,4 @@ __pycache__/
 .venv/
 venv/
 design_kit.json
+quiz_kit.json

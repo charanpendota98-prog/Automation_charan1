@@ -227,7 +227,11 @@ class WordPressClient:
         return term_id
 
     def ensure_categories(self) -> List[int]:
-        return [self.get_or_create_term(c, "categories") for c in config.CATEGORIES]
+        cats = list(config.CATEGORIES)
+        quiz_cat = getattr(config, "QUIZ_CATEGORY", "")
+        if quiz_cat and quiz_cat not in cats:
+            cats.append(quiz_cat)  # v26: Daily Quiz category
+        return [self.get_or_create_term(c, "categories") for c in cats]
 
     # ---------------------------------------------------------------- media
 

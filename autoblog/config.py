@@ -195,6 +195,20 @@ for _pair in _get("CATEGORY_PRIORITY",
         except ValueError:
             pass
 
+# --- v26: Daily Quiz Engine (exam-style interactive quizzes) --------------
+# Roju okka quiz post automatic ga publish avutundi (QUIZ_HOUR tarvata).
+QUIZ_ENABLED = _get("QUIZ_ENABLED", "1") not in ("0", "false", "no")
+QUIZ_CATEGORY = _get("QUIZ_CATEGORY", "Daily Quiz")
+QUIZ_HOUR = int(_get("QUIZ_HOUR", "8"))          # morning study time
+QUIZ_QUESTIONS = int(_get("QUIZ_QUESTIONS", "10"))
+QUIZ_SUNDAY_QUESTIONS = int(_get("QUIZ_SUNDAY_QUESTIONS", "20"))  # weekly mega mock
+QUIZ_TIME_PER_Q = int(_get("QUIZ_TIME_PER_Q", "60"))   # seconds/question (exam mode)
+QUIZ_NEGATIVE_MARK = _get("QUIZ_NEGATIVE_MARK", "1") not in ("0", "false", "no")
+# auto = day-of-week difficulty ramp (Mon L1 ... Sun Top-Level); 1-4 = fixed
+QUIZ_LEVEL = _get("QUIZ_LEVEL", "auto")
+# Quiz JSON cache (server-side analytics kosam; empty = off)
+QUIZ_LANGUAGE = _get("QUIZ_LANGUAGE", "te-en")   # bilingual Telugu+English
+
 # --- Images --------------------------------------------------------------
 IMAGE_ENABLED = _get("IMAGE_ENABLED", "1") not in ("0", "false", "no")
 IMAGE_WIDTH = int(_get("IMAGE_WIDTH", "1200"))

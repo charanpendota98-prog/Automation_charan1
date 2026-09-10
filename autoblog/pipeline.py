@@ -158,11 +158,18 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
     wp = WordPressClient()
     wp.check_connection()
 
+    is_quiz = article.get("article_type") == "quiz"
     # --- QA step 1: HTML sanitize (Gemini bad tags strip) ---
-    article["content_html"] = validator.sanitize_html(article["content_html"])
-    article = _hygiene(article)
-    # v18: Rank Math STRICT gate (actual panel checks) — low ante refine round
-    article = _rankmath_gate(article, article.get("category") or "")
+    if is_quiz:
+        # v26: quiz block ni memu build chesam (escaped) — sanitize only around it
+        from . import quiz_engine as _qe
+        article["content_html"] = _qe.sanitize_quiz_content(article["content_html"])
+        article = _hygiene(article)
+    else:
+        article["content_html"] = validator.sanitize_html(article["content_html"])
+        article = _hygiene(article)
+        # v18: Rank Math STRICT gate (actual panel checks) — low ante refine round
+        article = _rankmath_gate(article, article.get("category") or "")
 
     category_id = wp.get_or_create_term(article["category"], "categories")
     tag_ids = [wp.get_or_create_term(t, "tags") for t in article["tags"]]
@@ -185,22 +192,30 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
         if len(internal) < 2:
             internal.append({"link": f"{config.WP_SITE}/", "title": "studentup.in – Home"})
     today_str = (day or date.today()).isoformat()
-    final_html = seo.enhance(
-        article["content_html"],
-        focus_keyword=article.get("focus_keyword", ""),
-        internal_links=[{"link": p["link"], "title": p["title"]} for p in internal],
-        external_links=article.get("external_links", []),
-        quick_answer=article.get("quick_answer", ""),
-        faq=article.get("faq", []),
-        date_str=today_str,
-        slug=article["slug"],
-        title=article["title"],
-        description=article["meta_description"],
-        category=article.get("category", ""),
-        source_domains=article.get("_source_domains"),
-        list_items=article.get("list_items") if article.get("article_type") == "listicle" else None,
-        recruitment=article.get("recruitment"),
-    )
+    if is_quiz:
+        from . import quiz_engine as _qe
+        article["_link"] = ""   # real link publish tarvata telustundi; share bar
+        final_html = _qe.finalize_html(   # fallback = site home
+            article, internal_links=[
+                {"link": p["link"], "title": p["title"]} for p in internal],
+            site_url=config.WP_SITE + "/")
+    else:
+        final_html = seo.enhance(
+            article["content_html"],
+            focus_keyword=article.get("focus_keyword", ""),
+            internal_links=[{"link": p["link"], "title": p["title"]} for p in internal],
+            external_links=article.get("external_links", []),
+            quick_answer=article.get("quick_answer", ""),
+            faq=article.get("faq", []),
+            date_str=today_str,
+            slug=article["slug"],
+            title=article["title"],
+            description=article["meta_description"],
+            category=article.get("category", ""),
+            source_domains=article.get("_source_domains"),
+            list_items=article.get("list_items") if article.get("article_type") == "listicle" else None,
+            recruitment=article.get("recruitment"),
+        )
     # in-content ads (viewability-optimized slots; AD_SHORTCODE set unte matrame)
     if config.AD_SHORTCODE:
         final_html = seo.insert_ad_shortcodes(
@@ -209,7 +224,8 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
     # revenue blocks: affiliate section + channel CTA (schema mundu insert)
     from . import monetize
 
-    final_html = monetize.append_blocks(final_html, article)
+    if not is_quiz:
+        final_html = monetize.append_blocks(final_html, article)
 
     # --- QA step 2: validation score + originality proof ---
     qa = validator.validate_article(article, final_html)
@@ -616,6 +632,97 @@ def create_listicle(topic: str = "", mock: bool = False) -> Dict:
                  ("secondary_keywords", []), ("quick_answer", ""),
                  ("faq", []), ("seo_title", ""), ("list_items", None)):
         article.setdefault(k, v)
+    return publish_article(article)
+
+
+# ------------------------------------------------------------------ daily quiz
+
+def create_quiz(topic: str = "", level: int = 0, questions: int = 0,
+                mock: bool = False, dry_run: bool = False) -> Dict:
+    """v26: Daily Quiz post — exam-style interactive MCQ quiz.
+
+    topic empty aithe roju automatic rotation (Mon GK ... Sun Mega Mock).
+    Telugu lo topic ichhina work avutundi (Gemini bilingual prompt).
+    """
+    from . import quiz_engine
+
+    now_day = date.today()
+    if topic:
+        # manual topic (Telugu ok) — level default 2, questions default
+        topic_en = topic.strip()
+        topic_te = topic.strip()
+        lvl = level or 2
+        n = questions or config.QUIZ_QUESTIONS
+    else:
+        topic_en, topic_te, lvl, n = quiz_engine.pick_daily_topic(now_day)
+        if questions:
+            n = questions
+        if level:
+            lvl = max(1, min(4, level))
+
+    log.info("Quiz mode: '%s' (%s) — L%d, %d questions%s",
+             topic_en, topic_te, lvl, n, " [MOCK]" if mock else "")
+    if mock:
+        quiz = quiz_engine.mock_quiz(topic_en, topic_te, lvl, n, now_day)
+    else:
+        if not (config.GEMINI_API_KEY or getattr(config, "GEMINI_API_KEYS", [])):
+            raise ValueError("GEMINI_API_KEY ledu — quiz generate avvaledu")
+        recent = state.recent_titles(config.STATE_PATH, limit=20)
+        quiz = gemini_client.generate_quiz(topic_en, topic_te, lvl, n,
+                                           now_day.year)
+        _ = recent  # future: question-level dedupe against old quizzes
+
+    content_html, uid = quiz_engine.build_quiz_html(quiz, topic_en, topic_te,
+                                                    lvl, n, now_day)
+    dstr = now_day.strftime("%d %B %Y")
+    title = (f"Daily Quiz – {dstr} | {topic_en} Telugu "
+             f"({quiz_engine.LEVEL_NAMES[lvl]})") if not topic else \
+            f"Quiz: {topic_en} Telugu ({quiz_engine.LEVEL_NAMES[lvl]})"
+    # duplicate guard: same-day/same-topic quiz already unda?
+    if state.title_exists(config.STATE_PATH, title):
+        raise ValueError(f"Quiz already generated today: {title}")
+    focus = "daily quiz telugu" if not topic else topic_en.lower()
+    article = {
+        "title": title,
+        "seo_title": title,
+        "slug": "",  # filled below
+        "category": config.QUIZ_CATEGORY,
+        "tags": ["Daily Quiz", "GK Quiz Telugu", topic_en, "Current Affairs Quiz",
+                 str(now_day.year)][:8],
+        "meta_description": (
+            f"{dstr} Daily Quiz Telugu lo — {topic_en} మీద {n} exam-style "
+            f"questions, timer + negative marking + explanations. "
+            f"ఆడండి, నేర్చుకోండి! (studentup.in free quiz)"),
+        "focus_keyword": focus,
+        "secondary_keywords": [topic_en, "quiz telugu", "gk telugu"],
+        "quick_answer": (f"ఈరోజు క్విజ్: {topic_en} — {n} questions, "
+                         f"Level {lvl}. Start Quiz నొక్కి వెంటనే మొదలుపెట్టండి."),
+        "banner_text": f"DAILY QUIZ\n{topic_en}\nLevel {lvl} • {quiz_engine.LEVEL_NAMES[lvl]}",
+        "faq": [],
+        "external_links": [],
+        "article_type": "quiz",
+        "content_html": content_html,
+        "_quiz": quiz,
+        "_quiz_level": lvl,
+        "_mock": mock,
+    }
+    from .main import _safe_slug
+    article["slug"] = seo.optimize_slug(
+        _safe_slug("", article["title"]), focus_keyword=focus)
+    log.info("Quiz ready: %s (uid=%s, %d questions)", title, uid,
+             len(quiz["questions"]))
+    if dry_run:
+        out_dir = config.OUTPUT_DIR / "quiz-dry"
+        out_dir.mkdir(parents=True, exist_ok=True)
+        final = article["content_html"]
+        fp = out_dir / f"{article['slug']}.html"
+        fp.write_text(
+            "<!doctype html><html><head><meta charset='utf-8'>"
+            f"<title>{article['title']}</title></head><body>"
+            f"<h1>{article['title']}</h1>{final}</body></html>",
+            encoding="utf-8")
+        log.info("QUIZ DRY-RUN saved to %s (state lo record cheyaledu)", fp)
+        return {"id": 0, "status": "dry-run", "link": str(fp)}
     return publish_article(article)
 
 

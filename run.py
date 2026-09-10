@@ -7,6 +7,8 @@
   python run.py --mock        offline test without Gemini key
   python run.py --status      show today's plan and stats
   python run.py --check-wp    test WordPress credentials
+  python run.py --quiz        v26: today's exam-style Daily Quiz (auto topic)
+  python run.py --quiz-kit    v26: update site-wide quiz UI (CSS+JS widget)
   python run.py --notify-test test Telegram/WhatsApp notifications
   python run.py --url LINK    source URL -> 100% original SEO rewrite post
 

@@ -114,6 +114,45 @@ center card / top pill — pixel-test tho verify). Inka:
 > ⚠️ E fixes anni GitHub PR #2 lo unnayi — **merge + server pull avvakapote site paapa code leni
 > run avuthundi**. First merge cheyandi!
 
+## 🎯 v26 — Daily Quiz Engine (exam-style, top-level interactive)
+
+RojU automatic ga **okka exam-style quiz post** publish avutundi — Adda247/Adda
+level interactivity, mana design kit palette lo:
+
+- **Exam Mode**: total timer (question ki 60s default), question palette
+  (answered/flagged/current), flag-for-review, confirm-before-submit,
+  **negative marking (+1 / −0.25)**, timeout aite auto-submit.
+- **Practice Mode**: option click chesinappude right/wrong + Telugu explanation.
+- **Results**: score, accuracy %, grade (Topper/Excellent/Good...), 🔥 daily
+  streak (localStorage), per-question review (mee answer vs correct +
+  explanation), WhatsApp share button.
+- **Bilingual**: prathi question English + Telugu script (`qt`), explanations
+  Telugu-mix. Telugu lo topic cheppina work avutundi.
+- **Difficulty ramp (auto)**: Mon L1 Basics → Tue L2 → Wed L3 → Thu L2 →
+  Fri L3 → Sat L4 → **Sun = 20-question Weekly Mega Mock (L4)**.
+  `QUIZ_LEVEL=1-4` tho fix cheyochu.
+- **SEO**: post lo static Answer Key + explanations (no-JS users + Google),
+  `Quiz` JSON-LD schema, dedicated **Daily Quiz** category (Telugu SEO copy).
+
+**Architecture** (post content sanitizer ni bypass cheyyakunda safe):
+quiz block = `<div class="su-quiz" data-quiz="...">` (escaped JSON only);
+actual exam UI (CSS+JS) **site-wide footer text widget** ga install avutundi —
+design kit (`--polish`) same mechanism, marker `suquiz26`, idempotent.
+`--setup` apply lo automatic ga install; leda `run.py --quiz-kit` manual.
+
+**Usage:**
+```bash
+python run.py --quiz                       # today's auto-rotation quiz (publish)
+python run.py --quiz --mock --dry-run      # offline preview (no keys/WP needed)
+python run.py --quiz-topic "స్కాలర్‌షిప్‌ల మీద క్విజ్" --quiz-level 3
+python run.py --quiz-questions 15 --quiz   # custom length
+python run.py --quiz-kit                   # update site-wide exam UI widget
+```
+Hourly cron lo `QUIZ_HOUR` (default 8 AM) tarvata first run lo quiz post
+vastundi; aa roju already ayyunte skip (idempotent). Config: `QUIZ_ENABLED`,
+`QUIZ_QUESTIONS`, `QUIZ_SUNDAY_QUESTIONS`, `QUIZ_TIME_PER_Q`,
+`QUIZ_NEGATIVE_MARK`, `QUIZ_CATEGORY` (.env).
+
 ## Setup Guide (Telugu)
 
 ### Step 1: Gemini API key (FREE) teyali
