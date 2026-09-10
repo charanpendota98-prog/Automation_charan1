@@ -371,6 +371,104 @@ def generate_listicle(topic: str, recent_titles: List[str], year: int) -> Dict:
     return article
 
 
+QUIZ_PROMPT_TEMPLATE = """You are a senior exam-content setter for studentup.in (Telugu education portal). Create a top-quality {level_name} level (L{level}) MCQ quiz for Telugu students on: {topic} ({topic_te}).
+
+Return ONLY valid JSON — exactly this schema:
+{{
+  "topic": "{topic}",
+  "topic_te": "{topic_te}",
+  "questions": [
+    {{
+      "q": "question in English (natural Telugu terms like 'ప్రభుత్వ ఉద్యోగాలు' allowed inside)",
+      "qt": "same question fully in Telugu script (accurate translation)",
+      "options": ["option A", "option B", "option C", "option D"],
+      "a": 0,
+      "x": "1-2 sentence explanation in Telugu+English mix (why the answer is correct)"
+    }}
+  ]
+}}
+
+HARD RULES:
+- EXACTLY {n} questions. All 4 options non-empty, plausible, unambiguous.
+- "a" = index (0-3) of the correct option. VARY positions — never all 0.
+- Difficulty L{level} ({level_name}): {level_hint}
+- Questions must be FACTUALLY CORRECT, well-known, verifiable knowledge (current affairs {year}, schemes, exams, science, AP/TS state facts). NEVER invent dates, amounts or fake schemes. When unsure, use evergreen facts.
+- Every question different angle — no near-duplicates.
+- "x" explanation: crisp, teaches one fact (Telugu script + English terms mix).
+- No question text longer than 220 characters; options under 90 chars each.
+- LANGUAGE: questions bilingual (q English-first, qt Telugu script); explanations Telugu-mix like Adda247 Telugu.
+
+Return ONLY the JSON object."""
+
+_LEVEL_HINTS = {
+    1: "direct, one-fact recall questions every student should know.",
+    2: "concept + fact mix; 1-2 options close distractors.",
+    3: "application & statement-based; tricky distractors, exam-grade.",
+    4: "multi-statement, assertion-reason style, topper-level precision.",
+}
+
+
+def generate_quiz(topic: str, topic_te: str, level: int, n: int,
+                  year: int) -> Dict:
+    """Bilingual exam-grade MCQ set. Returns normalized quiz dict.
+    Raises GeminiError after retries (validation feedback appended)."""
+    if not config.GEMINI_API_KEY and not _api_keys():
+        raise GeminiError("GEMINI_API_KEY not set")
+    prompt = QUIZ_PROMPT_TEMPLATE.format(
+        topic=topic, topic_te=topic_te, level=level, n=n, year=year,
+        level_name=QUIZ_LEVEL_NAMES.get(level, "Mixed"),
+        level_hint=_LEVEL_HINTS.get(level, _LEVEL_HINTS[2]),
+    )
+    last_err: Optional[Exception] = None
+    for attempt in range(1, config.GEMINI_MAX_RETRIES + 1):
+        for model in _models():
+            for key in _usable_keys():
+                try:
+                    raw = _call_model(model, prompt, key)
+                    quiz = _parse_json(raw)
+                    problems = validate_quiz_shape(quiz, n)
+                    if problems:
+                        raise GeminiError("VALIDATION: " + "; ".join(problems[:4]))
+                    _bump_key(key)
+                    quiz = normalize_quiz_shape(quiz, n)
+                    quiz["model"] = model
+                    return quiz
+                except GeminiError as exc:
+                    msg = str(exc)
+                    if msg.startswith("MODEL_NOT_FOUND"):
+                        break
+                    if msg.startswith(("QUOTA_KEY", "BAD_KEY")):
+                        _mark_key_dead(key, msg.split(":")[0])
+                        last_err = exc
+                        continue
+                    last_err = exc
+                    if msg.startswith("VALIDATION") and attempt < config.GEMINI_MAX_RETRIES:
+                        # feedback loop: tell the model exactly what to fix
+                        prompt += ("\n\nPREVIOUS OUTPUT PROBLEMS (fix ALL — "
+                                   + msg[11:200] + "). Return the FULL corrected JSON.")
+                    break
+                except (json.JSONDecodeError, ValueError) as exc:
+                    last_err = GeminiError(f"Quiz JSON parse failed: {exc}")
+                    break
+        if attempt < config.GEMINI_MAX_RETRIES:
+            time.sleep(min(30, 5 * (2 ** (attempt - 1))))
+    raise GeminiError(f"Quiz generation failed: {last_err}")
+
+
+# thin aliases so gemini_client stays decoupled from quiz_engine imports
+QUIZ_LEVEL_NAMES = {1: "Basics", 2: "Intermediate", 3: "Advanced", 4: "Top Level"}
+
+
+def validate_quiz_shape(quiz: Dict, n: int) -> List[str]:
+    from . import quiz_engine
+    return quiz_engine.validate_quiz(quiz, n)
+
+
+def normalize_quiz_shape(quiz: Dict, n: int) -> Dict:
+    from . import quiz_engine
+    return quiz_engine.normalize_quiz(quiz, n)
+
+
 def generate_update(
     existing_title: str,
     existing_text: str,

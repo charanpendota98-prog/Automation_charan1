@@ -68,6 +68,10 @@ CAT_DESCS: Dict[str, str] = {
     "Internships":
         "IIT, IIM, DRDO, startup internships — stipend, apply process, "
         "eligibility complete details Telugu lo.",
+    "Daily Quiz":
+        "Prathi roju exam-style Daily Quiz Telugu lo — GK, current affairs, "
+        "scholarships, maths & reasoning. Timer, negative marking, "
+        "explanations tho free practice.",
 }
 
 
@@ -344,6 +348,13 @@ def run_setup(dry: bool = True, wp=None) -> int:
                 print(f"  🦶 {'Footer token':28.28s} {f_stat}: {f_detail[:120]}")
         except Exception as exc:  # noqa: BLE001
             print(f"  🎨 Design kit failed (harmless): {str(exc)[:100]}")
+        # v26 QUIZ ENGINE — site-wide exam UI (CSS+JS footer widget)
+        try:
+            from . import quiz_engine
+            q_status, q_detail = quiz_engine.install(wp)
+            print(f"  🎯 {'Quiz engine':28.28s} {q_status}: {q_detail[:120]}")
+        except Exception as exc:  # noqa: BLE001
+            print(f"  🎯 Quiz engine failed (harmless): {str(exc)[:100]}")
     print("-" * 64)
     if dry:
         print("  Preview matrame. Apply cheyadaniki: run.py --setup")

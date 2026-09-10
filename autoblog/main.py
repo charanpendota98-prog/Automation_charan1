@@ -88,7 +88,9 @@ def generate_one(category: str, mock: bool, mock_index: int = 0,
 
 def run(dry_run: bool, force: bool, mock: bool, category: str = "",
         source_url: str = "", process_queue: int = 0, update_id: int = 0,
-        listicle: str = "", auto_refresh_n: int = 0) -> int:
+        listicle: str = "", auto_refresh_n: int = 0,
+        quiz: bool = False, quiz_topic: str = "", quiz_level: int = 0,
+        quiz_questions: int = 0) -> int:
     now = _now()
     today = now.date()
     now_hour = now.hour
@@ -120,6 +122,14 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
     if listicle:
         result = pipeline.create_listicle(topic=listicle, mock=mock)
         log.info("LISTICLE READY ✔ %s (status=%s)", result["link"], result["status"])
+        return 0
+
+    # --- manual quiz mode (--quiz / --quiz-topic "...") ----------------------
+    if quiz or quiz_topic:
+        result = pipeline.create_quiz(topic=quiz_topic, level=quiz_level,
+                                      questions=quiz_questions, mock=mock,
+                                      dry_run=dry_run)
+        log.info("QUIZ READY ✔ %s (status=%s)", result["link"], result["status"])
         return 0
 
     # --- manual auto-refresh (--auto-refresh N) ------------------------------
@@ -179,6 +189,29 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
                 state.meta_set(config.STATE_PATH, f"autorefresh:{today.isoformat()}", "1")
             except Exception:
                 log.exception("Daily auto-refresh failed")
+        # --- v26: Daily Quiz slot — roju okati, QUIZ_HOUR tarvata ---
+        if (config.QUIZ_ENABLED
+                and now_hour >= config.QUIZ_HOUR
+                and not state.meta_get(config.STATE_PATH,
+                                       f"quizdate:{today.isoformat()}")):
+            if not mock and not config.GEMINI_API_KEY \
+                    and not getattr(config, "GEMINI_API_KEYS", []):
+                log.warning("QUIZ skip — GEMINI_API_KEY ledu")
+            else:
+                try:
+                    result = pipeline.create_quiz(mock=mock)
+                    state.meta_set(config.STATE_PATH,
+                                   f"quizdate:{today.isoformat()}", "1")
+                    log.info("DAILY QUIZ READY ✔ %s (status=%s)",
+                             result["link"], result["status"])
+                    return 0
+                except ValueError as exc:
+                    # already generated today (manual --quiz) — mark & move on
+                    state.meta_set(config.STATE_PATH,
+                                   f"quizdate:{today.isoformat()}", "1")
+                    log.info("Daily quiz already done: %s", exc)
+                except Exception:
+                    log.exception("Daily quiz failed — regular posting continues")
         # --- v15/v16: Breaking-News Radar — every RADAR_INTERVAL_HOURS ---
         if (config.RADAR_ENABLED
                 and (now_hour - config.RADAR_HOUR) % max(1, config.RADAR_INTERVAL_HOURS) == 0
@@ -989,6 +1022,19 @@ def main() -> int:
                         help="v24: site-wide design kit CSS via footer widget — "
                              "colors/typography/tables/cards on ALL pages. "
                              "Idempotent; re-run after theme changes.")
+    parser.add_argument("--quiz", action="store_true",
+                        help="v26: generate today's Daily Quiz (auto topic rotation) "
+                             "and publish")
+    parser.add_argument("--quiz-topic", default="",
+                        help="custom quiz topic (Telugu lo cheppina ok — "
+                             "e.g. --quiz-topic \"స్కాలర్‌షిప్‌ల మీద క్విజ్\")")
+    parser.add_argument("--quiz-level", type=int, default=0,
+                        help="quiz difficulty 1-4 (default: day-based auto ramp)")
+    parser.add_argument("--quiz-questions", type=int, default=0,
+                        help="number of questions (default: QUIZ_QUESTIONS)")
+    parser.add_argument("--quiz-kit", action="store_true",
+                        help="v26: install/update site-wide quiz engine "
+                             "(CSS+JS footer widget) — exam UI, timers, scoring")
     args = parser.parse_args()
 
     _setup_logging()
@@ -1032,6 +1078,28 @@ def main() -> int:
         f_stat, f_detail = design_kit.broken_footer_token(wp)
         print(f"🎨 Design kit: {status} — {detail}")
         print(f"🦶 Footer token: {f_stat} — {f_detail}")
+        # v26: quiz engine site-wide CSS+JS (same widget mechanism)
+        try:
+            from . import quiz_engine
+            q_stat, q_detail = quiz_engine.install(wp)
+            print(f"🎯 Quiz engine: {q_stat} — {q_detail}")
+        except Exception as exc:  # noqa: BLE001
+            print(f"🎯 Quiz engine failed (harmless): {str(exc)[:100]}")
+        return 0
+
+    if args.quiz_kit:
+        from . import quiz_engine
+        from .wordpress_client import WordPressClient
+        wp = WordPressClient()
+        try:
+            wp.check_connection()
+        except Exception as exc:  # noqa: BLE001
+            print(f"WP connect kaDU ({str(exc)[:70]}...) — "
+                  "Appearance→Widgets lo text widget lo paste cheyandi:")
+            print(quiz_engine.build_widget_html())
+            return 0
+        status, detail = quiz_engine.install(wp)
+        print(f"🎯 Quiz engine: {status} — {detail}")
         return 0
 
     if args.rebuild_hubs:
@@ -1052,7 +1120,10 @@ def main() -> int:
         return run(dry_run=args.dry_run, force=args.force, mock=args.mock,
                    category=args.category, source_url=src,
                    process_queue=args.process_queue, update_id=args.update,
-                   listicle=listicle_arg, auto_refresh_n=args.auto_refresh)
+                   listicle=listicle_arg, auto_refresh_n=args.auto_refresh,
+                   quiz=args.quiz, quiz_topic=args.quiz_topic,
+                   quiz_level=args.quiz_level,
+                   quiz_questions=args.quiz_questions)
     except wordpress_client.WordPressAuthError as exc:
         log.error("%s", exc)
         return 3
