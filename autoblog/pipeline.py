@@ -61,6 +61,12 @@ def classify_category(title: str, text: str = "") -> str:
     return best
 
 
+# v15 tag hygiene: brand/junk tags create cheyakudadu (SEO value undadu)
+JUNK_TAGS = {"studentup", "studentup.in", "studentupin", "news", "latest",
+             "update", "updates", "breaking", "breaking news", "viral",
+             "trending", "2026", "2025", "students", "telugu news"}
+
+
 def _hygiene(article: Dict) -> Dict:
     """Chinna chinna quality fixes publish mundhe."""
     # title too long -> seo_title use cheyi (Rank Math 60-75 chars ideal)
@@ -68,13 +74,18 @@ def _hygiene(article: Dict) -> Dict:
     seo_title = article.get("seo_title", "")
     if len(title) > 85 and seo_title and 20 <= len(seo_title) <= 85:
         article["title"] = seo_title
-    # tags: dedupe + max 32 chars + max 8
+    # tags: junk blocklist + dedupe + max 32 chars + max 8 (v15 hygiene —
+    # "Studentup.in"/"News" lanti value-leni tags create avvakudadu)
     seen, tags = set(), []
     for t in article.get("tags", []):
         t = str(t).strip()[:32]
-        if t and t.lower() not in seen:
-            seen.add(t.lower())
-            tags.append(t)
+        low = t.lower()
+        if not t or low in JUNK_TAGS or low in seen:
+            continue
+        seen.add(low)
+        tags.append(t)
+    if not tags:
+        tags = [article.get("category", "Students"), str(date.today().year)]
     article["tags"] = tags[:8]
     # meta description fallback: quick_answer or first para nunchi
     md = (article.get("meta_description") or "").strip()
@@ -86,6 +97,62 @@ def _hygiene(article: Dict) -> Dict:
     return article
 
 
+def _rankmath_gate(article: dict, category: str) -> dict:
+    """v18: strict Rank Math scoring → ONE automatic refine round if below RM_TARGET.
+
+    Scorer mimics the actual Rank Math content checks (capped /100 — QA lo
+    inflation undadu). Refine preserves slug (internal links stay valid).
+    Mock/no-key flows skip silently.
+    """
+    if article.get("_mock") or not getattr(config, "RM_REFINE_ROUNDS", 1):
+        return article
+    if not (config.GEMINI_API_KEY or getattr(config, "GEMINI_API_KEYS", [])):
+        return article
+    strict = validator.rankmath_strict(article, article.get("content_html", ""))
+    article["_rm_pre"] = strict["score"]
+    # v21 FACT GUARD: dates/counts source lo verify-avgathi refine fixes lo
+    facts_before: list = []
+    if getattr(config, "FACT_STRICT", True) and article.get("_source_texts"):
+        facts_before = validator.fact_guard(
+            article.get("content_html", ""), article["_source_texts"])
+        if facts_before:
+            log.warning("FACT GUARD: %d unverified data item(s): %s",
+                        len(facts_before), "; ".join(facts_before[:3]))
+    article["_fact"] = facts_before
+    if (strict["score"] >= getattr(config, "RM_TARGET", 90)
+            and not strict["fixes"]) and not facts_before:
+        return article
+    fixes = list(strict["fixes"]) + [
+        f"SUSPECT data remove/verify cheyandi — {x}" for x in facts_before]
+    log.info("RankMath strict %d/100 (<%d) + facts — refine round (%d fixes)",
+             strict["score"], config.RM_TARGET, len(fixes))
+    try:
+        improved = gemini_client.refine_article(article, fixes[:12])
+        rm2 = validator.rankmath_strict(improved, improved.get("content_html", ""))
+        facts_after = (validator.fact_guard(
+            improved.get("content_html", ""), article["_source_texts"])
+            if facts_before else [])
+        if facts_after:
+            log.warning("FACT GUARD after refine: %d still unverified", len(facts_after))
+        improved["_fact"] = facts_after
+        facts_fixed = facts_before and not facts_after
+        if rm2["score"] > strict["score"] or facts_fixed:
+            log.info("Refine helped: %d -> %d/100", strict["score"], rm2["score"])
+            for k in ("title", "banner_text", "meta_description",
+                      "content_html", "tags", "focus_keyword"):
+                if improved.get(k):
+                    article[k] = improved[k]
+            article["_rm"] = rm2
+            article["_fact"] = improved.get("_fact", facts_after)
+            article["refined"] = True
+        else:
+            log.info("Refine did not help (%d/100) — keeping original draft",
+                     rm2["score"])
+    except Exception as exc:  # noqa: BLE001 — refine best-effantundi
+        log.warning("Refine round failed (%s) — continuing with original", exc)
+    return article
+
+
 def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
     """Full publish flow for a generated article dict. Returns WP result."""
     wp = WordPressClient()
@@ -94,6 +161,8 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
     # --- QA step 1: HTML sanitize (Gemini bad tags strip) ---
     article["content_html"] = validator.sanitize_html(article["content_html"])
     article = _hygiene(article)
+    # v18: Rank Math STRICT gate (actual panel checks) — low ante refine round
+    article = _rankmath_gate(article, article.get("category") or "")
 
     category_id = wp.get_or_create_term(article["category"], "categories")
     tag_ids = [wp.get_or_create_term(t, "tags") for t in article["tags"]]
@@ -130,6 +199,7 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
         category=article.get("category", ""),
         source_domains=article.get("_source_domains"),
         list_items=article.get("list_items") if article.get("article_type") == "listicle" else None,
+        recruitment=article.get("recruitment"),
     )
     # in-content ads (viewability-optimized slots; AD_SHORTCODE set unte matrame)
     if config.AD_SHORTCODE:
@@ -144,12 +214,18 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
     # --- QA step 2: validation score + originality proof ---
     qa = validator.validate_article(article, final_html)
     article["_qa"] = qa
+    article["_rm"] = validator.rankmath_strict(article, final_html)
     if article.get("_source_texts"):
         article["_orig"] = validator.originality_score(
             final_html, article["_source_texts"])
     log.info("QA score %s/100 (words=%d) originality=%s%% issues=%s",
              qa["score"], qa["words"], article.get("_orig", "n/a"),
              qa["issues"][:3] or "none")
+    try:  # v19: dup-guard memory (scaled-content protection for FUTURE posts)
+        state.save_fingerprint(config.STATE_PATH, article["slug"],
+                               validator.fingerprint_tokens(final_html))
+    except Exception:
+        pass
 
     # --- featured image (alt text lo focus keyword) ---
     image_path = Path(config.OUTPUT_DIR / "images" / f"{article['slug']}.jpg")
@@ -323,6 +399,34 @@ def create_from_source(url: str, mock: bool = False, category: str = "") -> Dict
                     article, orig = retry_article, retry_orig
             except gemini_client.GeminiError:
                 log.exception("Regenerate failed — first version e continue")
+        # v18 HARD FLOOR: near-copy anipichte publish EEDU (AdSense rule #1 —
+        # copied content unte site approve avakapote runtime lo ban risk)
+        floor = getattr(config, "ORIG_HARD_FLOOR", 72)
+        if orig < floor:
+            raise RuntimeError(
+                f"SKIP-NEAR-COPY: best originality {orig:.1f}% < hard floor "
+                f"{floor}% — ee source ni skip chestunnam (AdSense risk). "
+                f"Inko deep-rewrite source try cheyandi: {src.url}")
+
+    # v19: near-duplicate guard — Google "scaled content abuse" policy:
+    # swapped-name/only-date-changed pages site-wide signal ni charchestayi.
+    # Mana published posts tho ee level dup ante SKIP (AdSense + ranking both).
+    try:
+        ratio, match = validator.near_duplicate(
+            article["title"], article["content_html"],
+            state.load_fingerprints(config.STATE_PATH),
+            config.DUP_JACCARD_SKIP)
+        if ratio >= config.DUP_JACCARD_SKIP:
+            raise RuntimeError(
+                f"SKIP-NEAR-DUP: {ratio:.0%} overlap with existing post "
+                f"'{match}' — different exam/notification topic pick cheyandi")
+        elif ratio >= 0.40:
+            log.warning("Near-dup warning: %.0f%% overlap with '%s' (ok, but watch)",
+                        ratio, match)
+    except RuntimeError:
+        raise
+    except Exception as exc:  # noqa: BLE001 — guard never blocks on infra error
+        log.warning("Dup guard skipped (%s)", exc)
 
     # --- QA data (notification + trust box kosam) ---
     article["_source_texts"] = [src.text] + [e.text for e in extras]
@@ -444,6 +548,7 @@ def update_post(post_id: int, new_source_urls=None, mock: bool = False) -> Dict:
         description=article["meta_description"],
         category=article.get("category", ""),
         source_domains=[e.site_name for e in extras],
+        recruitment=article.get("recruitment"),
     )
     qa = validator.validate_article(article, final_html)
     article["_qa"] = qa

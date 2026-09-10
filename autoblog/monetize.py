@@ -71,9 +71,24 @@ def affiliate_block(article: Dict) -> str:
     )
 
 
+def featured_block() -> str:
+    """v20: coaching-center featured listing (AdSense policy: disclosure
+    + rel=sponsored mandatory). FEATURED_CTA_HTML env lo set cheste active."""
+    raw = (getattr(config, "FEATURED_CTA_HTML", "") or "").strip()
+    if not raw:
+        return ""
+    return (
+        '<div style="border:1px solid #D8CFB8;background:#F1E8CE;'
+        'padding:10px 14px;border-radius:6px;margin:18px 0;font-size:14px;">'
+        '<span style="font-size:11px;font-weight:700;letter-spacing:.5px;'
+        'text-transform:uppercase;color:#93711D;">Sponsored</span><br>'
+        + raw + "</div>"
+    )
+
+
 def append_blocks(html: str, article: Dict) -> str:
     """Monetization blocks ni schema scripts mundu insert chey."""
-    blocks = affiliate_block(article) + telegram_cta_block()
+    blocks = affiliate_block(article) + telegram_cta_block() + featured_block()
     if not blocks:
         return html
     idx = html.find('<script type="application/ld+json">')

@@ -33,6 +33,18 @@ RESPONSE_SCHEMA = {
         "quick_answer": {"type": "STRING"},
         "list_items": {"type": "ARRAY", "items": {"type": "STRING"}},
         "update_notes": {"type": "STRING"},
+        "recruitment": {
+            "type": "OBJECT",
+            "properties": {
+                "org_name": {"type": "STRING"},
+                "org_url": {"type": "STRING"},
+                "identifier": {"type": "STRING"},
+                "apply_end": {"type": "STRING"},
+                "salary_min": {"type": "INTEGER"},
+                "salary_max": {"type": "INTEGER"},
+                "location": {"type": "STRING"},
+            },
+        },
         "faq": {
             "type": "ARRAY",
             "items": {
@@ -401,26 +413,157 @@ RANK MATH WRITING RULES (follow exactly):
 - Consecutive sentences same word tho start cheyakudadu.
 - At least 2-3 internal-link-friendly phrases (mana site related topics peru mention cheyandi - " SSC CGL notification", " scholarship guide" lanti anchors) and 1-2 official site names (text anchor kosam).
 - Content lo table kavali + numbered/bulleted lists kavali (snippet eligibility).
+
+NO-COPY RULE (absolute — copyright + Google safety):
+- Vere website/article content nunchi SENTENCES, paragraph structure, headings order copy cheyakudadu.
+- FACTS (names, numbers, dates, process) matrame teesukuni — 100% mana own words lo, mana structure lo ravadam.
+- Source ki idi "rewrite" kaadu — idi "fresh expert article on the same facts". Duplicate-content penalty endukuadu.
+
+10X CONTENT STRATEGY (top publisher standard — beat every competitor):
+- Competitors ichina information ANNI + inka ekkuva ivvali: common mistakes section, pro tips, real numbers (pay matrix levels, fees, stipends — well-known values matrame), minimum 2 tables (info table + comparison table).
+- Step-by-step process ul/ol lists ga (screenshots em cheyalo exact ga) — reader action-ready ga undali.
+- Prathi section ki specific value: generic filler ("this is important") writing keellaadu — numbers, examples, caveats ivvali.
+- 5+ FAQ questions "People Also Ask" style lo — real ga students adige prashnalu (apply ela, eligibility, negative marking, direct link emiti).
+- E-E-A-T: official website link + "notification prakaram" phrasing + last-verified note — trust signals.
+
+KEYWORD DOMINANCE (Google #1 target — students search chese exact phrases):
+- Title FIRST words = focus keyword (exact search phrase, year tho — e.g. "SSC CGL 2026 Notification – ..."). Long hook tarvata.
+- Focus keyword first 100 words lo rawali; H2 headings lo students vesē long-tail intent words pettandi (apply online, eligibility, hall ticket, cut off, salary, direct link...).
+- Meta description focus keyword THO start (first 60 chars lo kanipinchali — SERP CTR).
+
+NATURAL TELUGU STYLE (reader kinchukune bhasha — 'grantha/translation' feel kaadu):
+- Simple spoken Telugu (anchorman style). Bhari sanskrit/Tat-samam words addu; tech terms ENGLISH script lo ne undali: notification, eligibility, apply online, cut off, hall ticket, vacancy, stipend.
+- Okka sentence 15-20 words merisi kaanadu; paragraph 2-3 sentences; kaani/అందువల్ల/మరోవైపు/అలాగే/చివరగా/ఉదాహరణకు connectives 30%+ sentences lo vaadi (Rank Math readability).
+- H2 headings 4-8 words — laabam cheppali (e.g. "SSC CGL 2026: Eligibility & Fee Details").
+- Prathi <li> step 10 words lo complete avvali (Rank Math "short list items" check — long steps FAIL avthayi).
+- Table cells lo words matrame (sentences kaadu); prathi cell 2-6 words.
+- Title 40-60 chars — focus keyword MODALO + year + number + power word (Complete/Best/Easy/Top).
+
+VALUE-ADD — source notice ni mirror cheyyakundu (Google scaled-content rule):
+- Job/notification posts: recruitment object fill cheyandi — apply_end = notice lo unna EXACT last date (YYYY-MM-DD; lekapote khali vadi, GUESS cheyyakundu), org_name/org_url official, salary_min/max real pay-band matrame, identifier = notification number.
+- H2s students phone lo adigina colloquial prashnalu laga: "Apply ela cheyali?", "Fee emiti?", "Eligibility enti?", "Selection ela?" (Telugu+English mix okati okka style).
+- Salary/vacancy ki table; last date unte paragraph lo "ippude apply cheste" type urgency (bot countdown badge automatic ga add chesthundi).
+- Prathi post ki value-add okkamaina undali: plain-language eligibility explain, important dates summary, related previous-exam links section — kevalam notice rephrase kaadu.
+- Secondary keywords natural ga body lo (stuffing kaadu) — ee phrases Google lo related searches ga vastayi.
 """
 
-def _call_model(model: str, prompt: str) -> str:
+def _key_tag(key: str) -> str:
+    import hashlib
+
+    return hashlib.sha1((key or "none").encode()).hexdigest()[:6]
+
+
+def _api_keys() -> List[str]:
+    keys = list(getattr(config, "GEMINI_API_KEYS", []) or [])
+    if config.GEMINI_API_KEY and config.GEMINI_API_KEY not in keys:
+        keys.append(config.GEMINI_API_KEY)
+    return keys
+
+
+def _usable_keys() -> List[str]:
+    """v18: RPD budget + daily dead-flag based key rotation (429 safe)."""
+    keys = _api_keys()
+    if len(keys) <= 1:
+        # unset key (mock/tests) — loop kenanga [None] return (key or GEMINI_API_KEY)
+        return keys or [None]
+    import hashlib
+    from datetime import date
+
+    from . import state
+
+    today = date.today().isoformat()
+    out = []
+    for k in keys:
+        kh = hashlib.sha1(k.encode()).hexdigest()[:8]
+        try:
+            if state.meta_get(config.STATE_PATH, f"gemkey:dead:{kh}:{today}"):
+                continue
+            n = int(state.meta_get(config.STATE_PATH, f"gemkey:cnt:{kh}:{today}") or 0)
+            if n < config.GEMINI_RPD_PER_KEY:
+                out.append((n, k))
+        except Exception:
+            out.append((0, k))
+    if not out:
+        return keys  # anni exhausted — aa again try (counter broken aiy unchu)
+    out.sort()  # usage takkuva key mundu
+    return [k for _, k in out]
+
+
+def _bump_key(key: str) -> None:
+    import hashlib
+    from datetime import date
+
+    from . import state
+
+    if not key:
+        return
+    kh = hashlib.sha1(key.encode()).hexdigest()[:8]
+    today = date.today().isoformat()
+    try:
+        n = int(state.meta_get(config.STATE_PATH, f"gemkey:cnt:{kh}:{today}") or 0)
+        state.meta_set(config.STATE_PATH, f"gemkey:cnt:{kh}:{today}", str(n + 1))
+    except Exception:
+        pass
+
+
+def _mark_key_dead(key: str, reason: str) -> None:
+    import hashlib
+    from datetime import date
+
+    from . import state
+
+    if not key:
+        return
+    kh = hashlib.sha1(key.encode()).hexdigest()[:8]
+    today = date.today().isoformat()
+    try:
+        state.meta_set(config.STATE_PATH, f"gemkey:dead:{kh}:{today}",
+                       reason[:80])
+    except Exception:
+        pass
+    log.warning("Gemini key ..%s marked for cooldown today (%s)", kh, reason[:60])
+
+
+def _call_model(model: str, prompt: str, key: Optional[str] = None) -> str:
+    key = key or config.GEMINI_API_KEY
+    # v17.1: Telugu JSON 8192 tokens lo truncate avtundi — 2.5 models ki
+    # 32k + thinking OFF; 2.0/1.5 flash max output 8192 (clamp — leda 400)
+    max_out = config.GEMINI_MAX_OUTPUT_TOKENS
+    if "2.5" in model:
+        max_out = min(max_out, 65536)
+    else:
+        max_out = min(max_out, 8192)
+    gen_config = {
+        "temperature": 0.95,
+        "topP": 0.95,
+        "maxOutputTokens": max_out,
+        "responseMimeType": "application/json",
+        "responseSchema": RESPONSE_SCHEMA,
+    }
+    if "2.5" in model:
+        # 2.5 thinking default ON — thinking tokens output budget tintayi -> OFF
+        gen_config["thinkingConfig"] = {"thinkingBudget": 0}
     payload = {
         "contents": [{"role": "user", "parts": [{"text": prompt}]}],
-        "generationConfig": {
-            "temperature": 0.95,
-            "topP": 0.95,
-            "maxOutputTokens": 8192,
-            "responseMimeType": "application/json",
-            "responseSchema": RESPONSE_SCHEMA,
-        },
+        "generationConfig": gen_config,
     }
     url = API_URL.format(model=model)
     resp = requests.post(
         url,
-        params={"key": config.GEMINI_API_KEY},
+        params={"key": key},
         json=payload,
         timeout=config.HTTP_TIMEOUT,
     )
+    if resp.status_code == 429:
+        raise GeminiError(f"QUOTA_KEY:{_key_tag(key)}:429")
+    if resp.status_code in (400, 403) and (
+            "quota" in resp.text.lower()
+            or "resource has been exhausted" in resp.text.lower()):
+        raise GeminiError(f"QUOTA_KEY:{_key_tag(key)}:{resp.status_code}")
+    if resp.status_code in (400, 403) and (
+            "api key not valid" in resp.text.lower()
+            or "permission denied on resource project" in resp.text.lower()):
+        raise GeminiError(f"BAD_KEY:{_key_tag(key)}")
     if resp.status_code == 404 or (resp.status_code == 400 and "not found" in resp.text.lower()):
         raise GeminiError(f"MODEL_NOT_FOUND:{model}")
     if resp.status_code == 429 or resp.status_code >= 500:
@@ -429,9 +572,81 @@ def _call_model(model: str, prompt: str) -> str:
         raise GeminiError(f"HTTP {resp.status_code}: {resp.text[:300]}")
     data = resp.json()
     try:
-        return data["candidates"][0]["content"]["parts"][0]["text"]
+        cand = data["candidates"][0]
     except (KeyError, IndexError) as exc:
         raise GeminiError(f"Unexpected API response shape: {data}") from exc
+    finish = cand.get("finishReason", "")
+    if finish == "MAX_TOKENS":
+        raise GeminiError("TRUNCATED:MAX_TOKENS (output cut — shorter retry kavali)")
+    try:
+        return cand["content"]["parts"][0]["text"]
+    except (KeyError, IndexError, TypeError) as exc:
+        raise GeminiError(f"Empty response (finishReason={finish}): {str(data)[:200]}") from exc
+
+
+def _generate_core(prompt: str, category: str = "", source=None,
+                   strict_category: bool = False) -> Dict:
+    """v18 core: keys × models loop, v17.1 adaptive truncation retry."""
+    models = _models()
+    last_err: Optional[Exception] = None
+    shorten = False
+    for attempt in range(1, config.GEMINI_MAX_RETRIES + 1):
+        for model in models:
+            for key in _usable_keys():
+                try:
+                    raw = _call_model(model, prompt, key)
+                    article = _parse_json(raw)
+                    for field in ("title", "slug", "meta_description", "content_html"):
+                        if not article.get(field):
+                            raise GeminiError(f"Empty field in response: {field}")
+                    article["tags"] = [str(t).strip() for t in
+                                       article.get("tags", []) if str(t).strip()][:8]
+                    if strict_category:
+                        article["category"] = category or "Online Education"
+                    else:
+                        article["category"] = (category
+                                               or article.get("category", "Education News"))
+                    article["model"] = model
+                    if source is not None:
+                        article["source_url"] = source.url
+                        article["source_title"] = source.title
+                    _bump_key(key)
+                    return article
+                except GeminiError as exc:
+                    msg = str(exc)
+                    if msg.startswith("MODEL_NOT_FOUND"):
+                        log.warning("Model %s unavailable, trying fallback...", model)
+                        break  # ee model ki keys varapadam prakasam ledu
+                    if msg.startswith(("QUOTA_KEY", "BAD_KEY")):
+                        _mark_key_dead(key, msg.split(":")[0])
+                        last_err = exc
+                        continue  # next key!
+                    last_err = exc
+                    if msg.startswith("TRUNCATED"):
+                        shorten = True
+                    break  # retryable -> next attempt
+                except (json.JSONDecodeError, ValueError) as exc:
+                    last_err = GeminiError(f"JSON parse failed: {exc}")
+                    if any(k in str(exc) for k in
+                           ("Unterminated", "Expecting", "Out of range")):
+                        shorten = True
+                    break
+        if shorten and "LENGTH OVERRIDE" not in prompt:
+            prompt += (
+                "\n\nLENGTH OVERRIDE (output token limit davvindi — vinipistu): "
+                "article ni 1400-1800 words lo COMPLETE ga rayandi. "
+                "Anni sections, tables, FAQ keep — kani prathi section crisp ga "
+                "(2-3 paragraphs). JSON ni 100% complete ga close cheyadam "
+                "guarantee."
+            )
+        if attempt < config.GEMINI_MAX_RETRIES:
+            time.sleep(min(45, 5 * (2 ** (attempt - 1))))
+    hint = ""
+    if isinstance(last_err, GeminiError) and str(last_err).startswith(("QUOTA", "BAD_KEY")):
+        hint = (" — GEMINI_API_KEYS lo inka keys add cheyandi "
+                "(free tier quota ayyipoyindi; .env lo comma tho separator)")
+    raise GeminiError(f"All attempts failed: {last_err}{hint}")
+
 
 
 def _parse_json(text: str) -> dict:
@@ -485,66 +700,58 @@ def generate_article(
             "Trend context ni mana education angle tho connect cheyandi."
         )
 
-    models = _models()
-    last_err: Optional[Exception] = None
-    for attempt in range(1, config.GEMINI_MAX_RETRIES + 1):
-        for model in models:
-            try:
-                raw = _call_model(model, prompt)
-                article = _parse_json(raw)
-                for field in ("title", "slug", "meta_description", "content_html"):
-                    if not article.get(field):
-                        raise GeminiError(f"Empty field in response: {field}")
-                article["tags"] = [str(t).strip() for t in article.get("tags", []) if str(t).strip()][:8]
-                article["category"] = category
-                article["model"] = model
-                return article
-            except GeminiError as exc:
-                msg = str(exc)
-                if msg.startswith("MODEL_NOT_FOUND"):
-                    log.warning("Model %s unavailable, trying fallback...", model)
-                    continue
-                last_err = exc
-                break  # retryable error -> go to next attempt (with backoff)
-            except (json.JSONDecodeError, ValueError) as exc:
-                last_err = GeminiError(f"JSON parse failed: {exc}")
-                break
-        time.sleep(min(45, 5 * (2 ** (attempt - 1))))
-    raise GeminiError(f"All attempts failed: {last_err}")
+    prompt = prompt + WRITING_RULES
+    return _generate_core(prompt, category, strict_category=True)
 
 
 def _generate_with_retries(prompt: str, category: str = "", source=None) -> Dict:
     """Common retry loop for all prompts. Returns article dict."""
     prompt = prompt + WRITING_RULES
-    models = _models()
-    last_err: Optional[Exception] = None
-    for attempt in range(1, config.GEMINI_MAX_RETRIES + 1):
-        for model in models:
-            try:
-                raw = _call_model(model, prompt)
-                article = _parse_json(raw)
-                for field in ("title", "slug", "meta_description", "content_html"):
-                    if not article.get(field):
-                        raise GeminiError(f"Empty field in response: {field}")
-                article["tags"] = [str(t).strip() for t in article.get("tags", []) if str(t).strip()][:8]
-                article["category"] = category or article.get("category", "Education News")
-                article["model"] = model
-                if source is not None:
-                    article["source_url"] = source.url
-                    article["source_title"] = source.title
-                return article
-            except GeminiError as exc:
-                msg = str(exc)
-                if msg.startswith("MODEL_NOT_FOUND"):
-                    log.warning("Model %s unavailable, trying fallback...", model)
-                    continue
-                last_err = exc
-                break
-            except (json.JSONDecodeError, ValueError) as exc:
-                last_err = GeminiError(f"JSON parse failed: {exc}")
-                break
-        time.sleep(min(45, 5 * (2 ** (attempt - 1))))
-    raise GeminiError(f"All attempts failed: {last_err}")
+    return _generate_core(prompt, category, source=source)
+
+
+REFINE_PROMPT_TEMPLATE = """You are a top Telugu SEO editor for studentup.in. Rank Math content analysis FAILED on the draft below. Fix ONLY the failing items and return the IMPROVED article — same topic, same facts, 100% original, natural spoken Telugu + English terms.
+
+=============== CURRENT DRAFT ===============
+TITLE: {title}
+FOCUS KEYWORD: {kw}
+META DESCRIPTION: {meta}
+CONTENT (HTML):
+{content}
+==============================================
+
+MUST FIX (item-by-item — Rank Math real checks):
+{fixes}
+
+REWRITE RULES:
+- Title 40-60 chars: focus keyword FIRST words + year + number + power word (Complete/Best/Easy/Top).
+- meta_description 110-156 chars, focus keyword THO start.
+- Focus keyword exact phrase ga: first paragraph + 2+ H2s + 8-14 times in body (0.5-3% density).
+- Prathi <li> 10 words lo complete avvali — pedda steps ni split cheyandi.
+- Prathi paragraph 2-3 sentences (120 words eravaddu). 300+ words unna section ki kotha <h2> add cheyandi.
+- Sentences lo connectives 30%+ (kaani/అందువల్ల/మరోవైపు/అలాగే/చివరగా).
+- Table (+1 ayna good), FAQ 3+ questions — maintain cheyandi.
+- Facts marchakundu — ADD missing value (fees, eligibility, steps) only well-known info.
+- recruitment object (org_name/apply_end/salary) unte correct ga maintain cheyandi — dates GUESS cheyyakundu.
+Return ONLY valid JSON (same schema)."""
+
+
+def refine_article(article: Dict, fixes: List[str]) -> Dict:
+    """v18: Rank Math gate fix round — same topic, corrected draft."""
+    if not config.GEMINI_API_KEY and not getattr(config, "GEMINI_API_KEYS", []):
+        raise GeminiError("GEMINI_API_KEY not set")
+    prompt = REFINE_PROMPT_TEMPLATE.format(
+        title=article.get("title", ""),
+        kw=article.get("focus_keyword", ""),
+        meta=article.get("meta_description", ""),
+        content=(article.get("content_html") or "")[:12000],
+        fixes="\n".join(f"- {f}" for f in fixes[:12]),
+    )
+    improved = _generate_core(prompt, article.get("category", ""),
+                              strict_category=True)
+    # identity stable ga undali — slug/url marchakudadu (internal links break avutayi)
+    improved["slug"] = article.get("slug") or improved.get("slug", "")
+    return improved
 
 
 def generate_article_from_source(

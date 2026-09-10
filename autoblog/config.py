@@ -86,6 +86,25 @@ HIGH_CPC_SHARE = int(_get("HIGH_CPC_SHARE", "30"))
 # https://api.callmebot.com/whatsapp.php?phone=+91XXXX&apikey=XXXX
 WHATSAPP_CALLMEBOT_URL = _get("WHATSAPP_CALLMEBOT_URL", "")
 
+# --- v15: District Breaking-News Radar + Channel Watch -------------------
+RADAR_ENABLED = _get("RADAR_ENABLED", "1") not in ("0", "false", "no")
+RADAR_HOUR = int(_get("RADAR_HOUR", "7"))               # first radar slot (IST)
+RADAR_INTERVAL_HOURS = int(_get("RADAR_INTERVAL_HOURS", "6"))  # 4x/day scan
+RADAR_DISTRICTS_PER_RUN = int(_get("RADAR_DISTRICTS_PER_RUN", "10"))
+RADAR_SOURCES_PER_RUN = int(_get("RADAR_SOURCES_PER_RUN", "10"))
+RADAR_POSTS_PER_DAY = int(_get("RADAR_POSTS_PER_DAY", "2"))
+# comma-separated: https://t.me/s/yourchannel,https://site.com/feed
+WATCH_SOURCES = _get("WATCH_SOURCES", "")
+
+# --- v16: Viral stories + tips share (%) in listicle rotation -------------
+VIRAL_LISTICLE_SHARE = int(_get("VIRAL_LISTICLE_SHARE", "30"))
+TIPS_SHARE = int(_get("TIPS_SHARE", "15"))
+
+# --- v17: Keyword Dominance Engine ---------------------------------------
+KEYWORD_DAILY_QUEUE = int(_get("KEYWORD_DAILY_QUEUE", "4"))
+# custom autocomplete seeds (comma); empty = top exams auto
+KEYWORD_SUGGEST_SEEDS = _get("KEYWORD_SUGGEST_SEEDS", "")
+
 # --- Gemini AI -----------------------------------------------------------
 GEMINI_API_KEY = _get("GEMINI_API_KEY", "")
 GEMINI_MODEL = _get("GEMINI_MODEL", "gemini-2.5-flash")
@@ -95,6 +114,51 @@ GEMINI_FALLBACK_MODELS = [
     if m.strip()
 ]
 GEMINI_MAX_RETRIES = int(_get("GEMINI_MAX_RETRIES", "3"))
+# v17.1: Telugu JSON 8192 tokens lo truncate avveti — big cap + env tunable
+GEMINI_MAX_OUTPUT_TOKENS = int(_get("GEMINI_MAX_OUTPUT_TOKENS", "32768"))
+# v18: Multiple Gemini keys — 429 quota rotation (comma-separated okka line)
+GEMINI_API_KEYS = [k.strip() for k in _get("GEMINI_API_KEYS", "").split(",")
+                   if k.strip()]
+GEMINI_RPD_PER_KEY = int(_get("GEMINI_RPD_PER_KEY", "1400"))
+# v18: Rank Math STRICT gate (real panel checks) — target + refine rounds
+RM_TARGET = int(_get("RM_TARGET", "90"))
+RM_REFINE_ROUNDS = int(_get("RM_REFINE_ROUNDS", "1"))
+# v18: AdSense-safe originality floor — ee % kindha post publish cheyyadu
+ORIG_HARD_FLOOR = float(_get("ORIG_HARD_FLOOR", "72"))
+# Mobile lo headings peddaga unte — responsive clamp CSS add (1=on)
+MOBILE_HEADLINE_TUNE = _get("MOBILE_HEADLINE_TUNE", "1") not in ("0", "false", "no")
+
+# v19 (playbook alignment): Google Jobs schema, deadline countdown, dup guard
+SUPPORT_EMAIL = _get("SUPPORT_EMAIL", "studentupinformative@gmail.com")
+
+# Real bylines (Google News + E-E-A-T require): "Name:Role;Name:Role"
+AUTHOR_TEAM = []
+for _a in _get("AUTHOR_TEAM",
+               "Charan Pendota:Founder & Editor;"
+               "Anand:Content Manager;"
+               "Naga Prathyu:Content Writer").split(";"):
+    if ":" in _a:
+        _n, _r = _a.split(":", 1)
+        AUTHOR_TEAM.append((_n.strip(), _r.strip()))
+    elif _a.strip():
+        AUTHOR_TEAM.append((_a.strip(), "Editorial Team"))
+
+# Authority hub pages (playbook: exam hubs = session depth + internal links)
+HUB_EXAMS = [x.strip() for x in _get(
+    "HUB_EXAMS",
+    "SSC CGL,SSC CHSL,SSC MTS,RRB Group D,RRB ALP,TET,TS DSC,"
+    "TSPSC Group 2,APPSC Group 2,ICET,TS Police Constable,SBI PO,"
+    "IBPS Clerk,Scholarships").split(",") if x.strip()]
+# Sponsored/featured listing CTA (AdSense disclosure REQUIRED with it)
+FEATURED_CTA_HTML = _get("FEATURED_CTA_HTML", "")
+JOB_SCHEMA_ENABLED = _get("JOB_SCHEMA_ENABLED", "1") not in ("0", "false", "no")
+# Google "scaled content abuse" rule — mana previous post tho ee threshold
+# dabbi dup ante source post SKIP avuthundi
+DUP_JACCARD_SKIP = float(_get("DUP_JACCARD_SKIP", "0.62"))
+
+# v21 FACT GUARD: article lo unna dates/numbers source lo verify ayyi unali
+# (fake deadline = Google News/AdSense ki chamathaga chaduvuna paadu)
+FACT_STRICT = _get("FACT_STRICT", "1") not in ("0", "false", "no")
 
 # --- Schedule ------------------------------------------------------------
 DAILY_MIN = int(_get("DAILY_MIN", "10"))     # min posts per day

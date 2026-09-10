@@ -62,6 +62,52 @@ HIGH_CPC_LISTICLE_IDEAS = [
     "Top 5 Government Jobs with Best Salary",
 ]
 
+# v16: VIRAL stories pool — channels lo viral ayye "Top N + benefit" style
+# (number + benefit + curiosity formula — "SSC 10 books", "SBI 5 topics" lanti vi)
+VIRAL_LISTICLE_IDEAS = [
+    "SSC Exam lo Must-Read 10 Books",
+    "SBI Job Pakka Ravadaniki 5 Topics",
+    "Bank Exam lo Vidipothunna 7 Mistakes",
+    "Interview lo Adigae 10 Important Questions",
+    "Students ki Amayiyam 6 Skills",
+    "FREE ga Nerchukune 8 Government Websites",
+    "Resume lo Pettsina 5 Power Words",
+    "Pakka Job Raaniki 5 Certifications",
+    "Govt Job ki Basic ga Chalse 7 Topics",
+    "Group Exams lo Easy ga Vache 10 Marks Topics",
+    "Typing Skill tho Pakka Vache 5 Govt Jobs",
+    "Night Study Perfect ga Cheyadaniki 6 Tips",
+    "English Kothagadaniki 5 FREE Apps",
+    "Vidyarthula ki 10 FREE Government Schemes",
+    "First Salary lo Cheyalsina 5 Things",
+    "12th Ayaka Pakka Ravé 9 Jobs",
+    "Degree tho Highest Salary 7 Jobs",
+    "Telangana lo High Salary 6 Govt Jobs",
+    "IBPS PO 7 Days Crash Study Plan",
+    "RRB Group D Pakka Vache 6 Easy Tricks",
+]
+
+# v17: TIPS pool — "every tip blog avvali" (evergreen student tips)
+TIPS_IDEAS = [
+    "Govt Exam Preparation Daily Timetable – Working Students Kosam",
+    "Negative Marking Strategy – Marks Penchukune 7 Tips",
+    "Last 30 Days Revision Plan – Govt Exams Kosam",
+    "Interview Body Language Tips – First Impression Power",
+    "Resume Writing Format – Freshers Kosam Free Templates",
+    "English Speaking Nerchukune 10 FREE Apps",
+    "Typing Test Practice – 40 WPM Ela Reach Avvali",
+    "Memory Power Penchukune 8 Science-Backed Tips",
+    "Current Affairs Daily Follow Avvali – Best 5 Sources",
+    "Mock Tests FREE ga Istunna 8 Websites",
+    "Group Study vs Solo Study – Evaru Best?",
+    "Exam Hall Lo Cheyakudadu – 7 Costly Mistakes",
+    "Physical Test (PET) Preparation – Police SI Aspirants",
+    "Pomodoro Study Method – Telugu lo Complete Guide",
+    "Best YouTube Channels for Govt Exams – Top 10 Telugu",
+    "Mobile Addiction Taginchi Study Focus Penchadam",
+]
+
+
 # Seasonal calendar — India education cycle prakaram topic priority
 SEASONAL_CATEGORIES = {
     # live-site category names tho remap (v14)
@@ -81,16 +127,24 @@ SEASONAL_CATEGORIES = {
 
 
 def pick_listicle_idea(recent_titles=None, month=None) -> str:
-    """HIGH_CPC_SHARE% chances high-CPC idea — smart revenue targeting."""
+    """Share-based pool pick: high-CPC → viral → tips → general listicle."""
     from . import config as _cfg
     import datetime as _dt
 
     recent = set(t.lower() for t in (recent_titles or []))
     month = month or _dt.date.today().month
-    all_ideas = LISTICLE_IDEAS + HIGH_CPC_LISTICLE_IDEAS
+    viral_share = getattr(_cfg, "VIRAL_LISTICLE_SHARE", 30)
+    tips_share = getattr(_cfg, "TIPS_SHARE", 15)
+    all_ideas = (LISTICLE_IDEAS + HIGH_CPC_LISTICLE_IDEAS
+                 + VIRAL_LISTICLE_IDEAS + TIPS_IDEAS)
     for _ in range(len(all_ideas) * 3):
-        if random.randint(1, 100) <= _cfg.HIGH_CPC_SHARE:
+        roll = random.randint(1, 100)
+        if roll <= _cfg.HIGH_CPC_SHARE:
             pool = HIGH_CPC_LISTICLE_IDEAS
+        elif roll <= _cfg.HIGH_CPC_SHARE + viral_share:
+            pool = VIRAL_LISTICLE_IDEAS
+        elif roll <= _cfg.HIGH_CPC_SHARE + viral_share + tips_share:
+            pool = TIPS_IDEAS
         else:
             pool = LISTICLE_IDEAS
         idea = random.choice(pool)

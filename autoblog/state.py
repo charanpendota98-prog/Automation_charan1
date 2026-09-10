@@ -272,3 +272,29 @@ def status_summary(db_path: Path, limit: int = 10) -> dict:
         ).fetchall()
         total = conn.execute("SELECT COUNT(*) c FROM posts").fetchone()["c"]
     return {"total": total, "last": [dict(r) for r in last]}
+
+
+# ---------------- v19: published-article fingerprints (dup guard) ----------------
+_FP_KEY = "***"
+_FP_CAP = 120
+
+
+def load_fingerprints(db_path) -> list:
+    import json as _json
+
+    raw = meta_get(db_path, _FP_KEY)
+    if not raw:
+        return []
+    try:
+        return _json.loads(raw)
+    except ValueError:
+        return []
+
+
+def save_fingerprint(db_path, slug: str, tokens: list) -> None:
+    import json as _json
+
+    rows = load_fingerprints(db_path)
+    rows = [r for r in rows if r.get("slug") != slug]
+    rows.insert(0, {"slug": slug, "t": list(tokens)[:250]})
+    meta_set(db_path, _FP_KEY, _json.dumps(rows[:_FP_CAP], ensure_ascii=False))

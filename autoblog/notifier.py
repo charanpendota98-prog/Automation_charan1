@@ -177,6 +177,18 @@ def notify_new_post(article: dict, result: dict) -> None:
     if qa:
         qa_bits.append(f"📊 QA: <b>{qa.get('score', '-')}/100</b>")
         qa_bits.append(f"📝 {qa.get('words', '-')} words · ⏱️ ~{qa.get('reading_min', '-')} min")
+    rm = article.get("_rm") or {}
+    if rm:
+        qa_bits.append("🎯 RankMath strict: <b>{}/100</b>".format(rm.get("score", "-")))
+    rec = article.get("recruitment") or {}
+    if rec.get("apply_end"):
+        qa_bits.append("📌 Google Jobs schema + deadline countdown ON "
+                       "(closes {})".format(rec["apply_end"]))
+    if article.get("_fact"):
+        qa_bits.append("⚠️ Fact flags: <b>{}</b> unverified — review "
+                       "mundu check: {}".format(
+                           len(article["_fact"]),
+                           esc(str(article["_fact"][0])[:60])))
     if article.get("_orig") is not None:
         qa_bits.append(f"🛡️ Originality: <b>{article['_orig']}%</b> (no-copy proof)")
     if qa_bits:
@@ -194,6 +206,16 @@ def notify_new_post(article: dict, result: dict) -> None:
     if config.TELEGRAM_BOT_TOKEN and (config.TELEGRAM_CHAT_ID or status == "draft"):
         buttons = post_buttons(post_id, result.get("link", "")) if status == "draft" else None
         send_telegram(text, buttons=buttons)
+
+    # v21: public Telegram CHANNEL broadcast — owned distribution (playbook
+    # advantage #3). ONLY published posts; drafts/mocks never go public.
+    ch = getattr(config, "TELEGRAM_CHANNEL_CHAT_ID", "")
+    if ch and status == "publish" and result.get("link") and not article.get("_mock"):
+        ch_msg = (f"📰 <b>{esc(title)}</b>\n"
+                  f"{esc(excerpt[:130])}\n\U0001f449 {esc(result['link'])}")
+        if config.TELEGRAM_CHANNEL_URL:
+            ch_msg += f"\n\n🔔 Inka alerts: {esc(config.TELEGRAM_CHANNEL_URL)}"
+        send_telegram(ch_msg, chat_id=ch)
 
     # WhatsApp text-only alert
     if config.WHATSAPP_CALLMEBOT_URL:

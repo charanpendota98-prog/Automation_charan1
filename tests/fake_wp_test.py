@@ -5,7 +5,6 @@ Verifies: auth headers, category/tag search+create, media upload, post create.
 """
 
 import json
-import re
 import sys
 import threading
 from http.server import BaseHTTPRequestHandler, HTTPServer

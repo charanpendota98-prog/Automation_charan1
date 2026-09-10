@@ -16,7 +16,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from autoblog import config, notifier, seo, sources, state  # noqa: E402
+from autoblog import config, seo, sources, state  # noqa: E402
 from autoblog.wordpress_client import WordPressClient  # noqa: E402
 
 tg_sent = []
