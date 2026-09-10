@@ -16,12 +16,11 @@ import re
 import string
 import subprocess
 import sys
-import unicodedata
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from autoblog import config, monetize, seo, topic_engine, validator  # noqa: E402
+from autoblog import monetize, seo, topic_engine, validator  # noqa: E402
 
 random.seed(20260907)
 
@@ -131,8 +130,6 @@ def main():
 
     # ---- 6. topic pickers 1000x (literal) ----
     import tempfile
-
-    import sqlite3
 
     tmp = Path(tempfile.mkdtemp()) / "s.db"
     from autoblog import state as st

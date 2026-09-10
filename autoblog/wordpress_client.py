@@ -61,6 +61,141 @@ class WordPressClient:
 
     # ---------------------------------------------------------------- terms
 
+    def published_count(self) -> int:
+        """X-WP-Total header — AdSense '20+ substantial posts' readiness."""
+        try:
+            r = self._request("GET", "posts",
+                              params={"status": "publish", "per_page": 1,
+                                      "_fields": "id"})
+            return int(r.headers.get("X-WP-Total", 0)) if r.ok else 0
+        except Exception:
+            return 0
+
+    def search_posts(self, term: str, per_page: int = 10) -> List[Dict]:
+        """Published posts matching term (hub pages kosam)."""
+        try:
+            r = self._request("GET", "posts", params={
+                "search": term, "status": "publish", "per_page": per_page,
+                "orderby": "date", "order": "desc",
+                "_fields": "id,link,title,date"})
+            if not r.ok:
+                return []
+            return [{"id": p.get("id"), "link": p.get("link", ""),
+                     "title": (p.get("title") or {}).get("rendered", ""),
+                     "date": p.get("date", "")} for p in r.json()]
+        except Exception:
+            log.exception("search_posts failed")
+            return []
+
+    def get_page_by_slug(self, slug: str) -> Optional[Dict]:
+        r = self._request("GET", "pages",
+                          params={"slug": slug, "status": "publish,draft",
+                                  "per_page": 1})
+        if r.ok and r.json():
+            pg = r.json()[0]
+            return {"id": pg.get("id"), "link": pg.get("link")}
+        return None
+
+    def upsert_page(self, title: str, content_html: str, slug: str) -> Dict:
+        """Slug-based idempotent page create/update (hub pages)."""
+        existing = self.get_page_by_slug(slug)
+        if existing:
+            r = self._request("PUT", f"pages/{existing['id']}",
+                              json={"title": title, "content": content_html})
+        else:
+            r = self._request("POST", "pages",
+                              json={"title": title, "content": content_html,
+                                    "slug": slug, "status": "publish"})
+        r.raise_for_status()
+        data = r.json()
+        return {"id": data.get("id"), "link": data.get("link")}
+
+    # ------------------------------------------------- v22: site admin (REST)
+    def get_settings(self) -> Dict:
+        r = self._request("GET", "settings")
+        return r.json() if r.ok else {}
+
+    def save_settings(self, payload: Dict) -> bool:
+        r = self._request("POST", "settings", json=payload)
+        return r.ok
+
+    def rest_namespaces(self) -> List[str]:
+        try:
+            r = self.session.get(f"{self.site}/wp-json/", timeout=30)
+            return list(r.json().get("namespaces", [])) if r.ok else []
+        except Exception:
+            return []
+
+    def public_get_status(self, path: str) -> tuple:
+        """Unauthenticated GET site+path -> (status_code, first 4KB text)."""
+        try:
+            r = self.session.get(f"{self.site}{path}", timeout=30)
+            return r.status_code, (r.text or "")[:4000]
+        except Exception:
+            return 0, ""
+
+    def list_categories(self) -> List[Dict]:
+        r = self._request("GET", "categories",
+                          params={"per_page": 60, "orderby": "count",
+                                  "order": "desc"})
+        if not r.ok:
+            return []
+        return [{"id": c["id"], "slug": c.get("slug", ""),
+                 "name": c.get("name", ""),
+                 "description": (c.get("description") or "").strip(),
+                 "count": c.get("count", 0)} for c in r.json()]
+
+    def update_category(self, cat_id: int, description: str) -> bool:
+        r = self._request("POST", f"categories/{cat_id}",
+                          json={"description": description})
+        return r.ok
+
+    def get_menus(self) -> List[Dict]:
+        r = self._request("GET", "menus", params={"per_page": 30})
+        return r.json() if r.ok else []
+
+    def create_menu(self, name: str, slug: str) -> Optional[int]:
+        r = self._request("POST", "menus", json={"name": name})
+        if not r.ok:
+            return None
+        return r.json().get("id")
+
+    def update_menu(self, menu_id: int, payload: Dict) -> bool:
+        r = self._request("POST", f"menus/{menu_id}", json=payload)
+        return r.ok
+
+    def get_menu_items(self, menu_id: int) -> List[Dict]:
+        r = self._request("GET", "menu-items",
+                          params={"menus": menu_id, "per_page": 100})
+        return r.json() if r.ok else []
+
+    def add_menu_item(self, menu_id: int, object_id: int, title: str,
+                      obj: str = "page") -> bool:
+        r = self._request("POST", "menu-items", json={
+            "menus": [menu_id], "object": obj, "object_id": object_id,
+            "title": title, "status": "publish"})
+        return r.ok
+
+    def get_locations(self) -> List[Dict]:
+        r = self._request("GET", "locations")
+        return r.json() if r.ok else []
+
+    def page_exists(self, slug: str) -> bool:
+        r = self._request("GET", "/pages",
+                          params={"slug": slug,
+                                  "status": "publish,draft,pending,private",
+                                  "per_page": 1})
+        return r.ok and bool(r.json())
+
+    def create_page(self, title: str, content_html: str, slug: str) -> Dict:
+        """AdSense-required static page (Privacy Policy / About / Contact)."""
+        r = self._request("POST", "/pages",
+                          json={"title": title, "content": content_html,
+                                "slug": slug, "status": "publish"})
+        r.raise_for_status()
+        data = r.json()
+        return {"id": data.get("id"), "link": data.get("link")}
+
     def get_or_create_term(self, name: str, term_type: str) -> int:
         """term_type: 'categories' or 'tags'. Returns WP term id."""
         cached = state.get_term_id(config.STATE_PATH, name, term_type)
@@ -206,6 +341,9 @@ class WordPressClient:
             "content": content_html,
             "status": status or config.DEFAULT_POST_STATUS,
             "excerpt": {"raw": excerpt},
+            # v22: spam/ping trackback ledu (AdSense quality + security)
+            "comment_status": "closed",
+            "ping_status": "closed",
         }
         if slug:
             payload["slug"] = slug

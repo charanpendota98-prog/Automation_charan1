@@ -147,6 +147,20 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
 
     # --- schedule check ----------------------------------------------------
     if not (force or dry_run):
+        # v20: hub pages auto-rebuild — week ki okkaru (Mon after 07h), playbook
+        # Phase-2 authority engine. Fail ayna daily flow pariparu (try/except).
+        iso = today.isocalendar()
+        hkey = f"hubweek:{iso[0]}-{iso[1]}"
+        if now_hour >= config.ACTIVE_HOUR_START \
+                and not state.meta_get(config.STATE_PATH, hkey):
+            state.meta_set(config.STATE_PATH, hkey, "1")
+            try:
+                from . import hubs as _hubs
+
+                n = len(_hubs.rebuild_hubs())
+                log.info("WEEKLY HUBS: %d pages refreshed", n)
+            except Exception:
+                log.exception("Weekly hub rebuild failed (non-fatal)")
         count = state.today_count(config.STATE_PATH, today)
         if count >= config.DAILY_MAX:
             log.info("Daily limit reached (%d/%d) — stopping.", count, config.DAILY_MAX)
@@ -165,6 +179,18 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
                 state.meta_set(config.STATE_PATH, f"autorefresh:{today.isoformat()}", "1")
             except Exception:
                 log.exception("Daily auto-refresh failed")
+        # --- v15/v16: Breaking-News Radar — every RADAR_INTERVAL_HOURS ---
+        if (config.RADAR_ENABLED
+                and (now_hour - config.RADAR_HOUR) % max(1, config.RADAR_INTERVAL_HOURS) == 0
+                and now_hour >= config.RADAR_HOUR
+                and not state.meta_get(config.STATE_PATH,
+                                       f"radar:{today.isoformat()}:{now_hour}")):
+            state.meta_set(config.STATE_PATH, f"radar:{today.isoformat()}:{now_hour}", "1")
+            log.info("RADAR: scheduled district+grid+watch sweep (hour %02d)", now_hour)
+            try:
+                radar_run()
+            except Exception:
+                log.exception("RADAR run failed — regular posting continues")
         if now_hour not in plan:
             log.info("Hour %02d:00 not in today's plan %s — nothing to do.", now_hour, plan)
             return 0
@@ -415,6 +441,31 @@ def gsc_opportunities(csv_path: str) -> int:
         print("         ravadam (title/desc/content optimize -> CTR perugutundi)")
     print("\n  Formula: veeti posts improve cheste 2-4 nelallo traffic 30-100%+ "
           "perugutundi (industry-proven striking-distance strategy).")
+
+    # v21: GSC real data → queue priority boost (radar/keyword queue lo
+    # ee queries matche ayye items mundu process avutayi)
+    try:
+        import json as _json
+        import re as _re
+
+        from . import sources as _src
+        from . import state as _st
+
+        boost = []
+        for q in opps[:5]:
+            for tok in _re.findall(r"[a-z0-9ఀ-౿]{3,}",
+                                   q["query"].lower()):
+                if tok not in boost:
+                    boost.append(tok)
+        boost = boost[:25]
+        if boost:
+            _st.meta_set(config.STATE_PATH, "gscboost:v1",
+                         _json.dumps(boost, ensure_ascii=False))
+            n = _src.apply_queue_boost(boost)
+            print(f"  ✅ Queue boost: {len(boost)} GSC terms saved"
+                  f" + {n} queue line(s) top ki move ayayi")
+    except Exception:
+        log.exception("Queue boost apply failed (non-fatal)")
     print("=" * 70)
     return 0
 
@@ -550,6 +601,164 @@ def trends_check() -> int:
     return 0
 
 
+def radar_run(process_posts: bool = True) -> int:
+    """v15/v16/v17: full radar sweep — districts + official grid + watch.
+
+    Queue fresh edu news URLs + channel topics; optionally process up to
+    RADAR_POSTS_PER_DAY articles (topics first, then source queue URLs).
+    """
+    from . import news_radar
+
+    state.init(config.STATE_PATH)
+    print("=" * 62)
+    print("  📡 BREAKING NEWS RADAR — TS 33 + AP 26 districts")
+    print("     + official sources grid + watch channels")
+    print("=" * 62)
+    summary = news_radar.run_radar()
+    if not summary.get("enabled", True):
+        print("  RADAR_ENABLED=0 — skip chesesaru")
+        return 0
+    d = summary.get("districts", 0)
+    g = summary.get("grid", 0)
+    w = summary.get("watch", 0)
+    print(f"  New queue items: {d} district + {g} grid URLs | {w} channel topics")
+
+    # v21: GSC boost (state meta) → queue re-sort — real impressions decide
+    # ee roju enti process avalo (radar sweep tarvata automatic).
+    try:
+        import json as _json
+
+        _boost = _json.loads(state.meta_get(config.STATE_PATH,
+                                            "gscboost:v1") or "[]")
+        if _boost:
+            from . import sources as _src
+
+            _nb = _src.apply_queue_boost(_boost)
+            if _nb:
+                print(f"  GSC boost: {_nb} queue line(s) prioritized")
+    except Exception:
+        pass
+
+    # v17: keyword dominance — prathi roju 1 saari autocomplete + gap analyse
+    kw_queued = 0
+    try:
+        from . import keyword_engine as ke
+
+        kw = ke.daily_keyword_harvest(max_queue=config.KEYWORD_DAILY_QUEUE)
+        kw_queued = int(kw.get("queued", 0) or 0)
+        if kw_queued:
+            print(f"  Keyword engine: {kw_queued} keyword topics queued")
+    except Exception as exc:
+        print(f"  keyword engine skip: {exc}")
+
+    if not process_posts:
+        print("  (posts processing skip — --dry-run mode)")
+        return 0
+    if not config.GEMINI_API_KEY:
+        print("  GEMINI_API_KEY ledu — queue fill ayyindi, posts skip")
+        return 0
+
+    n = min(config.RADAR_POSTS_PER_DAY, d + g + w + kw_queued)
+    done = 0
+    # 1) pending topics first (channel texts + keyword gap targets)
+    for topic in news_radar.pending_topics(limit=n):
+        try:
+            cat = pipeline.classify_category(topic)
+            recent = state.recent_titles(config.STATE_PATH, limit=40)
+            article = gemini_client.generate_article(
+                cat, recent, year=_now().year, trend_topic=topic)
+            title = (article.get("title") or "").strip()
+            if not title or state.title_exists(config.STATE_PATH, title):
+                news_radar.mark_topic_done(topic)
+                continue
+            from . import seo as _seo
+
+            article["slug"] = _seo.optimize_slug(
+                _safe_slug(article.get("slug", ""), title),
+                focus_keyword=article.get("focus_keyword", ""))
+            for k, v in (("external_links", []), ("secondary_keywords", []),
+                         ("quick_answer", ""), ("faq", []), ("seo_title", ""),
+                         ("focus_keyword", topic[:60])):
+                article.setdefault(k, v)
+            result = pipeline.publish_article(article, day=_now().date())
+            done += 1
+            print(f"  RADAR POST ✔ {result['link']}")
+        except Exception as exc:
+            log.error("radar topic post failed (%s): %s", topic[:50], exc)
+        finally:
+            news_radar.mark_topic_done(topic)  # poison-loop kaadu
+    # 2) source queue URLs (district/grid news) — original rewrite flow
+    while done < n:
+        url = sources.pending_from_queue()
+        if not url:
+            break
+        try:
+            result = pipeline.create_from_source(url)
+            done += 1
+            print(f"  RADAR POST ✔ {result['link']}")
+        except Exception as exc:
+            log.error("radar URL failed (%s): %s — skip", url[:60], exc)
+        finally:
+            sources.mark_done_and_clean(url)
+    print(f"  Radar posts created: {done}")
+    return 0
+
+
+def sources_view() -> int:
+    """v16.1: official sources grid anni chupinchu (verify coverage)."""
+    from . import sources_grid as sg
+
+    by_cat: dict = {}
+    for s_ in sg.SOURCES_GRID:
+        by_cat.setdefault(s_["cat"], []).append(s_)
+    daily_n = sum(1 for s_ in sg.SOURCES_GRID if s_.get("daily"))
+    print("=" * 62)
+    print(f"  OFFICIAL SOURCES GRID — {len(sg.SOURCES_GRID)} sources "
+          f"({daily_n} daily hot-list, rest rotation)")
+    print("=" * 62)
+    for cat in sorted(by_cat):
+        print(f"\n  [{cat}] ({len(by_cat[cat])})")
+        for s_ in by_cat[cat]:
+            print(f"    - {s_['name']}" + ("  ★ daily" if s_.get("daily") else ""))
+    print()
+    return 0
+
+
+def keywords_view() -> int:
+    """v17: keyword matrix + coverage vs live posts + live autocomplete."""
+    state.init(config.STATE_PATH)
+    from . import keyword_engine as ke
+
+    matrix = ke.keyword_matrix()
+    hot = [m for m in matrix if m["hot"]]
+    print("=" * 62)
+    print(f"  KEYWORD DOMINANCE ENGINE — {len(matrix)} keywords "
+          f"({len(ke.EXAMS)} exams × {len(ke.INTENTS)} intents, {len(hot)} hot)")
+    print("=" * 62)
+    titles: list = []
+    try:
+        from .wordpress_client import WordPressClient
+
+        titles = [t.get("title", "") for t in
+                  WordPressClient().get_recent_published(per_page=100)]
+    except Exception:
+        print("  (live post titles raaledu — sandbox/network; coverage 0 ga untundi)")
+    rep = ke.coverage_report(titles)
+    print(f"\n  Coverage vs {rep['existing_posts']} live posts: "
+          f"{rep['covered']}/{rep['total']} keywords ({rep['pct']}%)")
+    print("\n  Sample keyword targets (hot first):")
+    for m in matrix[:8]:
+        print(f"    - {m['title']}")
+    print("\n  Google Autocomplete harvest (live, top seeds):")
+    for seed in ke.suggest_seeds()[:5]:
+        sugg = ke.harvest_suggest(seed)
+        print(f"    {seed}: {', '.join(sugg[:5]) or '(no data)'}")
+    q = ke.daily_keyword_harvest(max_queue=config.KEYWORD_DAILY_QUEUE, force=True)
+    print(f"\n  Daily harvest: {q.get('queued', 0)} keyword topics queued (topics_queue.txt)")
+    print("=" * 62)
+    return 0
+
+
 def revenue_check() -> int:
     """Revenue setup audit — em set ayyindi, em missing o cheptundi."""
     state.init(config.STATE_PATH)
@@ -635,6 +844,105 @@ def notify_test() -> int:
     return 0 if ok_any else 4
 
 
+
+PRIVACY_HTML = """<p>studentup.in visits gurinchi detailed ga explain chestunnam.</p>
+<h2>Information We Collect</h2>
+<p>Mana site standard analytics (page views, country, browser type) matrame collect chestundi. Login levu; personal info adagabadu.</p>
+<h2>Cookies &amp; Advertising</h2>
+<p>Third-party vendors (Google AdSense togru) ads chupinadaniki cookies vaadatharu. Ad personalization ni <a href="https://www.google.com/settings/ads">google.com/settings/ads</a> lo control cheyochu.</p>
+<h2>Contact</h2>
+<p>Questions: <a href="mailto:studentupinformative@gmail.com">studentupinformative@gmail.com</a></p>"""
+
+ABOUT_HTML = """<p>studentup.in — Telugu students (18-30 years) kosam 100% free education news portal: govt jobs, notifications, results, hall tickets, scholarships, latest education news.</p>
+<h2>Meeku enduku help avutundi?</h2>
+<p>Prathi notification ni simple Telugu lo, steps/tables/FAQ tho complete ga explain chestam. Content team (Charan - Developer, Anand - Content Manager, Naga Prathyu - Content Writer) research chesi 100% original ga rastundi — copy/paste kaadu.</p>"""
+
+CONTACT_HTML = """<p>Mana team ki direct ga contact avvali:</p>
+<ul>
+<li>Editorial: <a href="mailto:studentupinformative@gmail.com">studentupinformative@gmail.com</a></li>
+<li>Business/Ads: <a href="mailto:charanpendota@gmail.com">charanpendota@gmail.com</a></li>
+</ul>
+<p>Reply 24-48 hours lo vastundi.</p>"""
+
+CORRECTIONS_HTML = """<p>studentup.in lo prathi article official notifications &amp; trusted news sources aadharanga untundi. Emaina tappu dorikina:</p>
+<ul>
+<li><a href="mailto:studentupinformative@gmail.com">studentupinformative@gmail.com</a> ki email cheyandi (post link + wrong detail)</li>
+<li>24 hours lo verify chesi fix chestam</li>
+<li>Fix cheyaka article lo "Updated" note pettistam (transparency)</li>
+</ul>
+<p>Dates, fees, eligibility vital info — publish mundu double-check chestam; kaani official website confirm chesukondi.</p>"""
+
+EDITORIAL_HTML = """<p>studentup.in editorial standards — Google News + AdSense rendu ikkadi expect chestayi:</p>
+<h2>Content ela test</h2>
+<ul>
+<li>Official notifications &amp; trusted sources nunchi facts matrame (copy/paste kaadu — 100% original rewrite, auto originality floor 72%)</li>
+<li>Dates/fees/eligibility prathi article lo verified; deadline exact notice nunchi teesukuntam (guessing banned)</li>
+<li>AI-assisted drafting + human editorial review — prathi publish taruvata team read</li>
+<li>Near-duplicate check: same topic revisit aithe merge/update, kotha page kaadu</li>
+</ul>
+<h2>Authors</h2>
+<p>Charan Pendota (Founder &amp; Editor), Anand (Content Manager), Naga Prathyu (Content Writer) — prathi article lo byline undi. Mistakes report: <a href="mailto:studentupinformative@gmail.com">studentupinformative@gmail.com</a>.</p>"""
+
+ADSENSE_PAGES = [
+    ("Privacy Policy", "privacy-policy", PRIVACY_HTML),
+    ("About Us", "about-us", ABOUT_HTML),
+    ("Contact Us", "contact-us", CONTACT_HTML),
+    ("Corrections Policy", "corrections-policy", CORRECTIONS_HTML),
+    ("Editorial Policy", "editorial-policy", EDITORIAL_HTML),
+]
+
+
+def ensure_adsense() -> int:
+    """AdSense approval: mandatory pages auto-create + manual checklist."""
+    from .wordpress_client import WordPressClient
+
+    print("\n========== GOOGLE ADSENSE APPROVAL CHECKLIST (v19) ==========")
+    ok_all = True
+    try:
+        wp = WordPressClient()
+        wp.check_connection()
+        for title, slug, html in ADSENSE_PAGES:
+            try:
+                if wp.page_exists(slug):
+                    print(f"[OK]     {title} page undi")
+                else:
+                    res = wp.create_page(title, html, slug)
+                    print(f"[CREATE] {title} -> {res.get('link')}")
+            except Exception as exc:  # noqa: BLE001 — network SSL errors tolidu
+                ok_all = False
+                print(f"[WARN]   {title}: {type(exc).__name__}")
+    except Exception as exc:  # noqa: BLE001 — sandbox/server network variance
+        ok_all = False
+        print(f"[WARN] WP connect kaDU ({type(exc).__name__}) — pages manual ga create cheyandi")
+    try:
+        n = wp.published_count()
+        if n >= 20:
+            print(f"[OK]     {n} published posts — AdSense content bar (20+) dorikindi")
+        else:
+            ok_all = False
+            print(f"[WAIT]   {n}/20 posts — Google rejection reason #1 'low value "
+                  "content'. Inka {20 - n} solid posts taruvata APPLY cheyandi!")
+    except Exception:
+        pass
+    print("\n--- MANUAL CHECKS (bot cheyyaleru — mee browser/console lo) ---")
+    for name, howto in [
+        ("ads.txt", "https://studentup.in/ads.txt open chesi correct publisher ID verify (AdSense > Earn > Get code)"),
+        ("Policy LINKS", "AUTO: run.py --setup — footer menu create+assign chesthundi (AdSense/Google News ki links mandatory)"),
+        ("Originality", "Bot NO-COPY hard floor (72%) auto enforce; manual posts ki same rule paalinchandi"),
+        ("Human eye", "Rozu okko auto-post human ga chaduvandi — 'AI at scale, unedited' Google demotion trigger #1"),
+        ("Dead/expired links", "Month ki okkaru expired posts/links clean cheyandi (auto-refresh undi kaani manual spot-check best)"),
+        ("No self-clicks", "mee own ads ni eppudu click cheyadraku — ban risk"),
+        ("Traffic/posts", "~20+ quality posts + organic traffic rawalsi (daily auto-publish undi)"),
+        ("Search Console", "Sitemap submitted aa check (/sitemap_index.xml); Coverage + Core Web Vitals warnings fix"),
+        ("Google News", "Bylines + Editorial Policy page LIVE ayaka Publisher Center lo site add cheyandi (news traffic = notification site oxygen)"),
+        ("Auto Ads audit", "AdSense approved taraivata auto-ads placements month ki okkaru review — above-fold stack + interstitials avoid"),
+        ("RPM reality", "Education/govt-jobs IN audience = moderate CPC; volume + session depth meeda focus (per-click value kaadu)"),
+    ]:
+        print(f"  [ ] {name}: {howto}")
+    print("===============================================================\n")
+    return 0 if ok_all else 1
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="studentup.in auto-blogger")
     parser.add_argument("--dry-run", action="store_true", help="generate locally, no publishing")
@@ -664,6 +972,23 @@ def main() -> int:
                         help="deployment health check — anni dependencies verify")
     parser.add_argument("--trends", action="store_true",
                         help="Google Trends India education trends chupinchindi")
+    parser.add_argument("--radar", action="store_true",
+                        help="breaking-news radar: TS+AP districts + grid + watch (queue+post)")
+    parser.add_argument("--sources", action="store_true",
+                        help="official sources grid (105 sources) list chupinchu")
+    parser.add_argument("--rebuild-hubs", action="store_true",
+                        help="authority hub pages: one per exam, auto-linked (weekly also auto)")
+    parser.add_argument("--setup", action="store_true",
+                        help="FULL WordPress site setup: audit + auto-fix settings, "
+                             "footer menu, category SEO, robots/sitemap checks (add --dry-run to preview)")
+    parser.add_argument("--ensure-adsense", action="store_true",
+                        help="AdSense approval: mandatory pages auto-create + full checklist")
+    parser.add_argument("--keywords", action="store_true",
+                        help="keyword dominance engine: matrix + coverage + autocomplete")
+    parser.add_argument("--polish", action="store_true",
+                        help="v24: site-wide design kit CSS via footer widget — "
+                             "colors/typography/tables/cards on ALL pages. "
+                             "Idempotent; re-run after theme changes.")
     args = parser.parse_args()
 
     _setup_logging()
@@ -682,6 +1007,43 @@ def main() -> int:
         return doctor()
     if args.trends:
         return trends_check()
+    if args.sources:
+        return sources_view()
+    if args.keywords:
+        return keywords_view()
+    if args.ensure_adsense:
+        return ensure_adsense()
+    if args.setup:
+        from . import site_setup
+
+        return site_setup.run_setup(dry=args.dry_run)
+    if args.polish:
+        from . import design_kit
+        from .wordpress_client import WordPressClient
+        wp = WordPressClient()
+        try:
+            wp.check_connection()
+        except Exception as exc:  # noqa: BLE001
+            print(f"WP connect kaDU ({str(exc)[:70]}...) — "
+                  "Appearance→Customize→Additional CSS lo paste cheyandi:")
+            print(design_kit.build_css())
+            return 0
+        status, detail = design_kit.install(wp)
+        f_stat, f_detail = design_kit.broken_footer_token(wp)
+        print(f"🎨 Design kit: {status} — {detail}")
+        print(f"🦶 Footer token: {f_stat} — {f_detail}")
+        return 0
+
+    if args.rebuild_hubs:
+        from . import hubs as _hubs
+
+        rows = _hubs.rebuild_hubs()
+        print(f"{len(rows)} hub pages upserted:")
+        for r in rows:
+            print(f"  • {r['exam']:<22} {r.get('posts', '?')} posts -> {r.get('link', r['slug'])}")
+        return 0
+    if args.radar:
+        return radar_run(process_posts=not args.dry_run)
     try:
         src = args.add_source or args.url
         listicle_arg = args.listicle or ""

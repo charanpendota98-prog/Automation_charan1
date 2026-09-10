@@ -32,6 +32,10 @@ def add_table_of_contents(html: str) -> str:
     items = []
     for i, raw in enumerate(h2s, 1):
         clean = re.sub(r"<[^>]+>", "", raw).strip()
+        # v18: Rank Math "list items <=10 words" check — TOC label truncate
+        parts = clean.split()
+        if len(parts) > 8:
+            clean = " ".join(parts[:8]) + " \u2026"
         anchor = _slugify_id(clean, i)
         items.append(f'<li><a href="#{anchor}">{clean}</a></li>')
 
@@ -135,7 +139,7 @@ def quick_answer_block(focus_keyword: str, quick_answer: str, updated: str) -> s
         return ""
     return (
         f'<h2 id="quick-answer">Quick Answer – {focus_keyword}</h2>'
-        f"<p><strong>{quick_answer.strip()}</strong></p>"
+        f'<p class="su-qa"><strong>{quick_answer.strip()}</strong></p>'
         f'<p><em>Last Updated: {updated} | studentup.in</em></p>'
     )
 
@@ -154,8 +158,130 @@ def trust_box(date_str: str, source_domains: Optional[List[str]] = None) -> str:
         "<p>ఈ ఆర్టికల్ <strong>studentup.in</strong> ఎడిటోరియల్ టీమ్ తయారు చేసింది — "
         "అధికారిక నోటిఫికేషన్ & ప్రముఖ వార్తా సంస్థల సమాచారం ఆధారంగా "
         f"({domains}) సమీక్షించబడింది. తేదీ: {date_str}. "
-        "ఏమైనా సందేహాలు ఉంటే అధికారిక వెబ్‌సైట్‌లో ధృవీకరించండి.</p>"
+        "ఏమైనా సందేహాలు ఉంటే అధికారిక వెబ్‌సైట్‌లో ధృవీకరించండి. "
+        f"తప్పతావలు దొరికితే <a href=\"mailto:{getattr(config, 'SUPPORT_EMAIL', '')}\">"
+        f"{getattr(config, 'SUPPORT_EMAIL', '')}</a>కి చెప్పండి — 24 గంటల్లో "
+        "(<a href=\"/corrections-policy/\">Corrections Policy</a>).</p>"
     )
+
+
+# ---------------------------------------------------------------- v19
+# Playbook adoption: deadline countdown + Google Jobs (JobPosting) schema.
+def _parse_iso(d: str):
+    from datetime import date as _date
+
+    try:
+        return _date.fromisoformat((d or "")[:10])
+    except ValueError:
+        return None
+
+
+def author_for_slug(slug: str) -> tuple:
+    """Deterministic real-byline rotation (same post -> same author)."""
+    team = list(getattr(config, "AUTHOR_TEAM", []) or [])
+    if not team:
+        return ("StudentUp Editorial Team", "Editorial Team")
+    import hashlib
+
+    h = int(hashlib.sha1((slug or "x").encode()).hexdigest()[:6], 16)
+    return team[h % len(team)]
+
+
+def byline_block(slug: str, date_str: str) -> str:
+    """Google News + E-E-A-T: visible author byline with role + review date."""
+    name, role = author_for_slug(slug)
+    # div (kaadu p) — Rank Math 'keyword in first paragraph' check ki
+    # byline munde padakudadu
+    return (
+        '<div style="font-size:14px;color:#57616B;margin:6px 0 14px;">'
+        f"✍️ <strong>{_esc(name)}</strong> ({role}) · "
+        f"✅ Editorial review: {date_str} · "
+        "🔄 Weekly updates for this topic</div>"
+    )
+
+
+def deadline_badge(apply_end: str) -> str:
+    """Countdown box — notification lo last date UNTE matrame (never invented)."""
+    from datetime import date as _date
+
+    end = _parse_iso(apply_end)
+    if not end:
+        return ""
+    days = (end - _date.today()).days
+    pretty = end.strftime("%d-%b-%Y")
+    if days < 0:
+        return (
+            '<div style="background:#FDECEA;border-left:4px solid #C0392B;'
+            'padding:10px 14px;border-radius:4px;margin:14px 0;font-size:15px;">'
+            f"⛔ <strong>Applications CLOSED ({pretty})</strong> — inka latest "
+            "openings kosam mana category chudandi. Next notification update "
+            "WhatsApp/Telegram lo vasthundi.</div>"
+        )
+    urgent = " 🔥" if days <= 7 else ""
+    return (
+        '<div style="background:#E8F4EC;border-left:4px solid #1E8E4E;'
+        'padding:10px 14px;border-radius:4px;margin:14px 0;font-size:15px;">'
+        f"🗓️ <strong>Last date to apply: {pretty}</strong> — "
+        f"<strong>{days} days left</strong>{urgent}. Miss avvakunandi; "
+        "documents munde ready pettandi.</div>"
+    )
+
+
+def jobposting_obj(recruitment, title: str, description: str,
+                   date_published: str):
+    """Google-for-Jobs eligibility rules (2026): required fields COMPLETE ga
+    future validThrough tho matrame emit — fake/incomplete data = manual action.
+    Returns dict or None (silent skip)."""
+    from datetime import date as _date
+
+    rec = recruitment or {}
+    if not getattr(config, "JOB_SCHEMA_ENABLED", True):
+        return None
+    org = (rec.get("org_name") or "").strip()
+    end = _parse_iso(rec.get("apply_end"))
+    if not org or not end or (end - _date.today()).days < 0:
+        return None  # expired/unknown deadline → Google Jobs lo list cheyakudadu
+    desc = (description or "").strip()
+    if len(desc) < 100:
+        return None  # 'substantial description' guard — placeholder nilpedadu
+    obj = {
+        "@context": "https://schema.org",
+        "@type": "JobPosting",
+        "title": title[:110],
+        "description": desc[:300],
+        "datePosted": (date_published or _date.today().isoformat())[:10],
+        "validThrough": end.isoformat() + "T23:59:59+05:30",
+        "hiringOrganization": {
+            "@type": "Organization", "name": org[:100],
+            **({"sameAs": rec["org_url"]}
+               if str(rec.get("org_url", "")).startswith("http") else {}),
+        },
+        "jobLocation": {
+            "@type": "Place",
+            "address": {
+                "@type": "PostalAddress",
+                "addressLocality": (rec.get("location") or
+                                    "Telangana / Andhra Pradesh")[:60],
+                "addressCountry": "IN",
+            },
+        },
+        # honest: apply avtadi official site lo — mana page direct apply kaadu
+        "directApply": False,
+    }
+    if str(rec.get("salary_min", 0) or 0).isdigit() and \
+            str(rec.get("salary_max", 0) or 0).isdigit() and \
+            int(rec["salary_min"]) > 0 and int(rec["salary_max"]) >= int(rec["salary_min"]):
+        obj["baseSalary"] = {
+            "@type": "MonetaryAmount", "currency": "INR",
+            "value": {"@type": "QuantitativeValue",
+                      "minValue": int(rec["salary_min"]),
+                      "maxValue": int(rec["salary_max"]),
+                      "unitText": "MONTH"},
+        }
+    if rec.get("identifier"):
+        obj["identifier"] = {"@type": "PropertyValue", "name": org[:40],
+                             "value": str(rec["identifier"])[:40]}
+    return obj
 
 
 def schema_jsonld(
@@ -167,8 +293,10 @@ def schema_jsonld(
     date_modified: str = "",
     category: str = "",
     list_items: Optional[List[str]] = None,
+    recruitment: Optional[Dict] = None,
 ) -> str:
-    """Google rich results: FAQPage + Article + BreadcrumbList (+ItemList)."""
+    """Google rich results: FAQPage + Article + BreadcrumbList (+ItemList
+    + v19 JobPosting for eligible recruitment notifications)."""
     import json as _json
 
     if not config.SEO_SCHEMA_ENABLED:
@@ -196,14 +324,17 @@ def schema_jsonld(
         # Google guideline: datePublished preserve, dateModified matrame update
         "datePublished": date_published,
         "dateModified": date_modified or date_published,
-        # E-E-A-T: Person author (editorial team) + publisher logo rich-results
+        # v20: REAL named bylines (Google News + Top Stories require this)
         "author": {
             "@type": "Person",
-            "name": "StudentUp Editorial Team",
-            "url": config.WP_SITE.rstrip("/") + "/about/",
+            "name": author_for_slug(slug)[0],
+            "jobTitle": author_for_slug(slug)[1],
+            "url": config.WP_SITE.rstrip("/") + "/about-us/",
             "worksFor": {"@type": "Organization", "name": "studentup.in"},
         },
         "editor": {"@type": "Person", "name": "StudentUp Editorial Team"},
+        "newsMaterialCategory": "Education",
+        "sourceOrganization": {"@type": "Organization", "name": "studentup.in"},
         "publisher": {"@type": "Organization", "name": "studentup.in",
                       "url": config.WP_SITE,
                       **({"logo": {"@type": "ImageObject",
@@ -211,6 +342,9 @@ def schema_jsonld(
                          if config.SITE_LOGO_URL else {})},
         "mainEntityOfPage": f"{config.WP_SITE}/{slug}/",
         "inLanguage": "te",
+        # v21: voice/Assistant — quick answer nee speak avvali
+        "speakable": {"@type": "SpeakableSpecification",
+                     "cssSelector": ["#quick-answer", ".su-qa"]},
     })
     if list_items:
         scripts.append({
@@ -223,6 +357,9 @@ def schema_jsonld(
                 for i, name in enumerate(list_items, 1)
             ],
         })
+    job = jobposting_obj(recruitment, title, description, date_published)
+    if job:
+        scripts.append(job)  # Google Jobs rich result — highest-leverage free win
     scripts.append({
         "@context": "https://schema.org",
         "@type": "BreadcrumbList",
@@ -242,6 +379,67 @@ def schema_jsonld(
     )
 
 
+def related_questions_block(html: str, focus_keyword: str) -> str:
+    """v21 PAA-style: article's own H2 sections → question + snippet answer.
+    Google 'related questions' box + featured snippet bait; zero fake data
+    (answers nee article nunchi teesukuntundi)."""
+    import re as _re
+
+    skip_ids = ("quick-answer", "read-also", "about-this-article",
+                "related-questions")
+    items = []
+    for m in _re.finditer(r"<h2(?P<attrs>[^>]*)>(?P<ht>[^<]*)</h2>", html):
+        if any(f'id="{x}"' in m.group("attrs") for x in skip_ids):
+            continue
+        heading = m.group("ht").strip()
+        if len(heading.split()) < 2 or len(heading) > 60:
+            continue
+        nxt = _re.search(r"<p[^>]*>(.*?)</p>", html[m.end():m.end() + 3000],
+                         _re.S)
+        if not nxt:
+            continue
+        ans = _re.sub(r"<[^>]+>", " ", nxt.group(1))
+        ans = " ".join(ans.split())
+        if len(ans) < 40:
+            continue
+        q = heading if heading.endswith("?") else f"{heading} — Details enti?"
+        items.append(f"<h3>{_esc(q[:80])}</h3><p>{_esc(ans[:220])}</p>")
+        if len(items) >= 3:
+            break
+    if len(items) < 2:
+        return ""
+    return ('<h2 id="related-questions">'
+            + _esc((focus_keyword or "Related").strip()[:40])
+            + " — Related Questions</h2>" + "".join(items))
+
+
+def _short_title(title: str, max_words: int = 8) -> str:
+    """v18: list-items <=10 words (Rank Math) — long post titles chota ga."""
+    parts = (title or "").strip().split()
+    if len(parts) > max_words:
+        return " ".join(parts[:max_words]) + " \u2026"
+    return " ".join(parts)
+
+
+MOBILE_CSS = (
+    "<style>"
+    # v23: Google's Noto Sans Telugu — granthikam-leka clean modern look
+    # (top vernacular sites style). Post-level; theme settings ki need ledu.
+    "@import url('https://fonts.googleapis.com/css2?"
+    "family=Noto+Sans+Telugu:wght@400;600;700&display=swap');"
+    ".entry-content,h1,h2,h3,h4{font-family:'Noto Sans Telugu','Inter',"
+    "system-ui,-apple-system,'Segoe UI',sans-serif}"
+    ".entry-content{font-size:16.5px;line-height:1.8}"
+    ".entry-content h2{font-size:clamp(20px,4.6vw,27px);line-height:1.35;"
+    "font-weight:700;margin:28px 0 12px}"
+    ".entry-content h3{font-size:clamp(18px,4.2vw,22px);line-height:1.4;"
+    "font-weight:600}"
+    ".entry-content table{font-size:15.5px}"
+    ".su-content{word-wrap:break-word}"
+    "</style>"
+)
+
+
 def enhance(
     html: str,
     focus_keyword: str,
@@ -257,6 +455,7 @@ def enhance(
     category: str = "",
     source_domains: Optional[List[str]] = None,
     list_items: Optional[List[str]] = None,
+    recruitment: Optional[Dict] = None,
 ) -> str:
     """Full top-level SEO pipeline: reading badge -> quick answer -> keyword
     intro (varied) -> TOC -> internal/external links -> E-E-A-T box ->
@@ -266,11 +465,18 @@ def enhance(
     words = _v.word_count(html)
     minutes = _v.reading_minutes(words)
     html = reading_badge(words, minutes) + html
+    if getattr(config, "MOBILE_HEADLINE_TUNE", True):
+        # v18: mobile lo pedda headings — responsive clamp (theme-dependent kaadu)
+        html = MOBILE_CSS + html
     html = ensure_keyword_first_para(html, focus_keyword, seed=slug)
     if quick_answer:
         # visible badge: modified date (fresh look); schema published original
         html = quick_answer_block(focus_keyword, quick_answer,
                                   date_modified or date_str) + html
+    # v20: visible real byline (Google News/E-E-A-T)
+    html = byline_block(slug, date_modified or date_str) + html
+    # v19: deadline countdown (playbook — notification lo real date UNTE matrame)
+    html = deadline_badge((recruitment or {}).get("apply_end", "")) + html
     html = add_table_of_contents(html)
     html = add_internal_links(html, internal_links, seed=slug)
     html = add_external_links(html, external_links)
@@ -278,15 +484,18 @@ def enhance(
     if internal_links:
         items = "".join(
             f'<li><a href="{l["link"]}" internal="true">'
-            f'{_esc(l["title"])}</a></li>'
+            f'{_esc(_short_title(l["title"]))}</a></li>'
             for l in internal_links[:4]
         )
         html += ('<h2 id="read-also">వీటిని కూడా చదవండి</h2>'
                  f'<ul>{items}</ul>')
+    # v21: related-questions PAA block (own content, honest answers)
+    html += related_questions_block(html, focus_keyword)
     html += trust_box(date_modified or date_str, source_domains)
     html += schema_jsonld(title or focus_keyword, description or "", faq or [],
                           date_str, slug, category=category,
-                          date_modified=date_modified, list_items=list_items)
+                          date_modified=date_modified, list_items=list_items,
+                          recruitment=recruitment)
     log.info("SEO enhanced: %d words, keyword=%r", words, focus_keyword)
     if words < 1200:
         log.warning("Word count takkuva (%d) — Rank Math full score kosari 1500+ kavali", words)
@@ -345,8 +554,23 @@ def insert_ad_shortcodes(html: str, shortcode: str, max_ads: int = 3,
 
     positions = []
     paras = list(_re.finditer(r"</p>", html))
-    if len(paras) >= 2:
-        positions.append(paras[1].end())            # after 2nd para
+    # playbook: 'after the FIRST MEANINGFUL paragraph' — 50+ words first para
+    first_meaningful = None
+    for m in _re.finditer(r"<p[^>]*>(.*?)</p>", html, _re.S):
+        if len(_re.sub(r"<[^>]+>", " ", m.group(1)).split()) >= 50:
+            first_meaningful = m.end()
+            break
+    if first_meaningful:
+        positions.append(first_meaningful)
+    elif len(paras) >= 2:
+        positions.append(paras[1].end())            # fallback: after 2nd para
+    # natural break near 'how to apply' H2 (high dwell + intent match)
+    apply_m = _re.search(r"<h2[^>]*>(?:(?!</h2>).)*?(?:apply|దరఖాస్తు|How to)"
+                         r".*?</h2>", html, _re.S | _re.I)
+    if apply_m:
+        nxt = _re.search(r"</p>", html[apply_m.end():])
+        if nxt:
+            positions.append(apply_m.end() + nxt.end())
     for m in _re.finditer(r"</table>", html):
         positions.append(m.end())                   # tables tarvata (pause point)
     if len(paras) >= 8:

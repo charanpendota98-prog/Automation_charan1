@@ -15,7 +15,6 @@ import sys
 import threading
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
-from urllib.parse import quote_plus
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
@@ -33,10 +32,7 @@ class FakeDDG(BaseHTTPRequestHandler):
         pass
 
     def do_GET(self):
-        from urllib.parse import urlparse, parse_qs
-
         ddg_paths.append(self.path)
-        q = parse_qs(urlparse(self.path).query).get("q", [""])[0]
         results = [
             # extra source (uddg redirect format)
             ("https://html.duckduckgo.com/l/?uddg=https%3A%2F%2Fcompetitor1.com%2Fssc-2026&rut=abc",

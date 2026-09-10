@@ -104,7 +104,7 @@ def main():
     assert il["numberOfItems"] == 5 and il["itemListElement"][0]["position"] == 1
     assert "FAQPage" in types and "BreadcrumbList" in types
     # wp_id recorded in state
-    with db.open("rb") as f:
+    with db.open("rb"):
         pass
     import sqlite3
 
@@ -162,7 +162,8 @@ def main():
 
     idea = te.pick_listicle_idea(["Old Top 10 Central Government Jobs 2026 post"])
     # note: HIGH_CPC_SHARE% valla high-CPC pool nunchi kuda vastundi (valid)
-    assert idea in te.LISTICLE_IDEAS or idea in te.HIGH_CPC_LISTICLE_IDEAS
+    assert (idea in te.LISTICLE_IDEAS or idea in te.HIGH_CPC_LISTICLE_IDEAS
+                or idea in te.VIRAL_LISTICLE_IDEAS or idea in te.TIPS_IDEAS)
     print("  4. pick_listicle_idea ✔")
 
     db.unlink(missing_ok=True)

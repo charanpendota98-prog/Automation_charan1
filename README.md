@@ -13,7 +13,106 @@
 - **No duplicates:** SQLite state tracks every posted title + source URL
 - **WhatsApp alerts** too (optional)
 
+## 📡 v15–v17.1: Breaking News Radar + 105 Official Sources + Keyword Dominance
+- **District Radar:** TS 33 + AP 26 districts Google News (Telugu) — breaking
+  news **6 గంటలకోసారి** scan (4×/day). Education-relevant matrame → auto draft.
+- **Official Sources Grid (v16.1):** 105 sources — SSC/UPSC/RRB/IBPS/SBI/LIC/RBI,
+  TSPSC/APPSC/TGRTC/APSRTC/Police/DSC/DISCOMs, NEET/AIIMS/Kaloji/NTR (medical),
+  NSP/YASASVI/ePASS/Jnanabhumi (scholarships), TCS/Infosys/Cognizant/Zoho+ (software),
+  walk-ins 5 cities, internships. **17 daily hot-list** prathi run lo; bavita rotation.
+- **Channel/Website Watch:** `WATCH_SOURCES=` lo Telegram channels (t.me/s/...) +
+  RSS/websites — vaalli edu-relevant posts mana queue → fresh original articles.
+- **Keyword Dominance (v17):** 66 exams × 14 intents = **980 exact search keywords**
+  + Google Autocomplete harvester (free) + daily gap analyse vs live posts —
+  "SSC 2026" lanti queries ki maname target post rasi publish chestam.
+- **10X prompts:** NO-COPY hard rule + beat-competitors strategy + keyword-first
+  titles (Rank Math 100% + Google #1 targeting).
+- **Pro thumbnails (v15/v16):** left-scrim / bottom-band / right-panel 3 layouts
+  rotation — mana own rendering, copy look ledu (monetization-safe).
+- **Viral + Tips engine (v16/v17):** "SSC lo 10 books", "SBI 5 topics" style
+  20 viral ideas + 16 student tips pools, daily rotation shares.
+- **Tag hygiene (v15):** "Studentup.in"/"News" junk tags create avvu; specific
+  tags matrame. `run.py --sources` / `--keywords` / `--radar` commands add.
+- **v17.1 truncation fix:** 32k output tokens (2.5 thinking OFF) + MAX_TOKENS
+  detect + LENGTH OVERRIDE crisp retry — Telugu JSON "Unterminated string" bug ledu.
+
 ---
+
+## 🎯 v18–v19: Honest RankMath Gate + Multi-Key + Google Playbook Adoption
+- **v18 — Rank Math STRICT gate:** real panel checks (capped /100 — no inflation),
+  auto-refine round when < 90, TOC/list truncation, mobile clamp CSS, crop-safe
+  thumbnails, multi-key Gemini rotation (429-proof: `GEMINI_API_KEYS=k2,k3` +
+  per-key RPD cap + dead-key day cooldown), near-copy HARD FLOOR (skip < 72%).
+- **v19 — top-site playbook adoption:**
+  - **Google Jobs:** `JobPosting` JSON-LD auto-emitted on notification posts —
+    ONLY when org + real future deadline + substantial description exist
+    (expired/fake → silently off; `directApply:false` honest).
+  - **Deadline countdown:** "Last date to apply — N days left 🔥" badge (auto
+    from `recruitment.apply_end`; expired → red CLOSED box). Model fills dates
+    ONLY from the notice — GUESS strictly banned in rules.
+  - **Scaled-content protection:** every publish fingerprints 3-word shingles;
+    a new near-duplicate (swapped name/date, ≥62% overlap) is REFUSED
+    (`DUP_JACCARD_SKIP`). Combined with the no-copy floor → AdSense rule #1.
+  - **E-E-A-T:** visible corrections policy + report-by-email line in every
+    post; `--ensure-adsense` creates Corrections page + checks 20+ published
+    posts readiness (rejection reason #1 is "low value content").
+  - **Colloquial H2s:** student-query style ("Apply ela cheyali?", "Fee emiti?")
+    + value-add rules (never mirror the notice — add explanation/links/action).
+
+## 🧠 v21: Fact Guard + Voice + Owned Distribution (advanced layer)
+- **Fact guard (FACT_STRICT=1 default):** article lo unna prathi date / vacancy
+  count source texts lo verify avutundi. Fabricated "last date" auto-flag →
+  refine round lo correct/remove; still unresolved ante Telegram lo ⚠️ Fact
+  flags count (publish mundu human check). Fake data = Google News/AdSense ki
+  #1 risk — ippudu machine ga catch avutundi.
+- **PAA block:** article own H2 sections nunchi "Related Questions" (max 3,
+  honest snippet answers) — Google related-questions + featured-snippet bait.
+- **Speakable schema:** quick answer voice-assistant ready (Google Assistant/
+  SpeakOn).
+- **Public Telegram channel auto-broadcast:** TELEGRAM_CHANNEL_CHAT_ID set
+  cheste prathi PUBLISHED post channel ki automatic (drafts/mocks eppudu
+  pampabadu) — owned distribution stream, Google-dependency lekapote growth.
+- **GSC data loop:** `run.py --gsc export.csv` ippudu top striking-distance
+  query tokens ni state lo save chesi, radar/topic QUEUE ni re-sort chesthundi
+  — meeru provide chechina real Google data bot priorities ni drive chesthundi
+  (radar sweep lo kuda auto-apply).
+
+## 🔧 v22: Bot = FULL Website Admin (post kaadu — site settings entire)
+`run.py --setup` (preview: `--setup --dry-run`) — WordPress ni mee application
+password admin tho connect chesi ee items audit + auto-fix chesthundhi:
+- ⛔ **Blockers**: `robots.txt Disallow:/` (blog_public off!), `?p=` plain
+  permalinks — ee rendhi unte SEO/AdSense ey padipoye; setup pakkaga chupisthundi
+- 🔧 **Auto-fixes**: SEO tagline, timezone Asia/Kolkata, comments/pings OFF
+  (global + prathi new post lo), posts_per_page, **footer legal menu**
+  (Privacy/About/Contact/Corrections/Editorial — links page lekapote AdSense
+  reject), **category Telugu SEO descriptions** (empty taaghata — existing
+  touch cheyyadu), site icon (SITE_LOGO_URL untelo auto favicon)
+- ⚠️ **Checks/Warns**: Rank Math sitemap live aa, Rank Math REST undaa,
+  sample permalink format — manual ki miginavay notifications isthundhi
+- **Idempotent**: ralli run cheste zero writes; okka safe REST endpoints matrame
+  (delete/overwrite emi ledu). Full test coverage: `tests/site_setup_test.py`
+
+## 🎨 v24 — Crop-proof thumbnails + site-wide Design Kit (`--polish`)
+
+Screenshots se nerugu: theme cards image ni **center 56% width** (mobile square!) varaku crop chestundi —
+kaani thumbnails text anni **center safe band [0.19w–0.81w]** lo ki move ayipoyayi (3 layouts: bottom band /
+center card / top pill — pixel-test tho verify). Inka:
+
+- `run.py --polish` → **site-wide Design Kit**: brand navy `#12356B` + orange `#E8842B`, Noto Sans Telugu+Inter,
+  bordered h2, zebra rounded tables, 14px rounded images, single-post featured image `max-height:420px + cover`,
+  pill Read-More buttons, mobile 15.5px/1.8 body — homepage ni kuda spellbind chestundi (footer text-widget
+  global `<style>` via core Widgets REST — theme files emi touch cheyydu, idempotent refresh).
+- `--setup` apply lo kit **automatic ga** install avutundi.
+- Footer lo kanipinchina raw `{StudentUp.in}` token → widget lo unte **auto-fix**; Customizer lo unte CLI
+  instruction print avutundi.
+- **v25**: home/archive cards kortha CSS (rounded border + hover lift + 16:9 thumb crop + widget
+  headings brand style); `--setup` lo footer menu **duplicate items auto-removal** (`_menu_dedupe`);
+  kit CSS maATkade poTE widget update skip (`up to date`) — widget ni manual ga edit chesina
+  sidecar (`design_kit.json`) id gurthupettukuni **duplicate widget create avvadu**.
+- WP connect kaNIPITE → kit CSS ni *Additional CSS* ki paste cheyyadaniki ready ga print chestundi.
+
+> ⚠️ E fixes anni GitHub PR #2 lo unnayi — **merge + server pull avvakapote site paapa code leni
+> run avuthundi**. First merge cheyandi!
 
 ## Setup Guide (Telugu)
 
@@ -529,7 +628,10 @@ Marpali te: `.env` edit chesi scheduler ni restart cheyandi: `sudo systemctl res
 │   ├── notifier.py         # Telegram (buttons) + WhatsApp alerts
 │   ├── approval_bot.py     # 24/7 Telegram bot (publish buttons + URL rewrite)
 │   ├── topic_engine.py     # Category rotation + mock generator
-│   ├── image_gen.py        # Featured image (PIL, no API)
+│   ├── image_gen.py        # v15/v16 PRO thumbnails — 3 layouts auto-rotate
+│   ├── news_radar.py       # v15: TS+AP district breaking news + channel watch
+│   ├── sources_grid.py     # v16.1: 105 official sources auto-watch grid
+│   ├── keyword_engine.py   # v17: 980-keyword matrix + autocomplete + gap analyse
 │   └── state.py            # SQLite state (dedupe, plan, sources)
 └── tests/                  # end-to-end tests (fake WP/Telegram/source servers)
 ```

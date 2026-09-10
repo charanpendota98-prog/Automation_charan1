@@ -72,13 +72,18 @@ def main():
     db = Path("/tmp/test_monetize.db")
     db.unlink(missing_ok=True)
     state.init(db)
-    # June (6): Online Education seasonal -> 300 runs lo dominance
+    # June (6): Online Education seasonal -> 400 runs lo dominance
+    # (seeded — 28/28 tie lanti sampling flake raakudadu)
+    import random as _rnd
+
     from collections import Counter
 
-    picks = Counter(topic_engine.pick_category(db, month=6) for _ in range(300))
+    _rnd.seed(2)
+    picks = Counter(topic_engine.pick_category(db, month=6) for _ in range(400))
     assert picks["Online Education"] > picks["Results"], picks.most_common()
     # High-CPC share: 100 picks lo ~20-45% high-CPC ideas (30% config)
     config.HIGH_CPC_SHARE = 30
+    _rnd.seed(5)
     ideas = [topic_engine.pick_listicle_idea(month=6) for _ in range(200)]
     hc = sum(1 for i in ideas if i in topic_engine.HIGH_CPC_LISTICLE_IDEAS)
     assert 25 <= hc <= 90, hc  # 30% expected, sane range

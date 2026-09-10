@@ -147,3 +147,49 @@ def mark_done_and_clean(url: str) -> None:
         lines = [l for l in path.read_text(encoding="utf-8").splitlines()
                  if l.strip() != url.strip()]
         path.write_text("\n".join(lines) + ("\n" if lines else ""), encoding="utf-8")
+
+
+# ---------------------------------------------------------------- v21
+def apply_queue_boost(boost_words: list) -> int:
+    """GSC-data-driven priority: queue lines matching boost terms move to
+    top (stable order otherwise). Returns matched count. Real impressions >
+    guesses — radar/keyword queue processing order itself optimize avutundi."""
+    if not boost_words:
+        return 0
+    import re as _re
+
+    words = [w.lower() for w in boost_words if len(w) >= 3][:40]
+
+    def score(line: str) -> int:
+        low = line.lower()
+        toks = set(_re.split(r"[^a-z0-9\u0c00-\u0c7f]+", low)) - {""}
+        return sum(1 for w in words if w in toks or w in low)
+
+    paths = []
+    try:
+        paths.append(queue_file_path())
+    except Exception:
+        pass
+    try:
+        from . import news_radar as _nr
+
+        paths.append(_nr.topics_queue_path())
+    except Exception:
+        pass
+    moved = 0
+    for path in paths:
+        try:
+            if not path or not path.exists():
+                continue
+            lines = [ln for ln in path.read_text(encoding="utf-8").splitlines()
+                     if ln.strip()]
+            scored = [(-score(ln), i, ln) for i, ln in enumerate(lines)]
+            if any(-sc > 0 for sc, _, _ in scored):
+                moved += sum(1 for sc, _, _ in scored if -sc > 0)
+                scored.sort()
+                path.write_text(
+                    "\n".join(ln for _, _, ln in scored) + "\n",
+                    encoding="utf-8")
+        except OSError:
+            continue
+    return moved
