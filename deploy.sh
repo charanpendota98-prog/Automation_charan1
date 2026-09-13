@@ -7,7 +7,7 @@
 set -uo pipefail
 cd "$(dirname "$0")"
 
-BRANCH="arena/01a07838-automation-charan1"
+BRANCH="arena/01a09acc-automation-charan1"
 
 say() { echo -e "\n==================== $1 ===================="; }
 
