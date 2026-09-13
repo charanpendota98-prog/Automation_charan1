@@ -7,23 +7,35 @@
 """
 
 import logging
-from typing import Dict, List
+import re
+from html import escape
+from typing import Dict, List, Optional
+from urllib.parse import urlparse
 
-from . import config
+from . import config, validator
 
 log = logging.getLogger("autoblog.monetize")
 
 
+def _safe_http_url(raw: str) -> Optional[str]:
+    """Only absolute HTTP(S) links enter generated HTML attributes."""
+    raw = (raw or "").strip()
+    parsed = urlparse(raw)
+    if parsed.scheme not in ("http", "https") or not parsed.netloc:
+        return None
+    return escape(raw, quote=True)
+
+
 def telegram_cta_block() -> str:
     """Post end lo channel join CTA — repeat traffic engine."""
-    url = config.TELEGRAM_CHANNEL_URL
+    url = _safe_http_url(config.TELEGRAM_CHANNEL_URL)
     if not url:
         return ""
     return (
         '<h2 id="join-alerts">రోజూ Job Alerts Free గా పొందండి 📥</h2>'
         "<p>కొత్త <strong>government jobs, scholarships, results, admit cards</strong> — "
         "అన్నీ మీకు మొదటగా కావాలా? మా "
-        f'<a href="{url}" target="_blank" rel="noopener noopener"><strong>Telegram '
+        f'<a href="{url}" target="_blank" rel="noopener"><strong>Telegram '
         "Channel లో జాయిన్ అవ్వండి</strong></a> (పూర్తిగా ఉచితం). ప్రతిరోజూ "
         "అప్‌డేట్స్ మీ ఫోన్ కి నేరుగా!</p>"
     )
@@ -37,10 +49,11 @@ def _parse_affiliates() -> List[Dict[str, str]]:
         if not line or line.startswith("#"):
             continue
         parts = [p.strip() for p in line.split("|")]
-        if len(parts) >= 2 and parts[0] and parts[1].startswith("http"):
+        safe_url = _safe_http_url(parts[1] if len(parts) >= 2 else "")
+        if len(parts) >= 2 and parts[0] and safe_url:
             out.append({
-                "label": parts[0],
-                "url": parts[1],
+                "label": parts[0][:120],
+                "url": safe_url,
                 "keywords": parts[2].lower() if len(parts) > 2 else "",
             })
     return out
@@ -60,7 +73,7 @@ def affiliate_block(article: Dict) -> str:
         return ""
     items = "".join(
         f'<li><a href="{a["url"]}" target="_blank" rel="sponsored nofollow noopener">'
-        f"{a['label']}</a></li>"
+        f"{escape(a['label'])}</a></li>"
         for a in matched[:4]
     )
     return (
@@ -75,6 +88,16 @@ def featured_block() -> str:
     """v20: coaching-center featured listing (AdSense policy: disclosure
     + rel=sponsored mandatory). FEATURED_CTA_HTML env lo set cheste active."""
     raw = (getattr(config, "FEATURED_CTA_HTML", "") or "").strip()
+    # Sponsored HTML is owner-provided but still passes the same XSS sanitizer
+    # as article content before it reaches a post.
+    raw = validator.sanitize_html(raw)
+    # Sponsored content must identify the relationship in the link itself;
+    # silently accepting owner HTML without rel=sponsored is unsafe.
+    if raw and not re.search(
+            r"<a\b[^>]*rel=[\"'][^\"']*\bsponsored\b",
+            raw, re.I):
+        log.warning("FEATURED_CTA_HTML skipped: sponsored rel missing")
+        return ""
     if not raw:
         return ""
     return (

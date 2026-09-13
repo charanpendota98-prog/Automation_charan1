@@ -62,7 +62,7 @@ class WordPressClient:
     # ---------------------------------------------------------------- terms
 
     def published_count(self) -> int:
-        """X-WP-Total header — AdSense '20+ substantial posts' readiness."""
+        """Return the published count for inventory reporting; no Google threshold claim."""
         try:
             r = self._request("GET", "posts",
                               params={"status": "publish", "per_page": 1,
@@ -95,6 +95,23 @@ class WordPressClient:
             pg = r.json()[0]
             return {"id": pg.get("id"), "link": pg.get("link")}
         return None
+
+    def get_page_for_edit(self, slug: str) -> Optional[Dict]:
+        """Read a page body so managed-page commands can preserve manual edits."""
+        r = self._request("GET", "pages", params={
+            "slug": slug, "status": "publish,draft",
+            "context": "edit", "per_page": 1,
+        })
+        if not r.ok or not r.json():
+            return None
+        page = r.json()[0]
+        content = page.get("content") or {}
+        title = page.get("title") or {}
+        return {
+            "id": page.get("id"), "link": page.get("link"),
+            "content": content.get("raw") or content.get("rendered") or "",
+            "title": title.get("raw") or title.get("rendered") or "",
+        }
 
     def upsert_page(self, title: str, content_html: str, slug: str) -> Dict:
         """Slug-based idempotent page create/update (hub pages)."""
@@ -133,6 +150,110 @@ class WordPressClient:
             return r.status_code, (r.text or "")[:4000]
         except Exception:
             return 0, ""
+
+    # ------------------------------------------------- v28: themes + plugins
+    def list_themes(self) -> List[Dict]:
+        """Return a small, normalized view of installed WP themes.
+
+        The endpoint is read-only here: theme activation is intentionally not
+        automated because a theme switch can change menus, widgets, and layout.
+        """
+        r = self._request("GET", "themes", params={
+            "context": "edit", "per_page": 100,
+            "_fields": "stylesheet,template,name,slug,status,version,author",
+        })
+        if not r.ok:
+            return []
+        themes = []
+        for item in r.json():
+            author = item.get("author")
+            if isinstance(author, dict):
+                author = author.get("raw") or author.get("rendered") or ""
+            themes.append({
+                "stylesheet": item.get("stylesheet", ""),
+                "template": item.get("template", ""),
+                "name": item.get("name", ""),
+                "slug": item.get("slug", ""),
+                "status": item.get("status", ""),
+                "version": item.get("version", ""),
+                "author": author or "",
+            })
+        return themes
+
+    def list_plugins(self) -> List[Dict]:
+        """Return installed plugins in a stable shape for setup audits."""
+        r = self._request("GET", "plugins", params={
+            "context": "edit", "per_page": 100,
+            "_fields": "plugin,name,status,version,textdomain,slug",
+        })
+        if not r.ok:
+            return []
+        plugins = []
+        for item in r.json():
+            plugin_id = item.get("plugin", "")
+            slug = item.get("slug", "") or plugin_id.split("/", 1)[0]
+            plugins.append({
+                "plugin": plugin_id,
+                "slug": slug.lower(),
+                "name": item.get("name", ""),
+                "status": item.get("status", "inactive"),
+                "version": item.get("version", ""),
+                "textdomain": item.get("textdomain", ""),
+            })
+        return plugins
+
+    def install_plugin(self, slug: str, activate: bool = True) -> Dict:
+        """Install one WordPress.org plugin and optionally activate it.
+
+        This method never accepts an arbitrary download URL; callers pass a
+        reviewed WordPress.org slug. A separate activation request handles WP
+        versions that ignore ``status`` during installation.
+        """
+        slug = (slug or "").strip().lower()
+        if not slug or "/" in slug or " " in slug:
+            raise ValueError("plugin slug must be a simple WordPress.org slug")
+        r = self._request("POST", "plugins", json={
+            "slug": slug, "status": "active" if activate else "inactive",
+        })
+        if r.status_code not in (200, 201):
+            raise WordPressError(
+                f"Plugin '{slug}' install failed: HTTP {r.status_code}: {r.text[:300]}"
+            )
+        data = r.json() if r.content else {}
+        plugin_id = data.get("plugin", "")
+        status = data.get("status", "active" if activate else "inactive")
+        if activate and status != "active" and plugin_id:
+            ar = self._request("POST", f"plugins/{plugin_id}",
+                               json={"status": "active"})
+            if ar.status_code not in (200, 201):
+                raise WordPressError(
+                    f"Plugin '{slug}' activation failed: HTTP "
+                    f"{ar.status_code}: {ar.text[:300]}"
+                )
+            data = ar.json() if ar.content else data
+        return {
+            "plugin": data.get("plugin", plugin_id),
+            "slug": slug,
+            "name": data.get("name", slug),
+            "status": data.get("status", status),
+            "installed": True,
+        }
+
+    def activate_plugin(self, plugin_id: str) -> Dict:
+        """Activate an already installed plugin by WP plugin identifier."""
+        if not plugin_id or ".." in plugin_id:
+            raise ValueError("invalid plugin identifier")
+        r = self._request("POST", f"plugins/{plugin_id}",
+                          json={"status": "active"})
+        if r.status_code not in (200, 201):
+            raise WordPressError(
+                f"Plugin activation failed: HTTP {r.status_code}: {r.text[:300]}"
+            )
+        data = r.json() if r.content else {}
+        return {"plugin": data.get("plugin", plugin_id),
+                "name": data.get("name", ""),
+                "status": data.get("status", "active"),
+                "installed": False}
 
     def list_categories(self) -> List[Dict]:
         r = self._request("GET", "categories",

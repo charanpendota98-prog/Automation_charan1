@@ -102,7 +102,7 @@ def main():
     assert "ItemList" in types, types
     il = json.loads([x for x in scripts if "ItemList" in x][0])
     assert il["numberOfItems"] == 5 and il["itemListElement"][0]["position"] == 1
-    assert "FAQPage" in types and "BreadcrumbList" in types
+    assert "FAQPage" not in types and "BreadcrumbList" in types
     # wp_id recorded in state
     with db.open("rb"):
         pass

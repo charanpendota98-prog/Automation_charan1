@@ -5,6 +5,8 @@ Rank Math meta + WP create + state + notification.
 create_from_source(url): fetch source -> Gemini 100% original rewrite -> publish.
 """
 
+import hashlib
+import json
 import logging
 from datetime import date
 from pathlib import Path
@@ -16,6 +18,33 @@ from .notifier import esc, send_telegram
 from .wordpress_client import WordPressClient
 
 log = logging.getLogger("autoblog.pipeline")
+
+
+def _save_provenance(article: Dict) -> None:
+    """Store source URLs and hashes, never raw/private source text."""
+    urls = list(article.get("_source_urls") or [])
+    texts = list(article.get("_source_texts") or [])
+    if not urls:
+        return
+    records = []
+    for index, url in enumerate(urls):
+        text = texts[index] if index < len(texts) else ""
+        records.append({
+            "id": f"S{index + 1}",
+            "url": url,
+            "sha256": hashlib.sha256(text.encode("utf-8", "ignore")).hexdigest(),
+            "characters": len(text),
+        })
+    path = config.OUTPUT_DIR / "provenance"
+    path.mkdir(parents=True, exist_ok=True)
+    (path / f"{article.get('slug', 'post')}.json").write_text(
+        json.dumps({
+            "title": article.get("title", ""),
+            "created": date.today().isoformat(),
+            "notebooklm_claims": article.get("_notebooklm_claims", 0),
+            "sources": records,
+        }, ensure_ascii=False, indent=2), encoding="utf-8")
+
 
 # ---------------------------------------------------------------- auto category
 
@@ -216,8 +245,9 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
             list_items=article.get("list_items") if article.get("article_type") == "listicle" else None,
             recruitment=article.get("recruitment"),
         )
-    # in-content ads (viewability-optimized slots; AD_SHORTCODE set unte matrame)
-    if config.AD_SHORTCODE:
+    # In-content ad hard gate: before AdSense approval no ad spaces are added,
+    # even if an old shortcode remains in .env by mistake.
+    if config.AD_SHORTCODE and getattr(config, "ADSENSE_APPROVED", False):
         final_html = seo.insert_ad_shortcodes(
             final_html, config.AD_SHORTCODE,
             max_ads=config.MAX_AD_SLOTS, cls_safe=config.AD_CLS_WRAPPER)
@@ -237,6 +267,30 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
     log.info("QA score %s/100 (words=%d) originality=%s%% issues=%s",
              qa["score"], qa["words"], article.get("_orig", "n/a"),
              qa["issues"][:3] or "none")
+    # v35: never let an unreviewed/under-validated article go straight live.
+    # Drafts remain available for a human to fix; only direct publish is blocked.
+    live_status = getattr(config, "DEFAULT_POST_STATUS", "draft")
+    if live_status == "publish":
+        reviewer = (getattr(config, "EDITORIAL_REVIEWER", "") or "").strip()
+        if not reviewer:
+            raise RuntimeError(
+                "LIVE-PUBLISH BLOCKED: EDITORIAL_REVIEWER is empty; "
+                "a named human must review the draft and official source first")
+        min_qa = max(0, min(100, int(getattr(config, "PUBLISH_QA_MIN_SCORE", 80))))
+        if qa["score"] < min_qa:
+            raise RuntimeError(
+                f"LIVE-PUBLISH BLOCKED: local QA {qa['score']}/100 < {min_qa}; "
+                "save as draft, fix the listed issues, then review manually")
+        if article.get("_orig") is not None:
+            min_orig = float(getattr(config, "PUBLISH_ORIGINALITY_MIN", 72))
+            if float(article["_orig"]) < min_orig:
+                raise RuntimeError(
+                    f"LIVE-PUBLISH BLOCKED: originality {article['_orig']}% < "
+                    f"{min_orig:g}% — source-backed rewrite needs editorial work")
+    try:
+        _save_provenance(article)
+    except OSError:
+        log.warning("Provenance sidecar could not be saved", exc_info=True)
     try:  # v19: dup-guard memory (scaled-content protection for FUTURE posts)
         state.save_fingerprint(config.STATE_PATH, article["slug"],
                                validator.fingerprint_tokens(final_html))
@@ -327,7 +381,8 @@ def _after_publish_push(article: Dict, result: Dict) -> None:
         log.exception("Channel auto-post failed")
 
 
-def create_from_source(url: str, mock: bool = False, category: str = "") -> Dict:
+def create_from_source(url: str, mock: bool = False, category: str = "",
+                       notebooklm_brief: str = "") -> Dict:
     """Vere site URL -> 100% original SEO article -> draft post.
 
     category empty aite auto-classify (Telugu+English keywords tho).
@@ -389,6 +444,7 @@ def create_from_source(url: str, mock: bool = False, category: str = "") -> Dict
         article = gemini_client.generate_article_from_source(
             src, recent, date.today().year, extras=extras,
             competitor_titles=competitor_titles,
+            notebooklm_brief=notebooklm_brief,
         )
         if category:
             article["category"] = category
@@ -397,24 +453,51 @@ def create_from_source(url: str, mock: bool = False, category: str = "") -> Dict
                 f"{src.title} {article['title']}", src.text)
         # --- originality guard: 70% kante takkuva aite OKKO regenerate ---
         source_texts = [src.text] + [e.text for e in extras]
+        if notebooklm_brief:
+            from . import research_brief as _rb
+            source_urls = [src.url] + [e.url for e in extras]
+            brief_check = _rb.validate_editor_brief(notebooklm_brief, source_urls)
+            if not brief_check["ok"]:
+                raise ValueError(
+                    "NotebookLM brief validation failed: "
+                    + "; ".join(brief_check["problems"]))
+            article["_notebooklm_claims"] = brief_check["claims"]
+            article["_notebooklm_sources"] = brief_check["source_ids"]
         article["content_html"] = validator.sanitize_html(article["content_html"])
         orig = validator.originality_score(article["content_html"], source_texts)
-        if orig < 70.0:
-            log.warning("Originality %.1f%% takkuva — inko sari regenerate", orig)
+        overlaps = validator.verbatim_overlaps(article["content_html"], source_texts)
+        if overlaps:
+            log.warning("Exact source phrase overlap detected (%d runs) — regenerate", len(overlaps))
+        if orig < 70.0 or overlaps:
+            log.warning("Source similarity guard triggered (originality %.1f%%) — regenerate", orig)
             try:
                 retry_article = gemini_client.generate_article_from_source(
                     src, recent, date.today().year, extras=extras,
                     competitor_titles=competitor_titles,
+                    notebooklm_brief=notebooklm_brief,
                 )
                 retry_article["content_html"] = validator.sanitize_html(
                     retry_article["content_html"])
                 retry_orig = validator.originality_score(
                     retry_article["content_html"], source_texts)
-                if retry_orig > orig:
-                    log.info("Regenerate better: %.1f%% -> %.1f%%", orig, retry_orig)
-                    article, orig = retry_article, retry_orig
+                retry_overlaps = validator.verbatim_overlaps(
+                    retry_article["content_html"], source_texts)
+                # Prefer a clean rewrite over a numerically higher similarity
+                # score; exact copied runs are never an acceptable tradeoff.
+                better = (not retry_overlaps and bool(overlaps)) or (
+                    len(retry_overlaps) < len(overlaps)
+                    and retry_orig >= orig - 2.0
+                ) or (not overlaps and retry_orig > orig)
+                if better:
+                    log.info("Regenerate better: %.1f%% -> %.1f%%; exact runs %d -> %d",
+                             orig, retry_orig, len(overlaps), len(retry_overlaps))
+                    article, orig, overlaps = retry_article, retry_orig, retry_overlaps
             except gemini_client.GeminiError:
                 log.exception("Regenerate failed — first version e continue")
+        if overlaps:
+            raise RuntimeError(
+                "SKIP-VERBATIM-OVERLAP: rewrite still shares exact long phrases "
+                "with a source; source set needs editorial rewriting before use")
         # v18 HARD FLOOR: near-copy anipichte publish EEDU (AdSense rule #1 —
         # copied content unte site approve avakapote runtime lo ban risk)
         floor = getattr(config, "ORIG_HARD_FLOOR", 72)
@@ -446,10 +529,24 @@ def create_from_source(url: str, mock: bool = False, category: str = "") -> Dict
 
     # --- QA data (notification + trust box kosam) ---
     article["_source_texts"] = [src.text] + [e.text for e in extras]
+    article["_source_urls"] = [src.url] + [e.url for e in extras]
     article["_source_domains"] = [
         d for d in [urlparse(src.url).netloc.replace("www.", "")]
         + [urlparse(e.url).netloc.replace("www.", "") for e in extras]
     ]
+
+    # Preserve provenance in visible official/reference links. The article is
+    # still independently written; these links let a student verify a date or
+    # fee instead of asking them to trust an AI summary.
+    article.setdefault("external_links", [])
+    known_links = {str(item.get("url", "")).rstrip("/")
+                   for item in article["external_links"] if isinstance(item, dict)}
+    for i, source_url in enumerate(article["_source_urls"][:6], 1):
+        if source_url.rstrip("/") not in known_links:
+            article["external_links"].append({
+                "text": f"Source {i} — {urlparse(source_url).netloc}",
+                "url": source_url,
+            })
 
     # slug safe ga + Rank Math optimize (keyword tokens + stopwords)
     from .main import _safe_slug

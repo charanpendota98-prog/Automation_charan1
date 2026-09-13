@@ -48,6 +48,28 @@ def originality_score(article_html: str, source_texts: List[str]) -> float:
     return round(100.0 * (1.0 - worst), 1)
 
 
+def verbatim_overlaps(article_html: str, source_texts: List[str],
+                      n: int = 12, limit: int = 12) -> List[str]:
+    """Return long exact word runs shared with a source.
+
+    A similarity percentage alone can miss a copied paragraph when the source
+    is much longer. This second guard looks for contiguous 12-word runs and is
+    intentionally conservative: it reports evidence for review rather than
+    pretending to be a copyright court or a plagiarism verdict.
+    """
+    article = text_shingles(strip_tags(article_html), n=n)
+    if not article:
+        return []
+    found = set()
+    for source in source_texts or []:
+        shared = article & text_shingles(source, n=n)
+        for phrase in shared:
+            found.add(phrase)
+            if len(found) >= limit:
+                return sorted(found)
+    return sorted(found)
+
+
 def sanitize_html(html: str) -> str:
     """Allowed tags tappa anni strip (content ni preserve chesi)."""
     if not html:

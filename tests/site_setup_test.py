@@ -15,7 +15,8 @@ from autoblog.wordpress_client import WordPressClient  # noqa: E402
 class FakeWP:
     def __init__(self, *, robots="User-agent: *\n", sample_link=None,
                  sitemap=200, ns=("wp/v2", "rankmath/v1"), settings=None,
-                 menus=None, cats=None, pages=None, locations=None):
+                 menus=None, cats=None, pages=None, locations=None,
+                 themes=None, plugins=None):
         self.robots = robots
         self.sample_link = sample_link
         self.sitemap = sitemap
@@ -33,6 +34,13 @@ class FakeWP:
         self.pages = pages or {}
         self.locations = locations or []
         self.created_pages = []
+        self.themes = themes if themes is not None else [{
+            "slug": "generatepress", "name": "GeneratePress", "status": "active",
+        }]
+        self.plugins = plugins if plugins is not None else [
+            {"slug": slug, "plugin": f"{slug}/{slug}.php", "status": "active"}
+            for slug in ("rank-math", "redirection", "updraftplus", "wp-super-cache")
+        ]
 
     # -- surface used by setup
     def check_connection(self):
@@ -50,6 +58,25 @@ class FakeWP:
 
     def get_recent_published(self, per_page=8):
         return [{"link": self.sample_link}] if self.sample_link else []
+
+    def list_themes(self):
+        return list(self.themes)
+
+    def list_plugins(self):
+        return list(self.plugins)
+
+    def install_plugin(self, slug, activate=True):
+        item = {"slug": slug, "plugin": f"{slug}/{slug}.php",
+                "status": "active" if activate else "inactive"}
+        self.plugins.append(item)
+        return item
+
+    def activate_plugin(self, plugin_id):
+        for item in self.plugins:
+            if item.get("plugin") == plugin_id:
+                item["status"] = "active"
+                return item
+        raise AssertionError(plugin_id)
 
     def get_settings(self):
         return dict(self.settings)

@@ -90,7 +90,7 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
         source_url: str = "", process_queue: int = 0, update_id: int = 0,
         listicle: str = "", auto_refresh_n: int = 0,
         quiz: bool = False, quiz_topic: str = "", quiz_level: int = 0,
-        quiz_questions: int = 0) -> int:
+        quiz_questions: int = 0, notebooklm_brief_file: str = "") -> int:
     now = _now()
     today = now.date()
     now_hour = now.hour
@@ -151,7 +151,15 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
         if not mock and not config.GEMINI_API_KEY:
             log.error("GEMINI_API_KEY set kavali! .env file lo key pettandi.")
             return 2
-        result = pipeline.create_from_source(source_url, mock=mock, category=category)
+        brief = ""
+        if notebooklm_brief_file:
+            brief_path = Path(notebooklm_brief_file)
+            if not brief_path.exists():
+                log.error("NotebookLM brief file ledu: %s", notebooklm_brief_file)
+                return 2
+            brief = brief_path.read_text(encoding="utf-8", errors="replace")[:18000]
+        result = pipeline.create_from_source(
+            source_url, mock=mock, category=category, notebooklm_brief=brief)
         log.info("SOURCE POST READY ✔ %s (status=%s)", result["link"], result["status"])
         return 0
 
@@ -472,8 +480,9 @@ def gsc_opportunities(csv_path: str) -> int:
         print(f"   {i}. \"{q}\" — ee query meeda already rank {opps[i-1]['position']:.0f}")
         print("      -> matching post ni --update cheyandi OR fresh deep article")
         print("         ravadam (title/desc/content optimize -> CTR perugutundi)")
-    print("\n  Formula: veeti posts improve cheste 2-4 nelallo traffic 30-100%+ "
-          "perugutundi (industry-proven striking-distance strategy).")
+    print("\n  Next step: matching post ni human ga inspect chesi title/snippet or content/internal links "
+          "test cheyandi. Search Console lo before/after data tho impact measure cheyandi; "
+          "traffic percentage or timing guarantee ledu.")
 
     # v21: GSC real data → queue priority boost (radar/keyword queue lo
     # ee queries matche ayye items mundu process avutayi)
@@ -802,16 +811,30 @@ def revenue_check() -> int:
     checks = [
         ("TELEGRAM_CHANNEL_URL set (repeat traffic CTA)",
          bool(config.TELEGRAM_CHANNEL_URL)),
+        ("AdSense pre-approval gate (ads intentionally off)",
+         not bool(getattr(config, "ADSENSE_APPROVED", False))),
+        ("ADSENSE_CLIENT_ID valid after approval",
+         (not getattr(config, "ADSENSE_APPROVED", False)) or
+         (bool(getattr(config, "ADSENSE_CLIENT_ID", ""))
+          and re.fullmatch(r"ca-pub-\d{6,20}",
+                           getattr(config, "ADSENSE_CLIENT_ID", "")) is not None)),
+        ("AdSense loader enabled only after approval",
+         not getattr(config, "ADSENSE_APPROVED", False) or
+         bool(getattr(config, "ADSENSE_ENABLED", False))),
+        ("AdSense CMP/provider after approval",
+         not getattr(config, "ADSENSE_APPROVED", False) or
+         bool(getattr(config, "ADSENSE_CONSENT_PROVIDER", ""))),
+        ("Plugin auto-stack enabled", bool(getattr(config, "PLUGIN_AUTO_INSTALL", False))),
         ("AFFILIATE_LINKS set (affiliate income)",
          bool(config.AFFILIATE_LINKS)),
-        ("AD_SHORTCODE set (in-content ads)",
-         bool(config.AD_SHORTCODE)),
-        (f"MAX_AD_SLOTS = {config.MAX_AD_SLOTS} (3-5 ideal long articles)",
+        ("AD_SHORTCODE gate (ignored before approval)",
+         not getattr(config, "ADSENSE_APPROVED", False) or bool(config.AD_SHORTCODE)),
+        (f"MAX_AD_SLOTS = {config.MAX_AD_SLOTS} (cap; unused before approval)",
          1 <= config.MAX_AD_SLOTS <= 5),
         ("CLS wrapper ON (layout-shift protection)",
          config.AD_CLS_WRAPPER),
-        (f"HIGH_CPC_SHARE = {config.HIGH_CPC_SHARE}% (30 recommended)",
-         20 <= config.HIGH_CPC_SHARE <= 50),
+        (f"Commercial-topic mix = {config.HIGH_CPC_SHARE}% (not a CPC promise)",
+         0 <= config.HIGH_CPC_SHARE <= 50),
         (f"LISTICLES_PER_DAY = {config.LISTICLES_PER_DAY} (trending stories)",
          config.LISTICLES_PER_DAY >= 1),
         (f"Daily auto-refresh ON ({config.AUTO_REFRESH_PER_DAY}/day)",
@@ -836,15 +859,19 @@ def revenue_check() -> int:
     print(f"\n  Bot-side score: {score}/{len(checks)}")
 
     print("\nSITE-SIDE (WordPress dashboard — manual cheyali):")
-    for item in [
-        "AdSense Auto Ads ON cheyandi",
-        "Anchor ads (mobile sticky) allow cheyandi",
+    ads_steps = ([
+        "Keep ADSENSE_APPROVED=0; no ad spaces until the owner sees Google approval",
+        "Use Search Console Indexing + Core Web Vitals reports weekly",
+    ] if not getattr(config, "ADSENSE_APPROVED", False) else [
+        "Verify AdSense Policy Center, CMP/consent, ads.txt and authorized sites",
+        "Review Auto Ads/anchor placements manually; no forced clicks or refresh tricks",
+    ])
+    for item in ads_steps + [
         "Rank Math / Yoast plugin active + sitemap",
-        "Caching plugin (LiteSpeed / WP-Optimize) — speed = viewability",
-        "Search Console lo sitemap submit",
-        "30+ posts ayaka Google News Publisher apply",
+        "Caching plugin (LiteSpeed / WP-Optimize) — test real mobile UX",
+        "Search Console lo sitemap submit and inspect important URLs",
+        "Google News/Discover visibility is not guaranteed by an application",
         "Rank Math > Titles & Meta > Global Robots: 'Large' image preview set cheyandi (Discover)",
-        "10K+ pageviews ayaka Ezoic / Monumetric apply (RPM 50-150% up)",
     ]:
         print(f"  🔧 {item}")
 
@@ -857,6 +884,60 @@ def revenue_check() -> int:
         print(f"  🚫 {item}")
     print("=" * 62)
     return 0
+
+
+def content_audit_run(limit: int = 500) -> int:
+    """Read-only audit of all published WP posts, independent of state.db."""
+    from . import content_audit
+
+    return content_audit.run(limit=limit)
+
+
+def google_audit_run(url: str) -> int:
+    from . import google_audit
+
+    return google_audit.run(url)
+
+
+def research_brief_run(seed: str, url_file: str = "", limit: int = 6) -> int:
+    from . import research_brief
+
+    return research_brief.run(seed, url_file=url_file, limit=max(1, min(limit, 12)))
+
+
+def service_center_setup(dry: bool = True, force: bool = False) -> int:
+    """Publish/preview the Student Internet Center service landing page."""
+    from . import service_center
+
+    if not config.SERVICE_CENTER_ENABLED:
+        print("📞 Student Service Center disabled: SERVICE_CENTER_ENABLED=0")
+        return 0
+    if dry:
+        out = config.OUTPUT_DIR / "service-center.html"
+        out.parent.mkdir(parents=True, exist_ok=True)
+        page = service_center.publish_page(None, dry=True)
+        out.write_text(
+            "<!doctype html><html lang='en'><head><meta charset='utf-8'>"
+            f"<title>{page['title']}</title></head><body>{page['html']}</body></html>",
+            encoding="utf-8",
+        )
+        print(f"📞 Service Center preview saved: {out}")
+        if not (config.SERVICE_CENTER_PHONE or config.SERVICE_CENTER_WHATSAPP):
+            print("⚠️  Add SERVICE_CENTER_PHONE or SERVICE_CENTER_WHATSAPP before publishing")
+        return 0
+    from .wordpress_client import WordPressClient
+    try:
+        wp = WordPressClient()
+        wp.check_connection()
+        result = service_center.publish_page(wp, dry=False, force=force)
+        if result.get("status") == "manual-preserved":
+            print(f"⚠️  Service Center page preserved: {result.get('detail', '')}")
+            return 0
+        print(f"📞 Service Center page: {result.get('link', result.get('slug'))}")
+        return 0
+    except Exception as exc:  # noqa: BLE001
+        print(f"❌ Service Center page failed: {exc}")
+        return 1
 
 
 def notify_test() -> int:
@@ -878,43 +959,43 @@ def notify_test() -> int:
 
 
 
-PRIVACY_HTML = """<p>studentup.in visits gurinchi detailed ga explain chestunnam.</p>
+PRIVACY_HTML = f"""<p>studentup.in visits gurinchi detailed ga explain chestunnam.</p>
 <h2>Information We Collect</h2>
-<p>Mana site standard analytics (page views, country, browser type) matrame collect chestundi. Login levu; personal info adagabadu.</p>
+<p>Analytics or consent tools enabled in the site configuration may collect limited page-performance information. Login, OTP, passwords, UPI PINs or bank credentials adagabadu.</p>
 <h2>Cookies &amp; Advertising</h2>
-<p>Third-party vendors (Google AdSense togru) ads chupinadaniki cookies vaadatharu. Ad personalization ni <a href="https://www.google.com/settings/ads">google.com/settings/ads</a> lo control cheyochu.</p>
+<p>Before AdSense approval, this project emits no AdSense loader or ad spaces. If advertising is later enabled, Google/other vendors may use cookies or similar technologies only under the configured consent and privacy controls. Users can review ad settings at <a href="https://www.google.com/settings/ads">google.com/settings/ads</a>.</p>
 <h2>Contact</h2>
-<p>Questions: <a href="mailto:studentupinformative@gmail.com">studentupinformative@gmail.com</a></p>"""
+<p>Questions: <a href="mailto:{config.SUPPORT_EMAIL}">{config.SUPPORT_EMAIL}</a></p>"""
 
-ABOUT_HTML = """<p>studentup.in — Telugu students (18-30 years) kosam 100% free education news portal: govt jobs, notifications, results, hall tickets, scholarships, latest education news.</p>
+ABOUT_HTML = """<p>studentup.in — Telugu students kosam free education information portal: govt jobs, notifications, results, hall tickets, scholarships and learning guidance.</p>
 <h2>Meeku enduku help avutundi?</h2>
-<p>Prathi notification ni simple Telugu lo, steps/tables/FAQ tho complete ga explain chestam. Content team (Charan - Developer, Anand - Content Manager, Naga Prathyu - Content Writer) research chesi 100% original ga rastundi — copy/paste kaadu.</p>"""
+<p>Prathi notification ni simple Telugu lo, steps/tables/visible FAQ tho explain chestam. Content team source-backed drafts prepare chestundi; human review and official-source verification workflow follow chestam.</p>"""
 
-CONTACT_HTML = """<p>Mana team ki direct ga contact avvali:</p>
+CONTACT_HTML = f"""<p>Mana team ki direct ga contact avvali:</p>
 <ul>
-<li>Editorial: <a href="mailto:studentupinformative@gmail.com">studentupinformative@gmail.com</a></li>
-<li>Business/Ads: <a href="mailto:charanpendota@gmail.com">charanpendota@gmail.com</a></li>
+<li>Editorial: <a href="mailto:{config.SUPPORT_EMAIL}">{config.SUPPORT_EMAIL}</a></li>
+<li>Service Center: <a href="mailto:{config.SERVICE_CENTER_EMAIL or config.SUPPORT_EMAIL}">{config.SERVICE_CENTER_EMAIL or config.SUPPORT_EMAIL}</a></li>
 </ul>
-<p>Reply 24-48 hours lo vastundi.</p>"""
+<p>Personal documents or sensitive credentials ni email lo pampakandi; configured private upload channel matrame use cheyandi.</p>"""
 
-CORRECTIONS_HTML = """<p>studentup.in lo prathi article official notifications &amp; trusted news sources aadharanga untundi. Emaina tappu dorikina:</p>
+CORRECTIONS_HTML = f"""<p>studentup.in lo articles official notifications &amp; trusted sources aadharanga untayi. Emaina tappu dorikina:</p>
 <ul>
-<li><a href="mailto:studentupinformative@gmail.com">studentupinformative@gmail.com</a> ki email cheyandi (post link + wrong detail)</li>
-<li>24 hours lo verify chesi fix chestam</li>
-<li>Fix cheyaka article lo "Updated" note pettistam (transparency)</li>
+<li><a href="mailto:{config.SUPPORT_EMAIL}">{config.SUPPORT_EMAIL}</a> ki post link + wrong detail pampandi</li>
+<li>Team verify chesi correction note/update chestundi; response time workload batti untundi</li>
+<li>Dates, fees, eligibility ki official website ni kuda confirm chesukondi</li>
 </ul>
-<p>Dates, fees, eligibility vital info — publish mundu double-check chestam; kaani official website confirm chesukondi.</p>"""
+<p>Correction policy: <a href="/corrections-policy/">details chudandi</a>.</p>"""
 
-EDITORIAL_HTML = """<p>studentup.in editorial standards — Google News + AdSense rendu ikkadi expect chestayi:</p>
+EDITORIAL_HTML = f"""<p>studentup.in editorial standards — useful, source-backed and people-first content kosam.</p>
 <h2>Content ela test</h2>
 <ul>
-<li>Official notifications &amp; trusted sources nunchi facts matrame (copy/paste kaadu — 100% original rewrite, auto originality floor 72%)</li>
-<li>Dates/fees/eligibility prathi article lo verified; deadline exact notice nunchi teesukuntam (guessing banned)</li>
-<li>AI-assisted drafting + human editorial review — prathi publish taruvata team read</li>
-<li>Near-duplicate check: same topic revisit aithe merge/update, kotha page kaadu</li>
+<li>Official notifications &amp; trusted sources nunchi facts matrame; copied text kaadu</li>
+<li>Dates/fees/eligibility verify cheyali; guessing banned</li>
+<li>AI-assisted drafting + human review required before a draft is treated as final</li>
+<li>Near-duplicate check: same topic revisit aithe merge/update, kotha thin page kaadu</li>
 </ul>
-<h2>Authors</h2>
-<p>Charan Pendota (Founder &amp; Editor), Anand (Content Manager), Naga Prathyu (Content Writer) — prathi article lo byline undi. Mistakes report: <a href="mailto:studentupinformative@gmail.com">studentupinformative@gmail.com</a>.</p>"""
+<h2>Authors and corrections</h2>
+<p>Configured author team bylines use chestundi. Mistakes report: <a href="mailto:{config.SUPPORT_EMAIL}">{config.SUPPORT_EMAIL}</a>.</p>"""
 
 ADSENSE_PAGES = [
     ("Privacy Policy", "privacy-policy", PRIVACY_HTML),
@@ -926,7 +1007,7 @@ ADSENSE_PAGES = [
 
 
 def ensure_adsense() -> int:
-    """AdSense approval: mandatory pages auto-create + manual checklist."""
+    """AdSense preparation: policy pages + owner checklist; approval remains Google-side."""
     from .wordpress_client import WordPressClient
 
     print("\n========== GOOGLE ADSENSE APPROVAL CHECKLIST (v19) ==========")
@@ -950,11 +1031,10 @@ def ensure_adsense() -> int:
     try:
         n = wp.published_count()
         if n >= 20:
-            print(f"[OK]     {n} published posts — AdSense content bar (20+) dorikindi")
+            print(f"[INFO]   {n} published posts — content inventory check only; no fixed Google threshold")
         else:
-            ok_all = False
-            print(f"[WAIT]   {n}/20 posts — Google rejection reason #1 'low value "
-                  "content'. Inka {20 - n} solid posts taruvata APPLY cheyandi!")
+            print(f"[INFO]   {n} published posts — continue building useful, original content; "
+                  "Google has no code-verifiable fixed post-count threshold")
     except Exception:
         pass
     print("\n--- MANUAL CHECKS (bot cheyyaleru — mee browser/console lo) ---")
@@ -965,7 +1045,7 @@ def ensure_adsense() -> int:
         ("Human eye", "Rozu okko auto-post human ga chaduvandi — 'AI at scale, unedited' Google demotion trigger #1"),
         ("Dead/expired links", "Month ki okkaru expired posts/links clean cheyandi (auto-refresh undi kaani manual spot-check best)"),
         ("No self-clicks", "mee own ads ni eppudu click cheyadraku — ban risk"),
-        ("Traffic/posts", "~20+ quality posts + organic traffic rawalsi (daily auto-publish undi)"),
+        ("Traffic/posts", "useful original content + real organic traffic; no fixed post-count guarantee"),
         ("Search Console", "Sitemap submitted aa check (/sitemap_index.xml); Coverage + Core Web Vitals warnings fix"),
         ("Google News", "Bylines + Editorial Policy page LIVE ayaka Publisher Center lo site add cheyandi (news traffic = notification site oxygen)"),
         ("Auto Ads audit", "AdSense approved taraivata auto-ads placements month ki okkaru review — above-fold stack + interstitials avoid"),
@@ -1003,6 +1083,24 @@ def main() -> int:
                         help="Search Console queries CSV -> striking-distance opportunities")
     parser.add_argument("--doctor", action="store_true",
                         help="deployment health check — anni dependencies verify")
+    parser.add_argument("--production-audit", action="store_true",
+                        help="v30: production safety, consent, ads, plugins, theme, and legal audit")
+    parser.add_argument("--service-center", action="store_true",
+                        help="v31: preview/publish Student Internet Center services page")
+    parser.add_argument("--content-audit", action="store_true",
+                        help="v32: read-only audit of all published posts; no rewrite/no URL changes")
+    parser.add_argument("--content-limit", type=int, default=500,
+                        help="v32: maximum published posts to inspect (default: 500)")
+    parser.add_argument("--google-audit", default="", metavar="URL",
+                        help="v33: public HTML + PageSpeed mobile/desktop audit for a URL")
+    parser.add_argument("--research-brief", default="", metavar="TOPIC_OR_URL",
+                        help="v36: build a cited NotebookLM-ready source bundle")
+    parser.add_argument("--research-urls", default="", metavar="FILE",
+                        help="v36: optional file with checked public URLs, one per line")
+    parser.add_argument("--research-limit", type=int, default=6, metavar="N",
+                        help="v36: maximum public sources in the NotebookLM bundle")
+    parser.add_argument("--notebooklm-brief", default="", metavar="FILE",
+                        help="v36: use an editor-verified NotebookLM brief with --url")
     parser.add_argument("--trends", action="store_true",
                         help="Google Trends India education trends chupinchindi")
     parser.add_argument("--radar", action="store_true",
@@ -1014,6 +1112,14 @@ def main() -> int:
     parser.add_argument("--setup", action="store_true",
                         help="FULL WordPress site setup: audit + auto-fix settings, "
                              "footer menu, category SEO, robots/sitemap checks (add --dry-run to preview)")
+    parser.add_argument("--plugins", action="store_true",
+                        help="v28: install/activate only the reviewed plugin stack "
+                             "(add --dry-run to preview)")
+    parser.add_argument("--theme-audit", action="store_true",
+                        help="v28: read-only active-theme audit; never switches themes")
+    parser.add_argument("--adsense-kit", action="store_true",
+                        help="v28: validate ADSENSE_CLIENT_ID and install/update "
+                             "the site-wide Auto Ads loader widget")
     parser.add_argument("--ensure-adsense", action="store_true",
                         help="AdSense approval: mandatory pages auto-create + full checklist")
     parser.add_argument("--keywords", action="store_true",
@@ -1051,6 +1157,19 @@ def main() -> int:
         return gsc_opportunities(args.gsc)
     if args.doctor:
         return doctor()
+    if args.production_audit:
+        from . import production_audit
+
+        return production_audit.run()
+    if args.service_center:
+        return service_center_setup(dry=args.dry_run, force=args.force)
+    if args.content_audit:
+        return content_audit_run(limit=max(1, min(args.content_limit, 5000)))
+    if args.google_audit:
+        return google_audit_run(args.google_audit)
+    if args.research_brief:
+        return research_brief_run(args.research_brief, args.research_urls,
+                                  args.research_limit)
     if args.trends:
         return trends_check()
     if args.sources:
@@ -1063,6 +1182,18 @@ def main() -> int:
         from . import site_setup
 
         return site_setup.run_setup(dry=args.dry_run)
+    if args.plugins:
+        from . import site_setup
+
+        return site_setup.run_plugins(dry=args.dry_run)
+    if args.theme_audit:
+        from . import site_setup
+
+        return site_setup.run_theme_audit()
+    if args.adsense_kit:
+        from . import site_setup
+
+        return site_setup.run_adsense_kit(dry=args.dry_run)
     if args.polish:
         from . import design_kit
         from .wordpress_client import WordPressClient
@@ -1123,7 +1254,8 @@ def main() -> int:
                    listicle=listicle_arg, auto_refresh_n=args.auto_refresh,
                    quiz=args.quiz, quiz_topic=args.quiz_topic,
                    quiz_level=args.quiz_level,
-                   quiz_questions=args.quiz_questions)
+                   quiz_questions=args.quiz_questions,
+                   notebooklm_brief_file=args.notebooklm_brief)
     except wordpress_client.WordPressAuthError as exc:
         log.error("%s", exc)
         return 3

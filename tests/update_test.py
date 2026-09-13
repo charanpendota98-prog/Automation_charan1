@@ -157,7 +157,7 @@ def main():
     content = payload["content"]
     # fresh SEO sections exactly once (old ones strip + re-add, no duplicates)
     assert content.count("విషయ సూచిక") == 1, content.count("విషయ సూచిక")
-    assert content.count("FAQPage") == 1
+    assert content.count("FAQPage") == 0
     assert content.count("Quick Answer") <= 2  # h2 + TOC entry
     assert content.count("About This Article") == 1
     assert "Last Updated" in content
