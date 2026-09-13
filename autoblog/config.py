@@ -54,11 +54,12 @@ INDEXNOW_KEY = _get("INDEXNOW_KEY", "")
 KEEP_IMAGES = _get("KEEP_IMAGES", "0") not in ("0", "false", "no")
 # Scheduler watchdog: itne hours run ledu ante Telegram lo alert
 WATCHDOG_HOURS = int(_get("WATCHDOG_HOURS", "26"))
-# Trending listicles ("stories"): roju intha count, auto schedule lo
-LISTICLES_PER_DAY = int(_get("LISTICLES_PER_DAY", "2"))
+# Quality-first publishing: fewer, source-backed drafts beat scaled thin pages.
+# These are draft slots by default; a human still decides what becomes public.
+LISTICLES_PER_DAY = int(_get("LISTICLES_PER_DAY", "1"))
 # Daily auto-refresh: prathi roju intha purana posts ni refresh chestundi
 AUTO_REFRESH_PER_DAY = int(_get("AUTO_REFRESH_PER_DAY", "1"))
-AUTO_REFRESH_MIN_AGE_DAYS = int(_get("AUTO_REFRESH_MIN_AGE_DAYS", "14"))
+AUTO_REFRESH_MIN_AGE_DAYS = int(_get("AUTO_REFRESH_MIN_AGE_DAYS", "30"))
 AUTO_REFRESH_HOUR = int(_get("AUTO_REFRESH_HOUR", "21"))
 # In-content ad shortcode (site lo ad plugin active unte; empty = off)
 # Example: AD_SHORTCODE=[quads id=1]  or  [advanced_ads_severities]
@@ -133,6 +134,9 @@ SUPPORT_EMAIL = _get("SUPPORT_EMAIL", "studentupinformative@gmail.com")
 
 # Real bylines (Google News + E-E-A-T require): "Name:Role;Name:Role"
 AUTHOR_TEAM = []
+# Never claim a human review that did not happen. Set this only after a named
+# editor has actually checked the draft and its official sources.
+EDITORIAL_REVIEWER = _get("EDITORIAL_REVIEWER", "").strip()
 for _a in _get("AUTHOR_TEAM",
                "Charan Pendota:Founder & Editor;"
                "Anand:Content Manager;"
@@ -161,8 +165,9 @@ DUP_JACCARD_SKIP = float(_get("DUP_JACCARD_SKIP", "0.62"))
 FACT_STRICT = _get("FACT_STRICT", "1") not in ("0", "false", "no")
 
 # --- Schedule ------------------------------------------------------------
-DAILY_MIN = int(_get("DAILY_MIN", "10"))     # min posts per day
-DAILY_MAX = int(_get("DAILY_MAX", "15"))     # max posts per day
+# Draft-first quality default: do not create a scaled-content firehose.
+DAILY_MIN = int(_get("DAILY_MIN", "3"))      # min draft slots per day
+DAILY_MAX = int(_get("DAILY_MAX", "5"))      # max draft slots per day
 ACTIVE_HOUR_START = int(_get("ACTIVE_HOUR_START", "6"))   # first posting hour (local)
 ACTIVE_HOUR_END = int(_get("ACTIVE_HOUR_END", "22"))      # last posting hour (local)
 TIMEZONE = _get("TIMEZONE", "Asia/Kolkata")
@@ -195,6 +200,54 @@ for _pair in _get("CATEGORY_PRIORITY",
         except ValueError:
             pass
 
+# --- v28: safe site operations --------------------------------------------
+# Only this small, reviewed allow-list can ever be installed by the bot.
+# WordPress still decides whether the authenticated user has install_plugins /
+# activate_plugins capability; failures are reported, never hidden.
+PLUGIN_AUTO_INSTALL = _get("PLUGIN_AUTO_INSTALL", "1") not in ("0", "false", "no")
+PLUGIN_AUTO_ACTIVATE = _get("PLUGIN_AUTO_ACTIVATE", "1") not in ("0", "false", "no")
+# Comma-separated slugs. Keep this allow-list deliberately boring and small.
+AUTO_INSTALL_PLUGINS = [
+    p.strip().lower()
+    for p in _get(
+        "AUTO_INSTALL_PLUGINS",
+        "rank-math,redirection,updraftplus,wp-super-cache",
+    ).split(",")
+    if p.strip()
+]
+# AdSense Auto Ads loader is never emitted with an empty/invalid id.
+ADSENSE_ENABLED = _get("ADSENSE_ENABLED", "1") not in ("0", "false", "no")
+ADSENSE_AUTO_ADS = _get("ADSENSE_AUTO_ADS", "1") not in ("0", "false", "no")
+# Hard gate: before Google approves the account, neither ad slots nor the
+# Auto Ads loader can be emitted even if a client id is accidentally present.
+ADSENSE_APPROVED = _get("ADSENSE_APPROVED", "0") not in ("0", "false", "no")
+ADSENSE_CLIENT_ID = _get("ADSENSE_CLIENT_ID", "").strip()
+# Consent is a deployment responsibility, not something the bot can fake.
+# Set a real Google-certified CMP/provider in production and verify its UI.
+ADSENSE_CONSENT_PROVIDER = _get("ADSENSE_CONSENT_PROVIDER", "").strip()
+# Optional measurement; never emitted unless an explicit GA4 id is supplied.
+GA4_ENABLED = _get("GA4_ENABLED", "0") not in ("0", "false", "no")
+GA4_MEASUREMENT_ID = _get("GA4_MEASUREMENT_ID", "").strip()
+
+# --- v31: Student Internet Center service workflow ------------------------
+SERVICE_CENTER_ENABLED = _get("SERVICE_CENTER_ENABLED", "1") not in ("0", "false", "no")
+SERVICE_CENTER_NAME = _get("SERVICE_CENTER_NAME", "StudentUp Internet Center").strip()
+SERVICE_CENTER_PHONE = _get("SERVICE_CENTER_PHONE", "").strip()
+SERVICE_CENTER_WHATSAPP = _get("SERVICE_CENTER_WHATSAPP", "").strip()
+SERVICE_CENTER_EMAIL = _get("SERVICE_CENTER_EMAIL", "").strip()
+SERVICE_CENTER_CITY = _get("SERVICE_CENTER_CITY", "Hyderabad").strip()
+SERVICE_CENTER_PAGE_SLUG = _get("SERVICE_CENTER_PAGE_SLUG", "student-services")
+# Prefer a private upload portal or staff-issued one-time link. Empty means
+# the public page tells callers to request a secure link instead of collecting
+# raw documents in an open form.
+SERVICE_CENTER_UPLOAD_URL = _get("SERVICE_CENTER_UPLOAD_URL", "").strip()
+SERVICE_CENTER_DB = Path(_get("SERVICE_CENTER_DB", str(BASE_DIR / "service_center.db")))
+SERVICE_RETENTION_DAYS = int(_get("SERVICE_RETENTION_DAYS", "30"))
+
+# --- v33: Google-facing public page audit ---------------------------------
+PAGESPEED_API_KEY = _get("PAGESPEED_API_KEY", "").strip()
+GOOGLE_AUDIT_TIMEOUT = int(_get("GOOGLE_AUDIT_TIMEOUT", "90"))
+
 # --- v26: Daily Quiz Engine (exam-style interactive quizzes) --------------
 # Roju okka quiz post automatic ga publish avutundi (QUIZ_HOUR tarvata).
 QUIZ_ENABLED = _get("QUIZ_ENABLED", "1") not in ("0", "false", "no")
@@ -219,6 +272,7 @@ SITE_BRAND = _get("SITE_BRAND", "studentup.in")
 STATE_PATH = Path(_get("STATE_PATH", str(BASE_DIR / "state.db")))
 LOG_DIR = Path(_get("LOG_DIR", str(BASE_DIR / "log")))
 OUTPUT_DIR = Path(_get("OUTPUT_DIR", str(BASE_DIR / "output")))
+RESEARCH_BRIEF_DIR = Path(_get("RESEARCH_BRIEF_DIR", str(OUTPUT_DIR / "research")))
 HTTP_TIMEOUT = int(_get("HTTP_TIMEOUT", "90"))
 
 # --- Sources (URL -> original rewrite) ------------------------------------
@@ -233,5 +287,10 @@ SEARCH_FALLBACK_ENDPOINT = _get(
 )
 # Rank Math meta REST dwara set cheyadam (plugin active unte automatic)
 RANK_MATH_META_ENABLED = _get("RANK_MATH_META_ENABLED", "1") not in ("0", "false", "no")
-# FAQ + Article JSON-LD schema (Google rich results)
+# A low score may still be saved as a draft for human editing, but direct live
+# publishing is blocked. This is a local quality gate, not a Google score.
+PUBLISH_QA_MIN_SCORE = int(_get("PUBLISH_QA_MIN_SCORE", "80"))
+PUBLISH_ORIGINALITY_MIN = float(_get("PUBLISH_ORIGINALITY_MIN", "72"))
+# Article/visible FAQ is useful for readers; FAQPage rich-result markup is not
+# emitted because Google retired that search feature in 2026.
 SEO_SCHEMA_ENABLED = _get("SEO_SCHEMA_ENABLED", "1") not in ("0", "false", "no")

@@ -1,6 +1,5 @@
-"""v21 tests: fact guard (unverified dates/counts), PAA related-questions
-block, speakable schema, public Telegram channel broadcast (publish-only),
-GSC-data-driven queue prioritization wired end-to-end."""
+"""Fact guard, visible PAA-style questions, publish-only channel broadcast,
+and GSC-data-driven queue prioritization tests."""
 
 import sys
 from pathlib import Path
@@ -93,10 +92,12 @@ def main():
     assert 'id="related-questions"' in out
     print("  3. related-questions PAA (max 3, headings-skipped, gating) ✔")
 
-    # ---- 4. speakable ----
+    # ---- 4. current schema policy ----
     sc = seo.schema_jsonld("T", "d" * 140, [], "2026-09-10", "s1")
-    assert "SpeakableSpecification" in sc and ".su-qa" in sc
-    print("  4. speakable schema (voice-ready quick answer) ✔")
+    assert "SpeakableSpecification" not in sc
+    assert "FAQPage" not in sc
+    assert '"@type": "Article"' in sc
+    print("  4. no deprecated FAQ/speakable markup; Article schema remains ✔")
 
     # ---- 5. channel broadcast: publish-only, mocks never ----
     sent = []

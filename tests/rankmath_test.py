@@ -92,8 +92,8 @@ def main():
     assert "వీటిని కూడా చదవండి" in html_out
     assert 'href="https://studentup.in/a/"' in html_out
     # E-E-A-T author
-    assert '"@type": "Person"' in html_out and "Editorial Team" in html_out
-    assert '"editor"' in html_out
+    assert '"@type": "Person"' in html_out and '"author"' in html_out
+    assert '"editor"' not in html_out
     # publisher logo: set -> present; empty -> absent
     config.SITE_LOGO_URL = "https://studentup.in/logo.png"
     html_logo = seo.schema_jsonld("T", "d", [], "2026-01-10", "t")

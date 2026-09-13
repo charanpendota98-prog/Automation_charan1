@@ -8,6 +8,7 @@ extra advanced sections tho, Telugu+English mix lo rewrite chestundi.
 import logging
 import re
 from dataclasses import dataclass
+from io import BytesIO
 from typing import Optional
 from urllib.parse import urlparse
 
@@ -31,6 +32,8 @@ class SourceArticle:
     text: str = ""
     meta_description: str = ""
     image_url: str = ""
+    published_date: str = ""
+    updated_date: str = ""
 
 
 def is_valid_source_url(url: str) -> bool:
@@ -40,6 +43,38 @@ def is_valid_source_url(url: str) -> bool:
             not any(b in p.netloc for b in BLOCKED_HOSTS)
     except ValueError:
         return False
+
+
+def _extract_pdf(url: str, content: bytes) -> SourceArticle:
+    """Extract text from public notification PDFs without storing the file."""
+    try:
+        from pypdf import PdfReader
+    except ImportError as exc:  # pragma: no cover - dependency is in requirements
+        raise ValueError("PDF source requires the pypdf dependency") from exc
+    try:
+        reader = PdfReader(BytesIO(content))
+        pages = []
+        for page in reader.pages[:40]:
+            text = page.extract_text() or ""
+            if text.strip():
+                pages.append(text)
+        extracted = re.sub(r"\n{2,}", "\n", "\n".join(pages)).strip()
+    except Exception as exc:  # noqa: BLE001
+        raise ValueError("PDF text extraction failed; open this source manually") from exc
+    if not extracted:
+        raise ValueError("PDF has no selectable text; open this source manually")
+    filename = urlparse(url).path.rsplit("/", 1)[-1]
+    title = re.sub(r"[_+%20-]+", " ", filename.rsplit(".", 1)[0]).strip() or url
+    date_match = re.search(r"(?:dated?|date)\D{0,12}(\d{1,2}[^\n]{0,20}20\d{2})",
+                           extracted, re.I)
+    return SourceArticle(
+        url=url,
+        title=title,
+        site_name=urlparse(url).netloc,
+        text=extracted[:MAX_SOURCE_CHARS],
+        meta_description="Public PDF notification; verify the cited page before publishing.",
+        published_date=date_match.group(1).strip() if date_match else "",
+    )
 
 
 def fetch_source(url: str, retries: int = 2) -> SourceArticle:
@@ -74,10 +109,13 @@ def fetch_source(url: str, retries: int = 2) -> SourceArticle:
     if resp is None or resp.status_code != 200:
         raise ValueError(f"Source fetch fail: {last_exc}")
 
+    ctype = resp.headers.get("content-type", "").lower()
+    if "pdf" in ctype or urlparse(url).path.lower().endswith(".pdf"):
+        return _extract_pdf(url, resp.content)
+
     # encoding fix: chala Indian sites wrong charset declare chestayi
     if not resp.encoding or resp.encoding.lower() == "iso-8859-1":
         resp.encoding = resp.apparent_encoding or "utf-8"
-    ctype = resp.headers.get("content-type", "")
     if "html" not in ctype and "text" not in ctype and ctype:
         raise ValueError(f"Not an HTML page: {ctype[:60]}")
 
@@ -100,6 +138,27 @@ def fetch_source(url: str, retries: int = 2) -> SourceArticle:
     desc = soup.find("meta", attrs={"property": "og:description"}) or \
         soup.find("meta", attrs={"name": "description"})
     src.meta_description = desc.get("content", "").strip() if desc else ""
+
+    def _meta_value(names):
+        for attrs in names:
+            tag = soup.find("meta", attrs=attrs)
+            if tag and tag.get("content", "").strip():
+                return tag.get("content", "").strip()
+        return ""
+
+    src.published_date = _meta_value([
+        {"property": "article:published_time"},
+        {"name": "datePublished"},
+        {"itemprop": "datePublished"},
+    ])
+    src.updated_date = _meta_value([
+        {"property": "article:modified_time"},
+        {"name": "dateModified"},
+        {"itemprop": "dateModified"},
+    ])
+    if not src.published_date:
+        time_tag = soup.find("time", attrs={"datetime": True})
+        src.published_date = time_tag.get("datetime", "").strip() if time_tag else ""
 
     og_site = soup.find("meta", attrs={"property": "og:site_name"})
     src.site_name = og_site.get("content", "").strip() if og_site else urlparse(url).netloc

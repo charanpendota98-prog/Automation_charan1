@@ -60,6 +60,7 @@ def main():
                       description=DESC, slug="tspsc-group-2-2026",
                       date_str=date.today().isoformat(), recruitment=REC)
     assert "days left" in out, "countdown insert avvali"
+    assert "su-facts-card" in out and "TSPSC-G2-2026" in out, "facts card"
     assert '"@type": "JobPosting"' in out, "JobPosting schema"
     assert "corrections-policy" in out and "mailto" in out, "E-E-A-T corrections"
     # expired deadline → no JobPosting (Google rule) but CLOSED badge shows
@@ -123,7 +124,7 @@ def main():
     src = (Path(__file__).resolve().parent.parent
            / "autoblog" / "main.py").read_text(encoding="utf-8")
     assert "X-WP-Total" in src or "published_count" in src
-    assert "low value" in src and "Human eye" in src
+    assert "no fixed Google threshold" in src and "Human eye" in src
     from autoblog.wordpress_client import WordPressClient
     assert hasattr(WordPressClient, "published_count")
 

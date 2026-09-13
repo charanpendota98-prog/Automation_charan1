@@ -194,7 +194,7 @@ def test_full_pipeline(url, wp_base):
     content = payload["content"]
     assert "విషయ సూచిక" in content
     assert "quick-answer" in content          # featured snippet block
-    assert "FAQPage" in content               # JSON-LD schema
+    assert "FAQPage" not in content           # retired rich-result markup
     assert "https://studentup.in/prev-post/" in content  # internal link added
     assert "https://www.gov.in" in content                # external link added
     assert payload["featured_media"] == 88

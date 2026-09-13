@@ -4,12 +4,12 @@
 
 - **AI content:** Google Gemini (free tier) generates Telugu + English mix articles
 - **URL → 100% Original:** vere site article URL ivvandi → facts teesi **complete ga original ga rewrite** (no copy) + **extra advanced info** add chesi post
-- **Multi-source research:** internet lo same topic articles **search chesi merge** chestundi (MERGE & BEAT strategy — competitors kante complete article)
-- **SEO + Rank Math 100%:** focus + secondary keywords, Quick Answer (featured snippet), TOC, internal/external links, FAQ/Article schema, meta tags — anni automatic
+- **Multi-source research:** internet lo same topic articles search chesi, source-backed context ni fact-check flow tho use chestundi; competitor copy/word-count race kaadu
+- **SEO + QA:** focus/secondary keywords, useful Quick Answer, TOC, internal/external links, visible FAQs, Article/Breadcrumb/eligible JobPosting schema, meta tags — Google result guarantee kaadu
 - **Review flow:** posts **DRAFT** lo vastayi → **Telegram ki message** (✅ Publish / 🗑️ Delete buttons) → **one tap lo approve**
 - **Categories:** Scholarships, Govt Jobs, Education News, Exam Updates, Admissions, Results, Internships, Study Tips
 - **Auto-publish:** WordPress REST API — post + category + tags + featured image + SEO meta
-- **Schedule:** 10–15 posts/day, spread across 6 AM – 10 PM IST, hourly runs via systemd/cron
+- **Schedule:** default 3–5 draft slots/day, spread across 6 AM – 10 PM IST; human review decides what goes live
 - **No duplicates:** SQLite state tracks every posted title + source URL
 - **WhatsApp alerts** too (optional)
 
@@ -25,8 +25,7 @@
 - **Keyword Dominance (v17):** 66 exams × 14 intents = **980 exact search keywords**
   + Google Autocomplete harvester (free) + daily gap analyse vs live posts —
   "SSC 2026" lanti queries ki maname target post rasi publish chestam.
-- **10X prompts:** NO-COPY hard rule + beat-competitors strategy + keyword-first
-  titles (Rank Math 100% + Google #1 targeting).
+- **People-first prompts:** NO-COPY hard rule + source provenance + useful reader answers; no Google #1, CPC or ad-attraction promise.
 - **Pro thumbnails (v15/v16):** left-scrim / bottom-band / right-panel 3 layouts
   rotation — mana own rendering, copy look ledu (monetization-safe).
 - **Viral + Tips engine (v16/v17):** "SSC lo 10 books", "SBI 5 topics" style
@@ -54,8 +53,8 @@
     a new near-duplicate (swapped name/date, ≥62% overlap) is REFUSED
     (`DUP_JACCARD_SKIP`). Combined with the no-copy floor → AdSense rule #1.
   - **E-E-A-T:** visible corrections policy + report-by-email line in every
-    post; `--ensure-adsense` creates Corrections page + checks 20+ published
-    posts readiness (rejection reason #1 is "low value content").
+    post; `--ensure-adsense` creates Corrections page + reports the content
+    inventory. It does not claim a fixed post count or Google approval rule.
   - **Colloquial H2s:** student-query style ("Apply ela cheyali?", "Fee emiti?")
     + value-add rules (never mirror the notice — add explanation/links/action).
 
@@ -65,10 +64,8 @@
   refine round lo correct/remove; still unresolved ante Telegram lo ⚠️ Fact
   flags count (publish mundu human check). Fake data = Google News/AdSense ki
   #1 risk — ippudu machine ga catch avutundi.
-- **PAA block:** article own H2 sections nunchi "Related Questions" (max 3,
-  honest snippet answers) — Google related-questions + featured-snippet bait.
-- **Speakable schema:** quick answer voice-assistant ready (Google Assistant/
-  SpeakOn).
+- **Related Questions block:** article own H2 sections nunchi max 3 honest questions/answers — useful for readers, without claiming a rich-result placement.
+- **Structured-data hygiene:** visible FAQs remain in HTML, but deprecated FAQPage and unsupported speakable markup are not emitted.
 - **Public Telegram channel auto-broadcast:** TELEGRAM_CHANNEL_CHAT_ID set
   cheste prathi PUBLISHED post channel ki automatic (drafts/mocks eppudu
   pampabadu) — owned distribution stream, Google-dependency lekapote growth.
@@ -111,8 +108,8 @@ center card / top pill — pixel-test tho verify). Inka:
   sidecar (`design_kit.json`) id gurthupettukuni **duplicate widget create avvadu**.
 - WP connect kaNIPITE → kit CSS ni *Additional CSS* ki paste cheyyadaniki ready ga print chestundi.
 
-> ⚠️ E fixes anni GitHub PR #2 lo unnayi — **merge + server pull avvakapote site paapa code leni
-> run avuthundi**. First merge cheyandi!
+> ℹ️ Ee site fixes run.py `--setup` / `--polish` commands dwara idempotent ga apply avutayi.
+> Production lo apply mundu `--dry-run` report chusi, blockers clear ayyaka matrame run cheyandi.
 
 ## 🎯 v26 — Daily Quiz Engine (exam-style, top-level interactive)
 
@@ -152,6 +149,238 @@ Hourly cron lo `QUIZ_HOUR` (default 8 AM) tarvata first run lo quiz post
 vastundi; aa roju already ayyunte skip (idempotent). Config: `QUIZ_ENABLED`,
 `QUIZ_QUESTIONS`, `QUIZ_SUNDAY_QUESTIONS`, `QUIZ_TIME_PER_Q`,
 `QUIZ_NEGATIVE_MARK`, `QUIZ_CATEGORY` (.env).
+
+## 🧰 v28 — Plugins, AdSense kit & honest theme audit
+
+v28 `--setup` ni **site admin** ga extend chestundi. REST capability lekapothe
+failure ni hide cheyyadu; report lo WARN chupistundi.
+
+- **Allow-listed plugin stack:** `Rank Math`, `Redirection`, `UpdraftPlus`,
+  `WP Super Cache` — missing aite WordPress.org slug tho install, inactive aite
+  activate. `AUTO_INSTALL_PLUGINS` lo unknown slugs ignore avutayi; delete,
+  deactivate, arbitrary ZIP/URL install eppudu cheyyadu.
+- **Theme audit:** active theme ni read-only ga detect chestundi. GeneratePress,
+  Astra, Kadence, Blocksy lightweight families lo unte OK; leka recommend
+  chestundi. Theme switch ni REST dwara automate cheyyadu — widgets/menus break
+  avvakunda Appearance → Themes lo manual decision mee control lo untundi.
+- **AdSense Auto Ads loader:** `.env` lo valid `ADSENSE_CLIENT_ID=ca-pub-...`
+  pettinappudu okka footer text widget lo Google loader install/refresh avutundi.
+  Empty/invalid id aite **script emit kaadu**. Ad units, forced clicks,
+  navigation tricks levu; AdSense approval, consent/CMP, ads.txt Google-side
+  manual requirements gaane untayi.
+- **Idempotent widget writes:** marker-based lookup + sidecar id valla repeated
+  `--setup` duplicate widgets create cheyyadu. Block theme/widget REST unavailable
+  aite manual Site Kit/Additional HTML route instructions report lo vastayi.
+- **Dry-run safety:** `--setup --dry-run`, `--plugins --dry-run`,
+  `--adsense-kit --dry-run` REST reads/plans matrame; menu/plugin/widget writes
+  jaragavu.
+
+```bash
+python run.py --setup --dry-run       # full audit + v28 plan
+python run.py --plugins --dry-run     # plugin plan only
+python run.py --plugins               # install/activate reviewed stack
+python run.py --theme-audit           # read-only theme check
+python run.py --adsense-kit --dry-run # validate client id, no widget write
+python run.py --adsense-kit           # install/update Auto Ads loader
+```
+
+**Honest limitation:** `ADSENSE_CLIENT_ID` set cheyyadam revenue/approval
+ guarantee kaadu. AdSense approve ayyaka publisher id tho ads.txt line ni
+`https://studentup.in/ads.txt` lo host cheyyali, consent requirements verify
+cheyyali, and Auto Ads placements ni manually review cheyyali. `--revenue-check`
+ippudu ee gaps ni separate ga report chestundi.
+
+## ✨ v29 — Advanced post experience + theme UI layer
+
+v29 is not a new heavy theme or page-builder lock-in. Existing WordPress theme
+meeda progressive enhancement ga install avutundi, so theme change ayina posts
+break avvakunda:
+
+- **Article UI:** visible breadcrumbs, reading badge, structured “At a Glance”
+  facts card for source-backed notification fields, quick-answer card, styled
+  TOC, deadline card, trust box, official links, and related-article sections.
+- **Reader tools:** reading-progress bar, skip-to-content accessibility link,
+  responsive horizontally-scrollable tables, WhatsApp share + copy-link buttons,
+  dark/light mode with local preference, scroll-to-top, reduced-motion support.
+- **Theme-safe responsive layer:** mobile cards, dark palette, focus states,
+  accessible labels, touch-friendly controls, and no jQuery/external UI library.
+  It is one idempotent UI widget marker (`sukit24` compatibility marker) and
+  does not overwrite theme files or existing widgets.
+- **Truth guard:** facts card shows only structured values already present in
+  the model/source response; the code never invents vacancy counts, dates,
+  salary, or locations.
+
+`--setup` / `--polish` refreshes the UI layer. If the active theme has no
+widget REST area, the command reports a manual fallback instead of pretending
+that the UI was installed.
+
+## 🛡️ v30 — Production safety + revenue audit
+
+`--production-audit` is the final pre-live gate. It checks HTTPS, WP/Gemini
+credentials, fact/originality guards, human-review mode, AdSense id format,
+CMP/consent configuration, ad-slot cap and CLS protection. With a real WP
+connection it also checks robots visibility, sitemap, policy pages, plugin
+activation, active theme and `ads.txt` publisher line.
+
+```bash
+python run.py --production-audit
+```
+
+The audit intentionally distinguishes **PASS / WARN / FAIL / INFO**. A CMP
+name in `.env` is not accepted as proof that consent works; Google-certified
+CMP setup and an actual browser verification are still required. Likewise,
+`ADSENSE_CLIENT_ID` only enables the loader after approval—it cannot guarantee
+AdSense approval, RPM, CPC, rankings, or income. No code can honestly promise
+that Google accepts every page or that revenue is “highest”.
+
+Revenue safety rules remain enforced: no self-click prompts, no forced
+navigation, sponsored/affiliate links are disclosed and sanitized, ads are
+capped with reserved space, and draft + fact/originality review is the default.
+
+## 📞 v31 — Student Internet Center service platform
+
+The site can now become a real local assistance business, not only a blog.
+`--service-center` publishes a transparent service page for:
+
+- online applications, jobs and recruitment guidance;
+- scholarships and welfare schemes;
+- resume/CV and cover letters;
+- admissions and exam registrations;
+- hall-ticket/results plus print/scan/PDF help.
+
+The page supports configured phone, WhatsApp enquiry, and a private upload-link
+CTA. It explains the workflow: enquiry → eligibility check → secure documents →
+fee confirmation → client verifies form → submission → receipt/materials/status.
+It also clearly says there is no government/selection guarantee, no hidden fee,
+and clients must never share OTP, UPI PIN, passwords or bank credentials.
+
+```bash
+python run.py --service-center --dry-run  # local preview: output/service-center.html
+python run.py --service-center             # create/update only if managed copy is unchanged
+python run.py --service-center --force     # explicit overwrite after taking a backup
+```
+
+Normal posts, pages, menus, categories and media remain editable from the
+WordPress dashboard. The service page is marked as managed and preserves a
+manual WP edit automatically; only the explicit `--force` flag can replace it.
+
+For the staff workflow, `autoblog/service_center.py` stores only consented case
+metadata, status events and private-storage document references. It does not
+accept or store document bytes. Case ids, status changes, retention purge and
+terminal-case protection are included. Put uploads in a private, access-
+controlled portal; do not commit documents, and set `SERVICE_RETENTION_DAYS`.
+WhatsApp may be convenient but is not a substitute for a secure upload process.
+
+## 🧪 v32 — Existing-post deep audit before editing
+
+Existing posts are **not blindly rewritten**. `--content-audit` pulls published
+posts directly from WordPress (not only local `state.db`) and reports title
+length, word depth, section structure, summary table, Quick Answer, FAQ,
+internal/external links, image alt text, quality score and a safe action:
+`priority-refresh`, `editorial-refresh`, `small-fix` or `keep`.
+
+```bash
+python run.py --content-audit --content-limit 500
+```
+
+The audit is read-only and never changes a title, slug or URL. After source and
+fact review, the existing controlled `--auto-refresh N` flow can be used. This
+separation prevents a low-quality bulk AI rewrite from damaging already-ranking
+pages.
+
+## 🔎 v33 — Google-facing public checks
+
+Run a public page audit with PageSpeed Insights and HTML checks:
+
+```bash
+python run.py --google-audit https://studentup.in/
+```
+
+It reports HTTPS, HTTP response, title, meta description, canonical, H1,
+viewport, JSON-LD, image alt text, and PageSpeed mobile/desktop scores plus
+LCP/CLS/INP when the PSI endpoint responds. It does **not** pretend to be
+Search Console or AdSense account access. For real query CTR/impressions,
+export Search Console data and use the existing `--gsc report.csv` flow; for
+AdSense approval, CMP, invalid traffic and ads.txt, use the owner account and
+production audit.
+
+## 🔒 v34 — Ad pre-approval hard gate
+
+Until Google AdSense approval, `ADSENSE_APPROVED=0` guarantees that the
+pipeline emits no Auto Ads loader and no in-content ad shortcode spaces. This
+keeps the pre-approval site focused on original content, UX and service leads.
+After approval, enable it deliberately only after checking CMP/consent, ads.txt
+and the AdSense dashboard.
+
+## 🧠 v35 — Deep quality and policy gap fixes
+
+The production path is now quality-first instead of volume-first:
+
+- default schedule is 3–5 draft slots/day, not a scaled live-content firehose
+- direct live publishing is blocked without a named `EDITORIAL_REVIEWER`, below `PUBLISH_QA_MIN_SCORE=80`, or below the originality floor
+- research prompts explicitly reject ranking/ad/word-count manipulation and resolve source conflicts visibly
+- bylines no longer claim a human editorial review unless `EDITORIAL_REVIEWER` is configured after real review
+- deprecated FAQPage and unsupported speakable JSON-LD are not emitted; visible FAQs remain for readers
+- canonical matching, noindex, HTML language, Open Graph and JSON-LD parse checks are in the public audit
+- sponsored partner HTML is rejected unless its link includes `rel="sponsored"`
+
+Google’s current AI-search guidance says the durable work is foundational SEO,
+helpful non-commodity content, crawlability, internal links, page experience and
+visible matching structured data — not special AEO/GEO hacks [Search Central](https://developers.google.com/search/docs/fundamentals/ai-optimization-guide).
+
+## 📚 v36 — NotebookLM-ready source-grounded research
+
+For a serious post, first create a focused evidence bundle instead of asking a
+model to merge random web pages directly:
+
+```bash
+python run.py --research-brief "TSPSC Group 2 notification" --research-year 2027
+# A year in the topic is also detected, but an explicit flag is safest:
+python run.py --research-brief "TSPSC Group 2 2027 notification" \
+  --research-year 2027
+# or provide URLs already checked by the editor:
+python run.py --research-brief "TSPSC Group 2 2027" \
+  --research-urls checked_urls.txt --research-year 2027
+```
+
+When a target year is supplied, the bundle labels each source as target-year,
+other-year/verify, or evergreen/verify-current. It records publication/update
+metadata when the page exposes it and tells NotebookLM never to carry a 2026
+(or older) deadline, fee, vacancy or eligibility rule into 2027 without an
+explicit source statement. If a 2027 official notice is not available, the
+brief must say that instead of inventing a projection. Use the same guard when
+drafting from a checked brief:
+
+```bash
+python run.py --url "https://official.gov.in/notice" --target-year 2027 \
+  --notebooklm-brief "checked-notebooklm-brief.md"
+```
+
+The command writes ignored local files under `output/research/`:
+
+- `*-sources.md` — labelled public sources, URLs, extracted text and candidate fact sentences
+- `*-notebooklm-prompt.md` — five-pass protocol: source map, fact ledger, conflict audit, gap analysis and cited article brief
+- `*-manifest.json` — source inventory and bundle metadata
+
+Import the sources file into the owner’s NotebookLM notebook, run the prompt,
+open every citation, then save the cited brief. Feed that **saved, human-checked
+brief** into the draft flow:
+
+```bash
+python run.py --url "https://official.gov.in/notice" \
+  --notebooklm-brief "checked-notebooklm-brief.md"
+```
+
+NotebookLM is source-grounded and provides inline citations that link back to
+supporting passages [Google’s NotebookLM update](https://blog.google/technology/ai/notebooklm-goes-global-support-for-websites-slides-fact-check/),
+but it is not a replacement for human fact checking. This repository cannot log
+into a private NotebookLM account or pretend that its answer was verified.
+
+The final article must use Claim IDs from the brief, keep official sources
+visible, flag disagreements, and be independently written. It must not stitch
+source paragraphs together, copy headings/tables, or invent facts to fill gaps.
+Never place private documents, passwords, OTPs, bank details or identity data in
+the public research bundle.
 
 ## Setup Guide (Telugu)
 
@@ -249,7 +478,7 @@ Vere valla site article ni **copy cheyakunda** daani nunchi mana own original ar
 
 ### Method 1: Telegram lo URL paste cheyandi (easiest!)
 1. Mi bot chat loki vere site article URL ni paste cheyandi
-2. Bot: source nunchi **facts** teesi → **100% original** Telugu article (2200-3000 words) → **extra advanced sections** (documents, mistakes, tips, tables, FAQ) add chesi → **SEO optimize** chesi → **DRAFT** create chestundi
+2. Bot: source nunchi **facts** teesi → **100% original** Telugu article (topic warrants it; no forced word count) → **useful sections** (documents, mistakes, tips, tables, visible FAQ) add chesi → **SEO/QA** chesi → **DRAFT** create chestundi
 3. ✅ Publish button press cheyandi — done!
 
 ### Method 2: Command line
@@ -269,14 +498,14 @@ Scheduler prathi hour lo queue lo unna URL ni priority ga process chesi original
 | Step | Em chestundi |
 |---|---|
 | 1. Fetch | Source article read chesi text extract (ads/menu junk vadiyesi) |
-| 2. **Research** | **Internet lo aa same topic meeda inko articles search** (DuckDuckGo — API key ledu) — top competitor sources fetch |
-| 3. **Merge & Beat** | Anni sources facts **merge** — mi URL lo **miss ayyina info kuda add** (fee, salary, selection stages, documents) |
-| 4. Rewrite | Complete ga fresh structure + fresh wording lo Telugu article (2200-3000 words), no copy |
-| 5. Enhance | Extra sections: documents list, common mistakes, pro tips, comparison table, key dates |
-| 6. SEO | Quick Answer + focus/secondary keywords + TOC + internal/external links + FAQ/Article schema + Rank Math meta |
+| 2. **Research** | **Internet lo same topic meeda sources search** (DuckDuckGo — API key ledu) — official/context sources fetch |
+| 3. **Fact-backed context** | Source conflict flag chesi, only supported fee/salary/stages/documents add chestundi |
+| 4. Rewrite | Complete ga fresh structure + fresh wording lo Telugu article; no copy and no forced length |
+| 5. Enhance | Useful sections: documents list, common mistakes, pro tips, comparison table only when relevant |
+| 6. SEO/QA | Quick Answer + focus/secondary keywords + TOC + internal/external links + visible FAQ + Article/Breadcrumb schema + Rank Math meta |
 | 7. Draft | WordPress draft + Telegram review buttons |
 
-> Idhe **"MERGE & BEAT" strategy** — internet lo already unna articles kante MII article ekkuva complete. Same topic search lo mii post top lo randaniki idhe main Google trick. DuckDuckGo fail aite bot primary source tho graceful ga continue chestundi.
+> Goal: reader ki official-source-based, genuinely useful explanation. Google top position, CTR, approval or revenue ni code guarantee cheyyadu. DuckDuckGo fail aite bot primary source tho graceful ga continue chestundi.
 
 ## 🛡️ QA & Safety Layer (kothena — 100x level)
 
@@ -289,7 +518,7 @@ Prathi post lo **publish mundhe** automatic checks:
 | **HTML Sanitizer** | Gemini script/div/markdown waste ichina automatic strip — only clean SEO tags |
 | **Keyword Intelligence** | Google lo already top-lo unna competitor titles ni kuda analyze chesi **vatikante strong title/keywords** generate |
 | **Boilerplate Footprint Fix** | Intro paragraphs & headings prathi post lo **rotate avtayi** — Google duplicate-pattern spam signal risk zero |
-| **E-E-A-T Trust Box** | "About This Article" — editorial review + sources + date (Google trust signals) |
+| **Source context box** | "About This Article" — named author, source domains and source-check date; it does not falsely claim a human review |
 | **Reading Time Badge** | ⏱️ words + minutes — UX + dwell time signal |
 | **Smart Source Fetch** | Site block cheste Googlebot UA tho retry + Telugu encoding auto-fix |
 
@@ -369,9 +598,10 @@ Oka post already publish ayyaka, **kotha information dorikithe** danini same pos
 - Rankings long-term lo stable — top websites idi exact ga chestayi
 - Manual: `.venv/bin/python run.py --auto-refresh 3`
 
-### In-Content Ads (ADSENSE-SAFE positions)
-- `AD_SHORTCODE=[quads id=1]` set cheste — bot 3 policy-safe positions lo ads insert chestundi:
-  intro tarvata, mid-article, FAQ mundu (Max 3 — accidental-click policy safe)
+### In-Content Ads — approval-gated
+- Before approval, `ADSENSE_APPROVED=0` hard gate valla **ad spaces, shortcode ads and Auto Ads loader emi render avvavu**.
+- Approval ayyaka matrame `ADSENSE_APPROVED=1` + valid `ADSENSE_CLIENT_ID` configure chesi, optional ga `AD_SHORTCODE` enable cheyali.
+- Then only 3 reserved, policy-reviewed positions: intro tarvata, mid-article, FAQ mundu.
 
 ### ⚠️ AdSense Safety — MEERU adigina "click → new page → back → new ads" pattern GURTHU PETTANDI:
 Ee pattern (**forced navigation for ad impressions**, **back-navigation ad refresh**) —
@@ -387,48 +617,28 @@ SAFE alternatives (bot already implement chesindi):
 6. ❌ Cheyakudadu: own ads click, "click here" arrows deggara ads, timer-based ad refresh,
    back-button ad refresh, thin pages only-for-ads
 
-## 💰 Smart Revenue Maximization (v6) — 100% Policy-Safe
+## 💼 Sustainable Revenue Plan — approval-first, data-driven
 
-### Bot automatic chestundi (already built):
-| Technique | Em chestundi | Revenue impact |
+Until Google AdSense approval, `ADSENSE_APPROVED=0` hard gate valla **ad loader, ad spaces and ad shortcodes emi render avvavu**. Current growth levers:
+
+| Lever | Safe implementation | What it can improve |
 |---|---|---|
-| **High-CPC targeting** | `HIGH_CPC_SHARE=30` — 30% daily posts high-CPC themes (education loans, bank jobs salary, IT courses, insurance jobs) | CPC 2-5x ekkuva topics |
-| **Seasonal calendar** | Month prakaram topics (Mar-May results, Jun-Jul admissions, exam season) | Traffic 3-10x seasonal spikes |
-| **Channel CTA block** | Prathi post end lo "Join Telegram" CTA | Repeat visitors = free pageviews lifetime |
-| **Affiliate section** | Relevant posts lo `AFFILIATE_LINKS` (rel=sponsored + disclosure) | AdSense revenue + affiliate income |
-| **Long content** | 2200-3000 words | More ad slots per page |
-| **Dwell time** | Quick Answer, TOC, Reading badge | Viewability-based CPC perugutundi |
+| Reader demand | Seasonal topics, official notifications, student questions | Relevant impressions and useful sessions |
+| Search Console loop | High-impression/low-CTR and position 8–20 queries | Evidence-based title/content decisions |
+| Owned audience | Optional Telegram CTA only when configured | Returning visitors, not artificial traffic |
+| Service conversions | Student Internet Center CTA with configured contact details | Legitimate leads and service revenue |
+| Affiliate links | Relevant links only, `rel=sponsored nofollow` + disclosure | Separate affiliate income, if actually relevant |
+| Performance | Mobile HTML, image dimensions, caching and Core Web Vitals | Better experience and conversion potential |
 
-### Meeru site lo cheyali (WordPress dashboard — 30 nimishalu):
-1. **AdSense Auto Ads ON** — Google automatic optimal placements chestundi
-2. **Anchor ads allow cheyandi** (mobile sticky) — AdSense > Ads > By ad unit
-3. **Ezoic / Monumetric apply** — 10,000+ monthly pageviews ayite; AdSense RPM 50-150% perugutundi (mediation automatic)
-4. **Google News Publisher submit** — 30+ quality posts unnaka; news sites ki massive Discover traffic
-5. **Google Search Console submit** — sitemap add cheyandi (yoast/rankmath auto sitemap)
-6. **WP-Optimize / LiteSpeed cache** — page speed = Core Web Vitals = higher ad viewability + rankings
+These are opportunities, not CPC/RPM/revenue guarantees. Do not create pages only for high-CPC terms, force long articles, or insert commercial claims without verified reader value.
 
-### Revenue realistic ga ela perugutundi (honest math):
-- AdSense Telugu education traffic: ~$0.5-2 RPM (1000 pageviews = $0.5-2)
-- TARGET: 6 months lo 50,000 pageviews/month = $25-100/month
-- 12-18 months lo 200,000+ pageviews = $100-400/month
-- KEY: consistency (bot 24/7), quality (QA layer), freshness (auto-refresh) — already built!
-- Affiliate + Ezoic add ayite same traffic lo 2-3x revenue
-
-## 💸 v7: Ad Revenue Maximizer (viewability + relevance + money pages)
-
-**Bot-side (automatic):**
-- **Viewability-optimized ad slots**: after 2nd para (above-fold), after tables (natural pause), mid-article, before FAQ — users actually SEE these ads → viewable impressions perugutayi → CPC perugutundi
-- **CLS-safe wrapper**: `min-height:280px` tho ad space reserve — layout shift radu → Core Web Vitals green + ad viewability better
-- **`MAX_AD_SLOTS`** (default 3, long articles ki 4-5 set cheyochu — news site standard, policy safe)
-- **Money-page internal linking**: traffic posts (results/admit cards) nunchi high-CPC posts (salary/loan/bank lists) ki automatic link priority — high-CPC pageviews ekkuva avtayi
-- **Commercial depth prompts**: fee/salary/stipend/loan/comparison angles articles lo — relevant high-value ads attract avtayi
-- **`--revenue-check` command**: bot-side + site-side setup audit — em missing o okka command lo
+After approval, enable ads deliberately only after checking the AdSense Policy Center, authorized sites, `ads.txt`, CMP/consent and traffic sources. Google’s publisher guidance recommends understanding traffic segments, avoiding self-clicks and preventing artificial activity [Google traffic quality](https://www.google.com/ads/adtrafficquality/publishers/).
 
 ```bash
 .venv/bin/python run.py --revenue-check
 ```
 
-**Honest note:** ad CLICKS ni artificially peragalera — adi policy violation (ban). Nenu build chesindi: viewability (ads kanipistayi), relevance (value ads match), slots (eka page ki ekkuva legit slots), money pages (high-CPC views). Idi real revenue growth formula.
+The command reports configuration gaps; it cannot approve an account or predict RPM.
 
 ## ⚖️ v13: Category Priority Weighting (revenue strategy default)
 
@@ -544,11 +754,11 @@ Prathi post lo automatic ga:
 - ✅ **Table of Contents** — automatic TOC + anchor links (Rank Math readability)
 - ✅ **Internal links** — mi site recent posts ki "Related Articles" links (same category priority)
 - ✅ **External links** — official portals (ssc.gov.in lanti vi) nofollow links tho
-- ✅ **FAQ + Article + Breadcrumb JSON-LD schema** — Google rich results eligibility — `te` language tag tho
+- ✅ **Article + Breadcrumb JSON-LD schema** — visible FAQ remains useful HTML; deprecated FAQPage rich-result markup is intentionally not emitted — `te` language tag tho
 - ✅ **Social OG/Twitter meta** — Facebook/WhatsApp/Twitter preview titles (CTR boost)
 - ✅ **Image alt text** — focus keyword tho alt text
 - ✅ **Rank Math meta** — `rank_math_focus_keyword` (primary + secondary), `rank_math_description`, `rank_math_title` direct REST API dwara
-- ✅ **Content length** — 2200-3000 words, short paragraphs, transition words (readability full)
+- ✅ **Content quality** — useful length for the topic, short paragraphs, transition words; no forced 2200-3000-word target
 - ✅ **Meta description** — 140-160 chars keyword tho
 - ✅ **Tables + lists** — snippet-eligible formats
 
@@ -559,7 +769,7 @@ Prathi post lo automatic ga:
 ## Daily working style
 
 - Prathi గంట (hourly) scheduler bot ni run chestundi
-- Bot roju morning 6 AM lo aa roju plan chestundi — 10–15 random hours pick chestundi (6 AM–10 PM madhya)
+- Bot roju morning 6 AM lo aa roju plan chestundi — default 3–5 draft slots (6 AM–10 PM madhya); quality review first
 - Current hour plan lo undo → new article generate chesi publish chestundi
 - Duplicate titles, category balance — antha automatic ga manage avtundi
 
@@ -596,7 +806,7 @@ tail -f log/autoblog.log
 | `TELEGRAM_BOT_TOKEN` | — | @BotFather token — buttons tho review messages |
 | `TELEGRAM_CHAT_ID` | auto | `/start` cheythe bot automatic ga register avtundi |
 | `WHATSAPP_CALLMEBOT_URL` | — | WhatsApp text alerts (callmebot.com free) |
-| `DAILY_MIN` / `DAILY_MAX` | `10` / `15` | Posts per day range |
+| `DAILY_MIN` / `DAILY_MAX` | `3` / `5` | Draft slots per day; human review decides live posts |
 | `ACTIVE_HOUR_START` / `ACTIVE_HOUR_END` | `6` / `22` | Posting window (24h IST) |
 | `CATEGORIES` | 8 categories | Site sections |
 | `IMAGE_ENABLED` | `1` | Featured image generation on/off |
@@ -635,7 +845,7 @@ Marpali te: `.env` edit chesi scheduler ni restart cheyandi: `sudo systemctl res
 2. **AdSense approval kosari:**
    - Privacy Policy, About Us, Contact pages undali
    - 20-30 quality posts unnappudu apply cheyandi
-   - Site new aite **mundu 5-8 posts/day chala** — approval tarvata 10-15 ki penchandi
+   - Site new aite quality-first ga **2-4 reviewed posts/day** chalu — approval kosam volume guarantee kaadu
    - ChinnA human-written posts kuda add cheyandi (menually raayandi)
 3. **Google News/Discover lo rank avvali ante:** pure AI spam ga ledu — human review + original value undali. Mi draft-review flow idi guarantee chestundi.
 4. **Telugu keyword SEO:** bot already Telugu+English mix lo rastundi — local search ki idi best.
@@ -663,7 +873,7 @@ Marpali te: `.env` edit chesi scheduler ni restart cheyandi: `sudo systemctl res
 │   ├── wordpress_client.py # WP REST publish (post/media/terms/RankMath meta)
 │   ├── sources.py          # URL fetch + text extraction + queue file
 │   ├── research.py         # Web search (DuckDuckGo) + multi-source gathering
-│   ├── seo.py              # Quick Answer + TOC + links + FAQ/Article JSON-LD schema
+│   ├── seo.py              # Quick Answer + TOC + links + Article/Breadcrumb schema
 │   ├── notifier.py         # Telegram (buttons) + WhatsApp alerts
 │   ├── approval_bot.py     # 24/7 Telegram bot (publish buttons + URL rewrite)
 │   ├── topic_engine.py     # Category rotation + mock generator
@@ -671,6 +881,12 @@ Marpali te: `.env` edit chesi scheduler ni restart cheyandi: `sudo systemctl res
 │   ├── news_radar.py       # v15: TS+AP district breaking news + channel watch
 │   ├── sources_grid.py     # v16.1: 105 official sources auto-watch grid
 │   ├── keyword_engine.py   # v17: 980-keyword matrix + autocomplete + gap analyse
-│   └── state.py            # SQLite state (dedupe, plan, sources)
+│   ├── state.py            # SQLite state (dedupe, plan, sources)
+│   ├── site_setup.py       # v22/v28 site audit, plugins, theme report
+│   ├── adsense_kit.py      # v28 validated Auto Ads widget installer
+│   ├── production_audit.py # v30 production safety/revenue gate
+│   ├── service_center.py   # v31 service page + consented case metadata
+│   ├── content_audit.py    # v32 existing-post quality audit
+│   └── google_audit.py     # v33 public HTML + PageSpeed checks
 └── tests/                  # end-to-end tests (fake WP/Telegram/source servers)
 ```

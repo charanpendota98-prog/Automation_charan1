@@ -9,6 +9,13 @@
   python run.py --check-wp    test WordPress credentials
   python run.py --quiz        v26: today's exam-style Daily Quiz (auto topic)
   python run.py --quiz-kit    v26: update site-wide quiz UI (CSS+JS widget)
+  python run.py --plugins      v28: install/activate reviewed WP plugins
+  python run.py --theme-audit  v28: read-only active theme audit
+  python run.py --adsense-kit  v28: install validated Auto Ads loader widget
+  python run.py --production-audit  v30: production safety/revenue gate
+  python run.py --service-center    v31: publish Student Internet Center page
+  python run.py --content-audit      v32: audit existing posts before refresh
+  python run.py --google-audit URL    v33: public HTML + PageSpeed audit
   python run.py --notify-test test Telegram/WhatsApp notifications
   python run.py --url LINK    source URL -> 100% original SEO rewrite post
 

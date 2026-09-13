@@ -7,7 +7,7 @@
 set -uo pipefail
 cd "$(dirname "$0")"
 
-BRANCH="arena/01a07838-automation-charan1"
+BRANCH="arena/01a09acc-automation-charan1"
 
 say() { echo -e "\n==================== $1 ===================="; }
 
@@ -41,9 +41,10 @@ ask WP_APP_PASSWORD      "WordPress APPLICATION password (wp-admin > Users > Pro
 ask TELEGRAM_BOT_TOKEN   "Telegram bot token" "@BotFather ichhina token"
 ask TELEGRAM_CHAT_ID     "Telegram chat ID" "123456789 (telegram bot start chesina chat id)"
 
-# optional revenue defaults (water lo levu ante ignore)
-grep -q "^AD_SHORTCODE=" .env || echo "AD_SHORTCODE=[adinsert block=1]" >> .env
-grep -q "^MAX_AD_SLOTS=" .env || echo "MAX_AD_SLOTS=3" >> .env
+# Ads are approval-gated. Keep them explicitly off until a human verifies
+# Google approval, CMP/consent, ads.txt and policy requirements.
+grep -q "^ADSENSE_APPROVED=" .env || echo "ADSENSE_APPROVED=0" >> .env
+grep -q "^AD_SHORTCODE=" .env || echo "AD_SHORTCODE=" >> .env
 
 # Telegram channel (private/public rendu work avtayi)
 if ! grep -q "^TELEGRAM_CHANNEL_URL=" .env; then

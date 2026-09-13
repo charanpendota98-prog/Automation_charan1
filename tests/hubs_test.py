@@ -106,8 +106,8 @@ def main():
     out = seo.enhance("<p>" + "word " * 300 + "</p>", "kw", [], [],
                       slug="byline-test", title="T", description="d" * 140,
                       date_str="2026-09-10")
-    assert "\u270d\ufe0f" in out and "Editorial review: 2026-09-10" in out
-    assert '"jobTitle"' in out and '"newsMaterialCategory"' in out
+    assert "\u270d\ufe0f" in out and "Source check: 2026-09-10" in out
+    assert '"jobTitle"' in out and '"newsMaterialCategory"' not in out
     print(f"  4. real bylines rotate ({len(seen)} authors) + schema ✔")
 
     # ---- 5. ad placement playbook: first MEANINGFUL para + apply-H2 anchor --
@@ -134,7 +134,7 @@ def main():
 
     # ---- 6. featured listing (disclosed) + editorial policy page ----
     old_c = config.FEATURED_CTA_HTML
-    config.FEATURED_CTA_HTML = '<a href="https://x.co">Coaching offer</a>'
+    config.FEATURED_CTA_HTML = '<a href="https://x.co" rel="sponsored nofollow">Coaching offer</a>'
     try:
         fb = monetize.featured_block()
         assert "Sponsored" in fb and "x.co" in fb
@@ -148,7 +148,7 @@ def main():
     titles = [pg[0] for pg in ab_main.ADSENSE_PAGES]
     assert "Editorial Policy" in titles
     assert "guessing banned" in ab_main.EDITORIAL_HTML
-    assert "human editorial review" in ab_main.EDITORIAL_HTML
+    assert "human review required" in ab_main.EDITORIAL_HTML
     print("  6. featured CTA disclosure + editorial policy page ✔")
 
     # ---- 7. weekly auto wiring + search fields ----

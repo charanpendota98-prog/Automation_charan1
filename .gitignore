@@ -14,3 +14,7 @@ __pycache__/
 venv/
 design_kit.json
 quiz_kit.json
+adsense_kit.json
+service_center.db
+service_center.db-journal
+service_center.json

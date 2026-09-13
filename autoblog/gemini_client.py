@@ -173,7 +173,7 @@ ACCURACY RULES (very important):
 - Mention only REAL, well-known exams/schemes/portals. Do NOT invent new scheme names, fake vacancy numbers, fake dates or fake deadlines.
 - Do NOT state specific application dates or deadlines. Instead write guidance like "official website lo latest notification check cheyandi" (in Telugu).
 - Structure the post as a helpful evergreen guide/update that stays useful.
-- COMMERCIAL DEPTH (important): wherever natural, include fee/salary/stipend/loan/cost details and comparison angles — this commercial information attracts relevant high-value ads and reader interest.
+- Include fee/salary/stipend/loan/cost details only when verified and genuinely useful to the reader. Never add commercial details to attract ads or inflate word count.
 
 ARTICLE STRUCTURE (HTML):
 - 2-3 intro paragraphs (no heading).
@@ -181,7 +181,7 @@ ARTICLE STRUCTURE (HTML):
 - Use <strong> for key phrases; include one simple <table> (3-5 rows) if a comparison or summary table fits naturally.
 - End with a short conclusion paragraph and then an FAQ section: 3 <h3> questions each followed by a short answer paragraph.
 - Final paragraph: a friendly call-to-action in Telugu asking readers to share the article and ask doubts in comments.
-- Total length: roughly 800-1200 words. Use ONLY these HTML tags: h2 h3 p ul ol li strong em table thead tbody tr th td a. No <html>/<head>/<body>, no markdown, no code fences.
+- Prefer a complete, readable article over a word-count target; usually 1500-2200 words when the topic warrants it. Use ONLY these HTML tags: h2 h3 p ul ol li strong em table thead tbody tr th td a. No <html>/<head>/<body>, no markdown, no code fences.
 
 ALSO RETURN:
 - slug: English kebab-case URL slug for this post ( transliterate the topic, e.g. "ssc-cgl-preparation-guide" ), max 60 chars, lowercase, hyphens only.
@@ -218,7 +218,7 @@ STRICT ORIGINALITY RULES (copyright safe — very important):
 
 IMPROVE & EXPAND (advanced content — very important):
 - ADD extra valuable sections the source may not have: detailed step-by-step process, required documents list, common mistakes to avoid, pro tips, comparison table, extra background context.
-- Total length: 1800-2500 words — richer and more useful than the source.
+- Make it complete only where the source and official context support it; do not inflate the article to beat a word count.
 - LANGUAGE: TELUGU SCRIPT with natural English terms mixed (scholarship, apply, eligibility, official website...) like Telugu news sites.
 
 ACCURACY RULES:
@@ -243,7 +243,7 @@ Return ONLY valid JSON."""
 
 RESEARCH_PROMPT_TEMPLATE = """You are a top-level Telugu SEO content strategist for studentup.in (education/jobs/scholarships site).
 
-TASK: Below are MULTIPLE research sources about the SAME topic/notification. Merge ALL their facts and write ONE definitive, 100% ORIGINAL article that is BETTER and MORE COMPLETE than every single source — so it can outrank them all on Google.
+TASK: Below are MULTIPLE research sources about the SAME topic/notification. Use them to create ONE definitive, 100% ORIGINAL, people-first article that answers the reader's real questions and adds source-backed context. Do not write for rankings, ads, or word count.
 
 =============== PRIMARY SOURCE (user's URL — main base) ===============
 URL: {url} | SITE: {site}
@@ -257,11 +257,12 @@ STRICT ORIGINALITY RULES (copyright safe — very important):
 - Write as an independent expert explaining the topic from scratch.
 - If sources CONFLICT on a number/date, use the most repeated/official value and phrase it as "notification prakaram" (as per notification).
 
-MERGE & BEAT STRATEGY (very important):
-- Start from the PRIMARY source's facts, then ADD every useful fact the other sources have that primary misses (extra eligibility points, fee details, salary, selection stages, documents, dates mentioned).
-- Include everything a reader could want: overview, eligibility, benefits/salary, application steps, documents, fee, selection process, important tips, common mistakes, comparison table, key dates table (only if in sources).
-- Total length: 2200-3000 words. Short paragraphs (2-3 sentences), transition words — top readability.
-- COMMERCIAL DEPTH: include salary/fee/stipend/loan/cost figures (only well-known real values, pay matrix levels) and comparison tables — attracts high-value relevant ads.
+RESEARCH AND VALUE STRATEGY (very important):
+- Start from the PRIMARY source's facts, then add only useful, source-backed context that helps a reader act safely (eligibility, fee details, selection stages, documents, dates mentioned).
+- Resolve conflicts by naming the official source and flagging uncertainty; never silently choose a convenient number or deadline.
+- Include overview, eligibility, benefits/salary, application steps, documents, fee, selection process, common mistakes, and a comparison table only when each section is genuinely useful.
+- Include salary/fee/stipend/loan/cost figures only when verified and relevant. Never add commercial details to attract ads, inflate word count, or target high CPC.
+- Prefer concise, complete answers over a fixed word count; usually 1500-2200 words when the topic warrants it.
 - LANGUAGE: TELUGU SCRIPT with natural English terms (scholarship, apply, eligibility, official website, vacancy, notification...) like Telugu news sites.
 
 ARTICLE STRUCTURE (HTML only — h2 h3 p ul ol li strong em table thead tbody tr th td a):
@@ -295,7 +296,7 @@ def _format_extra_sources(extras) -> str:
         )
     return (
         "=======================================================================\n"
-        "ADDITIONAL RESEARCH SOURCES (competitors — merge their EXTRA facts):\n"
+        "ADDITIONAL EVIDENCE SOURCES (use for corroboration and gap checking):\n"
         + "\n".join(blocks)
         + "======================================================================="
     )
@@ -858,12 +859,13 @@ def generate_article_from_source(
     year: int,
     extras: Optional[List] = None,
     competitor_titles: Optional[List[str]] = None,
+    notebooklm_brief: str = "",
 ) -> Dict:
     """100% original rewrite from a SourceArticle (facts only, no copying).
 
-    extras = additional research SourceArticles (internet lo dorikina
-    same-topic competitor articles). Ivvi unte MERGE & BEAT prompt use
-    avtundi — anni sources facts merge chesi super-complete article.
+    extras = additional research SourceArticles. They are used only for
+    source-backed context and fact checking; the model must not copy or
+    mechanically combine competitor pages.
     """
     if not config.GEMINI_API_KEY:
         raise GeminiError("GEMINI_API_KEY not set")
@@ -893,13 +895,26 @@ def generate_article_from_source(
         )
     if avoid_block:
         prompt += "\n" + avoid_block
+    if notebooklm_brief:
+        prompt += (
+            f"\nTARGET-YEAR DATE POLICY: This draft is for the {year} cycle. "
+            f"Do not carry a date, fee, vacancy, eligibility rule or deadline "
+            f"from another year into {year} unless a cited source explicitly "
+            f"says it applies. If {year} information is not officially available, "
+            "state that clearly instead of predicting it.\n"
+            "EDITOR-VERIFIED NOTEBOOKLM BRIEF (use as a cited outline, not as "
+            "copy):\n"
+            + notebooklm_brief[:18000]
+            + "\nKeep Claim IDs/citations available to the human editor. Verify "
+              "each claim against the supplied source passages and rewrite "
+              "everything in an independent Telugu voice.\n"
+        )
     if competitor_titles:
         prompt += (
-            "\nKEYWORD INTELLIGENCE — Google lo ee topic meeda already top lo "
-            "unna titles ivi (keyword research kosam — manam kante better "
-            "title/keywords ravali):\n"
+            "\nSEARCH-LANGUAGE REFERENCE — related result titles ivi; user language "
+            "and intent understand cheyadaniki matrame use cheyandi:\n"
             + "\n".join(f"- {t}" for t in competitor_titles[:8])
-            + "\n(Ee titles ni exact ga copy cheyakudadu — vatikante catchy & "
-              "keyword-rich title manadi ravali.)"
+            + "\n(Exact wording, structure or distinctive hook copy cheyakandi; "
+              "reader-first independent title create cheyandi.)"
         )
     return _generate_with_retries(prompt, source=source)

@@ -66,9 +66,15 @@ def t1_css():
                   "more-link", "line-height:1.85", "@media (max-width:640px)",
                   # v25 cards + widget heads
                   ".archive .entry-title", "aspect-ratio:16/9",
-                  "translateY(-2px)", "widget-title", "box-shadow"):
+                  "translateY(-2px)", "widget-title", "box-shadow",
+                  "su-reading-progress", "su-quick-answer-card",
+                  "su-share-bar", "prefers-reduced-motion", "su-service-hero",
+                  "su-service-grid", "su-service-safety"):
         assert token in css, token
-    print("1. kit CSS tokens ✅")
+    widget = design_kit.build_widget_html()
+    assert '<script id="su-design-ui">' in widget and "data-su-ui29" in widget
+    assert "localStorage" in widget and "WhatsApp" in widget
+    print("1. kit CSS + interaction tokens ✅")
 
 
 def t2_install_update():

@@ -212,12 +212,11 @@ def main():
     import re as _re
 
     scripts = _re.findall(r'<script type="application/ld\+json">(.*?)</script>', out, _re.S)
-    assert len(scripts) == 3, len(scripts)  # FAQ + Article + Breadcrumb
-    faq_schema = json.loads(scripts[0])
-    assert faq_schema["@type"] == "FAQPage" and len(faq_schema["mainEntity"]) == 2
-    art_schema = json.loads(scripts[1])
+    assert len(scripts) == 2, len(scripts)  # Article + Breadcrumb; FAQ stays visible HTML
+    assert "FAQPage" not in out
+    art_schema = json.loads(scripts[0])
     assert art_schema["@type"] == "Article" and art_schema["inLanguage"] == "te"
-    assert json.loads(scripts[2])["@type"] == "BreadcrumbList"
+    assert json.loads(scripts[1])["@type"] == "BreadcrumbList"
     # rankmath meta comma keywords
     meta = seo.rankmath_meta("SSC Bharti 2026", "desc", "Title", ["ssc 2026 apply", "ssc fee"])
     assert meta["rank_math_focus_keyword"] == "SSC Bharti 2026, ssc 2026 apply, ssc fee"
@@ -232,7 +231,7 @@ def main():
         year=2026,
     )
     assert "PRIMARY SOURCE" in prompt and "RESEARCH SOURCE 1" in prompt
-    assert "MERGE & BEAT" in prompt or "Merge ALL" in prompt
+    assert "RESEARCH AND VALUE" in prompt and "source-backed" in prompt
     assert "competitor1.com" in prompt or "SSC 2026 Article" in prompt
     print("  4. gemini research prompt (multi-source merge) ✔")
 
@@ -245,7 +244,7 @@ def main():
     payload = wp_created[-1]
     content = payload["content"]
     assert "quick-answer" in content
-    assert "FAQPage" in content and "Article" in content
+    assert "FAQPage" not in content and "Article" in content
     fk = payload["meta"]["rank_math_focus_keyword"]
     assert "," in fk and "test guide 2026" in fk
     draft = [m for m in tg_sent if "NEW DRAFT" in m["text"]]

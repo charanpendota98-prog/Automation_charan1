@@ -39,8 +39,9 @@ def add_table_of_contents(html: str) -> str:
         anchor = _slugify_id(clean, i)
         items.append(f'<li><a href="#{anchor}">{clean}</a></li>')
 
-    toc = ('<h2 id="table-of-contents">విషయ సూచిక (Table of Contents)</h2>'
-           "<ul>" + "".join(items) + "</ul>")
+    toc = ('<nav class="su-toc" aria-labelledby="table-of-contents">'
+           '<h2 id="table-of-contents">విషయ సూచిక (Table of Contents)</h2>'
+           "<ul>" + "".join(items) + "</ul></nav>")
 
     # TOC after the first paragraph (intro paragraph first ga untali SEO ki)
     idx = html.find("</p>")
@@ -104,7 +105,8 @@ def add_internal_links(html: str, links: List[Dict[str, str]], seed: str = "") -
         f'<li><a href="{l["link"]}">{l["title"]}</a></li>' for l in links
     )
     heading = _pick(RELATED_HEADINGS, seed)
-    section = f'<h2 id="related-articles">{heading}</h2><ul>{items}</ul>'
+    section = ('<section class="su-related" aria-labelledby="related-articles">'
+               f'<h2 id="related-articles">{heading}</h2><ul>{items}</ul></section>')
     return html + section
 
 
@@ -119,8 +121,9 @@ def add_external_links(html: str, links: List[Dict[str, str]]) -> str:
                          f'rel="nofollow noopener">{text}</a></li>')
     if not valid:
         return html
-    section = ('<h2 id="official-links">అధికారిక లింక్స్ (Official Links)</h2>'
-               f"<ul>{''.join(valid)}</ul>")
+    section = ('<section class="su-official-links" aria-labelledby="official-links">'
+               '<h2 id="official-links">అధికారిక లింక్స్ (Official Links)</h2>'
+               f"<ul>{''.join(valid)}</ul></section>")
     return html + section
 
 
@@ -138,30 +141,32 @@ def quick_answer_block(focus_keyword: str, quick_answer: str, updated: str) -> s
     if not quick_answer:
         return ""
     return (
+        '<section class="su-quick-answer-card" aria-labelledby="quick-answer">'
         f'<h2 id="quick-answer">Quick Answer – {focus_keyword}</h2>'
         f'<p class="su-qa"><strong>{quick_answer.strip()}</strong></p>'
-        f'<p><em>Last Updated: {updated} | studentup.in</em></p>'
+        f'<p><em>Last Updated: {updated} | studentup.in</em></p></section>'
     )
 
 
 def reading_badge(words: int, minutes: int) -> str:
     """Top lo reading time badge — UX signal + dwell time."""
-    return (f'<p><em>⏱️ Reading Time: ~{minutes} నిమిషాలు · {words} పదాలు · '
-            f'తెలుగు + English</em></p>')
+    return (f'<p class="su-reading-badge"><em>⏱️ Reading Time: ~{minutes} నిమిషాలు · '
+            f'{words} పదాలు · తెలుగు + English</em></p>')
 
 
 def trust_box(date_str: str, source_domains: Optional[List[str]] = None) -> str:
-    """E-E-A-T trust signals: editorial review + sources + freshness."""
+    """E-E-A-T context without falsely claiming a human review."""
     domains = ", ".join(source_domains[:4]) if source_domains else "official notification"
     return (
+        '<section class="su-trust-box" aria-labelledby="about-this-article">'
         '<h2 id="about-this-article">About This Article</h2>'
         "<p>ఈ ఆర్టికల్ <strong>studentup.in</strong> ఎడిటోరియల్ టీమ్ తయారు చేసింది — "
-        "అధికారిక నోటిఫికేషన్ & ప్రముఖ వార్తా సంస్థల సమాచారం ఆధారంగా "
-        f"({domains}) సమీక్షించబడింది. తేదీ: {date_str}. "
-        "ఏమైనా సందేహాలు ఉంటే అధికారిక వెబ్‌సైట్‌లో ధృవీకరించండి. "
+        "పరిశీలించిన అధికారిక నోటిఫికేషన్/వనరుల ఆధారంగా "
+        f"({domains}) రూపొందించబడింది. Source check తేదీ: {date_str}. "
+        "తేదీ, ఫీజు, అర్హత వంటి విషయాలను అధికారిక వెబ్‌సైట్‌లో తప్పనిసరిగా ధృవీకరించండి. "
         f"తప్పతావలు దొరికితే <a href=\"mailto:{getattr(config, 'SUPPORT_EMAIL', '')}\">"
         f"{getattr(config, 'SUPPORT_EMAIL', '')}</a>కి చెప్పండి — 24 గంటల్లో "
-        "(<a href=\"/corrections-policy/\">Corrections Policy</a>).</p>"
+        "(<a href=\"/corrections-policy/\">Corrections Policy</a>).</p></section>"
     )
 
 
@@ -187,16 +192,32 @@ def author_for_slug(slug: str) -> tuple:
     return team[h % len(team)]
 
 
+def breadcrumb_block(category: str, title: str) -> str:
+    """Visible breadcrumb for keyboard users; schema is emitted separately."""
+    cat = _esc(category or "Articles")
+    current = _esc(title or "Article")[:110]
+    home = config.WP_SITE.rstrip("/") + "/"
+    return (
+        '<nav class="su-breadcrumbs" aria-label="Breadcrumb">'
+        f'<a href="{home}">Home</a><span aria-hidden="true">›</span>'
+        f'<span>{cat}</span><span aria-hidden="true">›</span>'
+        f'<span class="su-crumb-current">{current}</span></nav>'
+    )
+
+
 def byline_block(slug: str, date_str: str) -> str:
     """Google News + E-E-A-T: visible author byline with role + review date."""
     name, role = author_for_slug(slug)
     # div (kaadu p) — Rank Math 'keyword in first paragraph' check ki
     # byline munde padakudadu
+    reviewer = (getattr(config, "EDITORIAL_REVIEWER", "") or "").strip()
+    review_text = (f"Reviewed by {_esc(reviewer)}" if reviewer
+                   else "Source-backed draft; verify the official notice")
     return (
-        '<div style="font-size:14px;color:#57616B;margin:6px 0 14px;">'
-        f"✍️ <strong>{_esc(name)}</strong> ({role}) · "
-        f"✅ Editorial review: {date_str} · "
-        "🔄 Weekly updates for this topic</div>"
+        '<div class="su-byline" style="font-size:14px;color:#57616B;margin:6px 0 14px;">'
+        f"✍️ <strong>{_esc(name)}</strong> ({_esc(role)}) · "
+        f"{review_text} · Source check: {_esc(date_str)} · "
+        "🔄 Updates are made when the official notice changes</div>"
     )
 
 
@@ -211,7 +232,7 @@ def deadline_badge(apply_end: str) -> str:
     pretty = end.strftime("%d-%b-%Y")
     if days < 0:
         return (
-            '<div style="background:#FDECEA;border-left:4px solid #C0392B;'
+            '<div class="su-deadline" style="background:#FDECEA;border-left:4px solid #C0392B;'
             'padding:10px 14px;border-radius:4px;margin:14px 0;font-size:15px;">'
             f"⛔ <strong>Applications CLOSED ({pretty})</strong> — inka latest "
             "openings kosam mana category chudandi. Next notification update "
@@ -219,12 +240,49 @@ def deadline_badge(apply_end: str) -> str:
         )
     urgent = " 🔥" if days <= 7 else ""
     return (
-        '<div style="background:#E8F4EC;border-left:4px solid #1E8E4E;'
+        '<div class="su-deadline" style="background:#E8F4EC;border-left:4px solid #1E8E4E;'
         'padding:10px 14px;border-radius:4px;margin:14px 0;font-size:15px;">'
         f"🗓️ <strong>Last date to apply: {pretty}</strong> — "
         f"<strong>{days} days left</strong>{urgent}. Miss avvakunandi; "
         "documents munde ready pettandi.</div>"
     )
+
+
+def key_facts_block(recruitment: Optional[Dict]) -> str:
+    """Compact, source-backed facts card for notification posts.
+
+    Only fields already supplied by the structured model response are shown;
+    no date, vacancy count, salary, or location is guessed here.
+    """
+    rec = recruitment or {}
+    rows = []
+    if str(rec.get("org_name", "")).strip():
+        rows.append(("Organization", str(rec["org_name"]).strip()[:100]))
+    if str(rec.get("identifier", "")).strip():
+        rows.append(("Notification", str(rec["identifier"]).strip()[:60]))
+    end = _parse_iso(str(rec.get("apply_end", "")))
+    if end:
+        rows.append(("Last date", end.strftime("%d-%b-%Y")))
+    if str(rec.get("location", "")).strip():
+        rows.append(("Location", str(rec["location"]).strip()[:80]))
+    try:
+        low, high = rec.get("salary_min"), rec.get("salary_max")
+        if low is not None or high is not None:
+            salary = "₹" + (str(low) if low is not None else "—")
+            if high is not None and high != low:
+                salary += " – ₹" + str(high)
+            rows.append(("Salary", salary[:80]))
+    except (TypeError, ValueError):
+        pass
+    if len(rows) < 2:
+        return ""
+    cells = "".join(
+        f'<div class="su-fact"><dt>{_esc(label)}</dt><dd>{_esc(value)}</dd></div>'
+        for label, value in rows[:6]
+    )
+    return ('<section class="su-facts-card" aria-labelledby="su-facts-title">'
+            '<h2 id="su-facts-title">At a Glance — ముఖ్యమైన వివరాలు</h2>'
+            f'<dl class="su-facts-grid">{cells}</dl></section>')
 
 
 def jobposting_obj(recruitment, title: str, description: str,
@@ -295,27 +353,16 @@ def schema_jsonld(
     list_items: Optional[List[str]] = None,
     recruitment: Optional[Dict] = None,
 ) -> str:
-    """Google rich results: FAQPage + Article + BreadcrumbList (+ItemList
-    + v19 JobPosting for eligible recruitment notifications)."""
+    """Structured data: Article + BreadcrumbList (+ItemList and eligible
+    JobPosting). Visible FAQs are deliberately not represented as FAQPage.
+    """
     import json as _json
 
     if not config.SEO_SCHEMA_ENABLED:
         return ""
     scripts = []
-    clean_faq = [f for f in (faq or []) if f.get("question") and f.get("answer")]
-    if clean_faq:
-        scripts.append({
-            "@context": "https://schema.org",
-            "@type": "FAQPage",
-            "mainEntity": [
-                {
-                    "@type": "Question",
-                    "name": f["question"],
-                    "acceptedAnswer": {"@type": "Answer", "text": f["answer"]},
-                }
-                for f in clean_faq
-            ],
-        })
+    # FAQ remains visible HTML for readers, but FAQPage rich-result markup is
+    # intentionally not emitted: Google retired that Search feature in 2026.
     scripts.append({
         "@context": "https://schema.org",
         "@type": "Article",
@@ -332,8 +379,8 @@ def schema_jsonld(
             "url": config.WP_SITE.rstrip("/") + "/about-us/",
             "worksFor": {"@type": "Organization", "name": "studentup.in"},
         },
-        "editor": {"@type": "Person", "name": "StudentUp Editorial Team"},
-        "newsMaterialCategory": "Education",
+        **({"editor": {"@type": "Person", "name": config.EDITORIAL_REVIEWER}}
+           if getattr(config, "EDITORIAL_REVIEWER", "") else {}),
         "sourceOrganization": {"@type": "Organization", "name": "studentup.in"},
         "publisher": {"@type": "Organization", "name": "studentup.in",
                       "url": config.WP_SITE,
@@ -342,9 +389,6 @@ def schema_jsonld(
                          if config.SITE_LOGO_URL else {})},
         "mainEntityOfPage": f"{config.WP_SITE}/{slug}/",
         "inLanguage": "te",
-        # v21: voice/Assistant — quick answer nee speak avvali
-        "speakable": {"@type": "SpeakableSpecification",
-                     "cssSelector": ["#quick-answer", ".su-qa"]},
     })
     if list_items:
         scripts.append({
@@ -475,8 +519,12 @@ def enhance(
                                   date_modified or date_str) + html
     # v20: visible real byline (Google News/E-E-A-T)
     html = byline_block(slug, date_modified or date_str) + html
+    # v29: visible breadcrumb complements BreadcrumbList JSON-LD.
+    html = breadcrumb_block(category, title or focus_keyword) + html
     # v19: deadline countdown (playbook — notification lo real date UNTE matrame)
     html = deadline_badge((recruitment or {}).get("apply_end", "")) + html
+    # v29: structured facts card uses only model/source-backed values.
+    html = key_facts_block(recruitment) + html
     html = add_table_of_contents(html)
     html = add_internal_links(html, internal_links, seed=slug)
     html = add_external_links(html, external_links)

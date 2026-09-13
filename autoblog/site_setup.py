@@ -29,6 +29,17 @@ TIMEZONE = "Asia/Kolkata"
 
 FOOTER_MENU_NAME = "studentup-legal"
 
+# v28: keep plugin installation explicit and allow-listed. The setup never
+# deactivates/removes anything and it never switches a theme automatically.
+PLUGIN_LABELS = {
+    "rank-math": "Rank Math",
+    "redirection": "Redirection",
+    "updraftplus": "UpdraftPlus",
+    "wp-super-cache": "WP Super Cache",
+}
+FAST_THEME_SLUGS = {"generatepress", "astra", "kadence", "blocksy"}
+FAST_THEME_NAMES = {"generatepress", "astra", "kadence", "blocksy"}
+
 # Telugu SEO copy for archive pages (Rank Math category meta boost). Only set
 # when a category description is EMPTY — existing copy is never touched.
 CAT_DESCS: Dict[str, str] = {
@@ -105,6 +116,80 @@ def _menu_dedupe(wp, menu_id: int) -> int:
     return removed
 
 
+def _theme_audit(wp) -> Tuple[str, str]:
+    """Theme speed/readability audit; switching is deliberately manual."""
+    themes = wp.list_themes()
+    if not themes:
+        return "WARN", "themes REST empty — current theme ni WP Admin lo verify cheyandi"
+    active = next((t for t in themes
+                   if (t.get("status") or "").lower() in ("active", "current")), None)
+    if not active:
+        active = next((t for t in themes if t.get("stylesheet")), themes[0])
+    slug = (active.get("slug") or active.get("stylesheet") or "").lower()
+    name = active.get("name") or slug or "unknown"
+    if slug in FAST_THEME_SLUGS or name.lower() in FAST_THEME_NAMES:
+        return "OK", f"{name} active — lightweight theme family"
+    recommended = ", ".join(("GeneratePress", "Astra", "Kadence"))
+    return "WARN", (f"{name} active — speed unknown; recommend {recommended}. "
+                     "Theme switch REST dwara cheyyamu; Appearance → Themes lo manual ga test cheyandi")
+
+
+def _plugin_slug(plugin: Dict) -> str:
+    return ((plugin.get("slug") or "").strip().lower()
+            or (plugin.get("plugin") or "").split("/", 1)[0].lower())
+
+
+def _plugin_audit_and_fix(wp, dry: bool) -> Tuple[str, str]:
+    """Install/activate only the reviewed v28 stack, idempotently."""
+    if not config.PLUGIN_AUTO_INSTALL:
+        return "SKIP", "PLUGIN_AUTO_INSTALL=0 — plugin changes disabled"
+    installed = wp.list_plugins()
+    by_slug = {_plugin_slug(p): p for p in installed if _plugin_slug(p)}
+    wanted = [p for p in config.AUTO_INSTALL_PLUGINS
+              if p in PLUGIN_LABELS]
+    unknown = [p for p in config.AUTO_INSTALL_PLUGINS if p not in PLUGIN_LABELS]
+    if unknown:
+        log.warning("Ignoring non-allow-listed plugin slugs: %s", ", ".join(unknown))
+    if not wanted:
+        return "WARN", "AUTO_INSTALL_PLUGINS lo allow-listed plugin ledu"
+
+    missing = [p for p in wanted if p not in by_slug]
+    inactive = [p for p in wanted
+                if p in by_slug and config.PLUGIN_AUTO_ACTIVATE
+                and (by_slug[p].get("status") or "inactive").lower() != "active"]
+    if dry:
+        if missing or inactive:
+            bits = []
+            if missing:
+                bits.append("install: " + ", ".join(PLUGIN_LABELS[p] for p in missing))
+            if inactive:
+                bits.append("activate: " + ", ".join(PLUGIN_LABELS[p] for p in inactive))
+            return "FIX?", "; ".join(bits)
+        return "OK", "allow-listed plugin stack installed + active"
+
+    changed, failures = [], []
+    for slug in missing:
+        try:
+            result = wp.install_plugin(slug, activate=config.PLUGIN_AUTO_ACTIVATE)
+            changed.append(f"{PLUGIN_LABELS[slug]} ({result.get('status', 'installed')})")
+        except Exception as exc:  # noqa: BLE001 — one plugin must not hide others
+            failures.append(f"{PLUGIN_LABELS[slug]}: {str(exc)[:90]}")
+    for slug in inactive:
+        plugin_id = by_slug[slug].get("plugin")
+        try:
+            if not plugin_id:
+                raise ValueError("REST response lo plugin id ledu")
+            result = wp.activate_plugin(plugin_id)
+            changed.append(f"{PLUGIN_LABELS[slug]} ({result.get('status', 'active')})")
+        except Exception as exc:  # noqa: BLE001
+            failures.append(f"{PLUGIN_LABELS[slug]}: {str(exc)[:90]}")
+    if failures:
+        return "WARN", "changed: " + (", ".join(changed) or "none") + "; failed: " + "; ".join(failures)
+    if changed:
+        return "FIXED", "plugin stack ready — " + ", ".join(changed)
+    return "OK", "allow-listed plugin stack already active"
+
+
 def audit_and_fix(wp, dry: bool = True) -> List[Tuple[str, str, str]]:
     """One pass: check each item; when dry=False apply fixes. Returns report."""
     out: List[Tuple[str, str, str]] = []
@@ -162,7 +247,24 @@ def audit_and_fix(wp, dry: bool = True) -> List[Tuple[str, str, str]]:
                          "plugin install/activate chepthe — meta fields "
                          "(focus keyword) set avvakapote RM panel blank vasthundi"))
 
-    # ---- 5. General settings (tagline / timezone / comments / page size) ----
+    # ---- 5. v28 theme audit + reviewed plugin stack ----------------------
+    # Keep this capability check for older/custom fakes and third-party WP
+    # clients: the rest of site setup remains useful even without the routes.
+    if callable(getattr(wp, "list_themes", None)):
+        try:
+            theme_status, theme_detail = _theme_audit(wp)
+            out.append(_line(theme_status, "Theme audit", theme_detail))
+        except Exception as exc:  # noqa: BLE001
+            out.append(_line("WARN", "Theme audit", f"themes REST failed: {str(exc)[:100]}"))
+    if callable(getattr(wp, "list_plugins", None)):
+        try:
+            plugin_status, plugin_detail = _plugin_audit_and_fix(wp, dry=dry)
+            # A disabled feature is informational, not a setup blocker.
+            out.append(_line(plugin_status, "Plugin stack", plugin_detail))
+        except Exception as exc:  # noqa: BLE001
+            out.append(_line("WARN", "Plugin stack", f"plugins REST failed: {str(exc)[:100]}"))
+
+    # ---- 6. General settings (tagline / timezone / comments / page size) ----
     try:
         st = wp.get_settings()
     except Exception:
@@ -259,26 +361,31 @@ def audit_and_fix(wp, dry: bool = True) -> List[Tuple[str, str, str]]:
             menu = {"id": mid} if mid else None
             add_items = list(pages)
         if menu and add_items:
-            for title, pg in add_items:
-                wp.add_menu_item(menu["id"], pg["id"], title)
-            # location assign (footer/secondary unte)
-            try:
-                locs = {l.get("name", ""): l.get("location")
-                        for l in (wp.get_locations() or [])}
-                footer = next((v for k, v in locs.items()
-                               if any(w in k.lower() or w in (v or "")
-                                      for w in ("footer", "bottom"))), "")
-                if footer:
-                    wp.update_menu(menu["id"], {"locations": [footer]})
-                    out.append(_line(done, "Footer legal menu",
-                                     f"{len(add_items)} links + '{footer}' location"))
-                else:
-                    out.append(_line("WARN", "Footer menu location",
-                                     "menu create ayindi kaani footer location ledu — "
-                                     "Appearance → Menus lo assign cheyandi"))
-            except Exception:
+            if dry:
+                # A dry-run must not mutate menu items or locations.
                 out.append(_line("FIX?", "Footer legal menu",
-                                 f"{len(add_items)} page links add cheyalsi (REST menu)"))
+                                 f"{len(add_items)} missing page links + footer assignment planned"))
+            else:
+                for title, pg in add_items:
+                    wp.add_menu_item(menu["id"], pg["id"], title)
+                # location assign (footer/secondary unte)
+                try:
+                    locs = {l.get("name", ""): l.get("location")
+                            for l in (wp.get_locations() or [])}
+                    footer = next((v for k, v in locs.items()
+                                   if any(w in k.lower() or w in (v or "")
+                                          for w in ("footer", "bottom"))), "")
+                    if footer:
+                        wp.update_menu(menu["id"], {"locations": [footer]})
+                        out.append(_line(done, "Footer legal menu",
+                                         f"{len(add_items)} links + '{footer}' location"))
+                    else:
+                        out.append(_line("WARN", "Footer menu location",
+                                         "menu create ayindi kaani footer location ledu — "
+                                         "Appearance → Menus lo assign cheyandi"))
+                except Exception:
+                    out.append(_line("FIX?", "Footer legal menu",
+                                     f"{len(add_items)} page links add cheyalsi (REST menu)"))
         elif menu:
             out.append(_line("OK", "Footer legal menu",
                              "anni links unnayi"
@@ -317,6 +424,56 @@ def audit_and_fix(wp, dry: bool = True) -> List[Tuple[str, str, str]]:
     return out
 
 
+def _connect_or_report(wp=None):
+    from .wordpress_client import WordPressClient
+
+    wp = wp or WordPressClient()
+    wp.check_connection()
+    return wp
+
+
+def run_plugins(dry: bool = True, wp=None) -> int:
+    """Explicit v28 plugin command, useful before running the full setup."""
+    try:
+        wp = _connect_or_report(wp)
+        status, detail = _plugin_audit_and_fix(wp, dry=dry)
+    except Exception as exc:  # noqa: BLE001
+        print(f"❌ Plugin setup failed: {exc}")
+        return 1
+    print(f"🔌 Plugin stack ({'dry-run' if dry else 'apply'}): {status} — {detail}")
+    return 0 if status not in ("WARN",) else 1
+
+
+def run_theme_audit(wp=None) -> int:
+    """Explicit read-only theme audit; never activates a theme."""
+    try:
+        wp = _connect_or_report(wp)
+        status, detail = _theme_audit(wp)
+    except Exception as exc:  # noqa: BLE001
+        print(f"❌ Theme audit failed: {exc}")
+        return 1
+    print(f"🎨 Theme audit: {status} — {detail}")
+    return 0 if status == "OK" else 1
+
+
+def run_adsense_kit(dry: bool = True, wp=None) -> int:
+    """Explicit AdSense loader command; client id is validated first."""
+    from . import adsense_kit
+
+    status, detail = adsense_kit.audit()
+    if status in ("SKIP", "WARN"):
+        print(f"💰 AdSense kit: {status} — {detail}")
+        return 0 if status == "SKIP" else 1
+    try:
+        wp = _connect_or_report(wp)
+        installed, detail = adsense_kit.install(wp, dry=dry)
+    except Exception as exc:  # noqa: BLE001
+        print(f"❌ AdSense kit failed: {exc}")
+        return 1
+    print(f"💰 AdSense kit ({'dry-run' if dry else 'apply'}): {installed} — {detail}")
+    return 0 if installed not in ("warn",) else 1
+
+
 def run_setup(dry: bool = True, wp=None) -> int:
     """CLI entry. Returns 0 (clean/fixed) or 1 (blocker present)."""
     from .wordpress_client import WordPressClient
@@ -337,6 +494,14 @@ def run_setup(dry: bool = True, wp=None) -> int:
         print(f"  {icon} {label:28.28s} {detail[:150]}")
         if status == "BLOCK":
             blocked = True
+    # v28 AdSense loader: no client id means a truthful SKIP, not a fake
+    # installation. ads.txt and approval remain manual Google-side steps.
+    try:
+        from . import adsense_kit
+        a_status, a_detail = adsense_kit.install(wp, dry=dry)
+        print(f"  💰 {'AdSense kit':28.28s} {a_status}: {a_detail[:120]}")
+    except Exception as exc:  # noqa: BLE001
+        print(f"  💰 AdSense kit failed (harmless): {str(exc)[:100]}")
     if not dry:
         # v24 DESIGN KIT — site-wide CSS via footer text widget (all pages)
         try:
