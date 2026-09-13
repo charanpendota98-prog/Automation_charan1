@@ -8,6 +8,7 @@ extra advanced sections tho, Telugu+English mix lo rewrite chestundi.
 import logging
 import re
 from dataclasses import dataclass
+from io import BytesIO
 from typing import Optional
 from urllib.parse import urlparse
 
@@ -44,6 +45,38 @@ def is_valid_source_url(url: str) -> bool:
         return False
 
 
+def _extract_pdf(url: str, content: bytes) -> SourceArticle:
+    """Extract text from public notification PDFs without storing the file."""
+    try:
+        from pypdf import PdfReader
+    except ImportError as exc:  # pragma: no cover - dependency is in requirements
+        raise ValueError("PDF source requires the pypdf dependency") from exc
+    try:
+        reader = PdfReader(BytesIO(content))
+        pages = []
+        for page in reader.pages[:40]:
+            text = page.extract_text() or ""
+            if text.strip():
+                pages.append(text)
+        extracted = re.sub(r"\n{2,}", "\n", "\n".join(pages)).strip()
+    except Exception as exc:  # noqa: BLE001
+        raise ValueError("PDF text extraction failed; open this source manually") from exc
+    if not extracted:
+        raise ValueError("PDF has no selectable text; open this source manually")
+    filename = urlparse(url).path.rsplit("/", 1)[-1]
+    title = re.sub(r"[_+%20-]+", " ", filename.rsplit(".", 1)[0]).strip() or url
+    date_match = re.search(r"(?:dated?|date)\D{0,12}(\d{1,2}[^\n]{0,20}20\d{2})",
+                           extracted, re.I)
+    return SourceArticle(
+        url=url,
+        title=title,
+        site_name=urlparse(url).netloc,
+        text=extracted[:MAX_SOURCE_CHARS],
+        meta_description="Public PDF notification; verify the cited page before publishing.",
+        published_date=date_match.group(1).strip() if date_match else "",
+    )
+
+
 def fetch_source(url: str, retries: int = 2) -> SourceArticle:
     """Fetch a web page and extract title + readable main text.
 
@@ -76,10 +109,13 @@ def fetch_source(url: str, retries: int = 2) -> SourceArticle:
     if resp is None or resp.status_code != 200:
         raise ValueError(f"Source fetch fail: {last_exc}")
 
+    ctype = resp.headers.get("content-type", "").lower()
+    if "pdf" in ctype or urlparse(url).path.lower().endswith(".pdf"):
+        return _extract_pdf(url, resp.content)
+
     # encoding fix: chala Indian sites wrong charset declare chestayi
     if not resp.encoding or resp.encoding.lower() == "iso-8859-1":
         resp.encoding = resp.apparent_encoding or "utf-8"
-    ctype = resp.headers.get("content-type", "")
     if "html" not in ctype and "text" not in ctype and ctype:
         raise ValueError(f"Not an HTML page: {ctype[:60]}")
 
