@@ -31,6 +31,8 @@ class SourceArticle:
     text: str = ""
     meta_description: str = ""
     image_url: str = ""
+    published_date: str = ""
+    updated_date: str = ""
 
 
 def is_valid_source_url(url: str) -> bool:
@@ -100,6 +102,27 @@ def fetch_source(url: str, retries: int = 2) -> SourceArticle:
     desc = soup.find("meta", attrs={"property": "og:description"}) or \
         soup.find("meta", attrs={"name": "description"})
     src.meta_description = desc.get("content", "").strip() if desc else ""
+
+    def _meta_value(names):
+        for attrs in names:
+            tag = soup.find("meta", attrs=attrs)
+            if tag and tag.get("content", "").strip():
+                return tag.get("content", "").strip()
+        return ""
+
+    src.published_date = _meta_value([
+        {"property": "article:published_time"},
+        {"name": "datePublished"},
+        {"itemprop": "datePublished"},
+    ])
+    src.updated_date = _meta_value([
+        {"property": "article:modified_time"},
+        {"name": "dateModified"},
+        {"itemprop": "dateModified"},
+    ])
+    if not src.published_date:
+        time_tag = soup.find("time", attrs={"datetime": True})
+        src.published_date = time_tag.get("datetime", "").strip() if time_tag else ""
 
     og_site = soup.find("meta", attrs={"property": "og:site_name"})
     src.site_name = og_site.get("content", "").strip() if og_site else urlparse(url).netloc

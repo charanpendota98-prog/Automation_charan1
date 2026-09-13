@@ -30,10 +30,14 @@ def main():
                   "The official portal should be checked for current updates."),
         ),
     ]
-    bundle = research_brief.build_source_bundle("Test notification", articles)
+    bundle = research_brief.build_source_bundle("Test notification", articles, target_year=2027)
     assert "S1" in bundle and "S2" in bundle
     assert "15 October 2026" in bundle and "official.gov.in" in bundle
-    prompt = research_brief.notebooklm_prompt("Test notification", articles)
+    assert "Target year: 2027" in bundle and "other-year/verify" in bundle
+    prompt = research_brief.notebooklm_prompt("Test notification", articles, target_year=2027)
+    assert "zero-confusion target-year policy" in prompt.lower()
+    assert "2027" in prompt and "do not invent" in prompt.lower()
+    assert research_brief.target_year_from_text("TSPSC Group 2 2027 notification") == 2027
     for phrase in ("source map", "fact ledger", "conflict", "gap", "Claim ID",
                    "Do not copy", "open every citation"):
         assert phrase.lower() in prompt.lower(), phrase

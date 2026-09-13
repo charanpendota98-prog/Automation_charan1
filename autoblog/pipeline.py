@@ -382,7 +382,8 @@ def _after_publish_push(article: Dict, result: Dict) -> None:
 
 
 def create_from_source(url: str, mock: bool = False, category: str = "",
-                       notebooklm_brief: str = "") -> Dict:
+                       notebooklm_brief: str = "",
+                       target_year: int | None = None) -> Dict:
     """Vere site URL -> 100% original SEO article -> draft post.
 
     category empty aite auto-classify (Telugu+English keywords tho).
@@ -396,6 +397,12 @@ def create_from_source(url: str, mock: bool = False, category: str = "",
     log.info("Source fetch chestunnanu: %s", url)
     src = sources.fetch_source(url)
     log.info("Source ready: %s (%d chars)", src.title[:60], len(src.text))
+    if target_year is None:
+        from .research_brief import target_year_from_text
+        target_year = target_year_from_text(f"{src.title} {url} {notebooklm_brief[:4000]}")
+    generation_year = target_year or date.today().year
+    if target_year:
+        log.info("Target-year mode enabled: %d — other-year claims require verification", target_year)
 
     # --- multi-source research: internet lo same topic articles ---
     extras, competitor_titles = [], []
@@ -412,11 +419,11 @@ def create_from_source(url: str, mock: bool = False, category: str = "",
 
     if mock:
         article = {
-            "title": f"{src.title[:80]} – Complete Guide 2026 (Original)",
+            "title": f"{src.title[:80]} – Complete Guide {generation_year} (Original)",
             "slug": "src-" + src.title.lower().replace(" ", "-")[:30],
             "meta_description": f"{src.title[:100]} — Telugu lo complete details.",
-            "tags": ["2026", "Students", "Telugu", "Guide", "News"],
-            "banner_text": "Students Guide 2026",
+            "tags": [str(generation_year), "Students", "Telugu", "Guide", "News"],
+            "banner_text": f"Students Guide {generation_year}",
             "content_html": (
                 "<p>Ee article source nunchi facts teesi original ga "
                 f"rayabadda test article. Source: {src.title}</p>"
@@ -426,10 +433,10 @@ def create_from_source(url: str, mock: bool = False, category: str = "",
             ),
             "category": category or classify_category(src.title, src.text),
             "model": "mock",
-            "focus_keyword": "test guide 2026",
-            "seo_title": "Test Guide 2026 – Complete Details",
-            "secondary_keywords": ["test guide details", "2026 guide telugu"],
-            "quick_answer": ("Test guide 2026 gurinchi menu thelisi untundi — "
+            "focus_keyword": f"test guide {generation_year}",
+            "seo_title": f"Test Guide {generation_year} – Complete Details",
+            "secondary_keywords": ["test guide details", f"{generation_year} guide telugu"],
+            "quick_answer": (f"Test guide {generation_year} gurinchi menu thelisi untundi — "
                              "ee quick answer featured snippet test kosam."),
             "faq": [
                 {"question": "Ee guide em gurinchi?", "answer": "Test guide gurinchi."},
@@ -442,7 +449,7 @@ def create_from_source(url: str, mock: bool = False, category: str = "",
     else:
         recent = state.recent_titles(config.STATE_PATH, limit=30)
         article = gemini_client.generate_article_from_source(
-            src, recent, date.today().year, extras=extras,
+            src, recent, generation_year, extras=extras,
             competitor_titles=competitor_titles,
             notebooklm_brief=notebooklm_brief,
         )
@@ -456,7 +463,8 @@ def create_from_source(url: str, mock: bool = False, category: str = "",
         if notebooklm_brief:
             from . import research_brief as _rb
             source_urls = [src.url] + [e.url for e in extras]
-            brief_check = _rb.validate_editor_brief(notebooklm_brief, source_urls)
+            brief_check = _rb.validate_editor_brief(
+                notebooklm_brief, source_urls, target_year=target_year)
             if not brief_check["ok"]:
                 raise ValueError(
                     "NotebookLM brief validation failed: "
@@ -472,7 +480,7 @@ def create_from_source(url: str, mock: bool = False, category: str = "",
             log.warning("Source similarity guard triggered (originality %.1f%%) — regenerate", orig)
             try:
                 retry_article = gemini_client.generate_article_from_source(
-                    src, recent, date.today().year, extras=extras,
+                    src, recent, generation_year, extras=extras,
                     competitor_titles=competitor_titles,
                     notebooklm_brief=notebooklm_brief,
                 )

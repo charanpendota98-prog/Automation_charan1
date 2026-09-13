@@ -90,7 +90,8 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
         source_url: str = "", process_queue: int = 0, update_id: int = 0,
         listicle: str = "", auto_refresh_n: int = 0,
         quiz: bool = False, quiz_topic: str = "", quiz_level: int = 0,
-        quiz_questions: int = 0, notebooklm_brief_file: str = "") -> int:
+        quiz_questions: int = 0, notebooklm_brief_file: str = "",
+        target_year: int = 0) -> int:
     now = _now()
     today = now.date()
     now_hour = now.hour
@@ -159,7 +160,8 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
                 return 2
             brief = brief_path.read_text(encoding="utf-8", errors="replace")[:18000]
         result = pipeline.create_from_source(
-            source_url, mock=mock, category=category, notebooklm_brief=brief)
+            source_url, mock=mock, category=category, notebooklm_brief=brief,
+            target_year=target_year or None)
         log.info("SOURCE POST READY ✔ %s (status=%s)", result["link"], result["status"])
         return 0
 
@@ -899,10 +901,13 @@ def google_audit_run(url: str) -> int:
     return google_audit.run(url)
 
 
-def research_brief_run(seed: str, url_file: str = "", limit: int = 6) -> int:
+def research_brief_run(seed: str, url_file: str = "", limit: int = 6,
+                       target_year: int = 0) -> int:
     from . import research_brief
 
-    return research_brief.run(seed, url_file=url_file, limit=max(1, min(limit, 12)))
+    return research_brief.run(
+        seed, url_file=url_file, limit=max(1, min(limit, 12)),
+        target_year=target_year or None)
 
 
 def service_center_setup(dry: bool = True, force: bool = False) -> int:
@@ -1099,6 +1104,10 @@ def main() -> int:
                         help="v36: optional file with checked public URLs, one per line")
     parser.add_argument("--research-limit", type=int, default=6, metavar="N",
                         help="v36: maximum public sources in the NotebookLM bundle")
+    parser.add_argument("--research-year", type=int, default=0, metavar="YEAR",
+                        help="v37: explicit target year; prevents mixing old/current cycles")
+    parser.add_argument("--target-year", type=int, default=0, metavar="YEAR",
+                        help="v37: target year for a source article, e.g. 2027")
     parser.add_argument("--notebooklm-brief", default="", metavar="FILE",
                         help="v36: use an editor-verified NotebookLM brief with --url")
     parser.add_argument("--trends", action="store_true",
@@ -1169,7 +1178,7 @@ def main() -> int:
         return google_audit_run(args.google_audit)
     if args.research_brief:
         return research_brief_run(args.research_brief, args.research_urls,
-                                  args.research_limit)
+                                  args.research_limit, args.research_year)
     if args.trends:
         return trends_check()
     if args.sources:
@@ -1255,7 +1264,8 @@ def main() -> int:
                    quiz=args.quiz, quiz_topic=args.quiz_topic,
                    quiz_level=args.quiz_level,
                    quiz_questions=args.quiz_questions,
-                   notebooklm_brief_file=args.notebooklm_brief)
+                   notebooklm_brief_file=args.notebooklm_brief,
+                   target_year=args.target_year)
     except wordpress_client.WordPressAuthError as exc:
         log.error("%s", exc)
         return 3

@@ -334,9 +334,26 @@ For a serious post, first create a focused evidence bundle instead of asking a
 model to merge random web pages directly:
 
 ```bash
-python run.py --research-brief "TSPSC Group 2 notification"
+python run.py --research-brief "TSPSC Group 2 notification" --research-year 2027
+# A year in the topic is also detected, but an explicit flag is safest:
+python run.py --research-brief "TSPSC Group 2 2027 notification" \
+  --research-year 2027
 # or provide URLs already checked by the editor:
-python run.py --research-brief "TSPSC Group 2" --research-urls checked_urls.txt
+python run.py --research-brief "TSPSC Group 2 2027" \
+  --research-urls checked_urls.txt --research-year 2027
+```
+
+When a target year is supplied, the bundle labels each source as target-year,
+other-year/verify, or evergreen/verify-current. It records publication/update
+metadata when the page exposes it and tells NotebookLM never to carry a 2026
+(or older) deadline, fee, vacancy or eligibility rule into 2027 without an
+explicit source statement. If a 2027 official notice is not available, the
+brief must say that instead of inventing a projection. Use the same guard when
+drafting from a checked brief:
+
+```bash
+python run.py --url "https://official.gov.in/notice" --target-year 2027 \
+  --notebooklm-brief "checked-notebooklm-brief.md"
 ```
 
 The command writes ignored local files under `output/research/`:

@@ -48,7 +48,7 @@ git pull
 .venv/bin/python run.py --production-audit  ← live safety/revenue gate
 .venv/bin/python run.py --content-audit       ← existing posts quality report
 .venv/bin/python run.py --google-audit https://studentup.in/ ← public Google-facing check
-.venv/bin/python run.py --research-brief "TSPSC Group 2 notification" ← NotebookLM source bundle
+.venv/bin/python run.py --research-brief "TSPSC Group 2 2027 notification" --research-year 2027 ← year-locked NotebookLM source bundle
 .venv/bin/python run.py --setup --dry-run   ← report chudandi
 .venv/bin/python run.py --setup             ← settings + theme audit + plugin stack + widgets
 .venv/bin/python run.py --plugins --dry-run  ← plugin plan alone chudali ante

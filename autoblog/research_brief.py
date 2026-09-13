@@ -26,6 +26,33 @@ def _slug(value: str) -> str:
     return value[:70] or "research-topic"
 
 
+def target_year_from_text(text: str) -> int | None:
+    """Infer an explicitly requested 20xx target year, without guessing."""
+    text = text or ""
+    explicit = re.findall(
+        r"(?:target|for|year|notification|exam|recruitment|admission|result)"
+        r"[^0-9]{0,24}(20[2-9][0-9])",
+        text, re.I,
+    )
+    if explicit:
+        return int(explicit[0])
+    years = [int(item) for item in re.findall(r"\b(20[2-9][0-9])\b", text)]
+    return years[0] if len(years) == 1 else None
+
+
+def _year_relevance(item: sources.SourceArticle, target_year: int | None) -> str:
+    if not target_year:
+        return "not-specified"
+    haystack = " ".join((item.url, item.title, item.text, item.published_date,
+                          item.updated_date)).lower()
+    if str(target_year) in haystack:
+        return f"target-{target_year}"
+    other_years = re.findall(r"\b20[2-9][0-9]\b", haystack)
+    if other_years:
+        return "other-year/verify"
+    return "evergreen/verify-current"
+
+
 def _sentence_candidates(text: str, limit: int = 18) -> List[str]:
     """Keep likely fact-bearing sentences for a quick evidence index."""
     sentences = re.split(r"(?<=[.!?\u0964])\s+|\n+", text or "")
@@ -66,7 +93,8 @@ def _read_url_file(path: str) -> List[str]:
     return urls
 
 
-def collect_sources(seed: str, url_file: str = "", limit: int = 6) -> Tuple[str, List[sources.SourceArticle]]:
+def collect_sources(seed: str, url_file: str = "", limit: int = 6,
+                    target_year: int | None = None) -> Tuple[str, List[sources.SourceArticle]]:
     """Collect a primary source plus related public sources.
 
     If ``seed`` is a URL it is always first. Otherwise it is used as a focused
@@ -74,6 +102,7 @@ def collect_sources(seed: str, url_file: str = "", limit: int = 6) -> Tuple[str,
     when the owner has already checked the results in NotebookLM.
     """
     seed = (seed or "").strip()
+    target_year = target_year or target_year_from_text(seed)
     explicit = _read_url_file(url_file) if url_file else []
     urls: List[str] = []
     if seed.startswith(("http://", "https://")) and sources.is_valid_source_url(seed):
@@ -81,6 +110,20 @@ def collect_sources(seed: str, url_file: str = "", limit: int = 6) -> Tuple[str,
     urls.extend(url for url in explicit if url not in urls)
 
     query = seed
+    if target_year and str(target_year) not in query:
+        query = f"{query} {target_year}".strip()
+    # A single supplied link is the primary source, not the entire evidence
+    # base. Search its title plus the requested year for independent sources.
+    if urls and seed.startswith(("http://", "https://")) and not explicit:
+        try:
+            seed_article = sources.fetch_source(seed)
+            query = f"{seed_article.title} {target_year or ''}".strip()
+            results = research.search_web(query, max_results=max(8, limit * 2))
+            urls.extend(r["url"] for r in results
+                        if sources.is_valid_source_url(r.get("url", ""))
+                        and r.get("url") not in urls)
+        except Exception:
+            pass
     if not urls:
         if not query:
             raise ValueError("topic or source URL kavali")
@@ -109,29 +152,44 @@ def collect_sources(seed: str, url_file: str = "", limit: int = 6) -> Tuple[str,
     return query or articles[0].title, articles
 
 
-def build_source_bundle(topic: str, articles: Sequence[sources.SourceArticle]) -> str:
+def build_source_bundle(topic: str, articles: Sequence[sources.SourceArticle],
+                        target_year: int | None = None) -> str:
     """Create a Markdown bundle that NotebookLM can ingest as one source."""
+    year_note = (
+        f"Target year: {target_year}. Do not substitute another year's dates, "
+        "fees, vacancies or deadlines.\n"
+        if target_year else
+        "Target year: not explicitly specified; do not infer one from an old post.\n"
+    )
     lines = [
         f"# Evidence Bundle: {topic}",
+        year_note,
         "",
         "> This is a source bundle for research only. Every source is labelled. "
         "Do not publish this bundle or treat unverified claims as facts.",
         "",
         "## Source index",
         "",
-        "| ID | Title | URL | Domain | Extracted chars |",
-        "|---|---|---|---|---:|",
+        "| ID | Title | URL | Domain | Published | Updated | Year relevance | Chars |",
+        "|---|---|---|---|---|---|---|---:|",
     ]
     for i, item in enumerate(articles, 1):
         domain = urlparse(item.url).netloc.replace("www.", "")
         title = item.title.replace("|", "—")[:120]
-        lines.append(f"| S{i} | {title} | {item.url} | {domain} | {len(item.text)} |")
+        lines.append(
+            f"| S{i} | {title} | {item.url} | {domain} | "
+            f"{item.published_date or 'not stated'} | {item.updated_date or 'not stated'} | "
+            f"{_year_relevance(item, target_year)} | {len(item.text)} |"
+        )
     lines += ["", "## Evidence excerpts", ""]
     for i, item in enumerate(articles, 1):
         lines += [
             f"## {_source_label(item, i)}",
             f"Source URL: {item.url}",
             f"Source site: {item.site_name or urlparse(item.url).netloc}",
+            f"Published date: {item.published_date or 'not stated'}",
+            f"Updated date: {item.updated_date or 'not stated'}",
+            f"Year relevance: {_year_relevance(item, target_year)}",
             f"Source description: {item.meta_description or '(not available)'}",
             "",
             "### Extracted text",
@@ -144,16 +202,35 @@ def build_source_bundle(topic: str, articles: Sequence[sources.SourceArticle]) -
     return "\n".join(lines).strip() + "\n"
 
 
-def notebooklm_prompt(topic: str, articles: Sequence[sources.SourceArticle]) -> str:
+def notebooklm_prompt(topic: str, articles: Sequence[sources.SourceArticle],
+                      target_year: int | None = None) -> str:
     """Prompt for a citation-backed NotebookLM research pass."""
     ids = ", ".join(f"S{i}" for i in range(1, len(articles) + 1))
+    year_policy = (
+        f"""\n## Zero-confusion target-year policy — {target_year}
+This assignment is specifically for {target_year}. Use {target_year} information
+only when the source actually supports it. A {date.today().year} or older page
+cannot establish a {target_year} deadline, fee, vacancy, eligibility rule or
+schedule unless the source explicitly says it continues into {target_year}.
+Classify each source as target-year, other-year, or evergreen. Never silently
+carry forward an old post. If a {target_year} official notification is not
+released or cannot be verified, say that clearly and do not invent projected
+numbers or dates. Put “as of [date]” beside time-sensitive claims.
+"""
+        if target_year else
+        """\n## Date policy
+Do not call a fact current unless its publication/update date and source context
+support that wording. Old posts are leads only; verify every time-sensitive
+claim against the newest primary source.
+"""
+    )
     return f"""# NotebookLM research protocol — {topic}
 
 Import the accompanying evidence bundle into a focused NotebookLM notebook.
 NotebookLM answers are useful only when the source passages are opened and
 verified. Use the citations shown by NotebookLM; do not cite NotebookLM itself.
 Selected source IDs: {ids}
-
+{year_policy}
 ## Pass 1 — source map
 Create a table with one row per source:
 - source ID, publisher/domain, publication or update date if present
@@ -206,7 +283,8 @@ would still help a reader even if Search did not exist.
 """
 
 
-def validate_editor_brief(brief: str, source_urls: Sequence[str]) -> dict:
+def validate_editor_brief(brief: str, source_urls: Sequence[str],
+                          target_year: int | None = None) -> dict:
     """Require a real citation-bearing NotebookLM/editor output.
 
     This is a structural gate, not a truth detector. The editor still has to
@@ -228,11 +306,14 @@ def validate_editor_brief(brief: str, source_urls: Sequence[str]) -> dict:
         problems.append("conflict audit section missing")
     if len(usable_ids) < min(2, len(source_ids)):
         problems.append("fewer than two supplied source IDs cited")
+    if target_year and str(target_year) not in text:
+        problems.append(f"target year {target_year} is not stated in the brief")
     return {"ok": not problems, "problems": problems,
             "source_ids": usable_ids, "claims": len(re.findall(r"\bC(?:laim)?[- ]?\d+\b", text, re.I))}
 
 
-def write_bundle(topic: str, articles: Sequence[sources.SourceArticle], output_dir: Path | None = None) -> dict:
+def write_bundle(topic: str, articles: Sequence[sources.SourceArticle],
+                output_dir: Path | None = None, target_year: int | None = None) -> dict:
     output_dir = output_dir or getattr(config, "RESEARCH_BRIEF_DIR", config.OUTPUT_DIR / "research")
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -240,14 +321,18 @@ def write_bundle(topic: str, articles: Sequence[sources.SourceArticle], output_d
     bundle_path = output_dir / f"{stem}-sources.md"
     prompt_path = output_dir / f"{stem}-notebooklm-prompt.md"
     manifest_path = output_dir / f"{stem}-manifest.json"
-    bundle_path.write_text(build_source_bundle(topic, articles), encoding="utf-8")
-    prompt_path.write_text(notebooklm_prompt(topic, articles), encoding="utf-8")
+    bundle_path.write_text(build_source_bundle(topic, articles, target_year), encoding="utf-8")
+    prompt_path.write_text(notebooklm_prompt(topic, articles, target_year), encoding="utf-8")
     manifest = {
         "topic": topic,
+        "target_year": target_year,
         "created": date.today().isoformat(),
         "sources": [
             {"id": f"S{i}", "url": item.url, "title": item.title,
-             "domain": urlparse(item.url).netloc.replace("www.", "")}
+             "domain": urlparse(item.url).netloc.replace("www.", ""),
+             "published_date": item.published_date,
+             "updated_date": item.updated_date,
+             "year_relevance": _year_relevance(item, target_year)}
             for i, item in enumerate(articles, 1)
         ],
         "bundle": str(bundle_path),
@@ -259,16 +344,20 @@ def write_bundle(topic: str, articles: Sequence[sources.SourceArticle], output_d
             "sources": len(articles)}
 
 
-def run(seed: str, url_file: str = "", limit: int = 6) -> int:
+def run(seed: str, url_file: str = "", limit: int = 6,
+        target_year: int | None = None) -> int:
     try:
-        topic, articles = collect_sources(seed, url_file=url_file, limit=limit)
-        result = write_bundle(topic, articles)
+        target_year = target_year or target_year_from_text(seed)
+        topic, articles = collect_sources(
+            seed, url_file=url_file, limit=limit, target_year=target_year)
+        result = write_bundle(topic, articles, target_year=target_year)
     except Exception as exc:  # noqa: BLE001
         print(f"❌ NotebookLM research bundle failed: {exc}")
         return 1
     print("=" * 78)
     print(f"  NOTEBOOKLM-READY RESEARCH BUNDLE ({result['sources']} sources)")
     print("=" * 78)
+    print(f"  Target year: {target_year or 'not specified'}")
     print(f"  Sources : {result['bundle']}")
     print(f"  Prompt  : {result['prompt']}")
     print(f"  Manifest: {result['manifest']}")

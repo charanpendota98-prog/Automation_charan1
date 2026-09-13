@@ -897,7 +897,12 @@ def generate_article_from_source(
         prompt += "\n" + avoid_block
     if notebooklm_brief:
         prompt += (
-            "\nEDITOR-VERIFIED NOTEBOOKLM BRIEF (use as a cited outline, not as "
+            f"\nTARGET-YEAR DATE POLICY: This draft is for the {year} cycle. "
+            f"Do not carry a date, fee, vacancy, eligibility rule or deadline "
+            f"from another year into {year} unless a cited source explicitly "
+            f"says it applies. If {year} information is not officially available, "
+            "state that clearly instead of predicting it.\n"
+            "EDITOR-VERIFIED NOTEBOOKLM BRIEF (use as a cited outline, not as "
             "copy):\n"
             + notebooklm_brief[:18000]
             + "\nKeep Claim IDs/citations available to the human editor. Verify "
