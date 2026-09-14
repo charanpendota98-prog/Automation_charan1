@@ -623,7 +623,8 @@ files direct ga push cheyyaleru; migilinavi anni automatic). Adi pettaka breakin
 change silent ga merge avvadu.
 
 ```bash
-python tests/v41_site_audit_test.py    # 14 sections: checks → fixers → gates → CLI → network-fail
+python tests/v41_site_audit_test.py    # 15 sections: checks → fixers → gates → CLI →
+                                       # network-fail → deploy pack (systemd/Docker/boot)
 ```
 
 
@@ -1045,7 +1046,8 @@ python run.py --site-audit-fix              # audit + fixes (dry-run default)
 python run.py --site-audit-fix --site-audit-apply [--site-audit-trash]
 python run.py --site-audit --site-audit-snapshot demo    # offline (network ledu)
 python run.py --test-all                    # ANNI suites (30/30) okate command tho
-python tests/v41_site_audit_test.py         # 14-section suite
+python run.py --deploy-check                # deploy readiness + exam portal boot proof
+python tests/v41_site_audit_test.py         # 15-section suite
 ```
 
 ```bash
@@ -1164,6 +1166,9 @@ Marpali te: `.env` edit chesi scheduler ni restart cheyandi: `sudo systemctl res
 │   └── top_post.py         # v38 top-post engine: 10k keywords, blueprint,
 │                           #      scorer, harden, gate, dominance calendar
 ├── ci/github-actions-tests.yml  # v41 CI — 30 suites × 3 py versions (copy to .github/workflows/)
+├── DEPLOY.md               # deployment guide — VPS(systemd+Caddy) / Docker / PaaS
+├── deploy/                 # systemd units · Caddyfile · nginx · Dockerfile · compose · backup.sh · install-vps.sh
+├── autoblog/deploy_check.py # deploy readiness (deps/env/disk/port + real /healthz boot)
 ├── autoblog/site_audit.py  # v41 deep audit + safe autofix + live publish gate
 ├── exam_portal/            # v39 college exam portal (stdlib only)
 │   ├── store.py            #      SQLite: exams/questions/roster/sessions/answers

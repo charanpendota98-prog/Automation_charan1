@@ -1294,6 +1294,11 @@ def main() -> int:
     parser.add_argument("--exam-base-url", default="",
                         help="v39: public URL for share links/notifications "
                              "(ex: https://exams.college.edu)")
+    parser.add_argument("--deploy-check", action="store_true",
+                        help="v41: deploy readiness — deps/env/disk/port + exam portal "
+                             "ni nijamga boot chesi /healthz hit (server SSH lo)")
+    parser.add_argument("--deploy-port", type=int, default=8080,
+                        help="v41: --deploy-check port (default 8080)")
     parser.add_argument("--test-all", action="store_true",
                         help="v41: ANNI suites okate command tho run chey "
                              "(--test-only NAME tho okka suite; CI idi ne run "
@@ -1405,6 +1410,10 @@ def main() -> int:
             demo=args.exam_portal_demo,
             test_channels=args.exam_portal_test_channels,
             base_url=args.exam_base_url)
+    if args.deploy_check:
+        from . import deploy_check
+
+        return deploy_check.run_deploy_check(port=args.deploy_port)
     if args.test_all:
         return test_all_run(only=args.test_only)
     if args.site_audit or args.site_audit_fix:

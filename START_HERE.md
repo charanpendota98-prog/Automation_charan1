@@ -37,7 +37,15 @@
 
 ## 🎬 ONE-TIME DEPLOY (server SSH lo — ee order ga)
 
+> 🚀 **Kotha (v41 deploy pack):** full guide `DEPLOY.md` lo — 3 paths (VPS+Caddy ⭐ /
+> Docker / PaaS). Okka command install: `sudo DOMAIN=exams.college.edu bash deploy/install-vps.sh`
+> Ready-a ani check: `python run.py --deploy-check` (deps/env/disk/port + exam portal ni
+> **nijamga boot chesi** `/healthz` hit chestundi).
+
 ```bash
+# 0. deploy readiness (ee okka command chalu — enti miss undo cheptundi)
+python run.py --deploy-check
+
 # 1. code
 git pull
 # 2. keys (.env edit: nano .env)

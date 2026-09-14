@@ -388,6 +388,48 @@ assert sa.check_posts(clean_post) == [], "clean post lo findings undakoodadu"
 assert sa.strip_shortcodes("no shortcode here", ["adinsert"]) == "no shortcode here"
 print("   ✔ audit twice = same findings · clean input = zero findings")
 
+# ------------------------------------------------------------------ §15
+
+section(15, "Deployment pack (deploy/ + DEPLOY.md + --deploy-check)")
+arts = ["deploy/exam-portal.service", "deploy/studentup-bot.service",
+        "deploy/studentup-bot.timer", "deploy/Caddyfile", "deploy/nginx-exam.conf",
+        "deploy/backup.sh", "deploy/install-vps.sh", "deploy/Dockerfile",
+        "deploy/docker-compose.yml", "DEPLOY.md"]
+for a in arts:
+    path = ROOT / a
+    assert path.exists(), f"{a} ledu"
+    assert path.stat().st_size > 200, f"{a} chala chinnadi"
+unit = (ROOT / "deploy/exam-portal.service").read_text(encoding="utf-8")
+assert "ExecStart=" in unit and "--exam-portal" in unit and "Restart=always" in unit
+assert "--exam-host 127.0.0.1" in unit, "portal localhost lo bind avvali (proxy venaka)"
+assert "ReadWritePaths" in unit and "NoNewPrivileges" in unit, "hardening kavali"
+compose = (ROOT / "deploy/docker-compose.yml").read_text(encoding="utf-8")
+assert "healthcheck" in compose and "/healthz" in compose and "unless-stopped" in compose
+timer = (ROOT / "deploy/studentup-bot.timer").read_text(encoding="utf-8")
+assert "OnCalendar=hourly" in timer and "Persistent=true" in timer
+caddy = (ROOT / "deploy/Caddyfile").read_text(encoding="utf-8")
+assert "reverse_proxy 127.0.0.1:8080" in caddy and "Strict-Transport-Security" in caddy
+deploy_md = (ROOT / "DEPLOY.md").read_text(encoding="utf-8")
+for path_name in ("Path A", "Path B", "Path C", "Backups", "Security checklist"):
+    assert path_name in deploy_md, f"DEPLOY.md lo '{path_name}' ledu"
+# bash scripts syntax-valid a undali
+for sh in ("deploy/backup.sh", "deploy/install-vps.sh"):
+    p2 = subprocess.run(["bash", "-n", str(ROOT / sh)], capture_output=True, text=True)
+    assert p2.returncode == 0, f"{sh} syntax error: {p2.stderr[:200]}"
+# deploy-check module nijamga exam portal boot chesi /healthz hit chestundi
+from autoblog import deploy_check  # noqa: E402
+for chk in (deploy_check.check_python(), deploy_check.check_deps(),
+            deploy_check.check_files(), deploy_check.check_writable()):
+    assert chk["status"] == "ok", chk
+boot = deploy_check.check_exam_portal(0)
+assert boot["status"] == "ok", boot
+assert "healthz ok" in boot["detail"]
+help2 = subprocess.run([sys.executable, str(ROOT / "run.py"), "--help"],
+                       capture_output=True, text=True, timeout=120).stdout
+assert "--deploy-check" in help2 and "--deploy-port" in help2
+print("   ✔ 10 deploy artifacts + systemd hardening + bash syntax + real boot "
+      "(/healthz) + CLI")
+
 print("\n" + "=" * 62)
 print("  ALL v41 SITE AUDIT TESTS PASSED ✔")
 print("=" * 62)

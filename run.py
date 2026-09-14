@@ -29,6 +29,8 @@
                                            wrong category, PII, tags, timezone)
   python run.py --site-audit-fix           v41: audit + safe fixes (dry-run)
   python run.py --site-audit-fix --site-audit-apply   v41: fixes ni apply chey
+  python run.py --deploy-check            v41: deploy readiness (deps/env/disk/port +
+                                           exam portal boot + /healthz) — server SSH lo
   python run.py --test-all                v41: ANNI suites okate command tho
   python run.py --test-all --test-only v41  v41: okka suite matrame
   python run.py --notify-test test Telegram/WhatsApp notifications

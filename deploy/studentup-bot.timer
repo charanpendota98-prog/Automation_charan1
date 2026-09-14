@@ -1,0 +1,13 @@
+# Hourly automation (systemd timer — cron kanna better: logs + missed-run catch-up)
+# Install: sudo cp deploy/studentup-bot.{service,timer} /etc/systemd/system/
+#          sudo systemctl daemon-reload && sudo systemctl enable --now studentup-bot.timer
+[Unit]
+Description=Run StudentUp auto-blogger every hour
+
+[Timer]
+OnCalendar=hourly
+Persistent=true
+RandomizedDelaySec=300
+
+[Install]
+WantedBy=timers.target

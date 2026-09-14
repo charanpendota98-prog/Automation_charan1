@@ -1,0 +1,30 @@
+# Okka command deploy:  docker compose -f deploy/docker-compose.yml up -d
+# Logs: docker compose -f deploy/docker-compose.yml logs -f
+# Update: git pull && docker compose -f deploy/docker-compose.yml up -d --build
+services:
+  exam-portal:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    image: studentup-exam:latest
+    container_name: studentup-exam
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8080:8080"   # HTTPS reverse proxy (Caddy/nginx/Cloudflare tunnel) venaka
+    environment:
+      EXAM_PORTAL_ADMIN_KEY: "${EXAM_PORTAL_ADMIN_KEY:?EXAM_PORTAL_ADMIN_KEY pettandi (.env)}"
+      EXAM_PUBLIC_URL: "${EXAM_PUBLIC_URL:-}"
+      EXAM_TELEGRAM_BOT_TOKEN: "${EXAM_TELEGRAM_BOT_TOKEN:-}"
+      EXAM_TELEGRAM_CHAT_ID: "${EXAM_TELEGRAM_CHAT_ID:-}"
+      EXAM_WEBHOOK_URL: "${EXAM_WEBHOOK_URL:-}"
+      TZ: "Asia/Kolkata"
+    volumes:
+      - studentup-data:/data
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8080/healthz',timeout=4).status==200 else 1)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  studentup-data:

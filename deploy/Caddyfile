@@ -1,0 +1,30 @@
+# Caddy = automatic HTTPS (Let's Encrypt) — exam portal ki simplest + safest.
+# Install: sudo apt install caddy && sudo cp deploy/Caddyfile /etc/caddy/Caddyfile
+#          (domain ni mee domain ki marchandi) && sudo systemctl reload caddy
+# Student data privacy: HSTS + nosniff + no-referrer; portal only localhost lo untundi.
+
+exams.college.edu {
+	encode gzip zstd
+
+	reverse_proxy 127.0.0.1:8080 {
+		header_up X-Real-IP {remote_host}
+	}
+
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "no-referrer"
+		X-Frame-Options "SAMEORIGIN"
+		-Server
+	}
+
+	# static demo/preview pages (optional): ikki unte
+	# file_server /preview/* browse {
+	#	root /opt/studentup
+	# }
+
+	log {
+		output file /var/log/caddy/exam-portal.log
+		format json
+	}
+}
