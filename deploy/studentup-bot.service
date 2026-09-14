@@ -1,0 +1,21 @@
+# StudentUp auto-blogger — okka run (timer trigger chestundi). Manual: systemctl start studentup-bot
+[Unit]
+Description=StudentUp auto-blogger (hourly run)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=studentup
+Group=studentup
+WorkingDirectory=/opt/studentup
+EnvironmentFile=-/opt/studentup/.env
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/opt/studentup/.venv/bin/python run.py
+TimeoutStartSec=900
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ReadWritePaths=/opt/studentup
+StandardOutput=append:/var/log/studentup/bot.log
+StandardError=append:/var/log/studentup/bot.log

@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="te">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>v39 — College Exam Portal | studentup.in</title>
+<style>
+  :root{--navy:#0E2449;--ink:#16233A;--muted:#5A6A85;--line:#E2E8F2;--bg:#F6F8FC;
+        --orange:#F26A21;--green:#17855A;--red:#C0392B;--amber:#B26B00}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+       font:16px/1.65 ui-sans-serif,system-ui,"Segoe UI",Inter,"Noto Sans Telugu",sans-serif}
+  .wrap{max-width:1000px;margin:0 auto;padding:0 18px}
+  header{background:linear-gradient(135deg,#0E2449,#123A73 60%,#1C4E9B);color:#fff;
+         padding:34px 0 30px}
+  header h1{margin:0 0 6px;font-size:clamp(24px,4.4vw,36px)}
+  header p{margin:0;opacity:.92}
+  .pill{display:inline-block;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.25);
+        border-radius:999px;padding:4px 12px;font-size:12.5px;font-weight:700;margin:10px 8px 0 0}
+  h2{margin:30px 0 10px;font-size:21px}
+  .card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;
+        box-shadow:0 10px 26px rgba(14,36,73,.06);margin:14px 0}
+  table{width:100%;border-collapse:collapse;font-size:14.5px}
+  th,td{border-bottom:1px solid var(--line);padding:9px 8px;text-align:left;vertical-align:top}
+  th{background:#F3F6FB;font-size:13px;text-transform:uppercase;letter-spacing:.03em;color:var(--muted)}
+  code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13.5px}
+  pre{background:#0E2449;color:#DCE8FF;border-radius:12px;padding:14px;overflow:auto}
+  .grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+  .chip{display:inline-block;font-size:12px;font-weight:800;border-radius:999px;padding:3px 10px;
+        margin-right:6px}
+  .ok{background:#E7F6EE;color:var(--green)}
+  .warn{background:#FFF4E3;color:var(--amber)}
+  .note{background:#FFF8EC;border:1px solid #F3DFBB;border-radius:14px;padding:14px;color:#6B4E1A}
+  ul{margin:8px 0 0 18px;padding:0}
+  li{margin:5px 0}
+  a{color:#123A73}
+  footer{color:var(--muted);font-size:13.5px;padding:26px 0 44px}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>🎓 v39 — College Exam Portal</h1>
+    <p>Online exams: students <b>link + roll number</b> tho join · admin <b>okka click START / CLOSE</b> ·
+       time ayyaka <b>auto-close + auto-submit</b> · anni notifications channels.</p>
+    <span class="pill">stdlib + vanilla JS</span>
+    <span class="pill">zero-pip-install</span>
+    <span class="pill">29/29 test suites green</span>
+    <span class="pill">49/49 UI (jsdom) checks</span>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="card">
+    <h2 style="margin-top:0">Eee okka command tho start</h2>
+<pre># sample exam + students tho (try cheyyadaniki)
+python run.py --exam-portal-demo
+
+# production (kotha exams create cheyyandi)
+python run.py --exam-portal --exam-base-url https://exams.college.edu
+# boot lo admin key print avutundi  →  /admin lo login</pre>
+    <p style="margin:0;color:var(--muted)">College ki: exam create → questions paste (Word/Excel) → roster paste →
+      publish → student link share. Students ki: link open → roll number → join (password ledu).</p>
+  </div>
+
+  <h2>Zero-mistake flow — built-in protections</h2>
+  <div class="card">
+  <table>
+    <tr><th>Risk</th><th>Protection</th></tr>
+    <tr><td>Questions paste tappu</td><td>3 formats (blocks/CSV/JSON) + line-wise error report — silent skip ledu</td></tr>
+    <tr><td>Answer key miss / galat question</td><td>Validation blockers publish/START ni aapestayi; tarvata <b>Drop</b> chesthe marks auto-recalculate</td></tr>
+    <tr><td>Option shuffle valla tappu scoring</td><td><b>Text-anchored scoring</b> — student chusina option ni answer key ki map chestundi</td></tr>
+    <tr><td>Duplicate attempt (okate roll, rendu devices)</td><td>Okka roll = okka device; same token tho resume (answers eppudu poyipovu)</td></tr>
+    <tr><td>Admin time marchipoyadu</td><td>Sweeper (5s): auto-close + auto-submit + "closing soon" ping</td></tr>
+    <tr><td>Andaru join ayyaka start marchipoyadu</td><td><code>auto_start_all_joined</code> ON → roster full aithe automatic START</td></tr>
+    <tr><td>START/CLOSE rendu sarlu click</td><td>Idempotent — rendu sarlu chesina okkate result, okkate end time</td></tr>
+    <tr><td>Student page close / net cut</td><td>localStorage pending queue + 10s heartbeat + token resume</td></tr>
+    <tr><td>Late join unfair advantage</td><td>Late joiners ki kuda <b>same end time</b> (grace minutes unte dani varaku)</td></tr>
+    <tr><td>Mass copy / tab switch</td><td>Tab-switch count + audit log + live monitor</td></tr>
+  </table>
+  </div>
+
+  <h2>Channels &amp; admin controls</h2>
+  <div class="grid">
+    <div class="card">
+      <h3 style="margin:0 0 6px">Notifications (anni channels)</h3>
+      <ul>
+        <li>Telegram (bot token + chat id)</li>
+        <li>Webhook (Slack/Discord/custom)</li>
+        <li>In-app live banner (students screen)</li>
+        <li>Copy-paste templates: WhatsApp group, SMS, notice board, email, JSON</li>
+        <li>Channel fail aithe exam block avvadu — log lo record avutundi</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3 style="margin:0 0 6px">Admin console (/manage/&lt;CODE&gt;)</h3>
+      <ul>
+        <li>Live monitor: writing / submitted / offline, tab switches</li>
+        <li>🚀 START (andariki same timer) · 🔒 CLOSE (auto-submit)</li>
+        <li>⏱️ +5/+10 min extend · Late-join ON/OFF · 📢 announcement</li>
+        <li>Results: rank, pass/fail, topper, average, question-wise analysis</li>
+        <li>CSV exports: results · questions · analysis · audit log</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>Proof (ee session lo run chesindi)</h2>
+  <div class="card">
+    <p style="margin:0 0 8px">
+      <span class="chip ok">29/29 suites PASSED</span>
+      <span class="chip ok">v39: 14 sections</span>
+      <span class="chip ok">UI: 49/49 (real DOM)</span>
+      <span class="chip warn">ranking/AdSense guarantee ledu</span>
+    </p>
+    <ul>
+      <li><code>tests/v39_exam_portal_test.py</code> — parse → validate → START/CLOSE idempotency →
+        shuffle-safe scoring → sweeper → notifications → HTTP end-to-end → demo → UI JS guards</li>
+      <li><code>tools/ui_smoke.mjs</code> (optional, jsdom) — asalu pages ni DOM lo run chesi full flow
+        (admin login → create → questions → roster → publish → START → student join → answers →
+        submit → CLOSE → exports) verify chestundi; ee run lo <b>3 real JS bugs</b> pattukundi</li>
+      <li>Test evidence: option shuffle tho kuda 2 students 5/5 correct, 1 student −2.5 (anni tappu) —
+        correct ga compute ayyindi</li>
+    </ul>
+  </div>
+
+  <div class="note">
+    ⚠️ Honest notes: ranking/AdSense/RPM guarantee ledu (repo policy adhe). Exam data (roll numbers,
+    answers, scores) <b>mee server lo matrame</b> untundi. Public internet lo pettali ante HTTPS reverse
+    proxy (nginx/Caddy) vadandi; admin key evariki share cheyyakandi — per-exam manage link share cheyandi.
+    Results/deadlines/keys ni staff verify chesi publish cheyandi.
+  </div>
+
+  <footer>
+    studentup.in automation repo — v39 College Exam Portal ·
+    <code>exam_portal/</code> (store · engine · notify · ui · server · demo) ·
+    README lo “🎓 v39” section chudandi.
+  </footer>
+</div>
+</body>
+</html>

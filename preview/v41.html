@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="te">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>v41 — Site Audit + Safe Autofix | studentup.in</title>
+<style>
+  :root{--navy:#0E2449;--ink:#16233A;--muted:#5A6A85;--line:#E2E8F2;--bg:#F6F8FC;
+        --orange:#F26A21;--green:#17855A;--red:#C0392B;--amber:#B26B00}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+       font:16px/1.65 ui-sans-serif,system-ui,"Segoe UI",Inter,"Noto Sans Telugu",sans-serif}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 18px}
+  header{background:linear-gradient(135deg,#0E2449,#123A73 60%,#1C4E9B);color:#fff;padding:34px 0 30px}
+  header h1{margin:0 0 6px;font-size:clamp(24px,4.4vw,36px)}
+  header p{margin:0;opacity:.92}
+  .pill{display:inline-block;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.25);
+        border-radius:999px;padding:4px 12px;font-size:12.5px;font-weight:700;margin:10px 8px 0 0}
+  h2{margin:30px 0 10px;font-size:21px}
+  .card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;
+        box-shadow:0 10px 26px rgba(14,36,73,.06);margin:14px 0}
+  table{width:100%;border-collapse:collapse;font-size:14.5px}
+  th,td{border-bottom:1px solid var(--line);padding:9px 8px;text-align:left;vertical-align:top}
+  th{background:#F3F6FB;font-size:12.5px;text-transform:uppercase;letter-spacing:.03em;color:var(--muted)}
+  code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13.5px}
+  pre{background:#0E2449;color:#DCE8FF;border-radius:12px;padding:14px;overflow:auto}
+  .grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+  .stat{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px;text-align:center}
+  .stat b{display:block;font-size:27px;line-height:1.2}
+  .chip{display:inline-block;font-size:12px;font-weight:800;border-radius:999px;padding:3px 10px;margin-right:6px}
+  .sev{white-space:nowrap;font-size:13px}
+  .ev{color:var(--muted);font-size:12.5px;margin-top:3px}
+  .chip-ok{background:#E7F6EE;color:var(--green);font-size:12px;font-weight:800;border-radius:999px;padding:2px 9px}
+  .chip-man{background:#FFF4E3;color:var(--amber);font-size:12px;font-weight:800;border-radius:999px;padding:2px 9px}
+  .ok{background:#E7F6EE;color:var(--green)}
+  .warn{background:#FFF4E3;color:var(--amber)}
+  .note{background:#FFF8EC;border:1px solid #F3DFBB;border-radius:14px;padding:14px;color:#6B4E1A}
+  .danger{background:#FDECEA;border:1px solid #F5C6C1;border-radius:14px;padding:14px;color:#8C2A20}
+  ul{margin:8px 0 0 18px;padding:0} li{margin:5px 0}
+  footer{color:var(--muted);font-size:13.5px;padding:26px 0 44px}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <h1>🧹 v41 — Site Audit + Safe Autofix</h1>
+  <p>studentup.in lanti site ni deep ga scan chesi (20+ check classes), safe fixes ni
+     dry-run default tho plan chesi, malli raakunda publish gate pettutundi.</p>
+  <span class="pill">read-only audit</span>
+  <span class="pill">dry-run default</span>
+  <span class="pill">draft/trash matrame</span>
+  <span class="pill">offline snapshot mode</span>
+  <span class="pill">CI 30 suites</span>
+</div></header>
+
+<div class="wrap">
+  <h2>Audit result (offline demo snapshot — live site fixture)</h2>
+  <div class="grid">
+    <div class="stat"><b>31</b>findings</div>
+    <div class="stat"><b style="color:#C0392B">12</b>high</div>
+    <div class="stat"><b style="color:#B26B00">11</b>medium</div>
+    <div class="stat"><b style="color:#B26B00">8</b>low</div>
+    <div class="stat"><b style="color:#17855A">20</b>auto-fixable</div>
+    <div class="stat"><b>5/6/9</b>posts / pages / tags</div>
+  </div>
+  <div class="card">
+    <table>
+      <tr><th>Severity</th><th>Finding (evidence)</th><th>Where</th><th>Fix</th></tr>
+      <tr><td class="sev">🔴 high</td><td><b>Theme/demo page live+sitemap lo: &#x27;Button &amp; Separator&#x27;</b><div class="ev">slug=3029-2 link=https://studentup.in/3029-2/</div></td><td><code>page#3029</code></td><td><span class=chip-ok>trash_page</span></td></tr>
+<tr><td class="sev">🔴 high</td><td><b>Theme/demo page live+sitemap lo: &#x27;Image &amp; Gallery Block&#x27;</b><div class="ev">slug=image-gallery-block link=https://studentup.in/image-gallery-block/</div></td><td><code>page#3028</code></td><td><span class=chip-ok>trash_page</span></td></tr>
+<tr><td class="sev">🔴 high</td><td><b>Heading tags broken (closing 3 &gt; opening 2) — sanitizer lo opening tags poyayi</b><div class="ev">slug=telangana-police-2026</div></td><td><code>post#3443</code></td><td><span class=chip-ok>draft_post</span></td></tr>
+<tr><td class="sev">🔴 high</td><td><b>Post ki title ledu</b><div class="ev">id=3452 slug=3452-2</div></td><td><code>post#3452</code></td><td><span class=chip-ok>draft_post</span></td></tr>
+<tr><td class="sev">🔴 high</td><td><b>Content lo raw HTML dump (theme/bot fragments)</b><div class="ev">hits=[&#x27;&lt;title&gt;&#x27;, &#x27;&lt;header&gt;&#x27;, &#x27;&lt;footer&gt;&#x27;, &#x27;100/100 seo&#x27;] slug=3452-2</div></td><td><code>post#3452</code></td><td><span class=chip-ok>draft_post</span></td></tr>
+<tr><td class="sev">🔴 high</td><td><b>Content lo raw HTML dump (theme/bot fragments)</b><div class="ev">hits=[&#x27;&lt;/figure&gt;&#x27;] slug=telangana-police-2026</div></td><td><code>post#3443</code></td><td><span class=chip-ok>draft_post</span></td></tr>
+<tr><td class="sev">🔴 high</td><td><b>Content lo personal phone number</b><div class="ev">slug=telangana-police-2026 numbers=89XXXXXX45</div></td><td><code>post#3443</code></td><td><span class=chip-ok>strip_pii</span></td></tr>
+<tr><td class="sev">🔴 high</td><td><b>Post &#x27;Uncategorized&#x27; lo undi</b><div class="ev">slug=3452-2 title=</div></td><td><code>post#3452</code></td><td><span class=chip-man>manual</span></td></tr>
+<tr><td class="sev">🔴 high</td><td><b>Post &#x27;Uncategorized&#x27; lo undi</b><div class="ev">slug=jobe-bellingham-education title=Jobe Bellingham inspiration: online education</div></td><td><code>post#3469</code></td><td><span class=chip-ok>set_categories</span></td></tr>
+<tr><td class="sev">🔴 high</td><td><b>Post &#x27;Uncategorized&#x27; lo undi</b><div class="ev">slug=nic-sta-recruitment-2026 title=NIC STA Recruitment 2026</div></td><td><code>post#3454</code></td><td><span class=chip-man>manual</span></td></tr>
+<tr><td class="sev">🔴 high</td><td><b>Body lo raw shortcode: adinsert</b><div class="ev">slug=optum-software-engineer-jobs-2026-freshers</div></td><td><code>post#3476</code></td><td><span class=chip-ok>strip_shortcode</span></td></tr>
+<tr><td class="sev">🔴 high</td><td><b>Private employer (&#x27;optum&#x27;) ni &#x27;Central Govt Jobs&#x27; category lo pettaru</b><div class="ev">slug=optum-software-engineer-jobs-2026-freshers categories=[&#x27;Central Govt Jobs&#x27;]</div></td><td><code>post#3476</code></td><td><span class=chip-ok>set_categories</span></td></tr>
+<tr><td class="sev">🟠 medium</td><td><b>Duplicate contact page (contact)</b><div class="ev">link=https://studentup.in/contact/</div></td><td><code>page#3162</code></td><td><span class=chip-ok>draft_page</span></td></tr>
+<tr><td class="sev">🟠 medium</td><td><b>URL privacy-policy kaani content/title &#x27;About us&#x27;</b><div class="ev">slug=privacy-policy title=About us</div></td><td><code>page#3</code></td><td><span class=chip-ok>update_slug</span></td></tr>
+<tr><td class="sev">🟠 medium</td><td><b>TOC lo same anchor multiple sections ki (click tappu place ki veltundi)</b><div class="ev">dupes=[&#x27;amp&#x27;]</div></td><td><code>post#3443</code></td><td><span class=chip-ok>dedupe_anchors</span></td></tr>
+<tr><td class="sev">🟠 medium</td><td><b>Featured image ledu</b><div class="ev">slug=3452-2</div></td><td><code>post#3452</code></td><td><span class=chip-man>manual</span></td></tr>
+<tr><td class="sev">🟠 medium</td><td><b>Featured image ledu</b><div class="ev">slug=jobe-bellingham-education</div></td><td><code>post#3469</code></td><td><span class=chip-man>manual</span></td></tr>
+<tr><td class="sev">🟠 medium</td><td><b>Featured image ledu</b><div class="ev">slug=nic-sta-recruitment-2026</div></td><td><code>post#3454</code></td><td><span class=chip-man>manual</span></td></tr>
+<tr><td class="sev">🟠 medium</td><td><b>Education site lo off-topic entity: &#x27;bellingham&#x27;</b><div class="ev">slug=jobe-bellingham-education title=Jobe Bellingham inspiration: online education</div></td><td><code>post#3469</code></td><td><span class=chip-man>manual</span></td></tr>
+<tr><td class="sev">🟠 medium</td><td><b>Walk-in job ni &#x27;Internships&#x27; category lo pettaru</b><div class="ev">slug=telangana-police-2026 categories=[&#x27;Internships&#x27;]</div></td><td><code>post#3443</code></td><td><span class=chip-ok>set_categories</span></td></tr>
+<tr><td class="sev">🟠 medium</td><td><b>Duplicate tags: &#x27;Fresher&#x27;, &#x27;Freshers Jobs&#x27;</b><div class="ev">total posts=20 → okate tag ki merge cheyandi (key=&#x27;fresher&#x27;)</div></td><td><code>tag#0</code></td><td><span class=chip-ok>merge_tags</span></td></tr>
+<tr><td class="sev">🟠 medium</td><td><b>Duplicate tags: &#x27;Part Time&#x27;, &#x27;Part-time Jobs&#x27;</b><div class="ev">total posts=10 → okate tag ki merge cheyandi (key=&#x27;parttime&#x27;)</div></td><td><code>tag#0</code></td><td><span class=chip-ok>merge_tags</span></td></tr>
+<tr><td class="sev">🟠 medium</td><td><b>5 tags ki e post ledu (tag bloat)</b><div class="ev">examples: &#x27;TS Police SI Constable Preparati&#x27;, &#x27;Testbook&#x27;, &#x27;Unacademy&#x27;, &#x27;Adda247&#x27;, &#x27;StudentUp Telugu&#x27;</div></td><td><code>tag#0</code></td><td><span class=chip-ok>purge_zero_tags</span></td></tr>
+<tr><td class="sev">🟡 low</td><td><b>2 categories ki posts levu (kaani sitemap lo unnayi)</b><div class="ev">examples: &#x27;Degree Admissions&#x27;, &#x27;Polytechnic&#x27;</div></td><td><code>category#0</code></td><td><span class=chip-man>manual</span></td></tr>
+<tr><td class="sev">🟡 low</td><td><b>Legal page slug &#x27;-&quot; suffix tho undi (privacy-policy-2)</b><div class="ev">slug=privacy-policy-2</div></td><td><code>page#20</code></td><td><span class=chip-ok>update_slug</span></td></tr>
+<tr><td class="sev">🟡 low</td><td><b>Image URL double-extension (.jpg.webp)</b><div class="ev">optum-jobs.jpg.webp</div></td><td><code>post#3476</code></td><td><span class=chip-man>manual</span></td></tr>
+<tr><td class="sev">🟡 low</td><td><b>Image URL double-extension (.jpg.webp)</b><div class="ev">ts-police-768x432.jpg.webp</div></td><td><code>post#3443</code></td><td><span class=chip-man>manual</span></td></tr>
+<tr><td class="sev">🟡 low</td><td><b>Post lo unna anni dates puranavi (session over/stale info)</b><div class="ev">slug=telangana-police-2026 newest date August 07, 2026 (38 days old) | August 7, 2026</div></td><td><code>post#3443</code></td><td><span class=chip-man>manual</span></td></tr>
+<tr><td class="sev">🟡 low</td><td><b>Rank Math Local SEO active (locations.kml live) kaani business location ledu</b><div class="ev">https://studentup.in/locations.kml → 200</div></td><td><code>site#0</code></td><td><span class=chip-man>manual</span></td></tr>
+<tr><td class="sev">🟡 low</td><td><b>WordPress timezone UTC lo undi (Indian audience ki tappu timestamps)</b><div class="ev">gmt_offset=0 timezone_string=&#x27;&#x27;</div></td><td><code>site#0</code></td><td><span class=chip-ok>set_timezone</span></td></tr>
+<tr><td class="sev">🟡 low</td><td><b>Tag name mid-word lo cut ayyindi: &#x27;TS Police SI Constable Preparati&#x27;</b><div class="ev">id=279 last-word=&#x27;Preparati&#x27;</div></td><td><code>tag#279</code></td><td><span class=chip-ok>rename_tag</span></td></tr>
+    </table>
+  </div>
+
+  <h2>Safety rules — mistakes lekunda</h2>
+  <div class="card">
+    <ul>
+      <li>Default <b>dry-run</b> — <code>--site-audit-apply</code> ivvakapote okka write kuda jaragadu.</li>
+      <li>Destructive ops (<code>draft</code>/<code>trash</code>) ki <b><code>--site-audit-trash</code></b> explicit permission.</li>
+      <li>Junk content <b>delete avvadu</b> — draft/trash matrame (WordPress revisions tho reversible).</li>
+      <li>Duplicate tags <b>lossless merge</b> — posts ni keep-tag ki reassign chesaka ne drop tag delete.</li>
+      <li>PII report lo kuda <b>masked</b> (<code>89XXXXX45</code>) — privacy.</li>
+      <li>Prathi fix <code>output/audit/site-fix-&lt;stamp&gt;.json</code> lo audit log + MD/JSON report.</li>
+    </ul>
+  </div>
+
+  <h2>Root-cause gate — malli raakunda</h2>
+  <div class="card">
+    <p><code>DEFAULT_POST_STATUS=publish</code> unte, live publish ki mundu:</p>
+    <p><span class="chip ok">v35 reviewer/QA/originality</span>
+       <span class="chip ok">v38 top-post score ≥78</span>
+       <span class="chip warn">v41 site gate</span></p>
+    <p>v41 gate block chestundi: title/excerpt khali · featured image ledu · junk HTML ·
+       registered-kaani shortcode · duplicate TOC anchor · <code>U+2011</code>/"today" template ·
+       stale date · PII phone · Govt category lo private company · off-topic entity.
+       Drafts eppudu allow (human review ki).</p>
+  </div>
+
+  <h2>Commands</h2>
+  <div class="card">
+<pre>python run.py --site-audit                              # read-only audit + report
+python run.py --site-audit-fix                          # fixes plan (DRY-RUN)
+python run.py --site-audit-fix --site-audit-apply       # apply (safe set)
+python run.py --site-audit-fix --site-audit-apply --site-audit-trash
+python run.py --site-audit-fix --site-audit-apply --site-audit-action strip_pii,strip_shortcode
+python run.py --site-audit --site-audit-snapshot demo   # offline (network ledu)
+python run.py --site-audit --site-audit-save output/audit/site-audit-snapshot.json
+python tests/v41_site_audit_test.py                     # 14 sections</pre>
+  </div>
+
+  <h2>Reality check</h2>
+  <div class="note">
+    Audit engine nijamga pani chestundi (demo fixture tho proof ikkada), kaani
+    <b>fixes mee WordPress credentials tho</b> (<code>WP_USERNAME</code>/<code>WP_APP_PASSWORD</code>)
+    run avutayi — audit matrame credentials lekunda kuda pani chestundi.
+    Repo sandbox lo studentup.in direct access block avutundi (proxy allowlist),
+    so live audit ni <b>mee server/machine nunchi</b> run cheyandi leda
+    snapshot mode vadandi. Ranking/AdSense guarantees ledu — ade repo policy.
+  </div>
+  <div class="danger">
+    <b>Eppudu cheyyakoodadu:</b> fake traffic / click loops / view inflation /
+    GAM rules lekunda ad refresh — AdSense invalid-traffic policy violation (ban).
+    v41 kuda ee tappulu pattukuntundi (unauthorized ad shortcode, junk bot text).
+  </div>
+</div>
+<footer><div class="wrap">Generated by <code>autoblog/site_audit.py</code> · demo snapshot —
+live audit: <code>python run.py --site-audit</code> · 2026-09-14T17:08:36+00:00</div></footer>
+</body></html>
