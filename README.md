@@ -468,6 +468,72 @@ FAQ, density rule) — kaani **facts official source nunchi matrame**; teliyani
 > Blueprint + score manaki on-page discipline istundi; Google ni evaru
 > "order" cheyyaleru.
 
+## 🎓 v39 — College Exam Portal (online exams, zero-mistake flow)
+
+College ki **okka command tho** online exam system: students link + **roll number**
+matrame tho join avutaru (password ledu), admin **okka click tho START / CLOSE**
+chestadu — andaru join ayyaka start, time ayyaka automatic close + auto-submit.
+Kotha module: `exam_portal/` (Python stdlib + vanilla JS — no framework, no pip
+installs, oka VM lo ne run avutundi).
+
+**1. Start (college admin)**
+
+```bash
+python run.py --exam-portal-demo        # sample exam + students tho start (try cheyyadaniki)
+python run.py --exam-portal             # empty portal — kotha exams create cheyyandi
+python run.py --exam-portal --exam-port 9000 --exam-base-url https://exams.college.edu
+python run.py --exam-portal-test-channels   # Telegram/webhook test ping
+```
+
+Boot lo admin key print avutundi (leda `EXAM_PORTAL_ADMIN_KEY` env). Console:
+`/admin` (exam create → questions paste → roster → publish → START/CLOSE),
+students ki share link: `/exam/<CODE>`.
+
+**2. Zero-mistake flow — built-in protections (mistakes lekunda)**
+
+| Risk | Protection |
+|---|---|
+| Questions tappu ga paste | `parse_questions` — 3 formats (blocks / CSV / JSON), prathi error line-wise report (silent skip ledu) |
+| Answer key miss / question galat | Validation blockers: options <2, duplicate options, answer set kaledu, pass marks > total, negative ≥ marks, duration 0 |
+| Live lo paper marchadam | Live/closed exam lo questions add/delete **block** (audit freeze) |
+| Tappu question valla unfair marks | Admin **Drop** → aa question andariki count avvadu, scores automatic recalculate |
+| Option shuffle valla tappu scoring | Scoring **text-anchored** — student chusina position ni original answer key ki map chestundi (v39 test 7b) |
+| Duplicate attempt (okate roll, rendu devices) | Okka roll = okka device; same token tho resume allowed (answers eppudu poyipovu) |
+| Time over — admin marchipoyadu | Background sweeper (5s): auto-close + auto-submit + "closing soon" ping |
+| Andaru join ayyaka start marchipoyadu | `auto_start_all_joined` ON unte roster full → automatic START |
+| START/CLOSE rendu sarlu click | Idempotent — rendu sarlu chesina okkate result, okkate end time |
+| Student page accidental close / net cut | localStorage pending-answer queue + 10s heartbeat + token resume |
+| Late join unfair advantage | Late joiners ki kuda **same end time** (grace minutes unte dani varaku matrame) |
+| Mass copy / tab switch | Tab-switch count + audit log + live monitor (integrity signals) |
+
+**3. Notifications — anni channels**
+
+Telegram (`EXAM_TELEGRAM_BOT_TOKEN` + `EXAM_TELEGRAM_CHAT_ID`, leda repo
+`TELEGRAM_*` fallback), webhook (`EXAM_WEBHOOK_URL`), in-app banner (students
+screen lo live announcement), plus **copy-paste templates** (WhatsApp group,
+SMS, notice board, email, JSON) — `/manage/<CODE>` → Share & Notify tab.
+Channel fail aithe exam **eppudu block avvadu** (log lo record avutundi).
+
+**4. Results, analysis, exports**
+
+Immediate result + per-question review (option text tho), rank, pass/fail,
+topper, average, question-wise analysis (which question everyone missed),
+CSV exports: results / questions / analysis / audit log.
+
+**5. Tests**
+
+```bash
+python tests/v39_exam_portal_test.py    # 14 sections: parse → validate → START/CLOSE →
+                                        # scoring (shuffle-safe) → sweeper → notify →
+                                        # HTTP end-to-end → demo → UI JS guards
+node tools/ui_smoke.mjs                 # optional: real DOM (jsdom) full-flow smoke
+```
+
+> ℹ️ Ee system exam conduct cheyyadaniki matrame — student data (roll, answers,
+> scores) mee server lo untundi, bayata pampabadadu. Public internet lo pettali
+> ante HTTPS reverse proxy (nginx/Caddy) vadandi; admin key ni evariki share
+> cheyyakandi (per-exam manage link share cheyandi).
+
 ## Setup Guide (Telugu)
 
 ### Step 1: Gemini API key (FREE) teyali
@@ -871,6 +937,15 @@ python run.py --top-post "NSP Scholarship last date" --publish-top-post
 ```
 
 ```bash
+# v39 COLLEGE EXAM PORTAL (students + admin console)
+python run.py --exam-portal-demo            # sample exam tho start (try cheyyandi)
+python run.py --exam-portal                 # production portal (admin key print avutundi)
+python run.py --exam-portal --exam-port 9000 --exam-base-url https://exams.college.edu
+python run.py --exam-portal-test-channels   # Telegram/webhook notification test
+python tests/v39_exam_portal_test.py        # 14-section suite
+```
+
+```bash
 .venv/bin/python run.py --status    # inka entha posts ayyayi, plan emito
 .venv/bin/python run.py --force     # ippude oka post publish cheyali ante
 .venv/bin/python run.py --url "https://site.com/article"   # URL -> original rewrite post
@@ -985,5 +1060,14 @@ Marpali te: `.env` edit chesi scheduler ni restart cheyandi: `sudo systemctl res
 │   ├── google_audit.py     # v33 public HTML + PageSpeed checks
 │   └── top_post.py         # v38 top-post engine: 10k keywords, blueprint,
 │                           #      scorer, harden, gate, dominance calendar
+├── exam_portal/            # v39 college exam portal (stdlib only)
+│   ├── store.py            #      SQLite: exams/questions/roster/sessions/answers
+│   ├── engine.py           #      validate, START/CLOSE, scoring, sweeper, exports
+│   ├── notify.py           #      Telegram/webhook/in-app + copy-paste templates
+│   ├── ui.py               #      landing + admin console + manage + student app
+│   ├── server.py           #      HTTP server + CLI (no framework)
+│   └── demo.py             #      sample exam seed (--exam-portal-demo)
+├── tools/
+│   └── ui_smoke.mjs        # v39 optional jsdom full-flow UI smoke test
 └── tests/                  # end-to-end tests (fake WP/Telegram/source servers)
 ```

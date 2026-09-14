@@ -964,6 +964,29 @@ def score_post_run(path: str, keyword: str = "") -> int:
     return top_post.run_score_file(path, keyword)
 
 
+# ------------------------------------------------------------- v39 exam portal
+
+def exam_portal_run(host: str = "0.0.0.0", port: int = 8080, db: str = "",
+                    admin_key: str = "", demo: bool = False,
+                    test_channels: bool = False, base_url: str = "") -> int:
+    """v39: College exam portal — admin console + student exam app."""
+    from exam_portal import server as portal_server
+    from exam_portal.store import DEFAULT_DB
+
+    db_path = db or str(DEFAULT_DB)
+    if test_channels:
+        import json as _json
+
+        print(_json.dumps(portal_server.notify.test_channels(), indent=2,
+                          ensure_ascii=False))
+        return 0
+    if demo:
+        from exam_portal import demo as portal_demo
+
+        portal_demo.run_demo(db_path)
+    return portal_server.run_server(host, port, db_path, admin_key, base_url)
+
+
 def service_center_setup(dry: bool = True, force: bool = False) -> int:
     """Publish/preview the Student Internet Center service landing page."""
     from . import service_center
@@ -1188,6 +1211,25 @@ def main() -> int:
                              "(30+ checks + fixes)")
     parser.add_argument("--score-keyword", default="", metavar="KEYWORD",
                         help="v38: keyword for --score-post")
+    parser.add_argument("--exam-portal", action="store_true",
+                        help="v39: college EXAM PORTAL start (admin console + "
+                             "student exam app + auto start/close)")
+    parser.add_argument("--exam-portal-demo", action="store_true",
+                        help="v39: sample exam seed chesi portal start "
+                             "(college ki ippude chudataniki)")
+    parser.add_argument("--exam-portal-test-channels", action="store_true",
+                        help="v39: Telegram/webhook notification test ping")
+    parser.add_argument("--exam-host", default="0.0.0.0",
+                        help="v39: portal bind host (default 0.0.0.0)")
+    parser.add_argument("--exam-port", type=int, default=8080,
+                        help="v39: portal port (default 8080)")
+    parser.add_argument("--exam-db", default="",
+                        help="v39: SQLite path (default exam_portal.db)")
+    parser.add_argument("--exam-admin-key", default="",
+                        help="v39: admin key (default: env/file/auto-generate)")
+    parser.add_argument("--exam-base-url", default="",
+                        help="v39: public URL for share links/notifications "
+                             "(ex: https://exams.college.edu)")
     parser.add_argument("--trends", action="store_true",
                         help="Google Trends India education trends chupinchindi")
     parser.add_argument("--radar", action="store_true",
@@ -1268,6 +1310,13 @@ def main() -> int:
         return keyword_universe_view()
     if args.score_post:
         return score_post_run(args.score_post, args.score_keyword)
+    if args.exam_portal or args.exam_portal_demo or args.exam_portal_test_channels:
+        return exam_portal_run(
+            host=args.exam_host, port=args.exam_port, db=args.exam_db,
+            admin_key=args.exam_admin_key,
+            demo=args.exam_portal_demo,
+            test_channels=args.exam_portal_test_channels,
+            base_url=args.exam_base_url)
     if args.trends:
         return trends_check()
     if args.sources:

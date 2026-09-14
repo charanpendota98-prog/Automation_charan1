@@ -18,3 +18,9 @@ adsense_kit.json
 service_center.db
 service_center.db-journal
 service_center.json
+
+# v39 exam portal (runtime data + auto-generated admin key)
+exam_portal.db
+exam_portal.db-wal
+exam_portal.db-shm
+exam_portal_admin_key.txt

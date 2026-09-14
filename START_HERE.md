@@ -1,4 +1,4 @@
-# 🚀 START HERE — studentup.in Founder Manual (v38)
+# 🚀 START HERE — studentup.in Founder Manual (v39)
 ### "Nenu em cheyali?" — ee file matrame chalu. Settings anni bot automatic ga set chesthundi.
 
 ---
@@ -98,6 +98,44 @@ sudo systemctl restart autoblog.timer
 
 ---
 
+## 🎓 v39 COLLEGE EXAM PORTAL — "college ki exams easy ga, students easy ga join" (new)
+
+| Em | Command |
+|---|---|
+| Sample exam + students tho portal start (try cheyyadaniki) | `run.py --exam-portal-demo` |
+| Empty portal (kotha exams create cheyyandi) | `run.py --exam-portal` |
+| Port / public URL tho | `run.py --exam-portal --exam-port 9000 --exam-base-url https://exams.college.edu` |
+| Telegram/webhook notification test | `run.py --exam-portal-test-channels` |
+| Test suite (14 sections) | `python tests/v39_exam_portal_test.py` |
+
+**College ki 5 nimishalu setup:**
+1. `run.py --exam-portal` → boot lo **admin key** print avutundi (adhi save cheyandi).
+2. Browser lo `/admin` → key tho login → **+ New exam** (title, duration, marks,
+   negative marks, pass marks, roster ON/OFF …).
+3. **Questions tab** → Word/Excel nunchi paste (blocks / CSV / JSON — prathi
+   tappu line-wise report avutundi, silent ga skip avvadu) → Publish.
+4. **Student list tab** → roll numbers paste (oka line ki okka roll).
+5. **Share tab** → student link + WhatsApp/notice template copy → students ki pampandi.
+
+**Exam day (okka click):**
+- Students link open chesi **roll number** tho join avutaru (password ledu;
+  okka roll = okka device; same device lo resume ayithe answers safe).
+- Andaru join ayyaka admin **🚀 START NOW** → andariki same timer + paper lock.
+- Admin **🔒 CLOSE NOW** → pending students auto-submit + results compute
+  (idempotent — rendu sarlu chesina okkate). Time ayyaka **automatic close**
+  kuda untundi (admin marchipoyina kuda).
+- Live monitor: evaru writing/submitted/offline, tab-switch count, announcement
+  banner (students screen lo live), `+5 min` extend, late-join ON/OFF.
+- Results tab: rank, pass/fail, topper, average, question-wise analysis
+  (ekkada andaru tappu chesaro), CSV exports (results/questions/analysis/audit).
+
+⚠️ Honest note: ranking/AdSense/RPM guarantee ledu (ade repo policy) — exam lo
+kuda ilage: results, deadlines, keys anni **meeru verify chesi** publish cheyandi.
+Public internet lo pettali ante HTTPS reverse proxy vadandi, admin key share
+cheyyakandi (per-exam manage link share cheyandi).
+
+---
+
 ## 💰 Money — honest plan (expectations realistic ga)
 
 | Phase | Timeline | Expected | Chese padaluku |
@@ -127,4 +165,4 @@ sudo systemctl restart autoblog.timer
 - Edaina doubt → `run.py --doctor` + `run.py --setup --dry-run` — rendu milipi **meeru cheppalsinanni English/Telugu lo checkisthayi**
 - Code problem vasthe Arena lo cheppandi — fix chestha 🔧
 
-*Last updated: v38 (Top Post Dominance Engine — 10,682 keywords, blueprint, top-post score, harden + publish gate). Ee file repo lo unnadi — server lo kuda adhe path.*
+*Last updated: v39 (College Exam Portal — admin START/CLOSE, roll-number join, auto-close/auto-submit, multi-channel notifications + 14-section test suite). Ee file repo lo unnadi — server lo kuda adhe path.*
