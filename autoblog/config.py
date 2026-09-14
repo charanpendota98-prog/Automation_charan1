@@ -248,6 +248,19 @@ SERVICE_RETENTION_DAYS = int(_get("SERVICE_RETENTION_DAYS", "30"))
 PAGESPEED_API_KEY = _get("PAGESPEED_API_KEY", "").strip()
 GOOGLE_AUDIT_TIMEOUT = int(_get("GOOGLE_AUDIT_TIMEOUT", "90"))
 
+# --- v38: Top Post Dominance Engine ---------------------------------------
+# Blueprint → write → score → harden → gate. "Top post" = measured, not claimed.
+TOP_POST_ENGINE = _get("TOP_POST_ENGINE", "1") not in ("0", "false", "no")
+# Live publish ki minimum Top Post Score (drafts eppudu allow).
+TOP_POST_MIN_SCORE = int(_get("TOP_POST_MIN_SCORE", "78"))
+# Direct live publish lo score < target unte block (draft-first lo enforce kaadu).
+TOP_POST_STRICT = _get("TOP_POST_STRICT", "1") not in ("0", "false", "no")
+# Word target (score check) + over-optimization ceiling for keyword density.
+TOP_POST_WORDS_TARGET = int(_get("TOP_POST_WORDS_TARGET", "1500"))
+TOP_POST_MAX_DENSITY = float(_get("TOP_POST_MAX_DENSITY", "0.03"))
+# Dominance calendar default length (days) — `--top-post-plan`
+TOP_POST_PLAN_DAYS = int(_get("TOP_POST_PLAN_DAYS", "90"))
+
 # --- v26: Daily Quiz Engine (exam-style interactive quizzes) --------------
 # Roju okka quiz post automatic ga publish avutundi (QUIZ_HOUR tarvata).
 QUIZ_ENABLED = _get("QUIZ_ENABLED", "1") not in ("0", "false", "no")

@@ -16,6 +16,11 @@
   python run.py --service-center    v31: publish Student Internet Center page
   python run.py --content-audit      v32: audit existing posts before refresh
   python run.py --google-audit URL    v33: public HTML + PageSpeed audit
+  python run.py --top-post "SSC CGL 2026 apply online"   v38: TOP POST blueprint
+  python run.py --top-post "TSPSC Group 2 2026 notification" --publish-top-post
+  python run.py --top-post-plan --top-post-days 90      v38: domination calendar
+  python run.py --keyword-universe                      v38: ANNI keywords (10k+)
+  python run.py --score-post file.html --score-keyword "ssc cgl 2026"
   python run.py --notify-test test Telegram/WhatsApp notifications
   python run.py --url LINK    source URL -> 100% original SEO rewrite post
 

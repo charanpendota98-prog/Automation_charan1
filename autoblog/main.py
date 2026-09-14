@@ -611,6 +611,17 @@ def doctor() -> int:
           f"{'ON' if config.DISCOVER_META_ENABLED else 'OFF'} | ads "
           f"{config.MAX_AD_SLOTS} slots"
           + (" (shortcode set)" if config.AD_SHORTCODE else " (NO shortcode!)"))
+    # v38: top-post engine summary (offline — no network calls)
+    try:
+        from . import top_post as _tp
+        _st = _tp.universe_stats()
+        print(f"  Top Post Engine {'ON' if config.TOP_POST_ENGINE else 'OFF'} | "
+              f"gate {config.TOP_POST_MIN_SCORE}/100 "
+              f"({'strict' if config.TOP_POST_STRICT else 'off'}) | "
+              f"{_st['total']} keywords ({_st['entities']} entities × "
+              f"{_st['intents']} intents) | {_st['clusters']} clusters")
+    except Exception as exc:  # noqa: BLE001
+        print(f"  Top Post Engine: ❌ {str(exc)[:60]}")
     print("=" * 62)
     if ok:
         print("  ALL SYSTEMS GO 🚀  — bot ready, start: systemctl --user start autoblog")
@@ -910,6 +921,49 @@ def research_brief_run(seed: str, url_file: str = "", limit: int = 6,
         target_year=target_year or None)
 
 
+# --------------------------------------------------------------- v38 top post
+
+def top_post_run(keyword: str, category: str = "", publish: bool = False,
+                 mock: bool = False, dry_run: bool = False) -> int:
+    """v38: blueprint (plan) → optional article → draft/publish."""
+    from . import top_post
+
+    state.init(config.STATE_PATH)
+    if publish:
+        log.info("Top-post publish flow: keyword=%r mock=%s dry_run=%s",
+                 keyword, mock, dry_run)
+        try:
+            result = top_post.create_top_post(keyword, mock=mock, dry_run=dry_run,
+                                              category=category)
+        except Exception as exc:  # noqa: BLE001
+            log.error("Top-post create failed: %s", exc)
+            top_post.run_blueprint(keyword, category=category)
+            return 4
+        print(f"🏆 TOP POST {'(dry-run) ' if dry_run else ''}created: "
+              f"{result.get('link', '')} [{result.get('status')}]")
+        return 0
+    return top_post.run_blueprint(keyword, category=category)
+
+
+def top_post_plan_run(days: int = 0, per_day: int = 1, show: int = 14) -> int:
+    from . import top_post
+
+    return top_post.run_plan(days=days or config.TOP_POST_PLAN_DAYS,
+                             per_day=per_day, show=show)
+
+
+def keyword_universe_view(export: bool = True, show: int = 12) -> int:
+    from . import top_post
+
+    return top_post.run_universe(export=export, show=show)
+
+
+def score_post_run(path: str, keyword: str = "") -> int:
+    from . import top_post
+
+    return top_post.run_score_file(path, keyword)
+
+
 def service_center_setup(dry: bool = True, force: bool = False) -> int:
     """Publish/preview the Student Internet Center service landing page."""
     from . import service_center
@@ -1110,6 +1164,30 @@ def main() -> int:
                         help="v37: target year for a source article, e.g. 2027")
     parser.add_argument("--notebooklm-brief", default="", metavar="FILE",
                         help="v36: use an editor-verified NotebookLM brief with --url")
+    parser.add_argument("--top-post", default="", metavar="KEYWORD",
+                        help="v38: TOP POST BLUEPRINT — title/meta/outline/keywords/"
+                             "schema/E-E-A-T plan for an exact search phrase "
+                             "(save chesi chupistundi: output/top-posts/)")
+    parser.add_argument("--top-post-category", default="", metavar="CAT",
+                        help="v38: blueprint category override (default: auto)")
+    parser.add_argument("--publish-top-post", action="store_true",
+                        help="v38: blueprint + article generate chesi publish "
+                             "(DEFAULT_POST_STATUS=draft tho review flow)")
+    parser.add_argument("--top-post-plan", action="store_true",
+                        help="v38: keyword domination calendar (pillar + support "
+                             "posts, cluster balanced) — CSV/MD/JSON export")
+    parser.add_argument("--top-post-days", type=int, default=0, metavar="N",
+                        help="v38: plan length in days (default TOP_POST_PLAN_DAYS=90)")
+    parser.add_argument("--top-post-per-day", type=int, default=1, metavar="N",
+                        help="v38: posts per day in the plan (1-5)")
+    parser.add_argument("--keyword-universe", action="store_true",
+                        help="v38: ANNI keywords (9000+) stats + CSV/JSON export "
+                             "(output/keywords/keyword_universe.csv)")
+    parser.add_argument("--score-post", default="", metavar="FILE",
+                        help="v38: any HTML/text file ni Top Post Score tho measure "
+                             "(30+ checks + fixes)")
+    parser.add_argument("--score-keyword", default="", metavar="KEYWORD",
+                        help="v38: keyword for --score-post")
     parser.add_argument("--trends", action="store_true",
                         help="Google Trends India education trends chupinchindi")
     parser.add_argument("--radar", action="store_true",
@@ -1179,6 +1257,17 @@ def main() -> int:
     if args.research_brief:
         return research_brief_run(args.research_brief, args.research_urls,
                                   args.research_limit, args.research_year)
+    if args.top_post:
+        return top_post_run(args.top_post, category=args.top_post_category,
+                            publish=args.publish_top_post, mock=args.mock,
+                            dry_run=args.dry_run)
+    if args.top_post_plan:
+        return top_post_plan_run(args.top_post_days,
+                                 per_day=args.top_post_per_day)
+    if args.keyword_universe:
+        return keyword_universe_view()
+    if args.score_post:
+        return score_post_run(args.score_post, args.score_keyword)
     if args.trends:
         return trends_check()
     if args.sources:
