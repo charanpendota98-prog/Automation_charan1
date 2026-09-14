@@ -197,6 +197,13 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
     else:
         article["content_html"] = validator.sanitize_html(article["content_html"])
         article = _hygiene(article)
+        # v38: TOP POST hardening (structural only — kotha facts ledu):
+        # keyword meta/slug, snippet answer, FAQ extraction, density cap.
+        try:
+            from . import top_post as _tp
+            article, _tp_report = _tp.harden(article)
+        except Exception:  # noqa: BLE001 — hardening never blocks publishing
+            log.exception("Top-post hardening skipped (safe)")
         # v18: Rank Math STRICT gate (actual panel checks) — low ante refine round
         article = _rankmath_gate(article, article.get("category") or "")
 
@@ -264,6 +271,17 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
     if article.get("_source_texts"):
         article["_orig"] = validator.originality_score(
             final_html, article["_source_texts"])
+    # v38: TOP POST SCORE — measurable on-page quality (30+ weighted checks).
+    # Quiz posts ki skip (interactive format different rules tho untundi).
+    if not is_quiz:
+        try:
+            from . import top_post as _tp
+            article["_top"] = _tp.score_top_post(article, html=final_html)
+            log.info("Top Post Score %s/100 %s — failed: %s",
+                     article["_top"]["score"], article["_top"]["grade"],
+                     ", ".join(article["_top"]["failed"][:4]) or "none")
+        except Exception:  # noqa: BLE001
+            log.exception("Top-post scoring failed (safe)")
     log.info("QA score %s/100 (words=%d) originality=%s%% issues=%s",
              qa["score"], qa["words"], article.get("_orig", "n/a"),
              qa["issues"][:3] or "none")
@@ -287,6 +305,16 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
                 raise RuntimeError(
                     f"LIVE-PUBLISH BLOCKED: originality {article['_orig']}% < "
                     f"{min_orig:g}% — source-backed rewrite needs editorial work")
+        # v38: Top Post gate — on-page quality measured, not claimed.
+        if article.get("_top") is not None:
+            from . import top_post as _tp
+
+            ok_live, detail = _tp.publish_gate(article, live=True)
+            if not ok_live:
+                raise RuntimeError(
+                    f"LIVE-PUBLISH BLOCKED: {detail}. Draft ga save chesi "
+                    "fix cheyyandi (run.py --score-post <file>)")
+            log.info("Top-post gate ✔ %s", detail)
     try:
         _save_provenance(article)
     except OSError:
@@ -304,11 +332,15 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
         fk = article.get("focus_keyword") or article["banner_text"]
         year = article.get("year", date.today().year)
         if image_gen.generate_featured_image(article["banner_text"], article["category"], image_path):
+            alt_text = f"{fk} – {article['category']} {year} | studentup.in"
             media_id = wp.upload_media(
                 image_path,
                 title=article["title"],
-                alt_text=f"{fk} – {article['category']} {year} | studentup.in",
+                alt_text=alt_text,
             )
+            # v38: Top Post Score image-alt check ee alt text ni verify chestundi
+            if media_id:
+                article["_media_alt"] = alt_text
             # disk full avvakunda — upload ayyaka local file delete
             if media_id and not config.KEEP_IMAGES:
                 image_path.unlink(missing_ok=True)

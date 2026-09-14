@@ -1,4 +1,4 @@
-# 🚀 START HERE — studentup.in Founder Manual (v35)
+# 🚀 START HERE — studentup.in Founder Manual (v38)
 ### "Nenu em cheyali?" — ee file matrame chalu. Settings anni bot automatic ga set chesthundi.
 
 ---
@@ -73,6 +73,27 @@ sudo systemctl restart autoblog.timer
 | Nela | `--setup --dry-run` (blockers audit) + `--rebuild-hubs` | 10 min |
 | Nela | Relevant coaching/service partners ni contact cheyandi; paid listing unte clear disclosure + `rel=sponsored nofollow` use cheyandi | 20 min |
 
+---
+
+## 🏆 v38 TOP POST ENGINE — "top post veyyali, anni keywords" (new)
+
+| Em | Command |
+|---|---|
+| Anni 10,682 keywords + CSV export | `run.py --keyword-universe` |
+| Oka keyword ki top-post blueprint (title/meta/outline/keywords/schema/E-E-A-T) | `run.py --top-post "TSPSC Group 2 2026 notification"` |
+| 90-day publishing calendar (pillar + support mix) | `run.py --top-post-plan --top-post-days 90` |
+| Blueprint nunchi article generate + draft | `run.py --top-post "NSP Scholarship last date" --publish-top-post` |
+| Ee file/HTML top post aa? measure chey | `run.py --score-post file.html --score-keyword "ssc cgl 2026"` |
+
+- Blueprint files: `output/top-posts/<slug>.html` (stylized page — browser lo open cheyandi), `.md`, `.json`
+- Keywords CSV: `output/keywords/keyword_universe.csv` (Excel lo sort chesi plan cheyochu)
+- Publish apudu bot **automatic ga** score chestundi (30+ checks) + structural
+  harden (meta/slug/snippet/FAQ/density cap). Score < 78 unte **live publish block**
+  (`TOP_POST_STRICT=0` tho off cheyochu) — draft-first lo block undadu.
+- Repo sample: `preview/top-post-blueprint.html` + `preview/dominance-plan-90-days.md`
+- ⚠️ Volume/difficulty bands **heuristic estimate** (Google data kaadu); ranking
+  guarantee ledu; dates/fee/vacancies official notice nunchi matrame.
+
 **AdSense approve ayyaka kuda:** `.env` lo `ADSENSE_APPROVED=1` + valid client ID/CMP/ads.txt verify chesi matrame ads consider cheyandi. `DEFAULT_POST_STATUS=publish` before independent human/editorial review verify cheyakandi; draft-first mode safer.
 
 ---
@@ -106,4 +127,4 @@ sudo systemctl restart autoblog.timer
 - Edaina doubt → `run.py --doctor` + `run.py --setup --dry-run` — rendu milipi **meeru cheppalsinanni English/Telugu lo checkisthayi**
 - Code problem vasthe Arena lo cheppandi — fix chestha 🔧
 
-*Last updated: v31 (Student Internet Center service workflow + advanced UI + production audit). Ee file repo lo unnadi — server lo kuda adhe path.*
+*Last updated: v38 (Top Post Dominance Engine — 10,682 keywords, blueprint, top-post score, harden + publish gate). Ee file repo lo unnadi — server lo kuda adhe path.*

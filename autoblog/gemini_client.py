@@ -372,6 +372,58 @@ def generate_listicle(topic: str, recent_titles: List[str], year: int) -> Dict:
     return article
 
 
+# ---------------------------------------------------------------- v38
+TOP_POST_PROMPT_TEMPLATE = """You are the senior editor of studentup.in (Telugu students portal, AP/TS focus).
+Write ONE "top post" (category-defining, best-on-the-internet) article for the search phrase below,
+following the editor blueprint EXACTLY. Facts must be true and verifiable — for notifications use the
+official notice values; NEVER invent dates, fees, vacancy counts or salary figures.
+
+BLUEPRINT (editor already planned this — follow the structure, write in your own Telugu voice):
+{blueprint}
+
+ARTICLE RULES:
+- TELUGU SCRIPT + natural English terms (notification, eligibility, apply online, cut off, hall ticket).
+- H1/title must be the blueprint's title style: exact keyword FIRST HALF + year + power word, 40-62 chars.
+- Every H2 from the blueprint (same order); each H2 gets 2-4 short paragraphs (2-3 sentences) plus the
+  planned H3 subtopics and a table/list where the blueprint asks for one.
+- The first 40 words must fully answer the query (snippet + WhatsApp forward friendly).
+- Keyword usage: exact phrase in first paragraph, 2+ H2s, 8-15 times total (1-2% density) — NEVER stuff.
+- Include every secondary/question keyword naturally at least once (no keyword lists, no stuffing).
+- Tables: only real data (dates, fee slabs, vacancy breakup, pay levels). Cells 2-6 words.
+- List items: complete in <= 10 words.
+- Visible FAQ: 5+ <h3> question headings in student language with honest 1-2 sentence answers.
+- Add "mana site related topic" anchor phrases (internal links) and 1-2 official website names.
+- E-E-A-T: "official notification prakaram" phrasing; say clearly when something is not yet announced.
+- If any required fact is not known/verifiable, write: "అధికారిక నోటిఫికేషన్‌లో ధృవీకరించుకోండి" —
+  never guess.
+- Do NOT copy any competitor text; write independently from facts.
+
+Return ONLY valid JSON with exactly these keys:
+{{"title": "...", "slug": "...", "meta_description": "...", "seo_title": "...",
+ "focus_keyword": "...", "secondary_keywords": ["...", "..."],
+ "quick_answer": "...", "banner_text": "...", "tags": ["..."],
+ "external_links": [{{"text": "...", "url": "https://..."}}],
+ "content_html": "<p>...</p><h2>...</h2>...",
+ "faq": [{{"question": "...", "answer": "..."}}]}}"""
+
+
+def generate_top_post(blueprint: Dict, year: int = 0) -> Dict:
+    """v38: blueprint-driven top-post generation (top_post.build_blueprint output).
+
+    Blueprint ni prompt ga istham — MODEL facts invent cheyyakudadu;
+    structure/on-page plan matrame blueprint nunchi vastundi.
+    """
+    if not config.GEMINI_API_KEY and not getattr(config, "GEMINI_API_KEYS", []):
+        raise GeminiError("GEMINI_API_KEY not set")
+    from . import top_post as _tp
+
+    prompt = TOP_POST_PROMPT_TEMPLATE.format(blueprint=_tp.gemini_brief(blueprint))
+    article = _generate_with_retries(prompt, blueprint.get("category", ""))
+    article["article_type"] = "top-post"
+    article.setdefault("year", year or blueprint.get("year"))
+    return article
+
+
 QUIZ_PROMPT_TEMPLATE = """You are a senior exam-content setter for studentup.in (Telugu education portal). Create a top-quality {level_name} level (L{level}) MCQ quiz for Telugu students on: {topic} ({topic_te}).
 
 Return ONLY valid JSON — exactly this schema:

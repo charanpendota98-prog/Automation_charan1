@@ -382,6 +382,92 @@ source paragraphs together, copy headings/tables, or invent facts to fill gaps.
 Never place private documents, passwords, OTPs, bank details or identity data in
 the public research bundle.
 
+## 🏆 v38 — Top Post Dominance Engine (anni keywords → top post)
+
+"Top post" ippudu **plan → write → measure → harden → gate** — claim kaadu,
+measurement. Kotha module: `autoblog/top_post.py` (offline, deterministic,
+no API key needed for planning).
+
+**1. ANNI KEYWORDS (10,682) — Keyword Universe**
+188 entities (SSC/UPSC/RRB/banks/defence, TSPSC/APPSC/DSC/Police, scholarships,
+entrances, universities, skills, internships) × **66 intents** (14 core +
+52 long-tail: last date, eligibility, age limit, fee, documents, district wise,
+PDF download, direct link, study plan, toppers strategy, mock test, FAQ,
+YouTube channels, Telegram groups, photo-signature size, fee refund, exam day
+checklist, seat matrix, renewal, income certificate…). Prathi keyword ki
+cluster, funnel (TOFU/MOFU/BOFU), content type, priority score, proposed title:
+
+```bash
+python run.py --keyword-universe      # stats + export
+# output/keywords/keyword_universe.csv  (Excel/Sheets lo open cheyochu)
+```
+Category hygiene built-in: scholarship/skill pages ki "negative marking / exam
+centre" lanti meaningless combos generate avvavu. Demand/competition bands
+**heuristic proxies matrame — Google volume data kaadu** (`--gsc` real data).
+
+**2. TOP POST BLUEPRINT — okka keyword ki complete on-page pack**
+
+```bash
+python run.py --top-post "TSPSC Group 2 2026 notification"
+```
+- 3 title options (40-62 chars, keyword first 40% lo, power word) + meta (110-156
+  chars keyword tho start) + slug + H1 + official site
+- 6-11 H2 sections + H3 subtopics with target keywords + purpose (intent-aware
+  families: notification / apply / result / hall ticket / cutoff / syllabus /
+  salary / plan / books / **scholarship / admission / career**)
+- Keyword family: secondary + question (PAA) + long-tail phrases
+- Entities to cover, tables to build, snippet answer (first 40 words),
+  visible FAQ plan, schema list, image banner + alt text, internal/external
+  link plan, E-E-A-T checklist, 10 ranking levers, word target
+- **Plan quality score** — 100/100 ki blueprints
+- Files: `output/top-posts/<slug>.html` (styled page), `.md`, `.json`
+
+**3. DOMINATION CALENDAR — 90-day publishing plan**
+
+```bash
+python run.py --top-post-plan --top-post-days 90 --top-post-per-day 2
+```
+Pillar (exam hub post) + support (long-tail wins) mix, cluster + intent
+rotation, same-day lo veru clusters (footprint-safe). CSV/MD/JSON export.
+Repo lo ready sample: `preview/dominance-plan-90-days.md`.
+
+**4. TOP POST SCORE — 30+ checks, 0-100, grade**
+
+```bash
+python run.py --score-post output/top-posts/x.html --score-keyword "ssc cgl 2026"
+```
+Checks: keyword title/first-content-paragraph/2+ H2 lo, density band
+(0.4-3% — **over-optimization penalty kuda**), secondary + long-tail + question
+coverage, snippet block, structure (H2/H3/section split/paragraph length),
+tables/lists (short list items), FAQ 4+, internal 2+ / official external link,
+Article+Breadcrumb schema, image alt, byline + corrections + source-check date,
+readability, entity coverage. Grades: `TOP POST 🏆 ≥90`, `STRONG 💪 ≥78`,
+`OK 👌 ≥65`, `WEAK ⚠️`.
+
+**5. HARDEN + GATE (publish path lo automatic)**
+- Publish mundu **structural** hardening: focus keyword default, secondary
+  keywords fill, meta 110-160 fix, slug keyword tokens, snippet answer
+  (article own first paragraph nunchi), visible FAQ extraction (own H3 answers
+  nunchi), **density cap** (3%+ repeat unte extras trim — spam signal safe).
+  Kotha facts eppudu invent cheyyadu.
+- `DEFAULT_POST_STATUS=publish` lo score < `TOP_POST_MIN_SCORE` (78) unte
+  **live publish BLOCK** (`TOP_POST_STRICT=1`). Draft-first flow lo score
+  log avutundi, block undadu.
+
+**6. Blueprint → article (Gemini) + preview**
+```bash
+python run.py --top-post "NSP Scholarship last date" --publish-top-post
+python run.py --top-post "SSC CGL 2026 apply online" --publish-top-post --mock --dry-run
+# dry-run: output/top-posts/<slug>.draft.html (WordPress touch cheyadu)
+```
+Gemini prompt blueprint ni exact ga follow avutundi (structure, keyword family,
+FAQ, density rule) — kaani **facts official source nunchi matrame**; teliyani
+వివరాలు "అధికారిక నోటిఫికేషన్‌లో ధృవీకరించుకోండి" ani rayali, guess cheyyakudadu.
+
+> ℹ️ Ranking, rich results, AdSense approval — ee plan **guarantee cheyyadu**.
+> Blueprint + score manaki on-page discipline istundi; Google ni evaru
+> "order" cheyyaleru.
+
 ## Setup Guide (Telugu)
 
 ### Step 1: Gemini API key (FREE) teyali
@@ -776,6 +862,15 @@ Prathi post lo automatic ga:
 ## Useful commands
 
 ```bash
+# v38 TOP POST (blueprint → measure → publish)
+python run.py --keyword-universe                     # 10,682 keywords + CSV
+python run.py --top-post "TSPSC Group 2 2026 notification"
+python run.py --top-post-plan --top-post-days 90     # domination calendar
+python run.py --score-post file.html --score-keyword "ssc cgl 2026"
+python run.py --top-post "NSP Scholarship last date" --publish-top-post
+```
+
+```bash
 .venv/bin/python run.py --status    # inka entha posts ayyayi, plan emito
 .venv/bin/python run.py --force     # ippude oka post publish cheyali ante
 .venv/bin/python run.py --url "https://site.com/article"   # URL -> original rewrite post
@@ -887,6 +982,8 @@ Marpali te: `.env` edit chesi scheduler ni restart cheyandi: `sudo systemctl res
 │   ├── production_audit.py # v30 production safety/revenue gate
 │   ├── service_center.py   # v31 service page + consented case metadata
 │   ├── content_audit.py    # v32 existing-post quality audit
-│   └── google_audit.py     # v33 public HTML + PageSpeed checks
+│   ├── google_audit.py     # v33 public HTML + PageSpeed checks
+│   └── top_post.py         # v38 top-post engine: 10k keywords, blueprint,
+│                           #      scorer, harden, gate, dominance calendar
 └── tests/                  # end-to-end tests (fake WP/Telegram/source servers)
 ```
