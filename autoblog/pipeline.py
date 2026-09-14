@@ -315,6 +315,17 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
                     f"LIVE-PUBLISH BLOCKED: {detail}. Draft ga save chesi "
                     "fix cheyyandi (run.py --score-post <file>)")
             log.info("Top-post gate ✔ %s", detail)
+        # v41: site-audit root-cause gate — junk HTML, unregistered shortcode,
+        # duplicate TOC anchors, PII, stale dates, Govt/Private category mismatch,
+        # empty title/excerpt, featured image — ivi live publish block chestayi.
+        from . import site_audit as _sa
+
+        ok_site, detail_site = _sa.article_gate(
+            article, html=final_html, category=article.get("category", ""), live=True)
+        if not ok_site:
+            raise RuntimeError(
+                f"LIVE-PUBLISH BLOCKED: {detail_site}")
+        log.info("v41 site gate ✔ %s", detail_site)
     try:
         _save_provenance(article)
     except OSError:

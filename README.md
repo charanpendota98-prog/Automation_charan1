@@ -534,6 +534,99 @@ node tools/ui_smoke.mjs                 # optional: real DOM (jsdom) full-flow s
 > ante HTTPS reverse proxy (nginx/Caddy) vadandi; admin key ni evariki share
 > cheyyakandi (per-exam manage link share cheyandi).
 
+## 🧹 v41 — Site Audit + Safe Autofix (anni tappalu → okate scan lo)
+
+Live site lo thin/junk content, tappu category, PII, raw shortcode, duplicate
+TOC anchors, tag bloat, demo pages, UTC timezone — ivi manual ga vethakadam
+kastam, malli malli vasthayi. v41 okka scan lo **anni** pattukuni, safe fixes ni
+(dry-run default) apply chestundi + malli raakunda **publish gate** pettutundi.
+
+```bash
+# 1) Read-only audit — emi maradu
+python run.py --site-audit
+
+# 2) Audit + fixes (default DRY-RUN — emi apply avvadu, plan chupistundi)
+python run.py --site-audit-fix
+
+# 3) Fixes ni nijamga apply (safe set matrame)
+python run.py --site-audit-fix --site-audit-apply
+
+# 4) Junk/demo pages ni trash cheyyadaniki permission (reversible — trash, delete kaadu)
+python run.py --site-audit-fix --site-audit-apply --site-audit-trash
+
+# 5) Only konni fixers (comma list)
+python run.py --site-audit-fix --site-audit-apply --site-audit-action strip_pii,strip_shortcode
+
+# 6) Network ledu / CI / mee machine block ayithe → offline modes
+python run.py --site-audit --site-audit-snapshot demo          # engine proof
+python run.py --site-audit --site-audit-save output/audit/site-audit-snapshot.json  # site unna machine lo
+python run.py --site-audit --site-audit-snapshot output/audit/site-audit-snapshot.json
+```
+
+**Enti pattukuntundi (post / page / tag / category / site — 20+ check classes)**
+
+| Class | Example (live site lo pattukunna) | Auto-fix |
+|---|---|---|
+| Junk HTML fragment | `<title>…<header>…<footer>` dump, bot "100/100 SEO" text | → draft |
+| Empty title/content | id 3452 (title ledu, content bot text) | → draft |
+| Broken heading tags | closing `</h2>` > opening `<h2>` (sanitizer damage) | → draft |
+| Missing featured image | 3 posts | manual (image generate → set) |
+| Wrong category (Govt↔Private) | Optum (private MNC) → "Central Govt Jobs" | → `Private Jobs` |
+| Wrong category (walk-in) | Walk-in drive → "Internships" | → `Walkin Jobs` |
+| Uncategorized | 3 posts | → guessed category |
+| PII phone | body lo `8977614045` | mask `89XXXXX45` |
+| Unprocessed shortcode | `[adinsert block=1]` raw ×2 | strip |
+| Duplicate TOC anchor | `#amp` ×3 (click tappu section ki) | unique `amp`, `amp-2`, `amp-3` |
+| Off-topic entity | education site lo footballer article | manual (rewrite) |
+| Stale dates | newest date 30+ days old (session over) | manual (refresh) |
+| Mixed image format | `.jpg.webp`, `-768x432.jpg.webp` | manual (media pipeline) |
+| Demo/theme pages live | `3029-2`, `image-gallery-block`, 9 pages | → trash (301 redirect) |
+| Slug ↔ title mismatch | `/privacy-policy/` = "About us" | → slug fix |
+| Duplicate contact page | `/contact/` + `/contact-us/` | → draft |
+| Tag bloat | 200+ tags, ~85% count 0 | → purge zero-count |
+| Truncated tag name | "TS Police SI Constable Preparati" | → "…Preparation" |
+| Duplicate tags | Fresher / Freshers Jobs · Part Time / Part-time Jobs | **lossless merge** (posts reassign → drop tag delete) |
+| Empty categories | 6 categories, posts ledu | manual (assign / noindex) |
+| Timezone UTC | Indian audience ki tappu timestamps | → `Asia/Kolkata` |
+| Local SEO without location | `locations.kml` live, business location ledu | manual (module off) |
+
+**Safety rules (mistakes lekunda)**
+
+- Default **dry-run** — `--site-audit-apply` ivvakapote okka write kuda jaragadu.
+- Destructive ops (`draft` / `trash`) ki **`--site-audit-trash`** explicit permission.
+- Junk content **delete avvadu** — draft/trash matrame (WordPress revisions tho reversible).
+- PII report lo kuda raw ga chupinchadu (mask chesi) — privacy.
+- Prathi fix audit log lo (`.json`) + `output/audit/site-audit-<stamp>.md`.
+
+**Root-cause gate (malli raakunda)**
+
+Ippati nunchi `DEFAULT_POST_STATUS=publish` unte, live publish ki mundu v35
+(reviewer/QA/originality), v38 (top-post score) **+ v41 site gate** kuda run
+avutundi — empty title/excerpt, featured image, junk HTML, unregistered
+shortcode, duplicate anchor, U+2011/"today" template, stale date, PII phone,
+Govt category lo private employer, off-topic entity → block. Drafts eppudu allow
+(human review ki). Code: `autoblog/site_audit.py::article_gate()` +
+`autoblog/pipeline.py` hook.
+
+**CI + test runner (v41 tho vachindi)**
+
+```bash
+python run.py --test-all                 # ANNI suites okate command tho (30/30)
+python run.py --test-all --test-only v41 # okka suite matrame
+```
+
+CI config: **`ci/github-actions-tests.yml`** — prathi push/PR ki 30 suites
+(3 Python versions: 3.10/3.11/3.12) + offline site-audit demo job run avutundi.
+⚠️ GitHub lo okka manual step: aa file ni **`.github/workflows/tests.yml`** ki copy
+cheyandi (Arena agent GitHub App token ki `workflows` permission ledu — workflow
+files direct ga push cheyyaleru; migilinavi anni automatic). Adi pettaka breaking
+change silent ga merge avvadu.
+
+```bash
+python tests/v41_site_audit_test.py    # 14 sections: checks → fixers → gates → CLI → network-fail
+```
+
+
 ## Setup Guide (Telugu)
 
 ### Step 1: Gemini API key (FREE) teyali
@@ -946,6 +1039,16 @@ python tests/v39_exam_portal_test.py        # 14-section suite
 ```
 
 ```bash
+# v41 SITE AUDIT + SAFE FIX
+python run.py --site-audit                  # read-only audit (report files)
+python run.py --site-audit-fix              # audit + fixes (dry-run default)
+python run.py --site-audit-fix --site-audit-apply [--site-audit-trash]
+python run.py --site-audit --site-audit-snapshot demo    # offline (network ledu)
+python run.py --test-all                    # ANNI suites (30/30) okate command tho
+python tests/v41_site_audit_test.py         # 14-section suite
+```
+
+```bash
 .venv/bin/python run.py --status    # inka entha posts ayyayi, plan emito
 .venv/bin/python run.py --force     # ippude oka post publish cheyali ante
 .venv/bin/python run.py --url "https://site.com/article"   # URL -> original rewrite post
@@ -1060,6 +1163,8 @@ Marpali te: `.env` edit chesi scheduler ni restart cheyandi: `sudo systemctl res
 │   ├── google_audit.py     # v33 public HTML + PageSpeed checks
 │   └── top_post.py         # v38 top-post engine: 10k keywords, blueprint,
 │                           #      scorer, harden, gate, dominance calendar
+├── ci/github-actions-tests.yml  # v41 CI — 30 suites × 3 py versions (copy to .github/workflows/)
+├── autoblog/site_audit.py  # v41 deep audit + safe autofix + live publish gate
 ├── exam_portal/            # v39 college exam portal (stdlib only)
 │   ├── store.py            #      SQLite: exams/questions/roster/sessions/answers
 │   ├── engine.py           #      validate, START/CLOSE, scoring, sweeper, exports

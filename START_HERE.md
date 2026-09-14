@@ -136,6 +136,52 @@ cheyyakandi (per-exam manage link share cheyandi).
 
 ---
 
+## 🧹 v41 SITE AUDIT + FIX — "anni tappalu okate scan lo, malli raakunda" (new)
+
+| Em kavali | Command |
+|---|---|
+| Audit matrame (read-only, emi maradu) | `run.py --site-audit` |
+| Audit + fixes plan (dry-run — emi apply avvadu) | `run.py --site-audit-fix` |
+| Fixes ni nijamga apply | `run.py --site-audit-fix --site-audit-apply` |
+| Junk/demo pages ni trash cheyyadaniki permission | `run.py --site-audit-fix --site-audit-apply --site-audit-trash` |
+| Only konni fixers (ex: PII + shortcode) | `... --site-audit-action strip_pii,strip_shortcode` |
+| Network ledu / site reach avvatledu (offline proof) | `run.py --site-audit --site-audit-snapshot demo` |
+| Test suite (14 sections) | `python tests/v41_site_audit_test.py` |
+| ANNI suites okate command tho (30/30) | `run.py --test-all` |
+
+**Enti pattukuntundi:** title ledu / content khali / junk HTML dump / broken heading tags /
+featured image ledu / private company "Govt Jobs" category lo / walk-in job
+"Internships" lo / Uncategorized posts / body lo phone number (PII) / raw
+`[adinsert]` shortcode / TOC lo duplicate anchors / off-topic article / stale dates /
+mixed image formats / theme demo pages live / `/privacy-policy/` lo "About us" /
+duplicate contact pages / 200+ tags (85% zero) / truncated tag name / duplicate tags /
+empty categories / timezone UTC / Rank Math Local SEO location lekunda.
+
+**Safety (zero-mistake rules):**
+- Default **dry-run** → `--site-audit-apply` ivvakapote okka write kuda jaragadu.
+- Destructive (draft/trash) ki **`--site-audit-trash`** permission kavali.
+- Junk content **delete avvadu** — draft/trash matrame (revisions tho tirigi techukovachu).
+- Duplicate tags **lossless merge** — posts anni keep-tag ki reassign ayyaka ne delete.
+- Prathi fix audit log + `output/audit/site-audit-<date>.md` report.
+
+**Malli raakunda (root cause):** live publish (`DEFAULT_POST_STATUS=publish`) ki mundu
+ippudu **v41 site gate** kuda run avutundi — empty title/excerpt, image ledu, junk HTML,
+registered-kaani shortcode, duplicate anchor, `U+2011`/"today" template, stale date,
+PII phone, Govt category lo private company, off-topic entity → **block**. Drafts
+eppudu allow (human review ki).
+
+**CI:** `ci/github-actions-tests.yml` — prathi push/PR ki **30 suites** (Python
+3.10/3.11/3.12) + offline audit job. Okka manual step: aa file ni GitHub lo
+`.github/workflows/tests.yml` ki copy cheyandi (agent token ki `workflows`
+permission ledu — workflow file push cheyyaleru; migilinavi automatic).
+Local ga same: `run.py --test-all`.
+
+⚠️ Audit ni **mee network nunchi** run cheyandi (repo sandbox/proxy lo studentup.in
+direct access block avutundi — appudu `--site-audit-snapshot` mode undi, leda mee
+server lo `--site-audit-save` tho snapshot teesukoni ikkada run cheyandi).
+
+---
+
 ## 💰 Money — honest plan (expectations realistic ga)
 
 | Phase | Timeline | Expected | Chese padaluku |

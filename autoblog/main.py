@@ -987,6 +987,70 @@ def exam_portal_run(host: str = "0.0.0.0", port: int = 8080, db: str = "",
     return portal_server.run_server(host, port, db_path, admin_key, base_url)
 
 
+# ------------------------------------------------------------- test runner
+
+def test_all_run(only: str = "", quiet: bool = False) -> int:
+    """v41: ANNI suites okate command tho (local + CI).
+
+    ee command ne `.github/workflows/tests.yml` kuda run chestundi — so CI lo
+    fail ayye suite ni local lo kuda exact ga reproduce cheyyachu.
+    """
+    import subprocess
+    import sys as _sys
+    from pathlib import Path as _Path
+
+    root = _Path(__file__).resolve().parent.parent
+    files = sorted((root / "tests").glob("*.py"))
+    if only:
+        files = [f for f in files if only in f.name]
+    if not files:
+        print("tests/ lo e suites levu")
+        return 1
+    passed, failed = [], []
+    for f in files:
+        try:
+            proc = subprocess.run([_sys.executable, str(f)], cwd=root,
+                                  capture_output=True, text=True, timeout=600)
+        except subprocess.TimeoutExpired:
+            failed.append((f.name, "TIMEOUT (>600s)"))
+            print(f"  ⏱️  {f.name} — TIMEOUT")
+            continue
+        out = (proc.stdout or "").strip().splitlines()
+        tail = out[-3:] if out else []
+        if proc.returncode == 0:
+            passed.append(f.name)
+            print(f"  ✔ {f.name}" + ("" if quiet else f" — {tail[-1][:70] if tail else ''}"))
+        else:
+            failed.append((f.name, "\n".join((proc.stdout or "")[-1200:] +
+                                              (proc.stderr or "")[-400:])))
+            print(f"  ❌ {f.name}")
+            if not quiet:
+                print("\n".join("      " + ln for ln in
+                                ((proc.stdout or "")[-1200:] +
+                                 (proc.stderr or "")[-400:]).splitlines()[-14:]))
+    print("=" * 62)
+    print(f"  suites: {len(passed)} passed · {len(failed)} failed "
+          f"(total {len(files)})")
+    if failed:
+        print("  FAILED: " + ", ".join(n for n, _ in failed))
+        return 1
+    print("  ALL SUITES PASSED ✔")
+    return 0
+
+
+# ------------------------------------------------------- v41 site audit + fix
+
+def site_audit_run(fix: bool = False, apply: bool = False, allow_trash: bool = False,
+                   actions: str = "", snapshot: str = "", save: str = "") -> int:
+    """v41: studentup.in deep audit (+ optional safe autofix)."""
+    from . import site_audit
+
+    acts = [a.strip() for a in (actions or "").split(",") if a.strip()]
+    return site_audit.run_audit(fix=fix, dry_run=not apply,
+                                allow_trash=allow_trash, actions=acts or None,
+                                snapshot=snapshot, save=save)
+
+
 def service_center_setup(dry: bool = True, force: bool = False) -> int:
     """Publish/preview the Student Internet Center service landing page."""
     from . import service_center
@@ -1230,6 +1294,30 @@ def main() -> int:
     parser.add_argument("--exam-base-url", default="",
                         help="v39: public URL for share links/notifications "
                              "(ex: https://exams.college.edu)")
+    parser.add_argument("--test-all", action="store_true",
+                        help="v41: ANNI suites okate command tho run chey "
+                             "(--test-only NAME tho okka suite; CI idi ne run "
+                             "chestundi)")
+    parser.add_argument("--test-only", default="", metavar="NAME",
+                        help="v41: --test-all tho okka suite matrame (ex: v41)")
+    parser.add_argument("--site-audit", action="store_true",
+                        help="v41: full site audit (21 problem classes — thin/junk "
+                             "content, wrong category, PII, tags, timezone) + report")
+    parser.add_argument("--site-audit-fix", action="store_true",
+                        help="v41: audit + SAFE autofix (default dry-run)")
+    parser.add_argument("--site-audit-apply", action="store_true",
+                        help="v41: fixes ni nijamga apply chey (dry-run kaadu)")
+    parser.add_argument("--site-audit-trash", action="store_true",
+                        help="v41: demo/junk pages ni trash cheyyadaniki permission")
+    parser.add_argument("--site-audit-action", default="",
+                        help="v41: only ee fixers run chey (comma list, ex: "
+                             "strip_pii,strip_shortcode)")
+    parser.add_argument("--site-audit-snapshot", default="", metavar="FILE",
+                        help="v41: offline audit from snapshot JSON "
+                             "(leda 'demo' — engine proof, network avasaram ledu)")
+    parser.add_argument("--site-audit-save", default="", metavar="FILE",
+                        help="v41: fetched site data ni JSON snapshot ga save chey "
+                             "(tarvata offline/CI audit ki)")
     parser.add_argument("--trends", action="store_true",
                         help="Google Trends India education trends chupinchindi")
     parser.add_argument("--radar", action="store_true",
@@ -1317,6 +1405,14 @@ def main() -> int:
             demo=args.exam_portal_demo,
             test_channels=args.exam_portal_test_channels,
             base_url=args.exam_base_url)
+    if args.test_all:
+        return test_all_run(only=args.test_only)
+    if args.site_audit or args.site_audit_fix:
+        return site_audit_run(fix=args.site_audit_fix, apply=args.site_audit_apply,
+                              allow_trash=args.site_audit_trash,
+                              actions=args.site_audit_action,
+                              snapshot=args.site_audit_snapshot,
+                              save=args.site_audit_save)
     if args.trends:
         return trends_check()
     if args.sources:

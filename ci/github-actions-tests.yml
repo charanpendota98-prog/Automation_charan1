@@ -1,0 +1,95 @@
+# ⚠️ Ee file ni deploy cheyyali ante okka step: GitHub lo
+#   .github/workflows/tests.yml  ki copy cheyandi (leda paste chesi commit cheyandi).
+# Enduku: Arena agent GitHub App token ki "workflows" permission ledu — workflow
+# files ni direct ga push cheyyaleru (GitHub security rule). Migilinavi anni push
+# avutayi; ee okka file meeru GitHub UI lo add cheyandi (2 clicks) →
+# Actions automatic ga run avutayi.
+#
+# Local ga same pani:  python run.py --test-all      (leda tools/run_all_suites.sh)
+
+name: tests
+
+# v41: prathi push/PR ki ANNI suites run avutayi (29 + v38 + v39 + v41).
+# Ee file lekunda breaking change silent ga merge avutundi — adi fix.
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  suites:
+    name: python ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyflakes
+
+      - name: Syntax / lint (blocking only on real errors)
+        run: |
+          python -m compileall -q autoblog exam_portal tests run.py
+          python -m pyflakes autoblog/site_audit.py exam_portal/*.py run.py
+
+      - name: All suites (standalone assert scripts)
+        env:
+          # Live API calls undakoodadu — kaani WP_SITE ni **override cheyyakoodadu**
+          # (rankmath/v32 tests default site base tho internal-link & audit logic
+          #  check chestayi; override chesthe false failures — CI lo nijamga chusam).
+          GEMINI_API_KEY: ""
+          DEFAULT_POST_STATUS: "draft"
+        run: |
+          set -e
+          fail=0
+          for f in tests/*.py; do
+            echo "────────── $f"
+            if ! python "$f" > "/tmp/$(basename "$f").log" 2>&1; then
+              echo "❌ FAILED: $f"
+              tail -40 "/tmp/$(basename "$f").log"
+              fail=1
+            else
+              tail -3 "/tmp/$(basename "$f").log"
+            fi
+          done
+          exit $fail
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: suite-logs-py${{ matrix.python-version }}
+          path: /tmp/*.py.log
+          if-no-files-found: ignore
+
+  site-audit-dry:
+    name: site audit engine (offline demo)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: v41 offline audit proof
+        run: python run.py --site-audit --site-audit-snapshot demo
+      - name: v41 dry-run fixes (no writes)
+        run: python run.py --site-audit --site-audit-snapshot demo --site-audit-fix

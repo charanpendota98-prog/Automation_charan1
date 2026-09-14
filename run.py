@@ -25,6 +25,12 @@
                                            admin START/CLOSE, auto-close, results)
   python run.py --exam-portal-demo         v39: sample exam tho portal start
   python run.py --exam-portal-test-channels v39: Telegram/webhook test ping
+  python run.py --site-audit               v41: full site audit (junk content,
+                                           wrong category, PII, tags, timezone)
+  python run.py --site-audit-fix           v41: audit + safe fixes (dry-run)
+  python run.py --site-audit-fix --site-audit-apply   v41: fixes ni apply chey
+  python run.py --test-all                v41: ANNI suites okate command tho
+  python run.py --test-all --test-only v41  v41: okka suite matrame
   python run.py --notify-test test Telegram/WhatsApp notifications
   python run.py --url LINK    source URL -> 100% original SEO rewrite post
 
