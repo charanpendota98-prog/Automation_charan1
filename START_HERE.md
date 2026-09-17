@@ -190,6 +190,41 @@ server lo `--site-audit-save` tho snapshot teesukoni ikkada run cheyandi).
 
 ---
 
+## 📢 v43 AD MANAGER — "vare ads: college banners, shop, services" (new)
+
+| Em kavali | Command |
+|---|---|
+| Inventory status + slot plans | `run.py --ads` |
+| Visible placement preview (browser lo) | `run.py --ads-demo` → `output/ads-preview.html` |
+| Real ad add cheyandi | `ads/inventory.json` lo ad add (demo:true remove) → next post automatic |
+
+- **Highest-CTR slots:** TOP (Quick Answer taruvata) · MID (first H2 taruvata) · BOTTOM (related mundu)
+- **100% safe:** visible SPONSORED label + `rel="sponsored nofollow"` + no-ads-near-links + CLS-safe + max 2/post (AdSense approval ayyaka auto 1)
+- **UTM auto-tagging** → GA4 lo ad-wise CTR reports
+- Strategy + 14 safe high-CTR tricks + college deal template: `AD_STRATEGY_ADVANCED.md`
+
+## 🔬 v44 DEEP POST ENGINE — "deep analyse, perfect posts, mistakes leku" (new)
+
+| Em kavali | Command |
+|---|---|
+| Deep research report (confidence/conflicts/gaps) | `run.py --deep-research "TSPSC Group 2 2027" --research-year 2027` |
+| NotebookLM deep prompt (passes 6–8) | `run.py --deep-research "..." --deep` |
+| NotebookLM output merge + verify | `run.py --deep-research "..." --notebooklm-brief brief.txt` |
+| Post ki deep analysis auto | Automatic — ≥2 sources unna posts lo "In-Depth Analysis" section |
+
+**Perfect gates (live publish lo BLOCK):** source conflicts (2 last dates) · article lo 2
+different "last date" values · stale years (current year dates levu) · uncited NotebookLM
+brief. Drafts lo flags (Telegram review) — override cheyaku.
+
+**Mee manual workflow:** `MANUAL_ADVANCED_CHECKLIST.md` — Part 1 (per-post 10-15 min:
+deep-research → NotebookLM loop → generate → review) + Part 2 (weekly loop) + Part 3
+(10 zero-mistake rules) + Part 4 (LIVE-PUBLISH BLOCKED fix table).
+
+- **Source tiering:** T1 official (.gov.in/.edu.in) > T2 major media > T3 other — T1-weighted
+- **Cross-verification:** confirmed (2+ sources) / official (T1) / single-source / ⛔ conflict
+- **Confidence 0-100** — 75+ strong, <50 = official source add cheyandi
+- Reports: `output/deep/<topic>-<date>.md` + `.json`
+
 ## 💰 Money — honest plan (expectations realistic ga)
 
 | Phase | Timeline | Expected | Chese padaluku |

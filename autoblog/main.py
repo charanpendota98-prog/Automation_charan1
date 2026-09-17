@@ -1251,6 +1251,15 @@ def main() -> int:
                         help="v37: target year for a source article, e.g. 2027")
     parser.add_argument("--notebooklm-brief", default="", metavar="FILE",
                         help="v36: use an editor-verified NotebookLM brief with --url")
+    parser.add_argument("--deep-research", default="", metavar="TOPIC_OR_URL",
+                        help="v44: DEEP POST ENGINE — source tiering + deep fact "
+                             "extraction + cross-verification + confidence report "
+                             "(--research-urls FILE / --research-limit N / "
+                             "--research-year Y / --notebooklm-brief FILE / "
+                             "--deep for NotebookLM passes 6-8)")
+    parser.add_argument("--deep", action="store_true",
+                        help="v44: emit extended NotebookLM prompt (passes 6-8: "
+                             "year-over-year, ELI-12, gap priority)")
     parser.add_argument("--top-post", default="", metavar="KEYWORD",
                         help="v38: TOP POST BLUEPRINT — title/meta/outline/keywords/"
                              "schema/E-E-A-T plan for an exact search phrase "
@@ -1399,6 +1408,14 @@ def main() -> int:
         return ad_manager.run_cli("demo" if args.ads_demo else "status")
     if args.google_audit:
         return google_audit_run(args.google_audit)
+    if args.deep_research:
+        from . import deep_research
+
+        return deep_research.run_cli(
+            args.deep_research, url_file=args.research_urls,
+            limit=max(1, args.research_limit), target_year=args.research_year,
+            notebooklm_brief=args.notebooklm_brief,
+            deep_prompt=args.deep)
     if args.research_brief:
         return research_brief_run(args.research_brief, args.research_urls,
                                   args.research_limit, args.research_year)

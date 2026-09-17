@@ -76,6 +76,13 @@ AD_MANAGER_ENABLED = _get("AD_MANAGER_ENABLED", "1") not in ("0", "false", "no")
 MAX_PERSONAL_AD_SLOTS = int(_get("MAX_PERSONAL_AD_SLOTS", "2"))
 # Inventory path override (default: repo ads/inventory.json)
 ADS_INVENTORY_PATH = _get("ADS_INVENTORY_PATH", "")
+# v44 DEEP POST ENGINE — deep analyse + cross-source verification.
+# ≥ DEEP_MIN_SOURCES sources unna posts ki "In-Depth Analysis" section +
+# perfect gate (conflicts/stale dates live publish lo block; drafts lo flags).
+DEEP_POST_ENABLED = _get("DEEP_POST_ENABLED", "1") not in ("0", "false", "no")
+DEEP_MIN_SOURCES = int(_get("DEEP_MIN_SOURCES", "2"))
+# 0 = deep gate off (drafts + live rendu lo ledu)
+DEEP_GATE_STRICT = _get("DEEP_GATE_STRICT", "1") not in ("0", "false", "no")
 # E-E-A-T: Article schema publisher logo (rich results kosam; optional)
 SITE_LOGO_URL = _get("SITE_LOGO_URL", "")
 # Google Discover: per-post robots lo max-image-preview:large (RM meta)

@@ -1,0 +1,154 @@
+# 📋 MANUAL ADVANCED CHECKLIST — "Nenu manual ga em em cheyali"
+### Website advanced ga run avvali · Posts ANI-PERFECT · Mistakes leku · Deep analyse + NotebookLM
+
+**Ee file = mee haath tho cheyyalsina ANNI — exact order, exact commands.**
+Bot automatic ga chesthunna varam rework cheyakapovadu — idi mee 15-min/day ritual matrame.
+
+---
+
+## PART 0 — ONE-TIME SETUP (Day 1 · ~90 min)
+
+| # | Action | Where | Command / Step |
+|---|---|---|---|
+| 1 | Gemini keys (2-3 free) | aistudio.google.com | `.env` → `GEMINI_API_KEYS=k2,k3` |
+| 2 | WP Application Password | wp-admin → Users | `.env` → `WP_USERNAME` + `WP_APP_PASSWORD` |
+| 3 | Telegram bot | @BotFather | `.env` → `TELEGRAM_BOT_TOKEN` + `/start` chat id |
+| 4 | Logo 512×512 | — | `.env` → `SITE_LOGO_URL=https://studentup.in/logo.png` |
+| 5 | Bot install (server SSH) | server | `sudo apt install git && git clone ... /opt/studentup-src && sudo DOMAIN=exams.college.edu bash /opt/studentup-src/deploy/install-vps.sh` (DEPLOY.md Path A) |
+| 6 | Bot auto-setup | server | `python run.py --setup && python run.py --polish && python run.py --plugins` |
+| 7 | **WP 60-min customization** | wp-admin | `WP_ADVANCED_CUSTOMIZATION.md` Part 1-8 follow (theme, WP Code packs, Rank Math Local SEO location!, Cloudflare, Wordfence 2FA) |
+| 8 | AdSense apply | adsense.google.com | Policy pages bot create chesthundi (`--ensure-adsense`); approval ayyaka `.env` lo `ADSENSE_APPROVED=1` + client id |
+
+**Verify:** `python run.py --doctor` → 0 problems · `python run.py --deploy-check` → 0 fail
+
+---
+
+## PART 1 — PERFECT POST WORKFLOW (prathi post · 10–15 min)
+### "Posts ani perfect ga, mistakes leku" — 4 steps
+
+### Step A — DEEP RESEARCH (5 min)
+```bash
+python run.py --deep-research "TSPSC Group 2 2027 notification" \
+    --research-year 2027 --research-limit 5
+```
+**Output lo ee varam cheyandi (1 min):**
+| Report item | Meeku chadali? |
+|---|---|
+| `CONFIDENCE: 85/100` | 75+ = strong · 50–74 = verify more · <50 = official source add cheyandi |
+| `⛔ Conflicts` | Sources **mattudu** (2 last dates!) → official site open chesi **correct date note cheyandi** |
+| `❓ Gaps` | Sources lo ledu (fee/eligibility/official link) → official notification lo confirm cheyandi |
+| `Sources [T1]/[T2]` | T1 (official) unte strong; T2 matrame unte official link add cheyandi |
+
+Report: `output/deep/<topic>-<date>.md` + `.json` (browser/Excel lo open avtundi)
+
+### Step B — NOTEBOOKLM DEEP LOOP (5–10 min) — "deep ga sources nunchi"
+```bash
+# 1) Evidence bundle + 5-pass prompt generate
+python run.py --research-brief "TSPSC Group 2 2027 notification" --research-year 2027
+# 2) Extended deep prompt (passes 6–8: year-over-year, ELI-12, gap priority)
+python run.py --deep-research "TSPSC Group 2 2027 notification" --research-year 2027 --deep
+```
+**Mee haath tho (NotebookLM lo — 5 min):**
+1. [notebooklm.google.com](https://notebooklm.google.com) open → **Import** → bundle file paste/upload
+2. Prompt file content paste cheyandi (5 passes; `--deep` undi ante passes 6-8 kuda)
+3. NotebookLM output lo: **Claim ledger + Conflict audit + Gap list** kanipisthundi
+4. Output copy cheyandi → `brief.txt` file lo save cheyandi
+
+**Re-run (merge + verify):**
+```bash
+python run.py --deep-research "TSPSC Group 2 2027 notification" \
+    --research-year 2027 --notebooklm-brief brief.txt
+```
+→ Bot **validate chesthundi**: citations (S1, S2…) unnaa? 400+ words? Conflict audit undaa? Target year stated aa? → `NotebookLM cross-check: N cited claims` report lo vasthundi. **Uncited summary = block** (silent AI summary content lo ramigadu).
+
+### Step C — POST GENERATE (bot auto · 3 min wait + 3 min review)
+```bash
+python run.py --url https://tspsc.gov.in/<official-notice-url> --notebooklm-brief brief.txt
+```
+**Bot automatic ga chesthundi:**
+- Official source fetch + 2-3 extra sources (research)
+- 100% original rewrite (Telugu-English)
+- **🔬 In-Depth Analysis section auto-add** — verified facts table (✅/🏛/⚠️ status + source), ⛔ conflict box, ❓ gap box, confidence badge
+- Quick Answer + TOC + FAQ + internal links + schema (JobPosting if eligible)
+- Fact Guard (dates/counts source cross-check) + Originality floor 72% + QA gate 80/100
+- **Perfect gates:** 2 different last dates? → BLOCK · conflicts? → BLOCK (live) · stale years? → BLOCK
+- Ad slots (v43) + monetize blocks
+- → **DRAFT lo WordPress** + Telegram ✅/🗑️ buttons
+
+**Mee review (WordPress draft lo — 3 min):**
+1. **Deep Analysis table** chudandi — ⛔/❓ unna varam official site tho fix
+2. **Prathi date** official notification tho compare (5 sec/date)
+3. Telugu readability — 2 lines parugu
+4. Telegram lo **✅ Publish** (matrame approve)
+
+### Step D — AFTER PUBLISH (2 min)
+- Rank Math → GSC: index status check (auto)
+- Telegram channel auto-post (configured unte)
+- Deadline post unte: countdown badge verify
+
+---
+
+## PART 2 — WEEKLY LOOP (15 min/week)
+
+| Day | Action | Command |
+|---|---|---|
+| Monday | GSC queries → queue priority | GSC → Performance → Export CSV → `python run.py --gsc file.csv` |
+| Wednesday | Site health | `python run.py --site-audit` (findings chudandi) |
+| Friday | Content quality + ads | `python run.py --content-audit` · GA4 → campaign `studentup.in` → ad CTR (< 0.3% → creative rotate) |
+
+**Monthly:** `python run.py --rebuild-hubs` (authority hubs refresh) · UpdraftPlus backup verify
+
+---
+
+## PART 3 — ZERO-MISTAKE RULES (10 rules — bot enforces + mee verify)
+
+| # | Rule | Bot enforcement | Mee verify |
+|---|---|---|---|
+| 1 | **One canonical date** per fact | 2 last-dates → LIVE BLOCK | Draft lo dates compare |
+| 2 | **Conflicts never auto-picked** | ⛔ → LIVE BLOCK + visible box | Official site open chesi correct cheyandi |
+| 3 | **No stale years** | Stale gate → LIVE BLOCK | Fresh source use cheyandi |
+| 4 | **Every number source-backed** | Fact Guard flags | Big numbers (vacancies/fees) double-check |
+| 5 | **NotebookLM briefs need citations** | Validator (400+ words, S-IDs, conflict audit) | Citations 2-3 open chesite verify |
+| 6 | **Target-year lock** | `--research-year` → year-relevance tags | 2027 post ki 2026 numbers carry avvadu |
+| 7 | **Draft-first + human approval** | DEFAULT_POST_STATUS=draft | Telegram ✅ matrame — rush lo publish kavali ledu |
+| 8 | **Official link mandatory** | Gap check → visible ❓ box | `.gov.in` link article lo unnaa |
+| 9 | **Corrections workflow** | Byline + report email in every post | Corrections report 24h lo fix |
+| 10 | **Ad safety** | Sponsored label + rel + no-link-adjacency | Ad links click cheyandi (1 per month) |
+
+---
+
+## PART 4 — "LIVE-PUBLISH BLOCKED" vasthe? (panic ledu)
+
+Message lo reason undi — exact ga fix cheyandi:
+
+| Block reason | Fix |
+|---|---|
+| `DEEP GATE: source conflict on 'last-date-apply' (15/10 vs 20/10)` | Official site open chesi correct date note → article draft lo edit → re-publish |
+| `DEEP GATE: article lo 2 different 'last date' values` | Article lo okka date matrame — vippudu delete cheyandi |
+| `DEEP GATE: stale dates — current year dates levu` | Fresh official source ivvandi (2026/2027 date unna) |
+| `FACT GUARD: unverified data` | Telegram message lo flagged items chudandi — official verify |
+| `QA score < 80` | `run.py --score-post <file>` → fixes list → edit |
+| `originality < 72%` | Kotha source add cheyandi / rewrite — copy kavali ledu |
+| `EDITORIAL_REVIEWER empty` | `.env` lo `EDITORIAL_REVIEWER="Mee Name"` pettandi |
+
+**Rule:** Block = bot mee ke save chesthundi. Override cheyaku (DEEP_GATE_STRICT=0 emergency kaani permanent kaadu).
+
+---
+
+## PART 5 — DAILY 10-MIN (rozu ritual)
+
+```
+0-2 min  : Telegram drafts chudandi (⚠️ flags unna mattam deep ga)
+2-5 min  : 1 deep-research run (queue lo unna top topic ki)
+5-8 min  : NotebookLM brief (2-3 topics varam ki okka deep loop chalu)
+8-10 min : Approve 2-3 drafts (✅)
+```
+
+**Varam lo:** 10-15 perfect posts + 1 GSC cycle + 1 ad CTR check = "top website" flywheel 🔄
+
+---
+
+## ⚠️ Honest note
+Perfect = **machine gates + human 5-min verify**. Gates mistakes ramigadu (conflicts/stale/dates/originality), kaani official numbers mee mata tho final check — AdSense/Google/reputation thartham lo idi matrame safety.
+
+*Last updated: v44 (2026-09-17) — Deep Post Engine: 13 tests · 32/32 suites · CLI `--deep-research` + NotebookLM passes 6-8*

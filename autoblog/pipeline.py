@@ -275,6 +275,31 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
             log.exception("Ad manager inject skipped (safe)")
             article["_ads"] = []
 
+    # v44: DEEP POST ENGINE — cross-source verification + visible
+    # "In-Depth Analysis" section + perfect-post flags (drafts).
+    if not is_quiz and getattr(config, "DEEP_POST_ENABLED", True):
+        try:
+            from . import deep_research as _dr
+
+            deep_sources = article.get("_deep_sources") or []
+            if len(deep_sources) >= int(getattr(config, "DEEP_MIN_SOURCES", 2)):
+                _report = _dr.build_report(
+                    article.get("title", ""), deep_sources,
+                    notebooklm_brief=article.get("_notebooklm_brief", ""),
+                    target_year=article.get("_target_year"))
+                final_html = _dr.inject_deep(final_html, _report)
+                article["_deep"] = _report
+                _hard, _warn = _dr.gate_post(final_html, _report, live=False)
+                article["_deep_flags"] = ([f"DEEP: {h}" for h in _hard] +
+                                          [f"DEEP?: {w}" for w in _warn])
+                log.info("v44 deep: confidence %s/100 · conflicts=%d · gaps=%d",
+                         _report.get("confidence"),
+                         len(_report.get("conflicts", [])),
+                         len(_report.get("gaps", [])))
+        except Exception:  # noqa: BLE001 — deep layer must never block publish
+            log.exception("Deep post engine skipped (safe)")
+            article["_deep"] = None
+
     # --- QA step 2: validation score + originality proof ---
     qa = validator.validate_article(article, final_html)
     article["_qa"] = qa
@@ -337,6 +362,17 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
             raise RuntimeError(
                 f"LIVE-PUBLISH BLOCKED: {detail_site}")
         log.info("v41 site gate ✔ %s", detail_site)
+        # v44: DEEP GATE — source conflicts / date inconsistency / stale
+        # years block live publish (drafts carry the flags for review).
+        from . import deep_research as _dr
+
+        ok_deep, detail_deep = _dr.publish_gate(article, html=final_html,
+                                                live=True)
+        if not ok_deep:
+            raise RuntimeError(
+                f"LIVE-PUBLISH BLOCKED: {detail_deep}. Draft ga save chesi "
+                "official source tho fix cheyyandi (run.py --deep-research)")
+        log.info("v44 deep gate ✔ %s", detail_deep)
     try:
         _save_provenance(article)
     except OSError:
@@ -591,6 +627,9 @@ def create_from_source(url: str, mock: bool = False, category: str = "",
 
     # --- QA data (notification + trust box kosam) ---
     article["_source_texts"] = [src.text] + [e.text for e in extras]
+    article["_deep_sources"] = [src] + extras  # v44: full objects (tiering)
+    article["_target_year"] = target_year
+    article["_notebooklm_brief"] = notebooklm_brief
     article["_source_urls"] = [src.url] + [e.url for e in extras]
     article["_source_domains"] = [
         d for d in [urlparse(src.url).netloc.replace("www.", "")]

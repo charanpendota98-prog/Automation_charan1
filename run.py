@@ -32,6 +32,11 @@
   python run.py --ads                    v43: AD MANAGER — owner ads (college
   python run.py --ads-demo                 banners/shop/services) inventory +
                                            slot plan / visible placement preview
+  python run.py --deep-research "TOPIC"  v44: DEEP POST ENGINE — source tiering
+  python run.py --research-brief             + fact extraction + cross-verification
+    "TOPIC" --research-year 2027          + confidence report (--deep = NotebookLM
+  python run.py --deep ... --notebooklm-          passes 6-8; --notebooklm-brief FILE
+    brief FILE                              merges cited NotebookLM output)
   python run.py --deploy-check            v41: deploy readiness (deps/env/disk/port +
                                            exam portal boot + /healthz) — server SSH lo
   python run.py --test-all                v41: ANNI suites okate command tho
