@@ -191,6 +191,58 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
      socials.every(a => (a.getAttribute("data-label") || "").length > 0),
      socials.map(a => a.getAttribute("data-label")).join(","));
 
+  /* ---------- v46: top-right menu (desktop nav + mobile hamburger) ---------- */
+  const navTop = document.querySelectorAll(".nav > a").length
+    + document.querySelectorAll(".nav > .has-drop > a").length;
+  ok("desktop nav: 7 top-right items (6 + More)", navTop === 7, "count=" + navTop);
+  const drop = document.querySelector(".has-drop .drop");
+  const dropItems = drop ? drop.querySelectorAll("a").length : 0;
+  ok("More dropdown: 5+ neat items (services/ads/policy)", !!drop && dropItems >= 5, "items=" + dropItems);
+  ok("dropdown contains Advertise With Us link",
+     Array.from(document.querySelectorAll(".drop a")).some(a => a.textContent.indexOf("Advertise") > -1));
+  ok("desktop nav underline animation CSS (scaleX)", /\.nav a::after\{[^}]*transform:scaleX\(0\)/.test(styleText));
+  // hamburger
+  const menubtn = document.getElementById("menubtn");
+  const mpanel = document.getElementById("mpanel");
+  ok("hamburger button present (top-right headactions)",
+     !!menubtn && !!mpanel && document.querySelector(".headactions").contains(menubtn));
+  ok("menu closed initially (aria-expanded=false)", menubtn.getAttribute("aria-expanded") === "false");
+  menubtn.click();
+  ok("click -> panel opens + aria-expanded=true + scroll-lock",
+     mpanel.classList.contains("open") && menubtn.getAttribute("aria-expanded") === "true" &&
+     document.body.classList.contains("mlock"));
+  ok("mobile panel: 11 links + CTA + 4 socials",
+     mpanel.querySelectorAll("a").length >= 15,
+     "links=" + mpanel.querySelectorAll("a").length);
+  ok("mobile panel has Advertise + Exam CTA",
+     Array.from(mpanel.querySelectorAll("a")).some(a => a.textContent.indexOf("Advertise") > -1) &&
+     Array.from(mpanel.querySelectorAll("a")).some(a => a.textContent.indexOf("Try Live Exam") > -1));
+  mpanel.querySelector('a[href="#jobs"]').click();
+  ok("panel link click closes menu", !mpanel.classList.contains("open") && !document.body.classList.contains("mlock"));
+  menubtn.click();
+  document.dispatchEvent(new window.KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+  ok("Escape closes menu", !mpanel.classList.contains("open"));
+
+  /* ---------- v46: advanced ad slots ---------- */
+  const ads = document.querySelectorAll(".su-ad");
+  ok("4 ad slots total (leaderboard + in-feed + mid + sidebar)", ads.length === 4, "count=" + ads.length);
+  const slots = Array.from(ads).map(a => a.getAttribute("data-slot")).sort();
+  ok("slot map: in-feed, mid, sidebar, top-leaderboard",
+     slots.join(",") === "in-feed,mid,sidebar,top-leaderboard", slots.join(","));
+  ok("top leaderboard above hero (highest visibility)",
+     document.querySelector('.su-ad[data-slot="top-leaderboard"]').closest(".wrap") !== null &&
+     (document.querySelector('.su-ad[data-slot="top-leaderboard"]').compareDocumentPosition(
+       document.querySelector(".hero")) & 4) !== 0); // 4 = DOCUMENT_POSITION_FOLLOWING
+  ok("in-feed ad inside news grid (not .news — filters never hide ads)",
+     document.getElementById("grid").contains(document.querySelector('.su-ad[data-slot="in-feed"]')) &&
+     !document.querySelector('.su-ad[data-slot="in-feed"]').classList.contains("news"));
+  ok("all ad CTAs safe: rel=sponsored nofollow + target=_blank",
+     Array.from(document.querySelectorAll(".su-ad a")).every(a =>
+       (a.getAttribute("rel") || "").indexOf("sponsored") > -1 && a.getAttribute("target") === "_blank"));
+  ok("all ad slots labeled SPONSORED + visible disclosure",
+     Array.from(ads).every(a => /SPONSORED/i.test(a.textContent) && a.getAttribute("aria-label") === "Sponsored content"));
+  ok("Advertise-with-us anchor exists (#ads)", !!document.getElementById("ads"));
+
   /* ---------- summary ---------- */
   console.log("=".repeat(64));
   console.log("  JSDOM RUNTIME CHECKS — preview/index.html");

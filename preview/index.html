@@ -72,9 +72,37 @@
     .mark{height:40px;width:40px;border-radius:13px;display:grid;place-items:center;color:#fff;font-weight:800;font-size:21px;background:linear-gradient(135deg,var(--orange),#ffb25f);box-shadow:0 8px 17px rgba(237,138,50,.3)}
     .brand{font-size:21px;font-weight:800;letter-spacing:-.04em;color:var(--navy)}
     .brand small{font-size:10px;display:block;color:var(--muted);font-weight:700;letter-spacing:.06em;text-transform:uppercase}
-    .nav{display:flex;align-items:center;gap:3px;flex:1}
-    .nav a{padding:10px 13px;color:#44536b;font-size:13px;font-weight:700;border-radius:10px}
-    .nav a:hover,.nav a.active{color:var(--navy);background:#edf4ff}
+    .nav{display:flex;align-items:center;gap:2px;flex:1}
+    .nav a{position:relative;padding:10px 13px;color:#44536b;font-size:13px;font-weight:700;border-radius:10px;transition:color .2s}
+    .nav a::after{content:"";position:absolute;left:13px;right:13px;bottom:5px;height:2px;border-radius:2px;background:var(--orange);transform:scaleX(0);transform-origin:left;transition:transform .25s ease}
+    .nav a:hover{color:var(--navy)}
+    .nav a:hover::after,.nav a.active::after{transform:scaleX(1)}
+    .nav a.active{color:var(--navy)}
+    /* v46: "More" dropdown — neat, top-right */
+    .has-drop{position:relative}
+    .has-drop .dropcaret{font-size:10px;margin-left:3px;opacity:.7}
+    .drop{position:absolute;top:calc(100% + 8px);right:0;min-width:220px;background:var(--card);border:1px solid var(--cardline);border-radius:14px;box-shadow:0 22px 48px rgba(15,46,98,.18);padding:8px;opacity:0;visibility:hidden;transform:translateY(8px);transition:opacity .22s ease,transform .22s ease,visibility .22s;z-index:60}
+    .has-drop:hover .drop,.has-drop:focus-within .drop{opacity:1;visibility:visible;transform:translateY(0)}
+    .drop a{display:block;padding:10px 12px;border-radius:9px;font-size:13px;font-weight:700;color:#44536b}
+    .drop a:hover{background:#edf4ff;color:var(--navy)}
+    .drop a small{display:block;font-weight:500;font-size:11px;color:var(--muted)}
+    .drop .dropsep{height:1px;background:var(--line);margin:6px 8px}
+    /* v46: mobile hamburger + slide-down panel (top-right) */
+    .menubtn{display:none;border:1px solid var(--line);background:var(--card);color:var(--navy);height:38px;width:38px;border-radius:11px;font-size:16px;cursor:pointer;line-height:1}
+    .mpanel{position:fixed;top:74px;left:0;right:0;background:var(--card);border-bottom:1px solid var(--cardline);box-shadow:0 30px 60px rgba(15,46,98,.22);z-index:70;transform:translateY(-110%);transition:transform .28s ease;max-height:calc(100vh - 74px);overflow-y:auto;padding:10px 18px 20px}
+    .mpanel.open{transform:translateY(0)}
+    .mpanel a{display:flex;align-items:center;gap:10px;padding:13px 12px;font-size:15px;font-weight:700;color:var(--ink);border-radius:10px;text-decoration:none}
+    .mpanel a:active{background:var(--soft)}
+    .mpanel a .mico{width:34px;height:34px;border-radius:10px;background:#edf4ff;color:var(--navy);display:grid;place-items:center;font-size:15px;flex:none}
+    .mpanel .msep{height:1px;background:var(--line);margin:8px 4px}
+    .mpanel .mlabel{font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);padding:10px 12px 4px}
+    .mpanel .mcta{display:flex;justify-content:center;background:var(--orange);color:#fff;border-radius:12px;padding:13px;font-size:14px;font-weight:800;margin-top:10px}
+    .mpanel .msocial{display:flex;gap:8px;margin-top:12px}
+    .mpanel .msocial a{flex:1;justify-content:center;padding:10px;font-size:12px;background:var(--soft);color:var(--ink);border:1px solid var(--line)}
+    .mpanel .mtheme{display:flex;justify-content:space-between;align-items:center;padding:12px;font-size:13px;font-weight:700;color:var(--muted);margin-top:8px}
+    .mbackdrop{position:fixed;inset:0;background:rgba(13,23,40,.45);z-index:69;opacity:0;visibility:hidden;transition:opacity .25s}
+    .mbackdrop.open{opacity:1;visibility:visible}
+    body.mlock{overflow:hidden}
     .headactions{display:flex;align-items:center;gap:8px}
     .iconbtn{border:1px solid var(--line);color:var(--navy);background:var(--card);height:38px;width:38px;border-radius:11px;cursor:pointer;font-size:15px}
     .callbtn{border:0;background:var(--orange);color:#fff;font-weight:800;border-radius:11px;padding:11px 16px;cursor:pointer;box-shadow:0 8px 16px rgba(237,138,50,.22);font-size:13px}
@@ -229,6 +257,25 @@
     .su-ad-disc{font-size:10px;color:#8995a7;padding:8px 16px 12px;line-height:1.5}
     .su-ad-grad{height:110px;background:linear-gradient(120deg,#12356b 0%,#2c69bd 55%,#ed8a32 130%)}
     .su-ad-card{background:var(--card);border-left:4px solid var(--orange);padding-bottom:2px}
+    /* v46: TOP LEADERBOARD (below header — highest visibility) */
+    .su-ad-leader{margin:16px 0 0}
+    .su-ad-leader .su-ad-kicker{padding-top:11px}
+    .su-ad-leader-body{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:2px 16px 0;flex-wrap:wrap}
+    .su-ad-leader .su-ad-title{padding:2px 0 0;font-size:15px}
+    .su-ad-leader .su-ad-desc{padding:3px 0 0;font-size:12.5px;max-width:660px}
+    .su-ad-leader .su-ad-cta{margin:8px 0 4px}
+    .su-ad-leader .su-ad-disc{padding:2px 16px 12px}
+    @media(max-width:600px){.su-ad-leader-body{flex-direction:column;align-items:flex-start}}
+    /* v46: IN-FEED native ad (blends with news grid — high CTR) */
+    .su-ad-feed{margin:0;display:flex;flex-direction:column;border:1px dashed #f0b97a;border-radius:14px;background:linear-gradient(135deg,#fffdf8,#fff6ea);overflow:hidden;font-size:14px;position:relative}
+    .su-ad-feed .su-ad-kicker{padding:8px 14px 0}
+    .su-ad-feed .fthumb{height:84px;background:linear-gradient(120deg,#ed8a32,#f6b26b);display:grid;place-items:center;color:#fff;font-weight:800;font-size:13px;text-align:center;padding:8px;line-height:1.3}
+    .su-ad-feed h3{font-size:14.5px;color:var(--navy);margin:0;padding:9px 14px 0;line-height:1.35;font-weight:800}
+    .su-ad-feed p{font-size:12px;color:var(--muted);margin:4px 14px 0;line-height:1.5}
+    .su-ad-feed a.fcta{display:block;margin:10px 14px 12px;align-self:flex-start;background:var(--orange);color:#fff;font-size:12px;font-weight:800;padding:8px 14px;border-radius:999px;text-decoration:none;box-shadow:0 6px 14px rgba(237,138,50,.25)}
+    body.dark .su-ad-feed{background:linear-gradient(135deg,#14243c,#1c2a1e);border-color:#6b5527}
+    body.dark .su-ad-feed h3{color:#e7f0ff}
+    body.dark .su-ad-feed p{color:#93a4bd}
     .su-ad-card .su-ad-kicker{padding:10px 14px 0}
     .su-ad-card .su-ad-title{padding:5px 14px 0;font-size:14px}
     .su-ad-card .su-ad-desc{padding:4px 14px 0;font-size:12px}
@@ -290,7 +337,14 @@
     body.dark .eyebrow{background:#152a4a;color:#9cc3f5}
     body.dark .ghostbtn{background:#14243c;color:#e7f0ff;border-color:var(--line)}
     body.dark .nav a{color:#b9c6da}
-    body.dark .nav a:hover,body.dark .nav a.active{color:#e7f0ff;background:#152a4a}
+    body.dark .nav a:hover,body.dark .nav a.active{color:#e7f0ff}
+    body.dark .drop{background:#14243c;border-color:#31445f}
+    body.dark .drop a{color:#b9c6da}
+    body.dark .drop a:hover{background:#152a4a;color:#e7f0ff}
+    body.dark .mpanel{background:#0d1728;border-color:#31445f}
+    body.dark .mpanel a{color:#e8eef7}
+    body.dark .mpanel a .mico{background:#152a4a;color:#6ea3e8}
+    body.dark .mpanel .msocial a{background:#14243c;border-color:#31445f;color:#e8eef7}
     body.dark .tab{background:#14243c;color:#b9c6da;border-color:var(--line)}
     body.dark .tab.active{background:var(--orange);border-color:var(--orange);color:#0d1728}
     body.dark .searchbox{background:#14243c}
@@ -311,6 +365,8 @@
     @media(max-width:920px){
       .wrap{padding:0 18px}
       .nav{display:none}
+      .menubtn{display:block}
+      .mpanel{top:62px;max-height:calc(100vh - 62px)}
       .logo{min-width:0;flex:1}
       .hero-grid{grid-template-columns:1fr}
       .hero-card{max-width:590px;margin:auto;transform:none}
@@ -371,12 +427,66 @@
       <a href="#results">Results</a>
       <a href="#exam">Exam Portal</a>
       <a href="#quiz">Daily Quiz</a>
+      <span class="has-drop">
+        <a href="#services" aria-haspopup="true" aria-expanded="false">More<span class="dropcaret" aria-hidden="true">▾</span></a>
+        <span class="drop" role="menu" aria-label="More links">
+          <a href="#services" role="menuitem">Services<small>Counselling, documents, guidance</small></a>
+          <a href="#ads" role="menuitem">Advertise With Us<small>College banners · shop · services — highest-CTR slots</small></a>
+          <span class="dropsep" aria-hidden="true"></span>
+          <a href="#trust" role="menuitem">Editorial Policy</a>
+          <a href="#trust" role="menuitem">Corrections</a>
+          <a href="#trust" role="menuitem">Privacy</a>
+        </span>
+      </span>
     </nav>
     <div class="headactions">
       <button class="iconbtn" id="theme" aria-label="Dark mode toggle" aria-pressed="false">☾</button>
+      <button class="menubtn" id="menubtn" aria-label="Open menu" aria-expanded="false" aria-controls="mpanel">☰</button>
       <a class="callbtn" href="#exam">🎓 Try Live Exam</a>
     </div>
   </div></header>
+
+  <!-- v46: mobile menu panel (top-right hamburger) -->
+  <div class="mbackdrop" id="mbackdrop" aria-hidden="true"></div>
+  <div class="mpanel" id="mpanel" role="dialog" aria-label="Site menu">
+    <div class="mlabel">Explore</div>
+    <a href="#top"><span class="mico" aria-hidden="true">🏠</span>Home</a>
+    <a href="#jobs"><span class="mico" aria-hidden="true">💼</span>Jobs &amp; Opportunities</a>
+    <a href="#scholarships"><span class="mico" aria-hidden="true">🎓</span>Scholarships</a>
+    <a href="#results"><span class="mico" aria-hidden="true">📄</span>Results</a>
+    <a href="#exam"><span class="mico" aria-hidden="true">⏱</span>Exam Portal (Live)</a>
+    <a href="#quiz"><span class="mico" aria-hidden="true">🧠</span>Daily Quiz</a>
+    <div class="msep" aria-hidden="true"></div>
+    <div class="mlabel">More</div>
+    <a href="#services"><span class="mico" aria-hidden="true">🧭</span>Services</a>
+    <a href="#ads"><span class="mico" aria-hidden="true">📢</span>Advertise With Us</a>
+    <a href="#trust"><span class="mico" aria-hidden="true">🛡</span>Editorial Policy</a>
+    <a href="#trust"><span class="mico" aria-hidden="true">✉️</span>Corrections</a>
+    <a href="#trust"><span class="mico" aria-hidden="true">🔒</span>Privacy</a>
+    <a class="mcta" href="#exam">🎓 Try Live Exam — WQJTAK</a>
+    <div class="msocial" aria-label="Follow us">
+      <a href="https://wa.me/919999999999?text=StudentUp.in%20iniki%20question%20unnadi" target="_blank" rel="noopener">WhatsApp</a>
+      <a href="https://t.me/studentup_in" target="_blank" rel="noopener">Telegram</a>
+      <a href="https://www.instagram.com/studentup.in" target="_blank" rel="noopener">Instagram</a>
+      <a href="https://www.youtube.com/@studentupin" target="_blank" rel="noopener">YouTube</a>
+    </div>
+    <div class="mtheme"><span>Dark mode</span><button class="iconbtn" id="mtheme" aria-label="Dark mode toggle">☾</button></div>
+  </div>
+
+  <!-- v46: TOP LEADERBOARD — highest-visibility ad slot (below header) -->
+  <div class="wrap">
+    <section class="su-ad su-ad-leader" aria-label="Sponsored content" data-ad="coaching-leader-demo" data-slot="top-leaderboard">
+      <div class="su-ad-kicker">SPONSORED · COACHING PARTNER <span class="su-ad-note">DEMO</span></div>
+      <div class="su-ad-leader-body">
+        <div>
+          <div class="su-ad-title">ABC IAS/PCS Academy — TSPSC · APPSC · SSC batches 2026</div>
+          <p class="su-ad-desc">Test series + mentorship + daily GK. (Demo slot — real coaching deal ayyaka replace avutundi)</p>
+        </div>
+        <a class="su-ad-cta" href="https://example.com/abc-coaching-demo" target="_blank" rel="sponsored nofollow noopener">Book Free Demo Class →</a>
+      </div>
+      <div class="su-ad-disc">Advertisement — partner ki direct link. Official notifications main content lo matrame untayi.</div>
+    </section>
+  </div>
 
   <div id="top"></div>
   <section class="hero"><div class="wrap hero-grid"><div>
@@ -430,6 +540,14 @@
         </div>
       </div>
       <div class="newsgrid" id="grid">
+        <!-- v46: IN-FEED native ad (blends with grid — high CTR; not .news so filters never hide ads) -->
+        <aside class="su-ad su-ad-feed" aria-label="Sponsored content" data-ad="tuition-feed-demo" data-slot="in-feed">
+          <div class="su-ad-kicker">SPONSORED · LOCAL PARTNER <span class="su-ad-note">DEMO</span></div>
+          <div class="fthumb" aria-hidden="true">Partner Tuition<br>Home Classes · Hyderabad</div>
+          <h3>10th / 12th home classes — group + one-on-one, weekend batches</h3>
+          <p>Free demo class. Local tuition partner. (Demo ad — real partner ayyaka replace avutundi)</p>
+          <a class="fcta" href="https://example.com/tuition-demo" target="_blank" rel="sponsored nofollow noopener">Visit Partner →</a>
+        </aside>
         <article class="news" data-state="central" data-text="ssc cgl 2026 apply online central government jobs guide eligibility fee">
           <div class="thumb t1"><span>SSC CGL 2026<br>Apply Online Guide</span></div>
           <div class="newsbody">
@@ -562,6 +680,10 @@
         <div class="trend"><span class="rank">04</span><div><b>APPSC Group 1 cutoff trend</b><span>Andhra Pradesh</span></div></div>
         <div class="trend"><span class="rank">05</span><div><b>TS Inter results revaluation</b><span>Results · TS boards</span></div></div>
       </div>
+      <div class="sidecard" id="ads"><h3>📢 Advertise with us</h3><p class="sub">College banners · coaching · local shop · personal services</p>
+        <p style="font-size:12.5px;line-height:1.6;margin:8px 0 10px;color:var(--ink-soft)">Highest-CTR slots: top leaderboard · in-feed · mid-content · sidebar. 100% Google-safe: visible SPONSORED label, policy-compliant, no clickbait. UTM tracking on every ad.</p>
+        <a href="https://t.me/studentup_in" style="font-weight:800">DM on Telegram →</a>
+      </div>
       <aside class="su-ad su-ad-card" aria-label="Sponsored content" data-ad="shop-ad-demo" data-slot="sidebar">
         <div class="su-ad-kicker">SPONSORED · LOCAL PARTNER <span class="su-ad-note">DEMO</span></div>
         <div class="su-ad-title">Student Stationery Corner — Exam Kit @ Discount</div>
@@ -578,7 +700,7 @@
           <li>✓ CSV exports (results / questions / audit)</li>
         </ul>
         <div class="service-actions">
-          <a id="examlink" href="#" target="_blank" rel="noopener">▶ Try sample exam (NYZPD6)</a>
+          <a id="examlink" href="#" target="_blank" rel="noopener">▶ Try sample exam (WQJTAK)</a>
         </div>
       </div>
       <div class="sidecard service-card" id="services"><h3>Need application help?</h3>
@@ -643,6 +765,35 @@
   (function(){
     "use strict";
     /* ---------- theme ---------- */
+    /* ---------- v46: mobile hamburger menu (top-right) ---------- */
+    var menuBtn=document.getElementById("menubtn"), mpanel=document.getElementById("mpanel"),
+        mbackdrop=document.getElementById("mbackdrop");
+    function setMenu(open){
+      mpanel.classList.toggle("open",open);
+      mbackdrop.classList.toggle("open",open);
+      menuBtn.setAttribute("aria-expanded",open?"true":"false");
+      menuBtn.setAttribute("aria-label",open?"Close menu":"Open menu");
+      menuBtn.textContent=open?"✕":"☰";
+      document.body.classList.toggle("mlock",open);
+    }
+    menuBtn.addEventListener("click",function(){setMenu(!mpanel.classList.contains("open"));});
+    mbackdrop.addEventListener("click",function(){setMenu(false);});
+    Array.prototype.forEach.call(mpanel.querySelectorAll("a"),function(a){
+      a.addEventListener("click",function(){setMenu(false);});
+    });
+    document.addEventListener("keydown",function(e){if(e.key==="Escape")setMenu(false);});
+    var mtheme=document.getElementById("mtheme");
+    if(mtheme)mtheme.addEventListener("click",function(){document.getElementById("theme").click();});
+    /* ---------- v46: "More" dropdown a11y state ---------- */
+    Array.prototype.forEach.call(document.querySelectorAll(".has-drop > a"),function(t){
+      t.addEventListener("click",function(e){
+        var d=t.nextElementSibling, was=t.getAttribute("aria-expanded")==="true";
+        t.setAttribute("aria-expanded",was?"false":"true");
+        if(was&&window.innerWidth>920)e.preventDefault();
+      });
+      t.addEventListener("mouseenter",function(){t.setAttribute("aria-expanded","true");});
+      t.addEventListener("mouseleave",function(){t.setAttribute("aria-expanded","false");});
+    });
     var THEME_KEY="studentup-theme", themeBtn=document.getElementById("theme");
     function applyTheme(dark){document.body.classList.toggle("dark",dark);themeBtn.textContent=dark?"☀":"☾";themeBtn.setAttribute("aria-pressed",dark?"true":"false");}
     var stored=null;try{stored=localStorage.getItem(THEME_KEY);}catch(e){}
@@ -717,9 +868,9 @@
     var examLink=document.getElementById("examlink");
     (function(){
       var h=location.hostname, target;
-      if(/^8000-/.test(h)){target=location.protocol+"//"+h.replace(/^8000-/,"8080-")+"/exam/NYZPD6";}
-      else if(h==="localhost"||h==="127.0.0.1"){target="http://localhost:8080/exam/NYZPD6";}
-      else{target="/exam/NYZPD6";}
+      if(/^8000-/.test(h)){target=location.protocol+"//"+h.replace(/^8000-/,"8080-")+"/exam/WQJTAK";}
+      else if(h==="localhost"||h==="127.0.0.1"){target="http://localhost:8080/exam/WQJTAK";}
+      else{target="/exam/WQJTAK";}
       examLink.href=target;
     })();
 
@@ -774,7 +925,7 @@
       msgEl.textContent=score===QUIZ.length?"🏆 Full marks! Exam topper level — exam lo eppudu ekkadaka."
         :(score>=4?"👍 Chala velli! 2-3 topics revise chesi full marks ravadu."
         :(score>=2?"💪 Practice cheyandi — daily quiz 5 minutes matrame.":"📚 Re-try cheyandi — official notifications chudesi GK improve avtundi."));
-      result.scrollIntoView({behavior:"smooth",block:"nearest"});
+      if(result.scrollIntoView)result.scrollIntoView({behavior:"smooth",block:"nearest"});
     }
     wrap.addEventListener("click",function(ev){
       var el=ev.target.closest?ev.target.closest("button.opt, button.next"):null;
