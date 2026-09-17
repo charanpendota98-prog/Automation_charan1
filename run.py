@@ -29,6 +29,9 @@
                                            wrong category, PII, tags, timezone)
   python run.py --site-audit-fix           v41: audit + safe fixes (dry-run)
   python run.py --site-audit-fix --site-audit-apply   v41: fixes ni apply chey
+  python run.py --ads                    v43: AD MANAGER — owner ads (college
+  python run.py --ads-demo                 banners/shop/services) inventory +
+                                           slot plan / visible placement preview
   python run.py --deploy-check            v41: deploy readiness (deps/env/disk/port +
                                            exam portal boot + /healthz) — server SSH lo
   python run.py --test-all                v41: ANNI suites okate command tho

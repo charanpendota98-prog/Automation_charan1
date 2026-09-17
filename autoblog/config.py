@@ -68,6 +68,14 @@ AD_SHORTCODE = _get("AD_SHORTCODE", "")
 MAX_AD_SLOTS = int(_get("MAX_AD_SLOTS", "3"))
 # Ad space min-height tho reserve (CLS/layout-shift radu — CWV + viewability)
 AD_CLS_WRAPPER = _get("AD_CLS_WRAPPER", "1") not in ("0", "false", "no")
+# v43 AD MANAGER — owner ads (college banners, shop, services). Inventory:
+# ads/inventory.json (repo lo). Empty/missing inventory = no-op (safe).
+# ADSENSE_APPROVED=1 unte personal ad cap auto 1 ki drop avtundi (AdSense safe).
+AD_MANAGER_ENABLED = _get("AD_MANAGER_ENABLED", "1") not in ("0", "false", "no")
+# Post lo max personal ad slots (AdSense slots ki separate — ee varam matrame)
+MAX_PERSONAL_AD_SLOTS = int(_get("MAX_PERSONAL_AD_SLOTS", "2"))
+# Inventory path override (default: repo ads/inventory.json)
+ADS_INVENTORY_PATH = _get("ADS_INVENTORY_PATH", "")
 # E-E-A-T: Article schema publisher logo (rich results kosam; optional)
 SITE_LOGO_URL = _get("SITE_LOGO_URL", "")
 # Google Discover: per-post robots lo max-image-preview:large (RM meta)

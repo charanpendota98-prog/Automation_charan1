@@ -1294,6 +1294,12 @@ def main() -> int:
     parser.add_argument("--exam-base-url", default="",
                         help="v39: public URL for share links/notifications "
                              "(ex: https://exams.college.edu)")
+    parser.add_argument("--ads", action="store_true",
+                        help="v43: AD MANAGER — owner ads (college banners/shop/"
+                             "services) inventory status + per-category slot plan")
+    parser.add_argument("--ads-demo", action="store_true",
+                        help="v43: AD MANAGER — visible ad placement preview "
+                             "(output/ads-preview.html — browser lo open cheyandi)")
     parser.add_argument("--deploy-check", action="store_true",
                         help="v41: deploy readiness — deps/env/disk/port + exam portal "
                              "ni nijamga boot chesi /healthz hit (server SSH lo)")
@@ -1387,6 +1393,10 @@ def main() -> int:
         return service_center_setup(dry=args.dry_run, force=args.force)
     if args.content_audit:
         return content_audit_run(limit=max(1, min(args.content_limit, 5000)))
+    if args.ads or args.ads_demo:
+        from . import ad_manager
+
+        return ad_manager.run_cli("demo" if args.ads_demo else "status")
     if args.google_audit:
         return google_audit_run(args.google_audit)
     if args.research_brief:

@@ -1,0 +1,139 @@
+/* =====================================================================
+   studentup.in — ADVANCED CSS PACK (v42)
+   Where to paste:
+     Option A (recommended): WP Code plugin → Add New Snippet →
+        "HTML head" → <style> ... this file ... </style>
+     Option B: Appearance → Customize → Additional CSS (whole file)
+   Notes:
+     - Pairs with the bot Design Kit (--polish). Kit handles post-internal
+       components; THIS pack adds the site-shell advanced layer:
+       sticky header, interaction, mobile polish, LCP/CLS protection.
+     - Low-specificity defensive selectors (theme-safe, no !important).
+     - Brand variables match the Design Kit: navy #12356B, accent #E8842B.
+   ===================================================================== */
+
+:root{
+  --su2-navy:#12356B;
+  --su2-navy-2:#1D4D91;
+  --su2-accent:#E8842B;
+  --su2-ink:#22303F;
+  --su2-soft:#5A6472;
+  --su2-line:#E4E9F1;
+  --su2-soft-bg:#F7F9FC;
+  --su2-radius:16px;
+  --su2-shadow:0 10px 30px rgba(18,53,107,.10);
+}
+
+/* ---------- 1. Sticky header with blur + elevation on scroll ---------- */
+.site-header, header.site, .gp-header{
+  position:sticky; top:0; z-index:9999;
+  background:rgba(255,255,255,.92);
+  -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--su2-line);
+}
+body.nav-scrolled .site-header, body.nav-scrolled header.site{
+  box-shadow:0 6px 18px rgba(18,53,107,.10);
+}
+
+/* ---------- 2. Brand header CTA (if you add a "Get Help" button) ---------- */
+.su2-cta{
+  display:inline-block; background:var(--su2-accent); color:#fff !important;
+  font-weight:700; font-size:14px; text-decoration:none;
+  border-radius:999px; padding:10px 18px; margin-left:12px;
+  box-shadow:0 6px 14px rgba(232,132,43,.25);
+  transition:transform .15s ease, box-shadow .15s ease;
+}
+.su2-cta:hover{ transform:translateY(-1px); box-shadow:0 10px 20px rgba(232,132,43,.32); }
+
+/* ---------- 3. Card interactions (archive + related + hub grids) ---------- */
+body .post-card, body article.wp-block-post-template > li,
+body .su-related a, body .hub-card{
+  transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+body .post-card:hover, body article.wp-block-post-template > li:hover,
+body .su-related a:hover, body .hub-card:hover{
+  transform:translateY(-3px);
+  box-shadow:var(--su2-shadow);
+  border-color:#C9D6EA;
+}
+
+/* ---------- 4. LCP protection: featured images contained, no shift ---------- */
+body .post-thumbnail img, body article img.wp-post-image,
+body .su-featured img{
+  width:100%; height:auto; object-fit:cover;
+  max-height:420px;
+  background:#E9EEF5; /* paint placeholder -> no CLS flash */
+}
+@media (max-width:600px){
+  body .post-thumbnail img, body article img.wp-post-image{ max-height:280px; }
+}
+
+/* ---------- 5. Tables: mobile scroll instead of page overflow ---------- */
+body .entry-content table{ display:block; overflow-x:auto; -webkit-overflow-scrolling:touch; max-width:100%; }
+body .entry-content table table{ display:table; } /* nested table stays normal */
+body .entry-content thead th{ position:sticky; top:0; }
+
+/* ---------- 6. Typography scale for long Telugu-English reading ---------- */
+body .entry-content p{ font-size:16.5px; line-height:1.85; }
+body .entry-content h2{
+  font-size:clamp(21px, 2.6vw, 26px);
+  border-left:4px solid var(--su2-accent);
+  padding-left:12px; margin-top:34px;
+}
+body .entry-content h3{ font-size:clamp(18px, 2.2vw, 21px); }
+@media (max-width:600px){
+  body{ font-size:15.5px; }
+  body .entry-content p{ font-size:16px; line-height:1.8; }
+}
+
+/* ---------- 7. Tap targets >= 44px (mobile usability / AdSense UX) ---------- */
+@media (max-width:782px){
+  body a, body button{ min-height:44px; }
+  body .entry-content a{ min-height:0; } /* inline links stay inline */
+  body .wp-block-button__link, body .su2-cta, body .su-quick-answer-card a{ min-height:46px; display:inline-flex; align-items:center; }
+}
+
+/* ---------- 8. Keyboard accessibility ---------- */
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible{
+  outline:3px solid var(--su2-accent);
+  outline-offset:2px;
+  border-radius:6px;
+}
+@media (prefers-reduced-motion: reduce){
+  *, *::before, *::after{ animation-duration:.001s !important; transition-duration:.001s !important; }
+  html{ scroll-behavior:auto; }
+}
+
+/* ---------- 9. Footer: 3-column legal block, mobile stack ---------- */
+body .su2-footer-grid{
+  display:grid; grid-template-columns:1.4fr 1fr 1fr; gap:28px;
+}
+@media (max-width:782px){
+  body .su2-footer-grid{ grid-template-columns:1fr; gap:18px; }
+}
+body footer a{ color:inherit; opacity:.85; }
+body footer a:hover{ opacity:1; text-decoration:underline; }
+
+/* ---------- 10. 404 + no-results: keep users on the funnel ---------- */
+body .error-404 .page-title, body .no-results h1{
+  color:var(--su2-navy); font-size:clamp(24px, 4vw, 34px);
+}
+
+/* ---------- 11. Print: students print checklists ---------- */
+@media print{
+  body .site-header, body footer, body .su-share-bar,
+  body .su-related, body .su-official-links, body nav{ display:none !important; }
+  body .entry-content{ font-size:12pt; color:#000; }
+  body .su-quick-answer-card{ break-inside:avoid; }
+}
+
+/* ---------- 12. Dark-mode compatibility (Design Kit body.su-dark) ---------- */
+body.su-dark{
+  --su2-line:#33445E;
+  --su2-soft-bg:#182235;
+}
+body.su-dark .site-header, body.su-dark header.site{
+  background:rgba(17,24,39,.92);
+  border-bottom-color:#33445E;
+}
+body.su-dark body .post-thumbnail img, body.su-dark article img.wp-post-image{ background:#202F46; }

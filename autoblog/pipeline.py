@@ -263,6 +263,17 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
 
     if not is_quiz:
         final_html = monetize.append_blocks(final_html, article)
+        # v43: AD MANAGER — owner ads (college banners, shop, services).
+        # Runs AFTER monetize blocks so the bottom slot + link-adjacency
+        # safety check see every real <a> that exists. No-op when inventory
+        # empty/missing or AD_MANAGER_ENABLED=0 (publishing never blocked).
+        try:
+            from . import ad_manager as _admgr
+            final_html, _ad_report = _admgr.inject(final_html, article)
+            article["_ads"] = _ad_report
+        except Exception:  # noqa: BLE001 — owner ads must never block publish
+            log.exception("Ad manager inject skipped (safe)")
+            article["_ads"] = []
 
     # --- QA step 2: validation score + originality proof ---
     qa = validator.validate_article(article, final_html)

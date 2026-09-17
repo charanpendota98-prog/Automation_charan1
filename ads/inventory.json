@@ -1,0 +1,62 @@
+{
+  "version": 1,
+  "policy": {
+    "max_personal_ads_per_post": 2,
+    "label": "Sponsored",
+    "rel": "sponsored nofollow noopener",
+    "utm_source": "studentup.in"
+  },
+  "ads": [
+    {
+      "id": "college-banner-demo",
+      "name": "ABC Engineering College — Demo Banner",
+      "type": "college_banner",
+      "layout": "banner",
+      "active": true,
+      "demo": true,
+      "label": "College Sponsorship",
+      "title": "ABC Engineering College — 2026 Admissions Open (Demo)",
+      "description": "ECE · CSE · MBA — merit scholarships, hostel & placement support. Ee oka DEMO ad — mee college ki deal ayyaka real name/image/link replace cheyandi.",
+      "cta": "Know More",
+      "image": "",
+      "link": "https://example.com/abc-college-demo",
+      "categories": "Admissions, Education News, Exam Updates",
+      "start": "2026-01-01",
+      "end": "2026-12-31"
+    },
+    {
+      "id": "shop-ad-demo",
+      "name": "Stationery Shop — Demo Card",
+      "type": "shop",
+      "layout": "card",
+      "active": true,
+      "demo": true,
+      "label": "Local Partner",
+      "title": "Student Stationery Corner — Exam Kit @ Discount (Demo)",
+      "description": "Pen, notebook, calculator, admit-card copies — bulk discount for students. DEMO ad — mee shop/partner info replace cheyandi.",
+      "cta": "Visit Shop",
+      "image": "",
+      "link": "https://example.com/stationery-demo",
+      "categories": "Exam Updates, Results, Study Tips",
+      "start": "2026-01-01",
+      "end": "2026-12-31"
+    },
+    {
+      "id": "service-ad-demo",
+      "name": "Student Internet Center — Demo",
+      "type": "service",
+      "layout": "card",
+      "active": false,
+      "demo": true,
+      "label": "Our Service",
+      "title": "Application Help Center — Form Fill + Guidance (Demo)",
+      "description": "Jobs/scholarship forms fill chesipovadam, resume, document scan — call ki vachey. DEMO — .env lo SERVICE_CENTER_PHONE set chesi active:true cheyandi.",
+      "cta": "Call Now",
+      "image": "",
+      "link": "https://studentup.in/student-internet-center/",
+      "categories": "Scholarships, Govt Jobs",
+      "start": "2026-01-01",
+      "end": "2026-12-31"
+    }
+  ]
+}
