@@ -1,0 +1,12 @@
+{
+  "name": "studentup-jsdom-runtime",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Browser-level runtime checks for preview/index.html (jsdom)",
+  "scripts": {
+    "test": "node jsdom_runtime_test.js"
+  },
+  "dependencies": {
+    "jsdom": "^24.0.0"
+  }
+}
