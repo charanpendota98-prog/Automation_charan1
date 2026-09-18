@@ -66,7 +66,8 @@ def p2_module_parity(rep: dict) -> None:
 
 def p3_preview_links(rep: dict) -> None:
     checked = broken = 0
-    # v70: preview/_dev/ = internal design archive (robots Disallow) — deploy avvadu, anduku skip
+    # v70: dev archive ippudu docs/design-archive/ lo undi (website meeda serve avvadu) —
+    # _dev/ skip safety-net (purana deploy lo aa folder unte aa links ni audit cheyyamu)
     for html in sorted(h for h in PREVIEW.rglob("*.html") if "_dev" not in h.parts):
         text = _read(html)
         body = re.sub(r"<script.*?</script>", "", text, flags=re.S)  # JS templates skip

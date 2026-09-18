@@ -801,7 +801,7 @@ EMI TEESESARU (public surfaces):
                        breaking.php REST param 'proof' · hero-proof CSS · README-THEME proof row
   policy pages       : builder notes lo developer text remove (disclaimer · advertise)
   preview root       : v38/v39/v41/legacy-concept/ads-preview/top-post-blueprint.html +
-                       dominance-plan-90-days.md → preview/_dev/  (robots: Disallow: /_dev/)
+                       dominance-plan-90-days.md → docs/design-archive/  (website meeda serve avvadu)
 
 EMI MIGILINDI (visitor-facing — user cheppinattu): per-post trust note (sources + last updated) ·
   corrections email links · content.

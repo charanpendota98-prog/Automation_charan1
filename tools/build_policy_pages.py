@@ -454,7 +454,7 @@ ROBOTS = """# studentup.in — public preview build
 User-agent: *
 Allow: /
 Disallow: /admin
-# internal artifacts — design archive + strategy/keyword data, public pages kaadu (v58/v70)
+# internal artifacts — strategy/keyword data + (safety-net) purana _dev/ drafts (v58/v70)
 Disallow: /_dev/
 Disallow: /keyword-universe-top200.csv
 

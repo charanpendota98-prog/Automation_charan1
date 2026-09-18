@@ -161,7 +161,7 @@ def test_keyword_universe_has_abroad():
 def test_robots_blocks_internal_artifacts():
     """v58 audit: internal strategy/keyword artifacts public ga index avvakudadu."""
     txt = (ROOT / "preview" / "robots.txt").read_text(encoding="utf-8")
-    # v70: dev/proof HTML + strategy docs preview/_dev/ loki move ayyayi (public root clean)
+    # v70: dev/proof HTML + strategy docs preview/ nunchi docs/design-archive/ ki move ayyayi
     for path in ("/admin", "/_dev/", "/keyword-universe-top200.csv"):
         assert "Disallow: %s" % path in txt, "robots disallow missing: " + path
     for stray in ("v38.html", "v39.html", "v41.html", "legacy-concept.html",
@@ -169,7 +169,7 @@ def test_robots_blocks_internal_artifacts():
                   "dominance-plan-90-days.md"):
         assert not (ROOT / "preview" / stray).exists(), \
             "public preview root lo developer file undakoodadu: " + stray
-        assert (ROOT / "preview" / "_dev" / stray).exists(), "archive miss: " + stray
+        assert (ROOT / "docs" / "design-archive" / stray).exists(), "archive miss: " + stray
     assert "Allow: /\n" in txt, "public pages allow avvali"
     assert "Sitemap: https://studentup.in/sitemap.xml" in txt
 

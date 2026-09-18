@@ -429,7 +429,7 @@ python run.py --top-post-plan --top-post-days 90 --top-post-per-day 2
 ```
 Pillar (exam hub post) + support (long-tail wins) mix, cluster + intent
 rotation, same-day lo veru clusters (footprint-safe). CSV/MD/JSON export.
-Repo lo ready sample: `preview/_dev/dominance-plan-90-days.md`.
+Repo lo ready sample: `docs/design-archive/dominance-plan-90-days.md`.
 
 **4. TOP POST SCORE — 30+ checks, 0-100, grade**
 
@@ -566,7 +566,7 @@ python run.py --traffic-views            # advanced control
 | 1 | **On-site proof block remove** | `preview/index.html` nunchi trust/qgate section (headline · 7 stat tiles · ①–⑤ gates · honest note) + CSS teesesaru → mobile lo aa 3 links ippudu policy pages (`pages/editorial-policy.html` · `pages/contact.html` · `pages/privacy.html`) ki veltayi |
 | 2 | **Theme proof remove** | front-page hero-proof tiles · `studentup_proof_tiles()` · theme option `proof_json` · `breaking.php` REST param `proof` · hero-proof CSS · README-THEME proof row — **anni gone** |
 | 3 | **Policy pages clean** | `tools/build_policy_pages.py` notes (disclaimer/advertise) nunchi developer text remove → pages regenerate |
-| 4 | **Dev archive** | `v38/v39/v41/legacy-concept/ads-preview/top-post-blueprint.html` + `dominance-plan-90-days.md` → **`preview/_dev/`** (public root clean · `Disallow: /_dev/`) |
+| 4 | **Dev archive** | `v38/v39/v41/legacy-concept/ads-preview/top-post-blueprint.html` + `dominance-plan-90-days.md` → **`docs/design-archive/`** (preview server ee folder ni serve cheyyadu — website meeda eppudu kanipinchadu · robots `Disallow: /_dev/` safety-net) |
 | 5 | **Regression lock** | Guardian check `counts_sync` (suites ↔ README + public surfaces lo developer text ledu) · readiness `c_counts_sync` · parity **P8** (docs claims + public-text ban) · jsdom 2 clean-checks |
 | 6 | **Nijamaina bug fix (v70 lo pattukunnadi)** | `wp_theme_sync.build_payload()` nunchi `options` + `deadline` blocks + `return out` accidentally poyayi → options/deadline/indexnow sync aagipoyedi. Ippudu restore (daily hook malli pani chestundi) |
 | 7 | **Proof** | `--test-all` **55/55** · jsdom **119/119** · readiness **100/100 (28/28)** · guardian **14/15** (1 warn-only owner env) · code audit **0/0** · parity **0/0** · theme audit **0/0** · php-lint **29/29** |

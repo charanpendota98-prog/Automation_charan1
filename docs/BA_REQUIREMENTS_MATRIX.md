@@ -105,11 +105,11 @@ python tools/build_wp_theme.py    # php-lint + audit + POT + zip (theme install 
 | Bot publish without approval | reputation risk | draft-first + Telegram ✅/🗑️ + pin gate block on critical | ✅ mitigated |
 | Credentials shared in chat | security | never asked; App Password + REST + `.env` only | ✅ policy |
 | Revenue/ranking expectations | wrong decisions | v62 no-guarantee rule + measured readiness only | ✅ policy |
-| R70 | **Public surface lo developer/verification text ledu** (a paina unna proof block remove) | v70 | preview · theme · policy pages clean · dev archive `preview/_dev/` | `v60_test`, `v68_test`, `v69_test`, jsdom clean-checks, parity P8 | `python run.py --guardian` → `counts_sync` |
+| R70 | **Public surface lo developer/verification text ledu** (a paina unna proof block remove) | v70 | preview · theme · policy pages clean · dev archive `docs/design-archive/` (site meeda serve avvadu) | `v60_test`, `v68_test`, `v69_test`, jsdom clean-checks, parity P8 | `python run.py --guardian` → `counts_sync` |
 
 ---
 
 *Last updated: v70 (2026-09-18) — public surface cleanup (verification-proof block + developer
-text remove, dev archive `preview/_dev/`) · `wp_theme_sync` payload restore · 55/55 suites ·
+text remove, dev archive `docs/design-archive/`) · `wp_theme_sync` payload restore · 55/55 suites ·
 jsdom 119/119 · readiness 100/100 (28/28) · guardian 14/15 (1 warn-only owner env) ·
 theme audit 0/0 · code audit 0/0 · parity audit 0/0.*

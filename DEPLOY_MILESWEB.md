@@ -25,8 +25,9 @@ cPanel → File Manager → public_html/
   upload every file from preview/   (index.html, pages/, robots.txt, sitemap.xml, favicon.svg)
 ```
 Design drafts (`ads-preview.html`, `legacy-concept.html`, `v*.html`, `top-post-blueprint.html`)
-**ippudu `preview/_dev/` lo unnayi** (v70) — deploy appudu aa folder ni upload cheyyakapoyina
-parvaledu; upload chesina `Disallow: /_dev/` robots.txt lo already undi (internal drafts).
+**ippudu repo lo `docs/design-archive/` lo unnayi** (v70) — website server aa folder ni serve
+cheyyadu, anduku upload gurinchi aalochinchakandi. (Safety-net: robots.txt lo `Disallow: /_dev/`
+unchamu — purana deploy lo aa folder unte index avvakoodadu.)
 
 Option B — **WordPress** (recommended for the real blog):
 ```

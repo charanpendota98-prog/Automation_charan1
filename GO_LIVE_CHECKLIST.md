@@ -85,7 +85,7 @@ Detail docs: `DEPLOY_MILESWEB.md` (cPanel steps) · `DEPLOY_ORACLE_CLOUD.md` (VM
 | Readiness score | **`python run.py --readiness`** — **100/100** · 27/27 system checks · 10 owner-pending |
 | Production check | **11/11** pass (`python run.py --production-audit`) |
 | Browser runtime | **119/119** checks (`node tests/runtime/jsdom_runtime_test.js`) |
-| Public surface | developer/proof text **ledu** — `python run.py --guardian` → `counts_sync` · dev archive `preview/_dev/` (robots disallowed) |
+| Public surface | developer/proof text **ledu** — `python run.py --guardian` → `counts_sync` · dev archive `docs/design-archive/` (website meeda serve avvadu) |
 | Deploy check | 8 ok · 4 warn · 0 fail (`python run.py --deploy-check`) |
 | Website | 17 categories · 143 sources · 11,192 keywords · menu + chips |
 | Ads | AdSense gate · sponsor console · rate card · house ads |
