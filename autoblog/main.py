@@ -210,6 +210,14 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
                 _bres = breaking.publish(_r.get("items", []))
                 state.meta_set(config.STATE_PATH, f"breaking:{today.isoformat()}", "1")
                 log.info("BREAKING FEED ✔ %d items (site ticker)", _bres["count"])
+                try:  # v61: theme ki kuda push (WP theme active unte)
+                    from . import wp_theme_sync
+
+                    _tres = wp_theme_sync.push()
+                    log.info("WP THEME SYNC %s — %s", "✔" if _tres.get("ok") else "skip",
+                             _tres.get("reason") or _tres.get("updated"))
+                except Exception:
+                    log.exception("wp theme sync failed (non-fatal)")
             except Exception:
                 log.exception("breaking feed failed (non-fatal)")
         # --- v60: SITE GUARDIAN — roju okkasari system motham check + report ---
@@ -698,6 +706,29 @@ def trends_check() -> int:
               " rashtundi (1/day).")
     print("=" * 62)
     return 0
+
+
+def push_theme_data(dry_run: bool = False) -> int:
+    """v61: bot data → WordPress theme (breaking · proof · deadline · house ads)."""
+    from . import wp_theme_sync
+
+    payload = wp_theme_sync.build_payload()
+    if not payload:
+        print("  ⚠️  push cheyyalsina data ledu (breaking feed/house ads/proof khali)")
+        return 0
+    res = wp_theme_sync.push(payload, dry_run=dry_run)
+    print("=" * 62)
+    print("  🎨 WP THEME SYNC — bot data → site theme")
+    print("=" * 62)
+    for k, v in res.get("sent", {}).items():
+        print(f"  • {k}: {v if not isinstance(v, list) else str(len(v)) + ' items'}")
+    if res.get("ok"):
+        extra = " (dry-run, network call ledu)" if res.get("dry_run") else ""
+        print(f"  ✅ push OK{extra} — updated: {res.get('updated', [])}")
+        return 0
+    print(f"  ❌ push fail: {res.get('reason')}")
+    print("     ↳ fix: .env lo WP_SITE/WP_USERNAME/WP_APP_PASSWORD + theme activate")
+    return 1
 
 
 def guardian_run(notify: bool = False, quiet: bool = False) -> int:
@@ -1454,6 +1485,8 @@ def main() -> int:
                              "(tarvata offline/CI audit ki)")
     parser.add_argument("--trends", action="store_true",
                         help="Google Trends India education trends chupinchindi")
+    parser.add_argument("--push-theme-data", action="store_true",
+                        help="v61: bot data (breaking/proof/deadline/house ads) → WP theme REST")
     parser.add_argument("--guardian", action="store_true",
                         help="v60: SITE GUARDIAN — site/UI/SEO/ads/feed/storage full check")
     parser.add_argument("--guardian-notify", action="store_true",
@@ -1669,6 +1702,8 @@ def main() -> int:
         for r in rows:
             print(f"  • {r['exam']:<22} {r.get('posts', '?')} posts -> {r.get('link', r['slug'])}")
         return 0
+    if args.push_theme_data:
+        return push_theme_data(dry_run=args.dry_run)
     if args.guardian or args.guardian_notify:
         return guardian_run(notify=args.guardian_notify)
     if args.breaking_feed or args.breaking_from:

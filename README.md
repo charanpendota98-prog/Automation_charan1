@@ -533,10 +533,36 @@ python run.py --breaking-feed           # v59: radar → site బ్రేకి
 python run.py --breaking-from file.json # v59: feed ni JSON nunchi (offline/approved list)
 ```
 
+### v61 — REAL WEBSITE: WordPress + StudentUp theme (design = preview design)
+
+```bash
+python tools/build_wp_theme.py      # wordpress-theme/studentup-theme.zip (~29 KB) — WP upload ready
+python run.py --push-theme-data     # breaking · proof · deadline · house ads → WP theme (REST)
+```
+
+**Mee site ela untundi:** WordPress (MilesWeb) + `wordpress-theme/studentup/` — `preview/index.html`
+lo unna **ade design**, kaani **dynamic**: bot post rasthe card + category count + breaking item
+automatic ga site lo padutayi.
+
+| Theme file | Enti (preview lo ekkado) |
+|---|---|
+| `front-page.php` | home order: used-strip → ప్రకటన → hero+countdown → బ్రేకింగ్ → grid+chips |
+| `header.php` | logo · menu (TS/AP/… dropdown) · టికర్ · mobile panel |
+| `single.php` | article + ads + WhatsApp/Telegram share + related + trust note |
+| `inc/breaking.php` | feed (option → 10-min transient file → honest empty) + REST push endpoint |
+| `inc/ads.php` | AdSense unit + house ads (SPONSORED · rel=sponsored · day rotation) |
+| `inc/template.php` | cards · proof tiles (WP live numbers) · countdown · breadcrumbs (Rank Math) |
+| `assets/js/studentup.js` | dark mode · mobile panel · chips filter · countdown (no library) |
+
+Install (5 min): zip upload → Activate → Menus assign → `--push-theme-data`.
+Options: `studentup_breaking_json` · `studentup_proof_json` · `studentup_deadline_json` ·
+`studentup_house_ads` · `studentup_adsense_client` · `studentup_exam_url`.
+Detail: `wordpress-theme/studentup/README-THEME.md`.
+
 ### v60 — SITE GUARDIAN: eppatiki advanced ga (roju automatic)
 
 ```bash
-python run.py --guardian            # 11 checks: site/UI/SEO/ads/feed/storage
+python run.py --guardian            # 12 checks: site/UI/SEO/ads/feed/storage/theme
 python run.py --guardian-notify     # same + Telegram report (daily hook automatic @ 20 IST)
 ```
 
@@ -575,7 +601,7 @@ Menu (desktop + mobile same order): హోమ్ · ఉద్యోగాలు�
 
 Bot side: `autoblog/breaking.py` (feed build + tag classifier + honest empty note),
 radar run lo auto hook, `MOST_USED` order okate source (bot + site + tests sync).
-Evidence: tests/v59_test.py 12 checks · `run.py --test-all` 46/46 · jsdom 122/122.
+Evidence: tests/v59_test.py 12 checks · `run.py --test-all` 47/47 · jsdom 122/122.
 
 > ℹ️ Ee system exam conduct cheyyadaniki matrame — student data (roll, answers,
 > scores) mee server lo untundi, bayata pampabadadu. Public internet lo pettali
@@ -1221,6 +1247,8 @@ Marpali te: `.env` edit chesi scheduler ni restart cheyandi: `sudo systemctl res
 ├── CONTENT_PLAN_DAILY.md   # v58 daily plan: 17 pillars, rhythm, refresh, SEO gates
 ├── breaking (autoblog/breaking.py)      # v59 site బ్రేకింగ్ feed + most-used order
 ├── guardian (autoblog/guardian.py)      # v60 roju automatic system check + alert
+├── wordpress-theme/studentup/           # v61 REAL site theme (preview design → WP)
+├── wp_theme_sync (autoblog/)            # v61 bot data → WP theme (REST push)
 ├── GO_LIVE_CHECKLIST.md A0              # edi ekkada run avutundi (architecture + 3 combos)
 ├── preview/data/breaking.json           # v59 ticker/section feed (radar writes)
 ├── AD_REVENUE_PLAYBOOK.md  # v52 revenue lines, rate card, sponsor + house ad flows

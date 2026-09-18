@@ -229,6 +229,23 @@ def check_storage() -> tuple:
     return True, detail, ""
 
 
+def check_wp_theme() -> tuple:
+    """Real site theme (v61) — files + zip fresh (source marchi zip rebuild cheyyakapote)."""
+    theme = ROOT / "wordpress-theme" / "studentup"
+    zip_path = ROOT / "wordpress-theme" / "studentup-theme.zip"
+    if not theme.exists():
+        return False, "theme folder ledu (wordpress-theme/studentup)", "git pull / theme restore"
+    if not zip_path.exists():
+        return False, "theme zip ledu", "python tools/build_wp_theme.py"
+    srcs = [p for p in theme.rglob("*") if p.is_file()]
+    newest = max(p.stat().st_mtime for p in srcs)
+    if zip_path.stat().st_mtime < newest:
+        return False, "zip stale — source kante paata (WP upload lo puratana theme veltundi)", \
+            "python tools/build_wp_theme.py"
+    phps = len(list(theme.rglob("*.php")))
+    return True, f"theme zip fresh · {phps} PHP · {len(srcs)} files", ""
+
+
 def check_env_readiness() -> tuple:
     """Warn-only: mee .env lo em set cheyyali (deploy gate)."""
     have = []
@@ -255,6 +272,7 @@ CHECKS: List[tuple] = [
     ("keyword_pillar_lock", check_keyword_pillar_lock, False),
     ("menu_wiring", check_menu_wiring, False),
     ("storage", check_storage, False),
+    ("wp_theme", check_wp_theme, False),
     ("env_readiness", check_env_readiness, True),
 ]
 

@@ -159,6 +159,36 @@ Perfect = **machine gates + human 5-min verify**. Gates mistakes ramigadu (confl
 
 *Last updated: v60 (2026-09-18) — SITE GUARDIAN (roju automatic check + Telegram report) + v59 first-look: 10 checks (v60_test.py) · 46/46 suites · 122/122 runtime checks*
 
+## PART 20 — v61: REAL WEBSITE (WordPress + StudentUp theme) — "asalu site ela untundi?"
+
+```
+ANSWER  : Mee real website = **WordPress (MilesWeb)** + **mana custom theme** ee repo lo.
+          preview/index.html lo chusina design NE live site ga untundi (టికర్ ·
+          "విద్యార్థులు ఎక్కువగా వెతికేవి" · కార్డులు · ad slots · dark mode) —
+          kaani DYNAMIC: bot post rasthe aa card + category count + breaking item
+          automatic ga site lo kanipistayi.
+THEME   : wordpress-theme/studentup/  →  zip: wordpress-theme/studentup-theme.zip (~29 KB)
+INSTALL : 1) python tools/build_wp_theme.py
+          2) WP Admin → Appearance → Themes → Add New → Upload Theme → zip upload → Activate
+          3) Appearance → Menus → primary/mobile/footer assign (lekapote default
+             Telugu menu vastundi)
+          4) Settings → Reading → "Your latest posts" (front-page.php design home)
+          5) python run.py --push-theme-data   → breaking/proof/deadline/house ads push
+BOT LINK: POST /wp-json/studentup/v1/theme-data (WP_SITE + WP_USERNAME +
+          WP_APP_PASSWORD, edit_posts chaalu) — roju breaking feed tarvata auto push
+OPTIONS : studentup_breaking_json · studentup_proof_json · studentup_deadline_json ·
+          studentup_house_ads · studentup_adsense_client · studentup_exam_url
+FILES   : front-page (home order) · header (menu+టికర్) · footer (socials+links) ·
+          single (article+ads+share+related) · archive/search/page/404 ·
+          inc/breaking (feed + REST) · inc/ads (AdSense + house, SPONSORED label) ·
+          inc/template (cards · proof tiles · countdown · breadcrumbs)
+SPEED   : external JS library ledu (1 CSS + 1 JS) · lazy images · CLS-safe ad slots
+NIJAM   : theme = mee design; WP plugins (Rank Math · AdSense) vaalla pani vaalle chestayi.
+TESTS   : tests/v61_test.py = 14 checks · run.py --test-all 47/47
+```
+
+---
+
 ## PART 19 — v60: SITE GUARDIAN (eppatiki advanced ga — roju automatic check)
 
 ```
@@ -169,16 +199,16 @@ RUN      : python run.py --guardian            (ippude check)
            python run.py --guardian-notify     (report Telegram ki kuda)
 BOT HOOK : roju GUARDIAN_HOUR (default 20 IST) tarvata okkasari automatic
            (state meta tho once/day — rerun ayina double report ledu)
-CHECKS   : 11 — site files · first-look UI blocks (ticker/used/breaking/feed fetch/
+CHECKS   : 12 — site files · first-look UI blocks (ticker/used/breaking/feed fetch/
            nav) · tiles ↔ tests/jsdom sync · robots+sitemap · ads.txt status ·
            breaking feed freshness · ad inventory validity · keyword/pillar lock
-           (17 · 203 · 11,192 · 143) · menu wiring · storage · .env readiness
+           (17 · 203 · 11,192 · 143) · menu wiring · storage · theme zip · .env readiness
 SEVERITY : ❌ = system break (fix cheyyali) · ⚠️ = mee pani pending (creds)
            exit code: hard fail unte 1, warn-only unte 0
 STATUS   : logs/guardian.json — chivari 14 runs history (gitignored)
 NIJAM    : read-only audit — fix cheyyadu, cheptundi matrame. Fixes tests +
            builder nunchi vasthai (tiles bump, builder rerun, prune…)
-TESTS    : tests/v60_test.py = 10 checks · run.py --test-all 46/46
+TESTS    : tests/v60_test.py = 10 checks · run.py --test-all 47/47
 ```
 
 ---

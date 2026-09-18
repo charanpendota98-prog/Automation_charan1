@@ -58,10 +58,11 @@ rendu) — **duplicate posts** vasthayi. Bot ki okka home select cheyandi; migil
 | **B. MilesWeb + Oracle** ⭐ | WP = MilesWeb · bot + portal + guardian = Oracle Always Free 24×7 | ₹0 extra | **Recommended** — heavy bot runs + uptime + mee data mee control lo |
 | **C. Oracle only** | WP kuda Oracle VM lo (PHP + MySQL + Caddy) | ₹0 | Server telisina vallaki — WP updates/backups meeru chuskovali |
 
-**Frontend kuda okati select cheyandi** (rendu kaadu): studentup.in root lo **WordPress** (Rank Math
-+ ads + bot posts) ⭐ leda **static preview** (`preview/index.html` → public_html). WP select chesthe
-`preview/` = mee design blueprint/landing (subfolder lo pettukovachu); static select chesthe bot posts
-WP lo untayi kaani site lo kanipinchavu.
+**Frontend kuda okati select cheyandi** (rendu kaadu): studentup.in root lo **WordPress + StudentUp theme** ⭐
+(v61 — `wordpress-theme/studentup-theme.zip`, install 5 నిమిషాలు) leda **static preview**
+(`preview/index.html` → public_html). **WP + theme select chesthe site design = preview design**
+(టికర్ · ఎక్కువగా వెతికేవి · కార్డులు · ads) kaani dynamic — bot post rasthe site automatic ga update.
+Static select chesthe bot posts WP lo untayi kaani site lo kanipinchavu.
 
 **Ippude cheyyalsina 5 steps (combo B):**
 1. MilesWeb: domain + WordPress + SSL + Application Password → `.env`
@@ -79,8 +80,8 @@ Detail docs: `DEPLOY_MILESWEB.md` (cPanel steps) · `DEPLOY_ORACLE_CLOUD.md` (VM
 
 | Item | Proof |
 |---|---|
-| Test suites | **46/46** pass (`python run.py --test-all`) |
-| Site guardian | **`python run.py --guardian`** — site/UI/SEO/ads/feed/storage 11 checks |
+| Test suites | **47/47** pass (`python run.py --test-all`) |
+| Site guardian | **`python run.py --guardian`** — site/UI/SEO/ads/feed/storage/theme 12 checks (11 ok · 1 owner-pending) |
 | Production check | **11/11** pass (`python run.py --production-audit`) |
 | Browser runtime | **122/122** checks (`node tests/runtime/jsdom_runtime_test.js`) |
 | Deploy check | 8 ok · 4 warn · 0 fail (`python run.py --deploy-check`) |

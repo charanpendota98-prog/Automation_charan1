@@ -1,0 +1,134 @@
+# -*- coding: utf-8 -*-
+"""v61: StudentUp WordPress theme — validate + package (zip).
+
+Enduku:
+  Mee website = WordPress (MilesWeb). Design (preview/index.html) ni WordPres lo
+  ki teesukelle theme `wordpress-theme/studentup/` lo undi. Idi:
+    1) required files + theme header validate chestundi (WP install fail avvakunda)
+    2) wordpress-theme/studentup-theme.zip create chestundi (WP Admin → Upload Theme)
+    3) php lint untе `php -l` tho kuda check chestundi (lekapote skip — fail kaadu)
+
+Run: python tools/build_wp_theme.py   [--out wordpress-theme/studentup-theme.zip]
+"""
+from __future__ import annotations
+
+import argparse
+import io
+import re
+import shutil
+import subprocess
+import sys
+import zipfile
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+SRC = ROOT / "wordpress-theme" / "studentup"
+DEFAULT_OUT = ROOT / "wordpress-theme" / "studentup-theme.zip"
+
+REQUIRED = [
+    "style.css", "index.php", "functions.php", "header.php", "footer.php",
+    "front-page.php", "single.php", "page.php", "archive.php", "search.php",
+    "404.php", "searchform.php", "theme.json",
+    "inc/breaking.php", "inc/ads.php", "inc/template.php",
+    "assets/js/studentup.js",
+]
+SKIP_DIRS = {"__pycache__", ".git", "node_modules"}
+
+
+def validate() -> list[str]:
+    problems: list[str] = []
+    for rel in REQUIRED:
+        if not (SRC / rel).exists():
+            problems.append("missing: " + rel)
+    css = (SRC / "style.css").read_text(encoding="utf-8") if (SRC / "style.css").exists() else ""
+    for field in ("Theme Name:", "Version:", "License:", "Text Domain: studentup"):
+        if field not in css:
+            problems.append("style.css header lo ledu: " + field)
+    for token in ("--navy:#0f2e62", "--orange:#ed8a32", ".tickerwrap", ".usedgrid",
+                  ".newsgrid", ".su-ad", "body.dark"):
+        if token not in css:
+            problems.append("style.css lo design token ledu: " + token)
+    for php in SRC.rglob("*.php"):
+        text = php.read_text(encoding="utf-8")
+        rel = php.relative_to(SRC).as_posix()
+        if "ABSPATH" not in text:
+            problems.append(f"{rel}: ABSPATH guard ledu")
+        if re.search(r"<\?php\s+echo\s+\$", text):
+            problems.append(f"{rel}: escape cheyyani echo $ (XSS risk)")
+    js = (SRC / "assets/js/studentup.js").read_text(encoding="utf-8") if (SRC / "assets/js/studentup.js").exists() else ""
+    if re.search(r"\bjQuery\s*\(|\$\(document", js):
+        problems.append("studentup.js: jQuery library use (vaddu — speed)")
+    theme_json = SRC / "theme.json"
+    if theme_json.exists():
+        import json
+
+        try:
+            data = json.loads(theme_json.read_text(encoding="utf-8"))
+            slugs = [c.get("slug") for c in data.get("settings", {}).get("color", {}).get("palette", [])]
+            for want in ("navy", "blue", "orange"):
+                if want not in slugs:
+                    problems.append("theme.json palette lo ledu: " + want)
+        except ValueError as exc:
+            problems.append(f"theme.json invalid JSON: {exc}")
+    return problems
+
+
+def php_lint() -> tuple[int, str]:
+    php = shutil.which("php")
+    if not php:
+        return 0, "php ledu — lint skip (WP install ni adi aapadu)"
+    checked, fails = 0, []
+    for f in SRC.rglob("*.php"):
+        checked += 1
+        out = subprocess.run([php, "-l", str(f)], capture_output=True, text=True)
+        if out.returncode != 0:
+            fails.append(f"{f.relative_to(SRC)}: {out.stdout.strip() or out.stderr.strip()}")
+    if fails:
+        return 1, f"{checked} files lint — {len(fails)} FAIL: " + "; ".join(fails[:3])
+    return 0, f"{checked} PHP files lint PASS ✔"
+
+
+def package(out: Path) -> tuple[int, int]:
+    files = 0
+    out.parent.mkdir(parents=True, exist_ok=True)
+    with zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED) as zf:
+        for path in sorted(SRC.rglob("*")):
+            if path.is_dir() or any(part in SKIP_DIRS for part in path.parts):
+                continue
+            zf.write(path, Path("studentup") / path.relative_to(SRC))
+            files += 1
+    return files, out.stat().st_size
+
+
+def main(argv: list[str] | None = None) -> int:
+    ap = argparse.ArgumentParser(description="StudentUp WP theme validate + zip")
+    ap.add_argument("--out", default=str(DEFAULT_OUT))
+    args = ap.parse_args(argv)
+
+    print("=" * 66)
+    print("  🎨 STUDENTUP WORDPRESS THEME — validate + package (v61)")
+    print("=" * 66)
+    problems = validate()
+    for p in problems:
+        print("  ❌ " + p)
+    if not problems:
+        print("  ✅ structure + theme header + tokens + escaping — ANNI OK")
+    code, msg = php_lint()
+    print(("  ✅ " if code == 0 else "  ❌ ") + msg)
+    if problems or code:
+        print("  ⛔ package cheyyaledu — paina problems fix cheyandi")
+        return 1
+    out = Path(args.out)
+    files, size = package(out)
+    with zipfile.ZipFile(out) as zf:
+        names = zf.namelist()
+        has_style = "studentup/style.css" in names and "studentup/front-page.php" in names
+    print(f"  ✅ zip: {out.relative_to(ROOT)} — {files} files · {size/1024:.0f} KB")
+    print(f"     root: {'studentup/ ✔' if has_style else '⛔ tappu structure'}")
+    print("     install: WP Admin → Appearance → Themes → Add New → Upload Theme → Activate")
+    print("=" * 66)
+    return 0 if has_style else 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
