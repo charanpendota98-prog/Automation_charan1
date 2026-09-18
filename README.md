@@ -533,13 +533,31 @@ python run.py --breaking-feed           # v59: radar → site బ్రేకి
 python run.py --breaking-from file.json # v59: feed ni JSON nunchi (offline/approved list)
 ```
 
+### v63 — MISTAKE-FREE SEO: Rank Math REST bridge + meta verification + post edit
+
+**Pattina nijamaina mistake:** WordPress REST default ga custom meta accept cheyyadu →
+bot `rank_math_*` fields pampiste 400 → bot **meta lekunda** post pettēdi → SEO fields khali.
+Ippudu moonu layers lo fix:
+
+| Layer | Enti |
+|---|---|
+| `wordpress-theme/studentup/inc/seo-bridge.php` | 10 Rank Math keys ni REST ki register (show_in_rest + `edit_post` auth) → bot meta writes land avutayi |
+| `WordPressClient.verify_meta()` | publish/update tarvata **verify** — field land avvaledu ante Telegram ⚠️ + log (silent fail ledu) |
+| `pipeline` create + update | rendu chotla verify + `seo_meta_missing` result lo + fix pointer (seo-bridge) |
+
+Post edit/refresh capability (mee "edit cheyyagalava?" prashna): `update_post()` REST edit
+(URL/slug same — SEO safe) · `python run.py --update <id>` (manual) · `auto_refresh`
+(roju purana posts ni fresh research tho update) · meta verify.
+
+GET `/wp-json/studentup/v1/theme-info` → theme version + seo_bridge + rankmath + adsense seal.
+
 ### v62 — TOP WEBSITE READINESS (proof tho: enti ready, enti mee pani)
 
 ```bash
 python run.py --readiness      # 18 system checks score/100 + 6 owner-pending items
 ```
 
-**Ee command ee repo lo prastuta: 100/100 system checks · 6 owner-pending.**
+**Ee command ee repo lo prastuta: 100/100 system checks · 8 owner-pending.**
 Artifacts: `logs/readiness.json` + `output/readiness-<date>.md` (markdown report).
 
 | Section | Enti verify avutundi (verifiable number) |
@@ -549,7 +567,7 @@ Artifacts: `logs/readiness.json` + `output/readiness-<date>.md` (markdown report
 | ADS & MONEY | slots 3/3 high-CTR order · SPONSORED labels · rel=sponsored · ads.txt status · money engine 6/6 (rate card · house · calculator · network plan · advisor · leads) |
 | AUTOMATION | daily hooks 6/6 (radar · auto-refresh · breaking · advisor · guardian · quiz) · draft-first approval · test tiles sync |
 | REAL SITE | theme zip fresh · 14 PHP · REST bridge · first-look UX 4/4 |
-| OWNER PENDING ⏳ | domain/hosting · WP+theme install · Gemini · Telegram · AdSense · Oracle VM — prathi daniki fix line |
+| OWNER PENDING ⏳ | domain/hosting · WP+theme · Gemini · Telegram · **GSC+GA4** · **AdSense CMP** · AdSense · Oracle VM — prathi daniki fix line |
 
 > ⚠️ Honest: ranking/traffic/AdSense approval/revenue — Google + mee accounts + time.
 > Readiness score aa vatiki guarantee ivvadu; adi "code side 100% ready" ani matrame cheptundi.
@@ -622,7 +640,7 @@ Menu (desktop + mobile same order): హోమ్ · ఉద్యోగాలు�
 
 Bot side: `autoblog/breaking.py` (feed build + tag classifier + honest empty note),
 radar run lo auto hook, `MOST_USED` order okate source (bot + site + tests sync).
-Evidence: tests/v59_test.py 12 checks · `run.py --test-all` 48/48 · jsdom 122/122.
+Evidence: tests/v59_test.py 12 checks · `run.py --test-all` 49/49 · jsdom 122/122.
 
 > ℹ️ Ee system exam conduct cheyyadaniki matrame — student data (roll, answers,
 > scores) mee server lo untundi, bayata pampabadadu. Public internet lo pettali

@@ -210,6 +210,43 @@ def c_ad_slots() -> List[dict]:
             if ok else _bad("Ad placements", line, "ADS & MONEY", "v46/v59 slots check")]
 
 
+def c_seo_bridge() -> List[dict]:
+    """v63: Rank Math meta REST lo accept avutunda? (theme seo-bridge) — silent SEO fail fix."""
+    bridge = THEME / "inc" / "seo-bridge.php"
+    fn = _read(THEME / "functions.php")
+    text = _read(bridge)
+    need = ["register_post_meta", "show_in_rest", "rank_math_focus_keyword",
+            "auth_callback", "edit_post"]
+    have = [n for n in need if n in text]
+    included = "inc/seo-bridge.php" in fn
+    if len(have) == len(need) and included:
+        return [_ok("Rank Math REST bridge (silent-fail fix)", "seo-bridge.php · 10 keys · auth ok",
+                    "SEO")]
+    return [_bad("Rank Math REST bridge", f"{len(have)}/{len(need)} · included={included}", "SEO",
+                 "wordpress-theme/studentup/inc/seo-bridge.php check cheyandi")]
+
+
+def c_post_edit_capability() -> List[dict]:
+    """'Post chesinavi edit cheyyagalava?' — bot edit/update + verify capability."""
+    wp = _read(ROOT / "autoblog" / "wordpress_client.py")
+    pipe = _read(ROOT / "autoblog" / "pipeline.py")
+    main = _read(ROOT / "autoblog" / "main.py")
+    have = {
+        "update_post (REST edit)": "def update_post(" in wp,
+        "meta verify (land ayyaya)": "def verify_meta(" in wp and pipe.count("verify_meta") >= 2,
+        "--update CLI (manual)": '"--update"' in main,
+        "auto_refresh (purana posts)": "def auto_refresh(" in pipe,
+        "URL/slug safe refresh": "URL/slug same untundi" in wp,
+    }
+    missing = [k for k, v in have.items() if not v]
+    line = " · ".join(have)
+    return [_ok("Post edit / refresh capability", f"{len(have) - len(missing)}/{len(have)} — {line}",
+                "AUTOMATION")
+            if not missing else _bad("Post edit / refresh capability",
+                                     "missing: " + ", ".join(missing), "AUTOMATION",
+                                     "wordpress_client/pipeline check")]
+
+
 def c_ads_txt() -> List[dict]:
     from . import adsense_kit
 
@@ -324,6 +361,10 @@ def c_owner_pending() -> List[dict]:
                  "GO_LIVE_CHECKLIST.md PART B step 4"),
         _pending("AdSense approval + ads.txt live", "ADSENSE_CLIENT_ID + ADSENSE_APPROVED=1",
                  "GO_LIVE_CHECKLIST.md PART B step 2b"),
+        _pending("Google Search Console + GA4 verify", "sitemap submit + GA4 property",
+                 "GO_LIVE_CHECKLIST.md PART B step 2 (GSC/GA4)"),
+        _pending("AdSense CMP (EEA/UK consent)", "AdSense → Privacy & messaging → CMP ON",
+                 "AdSense lo one-click CMP enable (Google-certified)"),
         _pending("Oracle VM (bot 24x7) + UptimeRobot", "install-vps.sh + /healthz monitor",
                  "DEPLOY_ORACLE_CLOUD.md"),
     ]
@@ -337,6 +378,8 @@ CHECKS: List[Tuple[str, Callable[[], List[dict]]]] = [
     ("schema", c_schema),
     ("index_files", c_index_files),
     ("rankmath", c_rankmath),
+    ("seo_bridge", c_seo_bridge),
+    ("post_edit", c_post_edit_capability),
     ("ad_slots", c_ad_slots),
     ("ads_txt", c_ads_txt),
     ("money_engine", c_money_engine),

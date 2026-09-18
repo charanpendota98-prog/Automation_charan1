@@ -472,6 +472,29 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
         media_id=media_id,
         meta=meta,
     )
+    # v63: SEO fields nijamainaa land ayyaya? (silent-fail pattadam — "mistake lekunda")
+    if meta and result.get("id"):
+        try:
+            landed = wp.verify_meta(result["id"], ["rank_math_focus_keyword",
+                                                   "rank_math_title",
+                                                   "rank_math_description"])
+            missing = [k for k, ok in landed.items() if not ok]
+            if missing:
+                log.warning("Rank Math meta land avvaledu: %s (id=%s) — theme seo-bridge "
+                            "activate cheyandi (wordpress-theme/studentup/inc/seo-bridge.php)",
+                            ", ".join(missing), result["id"])
+                result["seo_meta_missing"] = missing
+                try:
+                    notifier.send_telegram(
+                        "⚠️ <b>SEO meta WAR</b> — post %s lo %s land avvaledu.\n"
+                        "Fix: WP theme (StudentUp) active undo chudandi (SEO bridge)."
+                        % (result["id"], ", ".join(missing)))
+                except Exception:
+                    pass
+            else:
+                log.info("Rank Math meta verified ✔ (id=%s)", result["id"])
+        except Exception:
+            log.exception("meta verify skip (post safe)")
     state.record_post(config.STATE_PATH, article["title"], article["slug"],
                       article["category"], result["link"], result["status"],
                       qa_score=(article.get("_qa") or {}).get("score"),
@@ -834,6 +857,16 @@ def update_post(post_id: int, new_source_urls=None, mock: bool = False) -> Dict:
         meta=meta,
     )
     log.info("POST UPDATED ✔ id=%s link=%s", post_id, result.get("link"))
+    if meta:
+        try:
+            landed = wp.verify_meta(post_id, ["rank_math_focus_keyword",
+                                              "rank_math_title",
+                                              "rank_math_description"])
+            missing = [k for k, ok in landed.items() if not ok]
+            if missing:
+                log.warning("UPDATE %s: Rank Math meta missing %s", post_id, missing)
+        except Exception:
+            log.exception("update meta verify skip (safe)")
     article["source_url"] = None
     try:
         state.record_refresh(config.STATE_PATH, post_id)

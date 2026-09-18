@@ -157,7 +157,33 @@ Message lo reason undi — exact ga fix cheyandi:
 ## ⚠️ Honest note
 Perfect = **machine gates + human 5-min verify**. Gates mistakes ramigadu (conflicts/stale/dates/originality), kaani official numbers mee mata tho final check — AdSense/Google/reputation thartham lo idi matrame safety.
 
-*Last updated: v62 (2026-09-18) — TOP WEBSITE READINESS (100/100 system checks) + SITE GUARDIAN + WP theme: 11 checks (v62_test.py) · 48/48 suites · 122/122 runtime checks*
+*Last updated: v63 (2026-09-18) — MISTAKE-FREE SEO (Rank Math REST bridge + meta verify) + post edit: 7 checks (v63_test.py) · 49/49 suites · 122/122 runtime · readiness 100/100*
+
+## PART 22 — v63: MISTAKE-FREE SEO (Rank Math REST bridge + meta verification)
+
+```
+PROBLEM  : WordPress REST default ga custom meta accept cheyyadu → bot rank_math_*
+           fields pampiste 400 → bot meta lekunda post pettēdi → SEO fields khali
+           (silent mistake — ee roju pattukunna gap)
+FIX 1    : theme inc/seo-bridge.php — 10 keys REST ki register (show_in_rest +
+           edit_post auth). Theme activate unte bot meta writes land avutayi.
+FIX 2    : WordPressClient.verify_meta() — publish/update tarvata check:
+           focus keyword/title/description land ayyaya? Ledu ante Telegram ⚠️ WAR +
+           log + result lo seo_meta_missing (fix pointer: seo-bridge)
+FIX 3    : UPDATE path lo kuda verify (purana posts refresh lo kuda same check)
+POST EDIT: bot existing posts ni edit chestundi —
+           · python run.py --update <id> [--update-source URL]  (manual)
+           · auto_refresh (roju purana posts kotha research tho refresh)
+           · URL/slug same untundi (SEO safe) · meta verify same
+SEAL     : GET /wp-json/studentup/v1/theme-info → theme/version/seo_bridge/rankmath/
+           adsense/posts (deploy tarvata okka call tho verify)
+GSC/GA4  : GO_LIVE step 2a — GSC verify + sitemap submit + GA4 property (owner pani)
+CMP      : GO_LIVE step 2c — AdSense → Privacy & messaging → Google-certified CMP ON
+           (EEA/UK ads ki Google rule)
+TESTS    : tests/v63_test.py = 7 checks · run.py --test-all 49/49
+```
+
+---
 
 ## PART 21 — v62: TOP WEBSITE READINESS ("asalu 100% advanced ga unda?")
 
@@ -174,7 +200,7 @@ NIJAM    : ee score = code side enta ready undo matrame. Google ranking, traffic
 EVIDENCE : blueprint 100/100 (TOP POST 🏆) · gates QA 80+/orig 72%+/deep ON ·
            radar 4x/day · 59 districts · Rank Math LIVE fields · slots 3/3 ·
            hooks 6/6 · theme zip fresh
-TESTS    : tests/v62_test.py = 11 checks · run.py --test-all 48/48
+TESTS    : tests/v62_test.py = 11 checks · run.py --test-all 49/49
 ```
 
 ---
@@ -204,7 +230,7 @@ FILES   : front-page (home order) · header (menu+టికర్) · footer (so
           inc/template (cards · proof tiles · countdown · breadcrumbs)
 SPEED   : external JS library ledu (1 CSS + 1 JS) · lazy images · CLS-safe ad slots
 NIJAM   : theme = mee design; WP plugins (Rank Math · AdSense) vaalla pani vaalle chestayi.
-TESTS   : tests/v61_test.py = 14 checks · run.py --test-all 48/48
+TESTS   : tests/v61_test.py = 14 checks · run.py --test-all 49/49
 ```
 
 ---
@@ -228,7 +254,7 @@ SEVERITY : ❌ = system break (fix cheyyali) · ⚠️ = mee pani pending (creds
 STATUS   : logs/guardian.json — chivari 14 runs history (gitignored)
 NIJAM    : read-only audit — fix cheyyadu, cheptundi matrame. Fixes tests +
            builder nunchi vasthai (tiles bump, builder rerun, prune…)
-TESTS    : tests/v60_test.py = 10 checks · run.py --test-all 48/48
+TESTS    : tests/v60_test.py = 10 checks · run.py --test-all 49/49
 ```
 
 ---

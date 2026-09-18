@@ -17,6 +17,7 @@ define( 'STUDENTUP_VERSION', '1.0.0' );
 require_once get_template_directory() . '/inc/breaking.php';
 require_once get_template_directory() . '/inc/ads.php';
 require_once get_template_directory() . '/inc/template.php';
+require_once get_template_directory() . '/inc/seo-bridge.php';
 
 /**
  * "విద్యార్థులు ఎక్కువగా వెతికేవి" — order okkate source (bot lo autoblog/breaking.py
