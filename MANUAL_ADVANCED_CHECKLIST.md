@@ -151,7 +151,7 @@ Message lo reason undi — exact ga fix cheyandi:
 ## ⚠️ Honest note
 Perfect = **machine gates + human 5-min verify**. Gates mistakes ramigadu (conflicts/stale/dates/originality), kaani official numbers mee mata tho final check — AdSense/Google/reputation thartham lo idi matrame safety.
 
-*Last updated: v58 (2026-09-18) — 17వ pillar (Abroad Jobs) + Tier-1 revenue line: 9 checks · 44/44 suites · 109/109 runtime checks*
+*Last updated: v58 (2026-09-18) — 17వ pillar (Abroad Jobs) + Tier-1 revenue line: 12 checks (v58_test.py) · 44/44 suites · 109/109 runtime checks*
 
 ---
 
