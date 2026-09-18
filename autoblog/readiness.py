@@ -271,6 +271,59 @@ def c_php_lint() -> List[dict]:
                     "REAL SITE (WordPress theme)")]
 
 
+def c_pin_gate() -> List[dict]:
+    """v65: pin-to-pin certificate gate — 47 checks, prathi post ki proof."""
+    from . import post_gate
+
+    res = post_gate.self_test()
+    pipe = _read(ROOT / "autoblog" / "pipeline.py")
+    wired = ("post_gate.run(" in pipe and "write_certificate" in pipe
+             and "PIN_GATE_BLOCK" in pipe)
+    crit = res["critical_fails"]
+    value = (f"{res['score']}/100 · {res['passed']}/{res['total']} checks · "
+             f"critical {len(crit)} · pipeline {'wired' if wired else 'MISSING'}")
+    if res["score"] >= 95 and not crit and wired:
+        return [_ok("Pin-to-pin certificate gate", value, "CONTENT ENGINE")]
+    return [_bad("Pin-to-pin certificate gate",
+                 value + (f" · fails: {', '.join(crit)}" if crit else ""),
+                 "CONTENT ENGINE", "post_gate + pipeline wiring check cheyandi")]
+
+
+def c_trends() -> List[dict]:
+    """v65: Google Trends + Suggest capture → topic queue (offline-testable)."""
+    from . import trends
+
+    fake_rss = ("<rss xmlns:ht='https://trends.google.com/trending/rss'><channel>"
+                "<item><title>TSPSC Group 2 notification 2026</title>"
+                "<ht:approx_traffic>50000+</ht:approx_traffic></item>"
+                "<item><title>Cricket score</title></item></channel></rss>")
+    fake_sugg = '["tspsc",["tspsc group 2 syllabus","ap dsc hall ticket","movie review"]]'
+    rss_rows = trends.parse_trends_rss(fake_rss)
+    sugg = trends.parse_suggest(fake_sugg)
+    picked = trends.relevant(rss_rows)
+    niche_sugg = [s for s in sugg if trends.is_niche(s)]
+    tpath = Path(config.OUTPUT_DIR) / "trend_queue_test.json"
+    q = trends.queue_topics(picked, niche_sugg, path=tpath, keep_days=1)
+    queued = trends.next_topics(limit=3, path=tpath)
+    consumed = trends.consume(str(queued[0]["title"]), path=tpath) if queued else False
+    ok = (len(rss_rows) == 2 and len(sugg) == 3 and "tspsc" in sugg[0].lower()
+          and len(picked) == 1 and len(niche_sugg) == 2 and q["added"] >= 3
+          and queued and consumed)
+    main_src = _read(ROOT / "autoblog" / "main.py")
+    wired = "trends_run(" in main_src and "TRENDS_ENABLED" in _read(ROOT / "autoblog" / "config.py")
+    value = (f"RSS {len(rss_rows)} items → niche {len(picked)} · suggest {len(sugg)} → "
+             f"niche {len(niche_sugg)} · queue +{q['added']} · consume "
+             f"{'ok' if consumed else 'FAIL'} · cli {'wired' if wired else 'MISSING'}")
+    try:
+        Path(q["path"]).unlink()
+    except Exception:  # noqa: BLE001
+        pass
+    if ok and wired:
+        return [_ok("Google Trends + Suggest engine", value, "SEO")]
+    return [_bad("Google Trends + Suggest engine", value, "SEO",
+                 "trends.py parse/filter/queue check cheyandi")]
+
+
 def c_ad_slots() -> List[dict]:
     html = _read(PREVIEW / "index.html")
     theme_ads = _read(THEME / "inc" / "ads.php")
@@ -454,6 +507,8 @@ CHECKS: List[Tuple[str, Callable[[], List[dict]]]] = [
     ("index_files", c_index_files),
     ("rankmath", c_rankmath),
     ("rm100", c_rm100),
+    ("pin_gate", c_pin_gate),
+    ("trends", c_trends),
     ("seo_bridge", c_seo_bridge),
     ("post_edit", c_post_edit_capability),
     ("ad_slots", c_ad_slots),

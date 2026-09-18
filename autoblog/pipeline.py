@@ -13,8 +13,8 @@ from pathlib import Path
 from typing import Dict, Optional
 from urllib.parse import urlparse
 
-from . import (config, gemini_client, image_gen, notifier, research, rm100,
-               seo, sources, state, validator)
+from . import (config, gemini_client, image_gen, notifier, post_gate, research,
+               rm100, seo, sources, state, validator)
 from .notifier import esc, send_telegram
 from .wordpress_client import WordPressClient
 
@@ -189,9 +189,13 @@ def _rankmath_gate(article: dict, category: str) -> dict:
     if article.get("_mock"):
         article["_rm100"] = rm100.apply(article) if not article.get("_no_rm100") else None
         return article
-    res = rm100.apply(article)
+    # v65: iterative deterministic passes (score → fix → score) — real-time check
+    opt = rm100.optimize(article, target=int(getattr(config, "RM_TARGET", 100) or 100),
+                         max_passes=2)
+    res = {"after": opt["score"], "before": opt["before"],
+           "applied": (opt["passes"][-1]["applied"] if opt["passes"] else [])}
     article["_rm100"] = {"score": res["after"], "before": res["before"],
-                         "applied": res["applied"]}
+                         "applied": res["applied"], "passes": len(opt["passes"])}
     article["_rm_pre"] = res["before"]
     target = int(getattr(config, "RM_TARGET", 100) or 100)
     rounds = int(getattr(config, "RM_REFINE_ROUNDS", 2) or 0)
@@ -240,10 +244,12 @@ def _rankmath_gate(article: dict, category: str) -> dict:
         log.info("Refine helped: %s -> %s/100 (facts fixed: %s)",
                  strict["score"], rm2["score"], facts_fixed)
         # v64: rewrite tarvata structure malli — TOC/title/meta/links intact
-        res2 = rm100.apply(article)
+        res2 = rm100.optimize(article, target=target, max_passes=2)
         strict = analyze_rm(article)
         article["_rm100"] = {"score": strict["score"], "before": res["before"],
-                             "applied": res2["applied"], "rounds": rnd}
+                             "applied": (res2["passes"][-1]["applied"]
+                                         if res2.get("passes") else []),
+                             "rounds": rnd}
         log.info("Round %d tarvata: %d/100", rnd, strict["score"])
     article["_rm"] = strict
     return article
@@ -486,6 +492,38 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
 
     if meta and (article.get("_rm100") or {}).get("score") is not None:
         meta["rank_math_seo_score"] = str((article["_rm100"] or {}).get("score"))
+    # --- v65 PIN-TO-PIN GATE: certificate + critical block (live publish mattrame) ---
+    is_live = (article.get("_live") is True or
+               str(getattr(config, "DEFAULT_POST_STATUS", "draft")).lower() == "publish")
+    gate = ({"score": 0, "passed": 0, "total": 0, "critical_fails": [], "block": False,
+             "cert_id": "mock", "rows": [], "words": 0, "rankmath": 0,
+             "title": article.get("title", ""), "slug": article.get("slug", ""),
+             "date": date.today().isoformat()}
+            if article.get("_mock") else
+            post_gate.run(article, final_html, media_id=media_id, image_path=image_path))
+    article["_gate"] = gate
+    try:
+        paths = post_gate.write_certificate(gate) if not article.get("_mock") else {}
+        article["_cert"] = paths.get("md", "")
+        log.info("PIN GATE %s/100 · %s/%s checks · critical: %s", gate["score"],
+                 gate["passed"], gate["total"], gate["critical_fails"] or "none")
+    except Exception:  # noqa: BLE001 — certificate fail publish aapadu
+        log.exception("certificate write skip (publish safe)")
+    try:
+        state.meta_set(config.STATE_PATH, "last_cert",
+                       f"{gate['cert_id']}:{gate['score']}")
+    except Exception:
+        pass
+    if gate["critical_fails"] and gate["block"] and is_live and not article.get("_mock"):
+        msg = (f"⛔ PIN GATE BLOCK — {article.get('title', '')[:60]}\n"
+               f"critical: {', '.join(gate['critical_fails'])}\n"
+               "(fix chesi malli run cheyandi · PIN_GATE_BLOCK=0 tho off)")
+        log.error("PIN GATE BLOCK: %s", ", ".join(gate["critical_fails"]))
+        try:
+            send_telegram(msg)
+        except Exception:
+            pass
+        return {"error": "pin_gate", "detail": msg, "gate": gate}
     result = wp.create_post(
         title=article["title"],
         content_html=final_html,
@@ -875,6 +913,14 @@ def update_post(post_id: int, new_source_urls=None, mock: bool = False) -> Dict:
 
     if meta and (article.get("_rm100") or {}).get("score") is not None:
         meta["rank_math_seo_score"] = str((article["_rm100"] or {}).get("score"))
+    try:  # v65: update ki kuda certificate (evidence)
+        gate = post_gate.run(article, final_html)
+        article["_gate"] = gate
+        post_gate.write_certificate(gate)
+        log.info("PIN GATE (update) %s/100 · critical: %s", gate["score"],
+                 gate["critical_fails"] or "none")
+    except Exception:
+        log.exception("update gate skip (post safe)")
     result = wp.update_post(
         post_id,
         content_html=final_html,

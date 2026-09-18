@@ -80,9 +80,9 @@ Detail docs: `DEPLOY_MILESWEB.md` (cPanel steps) · `DEPLOY_ORACLE_CLOUD.md` (VM
 
 | Item | Proof |
 |---|---|
-| Test suites | **50/50** pass (`python run.py --test-all`) |
+| Test suites | **51/51** pass (`python run.py --test-all`) |
 | Site guardian | **`python run.py --guardian`** — site/UI/SEO/ads/feed/storage/theme 12 checks (11 ok · 1 owner-pending) |
-| Readiness score | **`python run.py --readiness`** — **100/100** · 23/23 system checks · 8 owner-pending |
+| Readiness score | **`python run.py --readiness`** — **100/100** · 25/25 system checks · 8 owner-pending |
 | Production check | **11/11** pass (`python run.py --production-audit`) |
 | Browser runtime | **122/122** checks (`node tests/runtime/jsdom_runtime_test.js`) |
 | Deploy check | 8 ok · 4 warn · 0 fail (`python run.py --deploy-check`) |
@@ -116,6 +116,10 @@ Detail docs: `DEPLOY_MILESWEB.md` (cPanel steps) · `DEPLOY_ORACLE_CLOUD.md` (VM
 - [ ] **2d. 25k pageviews tarvata** — `python tools/ad_network_plan.py --views 50k --tier1 0.3`
       → Raptive/Ezoic ki apply (detail: AD_NETWORKS_PLAN.md). Partner lines ni
       `ads/ads_txt_extra.txt` lo paste chesi `python tools/build_policy_pages.py` run cheyyandi.
+- [ ] **3b. Pin-to-pin gate + trends** — prathi post ki certificate
+      (`output/certificates/`) automatic ga untundi; critical fail unte publish aagutundi
+      (`PIN_GATE_BLOCK=1`). `python run.py --pin-check` tho gate proof;
+      `python run.py --trends --trends-queue` tho trending topics queue (radar lo daily auto).
 - [ ] **2e. AdSense approve ayyaka** — `.env` lo `ADSENSE_CLIENT_ID=ca-pub-…` petti
       `python tools/build_policy_pages.py` run cheyyandi → **`ads.txt` automatic ga live** avutundi
       (idi lekapote konni ads rakavu → RPM takkuva). Tarvata `ADSENSE_APPROVED=1`.

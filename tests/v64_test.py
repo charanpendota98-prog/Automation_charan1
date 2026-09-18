@@ -266,7 +266,9 @@ def test_readiness_v64_checks():
 def test_docs_v64():
     manual = read(ROOT / "MANUAL_ADVANCED_CHECKLIST.md")
     assert "PART 23" in manual and "rm100" in manual
-    assert "Last updated: v64" in manual
+    # footer tarvata versions ki move avutundi — v64 leda adi kanna kotha undali
+    assert re.search(r"Last updated: v(6[4-9]|[7-9]\d)", manual), \
+        "MANUAL footer version check"
     readme = read(ROOT / "README.md")
     assert "v64" in readme and "rm100" in readme and "php_lint" in readme
     go = read(ROOT / "GO_LIVE_CHECKLIST.md")

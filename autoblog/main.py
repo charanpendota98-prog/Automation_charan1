@@ -708,6 +708,26 @@ def trends_check() -> int:
     return 0
 
 
+def pin_check_run() -> int:
+    """v65: pin-to-pin certificate proof (47 checks · deterministic fixture)."""
+    from . import post_gate
+
+    return post_gate.main()
+
+
+def trends_run(queue: bool = True) -> int:
+    """v65: Google Trends + Suggest capture (niche filter → topic queue)."""
+    from . import trends
+
+    if queue:
+        return trends.main()
+    res = trends.capture(queue=False)
+    print(f"trends: {res['trends']} · suggest: {res['suggest']}")
+    for t in res["top"]:
+        print("   -", str(t.get("title"))[:70])
+    return 0
+
+
 def rm100_run() -> int:
     """v64: Rank Math 100 engine proof — imperfect draft → 100/100 breakdown."""
     from . import rm100, validator
@@ -820,6 +840,18 @@ def breaking_feed_run(from_file: str = "") -> int:
 
 def radar_run(process_posts: bool = True) -> int:
     """v15/v16/v17: full radar sweep — districts + official grid + watch.
+    # v65: Google Trends/Suggest capture (network lekapote silent skip)
+    if getattr(config, "TRENDS_ENABLED", True):
+        try:
+            from . import trends as _tr
+
+            _cap = _tr.capture(queue=True)
+            if _cap.get("trends") or _cap.get("suggest"):
+                log.info("v65 trends: %d niche trends · %d suggest · queue +%s",
+                         _cap["trends"], _cap["suggest"],
+                         (_cap.get("queue") or {}).get("added", 0))
+        except Exception:  # noqa: BLE001 — trends bot ni aapakudadu
+            log.info("trends capture skip (safe)")
 
     Queue fresh edu news URLs + channel topics; optionally process up to
     RADAR_POSTS_PER_DAY articles (topics first, then source queue URLs).
@@ -1521,6 +1553,10 @@ def main() -> int:
                              "(tarvata offline/CI audit ki)")
     parser.add_argument("--trends", action="store_true",
                         help="Google Trends India education trends chupinchindi")
+    parser.add_argument("--pin-check", action="store_true",
+                        help="Pin-to-pin certificate proof (47 checks, offline)")
+    parser.add_argument("--trends-queue", action="store_true",
+                        help="v65: --trends tho paatu Suggest capture + topic queue")
     parser.add_argument("--rm100", action="store_true",
                         help="Rank Math 100 engine proof (imperfect draft → 100 breakdown)")
     parser.add_argument("--readiness", action="store_true",
@@ -1645,7 +1681,10 @@ def main() -> int:
                               snapshot=args.site_audit_snapshot,
                               save=args.site_audit_save)
     if args.trends:
-        return trends_check()
+        rc = trends_check()
+        if getattr(args, "trends_queue", False):
+            trends_run(queue=True)
+        return rc
     if args.sources:
         return sources_view()
     if args.keywords:
@@ -1742,6 +1781,10 @@ def main() -> int:
         for r in rows:
             print(f"  • {r['exam']:<22} {r.get('posts', '?')} posts -> {r.get('link', r['slug'])}")
         return 0
+    if getattr(args, "pin_check", False):
+        return pin_check_run()
+    if getattr(args, "trends", False):
+        return trends_run(queue=not getattr(args, "no_queue", False))
     if getattr(args, "rm100", False):
         return rm100_run()
     if args.readiness:

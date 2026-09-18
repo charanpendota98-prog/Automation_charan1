@@ -157,7 +157,43 @@ Message lo reason undi — exact ga fix cheyandi:
 ## ⚠️ Honest note
 Perfect = **machine gates + human 5-min verify**. Gates mistakes ramigadu (conflicts/stale/dates/originality), kaani official numbers mee mata tho final check — AdSense/Google/reputation thartham lo idi matrame safety.
 
-*Last updated: v64 (2026-09-18) — RANK MATH 100 engine (rm100) + theme 100x (options/TOC/schema/E-E-A-T/PWA) + PHP syntax gate: 12 checks · 50/50 suites · 122/122 runtime · readiness 100/100 (23/23)*
+*Last updated: v65 (2026-09-18) — PIN-TO-PIN GATE (47 checks + certificate + critical block) + GOOGLE VISIBILITY (Trends/Suggest → topic queue): 13 checks · 51/51 suites · 122/122 runtime · readiness 100/100 (25/25)*
+
+## PART 24 — v65: PIN-TO-PIN GATE + GOOGLE VISIBILITY (Trends/Suggest)
+
+```
+PIN-TO-PIN GATE (autoblog/post_gate.py) — publish ki mundu 47 checks:
+  CONTENT        : depth 1500+ · density · kw first para/body · FAQ · facts table ·
+                   TOC links = heading ids · dev/demo text ledu (critical) ·
+                   paragraphs · transitions · Telugu share · list items · dup H2
+  SEO            : title 40-62 · kw modatlo (critical) · number · power word ·
+                   meta 110-156 (critical) · slug tokens · Rank Math 100 (critical)
+  SCHEMA         : Article (critical) · Breadcrumb · JobPosting (recruitment unte) ·
+                   ItemList · publisher @id
+  MEDIA          : featured image · ≥1200px (Discover) · alt lo kw · hotlink ledu
+  LINKS          : internal 3+ · external authority (gov/edu) · ad links rel=sponsored
+  ADSENSE        : slot present · house ratio ≤1/600 words · ads.txt
+  FRESHNESS      : date ≤ today · deadline past kaadu (critical when set)
+  GOOGLE READY   : inLanguage te · author · publisher · demand signal ·
+                   near-duplicate ledu (critical) · unverified facts ledu (critical)
+  BLOCK          : critical fail unte publish aaputundi (PIN_GATE_BLOCK=0 tho off)
+  CERTIFICATE    : output/certificates/<date>-<slug>.md + .json (prathi post ki proof)
+GOOGLE VISIBILITY (autoblog/trends.py):
+  · Google Trends daily RSS (IN) — ET parser + regex fallback (unbad prefix feeds)
+  · Google Suggest (autocomplete) — seeds: 17 pillars nunchi
+  · Niche filter (TS/AP students) + demand score (0-100)
+  · Topic queue: output/trend_queue.json (dedupe 3 rojulu · consume/next_topics)
+  · radar_run lo 4x/day automatic (network lekapote silent skip)
+  · CLI: python run.py --trends --trends-queue
+BRAND GRAPH      : Article JSON-LD → author.worksFor #org · isPartOf #website ·
+                   publisher @id → theme Organization schema tho okate entity graph
+V65 BUG FIX      : seo.jobposting_obj — salary keys lekapote KeyError (publish crash)
+                   → safe int() + regression test
+TESTS            : tests/v65_test.py = 13 checks · run.py --test-all 51/51 ·
+                   readiness 100/100 (25/25 system checks) · --pin-check 100/100
+```
+
+---
 
 ## PART 23 — v64: RANK MATH 100 + THEME 100x (options/TOC/schema/E-E-A-T/PWA)
 
@@ -189,7 +225,7 @@ PHP LINT GATE   : tools/php_lint.js (node php-parser · PHP 8 grammar) —
 V64 BUG FIXES   : (1) 10 templates lo `?>` miss → white screen (site break!) — fix +
                   regex guard test · (2) TOC id/link mismatch (-2 suffix) — fix +
                   link⊆ids test · (3) paragraph split text loss — fix + words>=before test
-TESTS           : tests/v64_test.py = 12 checks · run.py --test-all 50/50 ·
+TESTS           : tests/v64_test.py = 12 checks · run.py --test-all 51/51 ·
                   readiness 100/100 (23/23 system checks)
 ```
 
@@ -216,7 +252,7 @@ SEAL     : GET /wp-json/studentup/v1/theme-info → theme/version/seo_bridge/ran
 GSC/GA4  : GO_LIVE step 2a — GSC verify + sitemap submit + GA4 property (owner pani)
 CMP      : GO_LIVE step 2c — AdSense → Privacy & messaging → Google-certified CMP ON
            (EEA/UK ads ki Google rule)
-TESTS    : tests/v63_test.py = 7 checks · run.py --test-all 50/50
+TESTS    : tests/v63_test.py = 7 checks · run.py --test-all 51/51
 ```
 
 ---
@@ -236,7 +272,7 @@ NIJAM    : ee score = code side enta ready undo matrame. Google ranking, traffic
 EVIDENCE : blueprint 100/100 (TOP POST 🏆) · gates QA 80+/orig 72%+/deep ON ·
            radar 4x/day · 59 districts · Rank Math LIVE fields · slots 3/3 ·
            hooks 6/6 · theme zip fresh
-TESTS    : tests/v62_test.py = 11 checks · run.py --test-all 50/50
+TESTS    : tests/v62_test.py = 11 checks · run.py --test-all 51/51
 ```
 
 ---
@@ -266,7 +302,7 @@ FILES   : front-page (home order) · header (menu+టికర్) · footer (so
           inc/template (cards · proof tiles · countdown · breadcrumbs)
 SPEED   : external JS library ledu (1 CSS + 1 JS) · lazy images · CLS-safe ad slots
 NIJAM   : theme = mee design; WP plugins (Rank Math · AdSense) vaalla pani vaalle chestayi.
-TESTS   : tests/v61_test.py = 14 checks · run.py --test-all 50/50
+TESTS   : tests/v61_test.py = 14 checks · run.py --test-all 51/51
 ```
 
 ---
@@ -290,7 +326,7 @@ SEVERITY : ❌ = system break (fix cheyyali) · ⚠️ = mee pani pending (creds
 STATUS   : logs/guardian.json — chivari 14 runs history (gitignored)
 NIJAM    : read-only audit — fix cheyyadu, cheptundi matrame. Fixes tests +
            builder nunchi vasthai (tiles bump, builder rerun, prune…)
-TESTS    : tests/v60_test.py = 10 checks · run.py --test-all 50/50
+TESTS    : tests/v60_test.py = 10 checks · run.py --test-all 51/51
 ```
 
 ---

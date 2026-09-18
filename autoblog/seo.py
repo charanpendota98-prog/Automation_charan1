@@ -326,14 +326,17 @@ def jobposting_obj(recruitment, title: str, description: str,
         # honest: apply avtadi official site lo — mana page direct apply kaadu
         "directApply": False,
     }
-    if str(rec.get("salary_min", 0) or 0).isdigit() and \
-            str(rec.get("salary_max", 0) or 0).isdigit() and \
-            int(rec["salary_min"]) > 0 and int(rec["salary_max"]) >= int(rec["salary_min"]):
+    # v65 FIX: salary keys lekapote KeyError (crash) — safe int conversion
+    try:
+        smin = int(rec.get("salary_min") or 0)
+        smax = int(rec.get("salary_max") or 0)
+    except (TypeError, ValueError):
+        smin = smax = 0
+    if smin > 0 and smax >= smin:
         obj["baseSalary"] = {
             "@type": "MonetaryAmount", "currency": "INR",
             "value": {"@type": "QuantitativeValue",
-                      "minValue": int(rec["salary_min"]),
-                      "maxValue": int(rec["salary_max"]),
+                      "minValue": smin, "maxValue": smax,
                       "unitText": "MONTH"},
         }
     if rec.get("identifier"):
@@ -372,17 +375,22 @@ def schema_jsonld(
         "datePublished": date_published,
         "dateModified": date_modified or date_published,
         # v20: REAL named bylines (Google News + Top Stories require this)
+        # v65: @id refs → theme Organization/Website schema tho okate graph
+        # (Google ki brand entity + author entity clear ga kanipistundi)
         "author": {
             "@type": "Person",
             "name": author_for_slug(slug)[0],
             "jobTitle": author_for_slug(slug)[1],
             "url": config.WP_SITE.rstrip("/") + "/about-us/",
-            "worksFor": {"@type": "Organization", "name": "studentup.in"},
+            "worksFor": {"@id": config.WP_SITE.rstrip("/") + "/#org"},
         },
+        "isPartOf": {"@id": config.WP_SITE.rstrip("/") + "/#website"},
         **({"editor": {"@type": "Person", "name": config.EDITORIAL_REVIEWER}}
            if getattr(config, "EDITORIAL_REVIEWER", "") else {}),
         "sourceOrganization": {"@type": "Organization", "name": "studentup.in"},
-        "publisher": {"@type": "Organization", "name": "studentup.in",
+        "publisher": {"@type": "Organization",
+                      "@id": config.WP_SITE.rstrip("/") + "/#org",
+                      "name": "studentup.in",
                       "url": config.WP_SITE,
                       **({"logo": {"@type": "ImageObject",
                                    "url": config.SITE_LOGO_URL}}

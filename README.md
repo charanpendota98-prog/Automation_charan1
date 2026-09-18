@@ -533,6 +533,24 @@ python run.py --breaking-feed           # v59: radar → site బ్రేకి
 python run.py --breaking-from file.json # v59: feed ni JSON nunchi (offline/approved list)
 ```
 
+### v65 — PIN-TO-PIN GATE (47 checks + certificate) + GOOGLE VISIBILITY (Trends/Suggest)
+
+**"Pin to pin check chesi rasetappudu real time ga anni perfect ga undala?"** → publish
+ki mundu **47 checks** + prathi post ki **certificate file**; **trending/suggest** capture
+tho topic demand.
+
+| # | Enti | Ela |
+|---|---|---|
+| 1 | **Pin-to-pin gate** (`autoblog/post_gate.py`) | 47 checks · 8 groups: CONTENT · SEO · SCHEMA · MEDIA · LINKS · ADSENSE · FRESHNESS · GOOGLE READINESS. Score + certificate (`output/certificates/<date>-<slug>.md|.json`) |
+| 2 | **Critical block** | title/meta/kw ledu · dev/demo text · Article schema ledu · unverified facts · past deadline · near-duplicate → **publish aaputundi** + Telegram (off: `PIN_GATE_BLOCK=0`) |
+| 3 | **Real-time iterative** | `rm100.optimize()` — score → fix → score (2 passes) publish ki mundu; LLM refine tarvata malli |
+| 4 | **Google Trends + Suggest** (`autoblog/trends.py`) | Trends RSS (IN) + autocomplete → TS/AP niche filter → **topic queue** + demand score. `--trends --trends-queue`; radar lo 4x/day automatic |
+| 5 | **Brand/E-E-A-T graph** | Article JSON-LD lo `author.worksFor → #org`, `isPartOf → #website`, `publisher.@id` — theme Organization schema tho okate entity graph |
+| 6 | **CLI proof** | `python run.py --pin-check` → 100/100 · 47/47 · 0 critical (offline) |
+
+**v65 lo pattukunna bug:** `seo.jobposting_obj` — recruitment dict lo `salary_min`/`salary_max`
+lekapote `KeyError` → publish path **crash**. Ippudu safe int conversion + regression test.
+
 ### v64 — RANK MATH 100 + THEME 100x (website options · TOC · schema · E-E-A-T · PWA)
 
 **Mee requirement: "post ki Rank Math 100 vachela score high"** → deterministic engine
@@ -578,7 +596,7 @@ GET `/wp-json/studentup/v1/theme-info` → theme version + seo_bridge + rankmath
 python run.py --readiness      # 18 system checks score/100 + 6 owner-pending items
 ```
 
-**Ee command ee repo lo prastuta: 100/100 · 23/23 system checks · 8 owner-pending.**
+**Ee command ee repo lo prastuta: 100/100 · 25/25 system checks · 8 owner-pending.**
 Artifacts: `logs/readiness.json` + `output/readiness-<date>.md` (markdown report).
 
 | Section | Enti verify avutundi (verifiable number) |
@@ -661,7 +679,7 @@ Menu (desktop + mobile same order): హోమ్ · ఉద్యోగాలు�
 
 Bot side: `autoblog/breaking.py` (feed build + tag classifier + honest empty note),
 radar run lo auto hook, `MOST_USED` order okate source (bot + site + tests sync).
-Evidence: tests/v59_test.py 12 checks · `run.py --test-all` 50/50 · jsdom 122/122.
+Evidence: tests/v59_test.py 12 checks · `run.py --test-all` 51/51 · jsdom 122/122.
 
 > ℹ️ Ee system exam conduct cheyyadaniki matrame — student data (roll, answers,
 > scores) mee server lo untundi, bayata pampabadadu. Public internet lo pettali

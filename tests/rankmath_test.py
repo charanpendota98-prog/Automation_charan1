@@ -232,25 +232,27 @@ def main():
     cfg_key = config.GEMINI_API_KEY
     config.GEMINI_API_KEY = "gate-test"
     low = {"score": 55, "issues": ["x"], "fixes": ["f1", "f2"], "words": 900}
-    high = {"score": 93, "issues": [], "fixes": [], "words": 1700}
+    high = {"score": 100, "issues": [], "fixes": [], "words": 1700}
     rv, rr = validator.rankmath_strict, gc.refine_article
     try:
-        n = []
+        state = {"refined": False}
 
         def strict_once(a, h=""):
-            # v64: rm100.apply() rendu sarlu score chestundi (before + after),
-            # tarvata gate — so modati 3 calls draft score (low) ivvali.
-            n.append(1)
-            return low if len(n) <= 3 else high
+            # v65: refine jarigaka mattrame 'high' — call-count tho brittle kaadu
+            return high if state["refined"] else low
+
+        def fake_refine(a, fixes):
+            state["refined"] = True
+            return {**a, "title": "Better Title"}
 
         validator.rankmath_strict = strict_once
-        gc.refine_article = lambda a, f: {**a, "title": "Better Title"}
+        gc.refine_article = fake_refine
         art1 = {"content_html": "<p>draft</p>", "title": "Old", "category": "X",
                 "focus_keyword": "kw", "meta_description": "m", "slug": "s"}
         res = pipeline._rankmath_gate(dict(art1), "X")
         # v64: rm100 tarvata title deterministic ga normalize avutundi (kw+year+power)
         assert res.get("refined") and "Better Title" in res["title"], res["title"]
-        assert res["_rm_pre"] == 55 and res["_rm"]["score"] == 93
+        assert res["_rm_pre"] == 55 and res["_rm"]["score"] == 100
         assert "Kw" in res["title"] and "Complete Details" in res["title"]
 
         validator.rankmath_strict = lambda a, h="": low

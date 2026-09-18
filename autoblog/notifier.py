@@ -192,6 +192,14 @@ def notify_new_post(article: dict, result: dict) -> None:
                 score, d.get("before"), ", ".join(rm.get("issues", [])[:3]) or "—"))
         else:
             qa_bits.append("🎯 RankMath strict: <b>{}/100</b>".format(score))
+    gate = article.get("_gate") or {}
+    if gate:
+        crit = gate.get("critical_fails") or []
+        qa_bits.append("🧾 Pin-to-pin: <b>{}/100</b> ({}/{} checks){}".format(
+            gate.get("score"), gate.get("passed"), gate.get("total"),
+            "" if not crit else " · ⛔ " + ", ".join(crit)))
+        if gate.get("_cert_path"):
+            pass
     rec = article.get("recruitment") or {}
     if rec.get("apply_end"):
         qa_bits.append("📌 Google Jobs schema + deadline countdown ON "

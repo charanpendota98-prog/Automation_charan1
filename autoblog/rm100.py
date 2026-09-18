@@ -542,6 +542,27 @@ def apply(article: dict, rounds: int = 1) -> Dict:
             "applied": sorted(set(applied)), "remaining": result["issues"]}
 
 
+def optimize(article: dict, target: int = 100, max_passes: int = 3) -> Dict:
+    """Iterative: score → apply → score... target (100) varaku (max_passes).
+
+    Returns {"article","score","before","passes":[{pass,score,applied}],"reached":bool}
+    Deterministic — LLM avasaram ledu. Pipeline idi vadutundi (real-time check).
+    """
+    before = analyze(article)["score"]
+    trace: List[dict] = []
+    score = before
+    for i in range(1, max(1, max_passes) + 1):
+        res = apply(article)
+        score = res["after"]
+        trace.append({"pass": i, "score": score, "applied": res["applied"]})
+        if score >= target or not res["applied"]:
+            break
+    article["_rm100"] = {"score": score, "before": before,
+                         "passes": len(trace), "trace": trace}
+    return {"article": article, "before": before, "score": score, "passes": trace,
+            "reached": score >= target}
+
+
 # ------------------------------------------------------------------ proof CLI
 
 def sample_article() -> dict:

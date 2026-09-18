@@ -284,6 +284,10 @@ SOCIAL_YOUTUBE = _get("SOCIAL_YOUTUBE", "").strip()
 CONTACT_EMAIL = _get("CONTACT_EMAIL", "").strip()
 STICKY_AD = _get("STICKY_AD", "").strip()
 EXAM_PUBLIC_URL = _get("EXAM_PUBLIC_URL", "").strip()
+# v65: pin-to-pin gate + Google trends capture
+PIN_GATE_BLOCK = _get("PIN_GATE_BLOCK", "1") not in ("0", "false", "no")
+TRENDS_GEO = _get("TRENDS_GEO", "IN").strip() or "IN"
+TRENDS_ENABLED = _get("TRENDS_ENABLED", "1") not in ("0", "false", "no")
 # Consent is a deployment responsibility, not something the bot can fake.
 # Set a real Google-certified CMP/provider in production and verify its UI.
 ADSENSE_CONSENT_PROVIDER = _get("ADSENSE_CONSENT_PROVIDER", "").strip()
