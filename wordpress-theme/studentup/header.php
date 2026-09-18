@@ -72,7 +72,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 	</div>
 </header>
 
-<?php studentup_breaking_ticker(); ?>
+<?php
+// v72: బ్రేకింగ్ section default OFF (admin → StudentUp Options lo on cheyyachu).
+studentup_breaking_ticker();
+?>
 
 <div class="mbackdrop" id="mbackdrop" aria-hidden="true"></div>
 <div class="mpanel" id="mpanel" role="dialog" aria-label="సైట్ మెనూ">
@@ -103,7 +106,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	}
 	if ( get_option( 'studentup_exam_url' ) ) :
 		?>
-		<a class="mcta" href="<?php echo esc_url( (string) get_option( 'studentup_exam_url' ) ); ?>">🎓 ప్రత్యక్ష పరీక్ష</a>
+		<a class="mcta" href="<?php echo esc_url( (string) get_option( 'studentup_exam_url' ) ); ?>">🎓 ఆన్‌లైన్ పరీక్షలు</a>
 	<?php endif; ?>
 	<div class="mlabel">సోషల్</div>
 	<a href="https://wa.me/919999999999" target="_blank" rel="noopener">WhatsApp</a>

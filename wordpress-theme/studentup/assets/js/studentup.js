@@ -55,19 +55,63 @@
     });
   }
 
-  /* ---------- chips filter (front page grid) ---------- */
+  /* ---------- chips filter (front page grid) + v72.1 అర్హత filter ---------- */
   var grid = document.getElementById("grid");
   var chips = document.querySelectorAll(".chip[data-cat]");
+  var qchips = document.querySelectorAll(".qchip");
   var nores = document.getElementById("nores");
-  function applyCat(cat) {
+  var activeCat = "all";
+  var activeQual = "all";
+  var today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  function daysLeft(card) {
+    var v = card.getAttribute("data-last");
+    if (!v) return null;
+    var d = new Date(v + "T23:59:59");
+    if (isNaN(d)) return null;
+    return Math.round((d - today) / 86400000);
+  }
+  function decorate(card) {                    /* ⏳/expired badge (server-side kuda undi) */
+    var left = daysLeft(card);
+    if (left === null) return;
+    var foot = card.querySelector(".newsfoot");
+    if (left < 0) card.classList.add("expired");
+    if (!foot) return;
+    var old = foot.querySelector(".qbadge");
+    if (old) old.remove();
+    var b = document.createElement("span");
+    if (left < 0) { b.className = "qbadge done"; b.textContent = "గడువు ముగిసింది"; }
+    else if (left <= 7) { b.className = "qbadge soon"; b.textContent = (left === 0 ? "ఈరోజే చివరి రోజు" : left + " రోజుల్లో ముగుస్తుంది"); }
+    else { return; }
+    foot.appendChild(b);
+  }
+  function applyFilter() {
     if (!grid) return;
-    var shown = 0;
+    var shown = 0, hiddenExpired = 0;
     Array.prototype.forEach.call(grid.querySelectorAll(".news"), function (card) {
-      var ok = cat === "all" || (" " + (card.getAttribute("data-cat") || "") + " ").indexOf(" " + cat + " ") > -1;
+      decorate(card);
+      var qua = (card.getAttribute("data-qual") || "").toLowerCase();
+      var left = daysLeft(card);
+      var expired = left !== null && left < 0;
+      var okCat = activeCat === "all" ||
+        (" " + (card.getAttribute("data-cat") || "") + " ").indexOf(" " + activeCat + " ") > -1;
+      var okQual = true;
+      if (activeQual === "closing") okQual = left !== null && left >= 0 && left <= 7;
+      else if (activeQual !== "all") okQual = qua.indexOf(activeQual) > -1;
+      if (activeQual !== "expired" && expired) { okQual = false; hiddenExpired++; }
+      var ok = okCat && okQual;
       card.classList.toggle("hidden", !ok);
       if (ok) shown++;
     });
     if (nores) nores.style.display = shown ? "none" : "block";
+    var note = document.getElementById("su-hidden-note");
+    if (note) {
+      if (hiddenExpired) {
+        note.hidden = false;
+        note.textContent = "గడువు ముగిసిన " + hiddenExpired + " ఉద్యోగాలు దాచబడ్డాయి.";
+      } else { note.hidden = true; }
+    }
   }
   Array.prototype.forEach.call(chips, function (chip) {
     chip.addEventListener("click", function () {
@@ -77,7 +121,31 @@
       });
       chip.classList.add("active");
       chip.setAttribute("aria-selected", "true");
-      applyCat(chip.getAttribute("data-cat"));
+      activeCat = chip.getAttribute("data-cat") || "all";
+      applyFilter();
+    });
+  });
+  /* v72.1: అర్హత chips — JS unte page reload lekunda category tho kalisi filter avutundi
+   * (href server-side/SEO kosam alage untundi; JS unna browser lo URL history update). */
+  Array.prototype.forEach.call(qchips, function (chip) {
+    chip.addEventListener("click", function (e) {
+      var slug = chip.getAttribute("data-qual") || "all";
+      e.preventDefault();
+      Array.prototype.forEach.call(qchips, function (c) {
+        c.classList.remove("active");
+        c.setAttribute("aria-current", "false");
+      });
+      chip.classList.add("active");
+      chip.setAttribute("aria-current", "true");
+      activeQual = slug;
+      try {                                   /* shareable URL — server-side tho same */
+        var url = new URL(location.href);
+        if (slug === "all") url.searchParams.delete("qual");
+        else url.searchParams.set("qual", slug);
+        history.replaceState({}, "", url.toString());
+      } catch (err) {}
+      applyFilter();
+      if (grid.scrollIntoView) grid.scrollIntoView({ behavior: "smooth", block: "start" });
     });
   });
   /* hash deep-link (#cat-ts-jobs) */
@@ -88,6 +156,61 @@
       if (c.getAttribute("data-cat") === m[1]) c.click();
     });
   })();
+  /* ---------- v72.1: అర్హత ప్రకారం విభాగాలు (grid nunchi automatic build) ---------- */
+  var QUAL_LABELS = { "10th": "10వ తరగతి", "inter": "ఇంటర్ (10+2)", "iti": "ఐటీఐ",
+                      "diploma": "డిప్లొమా", "degree": "డిగ్రీ", "pg": "పీజీ", "btech": "బీటెక్" };
+  function buildQualSections() {
+    var host = document.getElementById("qsplit");
+    if (!host || !grid) return;
+    var groups = host.querySelectorAll("[data-qgroup]");
+    var all = Array.prototype.slice.call(grid.querySelectorAll(".news"));
+    Array.prototype.forEach.call(groups, function (g) {
+      var key = g.getAttribute("data-qgroup");
+      var items = [];
+      all.forEach(function (card) {
+        var qua = (card.getAttribute("data-qual") || "").toLowerCase();
+        var left = daysLeft(card);
+        var ok = key === "closing"
+          ? (left !== null && left >= 0 && left <= 7)
+          : (qua.indexOf(key) > -1 && !(left !== null && left < 0));
+        if (ok) items.push(card);
+      });
+      if (!items.length) { g.hidden = true; g.innerHTML = ""; return; }
+      var h = document.createElement("h3");
+      h.innerHTML = (key === "closing" ? "⏳ 7 రోజుల్లో ముగిసేవి" : (QUAL_LABELS[key] || key)) +
+        ' <span class="qgnum">' + items.length + "</span>";
+      var sub = document.createElement("p");
+      sub.className = "qgsub";
+      sub.textContent = key === "closing" ? "గడువు దగ్గరపడుతోంది — ఇప్పుడే చూడండి" : "ఈ అర్హత ఉన్నవారు దరఖాస్తు చేసుకోవచ్చు";
+      var ul = document.createElement("ul");
+      items.slice(0, 6).forEach(function (card) {
+        var a = card.querySelector("h3 a") || card.querySelector("a");
+        if (!a) return;
+        var left = daysLeft(card);
+        var meta = (left !== null && left >= 0 && left <= 7)
+          ? (left === 0 ? "ఈరోజే చివరి రోజు" : left + " రోజుల్లో ముగుస్తుంది") : "";
+        var li = document.createElement("li");
+        var link = document.createElement("a");
+        link.href = a.getAttribute("href") || a.href;
+        link.textContent = a.textContent.trim();
+        li.appendChild(link);
+        if (meta) {
+          var span = document.createElement("span");
+          span.className = "qgmeta";
+          span.textContent = meta;
+          li.appendChild(span);
+        }
+        ul.appendChild(li);
+      });
+      g.innerHTML = "";
+      g.appendChild(h);
+      g.appendChild(sub);
+      g.appendChild(ul);
+      g.hidden = false;
+    });
+  }
+  buildQualSections();
+  applyFilter();                              /* modati load lo expired hide + badges */
 
   /* ---------- deadline countdown ---------- */
   var timer = document.querySelector(".timer[data-deadline]");

@@ -80,11 +80,11 @@ Detail docs: `DEPLOY_MILESWEB.md` (cPanel steps) · `DEPLOY_ORACLE_CLOUD.md` (VM
 
 | Item | Proof |
 |---|---|
-| Test suites | **55/55** pass (`python run.py --test-all`) |
+| Test suites | **56/56** pass (`python run.py --test-all`) |
 | Site guardian | **`python run.py --guardian`** — site/UI/SEO/ads/feed/storage/theme 12 checks (11 ok · 1 owner-pending) |
 | Readiness score | **`python run.py --readiness`** — **100/100** · 27/27 system checks · 10 owner-pending |
 | Production check | **11/11** pass (`python run.py --production-audit`) |
-| Browser runtime | **150/150** checks (`node tests/runtime/jsdom_runtime_test.js`) |
+| Browser runtime | **161/161** checks (`node tests/runtime/jsdom_runtime_test.js`) |
 | Public surface | developer/proof text **ledu** — `python run.py --guardian` → `counts_sync` · dev archive `docs/design-archive/` (website meeda serve avvadu) |
 | Business deal | no public rate card — prices live in `autoblog/rate_card.py`, print with `python run.py --rate-card` and negotiate personally |
 | Contact routes | set `SOCIAL_WHATSAPP` + `SOCIAL_TELEGRAM` in `.env` → `python run.py --push-theme-data` (site WhatsApp boxes + rail follow it) |
@@ -106,7 +106,7 @@ Detail docs: `DEPLOY_MILESWEB.md` (cPanel steps) · `DEPLOY_ORACLE_CLOUD.md` (VM
 
 - [ ] **1. Domain + hosting** — studentup.in (leda mee peru) + MilesWeb cPanel plan (₹59–180/నెల).
       → WordPress install + SSL (Let's Encrypt) ON.
-- [ ] **2. WordPress setup** — Rank Math; theme install (**v72**: theme **1.7.0** —
+- [ ] **2. WordPress setup** — Rank Math; theme install (**v72.1**: theme **1.7.1** —
       `python tools/build_wp_theme.py` → zip → Appearance → Themes → Upload → Activate);
       `wp-admin → Users → Application Passwords` → app password create cheyyandi.
       **v68**: IndexNow key file ni **theme ne serve chestundi** (`/<key>.key`) — cPanel lo
@@ -246,4 +246,4 @@ Detail: `python tools/revenue_estimate.py --views 10k`
 Clickbait titles · fake clicks · popups · "Google tricks" · ad ni content laaga dhaachadam ·
 job guarantee promises (advertisers kuda). Ivi AdSense ban + trust damage.
 
-*Last updated: v72 (2026-09-18) · 56/56 suites · 150/150 runtime · 11/11 production checks · theme v1.7.0*
+*Last updated: v72.1 (2026-09-18) · 56/56 suites · 161/161 runtime · 11/11 production checks · theme v1.7.1*

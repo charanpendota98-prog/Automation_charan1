@@ -30,7 +30,8 @@ RECOMMENDED_FILES = ("comments.php", "sidebar.php", "languages/studentup.pot", "
 # ee modules functions.php lo require avvali (module file undi kaani load avvakapote dead code)
 REQUIRED_MODULES = ("options.php", "template.php", "ads.php", "breaking.php", "toc.php",
                     "schema.php", "author-box.php", "pwa.php", "seo-bridge.php",
-                    "consent.php", "ads-txt.php", "perf.php", "news-sitemap.php")
+                    "consent.php", "ads-txt.php", "perf.php", "news-sitemap.php",
+                    "qual-filter.php")
 
 DANGEROUS = {
     "eval(": "eval — remote code execution risk",
@@ -306,7 +307,11 @@ def deep_checks(report: dict) -> dict:
     for rel, text in texts.items():
         code = text[1]
         for m in re.finditer(r"new WP_Query\(", code):
-            tail = code[m.end():m.end() + 700]
+            tail = code[m.end():m.end() + 900]
+            # v72.1: konni queries ki found_posts NIJAM ga kavali (counts — chips/widget/backfill).
+            # Aa case lo no_found_rows=false better (count query tho ne) — warning vaddu.
+            if "found_posts" in tail:
+                continue
             if "'no_found_rows'" not in tail and '"no_found_rows"' not in tail:
                 warnings.append(f"{rel}: custom WP_Query ki no_found_rows ledu "
                                 f"(shared hosting lo extra SELECT FOUND_ROWS)")

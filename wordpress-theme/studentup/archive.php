@@ -21,7 +21,14 @@ get_header();
 				<p><?php echo esc_html( wp_strip_all_tags( get_the_archive_description() ) ); ?></p>
 			</div>
 		</div>
-		<div class="newsgrid">
+		<?php
+		if ( function_exists( 'studentup_qual_bar' ) ) {
+			studentup_qual_bar();          // v72: archive/category lo kuda అర్హత filter
+			studentup_qual_active_note();
+			studentup_hidden_note();
+		}
+		?>
+		<div class="newsgrid" id="grid">
 			<?php
 			$su_i = 0;
 			while ( have_posts() ) :

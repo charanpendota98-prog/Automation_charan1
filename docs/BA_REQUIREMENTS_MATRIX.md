@@ -110,8 +110,9 @@ python tools/build_wp_theme.py    # php-lint + audit + POT + zip (theme install 
 | R72 | **విద్యార్హత ఫిల్టర్ automatic (10th → PG) · menu pakkana search · app-laga install · clean copy (బ్రేకింగ్/internal metrics teeseyadam)** | v72 | `preview/index.html` (chips + search panel + PWA) · `wordpress-theme/studentup/inc/qual-filter.php` (auto-tag + `?qual=` server filter + WP-CLI backfill) · `inc/pwa.php` + `assets/js/studentup-pwa.js` · `autoblog/qual.py` (bot meta) | `v72_test` (20 checks), `v59_test`, `v60_test`, jsdom 150 checks | `--test-all` · `node tests/runtime/jsdom_runtime_test.js` |
 ---
 
-*Last updated: v72 (2026-09-18) — qualification-wise job filter (auto tags; 10th · 10+2 · ITI ·
-Diploma · Degree · PG · B.Tech) + header search + PWA install + clean copy (బ్రేకింగ్/internal
-metrics removed from public) + theme v1.7.0 ·
-56/56 suites · jsdom 150/150 · readiness 100/100 (28/28) · guardian 14/15 (1 warn-only owner env) ·
+*Last updated: v72.1 (2026-09-18) — qualification-wise job filter (auto tags; 10th · 10+2 · ITI ·
+Diploma · Degree · PG · B.Tech) + per-qualification sections (auto built, no manual tagging) +
+always-visible App డౌన్‌లోడ్ + data-driven deadline + clean copy (topbar/7-point article/demo ads
+removed) + theme v1.7.1 ·
+56/56 suites · jsdom 161/161 · readiness 100/100 (28/28) · guardian 14/15 (1 warn-only owner env) ·
 theme audit 0/0 · code audit 0/0 · parity audit 0/0.*

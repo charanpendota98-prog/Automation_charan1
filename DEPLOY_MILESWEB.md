@@ -25,6 +25,12 @@ cPanel → File Manager → public_html/
   upload every file from preview/   (index.html, pages/, robots.txt, sitemap.xml, favicon.svg,
                                      manifest.webmanifest, sw.js)   # v72: ee rendu files PWA ki kaavali
 ```
+**v72.1 (App డౌన్‌లోడ్) note:** `manifest.webmanifest` + `sw.js` **root lo** undali (index.html
+pakkana). Munde install chesina phone lo kotha assets ravalante `sw.js` lo `VERSION` bump
+(`su-v72-2` ippudu undi) — browser purana cache vadadam aaputundi. `data/deadline.json` ledu
+ante hero countdown honest line chupistundi (fake date eppudu vaddu) — bot
+`python run.py --push-theme-data` tho ee file rasi pettedi.
+
 **v72 (PWA) note:** `manifest.webmanifest` + `sw.js` **root lo** undali (index.html pakkana).
 Ee rendu unte "యాప్గా ఇన్స్టాల్" button + offline page pani chestayi. WordPress route lo idi
 theme ne chestundi (`?studentup_manifest=1` / `?studentup_sw=1`) — server config avasaram ledu.

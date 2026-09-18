@@ -74,11 +74,7 @@
     .skip{position:absolute;left:-9999px;top:0;background:var(--navy);color:#fff;padding:10px 16px;z-index:99;border-radius:0 0 10px 0}
     .skip:focus{left:0}
     :focus-visible{outline:3px solid var(--orange);outline-offset:2px;border-radius:6px}
-    /* topbar + header */
-    .topbar{background:var(--navy);color:#d9e7ff;font-size:12px}
-    .topbar .wrap{height:34px;display:flex;align-items:center;justify-content:space-between;gap:12px}
-    .toplinks{display:flex;gap:18px;opacity:.92;white-space:nowrap}
-    .toplinks a:hover{color:#fff;text-decoration:underline}
+    /* header */
     .header{background:rgba(255,255,255,.94);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20}
     .headrow{height:74px;display:flex;align-items:center;gap:22px}
     .logo{display:flex;align-items:center;gap:10px;min-width:190px}
@@ -147,12 +143,30 @@
     body.dark .qbadge.soon{background:#2a2013;color:#ffc88a;border-color:#4a3a22}
     body.dark .qbadge.done{background:#182338;color:#9fb0c6;border-color:#243a5c}
     .news.expired{opacity:.72}
-    /* v72: install as an app (PWA) */
-    .installbtn{position:fixed;left:14px;bottom:16px;z-index:35;border:0;border-radius:13px;cursor:pointer;
-      background:linear-gradient(135deg,#2463b7,#0f2e62);color:#fff;font-weight:800;font-size:13px;padding:12px 16px;
-      box-shadow:0 12px 26px rgba(15,46,98,.3)}
-    .installhint{position:fixed;left:14px;bottom:16px;z-index:35;max-width:280px;background:#0f2e62;color:#fff;
-      font-size:12.5px;line-height:1.6;padding:12px 14px;border-radius:13px;box-shadow:0 12px 26px rgba(15,46,98,.3)}
+    /* v72.1: App download (PWA install) — prathi visit lo kanipistundi (mobile first) */
+    .installbtn{position:fixed;left:14px;bottom:18px;z-index:36;border:0;border-radius:14px;cursor:pointer;
+      display:flex;align-items:center;gap:8px;font-family:inherit;
+      background:linear-gradient(135deg,#2463b7,#0f2e62);color:#fff;font-weight:800;font-size:13.5px;padding:13px 17px;
+      box-shadow:0 14px 28px rgba(15,46,98,.32)}
+    .installbtn:hover{filter:brightness(1.06)}
+    .installbtn .ibadge{background:#ed8a32;color:#fff;border-radius:999px;font-size:10px;padding:2px 8px;font-weight:800}
+    .installbtn[hidden]{display:none}
+    .installsheet{position:fixed;inset:auto 0 0 0;z-index:60;background:var(--card);border-top:1px solid var(--line);
+      border-radius:18px 18px 0 0;box-shadow:0 -18px 44px rgba(15,46,98,.28);padding:18px 18px calc(18px + env(safe-area-inset-bottom));
+      max-width:560px;margin:0 auto;color:var(--ink)}
+    .installsheet[hidden]{display:none}
+    .installsheet h3{margin:0 0 4px;font-size:16.5px;color:var(--navy)}
+    .installsheet .isub{margin:0 0 12px;font-size:12.5px;color:var(--muted);line-height:1.6}
+    .installsheet ol{margin:0;padding-left:20px;display:grid;gap:7px;font-size:13px;line-height:1.6}
+    .installsheet ol b{color:var(--navy)}
+    .installsheet .irow{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}
+    .installok{background:linear-gradient(135deg,#1f9d63,#12805a);color:#fff;border:0;border-radius:12px;
+      padding:11px 16px;font-weight:800;font-size:13px;cursor:pointer;font-family:inherit}
+    .installclose{background:var(--soft);color:var(--navy);border:1px solid var(--line);border-radius:12px;
+      padding:11px 16px;font-weight:700;font-size:13px;cursor:pointer;font-family:inherit}
+    body.dark .installsheet{background:#101c30;color:#e8eef7}
+    body.dark .installsheet h3{color:#e7f0ff}
+    body.dark .installclose{background:#182338;color:#dbe7f8;border-color:#243a5c}
     .iconbtn{border:1px solid var(--line);color:var(--navy);background:var(--card);height:38px;width:38px;border-radius:11px;cursor:pointer;font-size:15px}
     .callbtn{border:0;background:var(--orange);color:#fff;font-weight:800;border-radius:11px;padding:11px 16px;cursor:pointer;box-shadow:0 8px 16px rgba(237,138,50,.22);font-size:13px}
     /* hero */
@@ -192,7 +206,6 @@
     .sectionhead h2,.news h3,.hero h1,.sidecard h3{text-wrap:balance}
     .newsbody{min-width:0}
     .tagrow{display:flex;gap:6px;flex-wrap:wrap}
-    .topbar span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
     .sectionhead{display:flex;justify-content:space-between;align-items:end;margin-bottom:18px;gap:14px;flex-wrap:wrap}
     .sectionhead h2{font-size:25px;color:var(--navy);letter-spacing:-.04em;margin:0}
     .sectionhead p{font-size:12px;color:var(--muted);margin:4px 0 0}
@@ -415,7 +428,6 @@
       .su-social a:hover{transform:none}}
     /* dark mode */
     body.dark{--ink:#e8eef7;--ink-soft:#b9c6da;--muted:#93a4bd;--line:#31445f;--soft:#14243c;--card:#14243c;--cardline:#31445f;--bg:#0d1728;--navy:#0f2e62;--blue:#6ea3e8;--orange:#f09a4b}
-    body.dark .topbar{background:#0a1a33}
     body.dark .header{background:rgba(13,23,40,.9)}
     body.dark .hero{background:radial-gradient(circle at 100% 0,#16335b 0,transparent 38%),#0d1728}
     body.dark .hero h1,body.dark .sectionhead h2,body.dark .news h3,body.dark .sidecard h3,body.dark .article h2,body.dark .article h4,body.dark .article-head .article h2,body.dark .quiz-head h3{color:#e7f0ff}
@@ -458,10 +470,12 @@
       .side{display:grid;grid-template-columns:1fr 1fr;gap:16px}
       .sidecard,.exam-card{margin:0}
       .service-card{grid-column:1/-1}
-      .toplinks{display:none}
     }
     @media(max-width:600px){
-      .topbar{display:none}
+      /* v72.1: bottom bar/rail/button overlap avvakoodadu */
+      .installbtn{left:10px;bottom:70px;font-size:12.5px;padding:11px 14px;max-width:66vw}
+      .installbtn .ibadge{font-size:9.5px}
+      .totop{bottom:126px;right:12px}
       .headrow{height:62px}
       .headactions .callbtn{display:none}
       .headactions{gap:5px}
@@ -489,7 +503,37 @@
     @media(max-width:400px){.mobile-nav a{font-size:8.5px;padding:4px 5px}
       .mobile-nav b{font-size:12px}
       .su-social a{width:31px;height:31px}
-      .su-social a svg{width:15px;height:15px}}
+      .su-social a svg{width:15px;height:15px}
+      .installbtn{font-size:12px;padding:10px 12px}
+      .installsheet{padding:16px 14px calc(16px + env(safe-area-inset-bottom))}}
+    /* v72.1: అర్హత ప్రకారం విభాగాలు (automatic grouping) */
+    .qualsplit{margin:26px 0 6px}
+    .qsplit-head{margin-bottom:12px}
+    .qsplit-head h2{margin:0 0 4px;font-size:21px;color:var(--navy)}
+    .qsplit-head p{margin:0;font-size:13px;color:var(--muted)}
+    .qsplit-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+    .qgroup{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 15px;box-shadow:0 8px 22px rgba(15,46,98,.05)}
+    .qgroup[hidden]{display:none}
+    .qgroup h3{margin:0 0 3px;font-size:15.5px;color:var(--navy);display:flex;align-items:center;gap:8px}
+    .qgroup h3 .qgnum{background:#eaf2ff;color:var(--blue);border-radius:999px;font-size:11px;padding:2px 9px;font-weight:800}
+    .qgroup .qgsub{margin:0 0 10px;font-size:12px;color:var(--muted)}
+    .qgroup ul{list-style:none;margin:0;padding:0;display:grid;gap:9px}
+    .qgroup li{padding:9px 0;border-top:1px dashed var(--line)}
+    .qgroup li:first-child{border-top:0;padding-top:0}
+    .qgroup a{color:var(--ink);text-decoration:none;font-weight:700;font-size:13.5px;line-height:1.5}
+    .qgroup a:hover{color:var(--blue)}
+    .qgroup .qgmeta{display:block;color:var(--muted);font-size:11.5px;font-weight:600;margin-top:3px}
+    .qgroup .qgempty{color:var(--muted);font-size:12.5px}
+    body.dark .qgroup{background:#111e33;border-color:#243a5c}
+    body.dark .qgroup h3{color:#e7f0ff}
+    body.dark .qgroup a{color:#dbe7f8}
+    body.dark .qgroup h3 .qgnum{background:#132743;color:#9dc2ff}
+    @media(max-width:600px){.qsplit-grid{grid-template-columns:1fr}.qsplit-head h2{font-size:19px}}
+
+    /* v72.1: text eppudu background meeda clear ga (contrast + wrap) */
+    .installsheet,.installbtn,.qcount,.qnote,.cd-note{text-shadow:none}
+    .hero h1 em{font-style:normal;color:var(--blue)}
+    body.dark .hero h1 em{color:#8fc0ff}
   
     /* ---------- v47: ఈరోజు పోల్ ---------- */
     .poll{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;margin:18px 0;box-shadow:0 11px 26px rgba(15,46,98,.06)}
@@ -548,7 +592,6 @@
 <body>
   <a class="skip" href="#main">ముఖ్య విషయానికి వెళ్లండి</a>
 
-  <div class="topbar"><div class="wrap"><span>🎓 తెలంగాణ &amp; ఆంధ్రప్రదేశ్ విద్యార్థులకు ఉద్యోగాలు, పరీక్షలు, ఫలితాలు — ఒకే వేదిక</span><div class="toplinks"><a href="pages/editorial-policy.html">సంపాదకీయ విధానం</a><a href="pages/contact.html">సవరణలు</a><a href="pages/privacy.html">గోప్యతా విధానం</a><span id="today" aria-hidden="true"></span></div></div></div>
 
   <header class="header"><div class="wrap headrow">
     <a class="logo" href="#top" aria-label="studentup.in home"><span class="mark" aria-hidden="true">S</span><span class="brand">studentup<small>నేర్చుకో · దరఖాస్తు చేయి · ఎదుగు</small></span></a>
@@ -667,7 +710,7 @@
     <a href="pages/editorial-policy.html"><span class="mico" aria-hidden="true">🛡</span>సంపాదకీయ విధానం</a>
     <a href="pages/contact.html"><span class="mico" aria-hidden="true">✉️</span>సవరణలు</a>
     <a href="pages/privacy.html"><span class="mico" aria-hidden="true">🔒</span>గోప్యతా విధానం</a>
-    <a class="mcta" href="#exam">🎓 ప్రత్యక్ష పరీక్ష — KBHA5W</a>
+    <a class="mcta" href="#exam">🎓 ఆన్‌లైన్ పరీక్షలు — ఇప్పుడే ప్రయత్నించండి</a>
     <div class="msocial" aria-label="మమ్మల్ని అనుసరించండి">
       <a href="https://wa.me/919999999999?text=StudentUp.in%20iniki%20question%20unnadi" target="_blank" rel="noopener">WhatsApp</a>
       <a href="https://t.me/studentup_in" target="_blank" rel="noopener">Telegram</a>
@@ -681,15 +724,15 @@
   <!-- v46: TOP LEADERBOARD — highest-visibility ad slot (below header) -->
   <div class="wrap">
     <section class="su-ad su-ad-leader" aria-label="Sponsored content" data-ad="coaching-leader-demo" data-slot="top-leaderboard">
-      <div class="su-ad-kicker">SPONSORED · కోచింగ్ భాగస్వామి </div>
+      <div class="su-ad-kicker">SPONSORED · స్లాట్ ఖాళీ</div>
       <div class="su-ad-leader-body">
         <div>
-          <div class="su-ad-title">ABC IAS/PCS అకాడమీ — TSPSC · APPSC · SSC బ్యాచ్‌లు 2026</div>
-          <p class="su-ad-desc">టెస్ట్ సిరీస్ + మెంటర్‌షిప్ + రోజువారీ GK — విద్యార్థులకు ప్రత్యేక ఆఫర్.</p>
+          <div class="su-ad-title">మీ కోచింగ్ సెంటర్ / కళాశాల ఇక్కడ — TS &amp; AP విద్యార్థుల ముందు</div>
+          <p class="su-ad-desc">రోజూ వేల విద్యార్థులు చూసే స్థలం. వివరాలు, స్లాట్ ధర — WhatsApp లో వ్యక్తిగతంగా.</p>
         </div>
-        <a class="su-ad-cta" href="https://example.com/abc-coaching-demo" target="_blank" rel="sponsored nofollow noopener">ఉచిత డెమో క్లాస్ బుక్ చేయండి →</a>
+        <a class="su-ad-cta" href="pages/advertise.html" rel="sponsored nofollow">ప్రకటన గురించి అడగండి →</a>
       </div>
-      <div class="su-ad-disc">ప్రకటన — భాగస్వామికి నేరు లింక్. అధికారిక నోటిఫికేషన్‌లు ప్రధాన కంటెంట్‌లో మాత్రమే ఉంటాయి.</div>
+      <div class="su-ad-disc">ప్రకటన స్థలం — భాగస్వాముల కోసం. అధికారిక నోటిఫికేషన్‌లు ప్రధాన కంటెంట్‌లో మాత్రమే ఉంటాయి.</div>
     </section>
   </div>
 
@@ -700,17 +743,19 @@
     <p class="lede">తెలంగాణ &amp; ఆంధ్రప్రదేశ్ పరీక్షలు, ప్రభుత్వ ఉద్యోగాలు, స్కాలర్‌షిప్‌లు — అధికారిక మూలాలతో పరిశీలించి, సులభ తెలుగులో వివరిస్తాము. ఫేక్ పోర్టల్‌ల నుండి రక్షణ చర్యలు ఇక్కడే.</p>
     <div class="hero-actions">
       <a class="bluebtn" href="#jobs">అవకాశాలు చూడండి →</a>
-      <a class="ghostbtn" href="#exam">🎓 ప్రత్యక్ష పరీక్షల పోర్టల్ ప్రయత్నించండి</a>
     </div>
   </div><div class="hero-card">
-    <div class="hcard-top"><span class="hcard-title">ముఖ్య గడువు</span><span class="live">● లైవ్ కౌంట్‌డౌన్</span></div>
-    <div class="deadline"><small>ముఖ్య గడువు · రాష్ట్ర సేవలు</small><h3 id="cd-title">TSPSC దరఖాస్తు కాలం — మూసివేతకు ముందు దరఖాస్తు చేయండి</h3>
+    <div class="hcard-top"><span class="hcard-title">ఈరోజు ముఖ్యాంశం</span><span class="live" id="cd-live">● లైవ్</span></div>
+    <div class="deadline" id="cd-box" hidden><small>ముఖ్య గడువు</small><h3 id="cd-title">—</h3>
       <div class="timer" role="timer" aria-label="Countdown to deadline">
         <div class="time"><b id="cd-d">--</b><span>రోజులు</span></div>
         <div class="time"><b id="cd-h">--</b><span>గంటలు</span></div>
         <div class="time"><b id="cd-m">--</b><span>నిమిషాలు</span></div>
         <div class="time"><b id="cd-s">--</b><span>సెకన్లు</span></div>
       </div>
+    </div>
+    <div class="deadline" id="cd-none"><small>తాజా అవకాశాలు</small><h3>తుది తేదీలు ప్రతి ఉద్యోగ పోస్ట్‌లో — అధికారిక నోటిఫికేషన్ ప్రకారం</h3>
+      <p class="cd-note">గడువు కౌంట్‌డౌన్ — తాజా డేటా వచ్చాక ఇక్కడ కనిపిస్తుంది.</p>
     </div>
     <p class="hcard-note">తుది తేదీని అధికారిక నోటిఫికేషన్‌లో ఒకసారి నిర్ధారించుకోండి.</p>
     <div class="hcard-row"><span class="mini-icon" aria-hidden="true">✓</span><div><b>అర్హత వివరాలు</b><span>విద్యార్హత · వయస్సు · ఫీజు మినహాయింపు · పత్రాలు</span></div><span class="arrow" aria-hidden="true">→</span></div>
@@ -769,11 +814,11 @@
       <div class="newsgrid" id="grid">
         <!-- v46: IN-FEED native ad (blends with grid — high CTR; not .news so filters never hide ads) -->
         <aside class="su-ad su-ad-feed" aria-label="Sponsored content" data-ad="tuition-feed-demo" data-slot="in-feed">
-          <div class="su-ad-kicker">SPONSORED · స్థానిక భాగస్వామి </div>
-          <div class="fthumb" aria-hidden="true">భాగస్వామి ట్యూషన్<br>ఇంటి క్లాసులు · హైదరాబాద్<br>Home Classes · Hyderabad</div>
-          <h3>10వ / 12వ తరగతి ఇంటి క్లాసులు — గ్రూప్ + వ్యక్తిగత, వారాంత బ్యాచ్‌లు</h3>
-          <p>ఉచిత డెమో క్లాస్ · స్థానిక ట్యూషన్ భాగస్వామి · ప్రత్యేక ఆఫర్.</p>
-          <a class="fcta" href="https://example.com/tuition-demo" target="_blank" rel="sponsored nofollow noopener">భాగస్వామిని చూడండి →</a>
+          <div class="su-ad-kicker">SPONSORED · స్లాట్ ఖాళీ</div>
+          <div class="fthumb" aria-hidden="true">మీ బ్రాండ్<br>ఇక్కడ కనిపిస్తుంది<br>Your brand here</div>
+          <h3>ఈ స్లాట్‌లో మీ ప్రకటన — ఉద్యోగం వెతికే విద్యార్థులకు నేరుగా</h3>
+          <p>కళాశాలలు · కోచింగ్ · స్టేషనరీ · హాస్టల్స్ — స్థానిక భాగస్వాముల కోసం.</p>
+          <a class="fcta" href="pages/advertise.html" rel="sponsored nofollow">భాగస్వామి అవ్వండి →</a>
         </aside>
 
         <article class="news" data-state="ts" data-cat="ts-jobs upcoming" data-text="tspsc group 2 2026 notification telangana state service eligibility syllabus" data-qual="degree pg" data-last="2026-10-15">
@@ -904,40 +949,35 @@
         </article>
       </div>
       <p class="nores" id="nores">ఈ శోధన/రాష్ట్రానికి అవకాశాలు లేవు — "అన్నీ" ట్యాబ్‌కు వెళ్లి మళ్లీ ప్రయత్నించండి.</p>
+      <p class="qhidden" id="su-hidden-note" hidden></p>
+
+      <!-- v72.1: అర్హత ప్రకారం విభాగాలు — JS prathi పోస్ట్ data-qual nunchi automatic ga nimpustundi -->
+      <section class="qualsplit" id="qualsplit" aria-label="అర్హత ప్రకారం ఉద్యోగాలు">
+        <div class="qsplit-head">
+          <h2>అర్హత ప్రకారం చూడండి</h2>
+          <p>మీ చదువుకు సరిపోయే ఉద్యోగాలు — కొత్త పోస్ట్ వచ్చిన ప్రతిసారీ ఇవి ఆటోమేటిక్‌గా అప్డేట్ అవుతాయి.</p>
+        </div>
+        <div class="qsplit-grid" id="qsplit">
+          <article class="qgroup" data-qgroup="10th" hidden></article>
+          <article class="qgroup" data-qgroup="inter" hidden></article>
+          <article class="qgroup" data-qgroup="iti" hidden></article>
+          <article class="qgroup" data-qgroup="diploma" hidden></article>
+          <article class="qgroup" data-qgroup="degree" hidden></article>
+          <article class="qgroup" data-qgroup="pg" hidden></article>
+          <article class="qgroup" data-qgroup="btech" hidden></article>
+          <article class="qgroup" data-qgroup="closing" hidden></article>
+        </div>
+      </section>
 
       <section class="su-ad" aria-label="Sponsored content" data-ad="college-banner-demo" data-slot="mid">
-        <div class="su-ad-kicker">SPONSORED · కళాశాల స్పాన్సర్‌షిప్ </div>
+        <div class="su-ad-kicker">SPONSORED · కళాశాల స్పాన్సర్‌షిప్</div>
         <div class="su-ad-grad" aria-hidden="true"></div>
-        <div class="su-ad-title">ABC ఇంజినీరింగ్ కళాశాల — 2026 ప్రవేశాలు ప్రారంభం</div>
-        <p class="su-ad-desc">ECE · CSE · MBA — మెరిట్ స్కాలర్‌షిప్‌లు, హాస్టల్ &amp; ప్లేస్‌మెంట్ సహాయం.</p>
-        <a class="su-ad-cta" href="https://example.com/abc-college-demo" target="_blank" rel="sponsored nofollow noopener">మరింత తెలుసుకోండి →</a>
+        <div class="su-ad-title">మీ కళాశాల ప్రకటన ఇక్కడ — ప్రవేశాలు, కోర్సులు, స్కాలర్‌షిప్‌లు</div>
+        <p class="su-ad-desc">విద్యార్థులకు ఉపయోగపడే ఆఫర్‌లే — మేము ప్రకటన కంటెంట్‌కు ఎడిటోరియల్ బాధ్యత తీసుకోము.</p>
+        <a class="su-ad-cta" href="pages/advertise.html" rel="sponsored nofollow">భాగస్వామి అవ్వండి →</a>
         <div class="su-ad-disc">ప్రకటన — ఈ ప్రకటన కంటెంట్‌కు ఎడిటోరియల్ బాధ్యత లేదు; అధికారిక నోటిఫికేషన్ లింకులు ప్రధాన కంటెంట్‌లో మాత్రమే ఉంటాయి.</div>
       </section>
 
-      <article class="article">
-        <div class="article-head"><div>
-          <span class="tag">ఎడిటర్ ఎంపిక · పూర్తి మార్గదర్శి</span>
-          <h2>దరఖాస్తు సమర్పించే ముందు తనిఖీ చేయాల్సిన 7 విషయాలు</h2>
-          <div class="article-meta">✍️ StudentUp ఎడిటోరియల్ టీమ్ · ⏱ 6 నిమిషాల పఠనం</div>
-        </div>
-        <div class="article-actions">
-          <a class="round" href="#" id="wa" aria-label="WhatsAppలో పంచుకోండి" title="WhatsAppలో పంచుకోండి">↗</a>
-          <button class="round" id="copylink" aria-label="లింక్ కాపీ చేయండి" title="లింక్ కాపీ చేయండి">⧉</button>
-        </div></div>
-        <div class="answer"><b>QUICK ANSWER</b>అధికారిక నోటిఫికేషన్, అర్హత, చివరి తేదీ, ఫీజు, పత్రాలు, ఫోటో/సంతకం ఫార్మాట్ మరియు తుది ప్రివ్యూ — ఈ 7 అంశాలు నిర్ధారించుకుని మాత్రమే సమర్పించండి.</div>
-        <h4>ఇది ఎందుకు ముఖ్యం</h4>
-        <p class="body">దరఖాస్తు ప్రక్రియ "సులభం"గా కనిపించినా, చిన్న పొరపాట్ల వల్ల తిరస్కరణ, ఫీజు రీఫండ్ ఆలస్యం, ఆబ్జెక్షన్ కాలం మిస్ అయ్యే ప్రమాదం ఉంటుంది.</p>
-        <h4>7-అంశాల చెక్‌లిస్ట్</h4>
-        <ul class="checklist">
-          <li><span class="num">1</span><span><b>అధికారిక నోటిఫికేషన్ మాత్రమే</b>— .gov.in డొమైన్ నిర్ధారించుకోండి. Google ప్రకటనల్లో తెరిచే లింకులను నమ్మవద్దు; అధికారిక సైట్ హోమ్ పేజీ నుండి వెళ్లండి.</span></li>
-          <li><span class="num">2</span><span><b>అర్హతను పూర్తిగా చదవండి</b>— వయస్సు (నిర్ణాయక తేదీ నాటికి), విద్యార్హత (పాస్ అయిన సంవత్సరం), కేటగిరీ/OBC ధృవపత్రం చెల్లుబాటు, ఫీజు మినహాయింపు నియమాలు. "సరిహద్దు" కేసులను ముందే స్పష్టం చేసుకోండి.</span></li>
-          <li><span class="num">3</span><span><b>చివరి తేదీ + 1 రోజు బఫర్</b>— చివరి తేదీ సాయంత్రం 5 గంటలు అయితే, అదే రోజు మధ్యాహ్నం 3 గంటల లోపు సమర్పించండి. సర్వర్ లోడ్ వల్ల పోర్టల్ నెమ్మదించవచ్చు; ఫీజు రీఫండ్ ఆలస్యం అవుతుంది.</span></li>
-          <li><span class="num">4</span><span><b>ఫీజు + రసీదు భద్రపరచండి</b>— ఆన్‌లైన్ చెల్లింపు తర్వాత రసీదు PDF డౌన్‌లోడ్ చేయండి. "చెల్లింపు జరిగింది, ఫారమ్ లేదు" సమస్యకు రసీదే ముఖ్య ఆధారం.</span></li>
-          <li><span class="num">5</span><span><b>పత్రాల ఫార్మాట్ కచ్చితంగా పాటించండి</b>— ఫోటో/సంతకం స్కాన్ KB పరిమాణం, JPG/PNG ఫార్మాట్, స్పష్టత. "అస్పష్ట ఫోటో" ప్రధాన తిరస్కరణ కారణం. స్కాన్ నాణ్యతను ముందే ఫోన్‌లో పరిశీలించండి.</span></li>
-          <li><span class="num">6</span><span><b>పూర్తి ఫారమ్ ప్రివ్యూ — ప్రతి ఫీల్డ్</b>— ముఖ్యంగా పేరు స్పెల్లింగ్ (ఆధార్‌తో సరిపోలాలి), పుట్టిన తేదీ, కేటగిరీ ఎంపిక, తల్లిదండ్రుల పేరు. సవరణ అవకాశం ఉన్న కాలంలోనే సరిచేయండి.</span></li>
-          <li><span class="num">7</span><span><b>సమర్పణ నిర్ధారణ + ప్రింట్</b>— ధృవీకరణ PDF ప్రింట్ + ఇమెయిల్‌లో కాపీ ఉంచండి. నిర్ధారణ నంబర్ నోట్ చేసుకోండి — ఆబ్జెక్షన్/అడ్మిట్ కార్డు దశలో ఇదే పనికి వస్తుంది.</span></li>
-        </ul>
-      </article>
 
           <section class="poll" id="poll" aria-label="ఈరోజు పోల్">
       <div class="poll-head">
@@ -1004,11 +1044,11 @@
         </div>
       </div>
       <aside class="su-ad su-ad-card" aria-label="Sponsored content" data-ad="shop-ad-demo" data-slot="sidebar">
-        <div class="su-ad-kicker">SPONSORED · స్థానిక భాగస్వామి </div>
-        <div class="su-ad-title">విద్యార్థి స్టేషనరీ కార్నర్ — పరీక్ష కిట్ @ డిస్కౌంట్</div>
-        <p class="su-ad-desc">పెన్ను, నోట్‌బుక్, కాలిక్యులేటర్, అడ్మిట్ కార్డు కాపీలు — విద్యార్థులకు బల్క్ డిస్కౌంట్.</p>
-        <a class="su-ad-cta" href="https://example.com/stationery-demo" target="_blank" rel="sponsored nofollow noopener">షాప్ చూడండి →</a>
-        <div class="su-ad-disc">ప్రకటన — భాగస్వామికి నేరు లింక్.</div>
+        <div class="su-ad-kicker">SPONSORED · స్థానిక వ్యాపారం</div>
+        <div class="su-ad-title">మీ షాప్ / సర్వీస్ విద్యార్థులకు కనిపించాలా?</div>
+        <p class="su-ad-desc">స్థానిక వ్యాపారాలకు చిన్న స్లాట్ — విద్యార్థులు ఎక్కువగా చూసే చోట.</p>
+        <a class="su-ad-cta" href="pages/advertise.html" rel="sponsored nofollow">ప్రకటన వివరాలు →</a>
+        <div class="su-ad-disc">ప్రకటన స్థలం — భాగస్వాముల కోసం.</div>
       </aside>
       <div class="exam-card" id="exam"><h3>🎓 ఆన్‌లైన్ పరీక్షల పోర్టల్</h3>
         <p>నిజమైన పరీక్ష వ్యవస్థ — రోల్ నంబర్‌తో చేరండి, ఒకే టైమర్, ట్యాబ్ మార్పు ట్రాకింగ్, ఆటో-క్లోజ్, తక్షణ ఫలితాలు.</p>
@@ -1061,8 +1101,20 @@
   </nav>
   <button type="button" class="su-tab" id="sutab" aria-label="Show social icons" title="Social links">‹</button>
   <button class="totop" id="totop" aria-label="Back to top">↑</button>
-  <button type="button" class="installbtn" id="installbtn" hidden>⬇️ యాప్‌గా ఇన్‌స్టాల్ చేయండి</button>
-  <div class="installhint" id="installhint" hidden role="status"></div>
+  <button type="button" class="installbtn" id="installbtn">⬇️ App డౌన్‌లోడ్ <span class="ibadge">FREE</span></button>
+  <div class="installsheet" id="installhint" hidden role="dialog" aria-modal="false" aria-labelledby="isheet-title">
+    <h3 id="isheet-title">StudentUp ను యాప్‌లా ఇన్‌స్టాల్ చేసుకోండి</h3>
+    <p class="isub">ఒక్క ట్యాప్‌తో తెరవండి · ఇంటర్నెట్ లేకపోయినా చూసిన పేజీలు కనిపిస్తాయి · ఫోన్‌లో స్పేస్ తక్కువ.</p>
+    <ol id="isteps">
+      <li><b>Android (Chrome):</b> పైన ⋮ మెనూ → <b>Install app</b> / <b>Add to Home screen</b></li>
+      <li><b>iPhone (Safari):</b> కింద <b>Share</b> ⬆️ → <b>Add to Home Screen</b> → Add</li>
+      <li><b>Computer:</b> address bar లో ఇన్‌స్టాల్ ఐకాన్ నొక్కండి</li>
+    </ol>
+    <div class="irow">
+      <button type="button" class="installok" id="installnow">ఇప్పుడే ఇన్‌స్టాల్ చేయండి</button>
+      <button type="button" class="installclose" id="installclose">తర్వాత</button>
+    </div>
+  </div>
 
   <script>
   (function(){
@@ -1106,26 +1158,28 @@
     applyTheme(dark);
     themeBtn.addEventListener("click",function(){dark=!document.body.classList.contains("dark");applyTheme(dark);try{localStorage.setItem(THEME_KEY,dark?"1":"0");}catch(e){}});
 
-    /* ---------- date (IST) ---------- */
-    var todayEl=document.getElementById("today");
-    try{
-      todayEl.textContent=new Intl.DateTimeFormat("te-IN",{timeZone:"Asia/Kolkata",day:"numeric",month:"long",year:"numeric"}).format(new Date());
-    }catch(e){
-      try{todayEl.textContent=new Intl.DateTimeFormat("en-IN",{timeZone:"Asia/Kolkata",day:"numeric",month:"long",year:"numeric"}).format(new Date());}catch(e2){todayEl.textContent="";}
-    }
-
-    /* ---------- countdown (auto-rolls to next cycle — never stale) ---------- */
-    var base=new Date(2026,9,15,17,0,0); // 15 Oct 2026 5pm IST sample target
-    var now=new Date();
-    while(base<=now){base.setFullYear(base.getFullYear()+1);}
-    function tick(){
-      var diff=base-new Date();
-      if(diff<0)diff=0;
-      var d=Math.floor(diff/864e5),h=Math.floor(diff%864e5/36e5),m=Math.floor(diff%36e5/6e4),s=Math.floor(diff%6e4/1e3);
-      function set(id,v){var el=document.getElementById(id);if(el)el.textContent=(v<10?"0":"")+v;}
-      set("cd-d",d);set("cd-h",h);set("cd-m",m);set("cd-s",s);
-    }
-    tick();setInterval(tick,1000);
+    /* ---------- countdown — data/deadline.json (nijamaina data; lekapote honest line) ---------- */
+    (function(){
+      var box=document.getElementById("cd-box"), none=document.getElementById("cd-none"),
+          title=document.getElementById("cd-title"), live=document.getElementById("cd-live"), base=null;
+      function paint(){
+        if(!base)return;
+        var diff=base-new Date(); if(diff<0){diff=0;}
+        var d=Math.floor(diff/864e5),h=Math.floor(diff%864e5/36e5),m=Math.floor(diff%36e5/6e4),s=Math.floor(diff%6e4/1e3);
+        function set(id,v){var el=document.getElementById(id);if(el)el.textContent=(v<10?"0":"")+v;}
+        set("cd-d",d);set("cd-h",h);set("cd-m",m);set("cd-s",s);
+      }
+      if(typeof fetch==="function"){
+        fetch("data/deadline.json",{cache:"no-store"}).then(function(r){return r.ok?r.json():null;}).then(function(d){
+          if(!d||!d.date)return;
+          var when=new Date(d.date); if(isNaN(when))return;
+          base=when; if(title&&d.title)title.textContent=d.title;
+          if(box)box.hidden=false; if(none)none.hidden=true;
+          if(live)live.textContent="● లైవ్ కౌంట్‌డౌన్";
+          paint(); setInterval(paint,1000);
+        }).catch(function(){});
+      }
+    })();
 
     /* ---------- relative "updated" stamps (never stale) ---------- */
     var agoEl=document.querySelectorAll("[data-days-ago]");
@@ -1180,7 +1234,46 @@
       if(qCount){
         qCount.textContent = shown ? (shown+" అవకాశాలు"+(jobs?(" · ఉద్యోగాలు "+jobs):"")) : "ఏమీ లేవు";
       }
+      if(typeof buildQualSections==="function") buildQualSections();
     }
+    /* v72.1: అర్హత ప్రకారం విభాగాలు — grid cards nunchi ఆటోమేటిక్‌గా తయారవుతాయి
+       (కొత్త పోస్ట్‌కు మాన్యువల్ పని అవసరం లేదు) */
+    var QUAL_LABELS={ "10th":"10వ తరగతి", "inter":"ఇంటర్ (10+2)", "iti":"ఐటీఐ",
+                      "diploma":"డిప్లొమా", "degree":"డిగ్రీ", "pg":"పీజీ", "btech":"బీటెక్" };
+    function buildQualSections(){
+      var host=document.getElementById("qsplit"); if(!host) return;
+      var groups=host.querySelectorAll("[data-qgroup]"); if(!groups.length) return;
+      var all=[];
+      Array.prototype.forEach.call(document.querySelectorAll("#grid .news"),function(c){ all.push(c); });
+      Array.prototype.forEach.call(groups,function(g){
+        var key=g.getAttribute("data-qgroup"), items=[], ul=document.createElement("ul");
+        all.forEach(function(c){
+          var qua=(c.getAttribute("data-qual")||"").toLowerCase();
+          var left=daysLeft(c);
+          var ok = key==="closing" ? (left!==null && left>=0 && left<=7)
+                                   : (qua.indexOf(key)>-1 && !(left!==null && left<0));
+          if(!ok) return;
+          var a=c.querySelector("h3 a"), title=a? a.textContent : (c.querySelector("h3")||{}).textContent||"";
+          var href=a? a.getAttribute("href") : (c.querySelector("a")? c.querySelector("a").getAttribute("href") : "#jobs");
+          var meta=c.querySelector(".newsfoot")? c.querySelector(".newsfoot").textContent.trim() : "";
+          var li=document.createElement("li");
+          li.innerHTML='<a href="'+href+'">'+title+'</a><span class="qgmeta">'+(meta||"")+'</span>';
+          ul.appendChild(li); items.push(1);
+        });
+        var label = key==="closing" ? "⏳ 7 రోజుల్లో ముగిసేవి" : (QUAL_LABELS[key]||key);
+        if(items.length){
+          var h=document.createElement("h3");
+          h.innerHTML=label+' <span class="qgnum">'+items.length+'</span>';
+          var sub=document.createElement("p");
+          sub.className="qgsub";
+          sub.textContent = key==="closing" ? "గడువు దగ్గరపడుతోంది — ఇప్పుడే చూడండి" : "ఈ అర్హత ఉన్నవారు దరఖాస్తు చేసుకోవచ్చు";
+          g.innerHTML=""; g.appendChild(h); g.appendChild(sub); g.appendChild(ul);
+          g.hidden=false;
+        } else { g.hidden=true; g.innerHTML=""; }
+      });
+    }
+    buildQualSections();
+
     Array.prototype.forEach.call(cards,decorate);
     Array.prototype.forEach.call(document.querySelectorAll(".qchip"),function(ch){
       ch.addEventListener("click",function(){
@@ -1232,29 +1325,51 @@
       });
     })();
 
-    /* ---------- v72: install as an app (PWA) — shortcut prati sari chupistundi ---------- */
+    /* ---------- v72.1: App డౌన్‌లోడ్ — button prathi visit lo, click ki install/sheet ---------- */
     (function(){
-      var btn=document.getElementById("installbtn"), hint=document.getElementById("installhint");
-      if(btn&&"serviceWorker" in navigator&&location.protocol.indexOf("http")===0){
+      var btn=document.getElementById("installbtn"), sheet=document.getElementById("installhint"),
+          now=document.getElementById("installnow"), close=document.getElementById("installclose"),
+          steps=document.getElementById("isteps"), deferred=null;
+      if("serviceWorker" in navigator&&location.protocol.indexOf("http")===0){
         try{ navigator.serviceWorker.register("sw.js"); }catch(e){}
       }
-      var standalone = window.matchMedia && window.matchMedia("(display-mode: standalone)").matches;
-      var ios = /iPad|iPhone|iPod/.test(navigator.userAgent||"");
-      if(standalone){ if(btn) btn.hidden=true; return; }
-      var deferred=null;
-      window.addEventListener("beforeinstallprompt",function(e){
-        e.preventDefault(); deferred=e; if(btn) btn.hidden=false;
+      var standalone=(window.matchMedia&&window.matchMedia("(display-mode: standalone)").matches)||window.navigator.standalone===true;
+      if(standalone){ if(btn)btn.hidden=true; if(sheet)sheet.hidden=true; return; }
+      var ua=navigator.userAgent||"", ios=/iPad|iPhone|iPod/.test(ua);
+      function openSheet(){
+        if(!sheet)return;
+        if(steps){                                   /* device ki taggattu steps mundu chupinchadam */
+          var first=steps.children[0], second=steps.children[1], third=steps.children[2];
+          var order = ios ? [second,first,third] : (/Android/i.test(ua) ? [first,third,second] : [third,first,second]);
+          if(now)now.hidden=false;
+          steps.innerHTML="";
+          order.forEach(function(li){ if(li) steps.appendChild(li); });
+        }
+        sheet.hidden=false;
+      }
+      window.addEventListener("beforeinstallprompt",function(e){ e.preventDefault(); deferred=e; });
+      function installNow(){
+        if(deferred){
+          deferred.prompt();
+          if(deferred.userChoice&&deferred.userChoice.then){ deferred.userChoice.then(function(){ deferred=null; }); }
+          if(sheet)sheet.hidden=true;
+          return true;
+        }
+        return false;
+      }
+      if(btn)btn.addEventListener("click",function(){
+        if(installNow())return;
+        openSheet();
       });
-      if(btn) btn.addEventListener("click",function(){
-        if(deferred){ deferred.prompt(); deferred.userChoice && deferred.userChoice.then(function(){ deferred=null; btn.hidden=true; }); }
-        else if(ios&&hint){ hint.hidden=false; hint.textContent="iPhone: Share → Add to Home Screen నొక్కితే యాప్‌లా ఇన్‌స్టాల్ అవుతుంది."; }
+      if(now)now.addEventListener("click",function(){ if(!installNow())openSheet(); });
+      if(close)close.addEventListener("click",function(){ sheet.hidden=true; });
+      document.addEventListener("keydown",function(e){
+        if(e.key==="Escape"&&sheet&&!sheet.hidden){sheet.hidden=true;}
       });
-      /* iOS: prompt event undadu — anduku chinna hint (dismiss cheyyagalaru) */
-      try{
-        if(ios&&btn&&localStorage.getItem("su_ios_hint")!=="off"){ btn.hidden=false;
-          btn.addEventListener("click",function(){ try{localStorage.setItem("su_ios_hint","off");}catch(e){} },{once:true}); }
-      }catch(e){}
-      window.addEventListener("appinstalled",function(){ if(btn) btn.hidden=true; if(hint) hint.hidden=true; });
+      window.addEventListener("appinstalled",function(){
+        if(btn)btn.hidden=true; if(sheet)sheet.hidden=true;
+        try{localStorage.setItem("su_installed","1");}catch(e){}
+      });
     })();
 
     /* ---------- v51: category chips + menu deep-links ---------- */
@@ -1277,16 +1392,6 @@
       var m=(location.hash||"").match(/^#cat-([a-z-]+)$/);
       if(m){setCat(m[1],true);}
     })();
-
-    /* ---------- share ---------- */
-    var wa=document.getElementById("wa"), copyBtn=document.getElementById("copylink");
-    var shareText=encodeURIComponent("దరఖాస్తు సమర్పించే ముందు తనిఖీ చేయాల్సిన 7 విషయాలు — studentup.in");
-    wa.href="https://wa.me/?text="+shareText;
-    copyBtn.addEventListener("click",function(){
-      var url=window.location.href, done=function(){copyBtn.textContent="✓";setTimeout(function(){copyBtn.textContent="⧉";},1500);};
-      if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(url).then(done,function(){window.prompt("లింక్ కాపీ చేయండి:",url);});}
-      else{window.prompt("లింక్ కాపీ చేయండి:",url);}
-    });
 
     /* ---------- live exam link (works in this preview env + localhost) ---------- */
     var examLink=document.getElementById("examlink");

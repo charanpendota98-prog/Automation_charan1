@@ -17,7 +17,7 @@
   ],
   "shortcuts": [
     { "name": "ఉద్యోగాలు", "short_name": "Jobs", "url": "./index.html#jobs" },
-    { "name": "బ్రేకింగ్ న్యూస్", "short_name": "Breaking", "url": "./index.html#breaking" },
+    { "name": "అర్హత ప్రకారం ఉద్యోగాలు", "short_name": "అర్హత", "url": "./index.html#qualsplit" },
     { "name": "ఫలితాలు", "short_name": "Results", "url": "./index.html#results" },
     { "name": "క్విజ్", "short_name": "Quiz", "url": "./index.html#quiz" }
   ]

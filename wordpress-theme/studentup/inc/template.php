@@ -76,9 +76,13 @@ function studentup_card( $idx = 0 ) {
 	$tones = array( '', 't2', 't3' );
 	$tone  = $tones[ $idx % 3 ];
 	?>
-	<?php $su_qual_raw = trim( (string) get_post_meta( get_the_ID(), 'studentup_qual', true ) ); ?>
+	<?php
+	$su_qual_raw = trim( (string) get_post_meta( get_the_ID(), 'studentup_qual', true ) );
+	$su_last_raw = trim( (string) get_post_meta( get_the_ID(), 'studentup_last_date', true ) );
+	?>
 	<article <?php post_class( 'news' ); ?> data-cat="<?php echo esc_attr( $cat ); ?>"
 		data-qual="<?php echo esc_attr( $su_qual_raw ); ?>"
+		data-last="<?php echo esc_attr( $su_last_raw ); ?>"
 		data-text="<?php echo esc_attr( mb_strtolower( get_the_title() . ' ' . get_the_excerpt() ) ); ?>">
 		<?php if ( has_post_thumbnail() ) : ?>
 			<a class="thumb <?php echo esc_attr( $tone ); ?>" href="<?php the_permalink(); ?>" aria-hidden="true" tabindex="-1">

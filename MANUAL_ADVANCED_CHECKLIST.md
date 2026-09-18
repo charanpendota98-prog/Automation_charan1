@@ -157,7 +157,7 @@ Message lo reason undi — exact ga fix cheyandi:
 ## ⚠️ Honest note
 Perfect = **machine gates + human 5-min verify**. Gates mistakes ramigadu (conflicts/stale/dates/originality), kaani official numbers mee mata tho final check — AdSense/Google/reputation thartham lo idi matrame safety.
 
-*Last updated: v72 (2026-09-18) — QUALIFICATION FILTER + HEADER SEARCH + PWA INSTALL (10th · 10+2 · ITI · Diploma · Degree · PG · B.Tech auto-tags · menu pakkana search · app-laga install · breaking section default OFF · clean copy): 56/56 suites · 150/150 runtime · readiness · code audit 0/0 · parity 0/0 · theme audit 0/0 · theme v1.7.0*
+*Last updated: v72.1 (2026-09-18) — QUALIFICATION FILTER + అర్హత SECTIONS + APP DOWNLOAD (10th · 10+2 · ITI · Diploma · Degree · PG · B.Tech auto-tags · per-qualification lists · always-visible App డౌన్‌లోడ్ · menu pakkana search · clean copy): 56/56 suites · 161/161 runtime · readiness 100/100 · code audit 0/0 · parity 0/0 · theme audit 0/0 · theme v1.7.1*
 
 ## PART 26 — v67: DEEP AUDIT (expert/BA) + TOP-THEME HARDENING + 6/6 REVENUE SLOTS
 
@@ -894,7 +894,7 @@ HOW IT STAYS AUTOMATIC
 VERIFY
 ```
 python run.py --test-all                     # 56/56 suites
-node tests/runtime/jsdom_runtime_test.js     # 150/150 browser checks
+node tests/runtime/jsdom_runtime_test.js     # 161/161 browser checks
 python run.py --readiness                    # 100/100 · python run.py --guardian
 python tools/parity_audit.py                 # PIN-TO-PIN · python tools/code_audit.py
 node tools/php_lint.js                       # 32/32 PHP files · python tools/build_wp_theme.py
@@ -903,16 +903,68 @@ node tools/php_lint.js                       # 32/32 PHP files · python tools/b
 (zip fresh kaavali) — theme audit/zip checks adi enforce chestayi.
 
 OWNER STEPS (v72)
-1. WordPress lo theme 1.7.0 activate chesi, *StudentUp → కంటెంట్* lo chips kalakaalam chudandi.
+1. WordPress lo theme 1.7.1 activate chesi, *StudentUp → కంటెంట్* lo chips + అర్హత sections chudandi
+   (PART 32 lo v72.1 detail undi).
 2. Purana posts ki okasari `wp studentup-qual-backfill --limit=500` (leda admin page open cheyandi).
 3. బ్రేకింగ్ న్యూస్ kavali ante — *StudentUp → కంటెంట్ → బ్రేకింగ్ న్యూస్ సెక్షన్ ON* (default OFF).
 4. Phones lo "యాప్గా ఇన్స్టాల్" button test cheyandi (Android Chrome + iPhone Safari).
 
-PROOF (v72): --test-all 56/56 · jsdom 150/150 · readiness 100/100 (28/28) · guardian 14/15
+PROOF (v72.1): --test-all 56/56 · jsdom 161/161 · readiness 100/100 (28/28) · guardian 14/15
   (1 warn-only owner env) · code audit 0/0 · parity 0/0 · theme audit 0/0 · php-lint 32/32 ·
-  zip 41 files 643 KB · theme v1.7.0 · proof doc: output/v72-proof-2026-09-18.md
+  zip 41 files 648 KB · theme v1.7.1 · proof doc: output/v72-proof-2026-09-18.md
 
 No guarantee: rankings, traffic, AdSense approval and revenue depend on Google + your accounts +
 time. Everything measured in this pass is code-level (tests · audits · readiness), nothing more.
 
 ```
+
+## PART 32 — v72.1: అర్హత SECTIONS · ALWAYS-VISIBLE APP DOWNLOAD · CLEAN PUBLIC COPY
+
+**Mee follow-up brief:** "ప్రత్యక్ష పరీక్ష" wording/CTA avasaram ledu → remove · coverage topbar line
+(33/26 జిల్లాలు) remove · 7-విషయాల demo article motham remove · hero stats manaki mattrame ·
+"ABC/ట్యూషన్/స్టేషనరీ" demo ads → nijamaina "మీ ప్రకటన ఇక్కడ" slots · hero countdown fake date
+vaddu · App డౌన్‌లోడ్ button prathi visit lo (mobile first) · **అర్హత ప్రకారం ఉద్యోగాలు విభాగాలుగా,
+manual tagging lekunda automatic** · text/background clash ledu, mobile lo fast + neat.
+
+WHAT CHANGED (site)
+  Copy clean : coverage topbar (33/26 జిల్లాలు line + policy links strip) motham teesesaam ·
+               hero hero-proof stats · "ప్రత్యక్ష పరీక్ష" → "ఆన్‌లైన్ పరీక్షలు" ·
+               7-విషయాల demo article (QUICK ANSWER + checklist + share buttons) remove.
+  Ads        : fake advertisers (ABC అకాడమీ/కళాశాల · ట్యూషన్ · స్టేషనరీ + example.com links)
+               → house "స్లాట్ ఖాళీ · మీ ప్రకటన ఇక్కడ" creatives (SPONSORED label + Partner page CTA).
+  Countdown  : hardcoded sample date → `preview/data/deadline.json` (bot `--push-theme-data` rasi
+               pettedi). File lekapote honest line ("తుది తేదీలు ప్రతి పోస్ట్‌లో…") chupistundi.
+  App        : "⬇️ App డౌన్‌లోడ్ [FREE]" button **prathi visit lo** (mobile-first) + device-wise
+               install sheet (Android Chrome prompt · iPhone Share · Computer icon).
+  Sections   : "అర్హత ప్రకారం చూడండి" — 10th · 10+2 · ITI · డిప్లొమా · డిగ్రీ · పీజీ · బీటెక్ ·
+               ⏳ 7 రోజుల్లో ముగిసేవి. Groups **grid cards nunchi JS automatic ga** build avutayi
+               (జీరో extra DB queries) — కొత్త పోస్ట్ వచ్చిన ప్రతిసారీ అదే క్షణం అప్డేట్.
+  Filter     : chips క్లిక్ → reload lekunda category tho kalisi filter (`?qual=` URL sync tho) ·
+               గడువు ముగిసినవి దాచి note chupistundi.
+
+WORDPRESS (theme v1.7.1)
+  `inc/qual-filter.php`  : `studentup_qual_directory()` (wp_footer) · `studentup_hidden_note()` ·
+                           admin dashboard widget (అర్హత-wise counts + tag-leni posts) ·
+                           chips ki `data-qual` (JS combined filter).
+  `assets/js/studentup.js`: combined category × అర్హత filter + expired hide + grouping builder.
+  `assets/js/studentup-pwa.js`: always-visible button + device-wise sheet + SW register.
+  `inc/template.php`     : card ki `data-last` (closing filter) — bot `studentup_last_date` nunchi.
+  `footer.php`           : App డౌన్‌లోడ్ button + install sheet (options tho on/off).
+  Version parity: style.css ↔ STUDENTUP_VERSION ↔ readme.txt = **1.7.1**.
+
+BOT
+  `wp_theme_sync.write_preview_deadline()` — deadline.json rasi pettedi (lekapote stale file teesesi
+  honest line). `main.py --push-theme-data` ee step call chestundi.
+
+VERIFY (v72.1)
+```
+python run.py --test-all                     # 56/56 suites
+node tests/runtime/jsdom_runtime_test.js     # 161/161 browser checks
+python tests/v72_test.py                     # 27 checks (v72 + v72.1)
+python run.py --readiness                    # 100/100 · python run.py --guardian
+python tools/parity_audit.py                 # PIN-TO-PIN · python tools/code_audit.py # 0/0
+node tools/php_lint.js                       # 32/32 · python tools/build_wp_theme.py
+```
+
+No guarantee: rankings/traffic/AdSense/revenue Google + mee accounts + time batti — ee pass lo unna vi
+code-level measurements matrame.

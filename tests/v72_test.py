@@ -202,8 +202,8 @@ def test_theme_version_parity_v72():
     css = re.search(r"^Version:\s*(\S+)", read(THEME / "style.css"), re.M).group(1)
     php = re.search(r"STUDENTUP_VERSION',\s*'([^']+)'", read(THEME / "functions.php")).group(1)
     stable = re.search(r"^Stable tag:\s*(\S+)", read(THEME / "readme.txt"), re.M).group(1)
-    assert css == php == stable == "1.7.0", f"version parity tappu: {css} · {php} · {stable}"
-    assert "= 1.7.0" in read(THEME / "readme.txt")
+    assert css == php == stable == "1.7.1", f"version parity tappu: {css} · {php} · {stable}"
+    assert "= 1.7.1" in read(THEME / "readme.txt")
     assert "v72" in read(THEME / "README-THEME.md")
 
 
@@ -271,6 +271,77 @@ def test_preview_writes_clean_js():
         assert proc.returncode == 0, f"{js.name} syntax error: {proc.stderr[:160]}"
 
 
+
+# ---------------------------------------------------------------- v72.1 (follow-up pass)
+def test_topbar_and_coverage_lines_gone():
+    html = read(PREVIEW / "index.html")
+    assert 'class="topbar"' not in html, "topbar (coverage line) inka undi"
+    assert ".topbar{" not in html and ".toplinks{" not in html, "topbar CSS migilindi"
+    for phrase in ("(33 జిల్లాలు", "(26 జిల్లాలు", "జిల్లాల పర్యవేక్షణ", "ప్రతిరోజూ ధృవీకృత"):
+        assert phrase not in html, f"'{phrase}' public HTML lo inka undi"
+
+
+def test_demo_article_removed():
+    html = read(PREVIEW / "index.html")
+    for needle in ("7 విషయాలు", "QUICK ANSWER", "ఎడిటర్ ఎంపిక", 'id="wa"', 'id="copylink"'):
+        assert needle not in html, f"demo article element '{needle}' inka undi"
+    assert 'class="article"' not in html, "article block migilindi"
+
+
+def test_ads_are_house_creatives_not_fake_advertisers():
+    html = read(PREVIEW / "index.html")
+    for needle in ("example.com", "ABC IAS", "ABC ఇంజినీరింగ్", "abc-college-demo",
+                   "tuition-demo", "stationery-demo"):
+        assert needle not in html, f"demo advertiser '{needle}' inka undi"
+    assert html.count("SPONSORED") >= 4, "SPONSORED labels poyayi (AdSense rule)"
+    assert "pages/advertise.html" in html, "ad slot CTA Partner page ki vellatledu"
+
+
+def test_countdown_is_data_driven():
+    html = read(PREVIEW / "index.html")
+    assert "new Date(2026,9,15" not in html, "hardcoded sample countdown inka undi"
+    assert 'fetch("data/deadline.json"' in html, "deadline.json fetch ledu"
+    assert 'id="cd-none"' in html and 'id="cd-box" hidden' in html, "honest default state ledu"
+    from autoblog import wp_theme_sync  # noqa: PLC0415
+    assert hasattr(wp_theme_sync, "write_preview_deadline"), "bot deadline writer ledu"
+    main = read(ROOT / "autoblog" / "main.py")
+    assert "write_preview_deadline" in main, "--push-theme-data preview deadline rasi undadu"
+
+
+def test_app_download_is_always_visible():
+    html = read(PREVIEW / "index.html")
+    m = re.search(r'<button[^>]*id="installbtn"[^>]*>', html)
+    assert m and "hidden" not in m.group(0), "download button inka hidden"
+    assert "App డౌన్‌లోడ్" in html and 'class="ibadge"' in html
+    assert 'id="installhint"' in html and html.count('id="isteps"') == 1
+    assert "openSheet" in html and "beforeinstallprompt" in html
+    theme_footer = read(THEME / "footer.php")
+    assert 'id="installbtn"' in theme_footer and 'id="installhint"' in theme_footer
+    assert 'id="installbtn">⬇️ App' in theme_footer, "theme button wording v72.1 kaadu"
+    pwa_js = read(THEME / "assets" / "js" / "studentup-pwa.js")
+    assert "openSheet" in pwa_js and "beforeinstallprompt" in pwa_js
+
+
+def test_qualification_directory_automatic():
+    html = read(PREVIEW / "index.html")
+    assert 'id="qsplit"' in html and html.count('class="qgroup"') == 8
+    assert "buildQualSections" in html, "preview lo auto grouping JS ledu"
+    js = read(THEME / "assets" / "js" / "studentup.js")
+    assert "buildQualSections" in js, "theme lo auto grouping JS ledu"
+    q = read(THEME / "inc" / "qual-filter.php")
+    assert "studentup_qual_directory" in q and "add_action( 'wp_footer'" in q
+    assert "studentup_hidden_note" in q and "wp_dashboard_setup" in q
+    card = read(THEME / "inc" / "template.php")
+    assert "data-last=" in card, "theme card lo data-last ledu (closing filter kaadu)"
+
+
+def test_theme_version_1721():
+    css = re.search(r"^Version:\s*(\S+)", read(THEME / "style.css"), re.M).group(1)
+    php = re.search(r"STUDENTUP_VERSION',\s*'([^']+)'", read(THEME / "functions.php")).group(1)
+    stable = re.search(r"^Stable tag:\s*(\S+)", read(THEME / "readme.txt"), re.M).group(1)
+    assert css == php == stable == "1.7.1", f"version parity tappu: {css} · {php} · {stable}"
+    assert "= 1.7.1" in read(THEME / "readme.txt")
+
 TESTS = [
     ("బ్రేకింగ్ న్యూస్ public site nunchi poyindi", test_breaking_removed_from_public),
     ("బ్రేకింగ్ backend opt-in (default OFF) ga migilindi", test_breaking_backend_still_available_opt_in),
@@ -285,13 +356,20 @@ TESTS = [
     ("యాప్గా ఇన్స్టాల్ (preview PWA)", test_pwa_preview),
     ("యాప్గా ఇన్స్టాల్ (theme PWA + install prompt)", test_pwa_theme),
     ("mobile icons chinna ga (neat)", test_mobile_icon_sizes_neat),
-    ("theme version parity 1.7.0", test_theme_version_parity_v72),
+    ("theme version parity 1.7.1", test_theme_version_parity_v72),
     ("theme zip fresh + v72 files", test_theme_zip_fresh_and_complete),
     ("php-lint clean (real PHP 8 grammar)", test_php_lint_clean),
     ("theme deep audit 0 errors", test_theme_audit_deep_clean),
     ("docs counts + v72 sections", test_counts_and_docs_v72),
     ("options lo v72 fields", test_options_v72_fields),
     ("preview + theme JS syntax clean", test_preview_writes_clean_js),
+    ("v72.1: topbar/coverage lines poyayi", test_topbar_and_coverage_lines_gone),
+    ("v72.1: demo 7-point article poyindi", test_demo_article_removed),
+    ("v72.1: fake advertiser creatives → house partner slots", test_ads_are_house_creatives_not_fake_advertisers),
+    ("v72.1: countdown data-driven (fake date ledu)", test_countdown_is_data_driven),
+    ("v72.1: App డౌన్‌లోడ్ button prathi visit lo", test_app_download_is_always_visible),
+    ("v72.1: అర్హత ప్రకారం విభాగాలు automatic (preview + theme)", test_qualification_directory_automatic),
+    ("v72.1: theme version 1.7.1 parity", test_theme_version_1721),
 ]
 
 

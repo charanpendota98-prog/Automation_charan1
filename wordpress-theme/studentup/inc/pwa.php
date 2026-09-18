@@ -34,7 +34,27 @@ function studentup_manifest() {
 		'background_color' => '#ffffff',
 		'theme_color'      => '#0f2e62',
 		'lang'             => 'te-IN',
+		'orientation'      => 'portrait',
 		'description'      => get_bloginfo( 'description' ),
+		'categories'       => array( 'news', 'education', 'jobs' ),
+		// v72.1: app icon long-press → nerugaa mukhyamaina sections (student-focus)
+		'shortcuts'        => array(
+			array(
+				'name'       => 'ఉద్యోగాలు',
+				'short_name' => 'Jobs',
+				'url'        => home_url( '/#jobs' ),
+			),
+			array(
+				'name'       => 'అర్హత ప్రకారం ఉద్యోగాలు',
+				'short_name' => 'అర్హత',
+				'url'        => home_url( '/#qualsplit' ),
+			),
+			array(
+				'name'       => 'ఆన్‌లైన్ పరీక్షలు',
+				'short_name' => 'Exams',
+				'url'        => home_url( '/?studentup_exam=1' ),
+			),
+		),
 	);
 	if ( $icon ) {
 		$manifest['icons'] = array(

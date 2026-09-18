@@ -554,6 +554,19 @@ python run.py --traffic-sessions         # advanced control
 python run.py --traffic-views            # advanced control
 ```
 
+### v72.1 — అర్హత SECTIONS + ALWAYS-VISIBLE APP DOWNLOAD + CLEAN PUBLIC COPY
+
+| # | Feature | Enti (mee brief → implementation) |
+|---|---------|-----------------------------------|
+| 0 | **Public copy clean** | Coverage topbar (33/26 జిల్లాలు line), hero proof stats, "ప్రత్యక్ష పరీక్ష" wording, 7-విషయాల demo article (share buttons tho) — anni public surfaces nunchi teesesaam. |
+| 13 | **అర్హత ప్రకారం విభాగాలు** | "అర్హత ప్రకారం చూడండి": 10వ తరగతి · ఇంటర్ (10+2) · ఐటీఐ · డిప్లొమా · డిగ్రీ · పీజీ · బీటెక్ + "⏳ 7 రోజుల్లో ముగిసేవి". Groups grid cards nunchi **JS automatic** build avutayi (`buildQualSections`) — kotha post vasthe ade kshanam list lo vastundi, **manual tagging ledu**. |
+| 14 | **Chips + విభాగాలు kalisi** | Category chip + అర్హత chip rendu kalisi filter (page reload ledu) · `?qual=` URL sync · గడువు ముగిసినవి దాచి `#su-hidden-note` note. |
+| 15 | **App డౌన్‌లోడ్ (prathi visit)** | "⬇️ App డౌన్‌లోడ్ FREE" button prathi visit lo (mobile-first) · click tho device-wise sheet (Android Chrome prompt · iPhone Share · Computer icon) · `inc/pwa.php` manifest ki shortcuts (Jobs · అర్హత · ఆన్‌లైన్ పరీక్షలు). |
+| 16 | **Countdown data-driven** | Hero countdown hardcoded date ledu — `preview/data/deadline.json` (bot `--push-theme-data` `wp_theme_sync.write_preview_deadline()` rasi pettedi). File lekapote honest line chupistundi. |
+| 17 | **Ads nijamainaవి** | Demo advertisers (ABC academy/college/tuition/stationery) → house "స్లాట్ ఖాళీ · మీ ప్రకటన ఇక్కడ" creatives (SPONSORED + `rel=sponsored nofollow`), CTA → Partner page. |
+| 18 | **Admin widget** | WP dashboard: "StudentUp · విద్యార్హత ప్రకారం ఉద్యోగాలు" — qualification-wise counts + tag-leni posts count. |
+| 10 | **Theme v1.7.1** | `inc/qual-filter.php` (directory + notes + widget) · `assets/js/studentup.js` (combined filter + grouping) · `assets/js/studentup-pwa.js` (sheet) · version parity `style.css` ↔ `STUDENTUP_VERSION` ↔ `readme.txt` = **1.7.1**. |
+
 ### v72 — QUALIFICATION FILTER + HEADER SEARCH + PWA INSTALL + CLEAN COPY
 
 **Mee brief:** బ్రేకింగ్ న్యూస్ అవసరం లేదు · internal metrics/radar/నమూనా maatalu public ga vaddu ·
@@ -574,7 +587,7 @@ app-laga install (PWA) · colorful premium look, text/background contrast eppudu
 | 9 | **Contrast + neatness** | Brand gradient (text gradient safe-fallback tho), beige/blue chip tones, dark-mode overrides, `overflow-wrap` + flex-wrap rules — mobile lo text overlap ledu, contrast eppudu safe. |
 | 10 | **Theme v1.7.0** | New: `inc/qual-filter.php` · `assets/js/studentup-pwa.js` · header search. Version parity: `style.css` ↔ `STUDENTUP_VERSION` ↔ `readme.txt` Stable tag. |
 | 11 | **Slug parity (bot ↔ theme)** | Python `qual.QUALS` ↔ PHP `studentup_qual_terms()` — test ee rendu list ni compare chestundi, so filter chips eppudu match avutayi. |
-| 12 | **Proof** | `--test-all` **56/56** · jsdom **150/150** · readiness **100/100 (28/28)** · guardian **14/15** (1 warn-only owner env) · code audit **0/0** · parity **0/0** · theme audit **0/0** · php-lint **32/32** · zip **41 files 642 KB** |
+| 12 | **Proof** (v72.1 tarvata) | `--test-all` **56/56** · jsdom **161/161** · readiness **100/100 (28/28)** · guardian **14/15** (1 warn-only owner env) · code audit **0/0** · parity **0/0** · theme audit **0/0** · php-lint **32/32** · zip **41 files 648 KB** |
 
 **Language rule (mee call):** broad headers/labels English/neat; student-facing lines Telugu lo
 (అర్హత chips, "గడువు ముగిసింది", service explanation). Internal metrics — bot report/README lo

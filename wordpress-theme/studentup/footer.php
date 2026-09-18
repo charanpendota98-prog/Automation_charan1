@@ -78,11 +78,24 @@ if ( studentup_opt( 'sticky_ad', '0' ) ) :
 <?php endif; ?>
 
 <?php
-// v72: "యాప్‌గా ఇన్‌స్టాల్ చేయండి" — PWA. JS button ni batti chupistundi/hide chestundi.
+// v72.1: App DOWNLOAD — button prathi visit lo kanipistundi (mobile first).
+// Click: Android/Chrome lo install prompt, iPhone/desktop lo device-wise steps.
 if ( studentup_opt( 'pwa', '1' ) && studentup_opt( 'install_prompt', '1' ) ) :
 	?>
-	<button type="button" class="installbtn" id="installbtn" hidden>⬇️ యాప్‌గా ఇన్‌స్టాల్ చేయండి</button>
-	<div class="installhint" id="installhint" hidden role="status"></div>
+	<button type="button" class="installbtn" id="installbtn">⬇️ App డౌన్‌లోడ్ <span class="ibadge">FREE</span></button>
+	<div class="installsheet" id="installhint" hidden role="dialog" aria-labelledby="isheet-title">
+		<h3 id="isheet-title">StudentUp ను యాప్‌లా ఇన్‌స్టాల్ చేసుకోండి</h3>
+		<p class="isub">ఒక్క ట్యాప్‌తో తెరవండి · ఇంటర్నెట్ లేకపోయినా చూసిన పేజీలు కనిపిస్తాయి.</p>
+		<ol id="isteps">
+			<li><b>Android (Chrome):</b> ⋮ మెనూ → <b>Install app</b> / <b>Add to Home screen</b></li>
+			<li><b>iPhone (Safari):</b> <b>Share</b> ⬆️ → <b>Add to Home Screen</b> → Add</li>
+			<li><b>Computer:</b> address bar లో install ఐకాన్ నొక్కండి</li>
+		</ol>
+		<div class="irow">
+			<button type="button" class="installok" id="installnow">ఇప్పుడే ఇన్‌స్టాల్ చేయండి</button>
+			<button type="button" class="installclose" id="installclose">తర్వాత</button>
+		</div>
+	</div>
 <?php endif; ?>
 
 <?php wp_footer(); ?>

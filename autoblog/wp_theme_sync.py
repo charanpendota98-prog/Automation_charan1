@@ -32,6 +32,30 @@ REST_PATH = "/wp-json/studentup/v1/theme-data"
 # payload builders (offline testable)
 # ---------------------------------------------------------------------------
 
+def write_preview_deadline(root: Optional[Path] = None,
+                           payload: Optional[Dict[str, object]] = None) -> Optional[Path]:
+    """v72.1: preview/data/deadline.json — static site hero countdown ki.
+
+    Entuku: mundu preview lo HARDCODED sample date undedi (fake content!). Ippudu
+    bot .env nunchi (POST_DEADLINE_TITLE/ISO) ee file rasi, site adi chaduvutundi.
+    Emi ledu ante file rasamu — site honest line chupistundi (fake date ledu).
+    """
+    root = Path(root or config.BASE_DIR)
+    payload = payload if payload is not None else build_payload(root)
+    dl = payload.get("deadline") if isinstance(payload, dict) else None
+    out = root / "preview" / "data" / "deadline.json"
+    try:
+        if isinstance(dl, dict) and dl.get("date"):
+            out.parent.mkdir(parents=True, exist_ok=True)
+            out.write_text(json.dumps(dl, ensure_ascii=False, indent=2), encoding="utf-8")
+            return out
+        out.unlink(missing_ok=True)   # deadline lekapote purana file teeseyali (stale date)
+        return None
+    except OSError as exc:            # noqa: BLE001 — best-effort (site deploy aapadu)
+        log.debug("preview deadline write skip: %s", exc)
+        return None
+
+
 def build_payload(root: Optional[Path] = None,
                   include: Optional[List[str]] = None) -> Dict[str, object]:
     """Local files nunchi theme payload — breaking + house ads + deadline + options."""

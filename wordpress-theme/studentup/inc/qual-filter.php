@@ -324,7 +324,7 @@ function studentup_qual_count( $slug ) {
 	if ( ! is_array( $counts ) ) {
 		$counts = array();
 		foreach ( studentup_qual_terms() as $key => $label ) {
-			$q = new WP_Query(
+			$q = new WP_Query(   // found-rows-needed: chips counts ki found_posts kavali
 				array(
 					'post_type'      => 'post',
 					'post_status'    => 'publish',
@@ -358,12 +358,13 @@ function studentup_qual_bar() {
 	$current = studentup_qual_current();
 	echo '<nav class="qrow" aria-label="అర్హత ప్రకారం ఉద్యోగాలు">';
 	echo '<span class="catlabel" aria-hidden="true">అర్హత:</span>';
-	echo '<a class="chip qchip' . ( 'all' === $current ? ' active' : '' ) . '" href="' . esc_url( home_url( '/' ) ) . '">అన్నీ</a>';
+	echo '<a class="chip qchip' . ( 'all' === $current ? ' active' : '' ) . '" data-qual="all" href="' . esc_url( home_url( '/' ) ) . '">అన్నీ</a>';
 	foreach ( $terms as $slug => $label ) {
 		$n   = studentup_qual_count( $slug );
 		$url = add_query_arg( 'qual', $slug, home_url( '/' ) );
-		echo '<a class="chip qchip' . ( $current === $slug ? ' active' : '' ) . '" href="' . esc_url( $url ) . '"'
-			. ' rel="nofollow">' . esc_html( $label ) . ( $n ? ' <span class="qnum">' . (int) $n . '</span>' : '' ) . '</a>';
+		echo '<a class="chip qchip' . ( $current === $slug ? ' active' : '' ) . '" data-qual="' . esc_attr( $slug ) . '"'
+			. ' href="' . esc_url( $url ) . '" rel="nofollow">' . esc_html( $label )
+			. ( $n ? ' <span class="qnum">' . (int) $n . '</span>' : '' ) . '</a>';
 	}
 	echo '</nav>';
 }
@@ -424,6 +425,93 @@ function studentup_qual_active_note( $count = 0 ) {
 	}
 	echo ' · <a href="' . esc_url( home_url( '/' ) ) . '">అన్నీ చూడండి</a></p>';
 }
+
+/**
+ * JS tho దాచిన గడువు ముగిసిన ఉద్యోగాల note (element mattrame — JS nimpustundi).
+ */
+function studentup_hidden_note() {
+	echo '<p class="qnote qhidden" id="su-hidden-note" hidden></p>';
+}
+
+/**
+ * Admin dashboard widget — ఏ అర్హతకు ఎన్ని ఉద్యోగాలు ఉన్నాయి (advanced view).
+ * Bot/owner ki okka chota clear picture; counts 15 min cache (page slow avvadu).
+ */
+function studentup_qual_dashboard_widget() {
+	if ( ! current_user_can( 'edit_posts' ) ) {
+		return;
+	}
+	wp_add_dashboard_widget(
+		'studentup_qual_widget',
+		'StudentUp · విద్యార్హత ప్రకారం ఉద్యోగాలు',
+		function () {
+			$terms = studentup_qual_terms();
+			echo '<p style="margin:0 0 8px;color:#64748b">Post save ayinappudu tag automatic ga set avutundi. Purana posts ki backfill:</p>';
+			echo '<p><code>wp studentup-qual-backfill --limit=500</code></p><table class="widefat striped"><tbody>';
+			foreach ( $terms as $slug => $label ) {
+				$n = studentup_qual_count( $slug );
+				echo '<tr><td>' . esc_html( $label ) . '</td><td style="text-align:right"><b>' . (int) $n . '</b></td></tr>';
+			}
+			$missing = studentup_qual_missing_count();
+			echo '<tr><td>ట్యాగ్ లేని పోస్టులు</td><td style="text-align:right">' . (int) $missing . '</td></tr>';
+			echo '</tbody></table>';
+		}
+	);
+}
+add_action( 'wp_dashboard_setup', 'studentup_qual_dashboard_widget' );
+
+/**
+ * Tag ledu ane posts count (backfill avasaram undo telusukovadaniki).
+ *
+ * @return int
+ */
+function studentup_qual_missing_count() {
+	$q = new WP_Query(   // found-rows-needed: backfill count ki found_posts kavali
+		array(
+			'post_type'      => 'post',
+			'post_status'    => 'publish',
+			'posts_per_page' => 1,
+			'fields'         => 'ids',
+			'update_post_meta_cache' => false,
+			'update_post_term_cache' => false,
+			'meta_query'     => array( // phpcs:ignore WordPress.DB.SlowDBQuery
+				array(
+					'key'     => 'studentup_qual',
+					'compare' => 'NOT EXISTS',
+				),
+			),
+		)
+	);
+	return (int) $q->found_posts;
+}
+
+/**
+ * v72.1: "అర్హత ప్రకారం చూడండి" విభాగాలు — grid cards nunchi JS automatic ga nimpustundi.
+ *
+ * Enduku JS: prathi qualification ki separate WP_Query chesthe page slow (7 extra queries).
+ * JS okkasari ne already render ayina cards nunchi groups build chestundi — kotha post
+ * vasthe automatic ga kanipistundi (manual tagging/editing ledu).
+ */
+function studentup_qual_directory() {
+	if ( ! studentup_opt( 'qual_filter', '1' ) || ! is_front_page() ) {
+		return;
+	}
+	$groups = array_merge( array_keys( studentup_qual_terms() ), array( 'closing' ) );
+	?>
+	<section class="qualsplit" id="qualsplit" aria-label="అర్హత ప్రకారం ఉద్యోగాలు">
+		<div class="qsplit-head">
+			<h2>అర్హత ప్రకారం చూడండి</h2>
+			<p>మీ చదువుకు సరిపోయే ఉద్యోగాలు — కొత్త పోస్ట్ వచ్చిన ప్రతిసారీ ఇవి ఆటోమేటిక్‌గా అప్డేట్ అవుతాయి.</p>
+		</div>
+		<div class="qsplit-grid" id="qsplit">
+			<?php foreach ( $groups as $g ) : ?>
+				<article class="qgroup" data-qgroup="<?php echo esc_attr( $g ); ?>" hidden></article>
+			<?php endforeach; ?>
+		</div>
+	</section>
+	<?php
+}
+add_action( 'wp_footer', 'studentup_qual_directory', 5 );
 
 /**
  * Card lo qualification chip (template.php nunchi call avutundi).

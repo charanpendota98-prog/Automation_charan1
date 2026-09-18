@@ -2,7 +2,7 @@
 Contributors: studentup
 Requires at least: 6.0
 Tested up to: 6.7
-Stable tag: 1.7.0
+Stable tag: 1.7.1
 Requires PHP: 7.4
 Version: 1.3.0
 License: GNU General Public License v2 or later
@@ -47,6 +47,15 @@ Theme lo REST bridge (`inc/seo-bridge.php`) undi. Mee koరaku `manage_options` 
 user tho App Password ivvandi (Administrator role).
 
 == Changelog ==
+
+= 1.7.1 (2026-09-18, v72.1) =
+* "⬇️ App డౌన్‌లోడ్" button prathi visit lo kanipistundi (mobile first) + device-wise install sheet
+  (Android Chrome prompt · iPhone Share · Computer icon)
+* అర్హత chips JS tho category tho kalisi filter (page reload ledu) + URL `?qual=` sync
+* గడువు ముగిసిన ఉద్యోగాలు grid lo దాచి, note chupistundi (`#su-hidden-note`)
+* Admin dashboard widget: అర్హత ప్రకారం post counts + tag-leni posts
+* Public copy clean: coverage line/topbar, demo ads → our partner slot creatives,
+  hero countdown ippudu `data/deadline.json` nunchi mattrame (fake date ledu)
 
 = 1.7.0 (2026-09-18, v72) =
 * Qualification-wise filter: 10th · 10+2 · ITI · Diploma · Degree · PG · B.Tech chips

@@ -12,7 +12,7 @@ const html = fs.readFileSync(PAGE, "utf8");
 
 /* v71: total check count — docs (README/MANUAL/GO_LIVE) claim this number and
  * tools/parity_audit.py P8 reads it, so a silent drift cannot slip through. */
-const EXPECTED_CHECKS = 150;
+const EXPECTED_CHECKS = 161;
 
 const passed = [];
 const failed = [];
@@ -49,16 +49,30 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
   lds.forEach(s => { try { JSON.parse(s.textContent); } catch (e) { ldOk = false; } });
   ok("2+ JSON-LD blocks, all valid JSON", ldOk, "count=" + lds.length);
 
-  /* ---------- date + countdown ---------- */
-  ok("#today (IST date) non-empty", (document.getElementById("today") || {}).textContent.trim().length > 3);
-  ok("cd-title non-empty", (document.getElementById("cd-title") || {}).textContent.trim().length > 3);
-  const snap1 = ["cd-d", "cd-h", "cd-m", "cd-s"].map(id => document.getElementById(id).textContent).join(":");
-  ok("countdown initialized (not --)", !/^-|^--/.test(snap1) && !snap1.includes("--"), snap1);
-  const cdNums = ["cd-d", "cd-h", "cd-m", "cd-s"].every(id => /^\d{1,2}$/.test(document.getElementById(id).textContent));
-  ok("countdown values numeric", cdNums, snap1);
-  await sleep(1150);
-  const snap2 = ["cd-d", "cd-h", "cd-m", "cd-s"].map(id => document.getElementById(id).textContent).join(":");
-  ok("countdown ticking (value changed)", snap1 !== snap2, snap1 + " -> " + snap2);
+  /* ---------- v72.1: dead-line data driven (fake countdown teesesaam) ---------- */
+  ok("v72.1 countdown: data ledu ante honest note (fake '--' timer chupinchadu)",
+     document.getElementById("cd-box").hasAttribute("hidden") &&
+     /తుది తేదీలు/.test(document.getElementById("cd-none").textContent));
+  ok("v72.1 countdown: feed vachhaka live ga tick chestundi (network-first, fake date ledu)",
+     /fetch\("data\/deadline\.json"/.test(html) && !/new Date\(2026,9,15/.test(html));
+  {
+    const domDl = new JSDOM(html, {
+      url: "http://localhost/", runScripts: "dangerously", pretendToBeVisual: true,
+      beforeParse(win) {
+        win.fetch = () => Promise.resolve({ ok: true, json: () => Promise.resolve(
+          { title: "TSPSC గ్రూప్ 2 — దరఖాస్తు చివరి తేదీ", date: "2027-01-05T17:00:00+05:30" }) });
+      },
+    });
+    await sleep(60);
+    const d = domDl.window.document;
+    const box = d.getElementById("cd-box");
+    const nums = ["cd-d", "cd-h", "cd-m", "cd-s"].map(id => d.getElementById(id).textContent).join(":");
+    ok("v72.1 countdown: deadline.json vachhaka timer live (numeric values)",
+       !box.hasAttribute("hidden") && d.getElementById("cd-none").hidden &&
+       /^\d{1,3}:\d{1,2}:\d{1,2}:\d{1,2}$/.test(nums),
+       nums);
+    domDl.window.close();
+  }
 
   /* ---------- state filters ---------- */
   const tabs = Array.from(document.querySelectorAll(".tab"));
@@ -159,9 +173,9 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
   const examHref = document.getElementById("examlink").getAttribute("href");
   ok("exam link resolves to live demo exam (env-aware URL)",
      /\/exam\/KBHA5W$/.test(examHref), examHref);
-  const wa = document.getElementById("wa");
-  wa.click();
-  ok("WhatsApp share sets wa.me href", wa.getAttribute("href").indexOf("wa.me") > -1, wa.getAttribute("href"));
+  ok("v72.1: 7-point article + దాని share buttons teesesaam (demo content ledu)",
+     !document.getElementById("wa") && !document.getElementById("copylink") &&
+     !/7 విషయాలు|QUICK ANSWER|ఎడిటర్ ఎంపిక/.test(html));
   const themeBtn = document.getElementById("theme");
   const wasDark = document.body.classList.contains("dark");
   themeBtn.click();
@@ -225,7 +239,7 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
      "links=" + mpanel.querySelectorAll("a").length);
   ok("mobile panel has Partner + Exam CTA",
      Array.from(mpanel.querySelectorAll("a")).some(a => /Partner with us/.test(a.textContent)) &&
-     Array.from(mpanel.querySelectorAll("a")).some(a => a.textContent.indexOf("ప్రత్యక్ష పరీక్ష") > -1));
+     Array.from(mpanel.querySelectorAll("a")).some(a => a.textContent.indexOf("ఆన్‌లైన్ పరీక్ష") > -1));
   mpanel.querySelector('a[href="#jobs"]').click();
   ok("panel link click closes menu", !mpanel.classList.contains("open") && !document.body.classList.contains("mlock"));
   menubtn.click();
@@ -245,9 +259,12 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
   ok("in-feed ad inside news grid (not .news — filters never hide ads)",
      document.getElementById("grid").contains(document.querySelector('.su-ad[data-slot="in-feed"]')) &&
      !document.querySelector('.su-ad[data-slot="in-feed"]').classList.contains("news"));
-  ok("all ad CTAs safe: rel=sponsored nofollow + target=_blank",
-     Array.from(document.querySelectorAll(".su-ad a")).every(a =>
-       (a.getAttribute("rel") || "").indexOf("sponsored") > -1 && a.getAttribute("target") === "_blank"));
+  ok("all ad CTAs safe: rel=sponsored nofollow (+ target=_blank external ki)",
+     Array.from(document.querySelectorAll(".su-ad a")).every(a => {
+       var rel = a.getAttribute("rel") || "";
+       var ext = /^https?:/.test(a.getAttribute("href") || "");
+       return /sponsored/.test(rel) && /nofollow/.test(rel) && (!ext || a.getAttribute("target") === "_blank");
+     }));
   ok("all ad slots labeled SPONSORED + visible disclosure",
      Array.from(ads).every(a => /SPONSORED/i.test(a.textContent) && a.getAttribute("aria-label") === "Sponsored content"));
   ok("sidebar promo card removed — no public rate-card anchor (#ads)",
@@ -441,6 +458,20 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
   ok("v72: hero-proof stats row teesesaam",
      !document.querySelector(".hero-proof") && !document.querySelector(".proof"));
 
+  /* ---------- v72.1: public copy clean (topbar, demo ads, fake countdown) ---------- */
+  ok("v72.1: coverage topbar teesesaam (jillalu/update-count line public lo ledu)",
+     !document.querySelector(".topbar") &&
+     !/\(33 జిల్లాలు\)|\(26 జిల్లాలు\)|జిల్లాల పర్యవేక్షణ|ప్రతిరోజూ ధృవీకృత అప్డేట్/.test(html));
+  ok("v72.1: hero countdown fake date ledu — data/deadline.json + honest default",
+     !!document.getElementById("cd-none") && document.getElementById("cd-box").hasAttribute("hidden") &&
+     /data\/deadline\.json/.test(html) && !/new Date\(2026,9,15/.test(html));
+  ok("v72.1: ad slots fake advertiser/example.com lekunda — 'స్లాట్ ఖాళీ' house creative",
+     /example\.com/.test(html) === false &&
+     Array.from(document.querySelectorAll(".su-ad")).every(a => !/ABC |abc-college|tuition-demo|stationery-demo/.test(a.textContent)) &&
+     /\.html$/.test(document.querySelector(".su-ad a").getAttribute("href")));
+  ok("v72.1: exam wording neat (ఆన్‌లైన్ పరీక్షలు)",
+     /ఆన్‌లైన్ పరీక్ష/.test(html));
+
   /* ---------- v72: ఎక్కువగా వెతికేవి + పర్ఫెక్ట్ మెనూ ---------- */
   const usedTiles = Array.from(document.querySelectorAll(".usedgrid .usedcard"));
   const usedCats = usedTiles.map(a => a.getAttribute("data-goto-cat"));
@@ -536,6 +567,42 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
      qVisible().length > 0 && qVisible().every(c => /degree/.test(c.getAttribute("data-qual"))) &&
      /అవకాశాలు/.test(document.getElementById("qcount").textContent),
      "visible=" + qVisible().length + " count=" + document.getElementById("qcount").textContent);
+  /* ---------- v72.1: అర్హత ప్రకారం విభాగాలు (automatic grouping) ---------- */
+  {
+    const host = document.getElementById("qualsplit");
+    const groups = host ? Array.from(host.querySelectorAll(".qgroup")) : [];
+    ok("v72.1 అర్హత విభాగాలు: 8 groups (7 అర్హతలు + ⏳ closing)",
+       groups.length === 8 &&
+       JSON.stringify(groups.map(g => g.getAttribute("data-qgroup"))) ===
+         JSON.stringify(["10th","inter","iti","diploma","degree","pg","btech","closing"]),
+       "groups=" + groups.length);
+    const visibleGroups = groups.filter(g => !g.hidden);
+    ok("v72.1 అర్హత విభాగాలు: grid nunchi automatic ga nimpabaddayi (count + links)",
+       visibleGroups.length >= 3 && visibleGroups.every(g =>
+         !!g.querySelector("h3 .qgnum") && g.querySelectorAll("li a").length > 0),
+       "visible=" + visibleGroups.length);
+    const first = visibleGroups[0];
+    const gKey = first.getAttribute("data-qgroup");
+    const titled = first.querySelectorAll("li a").length;
+    const gridCards = Array.from(document.querySelectorAll("#grid .news"));
+    const left = c => {
+      const v = c.getAttribute("data-last");
+      if (!v) return null;
+      return Math.round((new Date(v + "T23:59:59") - new Date(new Date().setHours(0,0,0,0))) / 86400000);
+    };
+    const expected = gridCards.filter(c => {
+      const l = left(c);
+      const qua = (c.getAttribute("data-qual") || "").toLowerCase();
+      return gKey === "closing" ? (l !== null && l >= 0 && l <= 7)
+                                : (qua.indexOf(gKey) > -1 && !(l !== null && l < 0));
+    }).length;
+    ok("v72.1 అర్హత విభాగాలు: group content grid tho exact match (auto, manual ledu)",
+       titled === expected, "group=" + gKey + " listed=" + titled + " expected=" + expected);
+    const counter = visibleGroups.find(g => g.querySelector("h3 .qgnum"));
+    ok("v72.1 అర్హత విభాగాలు: count chip chupistundi",
+       /^\d+$/.test(counter.querySelector(".qgnum").textContent), counter.querySelector(".qgnum").textContent);
+  }
+
   const qCloseChip = qchips.find(c => c.getAttribute("data-qual") === "closing");
   qCloseChip.click();
   const soonExpected = Array.from(document.querySelectorAll("#grid .news")).filter(c => {
@@ -560,25 +627,52 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
   expiredCard.remove();
   qchips.find(c => c.getAttribute("data-qual") === "all").click();
 
+  /* ---------- v72.1: category + అర్హత kalisi filter (preview) ---------- */
+  const degChip = qchips.find(c => c.getAttribute("data-qual") === "degree");
+  degChip.click();
+  const catChipTs = Array.from(document.querySelectorAll(".chip[data-cat]"))
+    .find(c => c.getAttribute("data-cat") === "ts-jobs");
+  if (catChipTs) catChipTs.click();
+  const combo = Array.from(document.querySelectorAll("#grid .news")).filter(c => !c.classList.contains("hidden"));
+  ok("v72.1: category + అర్హత kalisi filter (rendu condition)",
+     combo.length > 0 && combo.every(c => /degree/.test(c.getAttribute("data-qual")) &&
+       (" " + (c.getAttribute("data-cat") || "") + " ").indexOf(" ts-jobs ") > -1),
+     "visible=" + combo.length);
+  click('.chip[data-cat="all"]');
+  qchips.find(c => c.getAttribute("data-qual") === "all").click();
+
   /* ---------- v72: PWA — app-laga install ---------- */
   const installBtn = document.getElementById("installbtn");
   ok("v72 PWA: manifest link + theme-color + apple touch icon",
      !!document.querySelector('link[rel="manifest"][href="manifest.webmanifest"]') &&
      !!document.querySelector('meta[name="theme-color"]') &&
      !!document.querySelector('link[rel="apple-touch-icon"]'));
-  ok("v72 PWA: install button undi (prompt varaku hidden)",
-     !!installBtn && installBtn.hasAttribute("hidden") && /ఇన్‌స్టాల్/.test(installBtn.textContent));
+  ok("v72.1 App డౌన్‌లోడ్: button prathi visit lo kanipistundi (hidden kaadu)",
+     !!installBtn && !installBtn.hasAttribute("hidden") &&
+     /డౌన్‌లోడ్/.test(installBtn.textContent) && !!installBtn.querySelector(".ibadge"));
+  const isheet = document.getElementById("installhint");
+  ok("v72.1 App డౌన్‌లోడ్: device-wise install sheet (Android/iPhone/Computer steps)",
+     !!isheet && isheet.hasAttribute("hidden") &&
+     isheet.querySelectorAll("#isteps li").length === 3 &&
+     /Android/.test(isheet.textContent) && /iPhone/.test(isheet.textContent) &&
+     !!document.getElementById("installnow") && !!document.getElementById("installclose"));
+  installBtn.click();
+  ok("v72.1 App డౌన్‌లోడ్: prompt lekapote sheet terustundi (steps chupistundi)",
+     !isheet.hasAttribute("hidden") && /Add to Home Screen/.test(isheet.textContent));
+  document.getElementById("installclose").click();
+  ok("v72.1 sheet close button pani chestundi", isheet.hasAttribute("hidden"));
   {
     const ev = new window.Event("beforeinstallprompt");
     let prompted = 0;
     ev.prompt = () => { prompted++; };
     ev.userChoice = Promise.resolve({ outcome: "accepted" });
     window.dispatchEvent(ev);
-    const shown = !installBtn.hasAttribute("hidden");
     installBtn.click();
     await sleep(20);
-    ok("v72 PWA: beforeinstallprompt → button chupistundi + click tho prompt open",
-       shown && prompted === 1, "shown=" + shown + " prompted=" + prompted);
+    ok("v72.1 App డౌన్‌లోడ్: beforeinstallprompt unte click tho prompt open",
+       prompted === 1, "prompted=" + prompted);
+    ok("v72.1 App డౌన్‌లోడ్: install ayyaka button hide (appinstalled)",
+       (window.dispatchEvent(new window.Event("appinstalled")), installBtn.hasAttribute("hidden")));
   }
 
   /* ---------- v71: contact page (lead form) + partner page (no public rates) ---------- */

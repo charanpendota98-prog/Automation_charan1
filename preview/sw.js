@@ -2,7 +2,7 @@
  * Goal: app-like speed on mobile — shell cached, HTML network-first (fresh news),
  * offline shows the last cached page instead of the browser error.
  */
-var VERSION = "su-v72-1";
+var VERSION = "su-v72-2";   // v72.1: App sheet + అర్హత sections
 var SHELL = ["./", "./index.html", "./favicon.svg", "./manifest.webmanifest", "./robots.txt"];
 var OFFLINE_HTML =
   "<!doctype html><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'>" +

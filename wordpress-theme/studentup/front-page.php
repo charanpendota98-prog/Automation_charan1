@@ -54,7 +54,6 @@ $su_deadline = studentup_deadline();
 			<div class="hero-actions">
 				<a class="bluebtn" href="#jobs">అవకాశాలు చూడండి →</a>
 				<?php if ( get_option( 'studentup_exam_url' ) ) : ?>
-					<a class="ghostbtn" href="<?php echo esc_url( (string) get_option( 'studentup_exam_url' ) ); ?>">🎓 ప్రత్యక్ష పరీక్షల పోర్టల్</a>
 				<?php endif; ?>
 			</div>
 		</div>
@@ -99,6 +98,7 @@ $su_deadline = studentup_deadline();
 		<?php
 		studentup_qual_bar();
 		studentup_qual_active_note();
+		studentup_hidden_note();
 		?>
 
 		<div class="chips" id="chips" role="tablist" aria-label="విభాగ ఫిల్టర్లు">

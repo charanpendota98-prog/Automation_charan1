@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'STUDENTUP_VERSION', '1.7.0' );  // v72: qualification filter · header search · PWA install · clean copy
+define( 'STUDENTUP_VERSION', '1.7.1' );  // v72.1: App download sheet · combined అర్హత+category filter · clean copy
 
 require_once get_template_directory() . '/inc/options.php';
 require_once get_template_directory() . '/inc/qual-filter.php';  // v72: 10th/Inter/Degree/PG filter (auto tags)

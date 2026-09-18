@@ -431,7 +431,11 @@ def c_ad_safety() -> List[dict]:
     from . import adsense_kit, ad_manager  # noqa: F401
 
     html = _read(PREVIEW / "index.html")
-    ok = ("SPONSORED" in html and "rel=\"sponsored nofollow noopener\"" in html
+    # v72.1: ad CTAs internal (Partner page) or external — rendu case lo Google rule:
+    # SPONSORED label + rel lo sponsored & nofollow (external ki target=_blank/noopener).
+    rels = re.findall(r'<a[^>]*class="(?:su-ad-cta|fcta)"[^>]*>', html)
+    rel_ok = bool(rels) and all(("sponsored" in a and "nofollow" in a) for a in rels)
+    ok = ("SPONSORED" in html and rel_ok
           and getattr(config, "MAX_PERSONAL_AD_SLOTS", 0) >= 1)
     return [_ok("AdSense safety rules", "SPONSORED · rel · slot caps · CLS-safe", "ADS & MONEY")
             if ok else _bad("AdSense safety rules", "rules missing", "ADS & MONEY")]
