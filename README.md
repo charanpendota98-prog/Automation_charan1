@@ -1136,6 +1136,7 @@ Marpali te: `.env` edit chesi scheduler ni restart cheyandi: `sudo systemctl res
 ## Project structure
 
 ```
+├── wsgi_dev.py             # v54 dev WSGI runner (:8090) for poll + lead forms
 ├── run.py                  # CLI entry point
 ├── setup_oracle.sh         # One-command Oracle Cloud installer
 ├── requirements.txt        # requests + pillow + beautifulsoup4
@@ -1172,6 +1173,7 @@ Marpali te: `.env` edit chesi scheduler ni restart cheyandi: `sudo systemctl res
 ├── CONTENT_PLAN_DAILY.md   # v50 daily plan: 16 pillars, rhythm, refresh, SEO gates
 ├── AD_REVENUE_PLAYBOOK.md  # v52 revenue lines, rate card, sponsor + house ad flows
 ├── GO_LIVE_CHECKLIST.md    # v53 deploy order + owner actions + revenue table
+├── SALES_KIT_ADVERTISERS.md # v54 advertiser outreach templates + 90-day plan
 ├── deploy/                 # systemd units · Caddyfile · nginx · Dockerfile · compose · backup.sh · install-vps.sh
 ├── autoblog/deploy_check.py # deploy readiness (deps/env/disk/port + real /healthz boot)
 ├── autoblog/site_audit.py  # v41 deep audit + safe autofix + live publish gate

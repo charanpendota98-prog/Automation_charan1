@@ -544,6 +544,98 @@ class Api:
         return session
 
 
+    # ------------------------------------------------------- leads (v54 money)
+    LEAD_INTERESTS = ("jobs", "scholarships", "college", "coaching", "exams", "other")
+
+    @staticmethod
+    def _clean_phone(raw: Any) -> str:
+        digits = re.sub(r"\D", "", str(raw or ""))
+        if digits.startswith("91") and len(digits) == 12:
+            digits = digits[2:]
+        elif digits.startswith("0") and len(digits) == 11:
+            digits = digits[1:]
+        return digits
+
+    def save_lead(self, payload: Dict) -> Dict:
+        """Public: ఉచిత సమాచారం అభ్యర్థన (job/college alerts). Ads la revenue line."""
+        name = re.sub(r"\s+", " ", str(payload.get("name") or "")).strip()
+        phone = self._clean_phone(payload.get("phone"))
+        interest = str(payload.get("interest") or "jobs").strip().lower()
+        city = re.sub(r"\s+", " ", str(payload.get("city") or "")).strip()
+        source = re.sub(r"[^a-z_]", "", str(payload.get("source") or "site").lower())[:20] or "site"
+        note = re.sub(r"\s+", " ", str(payload.get("note") or "")).strip()
+        ip = str(payload.get("ip") or payload.get("_ip") or "")[:64]
+        spammy = bool(str(payload.get("website") or payload.get("url") or "").strip())
+
+        if len(name) < 2:
+            raise engine.ExamError("పేరు రాయండి (కనీసం 2 అక్షరాలు)", "lead-name", 400)
+        if not re.fullmatch(r"[6-9]\d{9}", phone or ""):
+            raise engine.ExamError("10 అంకెల మొబైల్ నంబర్ ఇవ్వండి (ఉదా: 9876543210)",
+                                   "lead-phone", 400)
+        if interest not in self.LEAD_INTERESTS:
+            interest = "other"
+        if city and len(city) < 2:
+            city = ""
+        if not spammy and self.store.lead_ip_count(ip, hours=1) >= 5:
+            raise engine.ExamError("కొద్దిసేపటి తర్వాత మళ్లీ ప్రయత్నించండి",
+                                   "lead-throttle", 429)
+
+        if spammy:
+            row = self.store.save_lead(name, phone, interest, city, source, note, ip)
+            self.store.set_lead_status(row["id"], "spam")
+            return {"ok": True, "id": row["id"], "duplicate": False,
+                    "message": "ధన్యవాదాలు! మేము సంప్రదిస్తాము."}
+
+        if self.store.lead_phone_seen(phone, hours=24):
+            return {"ok": True, "duplicate": True,
+                    "message": "ఈ నంబర్ ఇప్పటికే నమోదైంది — మేము త్వరలో సంప్రదిస్తాము."}
+
+        row = self.store.save_lead(name, phone, interest, city, source, note, ip)
+        log.info("lead #%s (%s) %s", row["id"], interest, phone[-4:].rjust(4, "*"))
+        return {"ok": True, "id": row["id"], "duplicate": False,
+                "message": "ధన్యవాదాలు! ఉద్యోగ/పరీక్ష సమాచారం మీకు పంపుతాము."}
+
+    def admin_leads(self, key: str, limit: int = 200, status: str = "") -> Dict:
+        self.require_admin(key)
+        rows = self.store.list_leads(limit=limit, status=status)
+        masked = []
+        for r in rows:
+            d = dict(r)
+            d.pop("ip", None)
+            d["phone"] = d.get("phone", "")
+            masked.append(d)
+        return {"ok": True, "count": len(masked), "stats": self.store.lead_stats(),
+                "leads": masked}
+
+    def set_lead_status(self, key: str, lead_id: Any, status: str) -> Dict:
+        self.require_admin(key)
+        try:
+            lid = int(lead_id or 0)
+        except (TypeError, ValueError):
+            raise engine.ExamError("lead id number ga undali", "bad-lead-id", 400)
+        try:
+            changed = self.store.set_lead_status(lid, str(status or "").strip().lower())
+        except ValueError as exc:
+            raise engine.ExamError(str(exc), "bad-lead-status", 400)
+        if not changed:
+            raise engine.ExamError("Ee id tho lead ledu", "lead-missing", 404)
+        return {"ok": True, "id": lid, "status": status}
+
+    def export_leads(self, key: str) -> tuple:
+        self.require_admin(key)
+        rows = self.store.list_leads(limit=5000)
+        cols = ["id", "created_at", "name", "phone", "interest", "city", "source",
+                "status", "note"]
+        lines = [",".join(cols)]
+        for r in rows:
+            vals = []
+            for c in cols:
+                v = str(r.get(c, "")).replace('"', '""')
+                vals.append(f'"{v}"' if any(ch in v for ch in ',"\n') else v)
+            lines.append(",".join(vals))
+        return "\n".join(lines) + "\n", "studentup-leads.csv"
+
+
 # ------------------------------------------------------------------ HTTP layer
 
 class Handler(BaseHTTPRequestHandler):
@@ -674,6 +766,15 @@ class Handler(BaseHTTPRequestHandler):
         if path == "/poll/today":
             self.json_out(self.api.today_poll(), cors=True)
             return
+        if path == "/api/admin/leads":
+            self.json_out(self.api.admin_leads(q.get("key", ""),
+                                               int(q.get("limit", 200) or 200),
+                                               q.get("status", "")))
+            return
+        if path in ("/api/admin/leads/export.csv", "/api/admin/leads.csv"):
+            text, name = self.api.export_leads(q.get("key", ""))
+            self.csv_out(text, name)
+            return
         if path == "/api/admin/ads":
             self.json_out(self.api.admin_ads(self.query().get("key", "")))
             return
@@ -759,6 +860,14 @@ class Handler(BaseHTTPRequestHandler):
             self.json_out(student[path](body))
             return
 
+        if path == "/lead":
+            self.json_out(self.api.save_lead(body), cors=True)
+            return
+        if path == "/api/admin/lead/status":
+            self.json_out(self.api.set_lead_status(body.get("key", ""),
+                                                   body.get("id"),
+                                                   body.get("status", "")))
+            return
         if path == "/poll/vote":
             body["_ip"] = self.client_ip()
             self.json_out(self.api.vote_poll(body), cors=True)

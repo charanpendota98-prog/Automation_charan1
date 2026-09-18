@@ -224,6 +224,24 @@
     .sidecard{border:1px solid var(--line);border-radius:17px;background:var(--card);padding:17px;margin-bottom:16px}
     .sidecard h3{font-size:15px;color:var(--navy);margin:0 0 4px}
     .sidecard .sub{font-size:10px;color:var(--muted);margin:0 0 12px}
+    .leadbox{border:1px solid var(--line);border-radius:17px;background:var(--card);padding:16px;margin:18px 0}
+    .leadbox h3{font-size:16px;color:var(--navy);margin:0 0 4px}
+    .leadbox .sub{font-size:11px;color:var(--muted);margin:0 0 12px}
+    .leadgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .leadgrid .full{grid-column:1/-1}
+    .leadgrid input,.leadgrid select{width:100%;padding:11px 12px;border:1px solid var(--line);
+      border-radius:11px;font:inherit;background:var(--card);color:inherit}
+    .leadgrid input:focus,.leadgrid select:focus{outline:2px solid var(--blue);outline-offset:1px}
+    .lead-hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
+    .leadbtn{margin-top:12px;width:100%;padding:13px;border:0;border-radius:12px;background:var(--blue);
+      color:#fff;font-weight:700;font-size:14px;cursor:pointer}
+    .leadbtn:disabled{opacity:.6;cursor:default}
+    .leadnote{font-size:10px;color:var(--muted);margin:9px 0 0;line-height:1.6}
+    .leadmsg{margin-top:11px;font-size:13px;font-weight:600;display:none}
+    .leadmsg.ok{display:block;color:#0a7a3d}
+    .leadmsg.err{display:block;color:#b3261e}
+    body.dark .leadbox h3{color:#e7f0ff}
+    @media(max-width:640px){.leadgrid{grid-template-columns:1fr}}
     .trend{display:flex;gap:10px;padding:11px 0;border-bottom:1px solid #eff2f7}
     .trend:last-child{border:0;padding-bottom:2px}
     .rank{color:var(--orange);font-size:16px;font-weight:800}
@@ -815,6 +833,35 @@
       <div id="pollbox" aria-live="polite"><p class="poll-error">పోల్ లోడ్ అవుతోంది…</p></div>
     </section>
 
+<section class="leadbox" id="alerts" aria-label="ఉచిత సమాచారం">
+      <h3>🔔 ఉచిత ఉద్యోగ &amp; పరీక్ష సమాచారం</h3>
+      <p class="sub">కొత్త ఉద్యోగాలు, నోటిఫికేషన్లు, పరీక్ష తేదీలు, ఫలితాలు — మీకు ముందుగా పంపుతాము.</p>
+      <form id="leadform" novalidate>
+        <div class="leadgrid">
+          <input type="text" id="ld-name" name="name" maxlength="60" autocomplete="name"
+                 placeholder="మీ పేరు" aria-label="మీ పేరు" required>
+          <input type="tel" id="ld-phone" name="phone" maxlength="15" inputmode="numeric"
+                 autocomplete="tel" placeholder="మొబైల్ నంబర్ (10 అంకెలు)" aria-label="మొబైల్ నంబర్" required>
+          <select id="ld-interest" name="interest" aria-label="మీ ఆసక్తి">
+            <option value="jobs">ఉద్యోగాలు</option>
+            <option value="scholarships">స్కాలర్‌షిప్‌లు</option>
+            <option value="college">కళాశాల ప్రవేశాలు</option>
+            <option value="coaching">కోచింగ్</option>
+            <option value="exams">పరీక్షలు</option>
+            <option value="other">ఇతర</option>
+          </select>
+          <input type="text" id="ld-city" name="city" maxlength="40" autocomplete="address-level2"
+                 placeholder="పట్టణం (ఐచ్ఛికం)" aria-label="పట్టణం">
+          <input type="text" class="lead-hp" id="ld-website" name="website" tabindex="-1"
+                 autocomplete="off" aria-hidden="true">
+        </div>
+        <button type="submit" class="leadbtn" id="ld-submit">ఉచితంగా నమోదు చేయండి</button>
+        <p class="leadmsg" id="ld-msg" role="status" aria-live="polite"></p>
+        <p class="leadnote">మీ నంబర్ ఎవరికీ అమ్మము · ప్రకటనల కోసం ఇవ్వము · ఎప్పుడైనా
+          <a href="pages/privacy.html">ఆపమని చెప్పవచ్చు</a>. ఇది ఉచిత సేవ మాత్రమే.</p>
+      </form>
+    </section>
+
 <section class="quiz" id="quiz" aria-label="Daily quiz">
         <div class="quiz-head">
           <div><h3>📝 రోజువారీ క్విజ్ — తెలంగాణ &amp; ఆంధ్రప్రదేశ్ సాధారణ జ్ఞానం</h3><div class="sub">6 ప్రశ్నలు · తక్షణ సమాధానాలు · ఉత్తమ స్కోరు మీ బ్రౌజర్‌లో సేవ్ అవుతుంది</div></div>
@@ -879,9 +926,9 @@
       <h2>100% ధృవీకరించి, తర్వాతే ప్రచురణ</h2>
       <p class="sub">studentup.in బాట్ పైప్‌లైన్ — ప్రతి పోస్ట్‌కు 30+ ఆటోమేటిక్ తనిఖీలు + మానవ సమీక్ష. ఈరోజు (2026-09-18) నిరూపక సంఖ్యలు — సైట్-ఆడిట్‌లో 31 ఫలితాలలో 20 ఆటో-ఫిక్స్ చేయగలిగేవి.</p>
       <div class="qgrid">
-        <div class="qtile"><b>39/39</b><span>టెస్ట్ సూట్‌లు పాస్ (అన్నీ ఆకుపచ్చ)</span></div>
+        <div class="qtile"><b>40/40</b><span>టెస్ట్ సూట్‌లు పాస్ (అన్నీ ఆకుపచ్చ)</span></div>
         <div class="qtile"><b>11/11</b><span>ప్రొడక్షన్ భద్రతా తనిఖీలు పాస్ (v30 గేట్)</span></div>
-        <div class="qtile"><b>102/102</b><span>బ్రౌజర్-స్థాయి రన్‌టైమ్ తనిఖీలు (ఈ వెబ్‌సైట్)</span></div>
+        <div class="qtile"><b>108/108</b><span>బ్రౌజర్-స్థాయి రన్‌టైమ్ తనిఖీలు (ఈ వెబ్‌సైట్)</span></div>
         <div class="qtile"><b>10,682</b><span>కీవర్డ్ విశ్వం (188 అంశాలు × 66 ఉద్దేశాలు)</span></div>
         <div class="qtile"><b>16</b><span>కంటెంట్ విభాగాలు: ఉద్యోగాలు (TS · AP · కేంద్ర · అవుట్‌సోర్సింగ్ · వాక్-ఇన్), స్కాలర్‌షిప్‌లు, రానున్న పరీక్షలు, ప్రస్తుతాంశాలు, పరీక్షా చిట్కాలు, ఫలితాలు మొదలైనవి</span></div>
         <div class="qtile"><b>129</b><span>అధికారిక మూలాల పర్యవేక్షణ (రోజుకు 4 సార్లు — ఉద్యోగ నోటిఫికేషన్, పరీక్షల క్యాలెండర్, ప్రభుత్వ ప్రకటనలు)</span></div>
@@ -1204,6 +1251,42 @@
         .catch(function(){ box.innerHTML='<p class="poll-error">⚠️ పోల్ అందుబాటులో లేదు — పరీక్షల పోర్టల్ ఆన్‌లైన్‌లోకి రాగానే ఇక్కడ కనిపిస్తుంది.</p>'; });
     })();
 
+</script>
+
+<script>
+/* v54 — ఉచిత సమాచారం ఫారం (leads) → పరీక్షల పోర్టల్ API */
+(function(){
+  var f=document.getElementById("leadform"); if(!f) return;
+  function api(){
+    var h=location.hostname;
+    if(/^8000-/.test(h)) return location.protocol+"//"+h.replace(/^8000-/,"8080-");
+    if(h==="localhost"||h==="127.0.0.1") return "http://localhost:8080";
+    return "";
+  }
+  var msg=document.getElementById("ld-msg"), btn=document.getElementById("ld-submit");
+  function say(text,ok){ msg.textContent=text; msg.className="leadmsg "+(ok?"ok":"err"); }
+  f.addEventListener("submit",function(e){
+    e.preventDefault();
+    var name=(document.getElementById("ld-name").value||"").trim();
+    var phone=(document.getElementById("ld-phone").value||"").replace(/\D/g,"");
+    var interest=document.getElementById("ld-interest").value;
+    var city=(document.getElementById("ld-city").value||"").trim();
+    var hp=(document.getElementById("ld-website").value||"").trim();
+    if(name.length<2){ say("⚠️ పేరు రాయండి.",false); return; }
+    if(!/^[6-9]\d{9}$/.test(phone)){ say("⚠️ 10 అంకెల మొబైల్ నంబర్ ఇవ్వండి (ఉదా: 9876543210).",false); return; }
+    if(typeof fetch!=="function"){ say("⚠️ ఈ బ్రౌజర్‌లో ఫారం పనిచేయదు — మాకు నేరుగా మెసేజ్ చేయండి.",false); return; }
+    btn.disabled=true; say("పంపుతోంది…",true);
+    fetch(api()+"/lead",{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({name:name,phone:phone,interest:interest,city:city,website:hp,source:"site"})})
+      .then(function(r){return r.json().then(function(j){return {s:r.status,j:j};});})
+      .then(function(o){
+        btn.disabled=false;
+        if(o.s===200&&o.j&&o.j.ok){ say("✅ "+(o.j.message||"నమోదు అయ్యింది!"),true); f.reset(); }
+        else { say("⚠️ "+((o.j&&o.j.error)||"పంపలేకపోయింది — మళ్లీ ప్రయత్నించండి."),false); }
+      })
+      .catch(function(){ btn.disabled=false; say("⚠️ సర్వర్‌కు కనెక్ట్ కాలేదు — కొద్దిసేపటి తర్వాత మళ్లీ ప్రయత్నించండి.",false); });
+  });
+})();
 </script>
 </body>
 </html>

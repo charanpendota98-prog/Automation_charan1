@@ -120,6 +120,53 @@ def market_reference(views: int) -> dict:
     return {"cpm": DISPLAY_CPM_INR, "value": int(round(views / 1000.0 * DISPLAY_CPM_INR))}
 
 
+# --- Advanced (top-level) lines — mee sales effort tho matrame (assumptions clear ga)
+LEAD_CAPTURE = (0.003, 0.008)      # pageviews lo 0.3%–0.8% ఫారం నింపుతారు
+LEAD_PRICE = (150, 300)            # ₹/వెరిఫైడ్ లీడ్ (కళాశాల/కోచింగ్, TS & AP)
+ADVERTORIAL = (8_000, 15_000)      # ₹/స్పాన్సర్డ్ ఆర్టికల్
+ADVERTORIAL_PER_MONTH = (1, 2)
+BROADCAST_PRICE = 1_500            # ₹/వాట్సాప్-టెలిగ్రామ్ బ్రాడ్‌కాస్ట్
+BROADCAST_PER_MONTH = (2, 4)
+AFFILIATE_RPM = 15                 # ₹/1000 views (పుస్తకాలు/కోర్సులు — జాగ్రత్త అంచనా)
+
+
+def advanced_lines(views: int) -> dict:
+    leads_lo = int(views * LEAD_CAPTURE[0])
+    leads_hi = int(views * LEAD_CAPTURE[1])
+    aff = int(views / 1000.0 * AFFILIATE_RPM)
+    return {
+        "leads_range": (leads_lo, leads_hi),
+        "leads": (leads_lo * LEAD_PRICE[0], leads_hi * LEAD_PRICE[1]),
+        "advertorial": (ADVERTORIAL_PER_MONTH[0] * ADVERTORIAL[0],
+                        ADVERTORIAL_PER_MONTH[1] * ADVERTORIAL[1]),
+        "broadcast": (BROADCAST_PER_MONTH[0] * BROADCAST_PRICE,
+                      BROADCAST_PER_MONTH[1] * BROADCAST_PRICE),
+        "affiliate": aff,
+    }
+
+
+def tiers(views: int) -> dict:
+    """3 స్థాయిలు: baseline (AdSense) · standard (+ slots) · advanced (+ ప్రీమియం)."""
+    ads = adsense_table(views)
+    b_lo, b_hi = ads[0]["revenue"], ads[-1]["revenue"]
+    d = direct_table(views)
+    # standard = AdSense conservative→strong + ఒప్పందాల స్లాట్లు (totals() tho okate)
+    std = (b_lo + d["conservative"], ads[2]["revenue"] + d["realistic"])
+    a = advanced_lines(views)
+    extra_lo = a["leads"][0] + a["advertorial"][0] + a["broadcast"][0] + a["affiliate"]
+    extra_hi = a["leads"][1] + a["advertorial"][1] + a["broadcast"][1] + a["affiliate"]
+    return {"baseline": (b_lo, b_hi), "standard": std,
+            "advanced": (std[0] + extra_lo, std[1] + extra_hi), "lines": a}
+
+
+def tier_rows() -> list[dict]:
+    out = []
+    for v in (10_000, 50_000, 100_000, 300_000):
+        t = tiers(v)
+        out.append({"views": v, "baseline": t["baseline"], "standard": t["standard"],
+                    "advanced": t["advanced"]})
+    return out
+
 def totals(views: int) -> dict:
     ads = {b["band"]: b["revenue"] for b in adsense_table(views)}
     direct = direct_table(views)
@@ -204,6 +251,22 @@ def render(views: int) -> str:
     for line in pricing_advice(views):
         A(f"    • {line}")
     A("")
+    A("  3 స్థాయిలు (idi asalu jawabu — 'top level' ante):")
+    t3 = tiers(views)
+    a3 = t3["lines"]
+    A(f"    1) BASELINE  (AdSense మాత్రమే)              ₹{human(t3['baseline'][0])} – ₹{human(t3['baseline'][1])}")
+    A(f"    2) STANDARD  (+ స్పాన్సర్ స్లాట్లు)          ₹{human(t3['standard'][0])} – ₹{human(t3['standard'][1])}")
+    A(f"    3) ADVANCED  (+ లీడ్లు, ఆర్టికల్స్, బ్రాడ్‌కాస్ట్) ₹{human(t3['advanced'][0])} – ₹{human(t3['advanced'][1])}")
+    A("")
+    A(f"  3వ స్థాయి ఎలా వస్తుంది (అంచనాలు స్పష్టంగా):")
+    A(f"    • లీడ్లు: {a3['leads_range'][0]}–{a3['leads_range'][1]} లీడ్లు (views లో 0.3–0.8%) × ₹{LEAD_PRICE[0]}–₹{LEAD_PRICE[1]}")
+    A(f"      = ₹{human(a3['leads'][0])} – ₹{human(a3['leads'][1])}  ← కళాశాల/కోచింగ్ కొనుగోలుదారు ఉంటే మాత్రమే")
+    A(f"    • స్పాన్సర్డ్ ఆర్టికల్స్: ₹{human(a3['advertorial'][0])} – ₹{human(a3['advertorial'][1])} (నెలకు 1–2)")
+    A(f"    • వాట్సాప్/టెలిగ్రామ్ బ్రాడ్‌కాస్ట్: ₹{human(a3['broadcast'][0])} – ₹{human(a3['broadcast'][1])}")
+    A(f"    • అఫిలియేట్ (పుస్తకాలు/కోర్సులు): ₹{human(a3['affiliate'])}")
+    A("    ⚠️ 3వ స్థాయి ఆటోమేటిక్ కాదు — మీరు స్పాన్సర్లను/లీడ్ కొనుగోలుదారును")
+    A("       సంప్రదించాలి (SALES_KIT_ADVERTISERS.md లో మెసేజ్ టెంప్లేట్లు ఉన్నాయి).")
+    A("")
     A("  Scale (నెలవారీ views → AdSense + direct = మొత్తం):")
     A("    {:>10}  {:>19}  {:>19}  {:>19}".format("views", "AdSense", "Direct", "మొత్తం"))
     for r in scale_rows():
@@ -231,7 +294,7 @@ def main(argv=None) -> int:
     if views <= 0:
         raise SystemExit("views > 0 undali")
     if args.json:
-        print(json.dumps({"views": views, "totals": totals(views),
+        print(json.dumps({"views": views, "totals": totals(views), "tiers": tiers(views),
                           "scale": scale_rows(), "market": market_reference(views)},
                          ensure_ascii=False, indent=2))
     else:

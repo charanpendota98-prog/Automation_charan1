@@ -25,6 +25,19 @@ python tools/revenue_estimate.py --views 10k     # leda 50k / 1l / 3l / 1m
 1,00,000 views → ₹5,000–₹23,100. Tool rate card ni LIVE advertise page nunchi chaduvutundi
 (prices okate chota untayi), house ads ni revenue lo count cheyyadu.
 
+## 0.2) 3 స్థాయిలు (v54) — 'top level' ante idi
+
+| స్థాయి | ఎలా | 10k views/నెల | 1L views/నెల |
+|---|---|---|---|
+| 1) BASELINE | AdSense మాత్రమే | ₹400–₹2,500 | ₹4,000–₹25,000 |
+| 2) STANDARD | + స్పాన్సర్ స్లాట్లు (rate card) | ₹400–₹4,200 | ₹5,000–₹23,100 |
+| 3) **ADVANCED** | + **లీడ్లు** (₹150–₹400/లీడ్) + స్పాన్సర్డ్ ఆర్టికల్స్ (₹8,000–₹15,000) + బ్రాడ్‌కాస్ట్ + అఫిలియేట్ | **₹16,050–₹64,350** | **₹60,000+** |
+
+3వ స్థాయి = **manual ga nadapalsina revenue**: website lead form nunchi వచ్చిన
+విద్యార్థి enquiries (పేరు + నంబర్) కళాశాలలకు/కోచింగ్‌లకు అమ్మడం. Setup ippude
+ready (ఫారం + admin panel + CSV) — kaavalsindi **2 అమ్మకాల మెసేజ్‌లు రోజూ**
+(SALES_KIT_ADVERTISERS.md lo టెంప్లేట్లు).
+
 ## 1) Revenue lines (4 — anni ippude ready)
 
 | # | Line | Status | Ekkada control |
@@ -33,6 +46,8 @@ python tools/revenue_estimate.py --views 10k     # leda 50k / 1l / 3l / 1m
 | 2 | **Direct sponsors** (private ads) | ✅ LIVE — rate card + booking page | `pages/advertise.html` + admin console "📢 ప్రకటనలు" |
 | 3 | **House ads** (mana sonta promos) | ✅ LIVE — slot khali ga undadu | `ads/house.json` |
 | 4 | **Sponsor packages** (full package ₹8,000/నెల) | ✅ rate card ready | advertise page |
+| 5 | **లీడ్ జనరేషన్** (విద్యార్థి enquiries → కళాశాలలు/కోచింగ్) | ✅ లైవ్ (ఫారం + admin + CSV) | `📞 లీడ్లు` panel |
+| 6 | **స్పాన్సర్డ్ ఆర్టికల్స్** (₹8,000–₹15,000/పాజ్) | ✅ listed | advertise page |
 
 ### Rate card (site lo live)
 | Slot | ఎక్కడ | నెలకు |

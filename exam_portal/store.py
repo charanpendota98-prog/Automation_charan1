@@ -187,6 +187,19 @@ class Store:
                     created_at TEXT NOT NULL
                 );
 
+                CREATE TABLE IF NOT EXISTS leads (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    name TEXT NOT NULL DEFAULT '',
+                    phone TEXT NOT NULL,
+                    interest TEXT NOT NULL DEFAULT 'jobs',   -- jobs|scholarships|college|coaching|exams|other
+                    city TEXT NOT NULL DEFAULT '',
+                    source TEXT NOT NULL DEFAULT 'site',     -- site|portal|bot|whatsapp
+                    note TEXT NOT NULL DEFAULT '',
+                    ip TEXT NOT NULL DEFAULT '',
+                    status TEXT NOT NULL DEFAULT 'new',      -- new|contacted|sold|spam
+                    created_at TEXT NOT NULL
+                );
+
                 CREATE TABLE IF NOT EXISTS notifications (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     exam_id INTEGER,
@@ -198,6 +211,8 @@ class Store:
                 );
 
                 CREATE INDEX IF NOT EXISTS idx_events_exam ON events(exam_id, id DESC);
+                CREATE INDEX IF NOT EXISTS idx_leads_phone ON leads(phone, created_at DESC);
+                CREATE INDEX IF NOT EXISTS idx_leads_status ON leads(status, id DESC);
                 CREATE INDEX IF NOT EXISTS idx_answers_session ON answers(session_id);
                 """
             )
@@ -355,6 +370,75 @@ class Store:
                 "VALUES (?, ?, ?, ?, ?)",
                 (day, int(qid), int(choice), (ip or "")[:64], now_iso()),
             )
+
+    # ------------------------------------------------------------- leads (v54)
+    def save_lead(self, name: str, phone: str, interest: str = "jobs", city: str = "",
+                  source: str = "site", note: str = "", ip: str = "") -> Dict:
+        with self.connect() as conn:
+            cur = conn.execute(
+                "INSERT INTO leads (name, phone, interest, city, source, note, ip, status, created_at) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?, 'new', ?)",
+                (str(name)[:60], str(phone)[:15], str(interest)[:20], str(city)[:40],
+                 str(source)[:20], str(note)[:300], str(ip or "")[:64], now_iso()),
+            )
+            lead_id = int(cur.lastrowid or 0)
+        return {"id": lead_id, "name": str(name)[:60], "phone": str(phone)[:15],
+                "interest": str(interest)[:20], "city": str(city)[:40],
+                "source": str(source)[:20], "status": "new"}
+
+    def _recent_leads(self, where: str, args: tuple, hours: int) -> List[Dict]:
+        """Rows from the last N hours — Python-side compare (timezone-safe)."""
+        cutoff = datetime.now(timezone.utc).timestamp() - int(hours) * 3600
+        with self.connect() as conn:
+            rows = conn.execute(
+                f"SELECT * FROM leads WHERE {where} ORDER BY id DESC LIMIT 500", args).fetchall()
+        out = []
+        for r in rows:
+            dt = parse_iso(r["created_at"])
+            if dt and dt.timestamp() >= cutoff:
+                out.append(dict(r))
+        return out
+
+    def lead_phone_seen(self, phone: str, hours: int = 24) -> bool:
+        return bool(self._recent_leads("phone = ?", (str(phone)[:15],), hours))
+
+    def lead_ip_count(self, ip: str, hours: int = 1) -> int:
+        if not ip:
+            return 0
+        return len(self._recent_leads("ip = ?", (str(ip)[:64],), hours))
+
+    def list_leads(self, limit: int = 200, status: str = "") -> List[Dict]:
+        sql = "SELECT * FROM leads"
+        args: List = []
+        if status:
+            sql += " WHERE status = ?"
+            args.append(status)
+        sql += " ORDER BY id DESC LIMIT ?"
+        args.append(max(1, min(int(limit), 5000)))
+        with self.connect() as conn:
+            rows = conn.execute(sql, tuple(args)).fetchall()
+        return [dict(r) for r in rows]
+
+    def lead_stats(self) -> Dict:
+        with self.connect() as conn:
+            by_status = {r["status"]: int(r["c"]) for r in conn.execute(
+                "SELECT status, COUNT(*) c FROM leads GROUP BY status")}
+            by_interest = {r["interest"]: int(r["c"]) for r in conn.execute(
+                "SELECT interest, COUNT(*) c FROM leads GROUP BY interest")}
+            today = conn.execute(
+                "SELECT COUNT(*) c FROM leads WHERE date(created_at) = date('now')").fetchone()
+        total = sum(by_status.values())
+        return {"total": total, "today": int(today["c"] if today else 0),
+                "by_status": by_status, "by_interest": by_interest}
+
+    def set_lead_status(self, lead_id: int, status: str) -> bool:
+        allowed = {"new", "contacted", "sold", "spam"}
+        if status not in allowed:
+            raise ValueError(f"status {sorted(allowed)} lo okati undali")
+        with self.connect() as conn:
+            cur = conn.execute("UPDATE leads SET status = ? WHERE id = ?",
+                               (status, int(lead_id)))
+            return bool(cur.rowcount)
 
     def has_poll_vote(self, day: str, qid: int, ip: str = "") -> bool:
         if not ip:

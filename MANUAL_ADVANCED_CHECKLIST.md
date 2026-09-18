@@ -151,7 +151,23 @@ Message lo reason undi — exact ga fix cheyandi:
 ## ⚠️ Honest note
 Perfect = **machine gates + human 5-min verify**. Gates mistakes ramigadu (conflicts/stale/dates/originality), kaani official numbers mee mata tho final check — AdSense/Google/reputation thartham lo idi matrame safety.
 
-*Last updated: v53 (2026-09-18) — revenue estimator + go-live checklist: 11 checks · 39/39 suites · 102/102 runtime checks*
+*Last updated: v54 (2026-09-18) — highest-revenue engine (leads + premium + sales kit): 12 checks · 40/40 suites · 108/108 runtime checks*
+
+---
+
+## PART 13 — v54: HIGHEST REVENUE ENGINE (adi asalu pani)
+
+```
+LEADS  : exam_portal/leads table + POST /lead (CORS) → website "ఉచిత సమాచారం" ఫారం
+         dedupe 24h · IP throttle 5/hour · honeypot spam trap · admin auth
+         admin console: 📞 లీడ్లు panel (status: కొత్త → సంప్రదించాం → అమ్మాం → స్పామ్) + CSV
+PREMIUM: advertise page lo 3 కొత్త products — స్పాన్సర్డ్ ఆర్టికల్ ₹8,000–₹15,000 ·
+         లీడ్లు ₹150–₹400/లీడ్ (కనీసం 50) · బ్రాడ్కాస్ట్ ₹1,500
+TIERS  : tools/revenue_estimate.py → 1) BASELINE (AdSense) 2) STANDARD (+ slots)
+         3) ADVANCED (+ లీడ్లు/ఆర్టికల్స్/బ్రాడ్కాస్ట్/అఫిలియేట్) — 10k views: ₹16,050–₹64,350
+SALES  : SALES_KIT_ADVERTISERS.md — WhatsApp/email టెంప్లేట్లు, objection handling, 90-day plan
+దినచర్య: రోజూ 2 అమ్మకాల మెసేజ్లు + 1 షేర్ (15 నిమిషాలు) — ide revenue ni penchutundi
+```
 
 ---
 

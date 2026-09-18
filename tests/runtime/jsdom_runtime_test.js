@@ -263,9 +263,9 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
   ok("no Romanized Tenglish words in visible text", tenglishHits.length === 0, "hits=" + tenglishHits.join(","));
   const trust = document.getElementById("trust");
   ok("trust section: 100% verify headline (Telugu)", !!trust && /100%/.test(trust.textContent) && /ధృవీకరించి/.test(trust.textContent));
-  ok("trust proof tiles: 39/39 + 11/11 + 102/102 + 10,682",
-     /39\/39/.test(trust.textContent) && /11\/11/.test(trust.textContent) &&
-     /102\/102/.test(trust.textContent) && /10,682/.test(trust.textContent));
+  ok("trust proof tiles: 40/40 + 11/11 + 108/108 + 10,682",
+     /40\/40/.test(trust.textContent) && /11\/11/.test(trust.textContent) &&
+     /108\/108/.test(trust.textContent) && /10,682/.test(trust.textContent));
   ok("trust tiles prove pillar + source coverage (16 categories · 129 sources)",
      /16/.test(trust.textContent) && /129/.test(trust.textContent) &&
      /అవుట్‌సోర్సింగ్/.test(trust.textContent) && /ప్రస్తుతాంశాలు/.test(trust.textContent));
@@ -370,6 +370,40 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
   ok("house ads documented on site (StudentUp own promos, not SPONSORED)",
      /StudentUp/.test(adsCard ? adsCard.textContent : "") ||
      /StudentUp/.test(document.body.textContent));
+
+
+  /* ---------- v54: ఉచిత సమాచారం lead form (highest-revenue engine) ---------- */
+  const leadForm = document.getElementById("leadform");
+  ok("lead form present (ఉచిత ఉద్యోగ & పరీక్ష సమాచారం)", !!leadForm);
+  ok("lead form fields: name + phone + interest + city",
+     !!document.getElementById("ld-name") && !!document.getElementById("ld-phone") &&
+     !!document.getElementById("ld-interest") && !!document.getElementById("ld-city"));
+  const hpField = document.getElementById("ld-website");
+  ok("lead honeypot hidden (spam trap)",
+     !!hpField && hpField.getAttribute("aria-hidden") === "true" && /lead-hp/.test(hpField.className));
+  const ldSel = document.getElementById("ld-interest");
+  const ldOpts = ldSel ? Array.from(ldSel.options).map(o => o.textContent).join(" ") : "";
+  ok("interest options pure Telugu (no Latin letters)",
+     /ఉద్యోగాలు/.test(ldOpts) && /స్కాలర్‌షిప్‌లు/.test(ldOpts) && /కళాశాల/.test(ldOpts) &&
+     !/[A-Za-z]/.test(ldOpts));
+  if (leadForm) {
+    let sent = false;
+    leadForm.addEventListener("submit", () => { sent = true; }, true);
+    document.getElementById("ld-name").value = "రవి";
+    document.getElementById("ld-phone").value = "123";
+    leadForm.dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
+    await sleep(60);
+    const msg = document.getElementById("ld-msg");
+    ok("bad phone → Telugu error shown (form not sent)",
+       sent === true && !!msg && /10 అంకెల/.test(msg.textContent) && /err/.test(msg.className),
+       msg ? msg.textContent.slice(0, 40) : "no message");
+  } else {
+    ok("bad phone → Telugu error shown (form not sent)", false, "no form");
+  }
+  const ldNote = document.querySelector(".leadnote");
+  ok("lead form privacy note + policy link",
+     !!ldNote && /ఆపమని చెప్పవచ్చు/.test(ldNote.textContent) &&
+     !!ldNote.querySelector('a[href="pages/privacy.html"]'));
 
   /* ---------- summary ---------- */
   console.log("=".repeat(64));

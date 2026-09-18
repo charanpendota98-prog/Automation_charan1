@@ -464,6 +464,20 @@ def admin_html() -> str:
         (SPONSORED లేబుల్ + rel=sponsored nofollow — విధాన-సురక్షితం).</p>
       </div>
     </div>
+
+    <div class="card" id="leadsCard">
+      <div class="flex-between">
+        <h1 style="margin:0">📞 లీడ్లు (విద్యార్థుల enquiries)</h1>
+        <div class="row">
+          <button class="btn ghost sm" onclick="loadLeads()">రిఫ్రెష్</button>
+          <a class="btn ghost sm" id="leadsCsv" href="#" target="_blank" rel="noopener">CSV డౌన్‌లోడ్</a>
+        </div>
+      </div>
+      <p class="tiny" id="leadsStats">ఇంకా లోడ్ కాలేదు.</p>
+      <div class="scroll" style="margin-top:10px"><table id="leadsTable"></table></div>
+      <p class="tiny">వెబ్‌సైట్ “ఉచిత సమాచారం” ఫారం నుంచి వచ్చినవి — కళాశాలలు / కోచింగ్‌లకు
+      ₹150–₹400/లీడ్‌కు ఇవ్వవచ్చు. స్పామ్ ఆటోమేటిక్‌గా వేరు చేయబడుతుంది (IP ఎప్పుడూ చూపించము).</p>
+    </div>
   </div>
 </div>"""
     script = """
@@ -484,7 +498,7 @@ async function login(){
     ADMIN_KEY = key; localStorage.setItem('su_admin_key', key); keyOK();
     document.getElementById('loginCard').classList.add('hide');
     document.getElementById('dash').classList.remove('hide');
-    loadExams(); loadAds();
+    loadExams(); loadAds(); loadLeads();
   }catch(e){ document.getElementById('loginMsg').textContent = e.message; toast(e.message); }
 }
 document.getElementById('loginBtn').addEventListener('click', login);
@@ -512,6 +526,34 @@ async function loadAds(){
         <td><button class="btn ghost sm" onclick="editAd(${i})">✏️</button>
             <button class="btn ghost sm" onclick="delAd('${adsEsc(a.id)}')">🗑</button></td></tr>`).join('');
   }catch(e){ pc.textContent = 'లోడ్ కాలేదు: ' + e.message; }
+}
+async function loadLeads(){
+  const tb = document.getElementById('leadsTable'), st = document.getElementById('leadsStats'),
+        csv = document.getElementById('leadsCsv');
+  if(!tb) return;
+  try{
+    const d = await api('/api/admin/leads?key=' + encodeURIComponent(ADMIN_KEY) + '&limit=200');
+    const s = d.stats || {}, bs = s.by_status || {};
+    st.textContent = 'మొత్తం: ' + (s.total||0) + ' · ఈరోజు: ' + (s.today||0) +
+      ' · కొత్త: ' + (bs.new||0) + ' · సంప్రదించినవి: ' + (bs.contacted||0) +
+      ' · అమ్మినవి: ' + (bs.sold||0) + ' · స్పామ్: ' + (bs.spam||0);
+    if(csv) csv.href = '/api/admin/leads/export.csv?key=' + encodeURIComponent(ADMIN_KEY);
+    const rows = d.leads || [];
+    if(!rows.length){ tb.innerHTML = '<tr><td class="tiny">ఇంకా లీడ్లు లేవు — వెబ్‌సైట్ ఫారం నింపగానే ఇక్కడ కనిపిస్తాయి.</td></tr>'; return; }
+    tb.innerHTML = '<tr><th>#</th><th>పేరు</th><th>మొబైల్</th><th>ఆసక్తి</th><th>పట్టణం</th><th>స్థితి</th><th></th></tr>' +
+      rows.map(l=>`<tr><td class="tiny">${l.id}</td><td>${adsEsc(l.name)}</td>
+        <td><a href="tel:${adsEsc(l.phone)}">${adsEsc(l.phone)}</a></td>
+        <td class="tiny">${adsEsc(l.interest)}</td><td class="tiny">${adsEsc(l.city||'—')}</td>
+        <td class="tiny"><span class="tag ${l.status==='sold'?'ok':(l.status==='spam'?'warn':'draft')}">${adsEsc(l.status)}</span></td>
+        <td><button class="btn ghost sm" onclick="setLeadStatus(${l.id},'contacted')">సంప్రదించాం</button>
+            <button class="btn ghost sm" onclick="setLeadStatus(${l.id},'sold')">అమ్మాం</button>
+            <button class="btn ghost sm" onclick="setLeadStatus(${l.id},'spam')">స్పామ్</button></td></tr>`).join('');
+  }catch(e){ st.textContent = 'లోడ్ కాలేదు: ' + e.message; }
+}
+async function setLeadStatus(id, status){
+  try{ await api('/api/admin/lead/status', {body:{key:ADMIN_KEY, id:id, status:status}});
+    toast('అప్‌డేట్ అయింది ✔'); loadLeads(); }
+  catch(e){ toast('కుదరలేదు: ' + e.message); }
 }
 function showAdForm(){ document.getElementById('adForm').classList.remove('hide');
   document.getElementById('adForm').scrollIntoView({behavior:'smooth'}); }

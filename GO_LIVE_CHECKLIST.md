@@ -9,9 +9,9 @@ Ee doc = okka page lo motham. Kramam ga cheyyandi.
 
 | Item | Proof |
 |---|---|
-| Test suites | **39/39** pass (`python run.py --test-all`) |
+| Test suites | **40/40** pass (`python run.py --test-all`) |
 | Production check | **11/11** pass (`python run.py --production-audit`) |
-| Browser runtime | **102/102** checks (`node tests/runtime/jsdom_runtime_test.js`) |
+| Browser runtime | **108/108** checks (`node tests/runtime/jsdom_runtime_test.js`) |
 | Deploy check | 8 ok · 4 warn · 0 fail (`python run.py --deploy-check`) |
 | Website | 16 categories · 129 sources · 10,682 keywords · menu + chips |
 | Ads | AdSense gate · sponsor console · rate card · house ads |
@@ -77,6 +77,7 @@ UptimeRobot → `https://exam.studentup.in/healthz` (5-min ping) — watchdog ki
 | 08:00 | 3–5 posts (16 pillars) → Telegram ✅/🗑️ | bot + **mee approval** |
 | 09:00, 18:00 | Current affairs + breaking refresh | auto |
 | Roju | Poll + quiz update + auto-refresh purana posts | auto |
+| Roju | 📞 లీడ్లు చూసి 2 అమ్మకాల మెసేజ్‌లు (కళాశాల/కోచింగ్) పంపండి | **మీరు (15 నిమిషాలు)** |
 | 2 nimishalku okasari | Health check → crash ayite restart + alert | watchdog |
 | 02:00 | Backup + media prune | cron |
 
@@ -89,7 +90,7 @@ Detail: `python tools/revenue_estimate.py --views 10k`
 
 | నెలవారీ views | AdSense | Direct sponsors | మొత్తం అంచనా |
 |---|---|---|---|
-| 10,000 | ₹400–₹2,500 | ₹0–₹2,700 | **₹400–₹4,200** |
+| 10,000 | ₹400–₹2,500 | ₹0–₹2,700 | **₹400–₹4,200** (advanced: ₹16,050+) |
 | 50,000 | ₹2,000–₹12,500 | ₹1,000–₹8,100 | ₹3,000–₹15,600 |
 | 1,00,000 | ₹4,000–₹25,000 | ₹1,000–₹8,100 | ₹5,000–₹23,100 |
 | 3,00,000 | ₹12,000–₹75,000 | ₹3,000–₹16,200 | ₹15,000–₹61,200 |
@@ -107,4 +108,4 @@ Detail: `python tools/revenue_estimate.py --views 10k`
 Clickbait titles · fake clicks · popups · "Google tricks" · ad ni content laaga dhaachadam ·
 job guarantee promises (advertisers kuda). Ivi AdSense ban + trust damage.
 
-*Last updated: v53 (2026-09-18) · 39/39 suites · 102/102 runtime · 11/11 production checks*
+*Last updated: v54 (2026-09-18) · 40/40 suites · 108/108 runtime · 11/11 production checks*
