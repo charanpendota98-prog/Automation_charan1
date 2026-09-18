@@ -11,11 +11,13 @@ Checks (offline only):
   * radar source whitelist + config CATEGORIES round-trip
   * website: nav dropdown + chip + mobile link + card + tiles 17/143
   * advisor Tier-1 advice prakaram ee pillar ni suggest chestundi
+  * robots.txt internal artifacts ni block chestundi + top-200 CSV engine tho match
 
 Run: python tests/v58_test.py   (also via python run.py --test-all)
 """
 from __future__ import annotations
 
+import csv
 import io
 import sys
 from pathlib import Path
@@ -157,6 +159,33 @@ def test_keyword_universe_has_abroad():
     assert stats["entities"] == 203
 
 
+def test_robots_blocks_internal_artifacts():
+    """v58 audit: internal strategy/keyword artifacts public ga index avvakudadu."""
+    txt = (ROOT / "preview" / "robots.txt").read_text(encoding="utf-8")
+    for path in ("/admin", "/legacy-concept.html", "/ads-preview.html",
+                 "/dominance-plan-90-days.md", "/top-post-blueprint.html",
+                 "/keyword-universe-top200.csv", "/v38.html", "/v39.html",
+                 "/v41.html"):
+        assert "Disallow: %s" % path in txt, "robots disallow missing: " + path
+    assert "Allow: /\n" in txt, "public pages allow avvali"
+    assert "Sitemap: https://studentup.in/sitemap.xml" in txt
+
+
+def test_keyword_csv_matches_engine():
+    """Top-200 CSV engine nunchi generate avutundi — stale unte ee test fail (v58 audit)."""
+    from autoblog import top_post
+    rows = list(csv.DictReader(io.open(ROOT / "preview" / "keyword-universe-top200.csv",
+                                       encoding="utf-8")))
+    assert len(rows) == 200, len(rows)
+    assert [r["rank"] for r in rows] == [str(i) for i in range(1, 201)], "rank order"
+    live = {e["kw"] for e in top_post.keyword_universe()}
+    stale = sorted({r["keyword"] for r in rows} - live)
+    assert not stale, "CSV lo stale keywords: %s" % stale[:5]
+    cats = set(config.CATEGORIES)
+    assert {r["category"] for r in rows} <= cats, {r["category"] for r in rows} - cats
+    assert any(r["category"] == "Abroad Jobs" for r in rows), "abroad row undali"
+
+
 def main():
     print("=" * 66)
     print("  v58 — 17వ PILLAR: విదేశీ ఉద్యోగాలు (Tier-1 revenue unlock)")
@@ -172,6 +201,8 @@ def main():
         ("advisor Tier-1 advice ee daari chupistundi", test_advisor_uses_abroad_pillar_for_tier1),
         ("keyword universe: 203 entities · 11,192 keywords (+abroad)", test_keyword_universe_has_abroad),
         ("docs: content plan + manual PART 17", test_docs_updated),
+        ("robots.txt internal artifacts block + sitemap intact", test_robots_blocks_internal_artifacts),
+        ("top-200 CSV engine tho match (stale kaadu)", test_keyword_csv_matches_engine),
     ]
     failed = 0
     for name, fn in tests:

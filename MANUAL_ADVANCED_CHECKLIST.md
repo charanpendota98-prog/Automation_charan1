@@ -172,6 +172,13 @@ TOP_POST : LIVE_CATEGORIES lo 17 pillars (mundu 12 matrame — 5 pillars
            "Online Education" ki map ayyevi!) + abroad intent filter
 ADVISOR  : Tier-1 gap unte — 'విదేశీ ఉద్యోగాలు (Abroad Jobs)' pillar posts cheyyamani cheptundi
 CLASSIFY : "Dubai jobs", "IELTS exam date", "గల్ఫ్ ఉద్యోగాలు", "Canada work visa" → Abroad Jobs
+AUDIT    : review lo pattina rendu issues fix —
+           (1) robots.txt ippudu internal artifacts anni block chestundi (keyword CSV,
+               dominance-plan, blueprint, v38/39/41, ads-preview, legacy-concept) +
+               builder (build_policy_pages.py) nunchi auto-generate avutundi
+           (2) keyword-universe-top200.csv ippudu engine nunchi generate (stale kaadu:
+               10 Abroad rows top-200 lo) — test fail ayithe CSV stale ani artham
+TESTS    : tests/v58_test.py = 12 checks · run.py --test-all 44/44 · jsdom 109/109
 ```
 
 ---

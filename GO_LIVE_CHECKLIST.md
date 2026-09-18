@@ -11,7 +11,7 @@ Ee doc = okka page lo motham. Kramam ga cheyyandi.
 |---|---|
 | Test suites | **44/44** pass (`python run.py --test-all`) |
 | Production check | **11/11** pass (`python run.py --production-audit`) |
-| Browser runtime | **108/108** checks (`node tests/runtime/jsdom_runtime_test.js`) |
+| Browser runtime | **109/109** checks (`node tests/runtime/jsdom_runtime_test.js`) |
 | Deploy check | 8 ok · 4 warn · 0 fail (`python run.py --deploy-check`) |
 | Website | 17 categories · 143 sources · 11,192 keywords · menu + chips |
 | Ads | AdSense gate · sponsor console · rate card · house ads |

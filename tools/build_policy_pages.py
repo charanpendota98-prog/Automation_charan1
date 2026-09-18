@@ -9,6 +9,7 @@ Run:  python tools/build_policy_pages.py
 """
 from __future__ import annotations
 
+import csv
 import io
 import os
 import re
@@ -453,9 +454,16 @@ FAVICON = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
 ROBOTS = """# studentup.in — public preview build
 User-agent: *
 Allow: /
+Disallow: /admin
+# internal artifacts — strategy/keyword data, public pages kaadu (v58 audit)
 Disallow: /legacy-concept.html
 Disallow: /ads-preview.html
-Disallow: /admin
+Disallow: /dominance-plan-90-days.md
+Disallow: /top-post-blueprint.html
+Disallow: /keyword-universe-top200.csv
+Disallow: /v38.html
+Disallow: /v39.html
+Disallow: /v41.html
 
 # AdSense/verification crawlers
 User-agent: Mediapartners-Google
@@ -538,6 +546,34 @@ def write_ads_txt() -> str:
     (OUT / "ads.txt").write_text(text, encoding="utf-8")
     return state
 
+def write_keyword_csv(limit: int = 200) -> str:
+    """preview/keyword-universe-top200.csv — engine nunchi top-N keywords (v58).
+
+    Idi INTERNAL artifact (robots.txt lo disallow) — content plan proof ki use avutundi.
+    Engine nunchi generate avutundi, so stale avvadu: priority order + category
+    + proposed title anni live top_post.keyword_universe() nunchi vasthai.
+    autoblog import fail ayithe (standalone builder) skip avutundi — build aagadu.
+    """
+    try:
+        import sys as _sys
+        if str(ROOT) not in _sys.path:
+            _sys.path.insert(0, str(ROOT))
+        from autoblog import top_post
+        uni = top_post.keyword_universe()
+    except Exception as exc:  # noqa: BLE001
+        return "skipped (%s: %s)" % (type(exc).__name__, exc)
+    rows = uni[:limit]
+    path = OUT / "keyword-universe-top200.csv"
+    with path.open("w", newline="", encoding="utf-8") as fh:
+        w = csv.writer(fh)
+        w.writerow(["rank", "keyword", "priority", "cluster", "intent", "funnel",
+                    "category", "proposed_title"])
+        for i, e in enumerate(rows, 1):
+            w.writerow([i, e["kw"], e["priority"], e["cluster"], e["intent"],
+                        e["funnel"], e["cat"], e["title"]])
+    return "%d rows · universe %d" % (len(rows), len(uni))
+
+
 def main() -> None:
     PAGES.mkdir(parents=True, exist_ok=True)
     for slug, title, desc, h1, sub, body in PAGE_DEFS:
@@ -549,6 +585,8 @@ def main() -> None:
     (OUT / "sitemap.xml").write_text(SITEMAP.format(d=UPDATED), encoding="utf-8")
     ads_state = write_ads_txt()
     print("  wrote favicon.svg · robots.txt · sitemap.xml · ads.txt (%s)" % ads_state)
+    kw_state = write_keyword_csv()
+    print("  wrote keyword-universe-top200.csv (%s)" % kw_state)
     print("ALL POLICY PAGES BUILT ✔")
 
 
