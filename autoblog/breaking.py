@@ -229,10 +229,10 @@ def write_feed(items: List[dict], path: Path = None, source: str = "radar",
         "updated": _iso(_now()),
         "source": source,
         "count": len(items),
-        "note": note or ("కొత్త verified breaking updates" if items else
-                         "ప్రస్తుతం కొత్త verified breaking అప్డేట్‌లు లేవు — "
-                         "radar (Google News తెలుగు + 143 అధికారిక మూలాలు) "
-                         "ప్రతి 6 గంటలకు చెక్ చేస్తుంది."),
+        # v72: ee note public site meeda kanipistundi — anduku internal tech maatalu ledu
+        "note": note or ("తాజా అప్డేట్‌లు" if items else
+                         "ప్రస్తుతం కొత్త బ్రేకింగ్ అప్డేట్‌లు లేవు — "
+                         "త్వరలో ఇక్కడ కనిపిస్తాయి."),
         "items": items,
     }
     tmp = target.with_suffix(target.suffix + ".tmp")

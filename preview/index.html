@@ -8,6 +8,8 @@
   <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
   <meta name="author" content="StudentUp Editorial Team">
   <meta name="theme-color" content="#0f2e62">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="favicon.svg">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="canonical" href="https://studentup.in/">
   <meta property="og:type" content="website">
@@ -81,8 +83,16 @@
     .headrow{height:74px;display:flex;align-items:center;gap:22px}
     .logo{display:flex;align-items:center;gap:10px;min-width:190px}
     .mark{height:40px;width:40px;border-radius:13px;display:grid;place-items:center;color:#fff;font-weight:800;font-size:21px;background:linear-gradient(135deg,var(--orange),#ffb25f);box-shadow:0 8px 17px rgba(237,138,50,.3)}
-    .brand{font-size:21px;font-weight:800;letter-spacing:-.04em;color:var(--navy)}
-    .brand small{font-size:10px;display:block;color:var(--muted);font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+    .brand{font-size:21px;font-weight:800;letter-spacing:-.04em;
+      background:linear-gradient(94deg,#0f2e62 0%,#2463b7 48%,#d9741f 100%);
+      -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:var(--navy)}
+    .brand small{font-size:10px;display:block;color:var(--muted);font-weight:700;letter-spacing:.06em;
+      text-transform:uppercase;-webkit-text-fill-color:var(--muted);background:none}
+    body.dark .brand{background:linear-gradient(94deg,#9dc2ff 0%,#6ea8ff 48%,#ffb066 100%);
+      -webkit-background-clip:text;background-clip:text}
+    body.dark .brand small{-webkit-text-fill-color:#93a4bd}
+    .logo .mark{background:linear-gradient(135deg,#2463b7,#0f2e62 55%,#ed8a32);color:#fff;
+      box-shadow:0 6px 16px rgba(15,46,98,.28)}
     .nav{display:flex;align-items:center;gap:2px;flex:1}
     .nav a{position:relative;padding:10px 13px;color:#44536b;font-size:13px;font-weight:700;border-radius:10px;transition:color .2s}
     .nav a::after{content:"";position:absolute;left:13px;right:13px;bottom:5px;height:2px;border-radius:2px;background:var(--orange);transform:scaleX(0);transform-origin:left;transition:transform .25s ease}
@@ -115,6 +125,34 @@
     .mbackdrop.open{opacity:1;visibility:visible}
     body.mlock{overflow:hidden}
     .headactions{display:flex;align-items:center;gap:8px}
+    /* v72: header search — menu pakkana neat search */
+    .searchpanel{border-bottom:1px solid var(--line);background:var(--card);box-shadow:0 10px 24px rgba(15,46,98,.06)}
+    .searchpanel .wrap{display:flex;align-items:center;gap:10px;padding-top:12px;padding-bottom:12px}
+    .searchpanel input{flex:1;min-width:0;border:1px solid var(--line);border-radius:12px;padding:11px 14px;
+      font:inherit;font-size:13.5px;background:var(--bg);color:var(--ink)}
+    .searchpanel input:focus{outline:2px solid var(--blue);outline-offset:1px}
+    .spanel-icon{font-size:15px;opacity:.7}
+    /* v72: qualification-wise job filter */
+    .qrow{margin-top:2px}
+    .qchip{background:#fff7ee;border-color:#f6d9b8;color:#8a4d00}
+    .qchip.active{background:linear-gradient(135deg,#ed8a32,#d9741f);border-color:#d9741f;color:#fff}
+    .soonchip{background:#eef6ff;border-color:#cfe0f7;color:#1d4f9c}
+    .soonchip.active{background:linear-gradient(135deg,#2463b7,#0f2e62);border-color:#0f2e62;color:#fff}
+    body.dark .qchip{background:#2a2013;border-color:#4a3a22;color:#ffc88a}
+    body.dark .soonchip{background:#132743;border-color:#24456f;color:#9dc2ff}
+    .qcount{margin-left:auto;font-size:11.5px;font-weight:700;color:var(--muted)}
+    .qbadge{display:inline-block;border-radius:999px;padding:2px 9px;font-size:10px;font-weight:800}
+    .qbadge.soon{background:#fff3e2;color:#9a5b00;border:1px solid #f3d6ae}
+    .qbadge.done{background:#f3f5f8;color:#7a8798;border:1px solid #e2e7ee}
+    body.dark .qbadge.soon{background:#2a2013;color:#ffc88a;border-color:#4a3a22}
+    body.dark .qbadge.done{background:#182338;color:#9fb0c6;border-color:#243a5c}
+    .news.expired{opacity:.72}
+    /* v72: install as an app (PWA) */
+    .installbtn{position:fixed;left:14px;bottom:16px;z-index:35;border:0;border-radius:13px;cursor:pointer;
+      background:linear-gradient(135deg,#2463b7,#0f2e62);color:#fff;font-weight:800;font-size:13px;padding:12px 16px;
+      box-shadow:0 12px 26px rgba(15,46,98,.3)}
+    .installhint{position:fixed;left:14px;bottom:16px;z-index:35;max-width:280px;background:#0f2e62;color:#fff;
+      font-size:12.5px;line-height:1.6;padding:12px 14px;border-radius:13px;box-shadow:0 12px 26px rgba(15,46,98,.3)}
     .iconbtn{border:1px solid var(--line);color:var(--navy);background:var(--card);height:38px;width:38px;border-radius:11px;cursor:pointer;font-size:15px}
     .callbtn{border:0;background:var(--orange);color:#fff;font-weight:800;border-radius:11px;padding:11px 16px;cursor:pointer;box-shadow:0 8px 16px rgba(237,138,50,.22);font-size:13px}
     /* hero */
@@ -129,9 +167,6 @@
     .hero-actions{display:flex;gap:10px;align-items:center;margin-top:24px;flex-wrap:wrap}
     .bluebtn{background:var(--navy);color:#fff;padding:13px 19px;border-radius:12px;font-weight:800;border:0;cursor:pointer;font-size:14px;box-shadow:0 10px 20px rgba(15,46,98,.2)}
     .ghostbtn{background:var(--card);color:var(--navy);padding:12px 18px;border:1px solid #d8e2f0;border-radius:12px;font-weight:800;cursor:pointer;font-size:14px}
-    .hero-proof{display:flex;gap:22px;margin-top:24px;flex-wrap:wrap}
-    .proof strong{display:block;color:var(--navy);font-size:18px}
-    .proof span{color:var(--muted);font-size:11px}
     .hero-card{border:1px solid #dbe6f5;border-radius:24px;background:var(--card);box-shadow:var(--shadow);padding:17px;transform:rotate(1.2deg)}
     .hcard-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;gap:8px}
     .hcard-title{font-weight:800;color:var(--navy);font-size:14px}
@@ -151,6 +186,13 @@
     .arrow{margin-left:auto;color:var(--orange);font-weight:800}
     /* main sections */
     main{padding:40px 0 80px}
+    /* v72: mobile lo text overlap/contrast problems raakoodadu */
+    .news h3,.news p,.sectionhead h2,.sectionhead p,.hero h1,.hero .lede,.sidecard h3,
+    .tagrow,.newsfoot,.qcount,.article-meta{overflow-wrap:anywhere;word-break:break-word}
+    .sectionhead h2,.news h3,.hero h1,.sidecard h3{text-wrap:balance}
+    .newsbody{min-width:0}
+    .tagrow{display:flex;gap:6px;flex-wrap:wrap}
+    .topbar span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
     .sectionhead{display:flex;justify-content:space-between;align-items:end;margin-bottom:18px;gap:14px;flex-wrap:wrap}
     .sectionhead h2{font-size:25px;color:var(--navy);letter-spacing:-.04em;margin:0}
     .sectionhead p{font-size:12px;color:var(--muted);margin:4px 0 0}
@@ -426,8 +468,6 @@
       .hero{padding:26px 0 16px}
       .hero h1{font-size:33px}
       .hero .lede{font-size:14px}
-      .hero-proof{gap:14px}
-      .proof strong{font-size:15px}
       .layout{display:block}
       .side{display:block;margin-top:22px}
       .sidecard{margin-bottom:14px}
@@ -478,20 +518,7 @@
     body.dark .poll-result-note{background:#14243c;color:#b9c6da}
     @media(max-width:600px){.poll{padding:15px;border-radius:14px}.poll-head h3{font-size:17px}.poll-opt{padding:13px 14px;font-size:13px}}
   
-    /* ================= v59: బ్రేకింగ్ టికర్ + "ఎక్కువగా వెతికేవి" ================= */
-    .tickerwrap{background:linear-gradient(90deg,#7f1d1d,#b91c1c);color:#fff}
-    .tickerwrap[hidden]{display:none}
-    .trow{display:flex;align-items:center;gap:12px;padding:8px 0;min-height:38px}
-    .tlabel{background:#fff;color:#b91c1c;font-weight:800;font-size:11px;letter-spacing:.05em;padding:4px 10px;border-radius:999px;flex-shrink:0;display:inline-flex;gap:6px;align-items:center}
-    .tlabel i{width:7px;height:7px;border-radius:50%;background:#b91c1c;animation:blip 1.1s infinite}
-    @keyframes blip{0%,100%{opacity:1}50%{opacity:.22}}
-    @media(prefers-reduced-motion:reduce){.tlabel i,.brkdot,.nav .navbrk .dot{animation:none}}
-    .tclip{overflow:hidden;flex:1;position:relative;height:21px}
-    .tmove{position:absolute;top:0;white-space:nowrap;display:flex;gap:36px;animation:slide 48s linear infinite;will-change:transform}
-    .tmove a{color:#fff;font-size:13.5px;text-decoration:none;font-weight:600}
-    .tmove .tsrc{opacity:.75;font-weight:400;font-size:12px}
-    @keyframes slide{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-    .tall{color:#fff;font-size:12px;font-weight:700;text-decoration:none;flex-shrink:0;border-bottom:1px solid rgba(255,255,255,.65)}
+    /* ================= v59/v72: "ఎక్కువగా వెతికేవి" టైల్స్ ================= */
     .usedwrap{padding:15px 0 2px}
     .usedhead{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:10px}
     .usedhead b{color:var(--navy);font-size:15px}
@@ -508,23 +535,6 @@
     body.dark .usedcard.hot{background:#182a20;border-color:#6b5527}
     body.dark .usedhead b,body.dark .usedcard b{color:#e7f0ff}
     body.dark .usedcard .ui{background:#14243c}
-    .breaking{margin:20px 0 4px;background:var(--card);border:1px solid var(--line);border-left:4px solid #b91c1c;border-radius:15px;padding:14px 16px}
-    .brkhead{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
-    .brkhead h2{font-size:16px;margin:0;color:var(--navy)}
-    .brkdot{width:9px;height:9px;border-radius:50%;background:#b91c1c;animation:blip 1.1s infinite}
-    .brklive{font-size:11px;color:var(--muted)}
-    .brklist{list-style:none;margin:10px 0 0;padding:0}
-    .brkitem{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-top:1px dashed var(--line)}
-    .brkitem:first-child{border-top:0}
-    .brkitem .bt{font-size:10.5px;font-weight:700;background:#fdecec;color:#b91c1c;border-radius:999px;padding:2px 8px;flex-shrink:0;margin-top:2px;white-space:nowrap}
-    .brkitem a{color:var(--ink);text-decoration:none;font-weight:600;font-size:13.5px;line-height:1.5}
-    .brkitem a:hover{color:var(--blue)}
-    .brkitem .bwhen{display:block;color:var(--muted);font-size:11px;font-weight:400;margin-top:3px}
-    .brkempty{color:var(--muted);font-size:12.5px;padding:10px 0 2px;list-style:none}
-    body.dark .brkhead h2{color:#e7f0ff}
-    body.dark .brkitem a{color:#dbe7f8}
-    .nav .navbrk{color:#b91c1c}
-    .nav .navbrk .dot{width:6px;height:6px;border-radius:50%;background:#b91c1c;display:inline-block;margin-right:5px;animation:blip 1.1s infinite}
     @media(max-width:980px){.usedgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
     @media(max-width:600px){
       .usedgrid{grid-template-columns:1fr 1fr;gap:8px}
@@ -532,15 +542,13 @@
       .usedcard .ui{height:32px;width:32px;font-size:15px}
       .usedcard b{font-size:12px}
       .usedcard .ucount{display:none}
-      .trow{gap:8px}
-      .tmove a{font-size:12.5px}
     }
   </style>
 </head>
 <body>
   <a class="skip" href="#main">ముఖ్య విషయానికి వెళ్లండి</a>
 
-  <div class="topbar"><div class="wrap"><span>🎓 తెలంగాణ (33 జిల్లాలు) + ఆంధ్రప్రదేశ్ (26 జిల్లాలు) విద్యార్థుల కోసం — ప్రతిరోజూ ధృవీకృత అప్డేట్‌లు</span><div class="toplinks"><a href="pages/editorial-policy.html">సంపాదకీయ విధానం</a><a href="pages/contact.html">సవరణలు</a><a href="pages/privacy.html">గోప్యతా విధానం</a><span id="today" aria-hidden="true"></span></div></div></div>
+  <div class="topbar"><div class="wrap"><span>🎓 తెలంగాణ &amp; ఆంధ్రప్రదేశ్ విద్యార్థులకు ఉద్యోగాలు, పరీక్షలు, ఫలితాలు — ఒకే వేదిక</span><div class="toplinks"><a href="pages/editorial-policy.html">సంపాదకీయ విధానం</a><a href="pages/contact.html">సవరణలు</a><a href="pages/privacy.html">గోప్యతా విధానం</a><span id="today" aria-hidden="true"></span></div></div></div>
 
   <header class="header"><div class="wrap headrow">
     <a class="logo" href="#top" aria-label="studentup.in home"><span class="mark" aria-hidden="true">S</span><span class="brand">studentup<small>నేర్చుకో · దరఖాస్తు చేయి · ఎదుగు</small></span></a>
@@ -562,7 +570,6 @@
       </span>
       <a href="#jobs" data-goto-cat="hallticket">హాల్ టికెట్లు</a>
       <a href="#jobs" data-goto-cat="results">ఫలితాలు</a>
-      <a class="navbrk" href="#breaking"><span class="dot" aria-hidden="true"></span>బ్రేకింగ్ న్యూస్</a>
       <a href="#scholarships">స్కాలర్‌షిప్‌లు</a>
       <a href="#jobs" data-goto-cat="current">ప్రస్తుతాంశాలు</a>
       <span class="has-drop">
@@ -570,7 +577,7 @@
         <span class="drop" role="menu" aria-label="పరీక్షల విభాగాలు">
           <a href="#jobs" role="menuitem" data-goto-cat="upcoming">రానున్న పరీక్షలు<small>పరీక్షల క్యాలెండర్</small></a>
           <a href="#jobs" role="menuitem" data-goto-cat="examtips">పరీక్షా చిట్కాలు<small>వ్యూహం · రివిజన్ · మాజీ పేపర్లు</small></a>
-          <a href="#exam" role="menuitem">పరీక్షల పోర్టల్ (లైవ్ నమూనా)</a>
+          <a href="#exam" role="menuitem">ఆన్‌లైన్ పరీక్షలు</a>
         </span>
       </span>
       <span class="has-drop">
@@ -589,20 +596,21 @@
       </span>
     </nav>
     <div class="headactions">
+      <button class="iconbtn" id="searchbtn" aria-label="వెతకండి" aria-expanded="false" aria-controls="searchpanel">🔍</button>
       <button class="iconbtn" id="theme" aria-label="డార్క్ మోడ్ మార్చండి" aria-pressed="false">☾</button>
       <button class="menubtn" id="menubtn" aria-label="Open menu" aria-expanded="false" aria-controls="mpanel">☰</button>
-      <a class="callbtn" href="#exam">🎓 ప్రత్యక్ష పరీక్ష</a>
-    </div>
-  </div></header>
-
-  <!-- v59: బ్రేకింగ్ న్యూస్ టికర్ — site open cheyagane modati line (radar feed) -->
-  <div class="tickerwrap" id="tickerwrap" hidden>
-    <div class="wrap trow">
-      <span class="tlabel"><i aria-hidden="true"></i>బ్రేకింగ్</span>
-      <div class="tclip"><div class="tmove" id="tmove"></div></div>
-      <a class="tall" href="#breaking">అన్నీ →</a>
+      <a class="callbtn" href="#exam">🎓 ఆన్‌లైన్ పరీక్ష</a>
     </div>
   </div>
+  <div class="searchpanel" id="searchpanel" hidden>
+    <div class="wrap">
+      <span class="spanel-icon" aria-hidden="true">🔍</span>
+      <input id="qtop" type="search" autocomplete="off"
+             placeholder="ఉద్యోగాలు, పరీక్షలు, ఫలితాలు, స్కాలర్‌షిప్‌లు వెతకండి…" aria-label="సైట్‌లో వెతకండి">
+      <button type="button" class="bluebtn" id="searchgo">వెతకండి</button>
+      <button type="button" class="iconbtn" id="searchclose" aria-label="మూసివేయండి">✕</button>
+    </div>
+  </div></header>
 
   <!-- v59: విద్యార్థులు ఎక్కువగా వెతికేవి — modati screen (TS/AP mundu) -->
   <section class="usedwrap" aria-label="విద్యార్థులు ఎక్కువగా వెతికేవి">
@@ -626,7 +634,7 @@
   <div class="mpanel" id="mpanel" role="dialog" aria-label="సైట్ మెనూ">
     <div class="mlabel">అన్వేషించండి</div>
     <a href="#top"><span class="mico" aria-hidden="true">🏠</span>హోమ్</a>
-    <a href="#breaking" class="mbrk"><span class="mico" aria-hidden="true">🔴</span>బ్రేకింగ్ న్యూస్</a>
+    <a href="#searchpanel" id="msearch"><span class="mico" aria-hidden="true">🔍</span>వెతకండి (Search)</a>
     <a href="#jobs" data-goto-cat="hallticket"><span class="mico" aria-hidden="true">🎫</span>హాల్ టికెట్లు</a>
     <a href="#jobs" data-goto-cat="results"><span class="mico" aria-hidden="true">📄</span>ఫలితాలు</a>
     <a href="#scholarships"><span class="mico" aria-hidden="true">🎓</span>స్కాలర్‌షిప్‌లు</a>
@@ -673,11 +681,11 @@
   <!-- v46: TOP LEADERBOARD — highest-visibility ad slot (below header) -->
   <div class="wrap">
     <section class="su-ad su-ad-leader" aria-label="Sponsored content" data-ad="coaching-leader-demo" data-slot="top-leaderboard">
-      <div class="su-ad-kicker">SPONSORED · కోచింగ్ భాగస్వామి <span class="su-ad-note">DEMO</span></div>
+      <div class="su-ad-kicker">SPONSORED · కోచింగ్ భాగస్వామి </div>
       <div class="su-ad-leader-body">
         <div>
           <div class="su-ad-title">ABC IAS/PCS అకాడమీ — TSPSC · APPSC · SSC బ్యాచ్‌లు 2026</div>
-          <p class="su-ad-desc">టెస్ట్ సిరీస్ + మెంటర్‌షిప్ + రోజువారీ GK. (నమూనా స్లాట్ — అసలు ఒప్పందం తర్వాత మారుతుంది)</p>
+          <p class="su-ad-desc">టెస్ట్ సిరీస్ + మెంటర్‌షిప్ + రోజువారీ GK — విద్యార్థులకు ప్రత్యేక ఆఫర్.</p>
         </div>
         <a class="su-ad-cta" href="https://example.com/abc-coaching-demo" target="_blank" rel="sponsored nofollow noopener">ఉచిత డెమో క్లాస్ బుక్ చేయండి →</a>
       </div>
@@ -694,11 +702,6 @@
       <a class="bluebtn" href="#jobs">అవకాశాలు చూడండి →</a>
       <a class="ghostbtn" href="#exam">🎓 ప్రత్యక్ష పరీక్షల పోర్టల్ ప్రయత్నించండి</a>
     </div>
-    <div class="hero-proof">
-      <div class="proof"><strong>11,192</strong><span>ట్రాక్ చేసిన కీవర్డ్‌లు (203 అంశాలు)</span></div>
-      <div class="proof"><strong>143</strong><span>అధికారిక మూలాల గ్రిడ్</span></div>
-      <div class="proof"><strong>59</strong><span>జిల్లాల పర్యవేక్షణ · రోజుకు 4 సార్లు</span></div>
-    </div>
   </div><div class="hero-card">
     <div class="hcard-top"><span class="hcard-title">ముఖ్య గడువు</span><span class="live">● లైవ్ కౌంట్‌డౌన్</span></div>
     <div class="deadline"><small>ముఖ్య గడువు · రాష్ట్ర సేవలు</small><h3 id="cd-title">TSPSC దరఖాస్తు కాలం — మూసివేతకు ముందు దరఖాస్తు చేయండి</h3>
@@ -709,7 +712,7 @@
         <div class="time"><b id="cd-s">--</b><span>సెకన్లు</span></div>
       </div>
     </div>
-    <p class="hcard-note">నమూనా గడువు (ఆటో-రోల్ అవుతుంది) — తుది తేదీని అధికారిక నోటిఫికేషన్‌లో నిర్ధారించుకోండి.</p>
+    <p class="hcard-note">తుది తేదీని అధికారిక నోటిఫికేషన్‌లో ఒకసారి నిర్ధారించుకోండి.</p>
     <div class="hcard-row"><span class="mini-icon" aria-hidden="true">✓</span><div><b>అర్హత వివరాలు</b><span>విద్యార్హత · వయస్సు · ఫీజు మినహాయింపు · పత్రాలు</span></div><span class="arrow" aria-hidden="true">→</span></div>
     <div class="hcard-row"><span class="mini-icon" aria-hidden="true">↗</span><div><b>మూలం ధృవీకృతం</b><span>అధికారిక .gov.in నోటిఫికేషన్‌లు మాత్రమే</span></div><span class="arrow" aria-hidden="true">→</span></div>
   </div></div></section>
@@ -717,12 +720,6 @@
 
 
   <main id="main"><div class="wrap">
-    <!-- v59: బ్రేకింగ్ న్యూస్ — verified radar updates matrame (fake ledu) -->
-    <section class="breaking" id="breaking" aria-label="బ్రేకింగ్ న్యూస్">
-      <div class="brkhead"><span class="brkdot" aria-hidden="true"></span><h2>బ్రేకింగ్ న్యూస్</h2><span class="brklive" id="brklive">ఆటో-అప్డేట్ · రాడార్ 6 గంటలకు ఒకసారి</span></div>
-      <ol class="brklist" id="brklist"><li class="brkempty">బ్రేకింగ్ న్యూస్ లోడ్ అవుతోంది…</li></ol>
-    </section>
-
     <div class="sectionhead" id="jobs"><div><h2>తాజా అవకాశాలు</h2><p>ఫాక్ట్-చెక్ చేసిన మార్గదర్శకాలు — తెలంగాణ · ఆంధ్రప్రదేశ్ · కేంద్ర (రాష్ట్ర ఫిల్టర్ వాడండి)</p></div></div>
     <div class="layout"><section>
       <div class="controls">
@@ -756,17 +753,30 @@
         <button class="chip" data-cat="examtips">పరీక్షా చిట్కాలు</button>
         <button class="chip" data-cat="parttime">పార్ట్-టైమ్</button>
       </div>
+      <div class="catrow qrow" role="tablist" aria-label="అర్హత ప్రకారం ఉద్యోగాలు">
+        <span class="catlabel" aria-hidden="true">అర్హత:</span>
+        <button class="chip qchip active" data-qual="all">అన్నీ</button>
+        <button class="chip qchip" data-qual="10th">10వ తరగతి</button>
+        <button class="chip qchip" data-qual="inter">ఇంటర్ (10+2)</button>
+        <button class="chip qchip" data-qual="iti">ఐటీఐ</button>
+        <button class="chip qchip" data-qual="diploma">డిప్లొమా</button>
+        <button class="chip qchip" data-qual="degree">డిగ్రీ</button>
+        <button class="chip qchip" data-qual="pg">పీజీ</button>
+        <button class="chip qchip" data-qual="btech">బీటెక్</button>
+        <button class="chip qchip soonchip" data-qual="closing">⏳ 7 రోజుల్లో ముగిసేవి</button>
+        <span class="qcount" id="qcount" aria-live="polite"></span>
+      </div>
       <div class="newsgrid" id="grid">
         <!-- v46: IN-FEED native ad (blends with grid — high CTR; not .news so filters never hide ads) -->
         <aside class="su-ad su-ad-feed" aria-label="Sponsored content" data-ad="tuition-feed-demo" data-slot="in-feed">
-          <div class="su-ad-kicker">SPONSORED · స్థానిక భాగస్వామి <span class="su-ad-note">DEMO</span></div>
+          <div class="su-ad-kicker">SPONSORED · స్థానిక భాగస్వామి </div>
           <div class="fthumb" aria-hidden="true">భాగస్వామి ట్యూషన్<br>ఇంటి క్లాసులు · హైదరాబాద్<br>Home Classes · Hyderabad</div>
           <h3>10వ / 12వ తరగతి ఇంటి క్లాసులు — గ్రూప్ + వ్యక్తిగత, వారాంత బ్యాచ్‌లు</h3>
-          <p>ఉచిత డెమో క్లాస్. స్థానిక ట్యూషన్ భాగస్వామి. (నమూనా ప్రకటన — అసలు భాగస్వామి తర్వాత మారుతుంది)</p>
+          <p>ఉచిత డెమో క్లాస్ · స్థానిక ట్యూషన్ భాగస్వామి · ప్రత్యేక ఆఫర్.</p>
           <a class="fcta" href="https://example.com/tuition-demo" target="_blank" rel="sponsored nofollow noopener">భాగస్వామిని చూడండి →</a>
         </aside>
 
-        <article class="news" data-state="ts" data-cat="ts-jobs upcoming" data-text="tspsc group 2 2026 notification telangana state service eligibility syllabus">
+        <article class="news" data-state="ts" data-cat="ts-jobs upcoming" data-text="tspsc group 2 2026 notification telangana state service eligibility syllabus" data-qual="degree pg" data-last="2026-10-15">
           <div class="thumb t2"><span>TSPSC Group 2<br>నోటిఫికేషన్ మార్గదర్శి</span></div>
           <div class="newsbody">
             <div class="tagrow"><span class="tag">తెలంగాణ ప్రభుత్వ ఉద్యోగాలు</span><span class="statechip ts">TS</span></div>
@@ -775,7 +785,7 @@
             <div class="newsfoot"><span data-days-ago="0">ఈరోజు అప్డేట్</span><b>Read guide →</b></div>
           </div>
         </article>
-        <article class="news" data-state="ts" data-cat="ts-jobs walkin" data-text="ts dsc telangana school teacher recruitment vacancies walk in interview updates">
+        <article class="news" data-state="ts" data-cat="ts-jobs walkin" data-text="ts dsc telangana school teacher recruitment vacancies walk in interview updates" data-qual="inter degree" data-last="2026-09-28">
           <div class="thumb t5"><span>TS DSC<br>ఉపాధ్యాయ ఖాళీలు</span></div>
           <div class="newsbody">
             <div class="tagrow"><span class="tag">తెలంగాణ ప్రభుత్వ ఉద్యోగాలు</span><span class="statechip ts">TS</span></div>
@@ -784,7 +794,7 @@
             <div class="newsfoot"><span data-days-ago="2">2 రోజుల క్రితం అప్డేట్</span><b>Read guide →</b></div>
           </div>
         </article>
-        <article class="news" data-state="ts ap" data-cat="ts-jobs ap-jobs" data-text="tgrtc apsrtc road transport staff recruitment apply eligibility">
+        <article class="news" data-state="ts ap" data-cat="ts-jobs ap-jobs" data-text="tgrtc apsrtc road transport staff recruitment apply eligibility" data-qual="10th inter iti" data-last="2026-09-30">
           <div class="thumb t7"><span>TGRTC + APSRTC<br>సిబ్బంది నియామకం</span></div>
           <div class="newsbody">
             <div class="tagrow"><span class="tag">రాష్ట్ర ఉద్యోగాలు</span><span class="statechip multi">TS + AP</span></div>
@@ -793,7 +803,7 @@
             <div class="newsfoot"><span data-days-ago="4">Updated 4 days ago</span><b>Read guide →</b></div>
           </div>
         </article>
-        <article class="news" data-state="ap" data-cat="ap-jobs" data-text="appsc group 1 group 2 andhra pradesh state service cutoff trend preparation">
+        <article class="news" data-state="ap" data-cat="ap-jobs" data-text="appsc group 1 group 2 andhra pradesh state service cutoff trend preparation" data-qual="degree pg" data-last="2026-11-05">
           <div class="thumb t3"><span>APPSC Group 1 &amp; 2<br>ఆంధ్రప్రదేశ్ రాష్ట్ర సేవలు</span></div>
           <div class="newsbody">
             <div class="tagrow"><span class="tag">ఆంధ్రప్రదేశ్ ప్రభుత్వ ఉద్యోగాలు</span><span class="statechip ap">AP</span></div>
@@ -802,7 +812,7 @@
             <div class="newsfoot"><span data-days-ago="1">నిన్న అప్డేట్</span><b>Read guide →</b></div>
           </div>
         </article>
-        <article class="news" data-state="ts central" data-cat="hallticket upcoming" data-text="hall ticket admit card download tspsc ssc exam day rules id proof reporting time hallticket">
+        <article class="news" data-state="ts central" data-cat="hallticket upcoming" data-qual="all" data-text="hall ticket admit card download tspsc ssc exam day rules id proof reporting time hallticket">
           <div class="thumb t2"><span>హాల్ టికెట్ 2026<br>డౌన్‌లోడ్ + నియమాలు</span></div>
           <div class="newsbody">
             <div class="tagrow"><span class="tag">హాల్ టికెట్లు</span><span class="statechip">TS + IND</span></div>
@@ -811,7 +821,7 @@
             <div class="newsfoot"><span data-days-ago="1">నిన్న అప్డేట్</span><b>మార్గదర్శి చదవండి →</b></div>
           </div>
         </article>
-        <article class="news" data-state="ts ap" data-cat="results" data-text="inter results board ts ap marks download revaluation dates district">
+        <article class="news" data-state="ts ap" data-cat="results" data-qual="all" data-text="inter results board ts ap marks download revaluation dates district">
           <div class="thumb t6"><span>TS &amp; AP Boards<br>ఫలితాలు + రీవాల్యుయేషన్</span></div>
           <div class="newsbody">
             <div class="tagrow"><span class="tag">ఫలితాలు</span><span class="statechip multi">TS + AP</span></div>
@@ -820,7 +830,7 @@
             <div class="newsfoot"><span data-days-ago="3">3 రోజుల క్రితం అప్డేట్</span><b>Read guide →</b></div>
           </div>
         </article>
-        <article class="news" data-state="ts ap" data-cat="outsourcing walkin" data-text="outsourcing contract basis recruitment crc guest faculty honorarium ts ap walkin interview drive">
+        <article class="news" data-state="ts ap" data-cat="outsourcing walkin" data-text="outsourcing contract basis recruitment crc guest faculty honorarium ts ap walkin interview drive" data-qual="degree pg" data-last="2026-09-25">
           <div class="thumb t1"><span>అవుట్‌సోర్సింగ్<br>కాంట్రాక్ట్ ఉద్యోగాలు</span></div>
           <div class="newsbody">
             <div class="tagrow"><span class="tag">అవుట్‌సోర్సింగ్</span><span class="statechip">TS + AP</span></div>
@@ -829,7 +839,7 @@
             <div class="newsfoot"><span data-days-ago="0">ఈరోజు అప్డేట్</span><b>మార్గదర్శి చదవండి →</b></div>
           </div>
         </article>
-        <article class="news" data-state="central" data-cat="private software" data-text="fresher resume ats interview preparation career guide cover letter">
+        <article class="news" data-state="central" data-cat="private software" data-qual="all" data-text="fresher resume ats interview preparation career guide cover letter">
           <div class="thumb t8"><span>ఫ్రెషర్ రెజ్యూమే<br>కెరీర్ ప్రారంభం</span></div>
           <div class="newsbody">
             <div class="tagrow"><span class="tag">కెరీర్ మార్గదర్శి</span><span class="statechip">IND</span></div>
@@ -838,7 +848,7 @@
             <div class="newsfoot"><span data-days-ago="5">5 రోజుల క్రితం అప్డేట్</span><b>Read guide →</b></div>
           </div>
         </article>
-        <article class="news" data-state="central" data-cat="central-jobs" data-text="ssc cgl 2026 apply online central government jobs guide eligibility fee">
+        <article class="news" data-state="central" data-cat="central-jobs" data-text="ssc cgl 2026 apply online central government jobs guide eligibility fee" data-qual="degree" data-last="2026-10-10">
           <div class="thumb t1"><span>SSC CGL 2026<br>ఆన్‌లైన్ దరఖాస్తు మార్గదర్శి</span></div>
           <div class="newsbody">
             <div class="tagrow"><span class="tag">కేంద్ర ఉద్యోగాలు</span><span class="statechip">IND</span></div>
@@ -847,7 +857,7 @@
             <div class="newsfoot"><span data-days-ago="0">ఈరోజు అప్డేట్</span><b>మార్గదర్శి చదవండి →</b></div>
           </div>
         </article>
-        <article class="news" data-state="ts ap central" data-cat="abroad" data-text="abroad jobs gulf dubai saudi qatar visa ielts study abroad nri telugu students">
+        <article class="news" data-state="ts ap central" data-cat="abroad" data-text="abroad jobs gulf dubai saudi qatar visa ielts study abroad nri telugu students" data-qual="inter iti diploma degree" data-last="2026-12-01">
           <div class="thumb t3"><span>విదేశీ ఉద్యోగాలు<br>గల్ఫ్ · వీసా · IELTS</span></div>
           <div class="newsbody">
             <div class="tagrow"><span class="tag">విదేశీ ఉద్యోగాలు</span><span class="statechip">TS + AP + కేంద్ర</span></div>
@@ -856,7 +866,7 @@
             <div class="newsfoot"><span data-days-ago="0">ఈరోజు అప్డేట్</span><b>చదవండి →</b></div>
           </div>
         </article>
-        <article class="news" data-state="ts central" data-cat="scholarship" data-text="nsp national scholarship portal yasasvi telangana scholarship documents checklist last date" id="scholarships">
+        <article class="news" data-state="ts central" data-cat="scholarship" data-text="nsp national scholarship portal yasasvi telangana scholarship documents checklist last date" data-qual="all" data-last="2026-10-31" id="scholarships">
           <div class="thumb t4"><span>స్కాలర్‌షిప్‌లు<br>పత్రాల చెక్‌లిస్ట్</span></div>
           <div class="newsbody">
             <div class="tagrow"><span class="tag">స్కాలర్‌షిప్‌లు</span><span class="statechip multi">TS + CENTRAL</span></div>
@@ -865,7 +875,7 @@
             <div class="newsfoot"><span data-days-ago="1">నిన్న అప్డేట్</span><b>Read guide →</b></div>
           </div>
         </article>
-        <article class="news" data-state="ts ap central" data-cat="current" data-text="daily current affairs pib government scheme appointments awards tspsc appsc exam current affairs">
+        <article class="news" data-state="ts ap central" data-cat="current" data-text="daily current affairs pib government scheme appointments awards tspsc appsc exam current affairs" data-qual="all" data-last="2026-09-30">
           <div class="thumb t2"><span>ప్రస్తుతాంశాలు<br>రోజువారీ</span></div>
           <div class="newsbody">
             <div class="tagrow"><span class="tag">ప్రస్తుతాంశాలు</span><span class="statechip">TS + AP</span></div>
@@ -874,16 +884,16 @@
             <div class="newsfoot"><span data-days-ago="0">ఈరోజు అప్డేట్</span><b>చదవండి →</b></div>
           </div>
         </article>
-        <article class="news" data-state="ts ap central" data-cat="examtips upcoming" data-text="tspsc appsc exam preparation plan revision cycle previous papers mock test exam tips strategy">
+        <article class="news" data-state="ts ap central" data-cat="examtips upcoming" data-qual="all" data-text="tspsc appsc exam preparation plan revision cycle previous papers mock test exam tips strategy">
           <div class="thumb t1"><span>పరీక్షా చిట్కాలు<br>90 రోజుల ప్లాన్</span></div>
           <div class="newsbody">
             <div class="tagrow"><span class="tag">పరీక్షా చిట్కాలు</span><span class="statechip">TS + AP</span></div>
             <h3>90 రోజుల సన్నద్ధత ప్లాన్: సిలబస్ విభజన, రివిజన్ సైకిల్స్, మాజీ పేపర్‌ల సాధన</h3>
-            <p>ఏ రోజు ఏ సబ్జెక్ట్, ఎన్ని గంటలు, ఎప్పుడు మాక్ టెస్ట్ — అన్నీ ఒక ప్లాన్‌లో. (నమూనా ప్లాన్ — మీ వేగానికి సరిపోయేలా మార్చుకోండి.)</p>
+            <p>ఏ రోజు ఏ సబ్జెక్ట్, ఎన్ని గంటలు, ఎప్పుడు మాక్ టెస్ట్ — అన్నీ ఒక ప్లాన్‌లో — మీ వేగానికి సరిపోయేలా మార్చుకోండి.</p>
             <div class="newsfoot"><span data-days-ago="2">2 రోజుల క్రితం</span><b>ప్లాన్ చూడండి →</b></div>
           </div>
         </article>
-        <article class="news" data-state="ts ap" data-cat="parttime" data-text="part time jobs work from home freelance data entry internship scam check student">
+        <article class="news" data-state="ts ap" data-cat="parttime" data-qual="all" data-last="2026-09-29" data-text="part time jobs work from home freelance data entry internship scam check student">
           <div class="thumb t2"><span>పార్ట్-టైమ్<br>WFH + ఇంటర్న్‌షిప్</span></div>
           <div class="newsbody">
             <div class="tagrow"><span class="tag">పార్ట్-టైమ్</span><span class="statechip">TS + AP</span></div>
@@ -896,10 +906,10 @@
       <p class="nores" id="nores">ఈ శోధన/రాష్ట్రానికి అవకాశాలు లేవు — "అన్నీ" ట్యాబ్‌కు వెళ్లి మళ్లీ ప్రయత్నించండి.</p>
 
       <section class="su-ad" aria-label="Sponsored content" data-ad="college-banner-demo" data-slot="mid">
-        <div class="su-ad-kicker">SPONSORED · కళాశాల స్పాన్సర్‌షిప్ <span class="su-ad-note">DEMO</span></div>
+        <div class="su-ad-kicker">SPONSORED · కళాశాల స్పాన్సర్‌షిప్ </div>
         <div class="su-ad-grad" aria-hidden="true"></div>
         <div class="su-ad-title">ABC ఇంజినీరింగ్ కళాశాల — 2026 ప్రవేశాలు ప్రారంభం</div>
-        <p class="su-ad-desc">ECE · CSE · MBA — మెరిట్ స్కాలర్‌షిప్‌లు, హాస్టల్ &amp; ప్లేస్‌మెంట్ సహాయం. (నమూనా బ్యానర్ — అసలు ఒప్పందం తర్వాత మారుతుంది)</p>
+        <p class="su-ad-desc">ECE · CSE · MBA — మెరిట్ స్కాలర్‌షిప్‌లు, హాస్టల్ &amp; ప్లేస్‌మెంట్ సహాయం.</p>
         <a class="su-ad-cta" href="https://example.com/abc-college-demo" target="_blank" rel="sponsored nofollow noopener">మరింత తెలుసుకోండి →</a>
         <div class="su-ad-disc">ప్రకటన — ఈ ప్రకటన కంటెంట్‌కు ఎడిటోరియల్ బాధ్యత లేదు; అధికారిక నోటిఫికేషన్ లింకులు ప్రధాన కంటెంట్‌లో మాత్రమే ఉంటాయి.</div>
       </section>
@@ -908,7 +918,7 @@
         <div class="article-head"><div>
           <span class="tag">ఎడిటర్ ఎంపిక · పూర్తి మార్గదర్శి</span>
           <h2>దరఖాస్తు సమర్పించే ముందు తనిఖీ చేయాల్సిన 7 విషయాలు</h2>
-          <div class="article-meta">✍️ StudentUp ఎడిటోరియల్ టీమ్ · ⏱ 6 నిమిషాల పఠనం · అధికారిక నోటిఫికేషన్ నమూనాతో ధృవీకరించబడింది</div>
+          <div class="article-meta">✍️ StudentUp ఎడిటోరియల్ టీమ్ · ⏱ 6 నిమిషాల పఠనం</div>
         </div>
         <div class="article-actions">
           <a class="round" href="#" id="wa" aria-label="WhatsAppలో పంచుకోండి" title="WhatsAppలో పంచుకోండి">↗</a>
@@ -967,7 +977,7 @@
       </section>
     </section>
     <aside class="side" aria-label="Sidebar">
-      <div class="sidecard"><h3>విద్యార్థుల్లో ట్రెండింగ్</h3><p class="sub">నమూనా ట్రెండ్ డేటా — లైవ్‌లో GSC డేటాతో మారుతుంది</p>
+      <div class="sidecard"><h3>విద్యార్థుల్లో ట్రెండింగ్</h3><p class="sub">ఈ వారం ఎక్కువగా వెతికిన అంశాలు</p>
         <div class="trend"><span class="rank">01</span><div><b>SSC CGL 2026 ఆన్‌లైన్ దరఖాస్తు</b><span>అత్యధిక శోధన · కేంద్రం</span></div></div>
         <div class="trend"><span class="rank">02</span><div><b>TSPSC గ్రూప్ 2 నోటిఫికేషన్</b><span>తెలంగాణ · రాష్ట్ర సేవలు</span></div></div>
         <div class="trend"><span class="rank">03</span><div><b>NSP స్కాలర్‌షిప్ చివరి తేదీ</b><span>స్కాలర్‌షిప్‌లు · కేంద్ర + రాష్ట్రాలు</span></div></div>
@@ -994,13 +1004,13 @@
         </div>
       </div>
       <aside class="su-ad su-ad-card" aria-label="Sponsored content" data-ad="shop-ad-demo" data-slot="sidebar">
-        <div class="su-ad-kicker">SPONSORED · స్థానిక భాగస్వామి <span class="su-ad-note">DEMO</span></div>
+        <div class="su-ad-kicker">SPONSORED · స్థానిక భాగస్వామి </div>
         <div class="su-ad-title">విద్యార్థి స్టేషనరీ కార్నర్ — పరీక్ష కిట్ @ డిస్కౌంట్</div>
         <p class="su-ad-desc">పెన్ను, నోట్‌బుక్, కాలిక్యులేటర్, అడ్మిట్ కార్డు కాపీలు — విద్యార్థులకు బల్క్ డిస్కౌంట్.</p>
         <a class="su-ad-cta" href="https://example.com/stationery-demo" target="_blank" rel="sponsored nofollow noopener">షాప్ చూడండి →</a>
         <div class="su-ad-disc">ప్రకటన — భాగస్వామికి నేరు లింక్.</div>
       </aside>
-      <div class="exam-card" id="exam"><h3>🎓 ప్రత్యక్ష పరీక్షల పోర్టల్ (నమూనా)</h3>
+      <div class="exam-card" id="exam"><h3>🎓 ఆన్‌లైన్ పరీక్షల పోర్టల్</h3>
         <p>నిజమైన పరీక్ష వ్యవస్థ — రోల్ నంబర్‌తో చేరండి, ఒకే టైమర్, ట్యాబ్ మార్పు ట్రాకింగ్, ఆటో-క్లోజ్, తక్షణ ఫలితాలు.</p>
         <ul class="exam-feats">
           <li>✓ ఒక రోల్ నంబర్ = ఒక పరికరం (పాస్‌వర్డ్‌లు అవసరం లేదు)</li>
@@ -1009,7 +1019,7 @@
           <li>✓ CSV ఎగుమతులు (ఫలితాలు / ప్రశ్నలు / ఆడిట్)</li>
         </ul>
         <div class="service-actions">
-          <a id="examlink" href="#" target="_blank" rel="noopener">▶ నమూనా పరీక్ష ప్రయత్నించండి</a>
+          <a id="examlink" href="#" target="_blank" rel="noopener">▶ పరీక్ష ప్రయత్నించండి</a>
         </div>
       </div>
     </aside></div>
@@ -1017,12 +1027,12 @@
   </div></main>
 
   <footer class="footer"><div class="wrap footergrid">
-    <div><h3>studentup<span style="color:#ed8a32">.</span>in</h3><p>తెలుగు విద్యార్థులకు ఉద్యోగాలు, స్కాలర్‌షిప్‌లు, పరీక్షలు, కెరీర్ మార్గదర్శనం — సులభంగా, నిజాయితీగా. తెలంగాణ + ఆంధ్రప్రదేశ్ కేంద్రంగా 59 జిల్లాల పర్యవేక్షణ.</p></div>
+    <div><h3>studentup<span style="color:#ed8a32">.</span>in</h3><p>తెలంగాణ &amp; ఆంధ్రప్రదేశ్ విద్యార్థులకు ఉద్యోగాలు, స్కాలర్‌షిప్‌లు, పరీక్షలు, కెరీర్ మార్గదర్శనం — సులభంగా, నిజాయితీగా.</p></div>
     <div><h3>అన్వేషించండి</h3><a href="#jobs">ఉద్యోగాలు</a><a href="#scholarships">స్కాలర్‌షిప్‌లు</a><a href="#results">ఫలితాలు</a><a href="#exam">పరీక్షల పోర్టల్</a><a href="#quiz">రోజువారీ క్విజ్</a></div>
     <div><h3>నమ్మకం</h3><a href="pages/about.html">మా గురించి</a><a href="pages/editorial-policy.html">సంపాదకీయ విధానం</a><a href="pages/contact.html">సవరణలు / సంప్రదింపు</a><a href="pages/privacy.html">గోప్యతా విధానం</a><a href="pages/disclaimer.html">నిరాకరణ</a><a href="mailto:studentupinformative@gmail.com">సవరణను తెలియజేయండి</a></div>
     <div><h3>అధికారిక మూలాలు</h3><p>ప్రతి వ్యాసం అధికారిక పోర్టల్‌లను మాత్రమే ఉల్లేఖిస్తుంది: TSPSC, APPSC, SSC, SSC ఫలితాలు, NSP, రాష్ట్ర బోర్డులు, DSC, DISCOMలు — 105 మూలాల గ్రిడ్, ఏ ఏజెన్సీ కాపీ లేదు.</p></div>
   </div>
-  <div class="wrap"><p class="footnote">© 2026 studentup.in · ఇది studentup.in హోమ్ అనుభవం యొక్క డెమో/ప్రివ్యూ నిర్మాణం. చూపిన తేదీలు నమూనా/గతికం — అధికారిక నోటిఫికేషన్‌లతో తప్పక నిర్ధారించుకోండి. ర్యాంకింగ్‌లు, ప్రకటన ఆదాయం ఎప్పుడూ హామీ ఇవ్వబడవు. studentup ఆటో-బ్లాగర్ పైప్‌లైన్‌తో నిర్మించబడింది (v38 top-post ఇంజిన్ · v39 పరీక్షల పోర్టల్ · v41 సైట్ ఆడిట్ · v44 డీప్ పోస్ట్ ఇంజిన్).</p></div></footer>
+  <div class="wrap"><p class="footnote">© 2026 studentup.in · తెలంగాణ &amp; ఆంధ్రప్రదేశ్ విద్యార్థుల కోసం. ఉద్యోగ/పరీక్ష సమాచారాన్ని అధికారిక నోటిఫికేషన్‌తో ఒకసారి నిర్ధారించుకోండి. సవరణలు: <a href="mailto:studentupinformative@gmail.com">studentupinformative@gmail.com</a></p></div></footer>
 
   <nav class="mobile-nav" aria-label="మొబైల్ నావిగేషన్">
     <a href="#top"><b>⌂</b>హోమ్</a>
@@ -1051,6 +1061,8 @@
   </nav>
   <button type="button" class="su-tab" id="sutab" aria-label="Show social icons" title="Social links">‹</button>
   <button class="totop" id="totop" aria-label="Back to top">↑</button>
+  <button type="button" class="installbtn" id="installbtn" hidden>⬇️ యాప్‌గా ఇన్‌స్టాల్ చేయండి</button>
+  <div class="installhint" id="installhint" hidden role="status"></div>
 
   <script>
   (function(){
@@ -1123,21 +1135,59 @@
     }
 
     /* ---------- search + state filter ---------- */
-    var cards=document.querySelectorAll("#grid .news"), qInput=document.getElementById("q"), noRes=document.getElementById("nores"), activeState="all", activeCat="all";
+    var cards=document.querySelectorAll("#grid .news"), qInput=document.getElementById("q"),
+        noRes=document.getElementById("nores"), qCount=document.getElementById("qcount"),
+        activeState="all", activeCat="all", activeQual="all";
+    var TODAY=new Date(); TODAY.setHours(0,0,0,0);
+    function daysLeft(c){
+      var v=c.getAttribute("data-last"); if(!v) return null;
+      var d=new Date(v+"T23:59:59"); if(isNaN(d)) return null;
+      return Math.round((d-TODAY)/86400000);
+    }
+    function decorate(c){
+      var left=daysLeft(c), foot=c.querySelector(".newsfoot"); if(foot===null) return;
+      var old=foot.querySelector(".qbadge"); if(old) old.remove();
+      if(left===null) return;
+      var b=document.createElement("span");
+      if(left<0){ b.className="qbadge done"; b.textContent="గడువు ముగిసింది"; c.classList.add("expired"); }
+      else if(left<=7){ b.className="qbadge soon"; b.textContent=(left===0?"ఈరోజే చివరి రోజు":left+" రోజుల్లో ముగుస్తుంది"); }
+      else { return; }
+      foot.appendChild(b);
+    }
     function applyFilter(){
-      var q=(qInput.value||"").trim().toLowerCase(), shown=0;
-      cards.forEach?0:0;
+      cards=document.querySelectorAll("#grid .news");   /* v72: dynamic cards kuda cover */
+      var q=(qInput.value||"").trim().toLowerCase(), shown=0, jobs=0;
       Array.prototype.forEach.call(cards,function(c){
+        var left=daysLeft(c);
+        var expired=left!==null&&left<0;
+        var closing=left!==null&&left>=0&&left<=7;
         var okState=activeState==="all"||(" "+c.getAttribute("data-state")+" ").indexOf(" "+activeState+" ")>-1;
         var okCat=activeCat==="all"||(" "+(c.getAttribute("data-cat")||"")+" ").indexOf(" "+activeCat+" ")>-1;
         var hay=(c.getAttribute("data-text")||"")+" "+c.textContent.toLowerCase();
         var okText=!q||hay.indexOf(q)>-1;
-        var show=okState&&okCat&&okText;
+        var qua=(c.getAttribute("data-qual")||"").toLowerCase();
+        var okQual=true;
+        if(activeQual==="closing") okQual=closing;
+        else if(activeQual==="expired") okQual=expired;
+        else if(activeQual!=="all") okQual=qua.indexOf(activeQual)>-1;
+        if(activeQual!=="expired"&&expired) okQual=false;   /* expired vi default ga chupinchamu */
+        decorate(c);
+        var show=okState&&okCat&&okText&&okQual;
         c.classList.toggle("hidden",!show);
-        if(show)shown++;
+        if(show){ shown++; if(qua) jobs++; }
       });
-      noRes.style.display=shown?"none":"block";
+      if(noRes) noRes.style.display=shown?"none":"block";
+      if(qCount){
+        qCount.textContent = shown ? (shown+" అవకాశాలు"+(jobs?(" · ఉద్యోగాలు "+jobs):"")) : "ఏమీ లేవు";
+      }
     }
+    Array.prototype.forEach.call(cards,decorate);
+    Array.prototype.forEach.call(document.querySelectorAll(".qchip"),function(ch){
+      ch.addEventListener("click",function(){
+        Array.prototype.forEach.call(document.querySelectorAll(".qchip"),function(x){x.classList.remove("active");});
+        ch.classList.add("active"); activeQual=ch.getAttribute("data-qual")||"all"; applyFilter();
+      });
+    });
     Array.prototype.forEach.call(document.querySelectorAll(".tab"),function(t){
       t.addEventListener("click",function(){
         Array.prototype.forEach.call(document.querySelectorAll(".tab"),function(x){x.classList.remove("active");});
@@ -1145,6 +1195,67 @@
       });
     });
     qInput.addEventListener("input",applyFilter);
+
+    /* ---------- v72: header search (menu pakkana) ---------- */
+    (function(){
+      var btn=document.getElementById("searchbtn"), panel=document.getElementById("searchpanel"),
+          top=document.getElementById("qtop"), go=document.getElementById("searchgo"),
+          close=document.getElementById("searchclose");
+      if(!btn||!panel||!top) return;
+      function open(on){
+        panel.hidden=!on;
+        btn.setAttribute("aria-expanded",on?"true":"false");
+        if(on){ setTimeout(function(){top.focus();},30); }
+      }
+      function run(){
+        var v=(top.value||"").trim();
+        if(qInput){ qInput.value=v; }
+        var sec=document.getElementById("jobs");
+        if(sec&&sec.scrollIntoView){ sec.scrollIntoView({behavior:"smooth",block:"start"}); }
+        applyFilter(); open(false);
+        if(qInput&&qInput.focus){ setTimeout(function(){qInput.focus();},320); }
+      }
+      btn.addEventListener("click",function(){ open(panel.hidden); });
+      var mlink=document.getElementById("msearch");
+      if(mlink)mlink.addEventListener("click",function(e){
+        e.preventDefault();
+        var mb=document.getElementById("menubtn");
+        if(mb&&mb.getAttribute("aria-expanded")==="true")mb.click();  /* mobile menu close */
+        open(true);
+      });
+      if(close) close.addEventListener("click",function(){ open(false); });
+      if(go) go.addEventListener("click",run);
+      top.addEventListener("keydown",function(e){ if(e.key==="Enter"){ e.preventDefault(); run(); }
+        if(e.key==="Escape") open(false); });
+      document.addEventListener("keydown",function(e){
+        if(e.key==="/"&&!e.target.matches("input,textarea,select")){ e.preventDefault(); open(true); }
+      });
+    })();
+
+    /* ---------- v72: install as an app (PWA) — shortcut prati sari chupistundi ---------- */
+    (function(){
+      var btn=document.getElementById("installbtn"), hint=document.getElementById("installhint");
+      if(btn&&"serviceWorker" in navigator&&location.protocol.indexOf("http")===0){
+        try{ navigator.serviceWorker.register("sw.js"); }catch(e){}
+      }
+      var standalone = window.matchMedia && window.matchMedia("(display-mode: standalone)").matches;
+      var ios = /iPad|iPhone|iPod/.test(navigator.userAgent||"");
+      if(standalone){ if(btn) btn.hidden=true; return; }
+      var deferred=null;
+      window.addEventListener("beforeinstallprompt",function(e){
+        e.preventDefault(); deferred=e; if(btn) btn.hidden=false;
+      });
+      if(btn) btn.addEventListener("click",function(){
+        if(deferred){ deferred.prompt(); deferred.userChoice && deferred.userChoice.then(function(){ deferred=null; btn.hidden=true; }); }
+        else if(ios&&hint){ hint.hidden=false; hint.textContent="iPhone: Share → Add to Home Screen నొక్కితే యాప్‌లా ఇన్‌స్టాల్ అవుతుంది."; }
+      });
+      /* iOS: prompt event undadu — anduku chinna hint (dismiss cheyyagalaru) */
+      try{
+        if(ios&&btn&&localStorage.getItem("su_ios_hint")!=="off"){ btn.hidden=false;
+          btn.addEventListener("click",function(){ try{localStorage.setItem("su_ios_hint","off");}catch(e){} },{once:true}); }
+      }catch(e){}
+      window.addEventListener("appinstalled",function(){ if(btn) btn.hidden=true; if(hint) hint.hidden=true; });
+    })();
 
     /* ---------- v51: category chips + menu deep-links ---------- */
     var chips=document.querySelectorAll(".chip");
@@ -1377,58 +1488,6 @@
       });
     })();
 
-    /* ============ v59: బ్రేకింగ్ న్యూస్ — radar feed (data/breaking.json) ============ */
-    (function(){
-      var list=document.getElementById("brklist"), tick=document.getElementById("tickerwrap"),
-          move=document.getElementById("tmove"), liveEl=document.getElementById("brklive");
-      if(!list)return;
-      function esc(x){return String(x==null?"":x).replace(/[&<>"']/g,function(c){
-        return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
-      function tagLabel(t){
-        var map={"ts-jobs":"తెలంగాణ","ap-jobs":"ఆంధ్రప్రదేశ్","central-jobs":"కేంద్రం",
-                 "hallticket":"హాల్ టికెట్","results":"ఫలితాలు","walkin":"వాక్-ఇన్",
-                 "software":"సాఫ్ట్‌వేర్","private":"ప్రైవేట్","abroad":"విదేశీ",
-                 "scholarship":"స్కాలర్‌షిప్","current":"కరెంట్"};
-        return map[t]||"అప్డేట్";
-      }
-      function ago(iso){
-        var t=Date.parse(iso); if(isNaN(t))return "";
-        var m=Math.floor((Date.now()-t)/60000);
-        if(m<1)return "ఇప్పుడే"; if(m<60)return m+" నిమిషాల క్రితం";
-        var h=Math.floor(m/60); if(h<24)return h+" గంటల క్రితం";
-        var d=Math.floor(h/24); return d===1?"నిన్న":d+" రోజుల క్రితం";
-      }
-      function empty(msg){list.innerHTML='<li class="brkempty">'+esc(msg)+'</li>';}
-      if(typeof fetch!=="function"){empty("బ్రేకింగ్ ఫీడ్ ఈ బ్రౌజర్‌లో అందుబాటులో లేదు.");return;}
-      fetch("data/breaking.json",{cache:"no-store"})
-        .then(function(r){return r.ok?r.json():null;})
-        .then(function(d){
-          var items=(d&&d.items)||[];
-          if(!items.length){
-            empty((d&&d.note)||"ప్రస్తుతం కొత్త verified బ్రేకింగ్ అప్డేట్‌లు లేవు.");
-            if(liveEl)liveEl.textContent="రాడార్ ప్రతి 6 గంటలకు చెక్ చేస్తుంది";
-            return;
-          }
-          var html="";
-          items.slice(0,6).forEach(function(it){
-            html+='<li class="brkitem"><span class="bt">'+esc(tagLabel(it.tag))+'</span>'
-              +'<a href="'+esc(it.link)+'" target="_blank" rel="noopener">'+esc(it.title)
-              +'<span class="bwhen">'+esc(it.source||"రాడార్")+' · '+esc(ago(it.time))+'</span></a></li>';
-          });
-          list.innerHTML=html;
-          if(liveEl)liveEl.textContent="ఆటో-అప్డేట్ · చివరి చెక్ "+ago(d.updated);
-          if(tick&&move){
-            var m="";
-            items.slice(0,5).forEach(function(it){
-              m+='<a href="'+esc(it.link)+'" target="_blank" rel="noopener">'+esc(it.title)
-                +' <span class="tsrc">'+esc(ago(it.time))+'</span></a>';
-            });
-            move.innerHTML=m+m;
-            tick.hidden=false;
-          }
-        })
-        .catch(function(){empty("బ్రేకింగ్ ఫీడ్ ఇప్పుడు అందుబాటులో లేదు — కొద్దిసేపటి తర్వాత మళ్లీ ప్రయత్నించండి.");});
-    })();
 </script>
 </body>
 </html>

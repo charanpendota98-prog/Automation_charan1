@@ -38,13 +38,13 @@ ROOT = Path(__file__).resolve().parent.parent
 PREVIEW = ROOT / "preview"
 STATE_FILE = ROOT / "logs" / "guardian.json"
 
-# Tile regexes — site (preview/index.html) nunchi live numbers teesukuntayi
+# v72: modati screen blocks — ticker/బ్రేకింగ్ teesesaam, badulu search + అర్హత ఫిల్టర్ + install
 UI_BLOCKS = [
-    ('id="tickerwrap"', "బ్రేకింగ్ టికర్"),
     ('class="usedwrap"', "విద్యార్థులు ఎక్కువగా వెతికేవి"),
-    ('id="brklist"', "బ్రేకింగ్ న్యూస్ section"),
-    ("fetch(\"data/breaking.json\"", "feed fetch"),
-    ('class="navbrk"', "menu బ్రేకింగ్ లింక్"),
+    ('id="searchbtn"', "menu pakkana search button"),
+    ('id="searchpanel"', "search panel"),
+    ('data-qual="10th"', "అర్హత ఫిల్టర్ chip (10వ తరగతి)"),
+    ('id="installbtn"', "యాప్గా ఇన్స్టాల్ button"),
 ]
 
 
@@ -84,11 +84,15 @@ def check_first_look_ui() -> tuple:
         return False, "index.html chadavalekapoyindi", "preview/index.html check cheyandi"
     gone = [label for needle, label in UI_BLOCKS if needle not in html]
     if gone:
-        return False, "poyayi: " + ", ".join(gone), "v59 first-look blocks malli add cheyandi (git log v59)"
-    order_ok = html.index('id="tickerwrap"') < html.index('class="usedwrap"') < html.index('class="hero"')
+        return False, "poyayi: " + ", ".join(gone), "v72 first-look blocks add cheyandi (used strip · search · qual filter · install)"
+    order_ok = html.index('class="usedwrap"') < html.index('class="hero"')
     if not order_ok:
-        return False, "order marindi (ticker → used → hero kaadu)", "v59 order restore cheyandi"
-    return True, "ticker → most-used → hero order intact", ""
+        return False, "order marindi (used → hero kaadu)", "v72 order restore cheyandi"
+    # v72: public surface lo internal metrics/demo maatalu undakoodadu
+    leaked = [t for t in ("11,192", "రాడార్", "నమూనా", "DEMO", "బ్రేకింగ్") if t in html]
+    if leaked:
+        return False, "public text leak: " + ", ".join(leaked), "v72 clean-copy rule (internal metrics teeseyandi)"
+    return True, "most-used → hero order + search/అర్హత/install intact, copy clean", ""
 
 
 def check_counts_sync() -> tuple:

@@ -58,3 +58,14 @@ theme.json           block editor colors/Typography (navy/blue/orange)
 - **AdSense:** SPONSORED labels + rel=sponsored + ad units ki minimum height (CLS safe).
   Auto Ads ki `functions.php` lo em ledu — AdSense ki aa pani varasam (plugin leda site code).
 - **Rank Math** unte breadcrumbs + meta aa plugin nunchi vasthayi (theme detect chestundi).
+## v72 (theme 1.7.0) — qualification filter · search · install
+
+| Feature | Where | Automatic? |
+|---|---|---|
+| విద్యార్హత ఫిల్టర్ (10th · 10+2 · ITI · Diploma · Degree · PG · B.Tech) | `inc/qual-filter.php` — home/archive `?qual=degree` | ✅ post save lo title/content nunchi tag; bot `studentup_qual` meta pampistundi; purana posts admin/CLI backfill |
+| Menu pakkana search | `header.php` + `assets/js/studentup.js` | 🔍 button + `/` shortcut |
+| యాప్గా ఇన్స్టాల్ (PWA) | `inc/pwa.php` + `assets/js/studentup-pwa.js` | service worker (`?studentup_sw=1`) + install prompt; Android/iPhone rendu |
+| Closing-soon badge | `studentup_last_date` meta → "⏳ N రోజుల్లో ముగుస్తుంది" | ✅ bot `recruitment.apply_end` nunchi |
+| Breaking section | `inc/breaking.php` | ⚙️ default **OFF** (`StudentUp → కంటెంట్ → breaking_enabled`) |
+
+CLI: `wp studentup-qual-backfill --limit=500` (purana posts ki tags).

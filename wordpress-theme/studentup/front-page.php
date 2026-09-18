@@ -7,7 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Front page — design (preview/index.html) same order:
  * టికర్ → "విద్యార్థులు ఎక్కువగా వెతికేవి" → ప్రకటన → hero (countdown) →
- * బ్రేకింగ్ న్యూస్ → తాజా అవకాశాలు grid (chips filter) → footer.
+ * అర్హత ఫిల్టర్ (v72) → తాజా అవకాశాలు grid (chips filter) → footer.
  *
  * @package studentup
  */
@@ -92,9 +92,14 @@ $su_deadline = studentup_deadline();
 		<div class="sectionhead" id="jobs">
 			<div>
 				<h2>తాజా అవకాశాలు</h2>
-				<p>ఫాక్ట్-చెక్ చేసిన మార్గదర్శకాలు — తెలంగాణ · ఆంధ్రప్రదేశ్ · కేంద్ర</p>
+				<p>విద్యార్హత ప్రకారం ఫిల్టర్ చేయండి — తెలంగాణ · ఆంధ్రప్రదేశ్ · కేంద్ర</p>
 			</div>
 		</div>
+
+		<?php
+		studentup_qual_bar();
+		studentup_qual_active_note();
+		?>
 
 		<div class="chips" id="chips" role="tablist" aria-label="విభాగ ఫిల్టర్లు">
 			<button type="button" class="chip active" data-cat="all" role="tab" aria-selected="true">అన్నీ</button>
@@ -106,11 +111,13 @@ $su_deadline = studentup_deadline();
 		<div class="newsgrid" id="grid">
 			<?php
 			$su_q = new WP_Query(
-				array(
-					'post_type'           => 'post',
-					'posts_per_page'      => 12,
-					'ignore_sticky_posts' => false,
-					'no_found_rows'       => true,   // v69 perf: pagination ledu → extra SQL query vaddu
+				studentup_qual_query_args(   // v72: ?qual=degree → server-side filter
+					array(
+						'post_type'           => 'post',
+						'posts_per_page'      => 12,
+						'ignore_sticky_posts' => false,
+						'no_found_rows'       => true,   // v69 perf: pagination ledu → extra SQL query vaddu
+					)
 				)
 			);
 			$su_i = 0;

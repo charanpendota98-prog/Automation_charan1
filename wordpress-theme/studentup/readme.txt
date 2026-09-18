@@ -2,7 +2,7 @@
 Contributors: studentup
 Requires at least: 6.0
 Tested up to: 6.7
-Stable tag: 1.6.0
+Stable tag: 1.7.0
 Requires PHP: 7.4
 Version: 1.3.0
 License: GNU General Public License v2 or later
@@ -47,6 +47,18 @@ Theme lo REST bridge (`inc/seo-bridge.php`) undi. Mee koరaku `manage_options` 
 user tho App Password ivvandi (Administrator role).
 
 == Changelog ==
+
+= 1.7.0 (2026-09-18, v72) =
+* Qualification-wise filter: 10th · 10+2 · ITI · Diploma · Degree · PG · B.Tech chips
+  (server-side `?qual=` WP_Query filter) + automatic `studentup_qual` tagging
+  (save_post detect · bot REST meta · admin/CLI backfill)
+* Header search next to the menu (🔍 panel + `/` shortcut), mobile panel search link
+* PWA: service worker (offline page + repeat-visit speed) + "యాప్గా ఇన్స్టాల్ చేయండి" prompt
+  (Android/Chrome `beforeinstallprompt`, iPhone Share hint)
+* Closing-soon badges (⏳ 7 రోజుల్లో ముగుస్తుంది) from `studentup_last_date`
+* Breaking-news section default OFF (`breaking_enabled` option) — copy clean-up:
+  internal metrics, radar/6-hour notes, "నమూనా/DEMO" labels teesesaam
+* New options: breaking_enabled · qual_filter · install_prompt
 
 = 1.6.0 =
 * Students Internet Center CTA (call + WhatsApp documents -> application PDF) on every page.

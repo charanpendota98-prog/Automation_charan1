@@ -157,7 +157,7 @@ Message lo reason undi — exact ga fix cheyandi:
 ## ⚠️ Honest note
 Perfect = **machine gates + human 5-min verify**. Gates mistakes ramigadu (conflicts/stale/dates/originality), kaani official numbers mee mata tho final check — AdSense/Google/reputation thartham lo idi matrame safety.
 
-*Last updated: v71 (2026-09-18) — STUDENTS INTERNET CENTER + CLEAN MONETISATION (premium English copy · no public rate card · WhatsApp/Telegram join · 2-minute rail cycle · block-editor parity): 55/55 suites · 138/138 runtime · readiness 100/100 (28/28) · code audit 0/0 · parity 0/0 · theme audit 0/0 · theme v1.6.0*
+*Last updated: v72 (2026-09-18) — QUALIFICATION FILTER + HEADER SEARCH + PWA INSTALL (10th · 10+2 · ITI · Diploma · Degree · PG · B.Tech auto-tags · menu pakkana search · app-laga install · breaking section default OFF · clean copy): 56/56 suites · 150/150 runtime · readiness · code audit 0/0 · parity 0/0 · theme audit 0/0 · theme v1.7.0*
 
 ## PART 26 — v67: DEEP AUDIT (expert/BA) + TOP-THEME HARDENING + 6/6 REVENUE SLOTS
 
@@ -853,5 +853,66 @@ jsdom count from the jsdom `EXPECTED_CHECKS` constant) · jsdom drift guard · t
 PROOF (v71): --test-all 55/55 · jsdom 138/138 · readiness 100/100 (28/28) · guardian 14/15
   (1 warn-only owner env) · code audit 0/0 · parity 0/0 · theme audit 0/0 · php-lint 31/31 ·
   zip 39 files 633 KB · theme v1.6.0 · proof doc: output/v71-proof-2026-09-18.md
+
+```
+
+## PART 31 — v72: QUALIFICATION FILTER · HEADER SEARCH · PWA INSTALL · CLEAN COPY
+
+**Your brief:** బ్రేకింగ్ న్యూస్ అవసరం లేదు (teeseyandi) · internal metrics (keywords/sources/districts)
+public ga vaddu · విద్యార్హత ప్రకారం ఉద్యోగాలు automatic ga filter avvali (10th · 10+2 · ITI ·
+Diploma · Degree · PG · B.Tech) — WordPress lo kuda, manual tagging lekunda · menu pakkana neat
+search · mobile lo app-laga install · colorful premium look, text/background contrast break avvakoodadu.
+
+WHAT CHANGED
+  Site copy  : బ్రేకింగ్ టికర్ + section + nav/mobile links + JS + CSS — public sitenunchi poyayi.
+               Hero proof-stats (11,192 keywords · 143 sources · 59 districts) mariyu topbar/footer
+               district lines teesesaam. "నమూనా/DEMO" maatalu public pages/theme nunchi clean.
+  Filters    : Homepage `.qrow` chips — అన్నీ · 10వ తరగతి · ఇంటర్ (10+2) · ఐటీఐ · డిప్లొమా · డిగ్రీ ·
+               పీజీ · బీటెక్ · ⏳ 7 రోజుల్లో ముగిసేవి. `applyFilter()` qual + search + category ni
+               kalipi pani chestundi, `#qcount` lo "N అవకాశాలు" chupistundi. `data-last` nunchi
+               "⏳ N రోజుల్లో ముగుస్తుంది" badge; గడువు ముగిసినవి `.expired` (default ga hide).
+  WordPress  : `inc/qual-filter.php` — post save lo title+content nunchi auto tag (`studentup_qual`),
+               bot REST meta (priority), purana posts ki admin batch + `wp studentup-qual-backfill`,
+               front-end `?qual=degree` server-side `WP_Query` filter, chips lo counts (15 min cache).
+               Menu pakkana 🔍 search panel (Enter / `/` shortcut, mobile menu lo link).
+  PWA        : `manifest.webmanifest` + `sw.js` (offline page + repeat-visit speed) +
+               "⬇️ యాప్గా ఇన్స్టాల్ చేయండి" button (Android `beforeinstallprompt`, iPhone Share hint).
+               Theme: `inc/pwa.php` SW ni `?studentup_sw=1` tho serve chestundi (`Service-Worker-Allowed: /`)
+               — kotha rewrite rules/server config avasaram ledu.
+  Bot        : `autoblog/qual.py` (slug/keyword parity with theme) — pipeline meta lo `studentup_qual` +
+               `studentup_last_date` add chestundi, `verify_meta` lo land ayyaya ani check chestundi.
+  Theme      : v1.7.0 — qual-filter · studentup-pwa.js · header search · closing badges · options
+               (breaking_enabled default OFF · qual_filter · install_prompt) · contrast/overflow rules.
+
+HOW IT STAYS AUTOMATIC
+  Every new post   : save_post → auto tag (bot value unte adi priority) → chips lo ventane kanipistundi.
+  Every old post   : admin page load (20/batch) · `wp studentup-qual-backfill --limit=500`.
+  Every publish    : bot meta + verify + Telegram WAR (tag land avvakapote telustundi).
+  Every change     : guardian `first_look_ui` (search/అర్హత/install + copy clean) · readiness
+                     `c_first_look` · parity P8 (jsdom count) · jsdom drift guard · v72 suite (20 checks).
+
+VERIFY
+```
+python run.py --test-all                     # 56/56 suites
+node tests/runtime/jsdom_runtime_test.js     # 150/150 browser checks
+python run.py --readiness                    # 100/100 · python run.py --guardian
+python tools/parity_audit.py                 # PIN-TO-PIN · python tools/code_audit.py
+node tools/php_lint.js                       # 32/32 PHP files · python tools/build_wp_theme.py
+```
+**Note:** themeలో ఏ మార్పు చేసినా `--test-all` కి **ముందు** `python tools/build_wp_theme.py`
+(zip fresh kaavali) — theme audit/zip checks adi enforce chestayi.
+
+OWNER STEPS (v72)
+1. WordPress lo theme 1.7.0 activate chesi, *StudentUp → కంటెంట్* lo chips kalakaalam chudandi.
+2. Purana posts ki okasari `wp studentup-qual-backfill --limit=500` (leda admin page open cheyandi).
+3. బ్రేకింగ్ న్యూస్ kavali ante — *StudentUp → కంటెంట్ → బ్రేకింగ్ న్యూస్ సెక్షన్ ON* (default OFF).
+4. Phones lo "యాప్గా ఇన్స్టాల్" button test cheyandi (Android Chrome + iPhone Safari).
+
+PROOF (v72): --test-all 56/56 · jsdom 150/150 · readiness 100/100 (28/28) · guardian 14/15
+  (1 warn-only owner env) · code audit 0/0 · parity 0/0 · theme audit 0/0 · php-lint 32/32 ·
+  zip 41 files 643 KB · theme v1.7.0 · proof doc: output/v72-proof-2026-09-18.md
+
+No guarantee: rankings, traffic, AdSense approval and revenue depend on Google + your accounts +
+time. Everything measured in this pass is code-level (tests · audits · readiness), nothing more.
 
 ```

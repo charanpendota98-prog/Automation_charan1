@@ -481,15 +481,20 @@ def c_theme() -> List[dict]:
 
 
 def c_first_look() -> List[dict]:
+    """v72: modati screen lo student ki kavalsinavi — search · అర్హత ఫిల్టర్ · install · టైల్స్."""
     html = _read(PREVIEW / "index.html")
-    blocks = [b for b, needle in (("టికర్", 'id="tickerwrap"'),
-                                  ("ఎక్కువగా వెతికేవి", 'class="usedwrap"'),
-                                  ("బ్రేకింగ్", 'id="brklist"'),
-                                  ("menu", 'class="navbrk"')) if needle in html]
+    theme = _read(ROOT / "wordpress-theme" / "studentup" / "inc" / "qual-filter.php")
+    blocks = [b for b, ok in (
+        ("ఎక్కువగా వెతికేవి", 'class="usedwrap"' in html),
+        ("menu pakkana search", 'id="searchbtn"' in html and 'id="searchpanel"' in html),
+        ("అర్హత ఫిల్టర్", 'data-qual="10th"' in html and 'studentup_qual_bar' in theme),
+        ("యాప్గా ఇన్స్టాల్", 'id="installbtn"' in html and 'studentup-pwa' in _read(
+            ROOT / "wordpress-theme" / "studentup" / "functions.php")),
+    ) if ok]
     if len(blocks) == 4:
         return [_ok("First-look UX (student-first)", " · ".join(blocks), "REAL SITE (WordPress theme)")]
     return [_bad("First-look UX", f"{len(blocks)}/4 blocks", "REAL SITE (WordPress theme)",
-                 "v59 blocks restore")]
+                 "v72 blocks (search/అర్హత/install/టైల్స్) restore cheyandi")]
 
 
 def c_counts_sync() -> List[dict]:

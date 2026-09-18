@@ -12,7 +12,7 @@ const html = fs.readFileSync(PAGE, "utf8");
 
 /* v71: total check count — docs (README/MANUAL/GO_LIVE) claim this number and
  * tools/parity_audit.py P8 reads it, so a silent drift cannot slip through. */
-const EXPECTED_CHECKS = 138;
+const EXPECTED_CHECKS = 150;
 
 const passed = [];
 const failed = [];
@@ -203,7 +203,7 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
   /* ---------- v46: top-right menu (desktop nav + mobile hamburger) ---------- */
   const navTop = document.querySelectorAll(".nav > a").length
     + document.querySelectorAll(".nav > .has-drop > a").length;
-  ok("desktop nav: 9 top-right items (6 + 3 dropdowns)", navTop === 9, "count=" + navTop);
+  ok("v72 desktop nav: 8 top-right items (5 + 3 dropdowns)", navTop === 8, "count=" + navTop);
   const drop = document.querySelector(".has-drop .drop");
   const dropItems = drop ? drop.querySelectorAll("a").length : 0;
   ok("dropdowns present with 5+ items each (jobs / exams / more)", !!drop && dropItems >= 5, "items=" + dropItems);
@@ -328,12 +328,12 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
   const examCats = examDrop ? Array.from(examDrop.querySelectorAll("a[data-goto-cat]")).map(a => a.getAttribute("data-goto-cat")) : [];
   ok("v59 పరీక్షలు dropdown: upcoming + tips + portal (hall/results top-level ki vachhayi)",
      ["upcoming", "examtips"].every(c => examCats.indexOf(c) > -1) &&
-     /పరీక్షల పోర్టల్/.test(examDrop ? examDrop.textContent : ""),
+     /ఆన్‌లైన్ పరీక్షలు/.test(examDrop ? examDrop.textContent : ""),
      "cats=" + examCats.join(","));
   ok("v59 హాల్ టికెట్లు + ఫలితాలు top-level menu lonaki vachhayi",
      !!document.querySelector('.nav > a[data-goto-cat="hallticket"]') &&
      !!document.querySelector('.nav > a[data-goto-cat="results"]'));
-  const chips = Array.from(document.querySelectorAll(".chip"));
+  const chips = Array.from(document.querySelectorAll(".chip[data-cat]"));
   const chipCats = chips.map(c => c.getAttribute("data-cat"));
   ok("category chip row present with 16 filters (all + 15 pillars)", chips.length === 16, "chips=" + chips.length);
   const articleCats = new Set();
@@ -428,11 +428,20 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
      /\.su-social a\{width:34px;height:34px/.test(styleText) &&
      /\.mobile-nav b\{display:block;font-size:13px/.test(styleText));
 
-  /* ---------- v59: బ్రేకింగ్ టికర్ + ఎక్కువగా వెతికేవి + పర్ఫెక్ట్ మెనూ ---------- */
-  const tickerw = document.getElementById("tickerwrap");
-  ok("v59 ticker: breaking strip (feed vachhaka open) + #breaking link",
-     !!tickerw && tickerw.hasAttribute("hidden") && !!tickerw.querySelector('a[href="#breaking"]'),
-     tickerw ? "present" : "missing");
+  /* ---------- v72: బ్రేకింగ్ teesesaam (public surface clean) ---------- */
+  ok("v72: బ్రేకింగ్ టికర్/section/nav link public surface nunchi teesesaam",
+     !document.getElementById("tickerwrap") && !document.getElementById("breaking") &&
+     !document.querySelector(".navbrk") && !/బ్రేకింగ్/.test(document.body.textContent),
+     "ticker=" + !!document.getElementById("tickerwrap") + " section=" + !!document.getElementById("breaking"));
+  ok("v72: internal metrics public ga levu (11,192 · 143 sources · 59 జిల్లాల · radar)",
+     !/11,192|143 మూలాల|59 జిల్లాల|రాడార్|కీవర్డ్లు/.test(html) &&
+     !/జిల్లాల పర్యవేక్షణ/.test(html));
+  ok("v72: నమూనా/DEMO labels public copy nunchi poyayi",
+     !/నమూనా|DEMO/.test(document.body.textContent.replace(/\s+/g, " ")));
+  ok("v72: hero-proof stats row teesesaam",
+     !document.querySelector(".hero-proof") && !document.querySelector(".proof"));
+
+  /* ---------- v72: ఎక్కువగా వెతికేవి + పర్ఫెక్ట్ మెనూ ---------- */
   const usedTiles = Array.from(document.querySelectorAll(".usedgrid .usedcard"));
   const usedCats = usedTiles.map(a => a.getAttribute("data-goto-cat"));
   ok("v59 most-used strip: 8 tiles, TS/AP mundu (student order)",
@@ -441,24 +450,15 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
      usedCats.join(","));
   const firstCount = document.querySelector(".usedgrid .ucount");
   ok("v59 most-used tiles: filter deep-link + live count (— kaadu)",
-     usedTiles.every(a => a.hasAttribute("data-ucount") === false && a.querySelector(".ucount") !== null || true) &&
      usedTiles.every(a => /#jobs/.test(a.getAttribute("href"))) &&
      !!firstCount && !/—/.test(firstCount.textContent),
      "count=" + (firstCount ? firstCount.textContent : "none"));
-  const brk = document.getElementById("breaking");
-  ok("v59 breaking section: live list + honest empty state (fake news ledu)",
-     !!brk && !!document.getElementById("brklist") && /బ్రేకింగ్ న్యూస్/.test(brk.textContent) &&
-     !!brk.querySelector(".brkempty") && !/నమూనా|DEMO/.test(brk.querySelector(".brklist").textContent),
-     brk ? "ok" : "missing");
-  ok("v59 breaking nav link + live dot",
-     !!document.querySelector(".nav a.navbrk .dot") &&
-     !!document.querySelector('.nav a.navbrk[href="#breaking"]'));
   const navCats = Array.from(document.querySelectorAll(".nav > a, .nav > .has-drop > a"))
     .map(a => a.textContent.replace(/▾/g, "").trim());
-  ok("v59 perfect menu order (హోమ్ · ఉద్యోగాలు · హాల్ టికెట్లు · ఫలితాలు · బ్రేకింగ్ · స్కాలర్ · ప్రస్తుతాంశాలు · పరీక్షలు · మరికొన్ని)",
+  ok("v72 perfect menu order (హోమ్ · ఉద్యోగాలు · హాల్ టికెట్లు · ఫలితాలు · స్కాలర్ · ప్రస్తుతాంశాలు · పరీక్షలు · మరికొన్ని)",
      /^హోమ్/.test(navCats[0]) && /ఉద్యోగాలు/.test(navCats[1]) && /హాల్ టికెట్లు/.test(navCats[2]) &&
-     /ఫలితాలు/.test(navCats[3]) && /బ్రేకింగ్ న్యూస్/.test(navCats[4]) && /స్కాలర్/.test(navCats[5]) &&
-     /ప్రస్తుతాంశాలు/.test(navCats[6]) && /పరీక్షలు/.test(navCats[7]) && /మరికొన్ని/.test(navCats[8]),
+     /ఫలితాలు/.test(navCats[3]) && /స్కాలర్/.test(navCats[4]) &&
+     /ప్రస్తుతాంశాలు/.test(navCats[5]) && /పరీక్షలు/.test(navCats[6]) && /మరికొన్ని/.test(navCats[7]),
      navCats.join(" | "));
   const jobDrop = Array.from(document.querySelectorAll(".nav .drop a[data-goto-cat]"))
     .slice(0, 6).map(a => a.getAttribute("data-goto-cat"));
@@ -471,9 +471,10 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
   ok("v59 grid: TS/AP govt cards mundu (student-first order)",
      /ts-jobs/.test(firstCards[0]) && /ts-jobs|ap-jobs/.test(firstCards[1]) && /ap-jobs/.test(firstCards[2]),
      firstCards.join(" | "));
-  ok("v59 CSS: ticker + used grid + breaking styles shipped",
-     /\.tickerwrap\{/.test(styleText) && /\.usedgrid\{/.test(styleText) &&
-     /\.breaking\{/.test(styleText) && /@keyframes slide/.test(styleText));
+  ok("v72 CSS: search panel + qual chips + install button + used grid shipped (ticker CSS gone)",
+     /\.searchpanel\{/.test(styleText) && /\.qchip\{/.test(styleText) &&
+     /\.installbtn\{/.test(styleText) && /\.usedgrid\{/.test(styleText) &&
+     !/\.tickerwrap\{/.test(styleText) && !/\.breaking\{/.test(styleText));
   const mpUsed = Array.from(document.querySelectorAll(".mpanel a[data-goto-cat]"))
     .slice(0, 8).map(a => a.getAttribute("data-goto-cat"));
   ok("v59 mobile panel: same most-used order (TS/AP mundu)",
@@ -482,38 +483,102 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
      JSON.stringify(mpUsed) === JSON.stringify(
        ["hallticket","results","ts-jobs","ap-jobs","hallticket","results","walkin","software","private","current"].slice(0,8)),
      mpUsed.join(","));
+  ok("v72 mobile panel: search link undi, breaking link ledu",
+     !!document.querySelector('.mpanel a[href="#searchpanel"], .mpanel a[href*="?s="]') &&
+     !document.querySelector(".mpanel .mbrk"));
 
-  /* ---------- v59: live feed simulation — feed vasthe ticker+list ela kanipistundi ---------- */
+  /* ---------- v72: menu pakkana search (🔍 panel) ---------- */
+  const sbtn = document.getElementById("searchbtn");
+  const spanel = document.getElementById("searchpanel");
+  const qtop = document.getElementById("qtop");
+  ok("v72 header search: 🔍 button + panel + input (menu pakkana)",
+     !!sbtn && !!spanel && !!qtop && spanel.hasAttribute("hidden") &&
+     sbtn.getAttribute("aria-controls") === "searchpanel" &&
+     /వెతకండి/.test(qtop.getAttribute("placeholder") || ""));
+  sbtn.click();
+  ok("v72 search panel opens on 🔍 click (aria-expanded true)",
+     !spanel.hasAttribute("hidden") && sbtn.getAttribute("aria-expanded") === "true");
+  qtop.value = "TSPSC";
+  document.getElementById("searchgo").click();
+  await sleep(30);
+  const visAfterSearch = Array.from(document.querySelectorAll("#grid .news"))
+    .filter(c => !c.classList.contains("hidden")).length;
+  ok("v72 search panel drives grid filter (TSPSC → few cards, panel closes)",
+     visAfterSearch > 0 && visAfterSearch < cards.length && spanel.hasAttribute("hidden"),
+     "visible=" + visAfterSearch);
+  document.getElementById("searchclose").click();
+  q.value = ""; q.dispatchEvent(new window.Event("input", { bubbles: true }));
+  click('.tab[data-state="all"]');
+
+  /* ---------- v72: విద్యార్హత ఫిల్టర్ (10th · 10+2 · డిగ్రీ · పీజీ …) ---------- */
+  const qchips = Array.from(document.querySelectorAll(".qchip"));
+  const qslugs = qchips.map(c => c.getAttribute("data-qual"));
+  ok("v72 qualification chips: 9 (అన్నీ + 7 అర్హతలు + ⏳ 7 రోజుల్లో ముగిసేవి)",
+     JSON.stringify(qslugs) === JSON.stringify(
+       ["all","10th","inter","iti","diploma","degree","pg","btech","closing"]),
+     qslugs.join(","));
+  ok("v72 every job card ki data-qual tag undi (auto tag)",
+     Array.from(document.querySelectorAll("#grid .news"))
+       .every(c => (c.getAttribute("data-qual") || "").length > 0));
+  function qVisible() {
+    return Array.from(document.querySelectorAll("#grid .news"))
+      .filter(c => !c.classList.contains("hidden"));
+  }
+  const q10Chip = qchips.find(c => c.getAttribute("data-qual") === "10th");
+  q10Chip.click();
+  ok("v72 qualification filter: 10వ తరగతి → only 10th eligible cards",
+     qVisible().length > 0 && qVisible().every(c => /10th/.test(c.getAttribute("data-qual"))) &&
+     !qVisible().some(c => /btech/.test(c.getAttribute("data-qual"))),
+     "visible=" + qVisible().length);
+  const qDegChip = qchips.find(c => c.getAttribute("data-qual") === "degree");
+  qDegChip.click();
+  ok("v72 qualification filter: డిగ్రీ → degree cards + count label update",
+     qVisible().length > 0 && qVisible().every(c => /degree/.test(c.getAttribute("data-qual"))) &&
+     /అవకాశాలు/.test(document.getElementById("qcount").textContent),
+     "visible=" + qVisible().length + " count=" + document.getElementById("qcount").textContent);
+  const qCloseChip = qchips.find(c => c.getAttribute("data-qual") === "closing");
+  qCloseChip.click();
+  const soonExpected = Array.from(document.querySelectorAll("#grid .news")).filter(c => {
+    const v = c.getAttribute("data-last"); if (!v) return false;
+    const left = Math.round((new Date(v + "T23:59:59") - new Date(new Date().setHours(0, 0, 0, 0))) / 86400000);
+    return left >= 0 && left <= 7;
+  }).length;
+  ok("v72 qualification filter: ⏳ 7 రోజుల్లో ముగిసేవి → closing-soon cards mattrame",
+     qVisible().length === soonExpected && qVisible().every(c => !!c.getAttribute("data-last")),
+     "visible=" + qVisible().length + " expected=" + soonExpected);
+  /* expiring card: past date → expired badge + default ga hide */
+  const expiredCard = document.querySelector("#grid .news").cloneNode(true);
+  expiredCard.setAttribute("data-last", "2026-01-05");
+  expiredCard.setAttribute("data-qual", "degree");
+  document.getElementById("grid").appendChild(expiredCard);
+  q .value = ""; q.dispatchEvent(new window.Event("input", { bubbles: true }));
+  qchips.find(c => c.getAttribute("data-qual") === "all").click();
+  ok("v72 expired job card: 'గడువు ముగిసింది' badge + default ga hide",
+     expiredCard.classList.contains("expired") &&
+     /గడువు ముగిసింది/.test(expiredCard.textContent) &&
+     expiredCard.classList.contains("hidden"));
+  expiredCard.remove();
+  qchips.find(c => c.getAttribute("data-qual") === "all").click();
+
+  /* ---------- v72: PWA — app-laga install ---------- */
+  const installBtn = document.getElementById("installbtn");
+  ok("v72 PWA: manifest link + theme-color + apple touch icon",
+     !!document.querySelector('link[rel="manifest"][href="manifest.webmanifest"]') &&
+     !!document.querySelector('meta[name="theme-color"]') &&
+     !!document.querySelector('link[rel="apple-touch-icon"]'));
+  ok("v72 PWA: install button undi (prompt varaku hidden)",
+     !!installBtn && installBtn.hasAttribute("hidden") && /ఇన్‌స్టాల్/.test(installBtn.textContent));
   {
-    const stubFeed = {
-      updated: "2026-09-18T16:00:00+05:30", source: "radar", count: 2, note: "",
-      items: [
-        { title: "TSPSC గ్రూప్ 2 హాల్ టికెట్ విడుదల", link: "https://example.org/a",
-          tag: "hallticket", source: "Google News · తెలుగు", time: "2026-09-18T15:40:00+05:30" },
-        { title: "APPSC గ్రూప్ 1 ఫలితాలు విడుదల", link: "https://example.org/b",
-          tag: "results", source: "APPSC", time: "2026-09-18T14:00:00+05:30" },
-      ],
-    };
-    const dom2 = new JSDOM(html, {
-      url: "http://localhost/", runScripts: "dangerously", pretendToBeVisual: true,
-      beforeParse(win) {
-        win.fetch = () => Promise.resolve({ ok: true, json: () => Promise.resolve(stubFeed) });
-      },
-    });
-    await sleep(80);
-    const d2 = dom2.window.document;
-    const liveItems = d2.querySelectorAll("#brklist .brkitem");
-    ok("v59 live feed: బ్రేకింగ్ list renders verified items with tag chips",
-       liveItems.length === 2 && /హాల్ టికెట్/.test(liveItems[0].textContent) &&
-       /ఫలితాలు/.test(liveItems[1].textContent),
-       "items=" + liveItems.length);
-    const tick2 = d2.getElementById("tickerwrap");
-    ok("v59 live feed: ticker opens + source links (no fake headlines)",
-       !!tick2 && !tick2.hasAttribute("hidden") &&
-       d2.querySelectorAll("#tmove a").length === 4 &&
-       /^https:\/\/example\.org\/a$/.test(d2.querySelector("#tmove a").getAttribute("href")),
-       "hidden=" + (tick2 ? tick2.hasAttribute("hidden") : "missing"));
-    dom2.window.close();
+    const ev = new window.Event("beforeinstallprompt");
+    let prompted = 0;
+    ev.prompt = () => { prompted++; };
+    ev.userChoice = Promise.resolve({ outcome: "accepted" });
+    window.dispatchEvent(ev);
+    const shown = !installBtn.hasAttribute("hidden");
+    installBtn.click();
+    await sleep(20);
+    ok("v72 PWA: beforeinstallprompt → button chupistundi + click tho prompt open",
+       shown && prompted === 1, "shown=" + shown + " prompted=" + prompted);
   }
 
   /* ---------- v71: contact page (lead form) + partner page (no public rates) ---------- */

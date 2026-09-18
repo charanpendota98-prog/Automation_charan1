@@ -1,6 +1,6 @@
 <?php
 /**
- * బ్రేకింగ్ న్యూస్ — radar feed (bot rasi preview/data/breaking.json) WordPress lo.
+ * బ్రేకింగ్ న్యూస్ — radar feed WordPress lo. **v72: default OFF** (admin lo on/off).
  *
  * Data path (okka chota, honest):
  *   1) WP option 'studentup_breaking_json' (bot REST/CLI tho push cheyyochu) — fastest
@@ -20,6 +20,11 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @param int $max max items.
  * @return array
  */
+function studentup_breaking_enabled() {
+	// v72: default OFF — public site lo breaking section chupinchamu (owner iste ON cheyyochu).
+	return (bool) studentup_opt( 'breaking_enabled', '0' );
+}
+
 function studentup_breaking_items( $max = 6 ) {
 	$max = max( 1, (int) $max );
 
@@ -116,6 +121,9 @@ function studentup_ago( $iso ) {
  * టికర్ (feed unte matrame render — khali aithe hide).
  */
 function studentup_breaking_ticker() {
+	if ( ! studentup_breaking_enabled() ) {
+		return;   // v72: default OFF (WP admin → StudentUp → కంటెంట్ లో ON cheyyochu)
+	}
 	$items = studentup_breaking_items( 5 );
 	if ( ! $items ) {
 		return;
@@ -145,6 +153,9 @@ function studentup_breaking_ticker() {
  * బ్రేకింగ్ న్యూస్ section (h2 + list; honest empty message).
  */
 function studentup_breaking_section() {
+	if ( ! studentup_breaking_enabled() ) {
+		return;   // v72: default OFF
+	}
 	$items = studentup_breaking_items( 6 );
 	echo '<section class="breaking" id="breaking" aria-label="బ్రేకింగ్ న్యూస్">';
 	echo '<div class="brkhead"><span class="brkdot" aria-hidden="true"></span><h2>బ్రేకింగ్ న్యూస్</h2>';

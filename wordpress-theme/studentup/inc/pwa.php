@@ -4,7 +4,8 @@
  *
  * Mobile lo "Add to Home screen" (app laga), theme-color, preconnect
  * (AdSense/GA — first ad request fast), apple touch icon.
- * Service worker ledu — shared hosting lo stale cache risk vaddu (honest).
+ * v72: service worker kuda undi (query tho serve — / lo scope header tho). Adi only
+ * site pages/fonts cache chestundi; AdSense/analytics requests ni touch cheyyadu.
  *
  * @package studentup
  */
@@ -67,6 +68,104 @@ function studentup_head_hints() {
 	}
 }
 add_action( 'wp_head', 'studentup_head_hints', 3 );
+
+/**
+ * v72: service worker JS (query `?studentup_sw=1` tho serve — root scope header tho).
+ *
+ * Enti cache avutundi: site pages (network-first → fresh news), static files
+ * (cache-first). Enti cache avvadu: AdSense/GA/third-party (avvi touch cheyyamu).
+ *
+ * @return string
+ */
+function studentup_sw_js() {
+	$ver     = defined( 'STUDENTUP_VERSION' ) ? STUDENTUP_VERSION : '1';
+	$offline = '<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
+		. '<title>Offline — ' . esc_html( get_bloginfo( 'name' ) ) . '</title>'
+		. '<body style="font-family:system-ui,sans-serif;margin:0;padding:28px;text-align:center;color:#0f2e62">'
+		. '<h1 style="font-size:20px">ఇంటర్నెట్ లేదు</h1>'
+		. '<p style="color:#5b6b85;font-size:14px;line-height:1.7">మీరు చూసిన పేజీలు మళ్లీ కనిపిస్తాయి — కనెక్షన్ వచ్చాక కొత్త ఉద్యోగాలు, ఫలితాలు అప్డేట్ అవుతాయి.</p>'
+		. '<p style="font-size:14px"><a href="' . esc_url( home_url( '/' ) ) . '" style="color:#2463b7">↻ మళ్లీ ప్రయత్నించండి</a></p>';
+
+	return 'var VERSION=' . wp_json_encode( 'su-' . $ver ) . ';' . "\n"
+		. 'var OFFLINE=' . wp_json_encode( $offline ) . ';' . "\n"
+		. 'var SHELL=' . wp_json_encode( array( home_url( '/' ) ) ) . ';' . "\n"
+		. <<<'JSEOF'
+self.addEventListener("install", function (e) {
+  e.waitUntil(caches.open(VERSION).then(function (c) { return c.addAll(SHELL).catch(function () {}); })
+    .then(function () { return self.skipWaiting(); }));
+});
+self.addEventListener("activate", function (e) {
+  e.waitUntil(caches.keys().then(function (keys) {
+    return Promise.all(keys.map(function (k) { return k === VERSION ? null : caches.delete(k); }));
+  }).then(function () { return self.clients.claim(); }));
+});
+self.addEventListener("fetch", function (e) {
+  var req = e.request;
+  if (req.method !== "GET") return;
+  var url = new URL(req.url);
+  if (url.origin !== self.location.origin) return;   /* ads/analytics untouch */
+  var isHtml = req.mode === "navigate" || (req.headers.get("accept") || "").indexOf("text/html") > -1;
+  if (isHtml) {
+    e.respondWith(fetch(req).then(function (res) {
+      var copy = res.clone();
+      caches.open(VERSION).then(function (c) { c.put(req, copy); });
+      return res;
+    }).catch(function () {
+      return caches.match(req).then(function (hit) {
+        return hit || new Response(OFFLINE, { headers: { "Content-Type": "text/html; charset=utf-8" } });
+      });
+    }));
+    return;
+  }
+  e.respondWith(caches.match(req).then(function (hit) {
+    return hit || fetch(req).then(function (res) {
+      if (res && res.status === 200 && res.type === "basic") {
+        var copy = res.clone();
+        caches.open(VERSION).then(function (c) { c.put(req, copy); });
+      }
+      return res;
+    }).catch(function () { return hit; });
+  }));
+});
+JSEOF;
+}
+
+/**
+ * Service worker ni query tho serve cheyyadam (rewrite rule avasaram ledu).
+ */
+function studentup_service_worker() {
+	if ( ! isset( $_GET['studentup_sw'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification
+		return;
+	}
+	if ( ! studentup_opt( 'pwa', '1' ) ) {
+		return;
+	}
+	nocache_headers();
+	header( 'Content-Type: application/javascript; charset=utf-8' );
+	header( 'Service-Worker-Allowed: /' );
+	echo studentup_sw_js(); // phpcs:ignore WordPress.Security.EscapeOutput
+	exit;
+}
+add_action( 'template_redirect', 'studentup_service_worker' );
+
+/**
+ * Install-prompt JS ki data pass (SW url, iOS hint).
+ */
+function studentup_pwa_data() {
+	if ( is_admin() || ! wp_script_is( 'studentup-pwa', 'enqueued' ) ) {
+		return;
+	}
+	wp_localize_script(
+		'studentup-pwa',
+		'STUDENTUP_PWA',
+		array(
+			'sw'      => esc_url_raw( add_query_arg( 'studentup_sw', '1', home_url( '/' ) ) ),
+			'scope'   => '/',
+			'iosHint' => 'iPhone: Share → Add to Home Screen నొక్కితే యాప్‌లా ఇన్‌స్టాల్ అవుతుంది.',
+		)
+	);
+}
+add_action( 'wp_enqueue_scripts', 'studentup_pwa_data', 20 );
 
 /**
  * AdSense auto ads script (option ON unte mattrame) — AdSense policy: ee code

@@ -13,7 +13,7 @@ from pathlib import Path
 from typing import Dict, Optional
 from urllib.parse import urlparse
 
-from . import (config, gemini_client, image_gen, notifier, post_gate, research,
+from . import (config, gemini_client, image_gen, notifier, post_gate, qual, research,
                rm100, seo, sources, state, validator)
 from .notifier import esc, send_telegram
 from .wordpress_client import WordPressClient
@@ -517,6 +517,15 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
 
     if meta and (article.get("_rm100") or {}).get("score") is not None:
         meta["rank_math_seo_score"] = str((article["_rm100"] or {}).get("score"))
+    # --- v72: qualification auto-tag (site filter: 10th · 10+2 · డిగ్రీ · పీజీ) ---
+    if meta is not None:
+        try:
+            qmeta = qual.post_meta(article)
+            if qmeta:
+                meta.update(qmeta)
+                log.info("v72 qual tag → %s", qual.describe(article))
+        except Exception:  # noqa: BLE001 — tag fail publish aapadu (theme kuda auto detects)
+            log.exception("v72 qual tag skip (publish safe)")
     # --- v65 PIN-TO-PIN GATE: certificate + critical block (live publish mattrame) ---
     is_live = (article.get("_live") is True or
                str(getattr(config, "DEFAULT_POST_STATUS", "draft")).lower() == "publish")
@@ -564,7 +573,8 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
         try:
             landed = wp.verify_meta(result["id"], ["rank_math_focus_keyword",
                                                    "rank_math_title",
-                                                   "rank_math_description"])
+                                                   "rank_math_description",
+                                                   "studentup_qual"])  # v72
             missing = [k for k, ok in landed.items() if not ok]
             if missing:
                 log.warning("Rank Math meta land avvaledu: %s (id=%s) — theme seo-bridge "

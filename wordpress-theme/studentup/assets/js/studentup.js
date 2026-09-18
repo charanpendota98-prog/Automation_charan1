@@ -219,4 +219,27 @@
     suRestart();
   }
 
+
+  /* ---------- v72: header search (menu pakkana 🔍) ---------- */
+  var sbtn = document.getElementById("searchbtn");
+  var spanel = document.getElementById("searchpanel");
+  var sinput = document.getElementById("qtop");
+  var sclose = document.getElementById("searchclose");
+  function searchOpen(on) {
+    if (!spanel || !sbtn) return;
+    spanel.hidden = !on;
+    sbtn.setAttribute("aria-expanded", on ? "true" : "false");
+    if (on && sinput) setTimeout(function () { sinput.focus(); }, 30);
+  }
+  if (sbtn && spanel) {
+    sbtn.addEventListener("click", function () { searchOpen(spanel.hidden); });
+    if (sclose) sclose.addEventListener("click", function () { searchOpen(false); });
+    document.addEventListener("keydown", function (e) {
+      var tag = (e.target && e.target.tagName) || "";
+      if (e.key === "/" && tag !== "INPUT" && tag !== "TEXTAREA" && tag !== "SELECT") {
+        e.preventDefault(); searchOpen(true);
+      }
+      if (e.key === "Escape" && !spanel.hidden) searchOpen(false);
+    });
+  }
 })();

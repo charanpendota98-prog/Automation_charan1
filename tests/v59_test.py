@@ -141,17 +141,18 @@ def test_committed_feed_is_honest():
 
 
 def test_site_first_look_wiring():
+    """v72: ticker/బ్రేకింగ్ teesesaam — badulu search + అర్హత ఫిల్టర్ + install block lu."""
     html = INDEX.read_text(encoding="utf-8")
-    assert 'id="tickerwrap"' in html and 'id="tmove"' in html
-    assert 'href="#breaking"' in html
-    assert re.search(r'id="tickerwrap"[^>]*hidden', html), "ticker feed vachhaka open avvali"
+    assert 'id="tickerwrap"' not in html and "బ్రేకింగ్" not in html, "v72: ticker/బ్రేకింగ్ teeseyali"
+    assert 'href="#breaking"' not in html and "brklist" not in html
     used = re.findall(r'<a class="usedcard[^"]*" href="#jobs" data-goto-cat="([a-z-]+)" '
                       r'data-count-cat="[a-z-]+">', html)
     assert used == breaking.most_used_cats(), used
     assert html.count('data-ucount=') == len(breaking.most_used())
-    assert 'id="brklist"' in html and 'fetch("data/breaking.json"' in html
-    assert html.index('id="tickerwrap"') < html.index('class="usedwrap"') < html.index('class="hero"')
-    # hero/ad ordering + no stale quickbar duplication
+    # v72 first-look blocks
+    assert 'id="searchbtn"' in html and 'id="searchpanel"' in html and 'id="qtop"' in html
+    assert 'data-qual="10th"' in html and 'id="qcount"' in html
+    assert 'id="installbtn"' in html and 'rel="manifest"' in html
     assert html.index('class="usedwrap"') < html.index('data-slot="top-leaderboard"') < html.index('class="hero"')
     assert "quickbar" not in html
 
@@ -188,9 +189,9 @@ def test_menu_order_perfect():
              for x in re.findall(r'<a[^>]*>(.*?)</a>', strip_drop(nav), re.S)]
     norm = lambda x: x.replace("\u200c", "").replace("▾", "").strip()  # noqa: E731
     order = [norm(h) for h in heads if norm(h)]
-    want = ["హోమ్", "ఉద్యోగాలు", "హాల్ టికెట్లు", "ఫలితాలు", "బ్రేకింగ్ న్యూస్",
+    want = ["హోమ్", "ఉద్యోగాలు", "హాల్ టికెట్లు", "ఫలితాలు",
             "స్కాలర్‌షిప్‌లు", "ప్రస్తుతాంశాలు", "పరీక్షలు", "మరికొన్ని"]
-    assert [norm(x) for x in order[:9]] == [norm(x) for x in want], order[:12]
+    assert [norm(x) for x in order[:8]] == [norm(x) for x in want], order[:12]
 
     drop = re.search(r'<span class="drop" role="menu" aria-label="ఉద్యోగ విభాగాలు">(.*?)</span>\s*</span>',
                      nav, re.S).group(1)
@@ -200,7 +201,9 @@ def test_menu_order_perfect():
 
     mp_start = html.index('<div class="mpanel"')
     mp = html[mp_start:html.index('<div id="top">', mp_start)]
-    assert mp.index("బ్రేకింగ్ న్యూస్") < mp.index("హాల్ టికెట్లు") < mp.index("విద్యార్థులు ఎక్కువగా")
+    # v72: mobile panel — search link mundu, బ్రేకింగ్ లేదు
+    assert mp.index("వెతకండి") < mp.index("హాల్ టికెట్లు") < mp.index("విద్యార్థులు ఎక్కువగా")
+    assert "బ్రేకింగ్" not in mp
     mp_used = re.findall(r'data-goto-cat="([a-z-]+)"', mp)
     assert mp_used[2:10] == breaking.most_used_cats(), mp_used[:12]
 
@@ -227,7 +230,9 @@ def test_bot_wiring_radar_and_cli():
 
 def test_docs_v59():
     manual = (ROOT / "MANUAL_ADVANCED_CHECKLIST.md").read_text(encoding="utf-8")
-    assert "PART 18" in manual and "బ్రేకింగ్ న్యూస్" in manual
+    assert "PART 18" in manual
+    # v72: site nunchi తీసేసినా, backend feed (opt-in) docs/env lo undali
+    assert "breaking" in manual.lower() or "బ్రేకింగ్" in manual
     assert "విద్యార్థులు ఎక్కువగా వెతికేవి" in manual
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
     assert "breaking" in readme.lower()

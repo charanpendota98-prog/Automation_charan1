@@ -22,8 +22,13 @@ MilesWeb cPanel plan facts (their own plan page): base plan gives **3,00,000 ino
 Option A — **static preview** (what `preview/` is):
 ```
 cPanel → File Manager → public_html/
-  upload every file from preview/   (index.html, pages/, robots.txt, sitemap.xml, favicon.svg)
+  upload every file from preview/   (index.html, pages/, robots.txt, sitemap.xml, favicon.svg,
+                                     manifest.webmanifest, sw.js)   # v72: ee rendu files PWA ki kaavali
 ```
+**v72 (PWA) note:** `manifest.webmanifest` + `sw.js` **root lo** undali (index.html pakkana).
+Ee rendu unte "యాప్గా ఇన్స్టాల్" button + offline page pani chestayi. WordPress route lo idi
+theme ne chestundi (`?studentup_manifest=1` / `?studentup_sw=1`) — server config avasaram ledu.
+
 Design drafts (`ads-preview.html`, `legacy-concept.html`, `v*.html`, `top-post-blueprint.html`)
 **ippudu repo lo `docs/design-archive/` lo unnayi** (v70) — website server aa folder ni serve
 cheyyadu, anduku upload gurinchi aalochinchakandi. (Safety-net: robots.txt lo `Disallow: /_dev/`

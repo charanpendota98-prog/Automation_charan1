@@ -554,6 +554,32 @@ python run.py --traffic-sessions         # advanced control
 python run.py --traffic-views            # advanced control
 ```
 
+### v72 — QUALIFICATION FILTER + HEADER SEARCH + PWA INSTALL + CLEAN COPY
+
+**Mee brief:** బ్రేకింగ్ న్యూస్ అవసరం లేదు · internal metrics/radar/నమూనా maatalu public ga vaddu ·
+విద్యార్హత ప్రకారం ఉద్యోగాలు **automatic** ga filter avvali (10th · 10+2 · ITI · Diploma · Degree ·
+PG · B.Tech) — WordPress lo kuda, manual tagging lekunda · menu pakkana neat search · mobile lo
+app-laga install (PWA) · colorful premium look, text/background contrast eppudu break avvakoodadu.
+
+| # | What changed | Detail |
+|---|---|---|
+| 1 | **బ్రేకింగ్ న్యూస్ teesesaam** | Ticker + section + nav/mobile links + JS + CSS anni public sitenunchi poyayi. Bot radar feed (`autoblog/breaking.py`) intact — WP admin → *StudentUp → కంటెంట్ → బ్రేకింగ్ న్యూస్ సెక్షన్ ON* tho eppudaina tirigi on cheyyochu (**default OFF**). |
+| 2 | **Internal metrics public lo levu** | Homepage proof-stats row (11,192 keywords · 143 sources · 59 districts) mariyu topbar/footer district lines teesesaam. Ee numbers ippudu internal reports/README lo mattrame. |
+| 3 | **"నమూనా/DEMO" labels poyayi** | Public pages + theme copy nunchi demo/sample maatalu clean chesam (ads ki **SPONSORED** label intact — AdSense rule). |
+| 4 | **విద్యార్హత ఫిల్టర్ (flagship)** | Job cards ki `data-qual`; chips: అన్నీ · 10వ తరగతి · ఇంటర్ (10+2) · ఐటీఐ · డిప్లొమా · డిగ్రీ · పీజీ · బీటెక్ · ⏳ 7 రోజుల్లో ముగిసేవి. Filter + search kalisi pani chestayi, count ("12 అవకాశాలు") chupistundi. |
+| 5 | **Countdown + closing filter** | `data-last` unna cards ki "⏳ N రోజుల్లో ముగుస్తుంది" badge; గడువు ముగిసినవి default ga hide (`.expired`). |
+| 6 | **Menu pakkana search** | 🔍 button → neat search panel (Enter/`/` shortcut); mobile menu lo "వెతకండి" link. WordPress lo idi `?s=` search ki connect (server-side). |
+| 7 | **యాప్గా ఇన్స్టాల్ (PWA)** | `manifest.webmanifest` + `sw.js` (offline page, repeat visits fast) + "⬇️ యాప్గా ఇన్స్టాల్ చేయండి" button (Android `beforeinstallprompt`, iPhone Share hint). Theme lo `inc/pwa.php` + `assets/js/studentup-pwa.js` (`?studentup_sw=1` tho root-scope SW — kotha rewrite rules avasaram ledu). |
+| 8 | **WordPress: automatic tagging** | `inc/qual-filter.php` — post save lo title+content nunchi అర్హత detect → `studentup_qual` meta; bot `autoblog/qual.py` kuda same tags REST tho pampistundi; purana posts ki admin/`wp studentup-qual-backfill` backfill; front-end `?qual=degree` server-side `WP_Query` filter (JS lekunda kuda pani chestundi). |
+| 9 | **Contrast + neatness** | Brand gradient (text gradient safe-fallback tho), beige/blue chip tones, dark-mode overrides, `overflow-wrap` + flex-wrap rules — mobile lo text overlap ledu, contrast eppudu safe. |
+| 10 | **Theme v1.7.0** | New: `inc/qual-filter.php` · `assets/js/studentup-pwa.js` · header search. Version parity: `style.css` ↔ `STUDENTUP_VERSION` ↔ `readme.txt` Stable tag. |
+| 11 | **Slug parity (bot ↔ theme)** | Python `qual.QUALS` ↔ PHP `studentup_qual_terms()` — test ee rendu list ni compare chestundi, so filter chips eppudu match avutayi. |
+| 12 | **Proof** | `--test-all` **56/56** · jsdom **150/150** · readiness **100/100 (28/28)** · guardian **14/15** (1 warn-only owner env) · code audit **0/0** · parity **0/0** · theme audit **0/0** · php-lint **32/32** · zip **41 files 642 KB** |
+
+**Language rule (mee call):** broad headers/labels English/neat; student-facing lines Telugu lo
+(అర్హత chips, "గడువు ముగిసింది", service explanation). Internal metrics — bot report/README lo
+mattrame, website lo ledu.
+
 ### v71 — STUDENTS INTERNET CENTER + CLEAN MONETISATION (no public rate card)
 
 **Your brief:** a premium, English-first site where needed; the application-help service explained

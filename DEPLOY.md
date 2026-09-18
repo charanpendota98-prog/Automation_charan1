@@ -158,3 +158,9 @@ python run.py --exam-portal-test-channels        # Telegram/webhook test ping
   uptime, zero-mistake flow ni **measure** chestundi, adi mee advantage.
 - Exam results/deadlines ni publish cheyyadaniki **mundu meeru verify** cheyandi.
 - Free tiers exam day ki risky; paid VPS/PaaS + backups + HTTPS = minimum professional setup.
+
+## v72 — PWA files (preview site)
+
+Static preview ni upload chesinappudu `manifest.webmanifest` + `sw.js` ni index.html pakkana
+(root lo) pettandi — app-laga install + offline page ki avi kaavali. WordPress lo theme ne
+serve chestundi (`?studentup_manifest=1` · `?studentup_sw=1`) — extra config ledu.

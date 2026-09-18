@@ -77,6 +77,14 @@ if ( studentup_opt( 'sticky_ad', '0' ) ) :
 	</div>
 <?php endif; ?>
 
+<?php
+// v72: "యాప్‌గా ఇన్‌స్టాల్ చేయండి" — PWA. JS button ni batti chupistundi/hide chestundi.
+if ( studentup_opt( 'pwa', '1' ) && studentup_opt( 'install_prompt', '1' ) ) :
+	?>
+	<button type="button" class="installbtn" id="installbtn" hidden>⬇️ యాప్‌గా ఇన్‌స్టాల్ చేయండి</button>
+	<div class="installhint" id="installhint" hidden role="status"></div>
+<?php endif; ?>
+
 <?php wp_footer(); ?>
 </body>
 </html>

@@ -31,6 +31,18 @@ get_header();
 						<?php if ( $su_cats ) : ?>
 							<span>🏷 <?php echo esc_html( $su_cats[0]->name ); ?></span>
 						<?php endif; ?>
+						<?php
+						if ( function_exists( 'studentup_qual_labels' ) ) {
+							$su_q = studentup_qual_labels( get_the_ID(), 3 );
+							if ( $su_q ) {
+								echo '<span>🎯 ' . esc_html( implode( ' · ', $su_q ) ) . '</span>';
+							}
+							$su_badge = studentup_last_date_badge( get_the_ID() );
+							if ( $su_badge ) {
+								echo '<span>' . wp_kses_post( $su_badge ) . '</span>';
+							}
+						}
+						?>
 					</div>
 				</div>
 

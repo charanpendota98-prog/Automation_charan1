@@ -1,0 +1,24 @@
+{
+  "name": "studentup.in — Telangana & Andhra Pradesh students",
+  "short_name": "studentup",
+  "description": "Government jobs, scholarships, results and exam updates — in simple Telugu.",
+  "lang": "te-IN",
+  "dir": "ltr",
+  "start_url": "./index.html?src=pwa",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#0f2e62",
+  "categories": ["news", "education", "jobs"],
+  "icons": [
+    { "src": "favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "ఉద్యోగాలు", "short_name": "Jobs", "url": "./index.html#jobs" },
+    { "name": "బ్రేకింగ్ న్యూస్", "short_name": "Breaking", "url": "./index.html#breaking" },
+    { "name": "ఫలితాలు", "short_name": "Results", "url": "./index.html#results" },
+    { "name": "క్విజ్", "short_name": "Quiz", "url": "./index.html#quiz" }
+  ]
+}

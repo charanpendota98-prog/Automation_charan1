@@ -107,9 +107,11 @@ python tools/build_wp_theme.py    # php-lint + audit + POT + zip (theme install 
 | Revenue/ranking expectations | wrong decisions | v62 no-guarantee rule + measured readiness only | ✅ policy |
 | R70 | **Public surface lo developer/verification text ledu** (a paina unna proof block remove) | v70 | preview · theme · policy pages clean · dev archive `docs/design-archive/` (site meeda serve avvadu) | `v60_test`, `v68_test`, `v69_test`, jsdom clean-checks, parity P8 | `python run.py --guardian` → `counts_sync` |
 | R71 | **Premium English where needed · prices never public · WhatsApp-first service contact** | v71 | `tools/build_policy_pages.py` (Partner page + contact), `autoblog/rate_card.py` (internal), theme `inc/cta.php`, rail cycle in `assets/js/studentup.js` | `v48`, `v52`, `v53`, `v54`, jsdom 138 checks | `--test-all` · `node tests/runtime/jsdom_runtime_test.js` |
+| R72 | **విద్యార్హత ఫిల్టర్ automatic (10th → PG) · menu pakkana search · app-laga install · clean copy (బ్రేకింగ్/internal metrics teeseyadam)** | v72 | `preview/index.html` (chips + search panel + PWA) · `wordpress-theme/studentup/inc/qual-filter.php` (auto-tag + `?qual=` server filter + WP-CLI backfill) · `inc/pwa.php` + `assets/js/studentup-pwa.js` · `autoblog/qual.py` (bot meta) | `v72_test` (20 checks), `v59_test`, `v60_test`, jsdom 150 checks | `--test-all` · `node tests/runtime/jsdom_runtime_test.js` |
 ---
 
-*Last updated: v71 (2026-09-18) — Students Internet Center CTA + internal rate card (no public
-prices) + WhatsApp/Telegram join + 2-minute social-rail cycle + theme v1.6.0 (editor parity) ·
-55/55 suites · jsdom 138/138 · readiness 100/100 (28/28) · guardian 14/15 (1 warn-only owner env) ·
+*Last updated: v72 (2026-09-18) — qualification-wise job filter (auto tags; 10th · 10+2 · ITI ·
+Diploma · Degree · PG · B.Tech) + header search + PWA install + clean copy (బ్రేకింగ్/internal
+metrics removed from public) + theme v1.7.0 ·
+56/56 suites · jsdom 150/150 · readiness 100/100 (28/28) · guardian 14/15 (1 warn-only owner env) ·
 theme audit 0/0 · code audit 0/0 · parity audit 0/0.*

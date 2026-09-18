@@ -84,10 +84,13 @@ Detail docs: `DEPLOY_MILESWEB.md` (cPanel steps) · `DEPLOY_ORACLE_CLOUD.md` (VM
 | Site guardian | **`python run.py --guardian`** — site/UI/SEO/ads/feed/storage/theme 12 checks (11 ok · 1 owner-pending) |
 | Readiness score | **`python run.py --readiness`** — **100/100** · 27/27 system checks · 10 owner-pending |
 | Production check | **11/11** pass (`python run.py --production-audit`) |
-| Browser runtime | **138/138** checks (`node tests/runtime/jsdom_runtime_test.js`) |
+| Browser runtime | **150/150** checks (`node tests/runtime/jsdom_runtime_test.js`) |
 | Public surface | developer/proof text **ledu** — `python run.py --guardian` → `counts_sync` · dev archive `docs/design-archive/` (website meeda serve avvadu) |
 | Business deal | no public rate card — prices live in `autoblog/rate_card.py`, print with `python run.py --rate-card` and negotiate personally |
 | Contact routes | set `SOCIAL_WHATSAPP` + `SOCIAL_TELEGRAM` in `.env` → `python run.py --push-theme-data` (site WhatsApp boxes + rail follow it) |
+| Qualification filter | theme `inc/qual-filter.php` — post save tho automatic tags + `wp studentup-qual-backfill` (purana posts) + bot `autoblog/qual.py` meta; proof: `python tests/v72_test.py` |
+| Install as an app | `preview/manifest.webmanifest` + `preview/sw.js` · theme `?studentup_sw=1` (root-scope SW, server config avasaram ledu) + install prompt |
+| Site copy clean | బ్రేకింగ్/internal metrics/demo maatalu public lo levu — `python run.py --guardian` → `first_look_ui` |
 | Deploy check | 8 ok · 4 warn · 0 fail (`python run.py --deploy-check`) |
 | Website | 17 categories · 143 sources · 11,192 keywords · menu + chips |
 | Ads | AdSense gate · sponsor console · rate card · house ads |
@@ -103,7 +106,7 @@ Detail docs: `DEPLOY_MILESWEB.md` (cPanel steps) · `DEPLOY_ORACLE_CLOUD.md` (VM
 
 - [ ] **1. Domain + hosting** — studentup.in (leda mee peru) + MilesWeb cPanel plan (₹59–180/నెల).
       → WordPress install + SSL (Let's Encrypt) ON.
-- [ ] **2. WordPress setup** — Rank Math; theme install (**v61**:
+- [ ] **2. WordPress setup** — Rank Math; theme install (**v72**: theme **1.7.0** —
       `python tools/build_wp_theme.py` → zip → Appearance → Themes → Upload → Activate);
       `wp-admin → Users → Application Passwords` → app password create cheyyandi.
       **v68**: IndexNow key file ni **theme ne serve chestundi** (`/<key>.key`) — cPanel lo
@@ -182,6 +185,9 @@ curl -s https://studentup.in/ads.txt      # ads.txt host ayyindi leda chudandi
 curl -s https://studentup.in/news-sitemap.xml | head -5   # v66: News/Discover eligibility
 python tools/theme_audit.py --verbose     # v66/v67: theme mistakes 0 errors · 0 warnings
 python tools/theme_audit_deep.py          # v67: deep audit (templates · security · perf · a11y · ads)
+# v72 notes: qualification tags — pehli sari `wp studentup-qual-backfill --limit=500` (leda
+#  wp-admin okasari open cheyandi — 20/batch automatic). బ్రేకింగ్ section kavali ante
+#  StudentUp → కంటెంట్ → 'బ్రేకింగ్ న్యూస్ సెక్షన్ ON' (default OFF).
 # v69 notes: theme v1.5.0 (author archive + editor styles) · `python tools/parity_audit.py` —
 #  CLI ↔ docs · dead modules · preview links/meta · counts (0 errors · 0 warnings).
 # v68 notes: bot + theme **code-level audit** (tools/code_audit.py) — 0 errors · 0 warnings.
@@ -240,4 +246,4 @@ Detail: `python tools/revenue_estimate.py --views 10k`
 Clickbait titles · fake clicks · popups · "Google tricks" · ad ni content laaga dhaachadam ·
 job guarantee promises (advertisers kuda). Ivi AdSense ban + trust damage.
 
-*Last updated: v71 (2026-09-18) · 55/55 suites · 138/138 runtime · 11/11 production checks · theme v1.6.0*
+*Last updated: v72 (2026-09-18) · 56/56 suites · 150/150 runtime · 11/11 production checks · theme v1.7.0*

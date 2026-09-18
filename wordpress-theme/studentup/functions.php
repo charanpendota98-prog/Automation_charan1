@@ -12,9 +12,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'STUDENTUP_VERSION', '1.6.0' );  // v71: Internet Center + join CTA blocks · social rail cycle
+define( 'STUDENTUP_VERSION', '1.7.0' );  // v72: qualification filter · header search · PWA install · clean copy
 
 require_once get_template_directory() . '/inc/options.php';
+require_once get_template_directory() . '/inc/qual-filter.php';  // v72: 10th/Inter/Degree/PG filter (auto tags)
 require_once get_template_directory() . '/inc/breaking.php';
 require_once get_template_directory() . '/inc/ads.php';
 require_once get_template_directory() . '/inc/template.php';
@@ -85,6 +86,10 @@ add_action( 'after_setup_theme', 'studentup_setup' );
 function studentup_assets() {
 	wp_enqueue_style( 'studentup', get_stylesheet_uri(), array(), STUDENTUP_VERSION );
 	wp_enqueue_script( 'studentup', get_template_directory_uri() . '/assets/js/studentup.js', array(), STUDENTUP_VERSION, true );
+	// v72: PWA install prompt (app-laga install) — pwa option ON unte mattrame
+	if ( studentup_opt( 'pwa', '1' ) ) {
+		wp_enqueue_script( 'studentup-pwa', get_template_directory_uri() . '/assets/js/studentup-pwa.js', array( 'studentup' ), STUDENTUP_VERSION, true );
+	}
 	wp_localize_script(
 		'studentup',
 		'STUDENTUP',

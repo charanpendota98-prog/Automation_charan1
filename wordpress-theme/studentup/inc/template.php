@@ -76,7 +76,10 @@ function studentup_card( $idx = 0 ) {
 	$tones = array( '', 't2', 't3' );
 	$tone  = $tones[ $idx % 3 ];
 	?>
-	<article <?php post_class( 'news' ); ?> data-cat="<?php echo esc_attr( $cat ); ?>" data-text="<?php echo esc_attr( mb_strtolower( get_the_title() . ' ' . get_the_excerpt() ) ); ?>">
+	<?php $su_qual_raw = trim( (string) get_post_meta( get_the_ID(), 'studentup_qual', true ) ); ?>
+	<article <?php post_class( 'news' ); ?> data-cat="<?php echo esc_attr( $cat ); ?>"
+		data-qual="<?php echo esc_attr( $su_qual_raw ); ?>"
+		data-text="<?php echo esc_attr( mb_strtolower( get_the_title() . ' ' . get_the_excerpt() ) ); ?>">
 		<?php if ( has_post_thumbnail() ) : ?>
 			<a class="thumb <?php echo esc_attr( $tone ); ?>" href="<?php the_permalink(); ?>" aria-hidden="true" tabindex="-1">
 				<?php the_post_thumbnail( 'studentup-card', array( 'loading' => 'lazy', 'alt' => esc_attr( get_the_title() ) ) ); ?>
@@ -87,12 +90,18 @@ function studentup_card( $idx = 0 ) {
 		<div class="newsbody">
 			<div class="tagrow">
 				<span class="tag"><?php echo esc_html( $label ); ?></span>
+				<?php studentup_qual_chip(); ?>
 				<time class="statechip" datetime="<?php echo esc_attr( get_the_date( DATE_W3C ) ); ?>"><?php echo esc_html( studentup_ago( get_the_date( DATE_W3C ) ) ); ?></time>
 			</div>
 			<h3><a href="<?php the_permalink(); ?>" style="color:inherit"><?php the_title(); ?></a></h3>
 			<p><?php echo esc_html( wp_trim_words( get_the_excerpt(), 20, '…' ) ); ?></p>
 			<div class="newsfoot">
 				<span><?php echo esc_html( studentup_reading_time() ); ?></span>
+				<?php
+				if ( function_exists( 'studentup_last_date_badge' ) ) {
+					echo wp_kses_post( studentup_last_date_badge() );
+				}
+				?>
 				<b><?php echo esc_html( 'మార్గదర్శి చదవండి →' ); ?></b>
 			</div>
 		</div>
@@ -137,7 +146,6 @@ function studentup_menu_fallback() {
 			$items[] = array( 'label' => $m['label'], 'url' => get_category_link( $term ), 'desc' => $m['hint'] );
 		}
 	}
-	$items[] = array( 'label' => 'బ్రేకింగ్ న్యూస్', 'url' => home_url( '/#breaking' ), 'class' => 'navbrk' );
 	echo '<ul class="menu-primary">';
 	foreach ( $items as $it ) {
 		$cls = isset( $it['class'] ) ? ' class="' . esc_attr( $it['class'] ) . '"' : '';
