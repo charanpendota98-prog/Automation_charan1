@@ -184,6 +184,37 @@ def test_indexing_engine_safe_and_signing():
         assert "Verified OK" in verify.stdout, verify.stdout + verify.stderr
 
 
+def test_indexing_token_path_degrades_gracefully():
+    """SA key unna kaani Google reach avvakapote (`access_token`) **crash avvakoodadu**."""
+    import os
+    import shutil
+
+    if not shutil.which("openssl"):
+        return
+    from autoblog import indexing
+
+    with tempfile.TemporaryDirectory() as td:
+        key = Path(td) / "k.pem"
+        subprocess.run(["openssl", "genrsa", "-out", str(key), "2048"],
+                       capture_output=True, timeout=120, check=True)
+        sa = {"client_email": "v68-test@example.iam.gserviceaccount.com",
+              "private_key": read(key)}
+        old = os.environ.get("GOOGLE_INDEXING_SA")
+        os.environ["GOOGLE_INDEXING_SA"] = __import__("json").dumps(sa)
+        indexing.access_token._cache = None          # noqa: SLF001 — cache reset
+        try:
+            assert indexing.configured() is True, "SA set unte configured True avvali"
+            token = indexing.access_token()          # network ledu → "" (raise kaadu)
+            assert token == "", f"offline lo token raakoodadu: {token[:20]}"
+            assert indexing.publish_url("https://example.com/x/") is False
+        finally:
+            if old is None:
+                os.environ.pop("GOOGLE_INDEXING_SA", None)
+            else:
+                os.environ["GOOGLE_INDEXING_SA"] = old
+            indexing.access_token._cache = None      # noqa: SLF001
+
+
 def test_publish_push_sets_indexing_state():
     """Publish tarvata `_indexing` state set avvali (Telegram/state reporting)."""
     from autoblog import pipeline

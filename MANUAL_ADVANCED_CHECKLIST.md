@@ -157,7 +157,7 @@ Message lo reason undi — exact ga fix cheyandi:
 ## ⚠️ Honest note
 Perfect = **machine gates + human 5-min verify**. Gates mistakes ramigadu (conflicts/stale/dates/originality), kaani official numbers mee mata tho final check — AdSense/Google/reputation thartham lo idi matrame safety.
 
-*Last updated: v67 (2026-09-18) — DEEP AUDIT (expert/BA: templates · security · perf · a11y · standards · KPI) + TOP-THEME HARDENING (security module · comments · sidebar · readme · POT) + 6/6 REVENUE SLOTS: 11 checks · 53/53 suites · 122/122 runtime · readiness 100/100 (26/26) · audit 0 errors 0 warnings*
+*Last updated: v68 (2026-09-18) — CODE-LEVEL BUG HUNT (bot + theme) + INSTANT INDEXING: nijamaina bugs fix (undefined config attr · 34 silent `except: pass` · AdSense in-article markup · news sitemap lastmod · IndexNow key file) + IndexNow/Google Indexing API engine: 19 checks · 54/54 suites · 122/122 runtime · readiness 100/100 (27/27) · code audit 0 errors 0 warnings*
 
 ## PART 26 — v67: DEEP AUDIT (expert/BA) + TOP-THEME HARDENING + 6/6 REVENUE SLOTS
 
@@ -206,8 +206,9 @@ REVENUE (6/6 slots · privacy-safe):
   anchor/sticky-bottom (mobile) — anni density cap + lazy + reserved height + consent tho.
 
 TESTS            : tests/v67_test.py = 11 checks · run.py --test-all 53/53 ·
-                   jsdom 122/122 · readiness 100/100 (26/26) · audit 0/0 · php-lint 27/27 ·
-                   zip 34 files · BA matrix docs/BA_REQUIREMENTS_MATRIX.md
+                   jsdom 122/122 · readiness 100/100 (27/27) · theme audit 0/0 ·
+                   code audit 0/0 · php-lint 28/28 · zip 35 files ·
+                   BA matrix docs/BA_REQUIREMENTS_MATRIX.md
 ```
 
 ---
@@ -746,7 +747,7 @@ KOTHA (trending ki): instant indexing
     Google officially support chese use case — Search Console lo SA ni Owner ga add cheyandi)
   · RS256 signing: `cryptography` leda `openssl` CLI (dependency ledu; test real signature verify)
 
-PROOF: tests/v68_test.py 18 checks (audit clean · bug locks · detection ability fixtures ·
+PROOF: tests/v68_test.py 19 checks (audit clean · bug locks · detection ability fixtures ·
   CLI smoke battery 10 commands · real RSA-2048 sign→verify) · run.py --test-all 54/54 ·
   readiness 100/100 (27/27) · theme audit 0/0 · code audit 0/0 · php-lint 28/28 · zip 35 files
 HONEST: instant indexing = notification, **ranking guarantee kaadu** (Google decide chestundi).

@@ -7,7 +7,7 @@ enti mee (owner) cheyyali" ani okka chota telustundi — memory meeda depend avv
 **Verify command (okate line, anni gates):**
 ```bash
 python run.py --test-all          # 53 suites (unit + integration, offline)
-python run.py --readiness         # 100/100 · 26/26 system checks · 8 owner-pending
+python run.py --readiness         # 100/100 · 27/27 system checks · 10 owner-pending
 python run.py --pin-check         # per-post certificate (67 checks) sample
 python run.py --guardian          # site + theme + audit daily checks
 python tools/theme_audit.py --verbose   # theme mistakes 0 errors · 0 warnings
@@ -22,8 +22,8 @@ python tools/build_wp_theme.py    # php-lint + audit + POT + zip (theme install 
 |---|---|---|---|
 | Post quality gates | 100/100 · 0 critical | **100/100 · 67/67 · critical 0** | `python run.py --pin-check` |
 | Rank Math score | 100 | **100** (draft 33 → 100 deterministic) | `--pin-check` / WP post edit |
-| System readiness | 100/100 | **100/100 · 26/26 system · 8 owner-pending** | `python run.py --readiness` |
-| Test coverage | all green | **54/54 suites · 122/122 runtime · 18 v68 checks** | `--test-all` + jsdom |
+| System readiness | 100/100 | **100/100 · 27/27 system · 10 owner-pending** | `python run.py --readiness` |
+| Test coverage | all green | **54/54 suites · 122/122 runtime · 19 v68 checks** | `--test-all` + jsdom |
 | Theme audit | 0 errors · 0 warnings | **0 · 0** (27 files · 75 functions · 34 options) | `tools/theme_audit.py` |
 | PHP syntax (real PHP 8) | 100% | **27/27 files OK** | `tools/build_wp_theme.py` |
 | Ad positions live in theme | 6/6 | **6/6** (leaderboard · in-article · in-feed · sidebar-sticky · below-content · anchor) | audit KPI row |
