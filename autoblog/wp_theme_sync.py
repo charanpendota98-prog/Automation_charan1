@@ -36,7 +36,7 @@ def build_payload(root: Optional[Path] = None,
                   include: Optional[List[str]] = None) -> Dict[str, object]:
     """Local files nunchi theme payload — breaking + house ads + proof + deadline."""
     root = Path(root or config.BASE_DIR)
-    include = include or ["breaking", "house_ads", "proof", "deadline"]
+    include = include or ["breaking", "house_ads", "proof", "deadline", "options"]
     out: Dict[str, object] = {}
 
     if "breaking" in include:
@@ -69,6 +69,24 @@ def build_payload(root: Optional[Path] = None,
             }
         except Exception as exc:  # noqa: BLE001
             log.debug("proof build skip: %s", exc)
+
+    if "options" in include:
+        # v64: .env nunchi website options (unna vi mattrame pampistundi — invent ledu)
+        mapping = {
+            "social_whatsapp": getattr(config, "SOCIAL_WHATSAPP", ""),
+            "social_telegram": getattr(config, "SOCIAL_TELEGRAM", ""),
+            "social_instagram": getattr(config, "SOCIAL_INSTAGRAM", ""),
+            "social_youtube": getattr(config, "SOCIAL_YOUTUBE", ""),
+            "adsense_client": getattr(config, "ADSENSE_CLIENT_ID", ""),
+            "adsense_auto": "1" if getattr(config, "ADSENSE_AUTO_ADS", True) else "0",
+            "sticky_ad": getattr(config, "STICKY_AD", ""),
+            "contact_email": getattr(config, "CONTACT_EMAIL", ""),
+            "exam_url": getattr(config, "EXAM_PUBLIC_URL", ""),
+            "proof_json": json.dumps(out.get("proof") or {}),
+        }
+        opts = {k: v for k, v in mapping.items() if isinstance(v, str) and v.strip()}
+        if opts:
+            out["options"] = opts
 
     if "deadline" in include:
         # .env / option driven: POST_DEADLINE_TITLE + POST_DEADLINE_ISO

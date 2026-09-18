@@ -274,6 +274,7 @@ def rankmath_strict(article: Dict, final_html: str = "") -> Dict:
         "score": min(100, round(100 * earned / possible)),
         "issues": [r["item"] for r in fails],
         "fixes": [r["fix"] for r in fails if r["fix"]],
+        "checks": results,          # v64: per-test breakdown (proof + refine)
         "words": words,
     }
 

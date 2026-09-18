@@ -157,7 +157,43 @@ Message lo reason undi — exact ga fix cheyandi:
 ## ⚠️ Honest note
 Perfect = **machine gates + human 5-min verify**. Gates mistakes ramigadu (conflicts/stale/dates/originality), kaani official numbers mee mata tho final check — AdSense/Google/reputation thartham lo idi matrame safety.
 
-*Last updated: v63 (2026-09-18) — MISTAKE-FREE SEO (Rank Math REST bridge + meta verify) + post edit: 7 checks (v63_test.py) · 49/49 suites · 122/122 runtime · readiness 100/100*
+*Last updated: v64 (2026-09-18) — RANK MATH 100 engine (rm100) + theme 100x (options/TOC/schema/E-E-A-T/PWA) + PHP syntax gate: 12 checks · 50/50 suites · 122/122 runtime · readiness 100/100 (23/23)*
+
+## PART 23 — v64: RANK MATH 100 + THEME 100x (options/TOC/schema/E-E-A-T/PWA)
+
+```
+RANK MATH 100 ENGINE (autoblog/rm100.py — deterministic, LLM ledu)
+  title      : focus keyword MODATLO + year (kw tarvata) + power word + 40-62 chars
+  meta       : kw + 110-156 chars
+  slug       : keyword tokens (URL test)
+  lede/TOC   : first paragraph lo kw · H2/H3 anchor ids + "విషయ సూచిక" jump links
+  H2s        : 2+ H2 headings lo keyword
+  density    : exact keyword 7-15 sarlu (0.4-0.8% — natural Telugu vakyalu)
+  table/FAQ  : unna facts thone summary table · faq 3+ unte FAQ section
+  links      : external (source url mattrame) + internal (site hub) — invent ledu
+  transitions: Telugu connectives 30% sentences ki (checker laage kolichi)
+  paragraphs : 120+ word paragraphs chunks ga split (text poadu)
+  PROOF      : python run.py --rm100 → 33/100 → 100/100 (21 tests ✅)
+GATE (pipeline) : rm100 → LLM refine (RM_REFINE_ROUNDS=2, RM_TARGET=100) → rm100 malli
+                  → final score WP meta 'rank_math_seo_score' + Telegram
+WEBSITE OPTIONS : WP Admin → StudentUp (tabs: Ads · Socials · Content · Advanced)
+                  REST /wp-json/studentup/v1/options (GET public · POST manage_options)
+                  bot --push-theme-data lo 'options' block (socials/adsense/flags)
+THEME 100x      : inc/options.php (admin+REST) · inc/toc.php (auto TOC) ·
+                  inc/schema.php (Organization/WebSite/SearchAction/Breadcrumb) ·
+                  inc/author-box.php (E-E-A-T + last updated) · inc/pwa.php
+                  (manifest + theme-color + preconnect + AdSense auto ads)
+                  sticky bottom ad · copy link · reading progress · facts table style
+PHP LINT GATE   : tools/php_lint.js (node php-parser · PHP 8 grammar) —
+                  build_wp_theme.py lo hard gate (syntax tappu → zip ledu)
+V64 BUG FIXES   : (1) 10 templates lo `?>` miss → white screen (site break!) — fix +
+                  regex guard test · (2) TOC id/link mismatch (-2 suffix) — fix +
+                  link⊆ids test · (3) paragraph split text loss — fix + words>=before test
+TESTS           : tests/v64_test.py = 12 checks · run.py --test-all 50/50 ·
+                  readiness 100/100 (23/23 system checks)
+```
+
+---
 
 ## PART 22 — v63: MISTAKE-FREE SEO (Rank Math REST bridge + meta verification)
 
@@ -180,7 +216,7 @@ SEAL     : GET /wp-json/studentup/v1/theme-info → theme/version/seo_bridge/ran
 GSC/GA4  : GO_LIVE step 2a — GSC verify + sitemap submit + GA4 property (owner pani)
 CMP      : GO_LIVE step 2c — AdSense → Privacy & messaging → Google-certified CMP ON
            (EEA/UK ads ki Google rule)
-TESTS    : tests/v63_test.py = 7 checks · run.py --test-all 49/49
+TESTS    : tests/v63_test.py = 7 checks · run.py --test-all 50/50
 ```
 
 ---
@@ -200,7 +236,7 @@ NIJAM    : ee score = code side enta ready undo matrame. Google ranking, traffic
 EVIDENCE : blueprint 100/100 (TOP POST 🏆) · gates QA 80+/orig 72%+/deep ON ·
            radar 4x/day · 59 districts · Rank Math LIVE fields · slots 3/3 ·
            hooks 6/6 · theme zip fresh
-TESTS    : tests/v62_test.py = 11 checks · run.py --test-all 49/49
+TESTS    : tests/v62_test.py = 11 checks · run.py --test-all 50/50
 ```
 
 ---
@@ -230,7 +266,7 @@ FILES   : front-page (home order) · header (menu+టికర్) · footer (so
           inc/template (cards · proof tiles · countdown · breadcrumbs)
 SPEED   : external JS library ledu (1 CSS + 1 JS) · lazy images · CLS-safe ad slots
 NIJAM   : theme = mee design; WP plugins (Rank Math · AdSense) vaalla pani vaalle chestayi.
-TESTS   : tests/v61_test.py = 14 checks · run.py --test-all 49/49
+TESTS   : tests/v61_test.py = 14 checks · run.py --test-all 50/50
 ```
 
 ---
@@ -254,7 +290,7 @@ SEVERITY : ❌ = system break (fix cheyyali) · ⚠️ = mee pani pending (creds
 STATUS   : logs/guardian.json — chivari 14 runs history (gitignored)
 NIJAM    : read-only audit — fix cheyyadu, cheptundi matrame. Fixes tests +
            builder nunchi vasthai (tiles bump, builder rerun, prune…)
-TESTS    : tests/v60_test.py = 10 checks · run.py --test-all 49/49
+TESTS    : tests/v60_test.py = 10 checks · run.py --test-all 50/50
 ```
 
 ---

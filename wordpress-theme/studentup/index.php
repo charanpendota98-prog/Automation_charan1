@@ -2,6 +2,7 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
+?>
 <?php
 /**
  * Fallback template — blog list (design cards same).

@@ -2,6 +2,7 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
+?>
 <?php
 /**
  * Footer + fixed socials (right side, vertically centered).
@@ -16,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<div>
 				<h4><?php bloginfo( 'name' ); ?></h4>
 				<p><?php echo esc_html( get_bloginfo( 'description' ) ); ?></p>
-				<p>✅ 100% అధికారిక మూలాలతో ధృవీకరించి ప్రచురిస్తాము. తప్పులు కనిపిస్తే <a href="mailto:<?php echo esc_attr( get_option( 'admin_email' ) ); ?>"><?php echo esc_html( get_option( 'admin_email' ) ); ?></a> కు తెలియజేయండి.</p>
+				<p>✅ 100% అధికారిక మూలాలతో ధృవీకరించి ప్రచురిస్తాము. తప్పులు కనిపిస్తే <a href="mailto:<?php echo esc_attr( studentup_contact_email() ); ?>"><?php echo esc_html( studentup_contact_email() ); ?></a> కు తెలియజేయండి.</p>
 			</div>
 			<div>
 				<h4>విభాగాలు</h4>
@@ -40,7 +41,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				}
 				?>
 				<ul>
-					<li><a href="https://t.me/studentup_in" target="_blank" rel="noopener">Telegram ఛానల్</a></li>
+					<li><a href="<?php echo esc_url( studentup_social_links()['telegram'] ); ?>" target="_blank" rel="noopener">Telegram ఛానల్</a></li>
 					<li><a href="<?php echo esc_url( home_url( '/#breaking' ) ); ?>">బ్రేకింగ్ న్యూస్</a></li>
 				</ul>
 			</div>
@@ -52,12 +53,23 @@ if ( ! defined( 'ABSPATH' ) ) {
 	</div>
 </footer>
 
+<?php $su_soc = studentup_social_links(); ?>
 <nav class="su-social" aria-label="సోషల్ మీడియా">
-	<a href="https://wa.me/919999999999" target="_blank" rel="noopener" aria-label="WhatsApp">💬</a>
-	<a href="https://t.me/studentup_in" target="_blank" rel="noopener" aria-label="Telegram">✈️</a>
-	<a href="https://www.instagram.com/studentup.in" target="_blank" rel="noopener" aria-label="Instagram">📸</a>
-	<a href="https://www.youtube.com/@studentupin" target="_blank" rel="noopener" aria-label="YouTube">▶️</a>
+	<a href="<?php echo esc_url( $su_soc['whatsapp'] ); ?>" target="_blank" rel="noopener" aria-label="WhatsApp">💬</a>
+	<a href="<?php echo esc_url( $su_soc['telegram'] ); ?>" target="_blank" rel="noopener" aria-label="Telegram">✈️</a>
+	<a href="<?php echo esc_url( $su_soc['instagram'] ); ?>" target="_blank" rel="noopener" aria-label="Instagram">📸</a>
+	<a href="<?php echo esc_url( $su_soc['youtube'] ); ?>" target="_blank" rel="noopener" aria-label="YouTube">▶️</a>
 </nav>
+
+<?php
+// v64: sticky bottom ad (option: StudentUp → Ads → Sticky bottom ad ON)
+if ( studentup_opt( 'sticky_ad', '0' ) ) :
+	?>
+	<div class="su-stickyad" id="su-stickyad">
+		<button type="button" class="su-sticky-close" aria-label="మూసివేయండి">✕</button>
+		<?php studentup_ad( 'anchor' ); ?>
+	</div>
+<?php endif; ?>
 
 <?php wp_footer(); ?>
 </body>

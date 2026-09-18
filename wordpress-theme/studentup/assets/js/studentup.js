@@ -1,4 +1,5 @@
-/* StudentUp theme JS (v61) — dark mode, mobile menu, chips filter, countdown.
+/* StudentUp theme JS (v64) — dark mode, mobile menu, chips filter, countdown,
+ * reading progress, copy link, sticky ad close, TOC smooth scroll.
  * No external JS library. Vanilla, tiny, mobile-first.
  */
 (function () {
@@ -108,6 +109,68 @@
     tick();
     setInterval(tick, 1000);
   }
+
+  /* ---------- v64: reading progress bar ---------- */
+  var bar = document.getElementById("su-progress-bar");
+  var article = document.querySelector(".article-content");
+  if (bar && article) {
+    var onScroll = function () {
+      var top = article.getBoundingClientRect().top + window.pageYOffset;
+      var total = article.offsetHeight - window.innerHeight;
+      var pct = total > 0 ? ((window.pageYOffset - top) / total) * 100 : 0;
+      bar.style.width = Math.max(0, Math.min(100, pct)) + "%";
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    onScroll();
+  }
+
+  /* ---------- v64: copy link button ---------- */
+  Array.prototype.forEach.call(document.querySelectorAll(".su-copy"), function (btn) {
+    btn.addEventListener("click", function () {
+      var url = btn.getAttribute("data-url") || window.location.href;
+      var done = function () {
+        var t = btn.textContent;
+        btn.textContent = "✅ కాపీ అయింది";
+        setTimeout(function () { btn.textContent = t; }, 1600);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(done, done);
+      } else {
+        var ta = document.createElement("textarea");
+        ta.value = url; document.body.appendChild(ta); ta.select();
+        try { document.execCommand("copy"); } catch (e) {}
+        document.body.removeChild(ta); done();
+      }
+    });
+  });
+
+  /* ---------- v64: sticky ad close ---------- */
+  var sticky = document.getElementById("su-stickyad");
+  if (sticky) {
+    var hide = function () { sticky.style.display = "none"; };
+    try { if (localStorage.getItem("su_sticky_off") === "1") hide(); } catch (e) {}
+    var close = sticky.querySelector(".su-sticky-close");
+    if (close) {
+      close.addEventListener("click", function () {
+        hide();
+        try { localStorage.setItem("su_sticky_off", "1"); } catch (e) {}
+      });
+    }
+  }
+
+  /* ---------- v64: TOC smooth scroll ---------- */
+  Array.prototype.forEach.call(document.querySelectorAll(".su-toc a"), function (a) {
+    a.addEventListener("click", function (ev) {
+      var id = (a.getAttribute("href") || "").replace("#", "");
+      var target = id && document.getElementById(id);
+      if (target) {
+        ev.preventDefault();
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
+        if (history.replaceState) history.replaceState(null, "", "#" + id);
+      }
+    });
+  });
 
   /* ---------- most-used live counts (site side, WP-print chesina numbers ki fallback) ---------- */
   Array.prototype.forEach.call(document.querySelectorAll(".ucount"), function (el) {

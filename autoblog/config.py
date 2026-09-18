@@ -170,8 +170,8 @@ GEMINI_API_KEYS = [k.strip() for k in _get("GEMINI_API_KEYS", "").split(",")
                    if k.strip()]
 GEMINI_RPD_PER_KEY = int(_get("GEMINI_RPD_PER_KEY", "1400"))
 # v18: Rank Math STRICT gate (real panel checks) — target + refine rounds
-RM_TARGET = int(_get("RM_TARGET", "90"))
-RM_REFINE_ROUNDS = int(_get("RM_REFINE_ROUNDS", "1"))
+RM_TARGET = int(_get("RM_TARGET", "100"))   # v64: 100 target (Rank Math)
+RM_REFINE_ROUNDS = int(_get("RM_REFINE_ROUNDS", "2"))  # v64: 2 rounds
 # v18: AdSense-safe originality floor — ee % kindha post publish cheyyadu
 ORIG_HARD_FLOOR = float(_get("ORIG_HARD_FLOOR", "72"))
 # Mobile lo headings peddaga unte — responsive clamp CSS add (1=on)
@@ -276,6 +276,14 @@ ADSENSE_AUTO_ADS = _get("ADSENSE_AUTO_ADS", "1") not in ("0", "false", "no")
 # Auto Ads loader can be emitted even if a client id is accidentally present.
 ADSENSE_APPROVED = _get("ADSENSE_APPROVED", "0") not in ("0", "false", "no")
 ADSENSE_CLIENT_ID = _get("ADSENSE_CLIENT_ID", "").strip()
+# v64: website options (.env nunchi theme ki push avutayi — --push-theme-data)
+SOCIAL_WHATSAPP = _get("SOCIAL_WHATSAPP", "").strip()
+SOCIAL_TELEGRAM = _get("SOCIAL_TELEGRAM", "").strip()
+SOCIAL_INSTAGRAM = _get("SOCIAL_INSTAGRAM", "").strip()
+SOCIAL_YOUTUBE = _get("SOCIAL_YOUTUBE", "").strip()
+CONTACT_EMAIL = _get("CONTACT_EMAIL", "").strip()
+STICKY_AD = _get("STICKY_AD", "").strip()
+EXAM_PUBLIC_URL = _get("EXAM_PUBLIC_URL", "").strip()
 # Consent is a deployment responsibility, not something the bot can fake.
 # Set a real Google-certified CMP/provider in production and verify its UI.
 ADSENSE_CONSENT_PROVIDER = _get("ADSENSE_CONSENT_PROVIDER", "").strip()

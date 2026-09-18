@@ -13,7 +13,8 @@ from pathlib import Path
 from typing import Dict, Optional
 from urllib.parse import urlparse
 
-from . import config, gemini_client, image_gen, notifier, research, seo, sources, state, validator
+from . import (config, gemini_client, image_gen, notifier, research, rm100,
+               seo, sources, state, validator)
 from .notifier import esc, send_telegram
 from .wordpress_client import WordPressClient
 
@@ -176,59 +177,80 @@ def _hygiene(article: Dict) -> Dict:
 
 
 def _rankmath_gate(article: dict, category: str) -> dict:
-    """v18: strict Rank Math scoring → ONE automatic refine round if below RM_TARGET.
+    """v64: Rank Math 100 gate — DETERMINISTIC rm100 fixes + LLM refine rounds.
 
-    Scorer mimics the actual Rank Math content checks (capped /100 — QA lo
-    inflation undadu). Refine preserves slug (internal links stay valid).
-    Mock/no-key flows skip silently.
+    Flow: rm100.apply (title/meta/slug/TOC/table/FAQ/links/density/transitions)
+       → score check → RM_REFINE_ROUNDS varaku LLM refine (content depth, list items)
+       → prathi refine tarvata rm100 malli (rewrite structure break cheyyakunda)
+       → final score article["_rm100"] lo (Telegram + WP meta lo chupistamu)
+
+    Mock/no-key flows skip (silently) — score inka compute avutundi.
     """
-    if article.get("_mock") or not getattr(config, "RM_REFINE_ROUNDS", 1):
+    if article.get("_mock"):
+        article["_rm100"] = rm100.apply(article) if not article.get("_no_rm100") else None
         return article
+    res = rm100.apply(article)
+    article["_rm100"] = {"score": res["after"], "before": res["before"],
+                         "applied": res["applied"]}
+    article["_rm_pre"] = res["before"]
+    target = int(getattr(config, "RM_TARGET", 100) or 100)
+    rounds = int(getattr(config, "RM_REFINE_ROUNDS", 2) or 0)
+    strict = analyze_rm(article)
     if not (config.GEMINI_API_KEY or getattr(config, "GEMINI_API_KEYS", [])):
+        # key ledu → LLM refine ledu; deterministic rm100 score mattrame
+        article["_rm"] = strict
         return article
-    strict = validator.rankmath_strict(article, article.get("content_html", ""))
-    article["_rm_pre"] = strict["score"]
-    # v21 FACT GUARD: dates/counts source lo verify-avgathi refine fixes lo
-    facts_before: list = []
-    if getattr(config, "FACT_STRICT", True) and article.get("_source_texts"):
-        facts_before = validator.fact_guard(
-            article.get("content_html", ""), article["_source_texts"])
-        if facts_before:
-            log.warning("FACT GUARD: %d unverified data item(s): %s",
-                        len(facts_before), "; ".join(facts_before[:3]))
-    article["_fact"] = facts_before
-    if (strict["score"] >= getattr(config, "RM_TARGET", 90)
-            and not strict["fixes"]) and not facts_before:
-        return article
-    fixes = list(strict["fixes"]) + [
-        f"SUSPECT data remove/verify cheyandi — {x}" for x in facts_before]
-    log.info("RankMath strict %d/100 (<%d) + facts — refine round (%d fixes)",
-             strict["score"], config.RM_TARGET, len(fixes))
-    try:
-        improved = gemini_client.refine_article(article, fixes[:12])
+    for rnd in range(1, rounds + 1):
+        if strict["score"] >= target and not strict["fixes"]:
+            break
+        facts_before: list = []
+        if getattr(config, "FACT_STRICT", True) and article.get("_source_texts"):
+            facts_before = validator.fact_guard(
+                article.get("content_html", ""), article["_source_texts"])
+            if facts_before:
+                log.warning("FACT GUARD: %d unverified data item(s): %s",
+                            len(facts_before), "; ".join(str(x) for x in facts_before[:3]))
+        fixes = list(strict["fixes"]) + [
+            f"SUSPECT data remove/verify cheyandi — {x}" for x in facts_before]
+        if not fixes:
+            break
+        log.info("RankMath %d/100 (target %d) — refine round %d/%d (%d fixes)",
+                 strict["score"], target, rnd, rounds, len(fixes))
+        try:
+            improved = gemini_client.refine_article(article, fixes[:12])
+        except Exception as exc:  # noqa: BLE001 — refine best-effort, publish aapadu
+            log.warning("Refine round %d failed (%s)", rnd, exc)
+            break
         rm2 = validator.rankmath_strict(improved, improved.get("content_html", ""))
-        facts_after = (validator.fact_guard(
-            improved.get("content_html", ""), article["_source_texts"])
-            if facts_before else [])
-        if facts_after:
-            log.warning("FACT GUARD after refine: %d still unverified", len(facts_after))
-        improved["_fact"] = facts_after
-        facts_fixed = facts_before and not facts_after
-        if rm2["score"] > strict["score"] or facts_fixed:
-            log.info("Refine helped: %d -> %d/100", strict["score"], rm2["score"])
-            for k in ("title", "banner_text", "meta_description",
-                      "content_html", "tags", "focus_keyword"):
-                if improved.get(k):
-                    article[k] = improved[k]
-            article["_rm"] = rm2
-            article["_fact"] = improved.get("_fact", facts_after)
-            article["refined"] = True
-        else:
-            log.info("Refine did not help (%d/100) — keeping original draft",
-                     rm2["score"])
-    except Exception as exc:  # noqa: BLE001 — refine best-effantundi
-        log.warning("Refine round failed (%s) — continuing with original", exc)
+        facts_after = (validator.fact_guard(improved.get("content_html", ""),
+                                            article["_source_texts"])
+                       if facts_before else [])
+        facts_fixed = bool(facts_before) and not facts_after
+        if not (rm2["score"] > strict["score"] or facts_fixed):
+            log.info("Refine helped ledu (%s/100 vs %s/100) — original draft keep",
+                     rm2["score"], strict["score"])
+            article["_fact"] = facts_before
+            break
+        for k in ("title", "banner_text", "meta_description", "content_html",
+                  "tags", "focus_keyword", "seo_title"):
+            if improved.get(k):
+                article[k] = improved[k]
+        article["refined"] = True
+        article["_fact"] = facts_after
+        log.info("Refine helped: %s -> %s/100 (facts fixed: %s)",
+                 strict["score"], rm2["score"], facts_fixed)
+        # v64: rewrite tarvata structure malli — TOC/title/meta/links intact
+        res2 = rm100.apply(article)
+        strict = analyze_rm(article)
+        article["_rm100"] = {"score": strict["score"], "before": res["before"],
+                             "applied": res2["applied"], "rounds": rnd}
+        log.info("Round %d tarvata: %d/100", rnd, strict["score"])
+    article["_rm"] = strict
     return article
+
+
+def analyze_rm(article: dict) -> dict:
+    return validator.rankmath_strict(article, article.get("content_html", ""))
 
 
 def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
@@ -462,6 +484,8 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
             secondary_keywords=article.get("secondary_keywords", []),
         )
 
+    if meta and (article.get("_rm100") or {}).get("score") is not None:
+        meta["rank_math_seo_score"] = str((article["_rm100"] or {}).get("score"))
     result = wp.create_post(
         title=article["title"],
         content_html=final_html,
@@ -849,6 +873,8 @@ def update_post(post_id: int, new_source_urls=None, mock: bool = False) -> Dict:
             secondary_keywords=article.get("secondary_keywords", []),
         )
 
+    if meta and (article.get("_rm100") or {}).get("score") is not None:
+        meta["rank_math_seo_score"] = str((article["_rm100"] or {}).get("score"))
     result = wp.update_post(
         post_id,
         content_html=final_html,

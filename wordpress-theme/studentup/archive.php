@@ -2,6 +2,7 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
+?>
 <?php
 /**
  * Category / tag / date archive — student card grid + ads.

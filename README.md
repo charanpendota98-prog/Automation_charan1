@@ -533,6 +533,27 @@ python run.py --breaking-feed           # v59: radar → site బ్రేకి
 python run.py --breaking-from file.json # v59: feed ni JSON nunchi (offline/approved list)
 ```
 
+### v64 — RANK MATH 100 + THEME 100x (website options · TOC · schema · E-E-A-T · PWA)
+
+**Mee requirement: "post ki Rank Math 100 vachela score high"** → deterministic engine
+`autoblog/rm100.py` (LLM avasaram ledu) + theme 100x upgrades.
+
+| # | Enti | Ela |
+|---|---|---|
+| 1 | **Rank Math 100 engine** | `rm100.apply()` — title (kw modatlo + year + power word + 40-62 ch) · meta 110-156 · slug tokens · lede lo kw · **auto TOC + anchor ids** · 2+ H2s lo kw · density 7-15 · facts table · FAQ · external+internal links · Telugu connectives 30% · paragraph split |
+| 2 | **Proof command** | `python run.py --rm100` → imperfect draft **33/100 → 100/100** (21 on-page tests okkokaటి ✅) |
+| 3 | **Gate + score** | pipeline: rm100 → LLM refine (`RM_REFINE_ROUNDS=2`, `RM_TARGET=100`) → rm100 malli → final score **WP meta `rank_math_seo_score`** + Telegram lo chupistundi |
+| 4 | **Website options page** | WP Admin → **StudentUp** menu (tabs: Ads · Socials · Content · Advanced) + REST `/wp-json/studentup/v1/options` (bot sync) |
+| 5 | **Theme 100x** | auto **TOC** · **JSON-LD schema** (Organization/WebSite/SearchAction/Breadcrumb) · **E-E-A-T author box** + last-updated · **PWA** manifest + theme-color + preconnect · sticky bottom ad · copy-link · reading progress |
+| 6 | **PHP syntax gate** | `tools/php_lint.js` (**node php-parser · real PHP 8**) — build_wp_theme.py hard gate. Ee gate pettaka **site break chese 10 bugs** pattukunnamu (template files lo `?>` miss → white screen!) |
+
+**v64 lo pattukunna nijamaina bugs (fix chesamu):**
+1. 10 template files (single/front-page/header/footer/index/archive/search/404/page/searchform)
+   lo ABSPATH guard tarvata `?>` ledu → **PHP fatal parse error → site white screen**.
+2. TOC ids rendu sarlu generate ayyi `-2` suffix vachedi → **TOC links pani cheyyavu** (jump ledu).
+3. Paragraph split long paragraphs ni chunks ga marchi **text ni thosesthundi** (content loss).
+Ippudu moodintiki tests unnayi (white-screen regex guard · TOC link⊆ids · words before≥after).
+
 ### v63 — MISTAKE-FREE SEO: Rank Math REST bridge + meta verification + post edit
 
 **Pattina nijamaina mistake:** WordPress REST default ga custom meta accept cheyyadu →
@@ -557,7 +578,7 @@ GET `/wp-json/studentup/v1/theme-info` → theme version + seo_bridge + rankmath
 python run.py --readiness      # 18 system checks score/100 + 6 owner-pending items
 ```
 
-**Ee command ee repo lo prastuta: 100/100 system checks · 8 owner-pending.**
+**Ee command ee repo lo prastuta: 100/100 · 23/23 system checks · 8 owner-pending.**
 Artifacts: `logs/readiness.json` + `output/readiness-<date>.md` (markdown report).
 
 | Section | Enti verify avutundi (verifiable number) |
@@ -640,7 +661,7 @@ Menu (desktop + mobile same order): హోమ్ · ఉద్యోగాలు�
 
 Bot side: `autoblog/breaking.py` (feed build + tag classifier + honest empty note),
 radar run lo auto hook, `MOST_USED` order okate source (bot + site + tests sync).
-Evidence: tests/v59_test.py 12 checks · `run.py --test-all` 49/49 · jsdom 122/122.
+Evidence: tests/v59_test.py 12 checks · `run.py --test-all` 50/50 · jsdom 122/122.
 
 > ℹ️ Ee system exam conduct cheyyadaniki matrame — student data (roll, answers,
 > scores) mee server lo untundi, bayata pampabadadu. Public internet lo pettali

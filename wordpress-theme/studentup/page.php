@@ -2,6 +2,7 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
+?>
 <?php
 /**
  * Static page (About / Contact / Privacy …).

@@ -48,7 +48,7 @@ def main():
                "category": "X", "focus_keyword": "k", "meta_description": "m",
                "_source_texts": ["real source"]}
         res = pipeline._rankmath_gate(dict(art), "X")
-        assert res["refined"] and res["title"] == "Fixed Title"
+        assert res["refined"] and "Fixed Title" in res["title"], res["title"]
         assert any("SUSPECT data" in f for f in seen_fixes["f"]), seen_fixes
         assert res["_fact"] == []
 
@@ -57,7 +57,7 @@ def main():
         validator.fact_guard = lambda h, s: ["fake1", "fake2"]
         gc.refine_article = lambda a, f: {**a, "title": "NotActuallyBetter"}
         res2 = pipeline._rankmath_gate(dict(art), "X")
-        assert not res2.get("refined") and res2["title"] == "Old"
+        assert not res2.get("refined") and "Old" in res2["title"], res2["title"]
         assert len(res2["_fact"]) == 2
         # FACT_STRICT=0 → guard completely off
         fs = config.FACT_STRICT

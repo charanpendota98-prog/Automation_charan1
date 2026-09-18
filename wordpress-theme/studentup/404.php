@@ -2,6 +2,7 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
+?>
 <?php
 /**
  * 404 — Telugu friendly.

@@ -238,21 +238,25 @@ def main():
         n = []
 
         def strict_once(a, h=""):
+            # v64: rm100.apply() rendu sarlu score chestundi (before + after),
+            # tarvata gate — so modati 3 calls draft score (low) ivvali.
             n.append(1)
-            return low if len(n) == 1 else high
+            return low if len(n) <= 3 else high
 
         validator.rankmath_strict = strict_once
         gc.refine_article = lambda a, f: {**a, "title": "Better Title"}
         art1 = {"content_html": "<p>draft</p>", "title": "Old", "category": "X",
                 "focus_keyword": "kw", "meta_description": "m", "slug": "s"}
         res = pipeline._rankmath_gate(dict(art1), "X")
-        assert res.get("refined") and res["title"] == "Better Title"
+        # v64: rm100 tarvata title deterministic ga normalize avutundi (kw+year+power)
+        assert res.get("refined") and "Better Title" in res["title"], res["title"]
         assert res["_rm_pre"] == 55 and res["_rm"]["score"] == 93
+        assert "Kw" in res["title"] and "Complete Details" in res["title"]
 
         validator.rankmath_strict = lambda a, h="": low
         gc.refine_article = lambda a, f: {**a, "title": "Worse?"}
         res2 = pipeline._rankmath_gate(dict(art1), "X")
-        assert not res2.get("refined") and res2["title"] == "Old"
+        assert not res2.get("refined") and "Old" in res2["title"], res2["title"]
 
         res3 = pipeline._rankmath_gate({**art1, "_mock": True}, "X")
         assert not res3.get("refined")

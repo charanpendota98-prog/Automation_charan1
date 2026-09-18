@@ -2,6 +2,7 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
+?>
 <?php
 /**
  * Single post — article layout: meta, content, ads, share, related, trust note.
@@ -11,6 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 get_header();
 ?>
+<div class="su-progress" aria-hidden="true"><span id="su-progress-bar"></span></div>
 <main id="main">
 	<div class="wrap">
 		<?php
@@ -24,6 +26,7 @@ get_header();
 					<div class="article-meta">
 						<span>📅 <?php echo esc_html( get_the_date() ); ?></span>
 						<span>⏱ <?php echo esc_html( studentup_reading_time() ); ?></span>
+						<?php echo wp_kses_post( studentup_last_updated() ); ?>
 						<?php $su_cats = get_the_category(); ?>
 						<?php if ( $su_cats ) : ?>
 							<span>🏷 <?php echo esc_html( $su_cats[0]->name ); ?></span>
@@ -39,9 +42,11 @@ get_header();
 					<a href="https://wa.me/?text=<?php echo rawurlencode( get_the_title() . ' — ' . get_permalink() ); ?>" target="_blank" rel="noopener">WhatsApp షేర్</a>
 					<a href="https://t.me/share/url?url=<?php echo rawurlencode( get_permalink() ); ?>&text=<?php echo rawurlencode( get_the_title() ); ?>" target="_blank" rel="noopener">Telegram షేర్</a>
 					<a href="<?php echo esc_url( 'https://twitter.com/intent/tweet?url=' . rawurlencode( get_permalink() ) ); ?>" target="_blank" rel="noopener">X షేర్</a>
+					<button type="button" class="su-copy" data-url="<?php echo esc_url( get_permalink() ); ?>">🔗 లింక్ కాపీ</button>
 				</div>
 
 				<?php studentup_trust_note(); ?>
+				<?php studentup_author_box(); ?>
 			</article>
 
 			<?php

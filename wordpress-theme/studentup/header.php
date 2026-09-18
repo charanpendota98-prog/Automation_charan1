@@ -2,6 +2,7 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
+?>
 <?php
 /**
  * Header — logo, menu (jobs/exams dropdown), actions, mobile panel.

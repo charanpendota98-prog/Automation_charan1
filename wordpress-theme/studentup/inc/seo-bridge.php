@@ -26,6 +26,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 function studentup_rankmath_keys() {
 	return array(
+		'rank_math_seo_score',   // bot compute chesina score (admin column)
 		'rank_math_title',
 		'rank_math_description',
 		'rank_math_focus_keyword',

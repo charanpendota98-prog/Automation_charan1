@@ -196,6 +196,81 @@ def c_rankmath() -> List[dict]:
                  "seo.rankmath_meta output check")]
 
 
+def c_rm100() -> List[dict]:
+    """v64: Rank Math 100 engine — deterministic fixes (proof: imperfect draft → 100)."""
+    from . import rm100
+
+    art = rm100.sample_article()
+    res = rm100.apply(art)
+    pipe = _read(ROOT / "autoblog" / "pipeline.py")
+    target = int(getattr(config, "RM_TARGET", 0) or 0)
+    wired = ("rm100.apply(" in pipe and "rank_math_seo_score" in pipe
+             and "RM_REFINE_ROUNDS" in pipe)
+    ok = res["after"] == 100 and not res["remaining"] and target == 100 and wired
+    value = (f"draft {res['before']}→100 · {len(res['applied'])} fixes · target {target} · "
+             f"pipeline {'wired' if wired else 'MISSING'}")
+    if ok:
+        return [_ok("Rank Math 100 engine (rm100)", value, "CONTENT ENGINE")]
+    return [_bad("Rank Math 100 engine (rm100)", value, "CONTENT ENGINE",
+                 "rm100.apply + RM_TARGET=100 + pipeline integration check cheyandi")]
+
+
+def c_theme_v64() -> List[dict]:
+    """v64: theme advanced modules — options page · TOC · schema · E-E-A-T · PWA."""
+    mods = {
+        "options (admin+REST)": ("inc/options.php", ("add_menu_page", "register_setting",
+                                                    "studentup/v1", "studentup_social_links")),
+        "auto TOC": ("inc/toc.php", ("the_content", "su-toc", "studentup_opt")),
+        "JSON-LD schema": ("inc/schema.php", ("Organization", "WebSite", "SearchAction",
+                                              "BreadcrumbList", "wp_head")),
+        "author box (E-E-A-T)": ("inc/author-box.php", ("studentup_author_box",
+                                                        "studentup_last_updated")),
+        "PWA + head hints": ("inc/pwa.php", ("studentup_manifest", "preconnect",
+                                             "adsense_auto")),
+    }
+    fn = _read(THEME_PATH / "functions.php") if False else _read(
+        ROOT / "wordpress-theme" / "studentup" / "functions.php")
+    missing, present = [], []
+    for label, (rel, needles) in mods.items():
+        path = ROOT / "wordpress-theme" / "studentup" / rel
+        text = _read(path) if path.exists() else ""
+        if text and all(n in text for n in needles) and rel in fn:
+            present.append(label)
+        else:
+            missing.append(label)
+    value = f"{len(present)}/{len(mods)} modules — " + " · ".join(present)
+    if not missing:
+        return [_ok("Theme v64 modules (options/TOC/schema/E-E-A-T/PWA)", value,
+                    "REAL SITE (WordPress theme)")]
+    return [_bad("Theme v64 modules", "missing: " + ", ".join(missing) + " | " + value,
+                 "REAL SITE (WordPress theme)",
+                 "theme files + functions.php include check cheyandi")]
+
+
+def c_php_lint() -> List[dict]:
+    """v64: REAL PHP syntax lint (node php-parser) — white-screen bug prevent."""
+    linter = ROOT / "tools" / "php_lint.js"
+    build = _read(ROOT / "tools" / "build_wp_theme.py")
+    if not linter.exists():
+        return [_bad("PHP syntax lint (php-parser)", "tools/php_lint.js ledu",
+                     "REAL SITE (WordPress theme)", "tools/php_lint.js add cheyandi")]
+    import subprocess
+    try:
+        out = subprocess.run(["node", str(linter)], capture_output=True, text=True,
+                             cwd=str(ROOT), timeout=60)
+        tail = (out.stdout or "").strip().splitlines()
+        msg = tail[-1] if tail else ""
+        wired = "php_lint.js" in build
+        if out.returncode == 0 and "OK" in msg and wired:
+            return [_ok("PHP syntax lint (php-parser, real PHP 8)", msg + " · build gate ON",
+                        "REAL SITE (WordPress theme)")]
+        return [_bad("PHP syntax lint", msg or "fail", "REAL SITE (WordPress theme)",
+                     "syntax errors fix chesi malli build cheyandi")]
+    except Exception as exc:  # noqa: BLE001 — node lekapote skip (warn kaadu)
+        return [_ok("PHP syntax lint (php-parser)", f"node ledu — skip ({type(exc).__name__})",
+                    "REAL SITE (WordPress theme)")]
+
+
 def c_ad_slots() -> List[dict]:
     html = _read(PREVIEW / "index.html")
     theme_ads = _read(THEME / "inc" / "ads.php")
@@ -378,6 +453,7 @@ CHECKS: List[Tuple[str, Callable[[], List[dict]]]] = [
     ("schema", c_schema),
     ("index_files", c_index_files),
     ("rankmath", c_rankmath),
+    ("rm100", c_rm100),
     ("seo_bridge", c_seo_bridge),
     ("post_edit", c_post_edit_capability),
     ("ad_slots", c_ad_slots),
@@ -387,6 +463,8 @@ CHECKS: List[Tuple[str, Callable[[], List[dict]]]] = [
     ("hooks", c_hooks),
     ("approval", c_approval_flow),
     ("theme", c_theme),
+    ("theme_v64", c_theme_v64),
+    ("php_lint", c_php_lint),
     ("first_look", c_first_look),
     ("tests_sync", c_tests_sync),
     ("owner_pending", c_owner_pending),

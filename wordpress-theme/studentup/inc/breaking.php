@@ -217,6 +217,32 @@ function studentup_register_rest() {
 					update_option( 'studentup_house_ads', wp_json_encode( $house ), false );
 					$done[] = 'house_ads';
 				}
+				// v64: website options (socials · adsense · flags) — same allowlist tho
+				$opts = $req->get_param( 'options' );
+				if ( is_array( $opts ) && function_exists( 'studentup_option_fields' ) ) {
+					$allowed = array();
+					foreach ( studentup_option_fields() as $tab ) {
+						foreach ( $tab['fields'] as $okey => $of ) {
+							$allowed[ $okey ] = $of[1];
+						}
+					}
+					$saved = array();
+					foreach ( $opts as $okey => $oval ) {
+						if ( ! isset( $allowed[ $okey ] ) ) {
+							continue;
+						}
+						if ( 'check' === $allowed[ $okey ] ) {
+							update_option( 'studentup_' . $okey, $oval ? '1' : '0', false );
+						} else {
+							update_option( 'studentup_' . $okey,
+								studentup_sanitize_option( is_string( $oval ) ? $oval : wp_json_encode( $oval, JSON_UNESCAPED_UNICODE ) ), false );
+						}
+						$saved[] = $okey;
+					}
+					if ( $saved ) {
+						$done[] = 'options:' . implode( ',', $saved );
+					}
+				}
 				return new WP_REST_Response( array( 'ok' => true, 'updated' => $done ), 200 );
 			},
 		)

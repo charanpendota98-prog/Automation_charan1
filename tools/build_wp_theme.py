@@ -6,7 +6,8 @@ Enduku:
   ki teesukelle theme `wordpress-theme/studentup/` lo undi. Idi:
     1) required files + theme header validate chestundi (WP install fail avvakunda)
     2) wordpress-theme/studentup-theme.zip create chestundi (WP Admin → Upload Theme)
-    3) php lint untе `php -l` tho kuda check chestundi (lekapote skip — fail kaadu)
+    3) REAL PHP lint: node php-parser (PHP 8 grammar) — `php -l` unte adi kuda
+       (v64: syntax tappu/build break unte zip create avvadu — hard gate)
 
 Run: python tools/build_wp_theme.py   [--out wordpress-theme/studentup-theme.zip]
 """
@@ -29,7 +30,9 @@ REQUIRED = [
     "style.css", "index.php", "functions.php", "header.php", "footer.php",
     "front-page.php", "single.php", "page.php", "archive.php", "search.php",
     "404.php", "searchform.php", "theme.json",
-    "inc/breaking.php", "inc/ads.php", "inc/template.php",
+    "inc/breaking.php", "inc/ads.php", "inc/template.php", "inc/seo-bridge.php",
+    "inc/options.php", "inc/toc.php", "inc/schema.php", "inc/author-box.php",
+    "inc/pwa.php",
     "assets/js/studentup.js",
 ]
 SKIP_DIRS = {"__pycache__", ".git", "node_modules"}
@@ -74,6 +77,19 @@ def validate() -> list[str]:
 
 
 def php_lint() -> tuple[int, str]:
+    """v64: mundu REAL PHP parse lint (node php-parser), tarvata php -l (unte)."""
+    node = shutil.which("node")
+    linter = ROOT / "tools" / "php_lint.js"
+    if node and linter.exists():
+        out = subprocess.run([node, str(linter)], capture_output=True, text=True,
+                             cwd=str(ROOT))
+        tail = (out.stdout or "").strip().splitlines()
+        msg = tail[-1] if tail else ""
+        if out.returncode != 0:
+            fails = [l for l in tail if l.startswith("✘")][:3]
+            return 1, "PHP PARSE FAIL: " + "; ".join(fails) + (f" ({msg})" if msg else "")
+        if msg and not msg.startswith("SKIP"):
+            return 0, msg + "  (php-parser · real PHP 8 syntax)"
     php = shutil.which("php")
     if not php:
         return 0, "php ledu — lint skip (WP install ni adi aapadu)"

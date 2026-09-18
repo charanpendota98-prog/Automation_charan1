@@ -708,6 +708,32 @@ def trends_check() -> int:
     return 0
 
 
+def rm100_run() -> int:
+    """v64: Rank Math 100 engine proof — imperfect draft → 100/100 breakdown."""
+    from . import rm100, validator
+
+    
+    art = rm100.sample_article()
+    res = rm100.apply(art)
+    checks = validator.rankmath_strict(art, art.get("content_html", "")).get("checks", [])
+    print("=" * 70)
+    print("  🎯 RANK MATH 100 ENGINE — proof (deterministic fixes, LLM ledu)")
+    print("=" * 70)
+    print(f"  score: {res['before']}/100  →  {res['after']}/100"
+          f"   ({len(checks)} on-page tests)")
+    print(f"  fixes: {', '.join(res['applied']) or '—'}")
+    print(f"  migilinavi: {res['remaining'] or 'emi ledu ✔'}")
+    print(f"  title: {art['title']} ({len(art['title'])} ch)")
+    print(f"  meta: {len(art['meta_description'])} ch · slug: {art['slug']}"
+          f" · words: {rm100._words(art['content_html'])}")
+    if checks:
+        print("-" * 70)
+        for c in checks:
+            print(f"    {'✅' if c['ok'] else '❌'} {c['item']:26s} {c['points']} pts")
+    print("=" * 70)
+    return 0 if res["after"] == 100 else 1
+
+
 def readiness_run() -> int:
     """v62: TOP WEBSITE READINESS — okka command lo motham system proof."""
     from . import readiness
@@ -1495,6 +1521,8 @@ def main() -> int:
                              "(tarvata offline/CI audit ki)")
     parser.add_argument("--trends", action="store_true",
                         help="Google Trends India education trends chupinchindi")
+    parser.add_argument("--rm100", action="store_true",
+                        help="Rank Math 100 engine proof (imperfect draft → 100 breakdown)")
     parser.add_argument("--readiness", action="store_true",
                         help="v62: TOP WEBSITE READINESS — content/SEO/ads/automation/site score")
     parser.add_argument("--push-theme-data", action="store_true",
@@ -1714,6 +1742,8 @@ def main() -> int:
         for r in rows:
             print(f"  • {r['exam']:<22} {r.get('posts', '?')} posts -> {r.get('link', r['slug'])}")
         return 0
+    if getattr(args, "rm100", False):
+        return rm100_run()
     if args.readiness:
         return readiness_run()
     if args.push_theme_data:

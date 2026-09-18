@@ -80,9 +80,9 @@ Detail docs: `DEPLOY_MILESWEB.md` (cPanel steps) · `DEPLOY_ORACLE_CLOUD.md` (VM
 
 | Item | Proof |
 |---|---|
-| Test suites | **49/49** pass (`python run.py --test-all`) |
+| Test suites | **50/50** pass (`python run.py --test-all`) |
 | Site guardian | **`python run.py --guardian`** — site/UI/SEO/ads/feed/storage/theme 12 checks (11 ok · 1 owner-pending) |
-| Readiness score | **`python run.py --readiness`** — **100/100** system checks · 8 owner-pending |
+| Readiness score | **`python run.py --readiness`** — **100/100** · 23/23 system checks · 8 owner-pending |
 | Production check | **11/11** pass (`python run.py --production-audit`) |
 | Browser runtime | **122/122** checks (`node tests/runtime/jsdom_runtime_test.js`) |
 | Deploy check | 8 ok · 4 warn · 0 fail (`python run.py --deploy-check`) |
@@ -106,13 +106,17 @@ Detail docs: `DEPLOY_MILESWEB.md` (cPanel steps) · `DEPLOY_ORACLE_CLOUD.md` (VM
 - [ ] **2a. Google Search Console + GA4** — GSC lo domain verify → `sitemap.xml` submit;
       GA4 property create → measurement ID. (GSC = rankings data, GA4 = traffic data —
       bot ki `--gsc` CSV tho ee data tho priority decide chestundi.)
+- [ ] **2b. Website options** — WP Admin → **StudentUp** menu → tabs (Ads · Socials ·
+      Content · Advanced) lo mee WhatsApp/Telegram/Instagram/YouTube, exam portal URL,
+      AdSense client + slots, sticky ad ON/OFF pettandi. Bot `--push-theme-data` tho
+      JSON fields (breaking/house/proof/deadline) automatic ga sync avutayi.
 - [ ] **2c. AdSense CMP (EEA/UK consent)** — AdSense → **Privacy & messaging** → GDPR/CCPA
       message + Google-certified CMP **ON**. (Ee step lekapote EEA/UK users ki ads
       chupinchadu — Google rule; India ki impact ledu kaani overseas traffic ki important.)
 - [ ] **2d. 25k pageviews tarvata** — `python tools/ad_network_plan.py --views 50k --tier1 0.3`
       → Raptive/Ezoic ki apply (detail: AD_NETWORKS_PLAN.md). Partner lines ni
       `ads/ads_txt_extra.txt` lo paste chesi `python tools/build_policy_pages.py` run cheyyandi.
-- [ ] **2b. AdSense approve ayyaka** — `.env` lo `ADSENSE_CLIENT_ID=ca-pub-…` petti
+- [ ] **2e. AdSense approve ayyaka** — `.env` lo `ADSENSE_CLIENT_ID=ca-pub-…` petti
       `python tools/build_policy_pages.py` run cheyyandi → **`ads.txt` automatic ga live** avutundi
       (idi lekapote konni ads rakavu → RPM takkuva). Tarvata `ADSENSE_APPROVED=1`.
 - [ ] **3. Gemini API key** — aistudio.google.com → API key (free tier chaalu).
