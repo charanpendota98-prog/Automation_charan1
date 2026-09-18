@@ -263,7 +263,7 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
   ok("no Romanized Tenglish words in visible text", tenglishHits.length === 0, "hits=" + tenglishHits.join(","));
   const trust = document.getElementById("trust");
   ok("trust section: 100% verify headline (Telugu)", !!trust && /100%/.test(trust.textContent) && /ధృవీకరించి/.test(trust.textContent));
-  ok("trust proof tiles: 54/54 + 11/11 + 122/122 + 11,192",
+  ok("trust proof tiles: 55/55 + 11/11 + 122/122 + 11,192",
      /5[0-9]\/5[0-9]/.test(trust.textContent) && /11\/11/.test(trust.textContent) &&
      /122\/122/.test(trust.textContent) && /11,192/.test(trust.textContent));
   ok("trust tiles prove pillar + source coverage (17 categories · 143 sources)",

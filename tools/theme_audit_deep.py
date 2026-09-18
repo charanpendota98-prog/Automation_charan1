@@ -270,6 +270,70 @@ def deep_checks(report: dict) -> dict:
         except Exception as exc:  # noqa: BLE001
             info.append(f"screenshot check skip ({type(exc).__name__})")
 
+    # ---------------------------------------------------------------- 8b) STANDARDS PASS 3 (v69)
+    # Version parity: style.css header (WP theme version) == STUDENTUP_VERSION (PHP constant)
+    ver_css = re.search(r"^Version:\s*(\S+)", style[:2000], re.M)
+    ver_php = re.search(r"STUDENTUP_VERSION',\s*'([^']+)'", fn)
+    if ver_css and ver_php:
+        if ver_css.group(1) != ver_php.group(1):
+            errors.append(f"version mismatch: style.css '{ver_css.group(1)}' vs "
+                          f"STUDENTUP_VERSION '{ver_php.group(1)}' — WP ki telisedi style.css, "
+                          f"cache-busting + child themes + updates daridram")
+        kpi_ver = ver_php.group(1)
+    else:
+        errors.append("version constant leda style.css 'Version:' ledu")
+
+    # readme.txt — Stable tag == version (WP.org + update checks)
+    readme = (THEME / "readme.txt")
+    if readme.exists():
+        rm = readme.read_text(encoding="utf-8")
+        st = re.search(r"^Stable tag:\s*(\S+)", rm, re.M)
+        if not st:
+            warnings.append("readme.txt lo 'Stable tag' ledu")
+        elif ver_php and st.group(1) != ver_php.group(1):
+            warnings.append(f"readme.txt Stable tag '{st.group(1)}' ≠ version "
+                            f"'{ver_php.group(1)}'")
+
+    # Loop templates: post_class() (plugin/CSS compatibility + WP standard)
+    for rel, text in texts.items():
+        if rel.startswith("inc/") or rel in ("404.php",):
+            continue
+        if "<article class=" in text[1] and "post_class(" not in text[1]:
+            warnings.append(f"{rel}: <article class=...> ki post_class() vaadandi "
+                            f"(WP standard + plugin compatibility)")
+
+    # Perf: custom WP_Query calls ki no_found_rows (extra SQL query aapadam)
+    for rel, text in texts.items():
+        code = text[1]
+        for m in re.finditer(r"new WP_Query\(", code):
+            tail = code[m.end():m.end() + 700]
+            if "'no_found_rows'" not in tail and '"no_found_rows"' not in tail:
+                warnings.append(f"{rel}: custom WP_Query ki no_found_rows ledu "
+                                f"(shared hosting lo extra SELECT FOUND_ROWS)")
+
+    # Block editor parity (advanced theme standard)
+    if "add_theme_support( 'editor-styles' )" not in fn:
+        warnings.append("editor-styles support ledu — block editor lo front-end look raadu")
+    if "add_theme_support( 'wp-block-styles' )" not in fn:
+        info.append("wp-block-styles support ledu (core block default styles)")
+    if "add_editor_style(" in fn:
+        ed = re.search(r"add_editor_style\(\s*'([^']+)'", fn)
+        if ed and not (THEME / ed.group(1)).exists():
+            errors.append(f"add_editor_style('{ed.group(1)}') file ledu — editor CSS 404")
+
+    # a11y: nav lo aria-current (prastuta page)
+    if "aria-current" not in "".join(t[1] for t in texts.values()):
+        warnings.append("aria-current ledu — nav lo prastuta page screen readers ki teliyadu")
+
+    # Admin form security: Settings API nonce (`settings_fields`) leda manual `wp_nonce_field`
+    if "register_setting(" in fn or "register_setting(" in "".join(t[0] for t in texts.values()):
+        opt = texts.get("inc/options.php", ("", ""))[0]
+        if opt and "settings_fields(" not in opt and "wp_nonce_field(" not in opt:
+            errors.append("inc/options.php: admin form ki nonce ledu "
+                          "(settings_fields() leda wp_nonce_field())")
+        if opt and "sanitize_callback" not in opt:
+            warnings.append("inc/options.php: register_setting ki sanitize_callback ledu")
+
     # ---------------------------------------------------------------- 9) REVENUE KPI (BA)
     kpi = report.setdefault("kpi", {})
     kpi["ad_positions"] = len(positions)

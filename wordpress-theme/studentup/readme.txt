@@ -2,6 +2,7 @@
 Contributors: studentup
 Requires at least: 6.0
 Tested up to: 6.7
+Stable tag: 1.4.0
 Requires PHP: 7.4
 Version: 1.3.0
 License: GNU General Public License v2 or later
@@ -46,6 +47,14 @@ Theme lo REST bridge (`inc/seo-bridge.php`) undi. Mee koరaku `manage_options` 
 user tho App Password ivvandi (Administrator role).
 
 == Changelog ==
+
+= 1.4.0 =
+* Theme standards pass 3: style.css version ↔ STUDENTUP_VERSION sync (build gate)
+* Block editor parity: editor-styles + wp-block-styles + assets/css/editor.css
+* `post_class()` on article loops (plugin/CSS compatibility) · `aria-current="page"` nav filter
+* Performance: custom WP_Query calls ki no_found_rows (extra SQL query teesesaam)
+* IndexNow key-file serving (/<key>.key) — instant indexing automatic
+
 
 = 1.3.0 (2026-09-18, v67) =
 * Deep audit fixes: security hardening module, comments + sidebar templates, POT file,

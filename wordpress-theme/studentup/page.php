@@ -18,7 +18,7 @@ get_header();
 		while ( have_posts() ) :
 			the_post();
 			?>
-			<article class="article">
+			<article <?php post_class( 'article' ); ?>>
 				<div class="article-head"><h1><?php the_title(); ?></h1></div>
 				<div class="article-content"><?php the_content(); ?></div>
 				<?php studentup_trust_note(); ?>

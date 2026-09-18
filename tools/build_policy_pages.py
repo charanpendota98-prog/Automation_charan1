@@ -85,6 +85,7 @@ SHELL = """<!DOCTYPE html>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{title} · studentup.in</title>
 <meta name="description" content="{desc}">
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
 <meta name="theme-color" content="#0f2e62">
 <link rel="canonical" href="https://studentup.in/pages/{slug}.html">
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">

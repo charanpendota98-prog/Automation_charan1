@@ -116,6 +116,7 @@ $su_deadline = studentup_deadline();
 					'post_type'           => 'post',
 					'posts_per_page'      => 12,
 					'ignore_sticky_posts' => false,
+					'no_found_rows'       => true,   // v69 perf: pagination ledu → extra SQL query vaddu
 				)
 			);
 			$su_i = 0;

@@ -7,7 +7,7 @@ enti mee (owner) cheyyali" ani okka chota telustundi — memory meeda depend avv
 **Verify command (okate line, anni gates):**
 ```bash
 python run.py --test-all          # 53 suites (unit + integration, offline)
-python run.py --readiness         # 100/100 · 27/27 system checks · 10 owner-pending
+python run.py --readiness         # 100/100 · 28/28 system checks · 10 owner-pending
 python run.py --pin-check         # per-post certificate (67 checks) sample
 python run.py --guardian          # site + theme + audit daily checks
 python tools/theme_audit.py --verbose   # theme mistakes 0 errors · 0 warnings
@@ -22,8 +22,8 @@ python tools/build_wp_theme.py    # php-lint + audit + POT + zip (theme install 
 |---|---|---|---|
 | Post quality gates | 100/100 · 0 critical | **100/100 · 67/67 · critical 0** | `python run.py --pin-check` |
 | Rank Math score | 100 | **100** (draft 33 → 100 deterministic) | `--pin-check` / WP post edit |
-| System readiness | 100/100 | **100/100 · 27/27 system · 10 owner-pending** | `python run.py --readiness` |
-| Test coverage | all green | **54/54 suites · 122/122 runtime · 19 v68 checks** | `--test-all` + jsdom |
+| System readiness | 100/100 | **100/100 · 28/28 system · 10 owner-pending** | `python run.py --readiness` |
+| Test coverage | all green | **55/55 suites · 122/122 runtime · 19 v68 + 16 v69 checks** | `--test-all` + jsdom |
 | Theme audit | 0 errors · 0 warnings | **0 · 0** (27 files · 75 functions · 34 options) | `tools/theme_audit.py` |
 | PHP syntax (real PHP 8) | 100% | **27/27 files OK** | `tools/build_wp_theme.py` |
 | Ad positions live in theme | 6/6 | **6/6** (leaderboard · in-article · in-feed · sidebar-sticky · below-content · anchor) | audit KPI row |
@@ -72,6 +72,7 @@ python tools/build_wp_theme.py    # php-lint + audit + POT + zip (theme install 
 | R23 | Fast (CWV) + accessible | v67 | preconnect · LCP preload · content-visibility toggle (`su-cv`) · `:focus-visible` · skip-link · button types · `contains` sizes | `v67_test` perf/a11y asserts | `inc/perf.php` + `style.css` |
 | R24 | Never fake/guarantee numbers | v62 | `readiness.honest_note` + docs + owner-pending section | `v62_test` | `--readiness` output |
 | R25 | Instant indexing (trending) | publish → IndexNow + Google Indexing API (JobPosting) · key file theme serve · `--index-now/--status/--key-gen` | autoblog/indexing.py · inc/indexnow.php · v68_test | ✔ engine · ⏳ owner key/SA |
+| R26 | Top-level theme standards + no misses | version parity · editor-styles · post_class · no_found_rows · aria-current · parity audit (CLI/docs/preview/counts) · guardian+readiness wiring | tools/parity_audit.py · theme_audit_deep (pass 3) · v69_test | ✔ 0/0 · zip 36 files 627 KB |
 
 ---
 
@@ -108,4 +109,4 @@ python tools/build_wp_theme.py    # php-lint + audit + POT + zip (theme install 
 ---
 
 *Last updated: v67 (2026-09-18) — deep audit (expert/BA) · top-theme hardening · 6/6 ad slots ·
-54/54 suites · readiness 100/100 (27/27) · theme audit 0/0 · code audit 0/0 (E1–E12 · W1–W7).*
+55/55 suites · readiness 100/100 (28/28) · theme audit 0/0 · code audit 0/0 · parity audit 0/0.*

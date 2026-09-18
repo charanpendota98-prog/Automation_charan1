@@ -80,7 +80,7 @@ Detail docs: `DEPLOY_MILESWEB.md` (cPanel steps) · `DEPLOY_ORACLE_CLOUD.md` (VM
 
 | Item | Proof |
 |---|---|
-| Test suites | **54/54** pass (`python run.py --test-all`) |
+| Test suites | **55/55** pass (`python run.py --test-all`) |
 | Site guardian | **`python run.py --guardian`** — site/UI/SEO/ads/feed/storage/theme 12 checks (11 ok · 1 owner-pending) |
 | Readiness score | **`python run.py --readiness`** — **100/100** · 27/27 system checks · 10 owner-pending |
 | Production check | **11/11** pass (`python run.py --production-audit`) |

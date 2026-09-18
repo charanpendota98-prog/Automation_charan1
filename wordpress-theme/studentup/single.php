@@ -20,7 +20,7 @@ get_header();
 			the_post();
 			?>
 			<div class="crumbs"><?php echo wp_kses_post( studentup_breadcrumbs() ); ?></div>
-			<article class="article">
+			<article <?php post_class( 'article' ); ?>>
 				<div class="article-head">
 					<h1><?php the_title(); ?></h1>
 					<div class="article-meta">
@@ -65,6 +65,7 @@ get_header();
 						'post__not_in'        => array( get_the_ID() ),
 						'posts_per_page'      => 3,
 						'ignore_sticky_posts' => true,
+						'no_found_rows'       => true,   // v69 perf: related posts — count query vaddu
 					)
 				);
 				if ( $su_q->have_posts() ) {

@@ -282,6 +282,37 @@ def check_theme_audit() -> tuple:
     return False, (errs[0][:120] if errs else summary[:120]), "python tools/theme_audit.py"
 
 
+
+def _run_tool_audit(tool: str, label: str) -> tuple:
+    """v69: tools/ audit (code_audit · parity_audit) — guardian lo automatic."""
+    import subprocess
+    import sys
+
+    path = ROOT / "tools" / tool
+    if not path.exists():
+        return False, f"{tool} ledu", f"tools/{tool} restore"
+    try:
+        out = subprocess.run([sys.executable, str(path)], capture_output=True, text=True,
+                             cwd=str(ROOT), timeout=180)
+    except Exception as exc:  # noqa: BLE001
+        return False, f"{label} run fail ({type(exc).__name__})", f"python tools/{tool}"
+    lines = [l.strip() for l in (out.stdout or "").splitlines() if l.strip()]
+    counts = [l for l in lines if "errors" in l and "warnings" in l]
+    summary = counts[0] if counts else (lines[-2] if len(lines) >= 2 else "")
+    if out.returncode == 0:
+        return True, f"{label}: {summary}".replace("  ", ""), ""
+    bad = [l for l in lines if l.startswith("❌")]
+    return False, (bad[0][:130] if bad else summary[:130]), f"python tools/{tool}"
+
+
+def check_code_audit() -> tuple:
+    return _run_tool_audit("code_audit.py", "code audit")
+
+
+def check_parity_audit() -> tuple:
+    return _run_tool_audit("parity_audit.py", "parity audit")
+
+
 CHECKS: List[tuple] = [
     ("site_files", check_site_files, False),
     ("first_look_ui", check_first_look_ui, False),
@@ -295,6 +326,8 @@ CHECKS: List[tuple] = [
     ("storage", check_storage, False),
     ("wp_theme", check_wp_theme, False),
     ("theme_audit", check_theme_audit, False),
+    ("code_audit", check_code_audit, False),
+    ("parity_audit", check_parity_audit, False),
     ("env_readiness", check_env_readiness, True),
 ]
 

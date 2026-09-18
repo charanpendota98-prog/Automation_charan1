@@ -571,6 +571,28 @@ def c_instant_indexing() -> List[dict]:
     return [_ok("Instant indexing (IndexNow · Google)", value, "TRENDING")]
 
 
+def c_parity_audit() -> List[dict]:
+    """v69: parity audit — CLI ↔ docs · dead modules · preview links/meta · counts."""
+    import importlib.util
+    import sys as _sys
+
+    path = ROOT / "tools" / "parity_audit.py"
+    spec = importlib.util.spec_from_file_location("_v69_parity", path)
+    mod = importlib.util.module_from_spec(spec)
+    _sys.modules["_v69_parity"] = mod
+    spec.loader.exec_module(mod)
+    rep = mod.run()
+    c = rep["counts"]
+    value = f"errors {c['errors']} · warnings {c['warnings']} (CLI · modules · preview · counts)"
+    if rep["errors"]:
+        return [_bad("Parity audit (docs · preview · CLI)", value, "AUTOMATION",
+                     "python tools/parity_audit.py — errors fix cheyandi")]
+    if c["warnings"]:
+        return [_bad("Parity audit (docs · preview · CLI)", value, "AUTOMATION",
+                     "python tools/parity_audit.py — warnings clear cheyandi")]
+    return [_ok("Parity audit (docs · preview · CLI)", value, "AUTOMATION")]
+
+
 CHECKS: List[Tuple[str, Callable[[], List[dict]]]] = [
     ("blueprint", c_blueprint),
     ("gates", c_gates),
@@ -597,6 +619,7 @@ CHECKS: List[Tuple[str, Callable[[], List[dict]]]] = [
     ("first_look", c_first_look),
     ("tests_sync", c_tests_sync),
     ("code_audit", c_code_audit),
+    ("parity_audit", c_parity_audit),
     ("instant_indexing", c_instant_indexing),
     ("owner_pending", c_owner_pending),
 ]

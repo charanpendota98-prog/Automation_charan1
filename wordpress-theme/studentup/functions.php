@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'STUDENTUP_VERSION', '1.3.0' );  // v67: security · deep-audit fixes
+define( 'STUDENTUP_VERSION', '1.4.0' );  // v69: theme standards pass 3 (version sync · editor styles · post_class)
 
 require_once get_template_directory() . '/inc/options.php';
 require_once get_template_directory() . '/inc/breaking.php';
@@ -57,6 +57,9 @@ function studentup_setup() {
 	add_theme_support( 'post-thumbnails' );
 	add_theme_support( 'automatic-feed-links' );
 	add_theme_support( 'responsive-embeds' );
+	add_theme_support( 'editor-styles' );        // v69: block editor lo front-end look same
+	add_theme_support( 'wp-block-styles' );      // v69: core block default styles
+	add_editor_style( 'assets/css/editor.css' ); // v69: editor parity
 	add_theme_support( 'align-wide' );
 	add_theme_support( 'html5', array( 'search-form', 'comment-form', 'comment-list', 'gallery', 'caption', 'style', 'script' ) );
 	add_theme_support( 'custom-logo', array( 'height' => 44, 'width' => 220, 'flex-width' => true, 'flex-height' => true ) );
@@ -163,3 +166,21 @@ add_action( 'init', 'studentup_head_cleanup' );
 function studentup_disable_emoji_title() {
 	return 'StudentUp — తెలంగాణ & ఆంధ్రప్రదేశ్ విద్యార్థుల వేదిక';
 }
+
+
+/**
+ * v69: menu lo **prastuta page** ki `aria-current="page"` (a11y + SEO crawl signal).
+ */
+function studentup_nav_link_aria( $atts, $item, $args ) {
+	if ( ! empty( $atts['aria-current'] ) ) {
+		return $atts;
+	}
+	if ( isset( $args->theme_location ) && in_array( $args->theme_location, array( 'primary', 'menu-1' ), true ) ) {
+		$current_id = (int) get_queried_object_id();
+		if ( $current_id && (int) $item->object_id === $current_id ) {
+			$atts['aria-current'] = 'page';
+		}
+	}
+	return $atts;
+}
+add_filter( 'nav_menu_link_attributes', 'studentup_nav_link_aria', 10, 3 );

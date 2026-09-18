@@ -102,7 +102,7 @@ function studentup_card( $idx = 0 ) {
 	$tones = array( '', 't2', 't3' );
 	$tone  = $tones[ $idx % 3 ];
 	?>
-	<article class="news" data-cat="<?php echo esc_attr( $cat ); ?>" data-text="<?php echo esc_attr( mb_strtolower( get_the_title() . ' ' . get_the_excerpt() ) ); ?>">
+	<article <?php post_class( 'news' ); ?> data-cat="<?php echo esc_attr( $cat ); ?>" data-text="<?php echo esc_attr( mb_strtolower( get_the_title() . ' ' . get_the_excerpt() ) ); ?>">
 		<?php if ( has_post_thumbnail() ) : ?>
 			<a class="thumb <?php echo esc_attr( $tone ); ?>" href="<?php the_permalink(); ?>" aria-hidden="true" tabindex="-1">
 				<?php the_post_thumbnail( 'studentup-card', array( 'loading' => 'lazy', 'alt' => esc_attr( get_the_title() ) ) ); ?>

@@ -59,9 +59,13 @@ def test_theme_files_exist():
 
 def test_style_header_and_tokens():
     css = read("style.css")
-    for field in ("Theme Name: StudentUp", "Version: 1.0.0", "Text Domain: studentup",
-                  "License:"):
+    for field in ("Theme Name: StudentUp", "Text Domain: studentup", "License:"):
         assert field in css, field
+    # v69: version ni **constant nunchi** verify (hardcode vaddu — bump aithe test break avvakoodadu)
+    php_ver = re.search(r"STUDENTUP_VERSION',\s*'([^']+)'",
+                        (SRC / "functions.php").read_text(encoding="utf-8")).group(1)
+    css_ver = re.search(r"^Version:\s*(\S+)", css, re.M).group(1)
+    assert css_ver == php_ver, f"style.css {css_ver} ≠ STUDENTUP_VERSION {php_ver}"
     for token in ("--navy:#0f2e62", "--orange:#ed8a32", ".tickerwrap", ".usedgrid",
                   ".newsgrid", ".su-ad", ".breaking", "body.dark", "@media(max-width:600px)"):
         assert token in css, token
