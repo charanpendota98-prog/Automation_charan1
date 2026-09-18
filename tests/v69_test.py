@@ -194,6 +194,26 @@ def test_guardian_and_readiness_wired():
         r["label"] for r in rep["rows"] if r.get("scored") and not r["ok"])
 
 
+def test_shell_scripts_syntax():
+    """P9 hygiene: deploy shell scripts `bash -n` clean (deploy lo syntax error = fail)."""
+    shells = sorted(list(ROOT.glob("*.sh")) + list((ROOT / "deploy").glob("*.sh")))
+    assert shells, "shell scripts ledu"
+    for sh in shells:
+        proc = subprocess.run(["bash", "-n", str(sh)], capture_output=True, text=True,
+                              timeout=120)
+        assert proc.returncode == 0, f"{sh.name}: {proc.stderr.strip()[:120]}"
+
+
+def test_secrets_not_committed():
+    """P9 hygiene: tracked files lo real API tokens ledu (example/dummy ok)."""
+    proc = subprocess.run(["git", "grep", "-nI", "-E",
+                           r"AIza[0-9A-Za-z_-]{30,}|[0-9]{8,10}:AA[A-Za-z0-9_-]{30,}|"
+                           r"sk-[A-Za-z0-9]{30,}", "--", "."],
+                          capture_output=True, text=True, cwd=str(ROOT), timeout=180)
+    hits = [l for l in (proc.stdout or "").splitlines() if l.strip()]
+    assert hits == [], f"secrets: {hits[:3]}"
+
+
 def test_code_audit_clean():
     rep = code_audit.run()
     assert rep["errors"] == [], rep["errors"]

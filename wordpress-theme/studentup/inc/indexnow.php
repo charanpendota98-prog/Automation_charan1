@@ -1,13 +1,15 @@
 <?php
 /**
- * v68: IndexNow key-file serving — instant indexing (Bing/Yandex) ki kavalsina key file.
+ * v68: IndexNow key file — `/<key>.key`
  *
- * Enduku: bot `autoblog/indexnow.py` publish tarvata URL submit chestundi, kaani
- * IndexNow ki **key file site root lo** undali (`/<key>.key`). Mundu adi manual ga
- * cPanel lo pettali — appudu bot nunchi submit fail ayyedi ("key verification failed").
- * Ippudu theme ne serve chestundi → admin lo key pettithe chalu, end-to-end automatic.
+ * Enduku: IndexNow (Bing/Yandex instant indexing) ki key file site root lo undali.
+ * Mundu adi cPanel/FTP lo **manual ga** pettali — marchipote bot submit fail ayyedi
+ * ("key not found") → kotha post lu search lo ki fast ga vellavu (trending miss).
+ * Ippudu: bot key ni theme option lo pettagane (--push-theme-data), ee route file ni
+ * automatic ga serve chestundi. Manual upload ledu, marchipo yadam ledu.
  *
- * Security: file lo **key mattrame** (random hex, public ga undadam safe — idi protocol).
+ * Note: file content = key mattrame (IndexNow spec). Key public ga undadam safe —
+ * adi verification token, secret kaadu.
  *
  * @package studentup
  */
@@ -17,20 +19,26 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * `/<key>.key` ni serve cheyyadam (key option lo unte mattrame).
+ * `/` + key + `.key` request ni serve cheyyadam (key set unte mattrame).
  */
 function studentup_indexnow_key_file() {
-	$key = preg_replace( '/[^a-f0-9]/i', '', (string) studentup_opt( 'indexnow_key', '' ) );
-	if ( '' === $key || strlen( $key ) < 8 ) {
-		return;   // key set kaaledu → ee route ledu
+	if ( is_admin() ) {
+		return;
 	}
-	$path = isset( $_SERVER['REQUEST_URI'] ) ? (string) wp_unslash( $_SERVER['REQUEST_URI'] ) : '';
-	$path = strtok( $path, '?' );
-	if ( '/' . $key . '.key' !== $path ) {
+	$key = (string) studentup_opt( 'indexnow_key', '' );
+	$key = preg_replace( '/[^A-Za-z0-9-]/', '', $key );
+	if ( '' === $key || strlen( $key ) < 8 ) {
+		return;
+	}
+	$uri = isset( $_SERVER['REQUEST_URI'] )
+		? (string) wp_unslash( $_SERVER['REQUEST_URI'] ) // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+		: '';
+	$uri = strtok( $uri, '?' );
+	if ( '/' . $key . '.key' !== $uri && '/' . $key . '.txt' !== $uri ) {
 		return;
 	}
 	header( 'Content-Type: text/plain; charset=utf-8' );
-	header( 'X-Robots-Tag: noindex' );
+	header( 'X-Robots-Tag: noindex, nofollow' );
 	echo esc_html( $key );
 	exit;
 }

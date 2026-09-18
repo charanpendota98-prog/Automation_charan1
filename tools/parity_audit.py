@@ -13,6 +13,7 @@ anni surfaces ni okate chota kalipi check chestundi:
   P6  Tool parity       — `tools/*.py` prathi script doc leda test lo reference avvali
   P7  Placeholder check — shipped surfaces lo TODO/FIXME/lorem ledu (demo text reject)
   P8  Count parity      — suites ↔ preview tile ↔ jsdom ↔ README claims
+  P9  Hygiene           — shell syntax (`bash -n`) · secrets scan · ignore rules · version parity
 
 Run: python tools/parity_audit.py [--json output/parity_audit.json]
 Exit 1 = errors unnayi.
@@ -198,10 +199,62 @@ def p8_count_parity(rep: dict) -> None:
     rep["info"].append(f"P8 counts: suites {suites} · tiles {tiles}")
 
 
+
+def p9_hygiene(rep: dict) -> None:
+    """P9 — deploy hygiene: shell syntax · secrets scan · ignore rules · env sample."""
+    import subprocess
+
+    # shell scripts: bash -n (syntax)
+    shells = sorted(list(ROOT.glob("*.sh")) + list((ROOT / "deploy").glob("*.sh")))
+    for sh in shells:
+        proc = subprocess.run(["bash", "-n", str(sh)], capture_output=True, text=True,
+                              timeout=60)
+        if proc.returncode != 0:
+            rep["errors"].append(f"P9 {sh.relative_to(ROOT)}: shell syntax error — "
+                                 f"{(proc.stderr or '').strip()[:90]}")
+    rep["info"].append(f"P9 shell scripts: {len(shells)} syntax-checked")
+
+    # secrets: tracked files lo real token patterns
+    try:
+        out = subprocess.run(["git", "grep", "-nI", "-E",
+                              r"AIza[0-9A-Za-z_-]{30,}|[0-9]{8,10}:AA[A-Za-z0-9_-]{30,}|"
+                              r"sk-[A-Za-z0-9]{30,}",
+                              "--", "."], capture_output=True, text=True, cwd=str(ROOT),
+                             timeout=120)
+        hits = [l for l in (out.stdout or "").splitlines() if l.strip()]
+        for h in hits[:5]:
+            rep["errors"].append(f"P9 secret commit ayyinattu undi: {h[:90]}")
+    except Exception as exc:  # noqa: BLE001
+        rep["info"].append(f"P9 secret scan skip ({type(exc).__name__})")
+
+    # ignore rules: .env / logs / output / state.db
+    for pat in (".env", "logs", "output", "state.db"):
+        proc = subprocess.run(["git", "check-ignore", "-q", pat], capture_output=True,
+                              cwd=str(ROOT), timeout=60)
+        if proc.returncode != 0:
+            rep["errors"].append(f"P9 '{pat}' .gitignore lo ledu — repo ki secrets/runtime "
+                                 f"data vellipovachu")
+
+    # theme version parity (style.css ↔ PHP ↔ readme Stable tag)
+    theme = ROOT / "wordpress-theme" / "studentup"
+    css = _read(theme / "style.css")
+    fn = _read(theme / "functions.php")
+    rm = _read(theme / "readme.txt")
+    ver_css = re.search(r"^Version:\s*(\S+)", css, re.M)
+    ver_php = re.search(r"STUDENTUP_VERSION',\s*'([^']+)'", fn)
+    ver_rm = re.search(r"^Stable tag:\s*(\S+)", rm, re.M)
+    vers = {v.group(1) for v in (ver_css, ver_php, ver_rm) if v}
+    if len(vers) != 1:
+        rep["errors"].append(f"P9 theme version mismatch: style.css={ver_css and ver_css.group(1)} · "
+                             f"PHP={ver_php and ver_php.group(1)} · readme={ver_rm and ver_rm.group(1)}")
+    rep["info"].append(f"P9 theme version: {sorted(vers)}")
+
+
 def run() -> dict:
     rep: dict = {"errors": [], "warnings": [], "info": []}
     for fn in (p1_cli_parity, p2_module_parity, p3_preview_links, p4_preview_meta,
-               p5_index_files, p6_tool_parity, p7_placeholders, p8_count_parity):
+               p5_index_files, p6_tool_parity, p7_placeholders, p8_count_parity,
+               p9_hygiene):
         try:
             fn(rep)
         except Exception as exc:  # noqa: BLE001

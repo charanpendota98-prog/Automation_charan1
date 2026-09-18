@@ -23,7 +23,7 @@ python tools/build_wp_theme.py    # php-lint + audit + POT + zip (theme install 
 | Post quality gates | 100/100 · 0 critical | **100/100 · 67/67 · critical 0** | `python run.py --pin-check` |
 | Rank Math score | 100 | **100** (draft 33 → 100 deterministic) | `--pin-check` / WP post edit |
 | System readiness | 100/100 | **100/100 · 28/28 system · 10 owner-pending** | `python run.py --readiness` |
-| Test coverage | all green | **55/55 suites · 122/122 runtime · 19 v68 + 16 v69 checks** | `--test-all` + jsdom |
+| Test coverage | all green | **55/55 suites · 122/122 runtime · 19 v68 + 18 v69 checks** | `--test-all` + jsdom |
 | Theme audit | 0 errors · 0 warnings | **0 · 0** (27 files · 75 functions · 34 options) | `tools/theme_audit.py` |
 | PHP syntax (real PHP 8) | 100% | **27/27 files OK** | `tools/build_wp_theme.py` |
 | Ad positions live in theme | 6/6 | **6/6** (leaderboard · in-article · in-feed · sidebar-sticky · below-content · anchor) | audit KPI row |

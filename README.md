@@ -572,7 +572,7 @@ surfaces ni kalipesamu (edi ekkadaina miss aithey adi **fail** avutundi).
 | 7 | **Dorikina misses → fix** | 7 CLI flags docs lo levu (ippudu 92/92 documented — README block) · 6 policy pages ki `robots` meta ledu (ippudu unnai) · parity audit itself reference avvaledu (ippudu README + readiness + guardian) |
 | 8 | **Automatic ga run** (v60 rule) | `python run.py --guardian` lo **code_audit + parity_audit** checks (ippudu **14/15** — 1 warn-only owner env) · readiness lo kotha check → **100/100 (28/28)** |
 | 9 | **Theme package** | version **1.5.0** · readme `Stable tag: 1.5.0` + changelog · zip **37 files 629 KB** (editor.css + **author.php**) |
-| 10 | **Proof** | `tests/v69_test.py` **16 checks** · `--test-all` **55/55** · jsdom **122/122** · code audit **0/0** · parity audit **0/0** · theme audit **0/0** · php-lint **29/29** · readiness **100/100 (28/28)** |
+| 10 | **Proof** | `tests/v69_test.py` **18 checks** · `--test-all` **55/55** · jsdom **122/122** · code audit **0/0** · parity audit **0/0** · theme audit **0/0** · php-lint **29/29** · POT **21 strings** · readiness **100/100 (28/28)** |
 
 ### v68 — CODE-LEVEL BUG HUNT (bot + theme) + INSTANT INDEXING (trending)
 

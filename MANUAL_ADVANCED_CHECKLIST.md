@@ -157,7 +157,7 @@ Message lo reason undi — exact ga fix cheyandi:
 ## ⚠️ Honest note
 Perfect = **machine gates + human 5-min verify**. Gates mistakes ramigadu (conflicts/stale/dates/originality), kaani official numbers mee mata tho final check — AdSense/Google/reputation thartham lo idi matrame safety.
 
-*Last updated: v69 (2026-09-18) — THEME STANDARDS PASS 3 (version parity · editor-styles · post_class · no_found_rows · admin nonce) + PARITY AUDIT (CLI ↔ docs · dead modules · preview links/meta · counts): 16 checks · 55/55 suites · 122/122 runtime · readiness 100/100 (28/28) · code audit 0/0 · parity 0/0*
+*Last updated: v69 (2026-09-18) — THEME STANDARDS PASS 3 (version parity · editor-styles · post_class · no_found_rows · admin nonce) + PARITY AUDIT (CLI ↔ docs · dead modules · preview links/meta · counts): 18 checks · 55/55 suites · 122/122 runtime · readiness 100/100 (28/28) · code audit 0/0 · parity 0/0*
 
 ## PART 26 — v67: DEEP AUDIT (expert/BA) + TOP-THEME HARDENING + 6/6 REVENUE SLOTS
 
@@ -784,7 +784,7 @@ PARITY AUDIT (kotha tool: tools/parity_audit.py) — "emi miss avvakoodadu":
 AUTOMATIC (v60 rule): guardian lo code_audit + parity_audit checks (13/15 = 2 warn-only) ·
   readiness lo +1 check → 100/100 (28/28)
 
-PROOF: tests/v69_test.py 16 checks (parity detection fixture to) · --test-all 55/55 ·
+PROOF: tests/v69_test.py 18 checks (parity detection fixture to) · --test-all 55/55 ·
   jsdom 122/122 · code audit 0/0 · parity 0/0 · theme audit 0/0 · php-lint 29/29 ·
   zip 37 files 629 KB · theme v1.5.0
 ```
