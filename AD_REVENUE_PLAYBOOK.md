@@ -38,6 +38,38 @@ python tools/revenue_estimate.py --views 10k     # leda 50k / 1l / 3l / 1m
 ready (ఫారం + admin panel + CSV) — kaavalsindi **2 అమ్మకాల మెసేజ్‌లు రోజూ**
 (SALES_KIT_ADVERTISERS.md lo టెంప్లేట్లు).
 
+## 0.3) ADS-ONLY revenue (v55) — 'ads tho entha vastundi?'
+
+```bash
+python tools/revenue_estimate.py --views 100000 --ads-only
+```
+
+| views/నెల | AdSense (₹40–250 RPM) | Sponsor slots | **మొత్తం** |
+|---|---|---|---|
+| 10,000 | ₹400–₹2,500 | ₹0–₹2,700 | ₹400–₹4,200 |
+| 50,000 | ₹2,000–₹12,500 | ₹1,000–₹8,100 | ₹3,000–₹15,600 |
+| 1,00,000 | ₹4,000–₹25,000 | ₹1,000–₹8,100 | ₹5,000–₹23,100 |
+| 3,00,000 | ₹12,000–₹75,000 | ₹3,000–₹16,200 | ₹15,000–₹61,200 |
+| 10,00,000 | ₹40,000–₹2,50,000 | ₹6,000–₹32,400 | ₹46,000–₹1,82,400 |
+
+**Idi maths: ads revenue = views × RPM.** Views perugakunda ads-only ceiling peragadu.
+Per-view value (RPM) penche levers — anni ippude siddham:
+
+| Lever | Status |
+|---|---|
+| **ads.txt** (buyers idi chustaru; lekapote demand takkuva) | ✅ auto (`python tools/build_policy_pages.py`) — approval tarvata line fill |
+| Auto Ads loader (anchor/in-feed formats) | ✅ `ADSENSE_AUTO_ADS=1` |
+| Viewability (sticky sidebar + in-feed + leaderboard) | ✅ |
+| Page speed (fast load = ekkuva viewable impressions) | ✅ static site |
+| Session depth (ఒక్క విజిట్‌లో ఎక్కువ పేజీలు: hubs, quiz, poll, related) | ✅ |
+| High-CPC pillars (Govt jobs, Results, Current affairs, Scholarships) | ✅ 16 pillars |
+| Tier-1 / NRI-దేశీ ట్రాఫిక్ (విదేశీ ఉద్యోగాలు, IELTS, visa content) | ⏳ content plan lo add cheyyali |
+| Topa ki 2 ads cap (policy + UX protect) | ✅ |
+
+**Mana site ki asalu answer:** ads-only tho 1 లక్ష views = ₹5,000–₹23,100/నెల.
+Adi automatic ga peragali ante **posts + SEO + shares** (roju 3–5 posts bot chestundi) —
+traffic ravali. Per-view value penchalante leads/premium (`--views` chudandi, 4–5×).
+
 ## 1) Revenue lines (4 — anni ippude ready)
 
 | # | Line | Status | Ekkada control |

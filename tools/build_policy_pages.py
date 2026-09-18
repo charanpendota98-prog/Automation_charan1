@@ -10,6 +10,8 @@ Run:  python tools/build_policy_pages.py
 from __future__ import annotations
 
 import io
+import os
+import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -475,6 +477,44 @@ SITEMAP = """<?xml version="1.0" encoding="UTF-8"?>
 """
 
 
+ADS_TXT_HEADER = """# ads.txt — studentup.in (IAB ads.txt standard)
+# Read by buyers/crawlers to know who may sell this site's ad inventory.
+# A missing/invalid ads.txt reduces advertiser demand (lower RPM).
+#
+# When AdSense is approved: put ADSENSE_CLIENT_ID=ca-pub-XXXXXXXXXXXXXXXX in .env
+# and re-run:  python tools/build_policy_pages.py   (this file updates automatically)
+"""
+
+
+def _adsense_pub_id() -> str:
+    """ADSENSE_CLIENT_ID (env or .env) → 'pub-################' leda ''."""
+    raw = os.environ.get("ADSENSE_CLIENT_ID") or os.environ.get("ADSENSE_CLIENT") or ""
+    if not raw:
+        env = ROOT.parent / ".env" if (ROOT.parent / ".env").exists() else Path(".env")
+        try:
+            for line in io.open(env, encoding="utf-8"):
+                if line.strip().startswith("ADSENSE_CLIENT_ID"):
+                    raw = line.split("=", 1)[1].strip().strip('"').strip("'")
+                    break
+        except OSError:
+            raw = ""
+    pub = re.sub(r"^ca-", "", raw.strip())
+    m = re.fullmatch(r"pub-(\d{10,20})", pub)
+    return m.group(0) if m else ""
+
+
+def write_ads_txt() -> str:
+    """preview/ads.txt — live publisher line (approval tarvata) leda honest placeholder."""
+    pub = _adsense_pub_id()
+    if pub:
+        text = ADS_TXT_HEADER + f"\ngoogle.com, {pub}, DIRECT, f08c47fec0942fa0\n"
+        state = "live"
+    else:
+        text = ADS_TXT_HEADER + "\n# (placeholder — nothing is served until AdSense approval)\n"
+        state = "placeholder"
+    (OUT / "ads.txt").write_text(text, encoding="utf-8")
+    return state
+
 def main() -> None:
     PAGES.mkdir(parents=True, exist_ok=True)
     for slug, title, desc, h1, sub, body in PAGE_DEFS:
@@ -484,7 +524,8 @@ def main() -> None:
     (OUT / "favicon.svg").write_text(FAVICON, encoding="utf-8")
     (OUT / "robots.txt").write_text(ROBOTS, encoding="utf-8")
     (OUT / "sitemap.xml").write_text(SITEMAP.format(d=UPDATED), encoding="utf-8")
-    print("  wrote favicon.svg · robots.txt · sitemap.xml")
+    ads_state = write_ads_txt()
+    print("  wrote favicon.svg · robots.txt · sitemap.xml · ads.txt (%s)" % ads_state)
     print("ALL POLICY PAGES BUILT ✔")
 
 

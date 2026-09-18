@@ -151,7 +151,23 @@ Message lo reason undi — exact ga fix cheyandi:
 ## ⚠️ Honest note
 Perfect = **machine gates + human 5-min verify**. Gates mistakes ramigadu (conflicts/stale/dates/originality), kaani official numbers mee mata tho final check — AdSense/Google/reputation thartham lo idi matrame safety.
 
-*Last updated: v54 (2026-09-18) — highest-revenue engine (leads + premium + sales kit): 12 checks · 40/40 suites · 108/108 runtime checks*
+*Last updated: v55 (2026-09-18) — ads.txt + ads-only ladder: 10 checks · 41/41 suites · 108/108 runtime checks*
+
+---
+
+## PART 14 — v55: ADS-ONLY REVENUE (ads.txt + ladder)
+
+```
+ads.txt  : preview/ads.txt — builder (tools/build_policy_pages.py) generate chestundi
+           placeholder (honest) → ADSENSE_CLIENT_ID set ayyaka live line automatic
+           google.com, pub-XXXXXXXX, DIRECT, f08c47fec0942fa0
+           robots.txt: /ads.txt open + Mediapartners-Google allow (verify chesadu)
+status   : autoblog/adsense_kit.ads_txt_status() → live | placeholder | warn | missing
+ladder   : python tools/revenue_estimate.py --views 100000 --ads-only
+           ads-only = AdSense + sponsor slots (leads/premium lekunda)
+           1L views → ₹5,000–₹23,100 · 10L views → ₹46,000–₹1,82,400
+nijam    : ads revenue = views × RPM — views perugakunda ceiling peragadu
+```
 
 ---
 

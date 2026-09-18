@@ -214,6 +214,36 @@ def scale_rows() -> list[dict]:
     return rows
 
 
+def render_ads_only(views: int) -> str:
+    """Ads-only jawabu: AdSense + sponsor slots (leads/premium lekunda)."""
+    out, A = [], None
+    A = out.append
+    A("=" * 74)
+    A("  ADS-ONLY REVENUE LADDER — AdSense + sponsor slots (leads lekunda)")
+    A("=" * 74)
+    A(f"  ఇప్పుడు చూస్తున్న views: {human(views)}/నెల")
+    A("")
+    A(f"    {'views/నెల':>12}  {'AdSense (₹40–250 RPM)':>24}  {'Sponsor slots':>18}  {'మొత్తం':>18}")
+    for v in (10_000, 25_000, 50_000, 100_000, 300_000, 1_000_000):
+        ads = adsense_table(v)
+        d = direct_table(v)
+        lo = ads[0]["revenue"] + d["conservative"]
+        hi = ads[2]["revenue"] + d["realistic"]
+        A(f"    {human(v):>12}  {('₹'+human(ads[0]['revenue'])+'–₹'+human(ads[-1]['revenue'])):>24}"
+          f"  {('₹'+human(d['conservative'])+'–₹'+human(d['realistic'])):>18}"
+          f"  {('₹'+human(lo)+'–₹'+human(hi)):>18}")
+    A("")
+    A("  Idi 'ads tho' vachhe revenue — views ki direct proportion lo perugutundi.")
+    A("  Per-view value penchalante: ads.txt (live), Auto Ads (anchor/in-feed), viewability,")
+    A("  page speed, session depth (ఒక్క విజిట్‌లో ఎక్కువ పేజీలు), high-CPC pillars + Tier-1")
+    A("  (NRI/విదేశీ) ట్రాఫిక్. Kaani views penchakunda ads-only ceiling penchadu.")
+    A("  Leads/premium products kalipithe per-view value 4–5× (--views చూడండి).")
+    A("")
+    A("  ⚠️  AdSense approval / RPM / traffic ఏవీ గ్యారంటీ కావు — ivi 2026 benchmarks.")
+    A("=" * 74)
+    return "\n".join(out)
+
+
 def human(n: int) -> str:
     s = f"{n:,}"
     return s
@@ -289,10 +319,15 @@ def main(argv=None) -> int:
     ap.add_argument("--views", default="10000",
                     help="నెలకు page views (10000 / 10k / 1l / 3l / 1m)")
     ap.add_argument("--json", action="store_true", help="machine-readable output")
+    ap.add_argument("--ads-only", action="store_true",
+                    help="ads-only ladder (AdSense + sponsor slots; leads/premium lekunda)")
     args = ap.parse_args(argv)
     views = parse_views(args.views)
     if views <= 0:
         raise SystemExit("views > 0 undali")
+    if args.ads_only:
+        print(render_ads_only(views))
+        return 0
     if args.json:
         print(json.dumps({"views": views, "totals": totals(views), "tiers": tiers(views),
                           "scale": scale_rows(), "market": market_reference(views)},

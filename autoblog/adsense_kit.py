@@ -161,6 +161,27 @@ def install(wp, dry: bool = False) -> Tuple[str, str]:
         return "warn", f"AdSense widgets REST error: {str(exc)[:100]}"
 
 
+def ads_txt_status(path=None) -> Tuple[str, str]:
+    """preview/ads.txt state → (status, detail): live | placeholder | warn | missing."""
+    if path is None:
+        path = Path(__file__).resolve().parents[1] / "preview" / "ads.txt"
+    path = Path(path)
+    try:
+        text = path.read_text(encoding="utf-8")
+    except OSError:
+        return "missing", f"ads.txt ledu ({path}) — 'python tools/build_policy_pages.py' run cheyandi"
+    line = next((ln.strip() for ln in text.splitlines()
+                 if ln.strip().lower().startswith("google.com,")), "")
+    if line and re.fullmatch(r"google\.com, pub-\d{10,20}, DIRECT, [0-9a-fA-F]{16}", line):
+        mine = ads_txt_line()
+        if mine and line.split(",")[1].strip() != mine.split(",")[1].strip():
+            return "warn", f"ads.txt publisher id .env tho match avvatledu: {line}"
+        return "live", line
+    if "placeholder" in text.lower():
+        return "placeholder", "ads.txt host-ready — approval + ADSENSE_CLIENT_ID tarvata auto line"
+    return "warn", "ads.txt lo valid 'google.com, pub-..., DIRECT, ...' line ledu"
+
+
 def ads_txt_line(client_id: str = "") -> Optional[str]:
     """Return the exact manual ads.txt line; WP root-file write is not faked."""
     pub = publisher_id(client_id or config.ADSENSE_CLIENT_ID)

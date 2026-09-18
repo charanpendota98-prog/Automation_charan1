@@ -1,0 +1,8 @@
+# ads.txt — studentup.in (IAB ads.txt standard)
+# Read by buyers/crawlers to know who may sell this site's ad inventory.
+# A missing/invalid ads.txt reduces advertiser demand (lower RPM).
+#
+# When AdSense is approved: put ADSENSE_CLIENT_ID=ca-pub-XXXXXXXXXXXXXXXX in .env
+# and re-run:  python tools/build_policy_pages.py   (this file updates automatically)
+
+# (placeholder — nothing is served until AdSense approval)

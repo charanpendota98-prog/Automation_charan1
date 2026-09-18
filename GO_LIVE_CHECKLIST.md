@@ -9,7 +9,7 @@ Ee doc = okka page lo motham. Kramam ga cheyyandi.
 
 | Item | Proof |
 |---|---|
-| Test suites | **40/40** pass (`python run.py --test-all`) |
+| Test suites | **41/41** pass (`python run.py --test-all`) |
 | Production check | **11/11** pass (`python run.py --production-audit`) |
 | Browser runtime | **108/108** checks (`node tests/runtime/jsdom_runtime_test.js`) |
 | Deploy check | 8 ok · 4 warn · 0 fail (`python run.py --deploy-check`) |
@@ -29,6 +29,9 @@ Ee doc = okka page lo motham. Kramam ga cheyyandi.
       → WordPress install + SSL (Let's Encrypt) ON.
 - [ ] **2. WordPress setup** — Rank Math, GA4, IndexNow; `wp-admin → Users → Application
       Passwords` → app password create cheyyandi.
+- [ ] **2b. AdSense approve ayyaka** — `.env` lo `ADSENSE_CLIENT_ID=ca-pub-…` petti
+      `python tools/build_policy_pages.py` run cheyyandi → **`ads.txt` automatic ga live** avutundi
+      (idi lekapote konni ads rakavu → RPM takkuva). Tarvata `ADSENSE_APPROVED=1`.
 - [ ] **3. Gemini API key** — aistudio.google.com → API key (free tier chaalu).
 - [ ] **4. Telegram bot** — @BotFather → token + mee chat id (@userinfobot).
 - [ ] **5. Oracle Cloud** (recommended) — Always Free VM (2 OCPU/12GB) + SSH key.
@@ -64,7 +67,9 @@ curl -s https://exam.studentup.in/healthz   # {"status":"ok"}
 python run.py --production-audit     # 0 blockers
 python run.py --deploy-check         # 0 fail
 python run.py --google-audit https://studentup.in
-python tools/revenue_estimate.py --views 10000
+curl -s https://studentup.in/ads.txt      # ads.txt host ayyindi leda chudandi
+python tools/revenue_estimate.py --views 10000        # leads/premium kalipi
+python tools/revenue_estimate.py --views 10000 --ads-only   # ads-only ladder
 ```
 UptimeRobot → `https://exam.studentup.in/healthz` (5-min ping) — watchdog ki rendo kanna.
 
@@ -108,4 +113,4 @@ Detail: `python tools/revenue_estimate.py --views 10k`
 Clickbait titles · fake clicks · popups · "Google tricks" · ad ni content laaga dhaachadam ·
 job guarantee promises (advertisers kuda). Ivi AdSense ban + trust damage.
 
-*Last updated: v54 (2026-09-18) · 40/40 suites · 108/108 runtime · 11/11 production checks*
+*Last updated: v55 (2026-09-18) · 41/41 suites · 108/108 runtime · 11/11 production checks*
