@@ -130,6 +130,12 @@ RADAR_POSTS_PER_DAY = int(_get("RADAR_POSTS_PER_DAY", "2"))
 BREAKING_ENABLED = _get("BREAKING_ENABLED", "1") not in ("0", "false", "no")
 BREAKING_MAX = int(_get("BREAKING_MAX", "8"))
 BREAKING_KEEP_HOURS = float(_get("BREAKING_KEEP_HOURS", "18"))
+
+# v60: SITE GUARDIAN — roju okkasari system motham check + Telegram alert
+GUARDIAN_ENABLED = _get("GUARDIAN_ENABLED", "1") not in ("0", "false", "no")
+GUARDIAN_HOUR = int(_get("GUARDIAN_HOUR", "20"))          # IST — raatri report
+GUARDIAN_STATE = Path(_get("GUARDIAN_STATE", str(BASE_DIR / "logs" / "guardian.json")))
+GUARDIAN_FEED_MAX_AGE = float(_get("GUARDIAN_FEED_MAX_AGE", "26"))  # breaking feed staleness (h)
 BREAKING_FEED_PATH = Path(_get(
     "BREAKING_FEED_PATH", str(BASE_DIR / "preview" / "data" / "breaking.json")))
 # comma-separated: https://t.me/s/yourchannel,https://site.com/feed

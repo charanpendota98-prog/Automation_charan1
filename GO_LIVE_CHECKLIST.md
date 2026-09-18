@@ -9,7 +9,8 @@ Ee doc = okka page lo motham. Kramam ga cheyyandi.
 
 | Item | Proof |
 |---|---|
-| Test suites | **45/45** pass (`python run.py --test-all`) |
+| Test suites | **46/46** pass (`python run.py --test-all`) |
+| Site guardian | **`python run.py --guardian`** — site/UI/SEO/ads/feed/storage 11 checks |
 | Production check | **11/11** pass (`python run.py --production-audit`) |
 | Browser runtime | **122/122** checks (`node tests/runtime/jsdom_runtime_test.js`) |
 | Deploy check | 8 ok · 4 warn · 0 fail (`python run.py --deploy-check`) |
@@ -118,4 +119,4 @@ Detail: `python tools/revenue_estimate.py --views 10k`
 Clickbait titles · fake clicks · popups · "Google tricks" · ad ni content laaga dhaachadam ·
 job guarantee promises (advertisers kuda). Ivi AdSense ban + trust damage.
 
-*Last updated: v59 (2026-09-18) · 45/45 suites · 122/122 runtime · 11/11 production checks*
+*Last updated: v60 (2026-09-18) · 45/45 suites · 122/122 runtime · 11/11 production checks*

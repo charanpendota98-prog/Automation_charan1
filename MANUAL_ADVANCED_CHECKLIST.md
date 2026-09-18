@@ -151,8 +151,31 @@ Message lo reason undi — exact ga fix cheyandi:
 ## ⚠️ Honest note
 Perfect = **machine gates + human 5-min verify**. Gates mistakes ramigadu (conflicts/stale/dates/originality), kaani official numbers mee mata tho final check — AdSense/Google/reputation thartham lo idi matrame safety.
 
-*Last updated: v59 (2026-09-18) — first-look: బ్రేకింగ్ న్యూస్ + విద్యార్థులు ఎక్కువగా వెతికేవి + పర్ఫెక్ట్ మెనూ: 12 checks (v59_test.py) · 45/45 suites · 122/122 runtime checks*
+*Last updated: v60 (2026-09-18) — SITE GUARDIAN (roju automatic check + Telegram report) + v59 first-look: 10 checks (v60_test.py) · 46/46 suites · 122/122 runtime checks*
 
+## PART 19 — v60: SITE GUARDIAN (eppatiki advanced ga — roju automatic check)
+
+```
+WHY      : "advanced ga untu undali" = manual gurthupettukovadam kaadu. Roju okkasari
+           bot motham system ni chusi, edaina padipoyindi/desync ayithe Telegram lo
+           cheptundi — silent regressions roju teliyali.
+RUN      : python run.py --guardian            (ippude check)
+           python run.py --guardian-notify     (report Telegram ki kuda)
+BOT HOOK : roju GUARDIAN_HOUR (default 20 IST) tarvata okkasari automatic
+           (state meta tho once/day — rerun ayina double report ledu)
+CHECKS   : 11 — site files · first-look UI blocks (ticker/used/breaking/feed fetch/
+           nav) · tiles ↔ tests/jsdom sync · robots+sitemap · ads.txt status ·
+           breaking feed freshness · ad inventory validity · keyword/pillar lock
+           (17 · 203 · 11,192 · 143) · menu wiring · storage · .env readiness
+SEVERITY : ❌ = system break (fix cheyyali) · ⚠️ = mee pani pending (creds)
+           exit code: hard fail unte 1, warn-only unte 0
+STATUS   : logs/guardian.json — chivari 14 runs history (gitignored)
+NIJAM    : read-only audit — fix cheyyadu, cheptundi matrame. Fixes tests +
+           builder nunchi vasthai (tiles bump, builder rerun, prune…)
+TESTS    : tests/v60_test.py = 10 checks · run.py --test-all 46/46
+```
+
+---
 ## PART 18 — v59: FIRST LOOK (బ్రేకింగ్ న్యూస్ + విద్యార్థులు ఎక్కువగా వెతికేవి + పర్ఫెక్ట్ మెనూ)
 
 ```

@@ -20,6 +20,9 @@
   python run.py --top-post "TSPSC Group 2 2026 notification" --publish-top-post
   python run.py --top-post-plan --top-post-days 90      v38: domination calendar
   python run.py --keyword-universe                      v38: ANNI keywords (10k+)
+  python run.py --guardian                v60: SITE GUARDIAN — site/UI/SEO/ads/
+                                          feed/storage check (roju auto @ GUARDIAN_HOUR)
+  python run.py --guardian-notify         v60: guardian report → Telegram
   python run.py --breaking-feed             v59: బ్రేకింగ్ న్యూస్ feed build (radar →
                                                    preview/data/breaking.json → site)
   python run.py --breaking-from F.json       v59: feed ni JSON nunchi (offline/test)

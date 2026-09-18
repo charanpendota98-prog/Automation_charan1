@@ -533,6 +533,30 @@ python run.py --breaking-feed           # v59: radar → site బ్రేకి
 python run.py --breaking-from file.json # v59: feed ni JSON nunchi (offline/approved list)
 ```
 
+### v60 — SITE GUARDIAN: eppatiki advanced ga (roju automatic)
+
+```bash
+python run.py --guardian            # 11 checks: site/UI/SEO/ads/feed/storage
+python run.py --guardian-notify     # same + Telegram report (daily hook automatic @ 20 IST)
+```
+
+| Check | Enti chustundi | Fail ayithe fix |
+|---|---|---|
+| site_files | pages/robots/sitemap/ads.txt/feed | `python tools/build_policy_pages.py` |
+| first_look_ui | ticker → most-used → hero blocks + feed fetch | v59 blocks restore |
+| tiles_sync | site tiles ↔ tests/*.py count ↔ jsdom literal | tiles + jsdom okate change lo bump |
+| robots_sitemap | sitemap line · /admin disallow · internal artifacts | builder rerun |
+| ads_txt | live/placeholder status | builder + ADSENSE_CLIENT_ID |
+| breaking_feed | freshness (GUARDIAN_FEED_MAX_AGE=26h) | `--breaking-feed` / radar cron |
+| ads_inventory | ad link/title/id validity (inventory + house) | ads/*.json correct |
+| keyword_pillar_lock | 17 pillars · 203 entities · 11,192 kws · 143 sources | counts sync |
+| menu_wiring | TS/AP/hall/results/walkin/software links + 8 used tiles | nav/mpanel |
+| storage | disk free · state.db · output size | `tools/prune_media.py --apply` |
+| env_readiness ⚠️ | Gemini/WP/Telegram creds (owner pani) | `.env` (GO_LIVE PART A) |
+
+Severity: ❌ = system break · ⚠️ = owner-pending (creds) · status → `logs/guardian.json` (14-run history).
+Guardian read-only — fix chestundi kaadu, cheptundi; fixes tests + builder nunchi.
+
 ### v59 — First Look: బ్రేకింగ్ న్యూస్ + "విద్యార్థులు ఎక్కువగా వెతికేవి" + పర్ఫెక్ట్ మెనూ
 
 Student site open cheyagane modati 3 sekundullo kanipinche order:
@@ -551,7 +575,7 @@ Menu (desktop + mobile same order): హోమ్ · ఉద్యోగాలు�
 
 Bot side: `autoblog/breaking.py` (feed build + tag classifier + honest empty note),
 radar run lo auto hook, `MOST_USED` order okate source (bot + site + tests sync).
-Evidence: tests/v59_test.py 12 checks · `run.py --test-all` 45/45 · jsdom 122/122.
+Evidence: tests/v59_test.py 12 checks · `run.py --test-all` 46/46 · jsdom 122/122.
 
 > ℹ️ Ee system exam conduct cheyyadaniki matrame — student data (roll, answers,
 > scores) mee server lo untundi, bayata pampabadadu. Public internet lo pettali
@@ -1196,6 +1220,7 @@ Marpali te: `.env` edit chesi scheduler ni restart cheyandi: `sudo systemctl res
 ├── DEPLOY_ORACLE_CLOUD.md  # v51 Oracle Always Free vs MilesWeb split + crash-proofing
 ├── CONTENT_PLAN_DAILY.md   # v58 daily plan: 17 pillars, rhythm, refresh, SEO gates
 ├── breaking (autoblog/breaking.py)      # v59 site బ్రేకింగ్ feed + most-used order
+├── guardian (autoblog/guardian.py)      # v60 roju automatic system check + alert
 ├── preview/data/breaking.json           # v59 ticker/section feed (radar writes)
 ├── AD_REVENUE_PLAYBOOK.md  # v52 revenue lines, rate card, sponsor + house ad flows
 ├── ad_advisor (autoblog/ad_advisor.py) # v57 network advisor + automatic alerts

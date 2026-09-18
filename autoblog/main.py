@@ -199,6 +199,35 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
                 state.meta_set(config.STATE_PATH, f"autorefresh:{today.isoformat()}", "1")
             except Exception:
                 log.exception("Daily auto-refresh failed")
+        # --- v59: బ్రేకింగ్ న్యూస్ feed — radar sweep tarvata site ticker fresh ---
+        if (getattr(config, "BREAKING_ENABLED", True)
+                and now_hour >= getattr(config, "RADAR_HOUR", 7)
+                and not state.meta_get(config.STATE_PATH, f"breaking:{today.isoformat()}")):
+            try:
+                from . import breaking, news_radar
+
+                _r = news_radar.run_radar()
+                _bres = breaking.publish(_r.get("items", []))
+                state.meta_set(config.STATE_PATH, f"breaking:{today.isoformat()}", "1")
+                log.info("BREAKING FEED ✔ %d items (site ticker)", _bres["count"])
+            except Exception:
+                log.exception("breaking feed failed (non-fatal)")
+        # --- v60: SITE GUARDIAN — roju okkasari system motham check + report ---
+        if (getattr(config, "GUARDIAN_ENABLED", True)
+                and now_hour >= getattr(config, "GUARDIAN_HOUR", 20)
+                and not state.meta_get(config.STATE_PATH, f"guardian:{today.isoformat()}")):
+            try:
+                from . import guardian
+
+                _g = guardian.guard(notify=True, print_out=False)
+                state.meta_set(config.STATE_PATH, f"guardian:{today.isoformat()}", "1")
+                log.info("SITE GUARDIAN ✔ %d/%d ok · %d owner-pending",
+                         _g["passed"], _g["checked"], _g.get("warned", 0))
+                for _r in _g["results"]:
+                    if not _r["ok"] and not _r.get("warn_only"):
+                        log.warning("GUARDIAN ❌ %s: %s (%s)", _r["id"], _r["detail"], _r["fix"])
+            except Exception:
+                log.exception("site guardian failed (non-fatal)")
         # --- v57: AD ADVISOR — roju okkasari: e network ki eppudu apply cheyyali ---
         if (getattr(config, "AD_ADVISOR_ENABLED", True)
                 and now_hour >= getattr(config, "AD_ADVISOR_HOUR", 10)
@@ -669,6 +698,14 @@ def trends_check() -> int:
               " rashtundi (1/day).")
     print("=" * 62)
     return 0
+
+
+def guardian_run(notify: bool = False, quiet: bool = False) -> int:
+    """v60: SITE GUARDIAN — system motham check (site/UI/SEO/ads/feed/storage)."""
+    from . import guardian
+
+    summary = guardian.guard(notify=notify, print_out=not quiet)
+    return 0 if summary.get("ok") else 1
 
 
 def breaking_feed_run(from_file: str = "") -> int:
@@ -1417,6 +1454,10 @@ def main() -> int:
                              "(tarvata offline/CI audit ki)")
     parser.add_argument("--trends", action="store_true",
                         help="Google Trends India education trends chupinchindi")
+    parser.add_argument("--guardian", action="store_true",
+                        help="v60: SITE GUARDIAN — site/UI/SEO/ads/feed/storage full check")
+    parser.add_argument("--guardian-notify", action="store_true",
+                        help="v60: guardian report ni Telegram ki kuda pampu")
     parser.add_argument("--breaking-feed", action="store_true",
                         help="v59: బ్రేకింగ్ న్యూస్ feed build (radar → preview/data/breaking.json)")
     parser.add_argument("--breaking-from", default="", metavar="FILE",
@@ -1628,6 +1669,8 @@ def main() -> int:
         for r in rows:
             print(f"  • {r['exam']:<22} {r.get('posts', '?')} posts -> {r.get('link', r['slug'])}")
         return 0
+    if args.guardian or args.guardian_notify:
+        return guardian_run(notify=args.guardian_notify)
     if args.breaking_feed or args.breaking_from:
         return breaking_feed_run(from_file=args.breaking_from)
     if args.radar:
