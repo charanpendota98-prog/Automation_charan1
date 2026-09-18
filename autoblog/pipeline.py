@@ -66,6 +66,18 @@ CATEGORY_RULES = [
     ("Part Time Jobs", ["part time", "part-time", "work from home",
                         "freelance", "data entry", "tutor"]),
     ("Walkin Jobs", ["walkin", "walk-in", "walk in", "direct interview"]),
+    ("Outsourcing Jobs", ["outsourcing", "contract basis", "contractual",
+                          "కాంట్రాక్ట్", "అవుట్‌సోర్సింగ్", "crc", "outsourced",
+                          "guest faculty", "honorarium"]),
+    ("Current Affairs", ["current affairs", "జాతీయ", "ప్రస్తుతాంశాలు",
+                         "pib", "press release", "news today", "daily news",
+                         "కరెంట్ అఫైర్స్", "studytoday news"]),
+    ("Upcoming Exams", ["upcoming exam", "exam calendar", "notification coming",
+                        "రానున్న పరీక్షలు", "exam schedule", "tentative schedule",
+                        "recruitment calendar", "పరీక్షల క్యాలెండర్"]),
+    ("Exam Tips", ["exam tips", "preparation strategy", "study plan", "revision",
+                   "పరీక్షా చిట్కాలు", "సన్నద్ధత", "how to prepare", "time table",
+                   "model paper", "previous papers", "mock test"]),
     ("Hall Tickets", ["admit card", "hall ticket", "హాల్ టికెట్", "call letter"]),
     ("Scholarships", ["scholarship", "fellowship", "nsp", "fee reimbursement",
                       "స్కాలర్", "రుసుము", "pragati", "saksham", "yasasvi"]),
@@ -79,14 +91,36 @@ CATEGORY_RULES = [
 ]
 
 
+# Generic job words: ivatiki thakkuva weight — "job/vacancy" unna headline ni
+# "Outsourcing Jobs" / "Upcoming Exams" lanti specific category lu outrank cheyyali.
+_RULE_GENERIC = {"job", "jobs", "vacancy", "posts", "notification", "recruitment",
+                 "bharti", "hiring", "apply", "apply online"}
+
+
+def _rule_weight(word: str) -> float:
+    """Keyword specificity: phrase/Telugu 2.0 · normal word 1.0 · generic 0.5."""
+    w = word.strip().lower()
+    if w in _RULE_GENERIC:
+        return 0.5
+    if " " in w or "-" in w:
+        return 2.0          # "contract basis", "hall ticket", "exam tips"
+    if not w.isascii():
+        return 2.0          # Telugu keyword (తెలంగాణ, ప్రస్తుతాంశాలు)
+    return 1.0
+
+
 def classify_category(title: str, text: str = "") -> str:
-    """URL mode lo category auto-detect (Telugu + English keywords)."""
+    """URL mode lo category auto-detect (Telugu + English keywords).
+
+    v50: weighted scoring so the *specific* pillar wins over generic job words
+    (e.g. "TSSPDCL outsourcing jobs" → Outsourcing Jobs, not Central Govt Jobs).
+    """
     blob = f"{title} {title} {text[:600]}".lower()
-    best, best_hits = "Online Education", 0
+    best, best_score = "Online Education", 0.0
     for cat, words in CATEGORY_RULES:
-        hits = sum(1 for w in words if w in blob)
-        if hits > best_hits:
-            best, best_hits = cat, hits
+        score = sum(_rule_weight(w) for w in words if w in blob)
+        if score > best_score:
+            best, best_score = cat, score
     return best
 
 

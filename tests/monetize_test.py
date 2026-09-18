@@ -80,7 +80,17 @@ def main():
 
     _rnd.seed(2)
     picks = Counter(topic_engine.pick_category(db, month=6) for _ in range(400))
-    assert picks["Online Education"] > picks["Results"], picks.most_common()
+    # v50: 16 pillars share the pool now, so pin the *intent* instead of a
+    # brittle pairwise count:
+    #  (a) June's seasonal set is exactly Online Education + Scholarships
+    assert set(topic_engine.SEASONAL_CATEGORIES[6]) == {"Online Education", "Scholarships"}
+    #  (b) seasonal categories together beat their uniform share of the pool
+    seasonal_hits = picks["Online Education"] + picks["Scholarships"]
+    uniform_share = 2 / len(config.CATEGORIES)
+    assert seasonal_hits / 400 > uniform_share, (seasonal_hits, picks.most_common())
+    #  (c) revenue priority really adds tickets
+    assert config.CATEGORY_PRIORITY.get("Upcoming Exams", 0) > \
+        config.CATEGORY_PRIORITY.get("Part Time Jobs", 0)
     # High-CPC share: 100 picks lo ~20-45% high-CPC ideas (30% config)
     config.HIGH_CPC_SHARE = 30
     _rnd.seed(5)

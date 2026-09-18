@@ -258,9 +258,12 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
   ok("no Romanized Tenglish words in visible text", tenglishHits.length === 0, "hits=" + tenglishHits.join(","));
   const trust = document.getElementById("trust");
   ok("trust section: 100% verify headline (Telugu)", !!trust && /100%/.test(trust.textContent) && /ధృవీకరించి/.test(trust.textContent));
-  ok("trust proof tiles: 35/35 + 11/11 + 76/76 + 10,682",
-     /35\/35/.test(trust.textContent) && /11\/11/.test(trust.textContent) &&
-     /76\/76/.test(trust.textContent) && /10,682/.test(trust.textContent));
+  ok("trust proof tiles: 36/36 + 11/11 + 83/83 + 10,682",
+     /36\/36/.test(trust.textContent) && /11\/11/.test(trust.textContent) &&
+     /83\/83/.test(trust.textContent) && /10,682/.test(trust.textContent));
+  ok("trust tiles prove pillar + source coverage (16 categories · 129 sources)",
+     /16/.test(trust.textContent) && /129/.test(trust.textContent) &&
+     /అవుట్‌సోర్సింగ్/.test(trust.textContent) && /ప్రస్తుతాంశాలు/.test(trust.textContent));
   ok("trust has 5 verification gates incl. deep cross-verification (v44)",
      trust.querySelectorAll(".vstep").length === 5 && /క్రాస్-వెరిఫికేషన్/.test(trust.textContent));
   ok("trust honest note + corrections email present",
@@ -287,6 +290,23 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
   const adSlots = Array.from(document.querySelectorAll(".su-ad"));
   ok("ad slots all labelled + sponsored rel (no unlabelled promo)",
      adSlots.length >= 4 && adSlots.every(a => /SPONSORED/i.test(a.textContent)));
+
+
+  /* ---------- v50: phone neatness (tap targets, overflow, zoom) ---------- */
+  ok("phone: horizontal-overflow guard on html/body",
+     /html,body\{overflow-x:hidden/.test(styleText));
+  ok("phone: tap targets >= 44px (nav, menu, buttons)",
+     /\.nav a,\.drop a,\.mobile-nav a,\.mpanel a,\.round,[^{]*\{min-height:44px\}/.test(styleText));
+  ok("phone: media never exceeds screen",
+     /img,video,iframe,table\{max-width:100%\}/.test(styleText) && /img,video\{height:auto\}/.test(styleText));
+  ok("phone: 16px inputs (no iOS zoom-jump on focus)",
+     /input,select,textarea\{font-size:16px\}/.test(styleText));
+  ok("phone: single-column layout switch at <=600px",
+     /@media\(max-width:600px\)/.test(styleText) && /@media\(max-width:920px\)/.test(styleText));
+  const navLinks = Array.from(document.querySelectorAll(".mobile-nav a"));
+  ok("phone: bottom nav has 5 labelled destinations",
+     navLinks.length === 5 && navLinks.every(a => a.textContent.trim().length > 0),
+     "count=" + navLinks.length);
 
   /* ---------- summary ---------- */
   console.log("=".repeat(64));

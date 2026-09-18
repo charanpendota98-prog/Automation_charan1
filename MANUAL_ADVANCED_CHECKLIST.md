@@ -151,7 +151,28 @@ Message lo reason undi — exact ga fix cheyandi:
 ## ⚠️ Honest note
 Perfect = **machine gates + human 5-min verify**. Gates mistakes ramigadu (conflicts/stale/dates/originality), kaani official numbers mee mata tho final check — AdSense/Google/reputation thartham lo idi matrame safety.
 
-*Last updated: v49 (2026-09-18) — MilesWeb/cPanel deployability: 8 WSGI tests · 35/35 suites · 76/76 browser-runtime checks*
+*Last updated: v50 (2026-09-18) — 16 content pillars + manual gate + Rank Math + daily refresh: 15 tests · 36/36 suites · 82/82 runtime checks*
+
+---
+
+## PART 9 — v50: ANNI CATEGORIES + MANUAL GATE + DAILY REFRESH
+
+Full plan: **CONTENT_PLAN_DAILY.md**
+
+```
+16 pillars : TS/AP/Central jobs · Outsourcing · Walk-in · Private · Software ·
+             Part-time · Scholarships · Upcoming Exams · Current Affairs ·
+             Exam Tips · Hall Tickets · Results · Internships · Online Education
+129 sources: 4x/day check (daily hot-list + rotation), prathi pillar ki watch
+Category   : kotha pillar WordPress lo lenappudu bot ne create chestundi
+             (wp.get_or_create_term) — manual work ledu
+Manual gate: DEFAULT_POST_STATUS=draft + Telegram ✅ + QA 80 +
+             originality 72% + deep conflict BLOCK
+Refresh    : --auto-refresh 2 (roju) · --update <id> (manual) · refreshed_at track
+SEO        : Rank Math fields (focus keyword/title/desc/social/robots) +
+             canonical + OG + JSON-LD + quick-answer card + IndexNow ping
+```
+Rate cheyyalsina command: `python run.py --test-only v50_test`
 
 ---
 

@@ -111,18 +111,18 @@ TIPS_IDEAS = [
 # Seasonal calendar — India education cycle prakaram topic priority
 SEASONAL_CATEGORIES = {
     # live-site category names tho remap (v14)
-    1: ["Hall Tickets", "Online Education"],    # exam season
-    2: ["Hall Tickets", "Results"],             # board exams start
-    3: ["Results", "Online Education"],         # results season
-    4: ["Online Education", "Hall Tickets"],    # EAMCET/entrance season
+    1: ["Hall Tickets", "Online Education", "Upcoming Exams"],  # exam season
+    2: ["Hall Tickets", "Results", "Exam Tips"],  # board exams start
+    3: ["Results", "Online Education", "Exam Tips"],  # results season
+    4: ["Online Education", "Hall Tickets", "Upcoming Exams"],  # EAMCET/entrance season
     5: ["Results", "Scholarships"],             # results + scholarship windows
     6: ["Online Education", "Scholarships"],    # admissions peak
     7: ["Online Education", "Internships"],     # degree admissions
     8: ["Scholarships", "Online Education"],    # new semesters
-    9: ["Central Govt Jobs", "Hall Tickets"],   # recruitment season
-    10: ["Central Govt Jobs", "Private Jobs"],
+    9: ["Central Govt Jobs", "Hall Tickets", "Outsourcing Jobs"],  # recruitment season
+    10: ["Central Govt Jobs", "Private Jobs", "Current Affairs"],
     11: ["Central Govt Jobs", "Internships"],   # placement season
-    12: ["Central Govt Jobs", "Hall Tickets"],  # year-end notifications
+    12: ["Central Govt Jobs", "Hall Tickets", "Upcoming Exams"],  # year-end notifications
 }
 
 

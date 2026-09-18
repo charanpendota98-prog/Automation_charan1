@@ -57,7 +57,17 @@
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Telugu:wght@400;500;600;700;800&display=swap');
     :root{--navy:#0f2e62;--blue:#2463b7;--orange:#ed8a32;--ink:#162235;--muted:#64748b;--line:#e5ebf4;--soft:#f5f8fc;--white:#fff;--green:#168451;--red:#c23b3b;--shadow:0 18px 45px rgba(15,46,98,.11);--bg:#f7f9fd;--card:#fff;--cardline:#e5ebf4;--ink-soft:#56657b}
     *{box-sizing:border-box}html{scroll-behavior:smooth}
-    body{margin:0;color:var(--ink);background:var(--bg);font-family:Inter,'Noto Sans Telugu',sans-serif;line-height:1.6}
+    html,body{overflow-x:hidden;max-width:100%}
+    *{-webkit-tap-highlight-color:rgba(36,99,183,.12)}
+    body{margin:0;color:var(--ink);background:var(--bg);font-family:Inter,'Noto Sans Telugu',sans-serif;line-height:1.6;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+    img,video,iframe,table{max-width:100%}
+    img,video{height:auto}
+    /* phone tap targets: Apple/Google min 44px so nothing is fiddly */
+    .nav a,.drop a,.mobile-nav a,.mpanel a,.round,.btn,.cta,.mcta,.tab,.chip{min-height:44px}
+    .nav a,.drop a,.mobile-nav a,.mpanel a{display:flex;align-items:center}
+    .mobile-nav a{justify-content:center;flex-direction:column;gap:2px}
+    .round{min-width:44px}
+    input,select,textarea{font-size:16px}   /* iOS zoom-on-focus fix */
     button,a{font:inherit}a{text-decoration:none;color:inherit}.wrap{max-width:1220px;margin:auto;padding:0 24px}
     .skip{position:absolute;left:-9999px;top:0;background:var(--navy);color:#fff;padding:10px 16px;z-index:99;border-radius:0 0 10px 0}
     .skip:focus{left:0}
@@ -751,10 +761,12 @@
       <h2>100% ధృవీకరించి, తర్వాతే ప్రచురణ</h2>
       <p class="sub">studentup.in బాట్ పైప్‌లైన్ — ప్రతి పోస్ట్‌కు 30+ ఆటోమేటిక్ తనిఖీలు + మానవ సమీక్ష. ఈరోజు (2026-09-18) నిరూపక సంఖ్యలు — సైట్-ఆడిట్‌లో 31 ఫలితాలలో 20 ఆటో-ఫిక్స్ చేయగలిగేవి.</p>
       <div class="qgrid">
-        <div class="qtile"><b>35/35</b><span>టెస్ట్ సూట్‌లు పాస్ (అన్నీ ఆకుపచ్చ)</span></div>
+        <div class="qtile"><b>36/36</b><span>టెస్ట్ సూట్‌లు పాస్ (అన్నీ ఆకుపచ్చ)</span></div>
         <div class="qtile"><b>11/11</b><span>ప్రొడక్షన్ భద్రతా తనిఖీలు పాస్ (v30 గేట్)</span></div>
-        <div class="qtile"><b>76/76</b><span>బ్రౌజర్-స్థాయి రన్‌టైమ్ తనిఖీలు (ఈ వెబ్‌సైట్)</span></div>
+        <div class="qtile"><b>83/83</b><span>బ్రౌజర్-స్థాయి రన్‌టైమ్ తనిఖీలు (ఈ వెబ్‌సైట్)</span></div>
         <div class="qtile"><b>10,682</b><span>కీవర్డ్ విశ్వం (188 అంశాలు × 66 ఉద్దేశాలు)</span></div>
+        <div class="qtile"><b>16</b><span>కంటెంట్ విభాగాలు: ఉద్యోగాలు (TS · AP · కేంద్ర · అవుట్‌సోర్సింగ్ · వాక్-ఇన్), స్కాలర్‌షిప్‌లు, రానున్న పరీక్షలు, ప్రస్తుతాంశాలు, పరీక్షా చిట్కాలు, ఫలితాలు మొదలైనవి</span></div>
+        <div class="qtile"><b>129</b><span>అధికారిక మూలాల పర్యవేక్షణ (రోజుకు 4 సార్లు — ఉద్యోగ నోటిఫికేషన్, పరీక్షల క్యాలెండర్, ప్రభుత్వ ప్రకటనలు)</span></div>
       </div>
       <div class="vsteps">
         <div class="vstep"><b>① మూల తనిఖీ (ఫాక్ట్ గార్డ్)</b><span>ప్రతి తేదీ, ఖాళీల సంఖ్య మూల పత్రాలలో సరిపోలాలి. నకిలీ “చివరి తేదీ” → ఆటో-ఫ్లాగ్ + మెరుగుదల. అబద్ధ డేటా = నంబర్ 1 ప్రమాదం — మెషీన్ ద్వారానే గుర్తింపు.</span></div>

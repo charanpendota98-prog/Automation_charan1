@@ -150,6 +150,28 @@ CATEGORY_SEEDS = {
         "registration number recovery, exam day guidelines & reporting "
         "time, scribe rules, ID proof requirements"
     ),
+    "Outsourcing Jobs": (
+        "TS/AP outsourcing & contract-basis recruitment, CRC (Commissionerate "
+        "of Rural Development) outsourcing, TSSPDCL/TGSPDCL outsourced posts, "
+        "guest faculty & honorarium roles, eligibility, pay scales, renewal "
+        "and document verification steps"
+    ),
+    "Current Affairs": (
+        "daily current affairs for competitive exams — national & Telugu-state "
+        "schemes, appointments, awards, sports, economy basics; every fact must "
+        "come from an official press release (PIB/state government) and stay "
+        "exam-relevant (no hype, no rumour)"
+    ),
+    "Upcoming Exams": (
+        "upcoming exam & recruitment calendar — TSPSC/APPSC/SSC/RRB/NTA "
+        "tentative schedules, application windows, fee dates, expected "
+        "vacancy counts, how to verify dates on the official calendar"
+    ),
+    "Exam Tips": (
+        "exam preparation plans for Telugu students — subject-wise strategy, "
+        "revision cycles, previous-paper practice, time management, "
+        "score-improvement habits, exam-day checklist (no false promises)"
+    ),
     "Online Education": (
         "online MBA & degrees, IGNOU distance programs, upskilling "
         "platforms, AICTE-approved certifications, course fees & EMI/loan "

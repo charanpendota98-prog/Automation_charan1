@@ -133,6 +133,34 @@ _S = [
     ("AICTE Internship", "AICTE internship scheme 2026", "Internships", False),
     ("NATS Apprenticeship", "apprenticeship NATS India 2026", "Internships", False),
     ("Graduate Trainee Jobs", "graduate trainee recruitment 2026", "Central Govt Jobs", False),
+    # --- v50: outsourcing / contract recruitment (TS + AP) ---
+    ("TS Outsourcing Recruitment", "Telangana outsourcing recruitment 2026", "Outsourcing Jobs", True),
+    ("TGSPDCL TSSPDCL Outsourcing", "TSSPDCL TGSPDCL outsourcing jobs 2026", "Outsourcing Jobs", False),
+    ("TS GENCO Outsourcing", "TSGENCO TRANSCO outsourcing recruitment 2026", "Outsourcing Jobs", False),
+    ("TS Medical & Health Outsourcing", "Telangana health department outsourcing 2026", "Outsourcing Jobs", False),
+    ("AP Outsourcing Recruitment", "Andhra Pradesh outsourcing recruitment 2026", "Outsourcing Jobs", True),
+    ("APSPDCL Outsourcing", "APSPDCL outsourcing jobs 2026", "Outsourcing Jobs", False),
+    ("AP Village & Ward Secretariat", "AP ward secretariat contract recruitment 2026", "Outsourcing Jobs", False),
+    ("Guest Faculty Recruitment", "guest faculty recruitment Telangana Andhra 2026", "Outsourcing Jobs", False),
+    # --- v50: current affairs from official releases ---
+    ("PIB Press Releases", "PIB press release education scheme", "Current Affairs", True),
+    ("PIB Telugu Region", "PIB Telangana Andhra development scheme", "Current Affairs", False),
+    ("Ministry of Education", "Ministry of Education announcement 2026", "Current Affairs", False),
+    ("Telangana Govt Orders", "Telangana government order education 2026", "Current Affairs", False),
+    ("AP Govt Orders", "Andhra Pradesh government order education 2026", "Current Affairs", False),
+    ("NITI Aayog & Schemes", "central scheme students scholarship announcement", "Current Affairs", False),
+    # --- v50: exam calendar / upcoming exams ---
+    ("TSPSC Calendar", "TSPSC upcoming exams calendar 2026", "Upcoming Exams", True),
+    ("APPSC Calendar", "APPSC upcoming exams schedule 2026", "Upcoming Exams", True),
+    ("SSC Exam Calendar", "SSC exam calendar 2026 2027", "Upcoming Exams", False),
+    ("RRB Exam Calendar", "RRB exam calendar 2026", "Upcoming Exams", False),
+    ("NTA Exam Calendar", "NTA exam calendar 2026", "Upcoming Exams", False),
+    ("State Board Exam Schedule", "Telangana Andhra board exam schedule 2026", "Upcoming Exams", False),
+    # --- v50: exam preparation guidance ---
+    ("TSPSC Preparation", "TSPSC exam preparation plan syllabus", "Exam Tips", False),
+    ("APPSC Preparation", "APPSC group 2 preparation strategy syllabus", "Exam Tips", False),
+    ("SSC Preparation", "SSC exam preparation strategy previous papers", "Exam Tips", False),
+    ("Board Exam Prep", "10th inter board exam preparation tips 2026", "Exam Tips", False),
 ]
 
 SOURCES_GRID = [
