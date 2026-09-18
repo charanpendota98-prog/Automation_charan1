@@ -23,7 +23,7 @@ python tools/build_wp_theme.py    # php-lint + audit + POT + zip (theme install 
 | Post quality gates | 100/100 · 0 critical | **100/100 · 67/67 · critical 0** | `python run.py --pin-check` |
 | Rank Math score | 100 | **100** (draft 33 → 100 deterministic) | `--pin-check` / WP post edit |
 | System readiness | 100/100 | **100/100 · 26/26 system · 8 owner-pending** | `python run.py --readiness` |
-| Test coverage | all green | **53/53 suites · 122/122 runtime** | `--test-all` + jsdom |
+| Test coverage | all green | **54/54 suites · 122/122 runtime · 18 v68 checks** | `--test-all` + jsdom |
 | Theme audit | 0 errors · 0 warnings | **0 · 0** (27 files · 75 functions · 34 options) | `tools/theme_audit.py` |
 | PHP syntax (real PHP 8) | 100% | **27/27 files OK** | `tools/build_wp_theme.py` |
 | Ad positions live in theme | 6/6 | **6/6** (leaderboard · in-article · in-feed · sidebar-sticky · below-content · anchor) | audit KPI row |
@@ -71,6 +71,7 @@ python tools/build_wp_theme.py    # php-lint + audit + POT + zip (theme install 
 | R22 | Security hardening (top-site level) | v67 | `inc/security.php` (headers · XML-RPC off · enumeration block · attachment redirect · comment flood guard · DISALLOW_FILE_EDIT) | `v67_test` security asserts | theme file + docs |
 | R23 | Fast (CWV) + accessible | v67 | preconnect · LCP preload · content-visibility toggle (`su-cv`) · `:focus-visible` · skip-link · button types · `contains` sizes | `v67_test` perf/a11y asserts | `inc/perf.php` + `style.css` |
 | R24 | Never fake/guarantee numbers | v62 | `readiness.honest_note` + docs + owner-pending section | `v62_test` | `--readiness` output |
+| R25 | Instant indexing (trending) | publish → IndexNow + Google Indexing API (JobPosting) · key file theme serve · `--index-now/--status/--key-gen` | autoblog/indexing.py · inc/indexnow.php · v68_test | ✔ engine · ⏳ owner key/SA |
 
 ---
 
@@ -107,4 +108,4 @@ python tools/build_wp_theme.py    # php-lint + audit + POT + zip (theme install 
 ---
 
 *Last updated: v67 (2026-09-18) — deep audit (expert/BA) · top-theme hardening · 6/6 ad slots ·
-53/53 suites · readiness 100/100 (26/26) · audit 0 errors · 0 warnings.*
+54/54 suites · readiness 100/100 (27/27) · theme audit 0/0 · code audit 0/0 (E1–E12 · W1–W7).*

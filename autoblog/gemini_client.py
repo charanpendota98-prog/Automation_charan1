@@ -682,8 +682,8 @@ def _bump_key(key: str) -> None:
     try:
         n = int(state.meta_get(config.STATE_PATH, f"gemkey:cnt:{kh}:{today}") or 0)
         state.meta_set(config.STATE_PATH, f"gemkey:cnt:{kh}:{today}", str(n + 1))
-    except Exception:
-        pass
+    except Exception as exc:  # noqa: BLE001 — best-effort (silent kaadu)
+        log.debug("gemini_client._bump_key skip: %s", exc)
 
 
 def _mark_key_dead(key: str, reason: str) -> None:
@@ -699,8 +699,8 @@ def _mark_key_dead(key: str, reason: str) -> None:
     try:
         state.meta_set(config.STATE_PATH, f"gemkey:dead:{kh}:{today}",
                        reason[:80])
-    except Exception:
-        pass
+    except Exception as exc:  # noqa: BLE001 — best-effort (silent kaadu)
+        log.debug("gemini_client._mark_key_dead skip: %s", exc)
     log.warning("Gemini key ..%s marked for cooldown today (%s)", kh, reason[:60])
 
 

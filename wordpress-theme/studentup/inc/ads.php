@@ -37,16 +37,23 @@ function studentup_adsense_unit( $slot, $layout = 'auto', $lazy = false, $height
 	if ( ! $client ) {
 		return;
 	}
+	// v68 FIX (revenue): in-article / in-feed units ki `data-ad-layout` + `data-ad-format="fluid"`.
+	// Mundu `data-ad-format="in-article"` (INVALID attribute value) velledi → Google adi
+	// generic display ga treat chesi **in-article RPM miss** ayyedi (highest-RPM slot!).
+	$liquid = in_array( $layout, array( 'in-article', 'in-feed' ), true );
+	$attrs  = $liquid
+		? ' data-ad-format="fluid" data-ad-layout="' . esc_attr( $layout ) . '"'
+		: ' data-ad-format="auto"';
 	printf(
 		'<div class="adsense-slot su-ad-reserved%1$s" style="min-height:%2$dpx" data-su-lazy="%3$d" data-su-height="%2$d">'
-		. '<ins class="adsbygoogle" style="display:block" data-ad-client="%4$s" data-ad-slot="%5$s" '
-		. 'data-ad-format="%6$s" data-full-width-responsive="true"></ins>%7$s</div>',
+		. '<ins class="adsbygoogle" style="display:block;text-align:center" data-ad-client="%4$s" '
+		. 'data-ad-slot="%5$s"%6$s data-full-width-responsive="true"></ins>%7$s</div>',
 		$lazy ? ' su-ad-lazy' : '',
 		(int) $height,
 		$lazy ? 1 : 0,
 		esc_attr( $client ),
 		esc_attr( $slot ),
-		esc_attr( $layout ),
+		$attrs,
 		$lazy ? '' : '<script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>'
 	);
 }

@@ -81,6 +81,7 @@ function studentup_option_fields() {
 				'comments_on'  => array( 'కామెంట్లు ON (engagement + freshness signal)', 'check', '1', 'OFF chesthe post lo comment form render avvadu' ),
 				'security_hardening' => array( 'Security hardening (headers · XML-RPC off · enumeration block)', 'check', '1', 'Default ON — adi 100% safe (REST bot ki impact ledu)' ),
 				'content_visibility' => array( 'content-visibility (below-fold render skip → fast)', 'check', '1', 'LCP/INP improvement — modern browsers lo mattrame' ),
+				'indexnow_key' => array( 'IndexNow key (hex, 8+ chars)', 'text', '', 'Bot nimpustundi — /<key>.key file automatic ga serve avutundi (Bing/Yandex instant indexing)' ),
 				'proof_json'   => array( 'Trust proof tiles (JSON)', 'textarea', '', 'Bot nimpustundi' ),
 				'api_base'     => array( 'Bot API base URL', 'text', '', 'పరీక్ష పోర్టల్/ఇతర internal API (optional)' ),
 			),

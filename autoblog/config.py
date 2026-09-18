@@ -155,6 +155,8 @@ KEYWORD_DAILY_QUEUE = int(_get("KEYWORD_DAILY_QUEUE", "4"))
 KEYWORD_SUGGEST_SEEDS = _get("KEYWORD_SUGGEST_SEEDS", "")
 
 # --- Gemini AI -----------------------------------------------------------
+GEMINI_API_BASE = _get("GEMINI_API_BASE",
+                       "https://generativelanguage.googleapis.com/v1beta")
 GEMINI_API_KEY = _get("GEMINI_API_KEY", "")
 GEMINI_MODEL = _get("GEMINI_MODEL", "gemini-2.5-flash")
 GEMINI_FALLBACK_MODELS = [

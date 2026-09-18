@@ -202,8 +202,8 @@ def radar_sources(per_run: int = None) -> list:
     batch = list(daily) + [rotating[(start + i) % len(rotating)] for i in range(take)]
     try:
         state.meta_set(config.STATE_PATH, "grid:last_idx", str((start + take - 1) % len(rotating)))
-    except Exception:
-        pass
+    except Exception as exc:  # noqa: BLE001 — best-effort (silent kaadu)
+        log.debug("sources_grid.radar_sources skip: %s", exc)
     new_items = []
     for s in batch:
         try:

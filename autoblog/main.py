@@ -98,8 +98,8 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
     state.init(config.STATE_PATH)
     try:  # scheduler heartbeat (watchdog kosam)
         state.meta_set(config.STATE_PATH, "heartbeat", now.isoformat())
-    except Exception:
-        pass
+    except Exception as exc:  # noqa: BLE001 — best-effort (silent kaadu)
+        log.debug("run skip: %s", exc)
 
     # --- bulk queue mode: --process-queue N (N URLs ippude process) ---------
     if process_queue:
@@ -638,7 +638,7 @@ def doctor() -> int:
         state.meta_set(config.STATE_PATH, "doctor:ping", "1")
         assert state.meta_get(config.STATE_PATH, "doctor:ping") == "1"
         config.OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-        (config.OUTPUT_DIR / ".ping").write_text("ok")
+        (config.OUTPUT_DIR / ".ping").write_text("ok", encoding="utf-8")
         (config.OUTPUT_DIR / ".ping").unlink()
         return f"{config.STATE_PATH} + {config.OUTPUT_DIR} writable"
     check("Storage", _db)
@@ -895,8 +895,8 @@ def radar_run(process_posts: bool = True) -> int:
             _nb = _src.apply_queue_boost(_boost)
             if _nb:
                 print(f"  GSC boost: {_nb} queue line(s) prioritized")
-    except Exception:
-        pass
+    except Exception as exc:  # noqa: BLE001 — best-effort (silent kaadu)
+        log.debug("radar_run skip: %s", exc)
 
     # v17: keyword dominance — prathi roju 1 saari autocomplete + gap analyse
     kw_queued = 0
@@ -1385,8 +1385,8 @@ def ensure_adsense() -> int:
         else:
             print(f"[INFO]   {n} published posts — continue building useful, original content; "
                   "Google has no code-verifiable fixed post-count threshold")
-    except Exception:
-        pass
+    except Exception as exc:  # noqa: BLE001 — best-effort (silent kaadu)
+        log.debug("ensure_adsense skip: %s", exc)
     print("\n--- MANUAL CHECKS (bot cheyyaleru — mee browser/console lo) ---")
     for name, howto in [
         ("ads.txt", "https://studentup.in/ads.txt open chesi correct publisher ID verify (AdSense > Earn > Get code)"),
@@ -1555,6 +1555,12 @@ def main() -> int:
                         help="Google Trends India education trends chupinchindi")
     parser.add_argument("--pin-check", action="store_true",
                         help="Pin-to-pin certificate proof (67 checks, offline)")
+    parser.add_argument("--index-now", default="", metavar="URL",
+                        help="v68: IndexNow + Google Indexing API (JobPosting) ki URL submit")
+    parser.add_argument("--index-status", action="store_true",
+                        help="v68: instant-indexing configuration status (SA key · openssl · key file)")
+    parser.add_argument("--index-key-gen", action="store_true",
+                        help="v68: kotha IndexNow key generate (hex) + .env lo pettalsina line")
     parser.add_argument("--trends-queue", action="store_true",
                         help="v65: --trends tho paatu Suggest capture + topic queue")
     parser.add_argument("--rm100", action="store_true",
@@ -1680,6 +1686,46 @@ def main() -> int:
                               actions=args.site_audit_action,
                               snapshot=args.site_audit_snapshot,
                               save=args.site_audit_save)
+    if getattr(args, "index_key_gen", False):
+        import secrets
+
+        key = secrets.token_hex(16)
+        print("=" * 62)
+        print("  🔑 INDEXNOW KEY (kotha)")
+        print("=" * 62)
+        print(f"  {key}")
+        print("\n  .env lo ee line pettandi:")
+        print(f"  INDEXNOW_KEY={key}")
+        print("\n  Tarvata: python run.py --push-theme-data  (theme /" + key + ".key serve chestundi)")
+        print("           python run.py --index-status     (verify)")
+        print("=" * 62)
+        return 0
+    if getattr(args, "index_status", False):
+        from . import indexing
+
+        st = indexing.status()
+        print("=" * 62)
+        print("  🔎 INSTANT INDEXING (v68)")
+        print("=" * 62)
+        print(f"  IndexNow key      : {'set ✔' if st['indexnow_key'] else 'ledu (INDEXNOW_KEY set cheyandi)'}")
+        print(f"  Google SA         : {'configured ✔ ' + st['client_email'] if st['configured'] else 'ledu (GOOGLE_INDEXING_SA_JSON / GOOGLE_INDEXING_SA)'}")
+        print(f"  RS256 signing     : {st['signing']} (openssl: {st['openssl']})")
+        print("  IndexNow key file : theme /<key>.key serve chestundi (StudentUp → Advanced)")
+        print("=" * 62)
+        return 0
+    if getattr(args, "index_now", ""):
+        from . import indexnow, indexing
+
+        url = args.index_now
+        st = indexing.status()
+        ok_bing = indexnow.submit(url)
+        ok_google = indexing.publish_url(url, "URL_UPDATED") if st["configured"] else False
+        print("=" * 62)
+        print(f"  URL: {url}")
+        print(f"  IndexNow (Bing/Yandex): {'✔ submitted' if ok_bing else '✘ skip (key ledu leda fail)'}")
+        print(f"  Google Indexing API   : {'✔ submitted' if ok_google else '✘ skip (SA ledu leda JobPosting page kaadu)'}")
+        print("=" * 62)
+        return 0 if (ok_bing or ok_google) else 0
     if args.trends:
         rc = trends_check()
         if getattr(args, "trends_queue", False):

@@ -82,7 +82,7 @@ def php_lint() -> tuple[int, str]:
     linter = ROOT / "tools" / "php_lint.js"
     if node and linter.exists():
         out = subprocess.run([node, str(linter)], capture_output=True, text=True,
-                             cwd=str(ROOT))
+                             cwd=str(ROOT), timeout=300)
         tail = (out.stdout or "").strip().splitlines()
         msg = tail[-1] if tail else ""
         if out.returncode != 0:
@@ -96,7 +96,7 @@ def php_lint() -> tuple[int, str]:
     checked, fails = 0, []
     for f in SRC.rglob("*.php"):
         checked += 1
-        out = subprocess.run([php, "-l", str(f)], capture_output=True, text=True)
+        out = subprocess.run([php, "-l", str(f)], capture_output=True, text=True, timeout=60)
         if out.returncode != 0:
             fails.append(f"{f.relative_to(SRC)}: {out.stdout.strip() or out.stderr.strip()}")
     if fails:
@@ -133,13 +133,13 @@ def main(argv: list[str] | None = None) -> int:
     print(("  ✅ " if code == 0 else "  ❌ ") + msg)
     # v67: POT (i18n) ni build lo regenerate — strings maarithe stale avvakunda
     pot = subprocess.run([sys.executable, str(ROOT / "tools" / "build_pot.py")],
-                         capture_output=True, text=True, cwd=str(ROOT))
+                         capture_output=True, text=True, cwd=str(ROOT), timeout=300)
     pot_line = [l for l in (pot.stdout or "").splitlines() if "strings:" in l]
     print(("  ✅ " if pot.returncode == 0 else "  ❌ ")
           + "pot: " + (pot_line[0].strip() if pot_line else "fail"))
     # v66: static theme audit (undefined functions · option keys · hooks · ads)
     audit = subprocess.run([sys.executable, str(ROOT / "tools" / "theme_audit.py")],
-                           capture_output=True, text=True, cwd=str(ROOT))
+                           capture_output=True, text=True, cwd=str(ROOT), timeout=300)
     tail = [l for l in (audit.stdout or "").splitlines() if l.strip()]
     summary = tail[-2].strip() if len(tail) >= 2 else ""
     print(("  ✅ " if audit.returncode == 0 else "  ❌ ") + "theme audit: " + summary)

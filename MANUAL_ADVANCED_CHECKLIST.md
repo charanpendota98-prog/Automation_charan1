@@ -703,3 +703,51 @@ Save → ads/inventory.json (bot next post lo SPONSORED + rel=sponsored tho use 
 - 5 ad types: college_banner · coaching · shop · service · sponsorship.
 
 **Public site:** fully Telugu script (no Romanized mixing), trust section with live verified numbers, dev-facing demo text removed, daily poll widget, mobile-clean CSS.
+
+
+---
+
+## PART 27 — v68: CODE-LEVEL BUG HUNT (bot + theme) + INSTANT INDEXING
+
+```
+AUDIT TOOL (kotha): tools/code_audit.py  — "errors 0 · warnings 0" = nijamaina bug ledu
+  E1  config.<attr> undefined            → AttributeError (research path crash) — FIXED
+  E2  sibling module attr typo           → AttributeError
+  E3  bare `except:`                     → KeyboardInterrupt/SystemExit swallow
+  E4  mutable default arg                → state leak between calls
+  E5  duplicate dict literal key         → SILENT data loss (exam_portal/server.py 'name')
+  E6  wp.<method>() lekapovadam           → publish crash
+  E7-E8  AdSense markup rules             → in-article invalid format = RPM miss
+  E9  .env.example drift                 → owner ki teliyani setting (20 keys add chesam)
+  E10 PHP printf placeholder ↔ args      → PHP warning + wrong output (detection proof test)
+  E11 Python `%` format arg count        → TypeError
+  E12 bot push key ↔ theme option typo    → site lo update kanipinchadu
+  W1  `except Exception: pass`           → 34 blocks (14 bot-critical + 20 modules) → log avutayi
+  W2  os.environ[...]  W3 json.loads try lekunda  W4 write_text encoding ledu (Telugu mojibake)
+  W5  network/subprocess timeout ledu (hang)  W6 AdSense unit rules  W7 news sitemap specs
+
+FIXED BUGS (nijamaina impact):
+  1) config.GEMINI_API_BASE ledu → deep-research path **AttributeError** (crash)  → define chesam
+  2) 34 × `except Exception: pass` → failures **kanipinchalevu** ("anni aapthunnayi") → prathi okkati
+     ippudu `log.debug/warning` tho reason cheptundi
+  3) AdSense in-article unit: `data-ad-format="in-article"` (**INVALID**) velledi →
+     ippudu `data-ad-format="fluid" data-ad-layout="in-article"` (correct spec) + in-feed kuda
+  4) news sitemap lo `<lastmod>` ledu → Google News reject → ippudu loc tarvata lastmod
+  5) exam_portal/server.py duplicate 'name' key → okati silent ga poyindi → clean
+  6) IndexNow: key file ni **manual ga cPanel lo pettali** (lekapote submit fail) →
+     ippudu theme `/<key>.key` ne serve chestundi (admin option, end-to-end automatic)
+  7) .env.example lo 20 keys ledu (socials · contact · instant indexing · overrides)
+
+KOTHA (trending ki): instant indexing
+  · `python run.py --index-key-gen`  → kotha IndexNow key (hex) + .env line
+  · `python run.py --index-status`   → SA / key file / openssl status
+  · `python run.py --index-now URL`  → manual submit (IndexNow + Google Indexing)
+  · publish appudu automatic: IndexNow (Bing/Yandex) + Google Indexing API (JobPosting pages,
+    Google officially support chese use case — Search Console lo SA ni Owner ga add cheyandi)
+  · RS256 signing: `cryptography` leda `openssl` CLI (dependency ledu; test real signature verify)
+
+PROOF: tests/v68_test.py 18 checks (audit clean · bug locks · detection ability fixtures ·
+  CLI smoke battery 10 commands · real RSA-2048 sign→verify) · run.py --test-all 54/54 ·
+  readiness 100/100 (27/27) · theme audit 0/0 · code audit 0/0 · php-lint 28/28 · zip 35 files
+HONEST: instant indexing = notification, **ranking guarantee kaadu** (Google decide chestundi).
+```

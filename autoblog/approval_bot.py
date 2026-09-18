@@ -224,8 +224,8 @@ class ApprovalBot:
                 from . import indexnow
 
                 indexnow.submit(link)
-            except Exception:
-                pass
+            except Exception as exc:  # noqa: BLE001 — best-effort (silent kaadu)
+                log.debug("block skip: %s", exc)
             try:
                 if config.TELEGRAM_CHANNEL_CHAT_ID:
                     self.tg("sendMessage", {
@@ -234,8 +234,8 @@ class ApprovalBot:
                         "text": (f"🆕 <b>{notifier.esc(title)}</b>\n\n"
                                  f"🔗 {notifier.esc(link)}"),
                     })
-            except Exception:
-                pass
+            except Exception as exc:  # noqa: BLE001 — best-effort (silent kaadu)
+                log.debug("block skip: %s", exc)
             self._finish(
                 cb,
                 f"🚀 <b>PUBLISHED ✔</b>\n\n<b>{notifier.esc(title)}</b>\n🔗 {notifier.esc(link)}",

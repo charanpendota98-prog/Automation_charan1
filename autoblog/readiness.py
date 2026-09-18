@@ -522,7 +522,53 @@ def c_owner_pending() -> List[dict]:
                  "AdSense lo one-click CMP enable (Google-certified)"),
         _pending("Oracle VM (bot 24x7) + UptimeRobot", "install-vps.sh + /healthz monitor",
                  "DEPLOY_ORACLE_CLOUD.md"),
+        _pending("IndexNow key + Google Indexing SA", ".env INDEXNOW_KEY + GOOGLE_INDEXING_SA_JSON",
+                 "GO_LIVE_CHECKLIST.md PART B step 5 (instant indexing)"),
     ]
+
+
+def c_code_audit() -> List[dict]:
+    """v68: code-level audit (bot Python + theme PHP runtime bugs) — 0 errors · 0 warnings."""
+    import importlib.util
+    import sys as _sys
+
+    path = ROOT / "tools" / "code_audit.py"
+    spec = importlib.util.spec_from_file_location("_v68_code_audit", path)
+    mod = importlib.util.module_from_spec(spec)
+    _sys.modules["_v68_code_audit"] = mod
+    spec.loader.exec_module(mod)
+    rep = mod.run()
+    counts = rep["counts"]
+    value = (f"files {rep['files']} · errors {counts['errors']} · warnings {counts['warnings']} "
+             f"(E1–E12 bugs · W1–W7 silent-fail/encoding/timeout)")
+    if rep["errors"]:
+        return [_bad("Code audit (bot + theme)", value, "AUTOMATION",
+                     "python tools/code_audit.py — errors fix cheyandi")]
+    if counts["warnings"]:
+        return [_bad("Code audit (bot + theme)", value, "AUTOMATION",
+                     "warnings clear cheyandi (silent fail / encoding / timeout)")]
+    return [_ok("Code audit (bot + theme)", value, "AUTOMATION")]
+
+
+def c_instant_indexing() -> List[dict]:
+    """v68: publish → instant indexing (IndexNow key file + Google Indexing API)."""
+    from . import indexing
+
+    theme = ROOT / "wordpress-theme" / "studentup"
+    key_route = (theme / "inc" / "indexnow.php").exists()
+    wired = "indexing.submit_published" in _read(ROOT / "autoblog" / "pipeline.py")
+    st = indexing.status()
+    value = (f"key {'set' if st['indexnow_key'] else 'ledu'} · theme key-file "
+             f"{'OK' if key_route else 'MISSING'} · Google SA "
+             f"{'configured' if st['configured'] else 'ledu (optional)'} · "
+             f"signing {st['signing']} · pipeline {'wired' if wired else 'MISSING'}")
+    if not key_route or not wired:
+        return [_bad("Instant indexing (IndexNow · Google)", value, "TRENDING",
+                     "theme inc/indexnow.php + pipeline indexing.submit_published check cheyandi")]
+    if not st["indexnow_key"]:
+        return [_pending("Instant indexing (IndexNow · Google)", value,
+                         "INDEXNOW_KEY ni .env lo pettandi (run.py --index-key-gen)")]
+    return [_ok("Instant indexing (IndexNow · Google)", value, "TRENDING")]
 
 
 CHECKS: List[Tuple[str, Callable[[], List[dict]]]] = [
@@ -550,6 +596,8 @@ CHECKS: List[Tuple[str, Callable[[], List[dict]]]] = [
     ("php_lint", c_php_lint),
     ("first_look", c_first_look),
     ("tests_sync", c_tests_sync),
+    ("code_audit", c_code_audit),
+    ("instant_indexing", c_instant_indexing),
     ("owner_pending", c_owner_pending),
 ]
 

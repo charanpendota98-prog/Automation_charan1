@@ -482,8 +482,8 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
     try:  # v19: dup-guard memory (scaled-content protection for FUTURE posts)
         state.save_fingerprint(config.STATE_PATH, article["slug"],
                                validator.fingerprint_tokens(final_html))
-    except Exception:
-        pass
+    except Exception as exc:  # noqa: BLE001 — best-effort (silent kaadu)
+        log.debug("publish_article skip: %s", exc)
 
     # --- featured image (alt text lo focus keyword) ---
     image_path = Path(config.OUTPUT_DIR / "images" / f"{article['slug']}.jpg")
@@ -537,8 +537,8 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
     try:
         state.meta_set(config.STATE_PATH, "last_cert",
                        f"{gate['cert_id']}:{gate['score']}")
-    except Exception:
-        pass
+    except Exception as exc:  # noqa: BLE001 — best-effort (silent kaadu)
+        log.debug("publish_article skip: %s", exc)
     if gate["critical_fails"] and gate["block"] and is_live and not article.get("_mock"):
         msg = (f"⛔ PIN GATE BLOCK — {article.get('title', '')[:60]}\n"
                f"critical: {', '.join(gate['critical_fails'])}\n"
@@ -546,8 +546,8 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
         log.error("PIN GATE BLOCK: %s", ", ".join(gate["critical_fails"]))
         try:
             send_telegram(msg)
-        except Exception:
-            pass
+        except Exception as exc:  # noqa: BLE001 — best-effort (silent kaadu)
+            log.debug("publish_article skip: %s", exc)
         return {"error": "pin_gate", "detail": msg, "gate": gate}
     result = wp.create_post(
         title=article["title"],
@@ -576,8 +576,8 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
                         "⚠️ <b>SEO meta WAR</b> — post %s lo %s land avvaledu.\n"
                         "Fix: WP theme (StudentUp) active undo chudandi (SEO bridge)."
                         % (result["id"], ", ".join(missing)))
-                except Exception:
-                    pass
+                except Exception as exc:  # noqa: BLE001 — best-effort (silent kaadu)
+                    log.debug("publish_article skip: %s", exc)
             else:
                 log.info("Rank Math meta verified ✔ (id=%s)", result["id"])
         except Exception:
@@ -591,8 +591,8 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
         state.mark_source_done(config.STATE_PATH, article["source_url"], result.get("id"))
     try:
         state.meta_cleanup(config.STATE_PATH)  # purana rojuvella keys tidy
-    except Exception:
-        pass
+    except Exception as exc:  # noqa: BLE001 — best-effort (silent kaadu)
+        log.debug("publish_article skip: %s", exc)
 
     log.info("POST CREATED ✔ id=%s status=%s link=%s",
              result.get("id"), result.get("status"), result.get("link"))
@@ -607,14 +607,17 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
 
 def _after_publish_push(article: Dict, result: Dict) -> None:
     """Publish ayyaka instant traffic/indexing push (best-effort)."""
-    # 1) IndexNow (Bing/Yandex instant indexing)
+    # 1) Instant indexing: IndexNow (Bing/Yandex) + Google Indexing API (JobPosting)
     try:
-        from . import indexnow
+        from . import indexing
 
-        if indexnow.submit(result.get("link", "")):
-            article["_indexnow"] = True
-    except Exception:
-        log.exception("IndexNow push failed")
+        idx = indexing.submit_published(article, result.get("link", ""))
+        article["_indexing"] = idx
+        article["_indexnow"] = bool(idx.get("indexnow"))
+        if idx.get("google"):
+            log.info("Google Indexing API ✔ (JobPosting) %s", result.get("link", ""))
+    except Exception as exc:  # noqa: BLE001 — indexing best-effort (publish aapadu)
+        log.warning("Indexing push fail: %s", exc)
     # 2) Telegram channel auto-post (instant traffic + social signal)
     try:
         if config.TELEGRAM_CHANNEL_CHAT_ID:
@@ -890,8 +893,8 @@ def update_post(post_id: int, new_source_urls=None, mock: bool = False) -> Dict:
         try:
             fk = (post.get("meta") or {}).get("rank_math_focus_keyword", "") or ""
             fk = fk.split(",")[0].strip()
-        except Exception:
-            pass
+        except Exception as exc:  # noqa: BLE001 — best-effort (silent kaadu)
+            log.debug("update_post skip: %s", exc)
         article = gemini_client.generate_update(
             title, existing_text, fk, extras, date.today().year,
         )
@@ -967,14 +970,14 @@ def update_post(post_id: int, new_source_urls=None, mock: bool = False) -> Dict:
     article["source_url"] = None
     try:
         state.record_refresh(config.STATE_PATH, post_id)
-    except Exception:
-        pass
+    except Exception as exc:  # noqa: BLE001 — best-effort (silent kaadu)
+        log.debug("update_post skip: %s", exc)
     try:
         from . import indexnow
 
         indexnow.submit(result.get("link", ""))
-    except Exception:
-        pass
+    except Exception as exc:  # noqa: BLE001 — best-effort (silent kaadu)
+        log.debug("update_post skip: %s", exc)
     try:
         notifier.notify_updated_post(article, result)
     except Exception:

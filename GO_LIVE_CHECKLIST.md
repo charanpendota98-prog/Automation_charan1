@@ -80,7 +80,7 @@ Detail docs: `DEPLOY_MILESWEB.md` (cPanel steps) · `DEPLOY_ORACLE_CLOUD.md` (VM
 
 | Item | Proof |
 |---|---|
-| Test suites | **53/53** pass (`python run.py --test-all`) |
+| Test suites | **54/54** pass (`python run.py --test-all`) |
 | Site guardian | **`python run.py --guardian`** — site/UI/SEO/ads/feed/storage/theme 12 checks (11 ok · 1 owner-pending) |
 | Readiness score | **`python run.py --readiness`** — **100/100** · 26/26 system checks · 8 owner-pending |
 | Production check | **11/11** pass (`python run.py --production-audit`) |
@@ -100,9 +100,12 @@ Detail docs: `DEPLOY_MILESWEB.md` (cPanel steps) · `DEPLOY_ORACLE_CLOUD.md` (VM
 
 - [ ] **1. Domain + hosting** — studentup.in (leda mee peru) + MilesWeb cPanel plan (₹59–180/నెల).
       → WordPress install + SSL (Let's Encrypt) ON.
-- [ ] **2. WordPress setup** — Rank Math, IndexNow; theme install (**v61**:
+- [ ] **2. WordPress setup** — Rank Math; theme install (**v61**:
       `python tools/build_wp_theme.py` → zip → Appearance → Themes → Upload → Activate);
       `wp-admin → Users → Application Passwords` → app password create cheyyandi.
+      **v68**: IndexNow key file ni **theme ne serve chestundi** (`/<key>.key`) — cPanel lo
+      upload cheyyalsina pani ledu. Key: `python run.py --index-key-gen` → `.env` →
+      `python run.py --push-theme-data`.
 - [ ] **2a. Google Search Console + GA4** — GSC lo domain verify → `sitemap.xml` submit;
       GA4 property create → measurement ID. (GSC = rankings data, GA4 = traffic data —
       bot ki `--gsc` CSV tho ee data tho priority decide chestundi.)
@@ -126,6 +129,17 @@ Detail docs: `DEPLOY_MILESWEB.md` (cPanel steps) · `DEPLOY_ORACLE_CLOUD.md` (VM
 - [ ] **2e. AdSense approve ayyaka** — `.env` lo `ADSENSE_CLIENT_ID=ca-pub-…` petti
       `python tools/build_policy_pages.py` run cheyyandi → **`ads.txt` automatic ga live** avutundi
       (idi lekapote konni ads rakavu → RPM takkuva). Tarvata `ADSENSE_APPROVED=1`.
+- [ ] **2f. Instant indexing (v68 — trending ki)** — publish ayyaka URL ni ventane
+      search engines ki notify:
+      · **IndexNow** (Bing/Yandex): `python run.py --index-key-gen` → `.env INDEXNOW_KEY=…`
+        → `python run.py --index-status` (verify). Key file theme serve chestundi.
+      · **Google Indexing API** (JobPosting pages — Google officially support chese use case):
+        Google Cloud → Service account → **Indexing API enable** → JSON key →
+        `.env GOOGLE_INDEXING_SA_JSON=/opt/studentup/service-account.json` →
+        **Search Console lo aa SA email ni Owner ga add cheyyandi**. Verify:
+        `python run.py --index-status`.
+      · Manual submit eppudaina: `python run.py --index-now https://studentup.in/<slug>/`.
+      (Signing ki `cryptography` leda `openssl` — rendu lekapote automatic skip, publish aagadu.)
 - [ ] **3. Gemini API key** — aistudio.google.com → API key (free tier chaalu).
 - [ ] **4. Telegram bot** — @BotFather → token + mee chat id (@userinfobot).
 - [ ] **5. Oracle Cloud** (recommended) — Always Free VM (2 OCPU/12GB) + SSH key.
@@ -165,6 +179,11 @@ curl -s https://studentup.in/ads.txt      # ads.txt host ayyindi leda chudandi
 curl -s https://studentup.in/news-sitemap.xml | head -5   # v66: News/Discover eligibility
 python tools/theme_audit.py --verbose     # v66/v67: theme mistakes 0 errors · 0 warnings
 python tools/theme_audit_deep.py          # v67: deep audit (templates · security · perf · a11y · ads)
+# v68 notes: bot + theme **code-level audit** (tools/code_audit.py) — 0 errors · 0 warnings.
+#  Ee audit nijamaina bugs pattukuntundi: undefined config attr · duplicate dict key ·
+#  silent `except: pass` · PHP printf arg mismatch · bot push key ↔ theme option typo ·
+#  AdSense markup (data-ad-layout/fluid) · .env drift. Roju git tarvata okkasari:
+#  python tools/code_audit.py
 # v67 notes: theme lo security hardening ON (XML-RPC off · headers · enumeration block).
 # Jetpack/old mobile apps vaadithe StudentUp → Advanced → Security hardening OFF cheyandi.
 # Comments: StudentUp → Advanced → కామెంట్లు ON/OFF (default ON — engagement + freshness).

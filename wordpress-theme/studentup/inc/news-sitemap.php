@@ -44,6 +44,9 @@ function studentup_news_sitemap() {
 		$title = wp_strip_all_tags( get_the_title( $p ) );
 		echo "\t<url>\n";
 		echo "\t\t<loc>" . esc_url( get_permalink( $p ) ) . "</loc>\n";
+		// v68: lastmod (sitemap spec: loc tarvata, news tarvata kadhu)
+		echo "\t\t<lastmod>" . esc_html( get_gmt_from_date( get_post_modified_time( 'Y-m-d H:i:s', false, $p ) ) ) .
+			"</lastmod>\n";
 		echo "\t\t<news:news>\n\t\t\t<news:publication>\n\t\t\t\t<news:name>" .
 			esc_html( get_bloginfo( 'name' ) ) . "</news:name>\n" .
 			"\t\t\t\t<news:language>te</news:language>\n\t\t\t</news:publication>\n";

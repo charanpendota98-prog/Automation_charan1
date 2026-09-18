@@ -518,13 +518,12 @@ class Api:
 
         return {
             "id": ad_id,
-            "name": s("name", title, limit=80) or title,
+            "name": s("name", limit=140) or title,
             "type": atype,
             "layout": layout,
             "active": bool(payload.get("active", True)),
             "demo": bool(payload.get("demo", False)),
             "label": s("label", limit=40),
-            "name": s("name", limit=140) or title,
             "title": title,
             "description": s("description", limit=300),
             "cta": s("cta", "Know More", limit=40) or "Know More",

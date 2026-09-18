@@ -109,8 +109,8 @@ def _menu_dedupe(wp, menu_id: int) -> int:
                                 params={"force": "true"})
                 if r.ok:
                     removed += 1
-            except Exception:
-                pass
+            except Exception as exc:  # noqa: BLE001 — best-effort (silent kaadu)
+                log.debug("site_setup._menu_dedupe skip: %s", exc)
         else:
             seen.add(title)
     return removed
@@ -211,8 +211,8 @@ def audit_and_fix(wp, dry: bool = True) -> List[Tuple[str, str, str]]:
     try:
         recent = wp.get_recent_published(per_page=1)
         sample = recent[0]["link"] if recent else ""
-    except Exception:
-        pass
+    except Exception as exc:  # noqa: BLE001 — best-effort (silent kaadu)
+        log.debug("site_setup.audit_and_fix skip: %s", exc)
     if sample and ("?p=" in sample or "?page_id=" in sample):
         out.append(_line(
             "BLOCK", "Permalinks PLAIN",
@@ -334,8 +334,8 @@ def audit_and_fix(wp, dry: bool = True) -> List[Tuple[str, str, str]]:
         pg = None
         try:
             pg = wp.get_page_by_slug(slug)
-        except Exception:
-            pass
+        except Exception as exc:  # noqa: BLE001 — best-effort (silent kaadu)
+            log.debug("site_setup.audit_and_fix skip: %s", exc)
         if pg:
             pages.append((title, pg))
     if pages:
@@ -352,8 +352,8 @@ def audit_and_fix(wp, dry: bool = True) -> List[Tuple[str, str, str]]:
             try:
                 have_titles = {(it.get("title") or "")
                                for it in wp.get_menu_items(menu["id"])}
-            except Exception:
-                pass
+            except Exception as exc:  # noqa: BLE001 — best-effort (silent kaadu)
+                log.debug("site_setup.audit_and_fix skip: %s", exc)
         n_dupes = _menu_dedupe(wp, menu["id"]) if (menu and not dry) else 0
         add_items = [p for p in pages if p[0] not in have_titles]
         if not menu and not dry:

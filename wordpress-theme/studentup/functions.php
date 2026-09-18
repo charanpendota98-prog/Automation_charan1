@@ -27,6 +27,7 @@ require_once get_template_directory() . '/inc/ads-txt.php';
 require_once get_template_directory() . '/inc/perf.php';
 require_once get_template_directory() . '/inc/news-sitemap.php';
 require_once get_template_directory() . '/inc/security.php';
+require_once get_template_directory() . '/inc/indexnow.php';
 require_once get_template_directory() . '/inc/pwa.php';
 
 /**

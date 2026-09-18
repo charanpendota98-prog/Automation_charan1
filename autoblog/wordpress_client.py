@@ -408,8 +408,8 @@ class WordPressClient:
             resp = self._request("GET", f"{term_type}/{term_id}", params={"_fields": "link"})
             if resp.status_code == 200:
                 return resp.json().get("link")
-        except Exception:
-            pass
+        except Exception as exc:  # noqa: BLE001 — best-effort (silent kaadu)
+            log.debug("block skip: %s", exc)
         return None
 
     def get_post(self, post_id: int) -> Dict:
