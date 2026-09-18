@@ -1174,6 +1174,7 @@ Marpali te: `.env` edit chesi scheduler ni restart cheyandi: `sudo systemctl res
 ├── AD_REVENUE_PLAYBOOK.md  # v52 revenue lines, rate card, sponsor + house ad flows
 ├── GO_LIVE_CHECKLIST.md    # v53 deploy order + owner actions + revenue table
 ├── SALES_KIT_ADVERTISERS.md # v54 advertiser outreach templates + 90-day plan
+├── AD_NETWORKS_PLAN.md     # v56 network thresholds (2026), uplift reality, apply checklist
 ├── SALES_KIT_ADVERTISERS.md # v54 advertiser outreach templates + 90-day plan
 ├── deploy/                 # systemd units · Caddyfile · nginx · Dockerfile · compose · backup.sh · install-vps.sh
 ├── autoblog/deploy_check.py # deploy readiness (deps/env/disk/port + real /healthz boot)
@@ -1191,6 +1192,7 @@ Marpali te: `.env` edit chesi scheduler ni restart cheyandi: `sudo systemctl res
 │   └── demo.py             #      sample exam seed (--exam-portal-demo)
 ├── tools/
 │   ├── ui_smoke.mjs        # v39 optional jsdom full-flow UI smoke test
-│   └── revenue_estimate.py # v53 ad revenue calculator (--views 10k / 1l / --json)
+│   ├── revenue_estimate.py # v53 ad revenue calculator (--views 10k / 1l / --json)
+│   └── ad_network_plan.py  # v56 network eligibility + uplift (--views 50k --tier1 0.3)
 └── tests/                  # end-to-end tests (fake WP/Telegram/source servers)
 ```

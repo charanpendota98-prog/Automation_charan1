@@ -70,6 +70,22 @@ Per-view value (RPM) penche levers — anni ippude siddham:
 Adi automatic ga peragali ante **posts + SEO + shares** (roju 3–5 posts bot chestundi) —
 traffic ravali. Per-view value penchalante leads/premium (`--views` chudandi, 4–5×).
 
+## 0.4) Networks (v56) — '50k tarvata 2x avutaya?'
+
+```bash
+python tools/ad_network_plan.py --views 50k --tier1 0.30
+```
+| Network | Minimum | Uplift nijam |
+|---|---|---|
+| AdSense | trafic minimum ledu | baseline |
+| Ezoic / header bidding | ~1k sessions | **+30–70%** (automatic 2x kaadu) |
+| Monumetric | 10k pageviews | +30–60% |
+| Raptive | 25k pageviews + ~50% Tier-1 | premium band (exclusive) |
+| Mediavine | 50k **sessions** + Tier-1 majority | 2–4x (exclusive) |
+
+**Rendu networks kalipi 2x avvavu** (okate demand koraku poti). 2x ante Tier-1 ట్రాఫిక్ +
+premium network + direct sponsors. Full detail: `AD_NETWORKS_PLAN.md`.
+
 ## 1) Revenue lines (4 — anni ippude ready)
 
 | # | Line | Status | Ekkada control |

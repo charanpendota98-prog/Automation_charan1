@@ -151,7 +151,23 @@ Message lo reason undi — exact ga fix cheyandi:
 ## ⚠️ Honest note
 Perfect = **machine gates + human 5-min verify**. Gates mistakes ramigadu (conflicts/stale/dates/originality), kaani official numbers mee mata tho final check — AdSense/Google/reputation thartham lo idi matrame safety.
 
-*Last updated: v55 (2026-09-18) — ads.txt + ads-only ladder: 10 checks · 41/41 suites · 108/108 runtime checks*
+*Last updated: v56 (2026-09-18) — ad-network expansion plan + multi-network ads.txt: 9 checks · 42/42 suites · 108/108 runtime checks*
+
+---
+
+## PART 15 — v56: AD NETWORKS (50k tarvata enti? 2x avutaya?)
+
+```
+tool     : tools/ad_network_plan.py --views 50k --tier1 0.30   (--json kuda)
+threshold: Raptive 25k pageviews + ~50% Tier-1 · Mediavine 50k SESSIONS (≈65-80k PV)
+           + Tier-1 majority · Monumetric 10k PV · Adversal/Revcontent 50k PV ·
+           Ezoic no strict minimum (AdSense good standing) · AdSense no minimum
+nijam    : header bidding add → +30-70% (automatic 2x KAADU) · Raptive/Mediavine 2-4x
+           kaani EXCLUSIVE (AdSense replace) + Tier-1 share kavali
+ads.txt  : ads/ads_txt_extra.txt lo partner lines paste cheyyandi → builder auto add
+           (comments skip; placeholder state intact while unapproved)
+order    : AdSense → direct sponsors (4-5x, ippude) → Ezoic → Monumetric → Raptive → Mediavine
+```
 
 ---
 

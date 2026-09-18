@@ -503,12 +503,35 @@ def _adsense_pub_id() -> str:
     return m.group(0) if m else ""
 
 
+def _ads_txt_extra_lines() -> list:
+    """ads/ads_txt_extra.txt nunchi partner lines (comments skip)."""
+    path = ROOT / "ads" / "ads_txt_extra.txt"
+    try:
+        raw = io.open(path, encoding="utf-8").read()
+    except OSError:
+        return []
+    out = []
+    for line in raw.splitlines():
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue
+        if len(line.split(",")) < 3:
+            continue                      # IAB format minimum: domain, publisher, relationship
+        out.append(line)
+    return out
+
+
 def write_ads_txt() -> str:
-    """preview/ads.txt — live publisher line (approval tarvata) leda honest placeholder."""
+    """preview/ads.txt — AdSense line (approval tarvata) + partner lines, leda honest placeholder."""
     pub = _adsense_pub_id()
+    extra = _ads_txt_extra_lines()
+    lines = []
     if pub:
-        text = ADS_TXT_HEADER + f"\ngoogle.com, {pub}, DIRECT, f08c47fec0942fa0\n"
-        state = "live"
+        lines.append(f"google.com, {pub}, DIRECT, f08c47fec0942fa0")
+    lines.extend(extra)
+    if lines:
+        text = ADS_TXT_HEADER + "\n" + "\n".join(lines) + "\n"
+        state = "live+partners(%d)" % len(extra) if extra and pub else ("partners(%d)" % len(extra) if extra else "live")
     else:
         text = ADS_TXT_HEADER + "\n# (placeholder — nothing is served until AdSense approval)\n"
         state = "placeholder"
