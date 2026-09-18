@@ -2,7 +2,7 @@
 Contributors: studentup
 Requires at least: 6.0
 Tested up to: 6.7
-Stable tag: 1.4.0
+Stable tag: 1.5.0
 Requires PHP: 7.4
 Version: 1.3.0
 License: GNU General Public License v2 or later
@@ -47,6 +47,12 @@ Theme lo REST bridge (`inc/seo-bridge.php`) undi. Mee koరaku `manage_options` 
 user tho App Password ivvandi (Administrator role).
 
 == Changelog ==
+
+= 1.5.0 =
+* Author archive template (`author.php`) — E-E-A-T: bio · published article count · profile/website link · editorial-policy link
+* Author archive CSS block (mobile-first, tokens tho)
+* Version parity: style.css ↔ STUDENTUP_VERSION ↔ readme Stable tag (audit ERROR unte)
+
 
 = 1.4.0 =
 * Theme standards pass 3: style.css version ↔ STUDENTUP_VERSION sync (build gate)

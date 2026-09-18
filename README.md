@@ -563,16 +563,16 @@ surfaces ni kalipesamu (edi ekkadaina miss aithey adi **fail** avutundi).
 
 | # | Enti | Ela |
 |---|---|---|
-| 1 | **Nijamaina bug — version mismatch** | `style.css Version: 1.0.0` vs `STUDENTUP_VERSION 1.3.0` → WordPress ki telisedi **style.css** (theme screen · child themes · cache-busting) → ippudu **1.4.0** rendu chota + **build gate** lo check |
+| 1 | **Nijamaina bug — version mismatch** | `style.css Version: 1.0.0` vs `STUDENTUP_VERSION 1.3.0` → WordPress ki telisedi **style.css** (theme screen · child themes · cache-busting) → ippudu **1.5.0** rendu chota + **build gate** lo check |
 | 2 | **Block editor parity** (advanced theme standard) | `add_theme_support('editor-styles')` + `wp-block-styles` + kotha `assets/css/editor.css` (front-end tokens/typography/quote/table/heading accent editor lo same) |
-| 3 | **WP standard markup** | loops lo `post_class()` (plugin/CSS compatibility) · nav lo `aria-current="page"` (a11y) |
+| 3 | **WP standard markup + E-E-A-T author archive** | loops lo `post_class()` · nav lo `aria-current="page"` · kotha **`author.php`** (bio · prachurita vyasala count · profile link · editorial-policy link — Google ki "ee vyasam evaru rasinaru?" jawabu) |
 | 4 | **Perf (shared hosting)** | custom `WP_Query` calls ki `no_found_rows` — page load ki **2 extra SQL queries** taggayi (front-page grid + related posts) |
 | 5 | **Standards pass 3 audit** | version parity · editor styles · `post_class` · `no_found_rows` · admin nonce (`settings_fields`/`wp_nonce_field`) · `sanitize_callback` — anni permanent ga `tools/theme_audit_deep.py` lo (malli regress avvavu) |
 | 6 | **Parity audit** (`tools/parity_audit.py` NEW) | **P1** CLI ↔ docs (92 flags) · **P2** dead modules (43 → 0) · **P3** preview links · **P4** preview meta (deployed pages) · **P5** robots↔sitemap↔ads.txt · **P6** tools references · **P7** placeholder text (TODO/FIXME/lorem) · **P8** count sync |
 | 7 | **Dorikina misses → fix** | 7 CLI flags docs lo levu (ippudu 92/92 documented — README block) · 6 policy pages ki `robots` meta ledu (ippudu unnai) · parity audit itself reference avvaledu (ippudu README + readiness + guardian) |
-| 8 | **Automatic ga run** (v60 rule) | `python run.py --guardian` lo **code_audit + parity_audit** checks (ippudu **13/15** = 2 warn-only) · readiness lo kotha check → **100/100 (28/28)** |
-| 9 | **Theme package** | version 1.4.0 · readme `Stable tag: 1.4.0` + changelog · zip **36 files 627 KB** (editor.css to) |
-| 10 | **Proof** | `tests/v69_test.py` **16 checks** · `--test-all` **55/55** · jsdom **122/122** · code audit **0/0** · parity audit **0/0** · theme audit **0/0** · php-lint **28/28** · readiness **100/100 (28/28)** |
+| 8 | **Automatic ga run** (v60 rule) | `python run.py --guardian` lo **code_audit + parity_audit** checks (ippudu **14/15** — 1 warn-only owner env) · readiness lo kotha check → **100/100 (28/28)** |
+| 9 | **Theme package** | version **1.5.0** · readme `Stable tag: 1.5.0` + changelog · zip **37 files 629 KB** (editor.css + **author.php**) |
+| 10 | **Proof** | `tests/v69_test.py` **16 checks** · `--test-all` **55/55** · jsdom **122/122** · code audit **0/0** · parity audit **0/0** · theme audit **0/0** · php-lint **29/29** · readiness **100/100 (28/28)** |
 
 ### v68 — CODE-LEVEL BUG HUNT (bot + theme) + INSTANT INDEXING (trending)
 

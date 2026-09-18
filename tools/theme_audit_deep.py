@@ -24,7 +24,7 @@ from theme_audit import THEME, WP_CORE, _php_files, _strip_php_comments, _tpl_ra
 # top themes ki kavalsina WordPress standard files
 REQUIRED_FILES = ("style.css", "index.php", "functions.php", "header.php", "footer.php",
                   "single.php", "page.php", "archive.php", "search.php", "404.php",
-                  "theme.json", "screenshot.png")
+                  "theme.json", "screenshot.png", "author.php")
 RECOMMENDED_FILES = ("comments.php", "sidebar.php", "languages/studentup.pot", "readme.txt")
 
 # ee modules functions.php lo require avvali (module file undi kaani load avvakapote dead code)
@@ -320,6 +320,16 @@ def deep_checks(report: dict) -> dict:
         ed = re.search(r"add_editor_style\(\s*'([^']+)'", fn)
         if ed and not (THEME / ed.group(1)).exists():
             errors.append(f"add_editor_style('{ed.group(1)}') file ledu — editor CSS 404")
+
+    # author archive (E-E-A-T): bio · article count · profile link
+    if (THEME / "author.php").exists():
+        au = texts.get("author.php", ("", ""))[1]
+        for needle, why in (("get_avatar", "avatar (author photo)"),
+                            ("count_user_posts", "prachurita vyasala count"),
+                            ("description", "author bio"),
+                            ("editorial-policy", "editorial policy link (E-E-A-T)")):
+            if needle not in au:
+                warnings.append(f"author.php lo '{needle}' ledu — {why}")
 
     # a11y: nav lo aria-current (prastuta page)
     if "aria-current" not in "".join(t[1] for t in texts.values()):

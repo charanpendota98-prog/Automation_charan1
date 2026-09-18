@@ -207,7 +207,7 @@ REVENUE (6/6 slots · privacy-safe):
 
 TESTS            : tests/v67_test.py = 11 checks · run.py --test-all 53/53 ·
                    jsdom 122/122 · readiness 100/100 (27/27) · theme audit 0/0 ·
-                   code audit 0/0 · php-lint 28/28 · zip 35 files ·
+                   code audit 0/0 · parity 0/0 · php-lint 29/29 · zip 37 files ·
                    BA matrix docs/BA_REQUIREMENTS_MATRIX.md
 ```
 
@@ -749,7 +749,7 @@ KOTHA (trending ki): instant indexing
 
 PROOF: tests/v68_test.py 19 checks (audit clean · bug locks · detection ability fixtures ·
   CLI smoke battery 10 commands · real RSA-2048 sign→verify) · run.py --test-all 55/55 ·
-  readiness 100/100 (27/27) · theme audit 0/0 · code audit 0/0 · php-lint 28/28 · zip 35 files
+  readiness 100/100 (28/28) · theme audit 0/0 · code audit 0/0 · parity 0/0 · php-lint 29/29 · zip 37 files
 HONEST: instant indexing = notification, **ranking guarantee kaadu** (Google decide chestundi).
 ```
 
@@ -761,14 +761,15 @@ HONEST: instant indexing = notification, **ranking guarantee kaadu** (Google dec
 ```
 NIJAMAINA BUG (fix): style.css `Version: 1.0.0` vs `STUDENTUP_VERSION 1.3.0`
   → WordPress theme version style.css nunchi chaduvutundi (theme screen · child theme ·
-    cache-busting) → ippudu 1.4.0 rendu chota + build gate check (audit ERROR).
+    cache-busting) → ippudu 1.5.0 rendu chota + build gate check (audit ERROR).
 
 THEME TOP-LEVEL STANDARDS (ippudu unnai, audit lo lock):
   · editor-styles + wp-block-styles + assets/css/editor.css  (block editor parity)
   · post_class() article loops lo (plugin/CSS compatibility)
   · aria-current="page" nav filter (a11y)
   · no_found_rows custom WP_Query lo → 2 extra SQL queries taggayi (shared hosting perf)
-  · readme.txt Stable tag 1.4.0 + changelog · version parity · admin nonce checks
+  · readme.txt Stable tag 1.5.0 + changelog · version parity · admin nonce checks
+  · author.php (E-E-A-T: avatar · bio · article count · profile + editorial-policy links)
 
 PARITY AUDIT (kotha tool: tools/parity_audit.py) — "emi miss avvakoodadu":
   P1 CLI ↔ docs          : run.py flags 92/92 README/MANUAL/GO_LIVE lo (7 miss → fix)
@@ -784,6 +785,6 @@ AUTOMATIC (v60 rule): guardian lo code_audit + parity_audit checks (13/15 = 2 wa
   readiness lo +1 check → 100/100 (28/28)
 
 PROOF: tests/v69_test.py 16 checks (parity detection fixture to) · --test-all 55/55 ·
-  jsdom 122/122 · code audit 0/0 · parity 0/0 · theme audit 0/0 · php-lint 28/28 ·
-  zip 36 files 627 KB · theme v1.4.0
+  jsdom 122/122 · code audit 0/0 · parity 0/0 · theme audit 0/0 · php-lint 29/29 ·
+  zip 37 files 629 KB · theme v1.5.0
 ```

@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'STUDENTUP_VERSION', '1.4.0' );  // v69: theme standards pass 3 (version sync · editor styles · post_class)
+define( 'STUDENTUP_VERSION', '1.5.0' );  // v69: + author archive (E-E-A-T) · standards pass 3
 
 require_once get_template_directory() . '/inc/options.php';
 require_once get_template_directory() . '/inc/breaking.php';

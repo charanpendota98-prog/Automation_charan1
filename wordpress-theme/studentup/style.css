@@ -4,7 +4,7 @@ Theme URI: https://studentup.in/
 Author: StudentUp
 Author URI: https://studentup.in/
 Description: తెలంగాణ & ఆంధ్రప్రదేశ్ విద్యార్థుల కోసం StudentUp design — బ్రేకింగ్ టికర్, "విద్యార్థులు ఎక్కువగా వెతికేవి" టైల్స్, ఉద్యోగం/పరీక్ష కార్డులు, ad slots, dark mode. Pure-Telugu, mobile-first, Rank Math + AdSense friendly.
-Version: 1.4.0
+Version: 1.5.0
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 7.4
@@ -346,3 +346,14 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 }
 body.dark .su-sidebar .widget,body.dark .su-comment-list .comment{background:#141b26;border-color:#243044}
 body.dark .su-empty{background:#141b26;border-color:#2a3a52}
+
+/* ================= v69: author archive (E-E-A-T) ================= */
+.authortop{margin-bottom:18px}
+.authorwrap{display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap}
+.author-avatar{border-radius:50%;width:96px;height:96px;object-fit:cover;box-shadow:var(--shadow)}
+.authorbody{flex:1 1 320px;min-width:260px}
+.authorbody h1.entry-title{font-size:26px;margin:0 0 6px}
+.authorbio{color:#22344f;line-height:1.75;margin:8px 0}
+.authormeta{font-size:13.5px;color:var(--muted);margin:4px 0}
+.authormeta a{color:var(--blue);font-weight:700}
+@media(max-width:560px){.author-avatar{width:72px;height:72px}.authorbody h1.entry-title{font-size:22px}}

@@ -179,6 +179,8 @@ curl -s https://studentup.in/ads.txt      # ads.txt host ayyindi leda chudandi
 curl -s https://studentup.in/news-sitemap.xml | head -5   # v66: News/Discover eligibility
 python tools/theme_audit.py --verbose     # v66/v67: theme mistakes 0 errors · 0 warnings
 python tools/theme_audit_deep.py          # v67: deep audit (templates · security · perf · a11y · ads)
+# v69 notes: theme v1.5.0 (author archive + editor styles) · `python tools/parity_audit.py` —
+#  CLI ↔ docs · dead modules · preview links/meta · counts (0 errors · 0 warnings).
 # v68 notes: bot + theme **code-level audit** (tools/code_audit.py) — 0 errors · 0 warnings.
 #  Ee audit nijamaina bugs pattukuntundi: undefined config attr · duplicate dict key ·
 #  silent `except: pass` · PHP printf arg mismatch · bot push key ↔ theme option typo ·

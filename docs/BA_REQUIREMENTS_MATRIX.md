@@ -72,7 +72,7 @@ python tools/build_wp_theme.py    # php-lint + audit + POT + zip (theme install 
 | R23 | Fast (CWV) + accessible | v67 | preconnect · LCP preload · content-visibility toggle (`su-cv`) · `:focus-visible` · skip-link · button types · `contains` sizes | `v67_test` perf/a11y asserts | `inc/perf.php` + `style.css` |
 | R24 | Never fake/guarantee numbers | v62 | `readiness.honest_note` + docs + owner-pending section | `v62_test` | `--readiness` output |
 | R25 | Instant indexing (trending) | publish → IndexNow + Google Indexing API (JobPosting) · key file theme serve · `--index-now/--status/--key-gen` | autoblog/indexing.py · inc/indexnow.php · v68_test | ✔ engine · ⏳ owner key/SA |
-| R26 | Top-level theme standards + no misses | version parity · editor-styles · post_class · no_found_rows · aria-current · parity audit (CLI/docs/preview/counts) · guardian+readiness wiring | tools/parity_audit.py · theme_audit_deep (pass 3) · v69_test | ✔ 0/0 · zip 36 files 627 KB |
+| R26 | Top-level theme standards + no misses | version parity · editor-styles · post_class · no_found_rows · aria-current · author archive (E-E-A-T) · parity audit (CLI/docs/preview/counts) · guardian+readiness wiring | tools/parity_audit.py · theme_audit_deep (pass 3) · v69_test | ✔ 0/0 · zip 37 files 629 KB · theme v1.5.0 |
 
 ---
 
