@@ -25,3 +25,6 @@ state.db-journal
 tests/runtime/node_modules/
 venv/
 ads/rotation.json
+
+# v57: ad advisor runtime state (traffic + milestones)
+logs/

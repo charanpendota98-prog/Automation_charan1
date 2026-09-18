@@ -527,6 +527,8 @@ python tests/v39_exam_portal_test.py    # 14 sections: parse → validate → ST
                                         # scoring (shuffle-safe) → sweeper → notify →
                                         # HTTP end-to-end → demo → UI JS guards
 node tools/ui_smoke.mjs                 # optional: real DOM (jsdom) full-flow smoke
+python run.py --ad-advisor              # v57: eppudu e ad-network ki apply cheyyali
+python run.py --ad-advisor --traffic-csv ga4.csv   # GA4 export → advisor (logs/traffic.json)
 ```
 
 > ℹ️ Ee system exam conduct cheyyadaniki matrame — student data (roll, answers,
@@ -1172,6 +1174,7 @@ Marpali te: `.env` edit chesi scheduler ni restart cheyandi: `sudo systemctl res
 ├── DEPLOY_ORACLE_CLOUD.md  # v51 Oracle Always Free vs MilesWeb split + crash-proofing
 ├── CONTENT_PLAN_DAILY.md   # v50 daily plan: 16 pillars, rhythm, refresh, SEO gates
 ├── AD_REVENUE_PLAYBOOK.md  # v52 revenue lines, rate card, sponsor + house ad flows
+├── ad_advisor (autoblog/ad_advisor.py) # v57 network advisor + automatic alerts
 ├── GO_LIVE_CHECKLIST.md    # v53 deploy order + owner actions + revenue table
 ├── SALES_KIT_ADVERTISERS.md # v54 advertiser outreach templates + 90-day plan
 ├── AD_NETWORKS_PLAN.md     # v56 network thresholds (2026), uplift reality, apply checklist

@@ -9,7 +9,7 @@ Ee doc = okka page lo motham. Kramam ga cheyyandi.
 
 | Item | Proof |
 |---|---|
-| Test suites | **42/42** pass (`python run.py --test-all`) |
+| Test suites | **43/43** pass (`python run.py --test-all`) |
 | Production check | **11/11** pass (`python run.py --production-audit`) |
 | Browser runtime | **108/108** checks (`node tests/runtime/jsdom_runtime_test.js`) |
 | Deploy check | 8 ok · 4 warn · 0 fail (`python run.py --deploy-check`) |
@@ -86,6 +86,8 @@ UptimeRobot → `https://exam.studentup.in/healthz` (5-min ping) — watchdog ki
 | 09:00, 18:00 | Current affairs + breaking refresh | auto |
 | Roju | Poll + quiz update + auto-refresh purana posts | auto |
 | Roju | 📞 లీడ్లు చూసి 2 అమ్మకాల మెసేజ్‌లు (కళాశాల/కోచింగ్) పంపండి | **మీరు (15 నిమిషాలు)** |
+| Roju 10:00 | **ad advisor** — e network ki eppudu apply cheyyali (kotha milestone ki Telegram) | auto |
+| నెలకు ఒకసారి | GA4 CSV export → `python run.py --ad-advisor --traffic-csv ga4.csv` | మీరు (2 నిమిషాలు) |
 | 2 nimishalku okasari | Health check → crash ayite restart + alert | watchdog |
 | 02:00 | Backup + media prune | cron |
 
@@ -116,4 +118,4 @@ Detail: `python tools/revenue_estimate.py --views 10k`
 Clickbait titles · fake clicks · popups · "Google tricks" · ad ni content laaga dhaachadam ·
 job guarantee promises (advertisers kuda). Ivi AdSense ban + trust damage.
 
-*Last updated: v56 (2026-09-18) · 42/42 suites · 108/108 runtime · 11/11 production checks*
+*Last updated: v57 (2026-09-18) · 43/43 suites · 108/108 runtime · 11/11 production checks*

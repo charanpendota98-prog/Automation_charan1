@@ -151,7 +151,23 @@ Message lo reason undi — exact ga fix cheyandi:
 ## ⚠️ Honest note
 Perfect = **machine gates + human 5-min verify**. Gates mistakes ramigadu (conflicts/stale/dates/originality), kaani official numbers mee mata tho final check — AdSense/Google/reputation thartham lo idi matrame safety.
 
-*Last updated: v56 (2026-09-18) — ad-network expansion plan + multi-network ads.txt: 9 checks · 42/42 suites · 108/108 runtime checks*
+*Last updated: v57 (2026-09-18) — AUTO AD ADVISOR: 9 checks · 43/43 suites · 108/108 runtime checks*
+
+---
+
+## PART 16 — v57: AD ADVISOR (eppudu e network ki apply cheyyali — AUTOMATIC)
+
+```
+CLI      : python run.py --ad-advisor [--traffic-csv ga4.csv] [--traffic-views 25k --tier1 0.5]
+Traffic  : logs/traffic.json (GA4 CSV import leda manual) → .env (AD_MONTHLY_VIEWS) → CLI
+Bot hook : roju ADVISOR_HOUR (default 10) tarvata okkasari — notify=True
+Alerts   : kotha network threshold cross ayyaka Telegram (milestone ki okkasari)
+           ADSENSE_APPROVED=1 ayyaka checklist alert (ads.txt status tho)
+Next     : eligible lo best per-view value; leda next threshold dooram (views/sessions/Tier-1)
+Publisher: AdSense ca-pub-… id MAREADU · Ezoic ade account vaadutundi · Raptive/Mediavine
+           exclusive — vaalla tags, AdSense line ads.txt nunchi thiyyali (account migilipotundi)
+State    : logs/ad_advisor_state.json (gitignored) · runtime data logs/ lo
+```
 
 ---
 

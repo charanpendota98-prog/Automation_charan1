@@ -86,6 +86,20 @@ python tools/ad_network_plan.py --views 50k --tier1 0.30
 **Rendu networks kalipi 2x avvavu** (okate demand koraku poti). 2x ante Tier-1 ట్రాఫిక్ +
 premium network + direct sponsors. Full detail: `AD_NETWORKS_PLAN.md`.
 
+## 0.5) AUTO ADVISOR (v57) — eppudu apply cheyyali ani bot cheptundi
+
+```bash
+python run.py --ad-advisor                                  # ippudu enti eligible
+python run.py --ad-advisor --traffic-csv ga4.csv            # GA4 export import
+python run.py --ad-advisor --traffic-views 25k --tier1 0.5  # manual
+```
+* Traffic data: `logs/traffic.json` (GA4 CSV) leda `.env AD_MONTHLY_VIEWS`
+* Bot roju **ADVISOR_HOUR (10:00)** tarvata okkasari run avutundi; kotha network
+  threshold cross ayyaka **Telegram alert** (milestone ki okkasari)
+* `ADSENSE_APPROVED=1` ayyaka checklist alert (ads.txt status tho saha)
+* **Publisher ID:** AdSense `ca-pub-…` **mareadu** (account ki okate id) · Ezoic ade
+  account vaadutundi · Raptive/Mediavine exclusive — vaalla tags, AdSense line thiyyali
+
 ## 1) Revenue lines (4 — anni ippude ready)
 
 | # | Line | Status | Ekkada control |

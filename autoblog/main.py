@@ -199,6 +199,21 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
                 state.meta_set(config.STATE_PATH, f"autorefresh:{today.isoformat()}", "1")
             except Exception:
                 log.exception("Daily auto-refresh failed")
+        # --- v57: AD ADVISOR — roju okkasari: e network ki eppudu apply cheyyali ---
+        if (getattr(config, "AD_ADVISOR_ENABLED", True)
+                and now_hour >= getattr(config, "AD_ADVISOR_HOUR", 10)
+                and not state.meta_get(config.STATE_PATH,
+                                       f"advisor:{today.isoformat()}")):
+            try:
+                from . import ad_advisor as _adv
+
+                _res = _adv.advice(notify=True)
+                state.meta_set(config.STATE_PATH, f"advisor:{today.isoformat()}", "1")
+                log.info("AD ADVISOR ✔ %s", _res["action"]["title"])
+                for _k in _res["new_milestones"]:
+                    log.info("AD ADVISOR milestone: %s — Telegram alert pampindi", _k)
+            except Exception:
+                log.exception("Ad advisor failed (non-fatal)")
         # --- v26: Daily Quiz slot — roju okati, QUIZ_HOUR tarvata ---
         if (config.QUIZ_ENABLED
                 and now_hour >= config.QUIZ_HOUR
@@ -1225,6 +1240,15 @@ def main() -> int:
     parser.add_argument("--notify-test", action="store_true", help="send test notification")
     parser.add_argument("--revenue-check", action="store_true",
                         help="revenue setup audit — em missing o cheptundi")
+    parser.add_argument("--ad-advisor", action="store_true",
+                        help="v57: eppudu e ad-network ki apply cheyyali (auto suggest)")
+    parser.add_argument("--traffic-csv", default="", metavar="CSV",
+                        help="GA4 CSV export -> logs/traffic.json (advisor kosam)")
+    parser.add_argument("--traffic-views", default="", metavar="N",
+                        help="advisor ki pageviews (10k / 25000) — data save avutundi")
+    parser.add_argument("--traffic-sessions", default="", metavar="N", help="advisor ki sessions")
+    parser.add_argument("--tier1", default="", metavar="SHARE",
+                        help="Tier-1 traffic share 0-1 (0.5 = 50%%)")
     parser.add_argument("--gsc", default="", metavar="CSV",
                         help="Search Console queries CSV -> striking-distance opportunities")
     parser.add_argument("--doctor", action="store_true",
@@ -1495,6 +1519,33 @@ def main() -> int:
             print(f"🎯 Quiz engine: {q_stat} — {q_detail}")
         except Exception as exc:  # noqa: BLE001
             print(f"🎯 Quiz engine failed (harmless): {str(exc)[:100]}")
+        return 0
+
+    if args.ad_advisor or args.traffic_csv or args.traffic_views:
+        from . import ad_advisor
+
+        if args.traffic_csv:
+            try:
+                info = ad_advisor.import_ga4_csv(args.traffic_csv)
+            except (OSError, ValueError) as exc:
+                print(f"❌ traffic CSV chadavaleka poyindi: {exc}")
+                return 6
+            print(f"📈 traffic import: {info['pageviews']:,} pageviews · "
+                  f"{info['sessions']:,} sessions · Tier-1 {int(info['tier1_share'] * 100)}% "
+                  f"({info['rows']} rows) → {info['path']}")
+        views = ad_advisor.parse_views(args.traffic_views) if args.traffic_views else 0
+        sessions = ad_advisor.parse_views(args.traffic_sessions) if args.traffic_sessions else 0
+        tier1 = None
+        if args.tier1:
+            try:
+                tier1 = float(args.tier1)
+                tier1 = tier1 / 100.0 if tier1 > 1 else tier1
+            except ValueError:
+                print("❌ --tier1 number ga undali (0.5 leda 50)")
+                return 6
+        result = ad_advisor.advice(pageviews=views or None,
+                                   sessions=sessions or None, tier1=tier1)
+        print(ad_advisor.render(result))
         return 0
 
     if args.quiz_kit:
