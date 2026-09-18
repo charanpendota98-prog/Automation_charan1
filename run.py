@@ -20,6 +20,8 @@
   python run.py --top-post "TSPSC Group 2 2026 notification" --publish-top-post
   python run.py --top-post-plan --top-post-days 90      v38: domination calendar
   python run.py --keyword-universe                      v38: ANNI keywords (10k+)
+  python run.py --readiness                v62: TOP WEBSITE READINESS score (content ·
+                                            SEO · ads · automation · real site)
   python run.py --push-theme-data         v61: bot data → WP theme (breaking · proof ·
                                             deadline · house ads) — REST push
   python run.py --guardian                v60: SITE GUARDIAN — site/UI/SEO/ads/

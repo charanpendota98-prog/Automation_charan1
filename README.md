@@ -533,6 +533,27 @@ python run.py --breaking-feed           # v59: radar → site బ్రేకి
 python run.py --breaking-from file.json # v59: feed ni JSON nunchi (offline/approved list)
 ```
 
+### v62 — TOP WEBSITE READINESS (proof tho: enti ready, enti mee pani)
+
+```bash
+python run.py --readiness      # 18 system checks score/100 + 6 owner-pending items
+```
+
+**Ee command ee repo lo prastuta: 100/100 system checks · 6 owner-pending.**
+Artifacts: `logs/readiness.json` + `output/readiness-<date>.md` (markdown report).
+
+| Section | Enti verify avutundi (verifiable number) |
+|---|---|
+| CONTENT ENGINE | blueprint score 100/100 (TOP POST 🏆) · gates QA 80+ / originality 72%+ / deep-gate ON · 17 pillars · 203 entities · 11,192 kws · 143 sources · radar 4x/day · 59 districts |
+| SEO | schema (Article · ItemList · JobPosting · BreadcrumbList) · head 6/6 (title/meta/canonical/OG/JSON-LD/lang) · robots+sitemap · Rank Math LIVE fields |
+| ADS & MONEY | slots 3/3 high-CTR order · SPONSORED labels · rel=sponsored · ads.txt status · money engine 6/6 (rate card · house · calculator · network plan · advisor · leads) |
+| AUTOMATION | daily hooks 6/6 (radar · auto-refresh · breaking · advisor · guardian · quiz) · draft-first approval · test tiles sync |
+| REAL SITE | theme zip fresh · 14 PHP · REST bridge · first-look UX 4/4 |
+| OWNER PENDING ⏳ | domain/hosting · WP+theme install · Gemini · Telegram · AdSense · Oracle VM — prathi daniki fix line |
+
+> ⚠️ Honest: ranking/traffic/AdSense approval/revenue — Google + mee accounts + time.
+> Readiness score aa vatiki guarantee ivvadu; adi "code side 100% ready" ani matrame cheptundi.
+
 ### v61 — REAL WEBSITE: WordPress + StudentUp theme (design = preview design)
 
 ```bash
@@ -601,7 +622,7 @@ Menu (desktop + mobile same order): హోమ్ · ఉద్యోగాలు�
 
 Bot side: `autoblog/breaking.py` (feed build + tag classifier + honest empty note),
 radar run lo auto hook, `MOST_USED` order okate source (bot + site + tests sync).
-Evidence: tests/v59_test.py 12 checks · `run.py --test-all` 47/47 · jsdom 122/122.
+Evidence: tests/v59_test.py 12 checks · `run.py --test-all` 48/48 · jsdom 122/122.
 
 > ℹ️ Ee system exam conduct cheyyadaniki matrame — student data (roll, answers,
 > scores) mee server lo untundi, bayata pampabadadu. Public internet lo pettali
@@ -1247,6 +1268,7 @@ Marpali te: `.env` edit chesi scheduler ni restart cheyandi: `sudo systemctl res
 ├── CONTENT_PLAN_DAILY.md   # v58 daily plan: 17 pillars, rhythm, refresh, SEO gates
 ├── breaking (autoblog/breaking.py)      # v59 site బ్రేకింగ్ feed + most-used order
 ├── guardian (autoblog/guardian.py)      # v60 roju automatic system check + alert
+├── readiness (autoblog/readiness.py)    # v62 top-website readiness score (proof tho)
 ├── wordpress-theme/studentup/           # v61 REAL site theme (preview design → WP)
 ├── wp_theme_sync (autoblog/)            # v61 bot data → WP theme (REST push)
 ├── GO_LIVE_CHECKLIST.md A0              # edi ekkada run avutundi (architecture + 3 combos)

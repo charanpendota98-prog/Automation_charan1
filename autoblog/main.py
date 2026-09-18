@@ -708,6 +708,16 @@ def trends_check() -> int:
     return 0
 
 
+def readiness_run() -> int:
+    """v62: TOP WEBSITE READINESS — okka command lo motham system proof."""
+    from . import readiness
+
+    rep = readiness.run_report()
+    arts = readiness.write_artifacts(rep)
+    readiness.print_report(rep, arts)
+    return 0 if rep.get("ok") else 1
+
+
 def push_theme_data(dry_run: bool = False) -> int:
     """v61: bot data → WordPress theme (breaking · proof · deadline · house ads)."""
     from . import wp_theme_sync
@@ -1485,6 +1495,8 @@ def main() -> int:
                              "(tarvata offline/CI audit ki)")
     parser.add_argument("--trends", action="store_true",
                         help="Google Trends India education trends chupinchindi")
+    parser.add_argument("--readiness", action="store_true",
+                        help="v62: TOP WEBSITE READINESS — content/SEO/ads/automation/site score")
     parser.add_argument("--push-theme-data", action="store_true",
                         help="v61: bot data (breaking/proof/deadline/house ads) → WP theme REST")
     parser.add_argument("--guardian", action="store_true",
@@ -1702,6 +1714,8 @@ def main() -> int:
         for r in rows:
             print(f"  • {r['exam']:<22} {r.get('posts', '?')} posts -> {r.get('link', r['slug'])}")
         return 0
+    if args.readiness:
+        return readiness_run()
     if args.push_theme_data:
         return push_theme_data(dry_run=args.dry_run)
     if args.guardian or args.guardian_notify:
