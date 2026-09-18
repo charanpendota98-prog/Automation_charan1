@@ -2,7 +2,7 @@
 Contributors: studentup
 Requires at least: 6.0
 Tested up to: 6.7
-Stable tag: 1.5.0
+Stable tag: 1.6.0
 Requires PHP: 7.4
 Version: 1.3.0
 License: GNU General Public License v2 or later
@@ -47,6 +47,12 @@ Theme lo REST bridge (`inc/seo-bridge.php`) undi. Mee koరaku `manage_options` 
 user tho App Password ivvandi (Administrator role).
 
 == Changelog ==
+
+= 1.6.0 =
+* Students Internet Center CTA (call + WhatsApp documents -> application PDF) on every page.
+* WhatsApp + Telegram join block replaces the old newsletter form.
+* Social rail auto-hides after 9 seconds and returns every 2 minutes, with an instant pull tab (‹).
+* Smaller social icons on mobile + block editor parity (assets/css/editor.css).
 
 = 1.5.0 =
 * Author archive template (`author.php`) — E-E-A-T: bio · published article count · profile/website link · editorial-policy link

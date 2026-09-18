@@ -206,13 +206,18 @@ def test_wsgi_app_serves_leads():
 
 
 # ---------------------------------------------------------------- offer + site
-def test_premium_products_on_advertise_page():
+def test_premium_products_are_internal_only():
+    """v71: premium services (advertorial/leads/broadcast) ippudu internal card lo mattrame."""
+    from autoblog import rate_card
+
+    services = " ".join(str(p["service"]) for p in rate_card.PREMIUM).lower()
+    assert "advertorial" in services and "lead" in services and "broadcast" in services
+    card = rate_card.as_markdown()
+    for needle in ("8,000", "150", "1,500"):
+        assert needle in card, f"internal card lo ledu: {needle}"
     html = io.open(ADV, encoding="utf-8").read()
-    for needle in ("ప్రీమియం సేవలు", "స్పాన్సర్డ్ ఆర్టికల్", "లీడ్ జనరేషన్",
-                   "₹8,000–₹15,000", "₹150–₹400", "₹1,500", "SPONSORED"):
-        assert needle in html, f"advertise page lo ledu: {needle}"
-    assert html.count("<table>") >= 3, "rate card + premium + booking tables"
-    assert "హామీ" in html and "నిజాయితీ" in html, "honest no-guarantee note undali"
+    assert "₹" not in html, "partner page lo prices undakoodadu (v71)"
+    assert "never guarantee" in html, "honest no-guarantee note undali"
 
 
 def test_estimator_advanced_tier():
@@ -231,14 +236,17 @@ def test_estimator_advanced_tier():
     assert len(rev.tier_rows()) == 4
 
 
-def test_site_lead_form():
-    html = io.open(INDEX, encoding="utf-8").read()
+def test_lead_form_lives_on_contact_page():
+    """v71: homepage form → contact page (homepage lo WhatsApp/Telegram join block)."""
+    contact = io.open(ROOT / "preview" / "pages" / "contact.html", encoding="utf-8").read()
     for needle in ('id="leadform"', 'id="ld-phone"', 'id="ld-interest"', 'class="lead-hp"',
-                   'api()+"/lead"', 'source:"site"', "ఉచిత ఉద్యోగ", "ఆపమని చెప్పవచ్చు"):
-        assert needle in html, f"index lo ledu: {needle}"
-    assert "pages/privacy.html" in html, "privacy link undali"
-    assert "9876543210" not in html or True  # placeholder example in error text only
-    assert "/^[6-9]\\d{9}$/" in html, "client-side phone check undali"
+                   'api()+"/lead"', 'source:"site"'):
+        assert needle in contact, f"contact page lo ledu: {needle}"
+    assert "/^[6-9]\\d{9}$/" in contact, "client-side phone check undali"
+    assert "privacy.html" in contact, "privacy link undali"
+    index = io.open(INDEX, encoding="utf-8").read()
+    assert 'id="leadform"' not in index, "homepage lo form undakoodadu (v71)"
+    assert 'id="join"' in index and "wa.me" in index and "t.me" in index, "join block undali"
 
 
 def test_sales_kit_exists():
@@ -269,9 +277,9 @@ def main():
         ("admin auth + ip masking + CSV export", test_admin_leads_masked_and_csv),
         ("HTTP routes: /lead (CORS) + admin + CSV + status", test_http_routes),
         ("WSGI app (MilesWeb path) leads pani chestayi", test_wsgi_app_serves_leads),
-        ("advertise page: ప్రీమియం సేవలు (leads/advertorial/broadcast)", test_premium_products_on_advertise_page),
+        ("premium services internal card lo (public page lo prices ledu)", test_premium_products_are_internal_only),
         ("estimator: 3 tiers — advanced ₹16,050 ఉదాహరణ", test_estimator_advanced_tier),
-        ("index.html: ఉచిత సమాచారం ఫారం → /lead", test_site_lead_form),
+        ("lead form contact page lo (homepage = join block)", test_lead_form_lives_on_contact_page),
         ("sales kit: templates + 90-day plan + honesty", test_sales_kit_exists),
         ("admin console: 📞 లీడ్లు panel (status + CSV)", test_admin_leads_panel),
     ]

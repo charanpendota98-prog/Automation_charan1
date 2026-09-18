@@ -23,7 +23,10 @@ ADV = ROOT / "preview" / "pages" / "advertise.html"
 
 
 def test_tool_and_rate_card():
-    assert rev.ADVERTISE == ADV and ADV.exists(), "advertise page dorakaledu"
+    assert ADV.exists(), "partner page dorakaledu"
+    from autoblog import rate_card as _rc
+
+    assert _rc.SLOTS, "internal rate card khali"
     slots = rev.parse_rate_card()
     assert len(slots) == 6, f"6 slots undali, vachhindi {len(slots)}"
     prices = sorted(s["price"] for s in slots)
@@ -32,12 +35,12 @@ def test_tool_and_rate_card():
     assert len(bundles) == 1 and bundles[0]["price"] == 8000, "full package okate bundle"
 
 
-def test_live_rate_card_prices_match_page():
-    """Tool price lu page meeda unna ₹ numbers tho exact ga match avvali."""
+def test_public_page_has_no_prices():
+    """v71: prices ippudu public page lo ledu — internal card lo mattrame (personal dealing)."""
     html = io.open(ADV, encoding="utf-8").read()
-    for s in rev.parse_rate_card():
-        assert f"₹{s['price']:,}" in html, f"page lo ₹{s['price']:,} kanipinchaledu"
-        assert s["slot"] in html, f"slot peru page lo ledu: {s['slot']}"
+    assert "₹" not in html, "partner page lo prices kanipistunnayi — vaddhu"
+    for row in rev.parse_rate_card():
+        assert f"₹{row['price']:,}" not in html
 
 
 def test_adsense_math():
@@ -126,7 +129,7 @@ def main():
     print("=" * 64)
     tests = [
         ("tool + live rate card (6 slots, ₹1,000–₹8,000)", test_tool_and_rate_card),
-        ("prices = page meeda unna ₹ numbers (single source)", test_live_rate_card_prices_match_page),
+        ("public page lo prices ledu (internal card mattrame)", test_public_page_has_no_prices),
         ("AdSense math (₹40/90/150/250 RPM → ₹400…₹2,500 @10k)", test_adsense_math),
         ("views parsing (10k / 1l / 1m / commas)", test_views_parsing),
         ("10k views realistic band (₹400–₹4,200)", test_10k_views_realistic_band),

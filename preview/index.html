@@ -216,24 +216,40 @@
     .sidecard{border:1px solid var(--line);border-radius:17px;background:var(--card);padding:17px;margin-bottom:16px}
     .sidecard h3{font-size:15px;color:var(--navy);margin:0 0 4px}
     .sidecard .sub{font-size:10px;color:var(--muted);margin:0 0 12px}
-    .leadbox{border:1px solid var(--line);border-radius:17px;background:var(--card);padding:16px;margin:18px 0}
-    .leadbox h3{font-size:16px;color:var(--navy);margin:0 0 4px}
-    .leadbox .sub{font-size:11px;color:var(--muted);margin:0 0 12px}
-    .leadgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-    .leadgrid .full{grid-column:1/-1}
-    .leadgrid input,.leadgrid select{width:100%;padding:11px 12px;border:1px solid var(--line);
-      border-radius:11px;font:inherit;background:var(--card);color:inherit}
-    .leadgrid input:focus,.leadgrid select:focus{outline:2px solid var(--blue);outline-offset:1px}
-    .lead-hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
-    .leadbtn{margin-top:12px;width:100%;padding:13px;border:0;border-radius:12px;background:var(--blue);
-      color:#fff;font-weight:700;font-size:14px;cursor:pointer}
-    .leadbtn:disabled{opacity:.6;cursor:default}
-    .leadnote{font-size:10px;color:var(--muted);margin:9px 0 0;line-height:1.6}
-    .leadmsg{margin-top:11px;font-size:13px;font-weight:600;display:none}
-    .leadmsg.ok{display:block;color:#0a7a3d}
-    .leadmsg.err{display:block;color:#b3261e}
-    body.dark .leadbox h3{color:#e7f0ff}
-    @media(max-width:640px){.leadgrid{grid-template-columns:1fr}}
+    /* v71: Students Internet Center card */
+    .ic-card{border:1px solid var(--line);border-radius:17px;background:var(--card);padding:17px;margin-bottom:16px}
+    .ic-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .ic-head h3{font-size:16px;color:var(--navy);margin:0}
+    .ic-badge{font-size:10px;font-weight:800;letter-spacing:.4px;color:#0b5f4a;background:#e6f7f0;border:1px solid #bde8d6;border-radius:999px;padding:3px 9px;white-space:nowrap}
+    .ic-lead{font-size:12.5px;line-height:1.6;color:var(--ink-soft);margin:9px 0 10px}
+    .ic-steps{margin:0 0 10px;padding-left:18px;font-size:12px;line-height:1.65;color:#35455c}
+    .ic-steps li{margin-bottom:4px}
+    .ic-te{font-size:11.5px;color:var(--muted);margin:0 0 12px}
+    .wa-box{display:flex;align-items:center;gap:11px;background:linear-gradient(135deg,#25d366,#128c7e);color:#fff;border-radius:13px;padding:12px 13px;text-decoration:none;box-shadow:0 10px 22px rgba(18,140,126,.25);transition:transform .18s ease,box-shadow .18s ease}
+    .wa-box:hover{transform:translateY(-2px);box-shadow:0 14px 26px rgba(18,140,126,.32)}
+    .wa-box b{display:block;font-size:13.5px;line-height:1.3}
+    .wa-box small{font-size:10.5px;opacity:.93}
+    .wa-ico{flex-shrink:0;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.2);display:grid;place-items:center}
+    .wa-ico svg{width:20px;height:20px;fill:#fff}
+    .ic-card .service-actions a{background:var(--navy)}
+    .ic-card .service-actions a.alt{background:#eef3fb;color:var(--navy)}
+    /* v71: WhatsApp + Telegram join block */
+    .joinbox{display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between;border:1px solid var(--line);border-radius:17px;background:linear-gradient(135deg,#f8fbff,#eef5ff);padding:18px;margin:18px 0}
+    .join-copy{flex:1 1 300px}
+    .joinbox h3{font-size:17px;color:var(--navy);margin:0 0 6px;line-height:1.35}
+    .joinbox .sub{font-size:12.5px;color:var(--ink-soft);margin:0 0 6px;line-height:1.6}
+    .join-te{font-size:12px;color:var(--muted);margin:0}
+    .join-cta{display:flex;flex-direction:column;gap:9px;min-width:212px;flex:0 1 240px}
+    .join-cta a{display:block;text-align:center;text-decoration:none;font-weight:800;font-size:13.5px;color:#fff;border-radius:12px;padding:12px 16px}
+    .join-wa{background:linear-gradient(135deg,#25d366,#128c7e);box-shadow:0 8px 18px rgba(18,140,126,.22)}
+    .join-tg{background:linear-gradient(135deg,#2aabee,#229ed9);box-shadow:0 8px 18px rgba(34,158,217,.22)}
+    .join-cta small{font-size:10.5px;color:var(--muted);text-align:center}
+    body.dark .ic-head h3,body.dark .joinbox h3{color:#e7f0ff}
+    body.dark .ic-steps{color:#c8d6ea}
+    body.dark .ic-badge{background:#12362c;border-color:#1d5b48;color:#7fe0bb}
+    body.dark .ic-card .service-actions a.alt{background:#1b2c46;color:#e7f0ff}
+    body.dark .joinbox{background:linear-gradient(135deg,#122036,#162943)}
+    @media(max-width:640px){.join-cta{min-width:0;flex:1 1 100%}}
     .trend{display:flex;gap:10px;padding:11px 0;border-bottom:1px solid #eff2f7}
     .trend:last-child{border:0;padding-bottom:2px}
     .rank{color:var(--orange);font-size:16px;font-weight:800}
@@ -325,7 +341,13 @@
     .totop{position:fixed;right:18px;bottom:18px;height:42px;width:42px;border-radius:12px;background:var(--navy);color:#fff;border:0;cursor:pointer;font-size:16px;box-shadow:0 10px 22px rgba(15,46,98,.3);opacity:0;pointer-events:none;transition:opacity .25s;z-index:25}
     .totop.show{opacity:1;pointer-events:auto}
     /* v45: floating social rail — right side, vertically centered */
-    .su-social{position:fixed;right:16px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:14px;z-index:40}
+    .su-social{position:fixed;right:16px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:12px;z-index:40;transition:transform .32s ease,opacity .32s ease,visibility .32s}
+    .su-social.su-out{transform:translate(115%,-50%);opacity:0;visibility:hidden;pointer-events:none}
+    .su-close{position:absolute;top:-9px;right:-9px;width:22px;height:22px;border:0;border-radius:50%;background:var(--navy);color:#fff;font-size:11px;font-weight:800;line-height:1;cursor:pointer;box-shadow:0 4px 10px rgba(15,46,98,.3)}
+    .su-close:hover{background:#0a2145}
+    .su-tab{position:fixed;right:0;top:50%;transform:translateY(-50%) translateX(0);width:20px;height:46px;border:0;border-right:0;border-radius:11px 0 0 11px;background:var(--navy);color:#fff;font-size:13px;font-weight:800;cursor:pointer;z-index:39;opacity:0;visibility:hidden;transition:opacity .28s ease,visibility .28s}
+    .su-tab.on{opacity:.92;visibility:visible}
+    .su-tab:hover{background:#0a2145;opacity:1}
     .su-social a{position:relative;display:flex;align-items:center;justify-content:center;width:48px;height:48px;border-radius:50%;color:#fff;box-shadow:0 8px 20px rgba(15,46,98,.24);transition:transform .22s ease,box-shadow .22s ease}
     .su-social a:hover{transform:translateX(-5px) scale(1.08);box-shadow:0 12px 26px rgba(15,46,98,.32)}
     .su-social a:active{transform:scale(.95)}
@@ -338,11 +360,16 @@
     .su-social .su-ig{background:linear-gradient(45deg,#f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%)}
     .su-social .su-yt{background:linear-gradient(135deg,#ff4e45 0%,#ff0000 100%)}
     body.dark .su-social a::after{background:#e8eef7;color:#162235}
-    @media(max-width:720px){.su-social{right:10px;gap:11px}
-      .su-social a{width:42px;height:42px}
-      .su-social a svg{width:20px;height:20px}
-      .su-social a::after{display:none}}
-    @media(prefers-reduced-motion:reduce){.su-social a,.su-social a::after{transition:none}
+    /* v71: mobile — chips chinna ga, text ki adupu lekunda */
+    @media(max-width:720px){.su-social{right:8px;gap:8px}
+      .su-social a{width:34px;height:34px;box-shadow:0 6px 14px rgba(15,46,98,.2)}
+      .su-social a svg{width:17px;height:17px}
+      .su-social a::after{display:none}
+      .su-close{width:19px;height:19px;font-size:10px;top:-7px;right:-7px}
+      .su-social.su-out{transform:translate(125%,-50%)}
+      .su-tab{width:18px;height:42px;font-size:12px}}
+    @media(prefers-reduced-motion:reduce){.su-social,.su-tab{transition:none}
+      .su-social a,.su-social a::after{transition:none}
       .su-social a:hover{transform:none}}
     /* dark mode */
     body.dark{--ink:#e8eef7;--ink-soft:#b9c6da;--muted:#93a4bd;--line:#31445f;--soft:#14243c;--card:#14243c;--cardline:#31445f;--bg:#0d1728;--navy:#0f2e62;--blue:#6ea3e8;--orange:#f09a4b}
@@ -415,9 +442,14 @@
       .mobile-nav{display:flex;position:fixed;bottom:0;left:0;right:0;z-index:30;background:rgba(255,255,255,.97);border-top:1px solid var(--line);backdrop-filter:blur(14px);justify-content:space-around;padding:8px 4px;gap:2px}
       .mobile-nav a{font-size:9px;color:#66768d;text-align:center;font-weight:700;padding:4px 8px;border-radius:8px}
       .mobile-nav a.active{color:var(--navy)}
-      .mobile-nav b{display:block;font-size:15px;margin-bottom:1px}
-      .totop{bottom:76px}
+      .mobile-nav b{display:block;font-size:13px;margin-bottom:1px}
+      .totop{bottom:72px}
     }
+    /* v71: chala chinna screens — icons inka chinna ga */
+    @media(max-width:400px){.mobile-nav a{font-size:8.5px;padding:4px 5px}
+      .mobile-nav b{font-size:12px}
+      .su-social a{width:31px;height:31px}
+      .su-social a svg{width:15px;height:15px}}
   
     /* ---------- v47: ఈరోజు పోల్ ---------- */
     .poll{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;margin:18px 0;box-shadow:0 11px 26px rgba(15,46,98,.06)}
@@ -546,7 +578,7 @@
         <span class="drop" role="menu" aria-label="More links">
           <a href="#quiz" role="menuitem">రోజువారీ క్విజ్<small>తెలంగాణ/ఆంధ్రప్రదేశ్ GK — 6 ప్రశ్నలు</small></a>
           <a href="#services" role="menuitem">సేవలు<small>కౌన్సెలింగ్ · పత్రాలు · మార్గదర్శనం</small></a>
-          <a href="pages/advertise.html" role="menuitem">మాతో ప్రకటన ఇవ్వండి<small>రేట్ కార్డ్ · స్లాట్‌లు · బుకింగ్</small></a>
+          <a href="pages/advertise.html" role="menuitem">Partner with us<small>Advertise · rates shared personally</small></a>
           <span class="dropsep" aria-hidden="true"></span>
           <a href="pages/about.html" role="menuitem">మా గురించి</a>
           <a href="pages/editorial-policy.html" role="menuitem">సంపాదకీయ విధానం</a>
@@ -623,7 +655,7 @@
     <div class="msep" aria-hidden="true"></div>
     <div class="mlabel">మరికొన్ని</div>
     <a href="#services"><span class="mico" aria-hidden="true">🧭</span>సేవలు</a>
-    <a href="pages/advertise.html"><span class="mico" aria-hidden="true">📢</span>మాతో ప్రకటన ఇవ్వండి (రేట్ కార్డ్)</a>
+    <a href="pages/advertise.html"><span class="mico" aria-hidden="true">🤝</span>Partner with us (advertise)</a>
     <a href="pages/editorial-policy.html"><span class="mico" aria-hidden="true">🛡</span>సంపాదకీయ విధానం</a>
     <a href="pages/contact.html"><span class="mico" aria-hidden="true">✉️</span>సవరణలు</a>
     <a href="pages/privacy.html"><span class="mico" aria-hidden="true">🔒</span>గోప్యతా విధానం</a>
@@ -905,33 +937,18 @@
       <div id="pollbox" aria-live="polite"><p class="poll-error">పోల్ లోడ్ అవుతోంది…</p></div>
     </section>
 
-<section class="leadbox" id="alerts" aria-label="ఉచిత సమాచారం">
-      <h3>🔔 ఉచిత ఉద్యోగ &amp; పరీక్ష సమాచారం</h3>
-      <p class="sub">కొత్త ఉద్యోగాలు, నోటిఫికేషన్లు, పరీక్ష తేదీలు, ఫలితాలు — మీకు ముందుగా పంపుతాము.</p>
-      <form id="leadform" novalidate>
-        <div class="leadgrid">
-          <input type="text" id="ld-name" name="name" maxlength="60" autocomplete="name"
-                 placeholder="మీ పేరు" aria-label="మీ పేరు" required>
-          <input type="tel" id="ld-phone" name="phone" maxlength="15" inputmode="numeric"
-                 autocomplete="tel" placeholder="మొబైల్ నంబర్ (10 అంకెలు)" aria-label="మొబైల్ నంబర్" required>
-          <select id="ld-interest" name="interest" aria-label="మీ ఆసక్తి">
-            <option value="jobs">ఉద్యోగాలు</option>
-            <option value="scholarships">స్కాలర్‌షిప్‌లు</option>
-            <option value="college">కళాశాల ప్రవేశాలు</option>
-            <option value="coaching">కోచింగ్</option>
-            <option value="exams">పరీక్షలు</option>
-            <option value="other">ఇతర</option>
-          </select>
-          <input type="text" id="ld-city" name="city" maxlength="40" autocomplete="address-level2"
-                 placeholder="పట్టణం (ఐచ్ఛికం)" aria-label="పట్టణం">
-          <input type="text" class="lead-hp" id="ld-website" name="website" tabindex="-1"
-                 autocomplete="off" aria-hidden="true">
-        </div>
-        <button type="submit" class="leadbtn" id="ld-submit">ఉచితంగా నమోదు చేయండి</button>
-        <p class="leadmsg" id="ld-msg" role="status" aria-live="polite"></p>
-        <p class="leadnote">మీ నంబర్ ఎవరికీ అమ్మము · ప్రకటనల కోసం ఇవ్వము · ఎప్పుడైనా
-          <a href="pages/privacy.html">ఆపమని చెప్పవచ్చు</a>. ఇది ఉచిత సేవ మాత్రమే.</p>
-      </form>
+<section class="joinbox" id="join" aria-label="Join StudentUp on WhatsApp and Telegram">
+      <div class="join-copy">
+        <h3>Every job, exam date and result — first on your phone</h3>
+        <p class="sub">Free daily updates for Telangana &amp; Andhra Pradesh students. Join our WhatsApp
+          and Telegram channels — no spam calls, leave anytime.</p>
+        <p class="join-te">ఉద్యోగాలు · నోటిఫికేషన్లు · ఫలితాలు — మా WhatsApp / Telegram లో ముందుగా.</p>
+      </div>
+      <div class="join-cta">
+        <a class="join-wa" data-wa="channel" href="https://wa.me/919999999999?text=StudentUp%20updates%20kavali" target="_blank" rel="noopener">WhatsApp updates</a>
+        <a class="join-tg" href="https://t.me/studentup_in" target="_blank" rel="noopener">Telegram channel</a>
+        <small>100% free · no calls · 1–3 updates a day</small>
+      </div>
     </section>
 
 <section class="quiz" id="quiz" aria-label="Daily quiz">
@@ -957,17 +974,24 @@
         <div class="trend"><span class="rank">04</span><div><b>APPSC గ్రూప్ 1 కటాఫ్ ధోరణి</b><span>ఆంధ్రప్రదేశ్</span></div></div>
         <div class="trend"><span class="rank">05</span><div><b>TS ఇంటర్ ఫలితాల రీవాల్యుయేషన్</b><span>ఫలితాలు · TS బోర్డులు</span></div></div>
       </div>
-      <div class="sidecard" id="ads"><h3>📢 మాతో ప్రకటన ఇవ్వండి</h3><p class="sub">కళాశాల బ్యానర్లు · కోచింగ్ · స్థానిక షాపులు · వ్యక్తిగత సేవలు</p>
-        <p style="font-size:12.5px;line-height:1.6;margin:8px 0 10px;color:var(--ink-soft)">అత్యధిక క్లిక్ స్లాట్‌లు: టాప్ లీడర్‌బోర్డ్ · ఇన్-ఫీడ్ · మిడ్-కంటెంట్ · సైడ్‌బార్. 100% Google-సురక్షితం: కనిపించే SPONSORED లేబుల్, విధాన-అనుకూల నిబంధనలు.</p>
-        <table style="width:100%;border-collapse:collapse;font-size:12px;margin:6px 0 10px">
-          <tr><th style="text-align:left;padding:5px 6px;background:var(--soft);color:var(--navy)">స్లాట్</th><th style="text-align:right;padding:5px 6px;background:var(--soft);color:var(--navy)">నెలకు</th></tr>
-          <tr><td style="padding:5px 6px;border-bottom:1px solid var(--line)">టాప్ లీడర్‌బోర్డ్</td><td style="text-align:right;padding:5px 6px;border-bottom:1px solid var(--line)"><b>₹4,000</b></td></tr>
-          <tr><td style="padding:5px 6px;border-bottom:1px solid var(--line)">ఆర్టికల్ మధ్యలో</td><td style="text-align:right;padding:5px 6px;border-bottom:1px solid var(--line)"><b>₹3,500</b></td></tr>
-          <tr><td style="padding:5px 6px;border-bottom:1px solid var(--line)">ఇన్-ఫీడ్ కార్డ్</td><td style="text-align:right;padding:5px 6px;border-bottom:1px solid var(--line)"><b>₹3,000</b></td></tr>
-          <tr><td style="padding:5px 6px;border-bottom:1px solid var(--line)">సైడ్‌బార్ స్టిక్కీ</td><td style="text-align:right;padding:5px 6px;border-bottom:1px solid var(--line)"><b>₹2,000</b></td></tr>
-          <tr><td style="padding:5px 6px">ఫుల్ ప్యాకేజీ (అన్నీ)</td><td style="text-align:right;padding:5px 6px"><b>₹8,000</b></td></tr>
-        </table>
-        <a href="pages/advertise.html" style="font-weight:800">పూర్తి రేట్ కార్డ్ &amp; బుకింగ్ →</a> <a href="https://t.me/studentup_in" style="font-weight:800;margin-left:8px">Telegram →</a>
+      <div class="sidecard ic-card" id="services">
+        <div class="ic-head"><h3>Students Internet Center</h3><span class="ic-badge">TS &amp; AP</span></div>
+        <p class="ic-lead">Apply for any job or scholarship from home. No need to visit any centre —
+          one call is enough.</p>
+        <ol class="ic-steps">
+          <li><b>Call us</b> with the post you want to apply for.</li>
+          <li><b>WhatsApp your documents</b> — photo, signature, certificates, resume.</li>
+          <li><b>We apply &amp; send the PDF</b> — your filled application reaches you at the lowest service charge.</li>
+        </ol>
+        <p class="ic-te">దరఖాస్తు మొత్తం మేము చేస్తాము — PDF మీకు పంపుతాము.</p>
+        <a class="wa-box" data-wa="service" href="https://wa.me/919999999999?text=StudentUp%20Students%20Internet%20Center%20-%20naa%20documents%20pampistanu" target="_blank" rel="noopener">
+          <span class="wa-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.55-1.342-.797-1.937-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></span>
+          <span class="wa-txt"><b>WhatsApp your documents</b><small>Tap to open our WhatsApp — we reply fast</small></span>
+        </a>
+        <div class="service-actions">
+          <a href="tel:+919999999999">📞 Call now</a>
+          <a class="alt" href="mailto:studentupinformative@gmail.com">✉️ Email</a>
+        </div>
       </div>
       <aside class="su-ad su-ad-card" aria-label="Sponsored content" data-ad="shop-ad-demo" data-slot="sidebar">
         <div class="su-ad-kicker">SPONSORED · స్థానిక భాగస్వామి <span class="su-ad-note">DEMO</span></div>
@@ -987,10 +1011,6 @@
         <div class="service-actions">
           <a id="examlink" href="#" target="_blank" rel="noopener">▶ నమూనా పరీక్ష ప్రయత్నించండి</a>
         </div>
-      </div>
-      <div class="sidecard service-card" id="services"><h3>దరఖాస్తు సహాయం కావాలా?</h3>
-        <p>ఫారములు, రెజ్యూమేలు, స్కాలర్‌షిప్‌లు, ఆన్‌లైన్ దరఖాస్తులు — మా సహాయ కేంద్రం మార్గదర్శనం అందిస్తుంది. సందేహాలు, సవరణలకు ఇమెయిల్ చేయండి.</p>
-        <div class="service-actions"><a href="mailto:studentupinformative@gmail.com">📧 ఇమెయిల్ చేయండి</a><a class="alt" href="https://t.me/studentup_in" target="_blank" rel="noopener">💬 Telegram సంప్రదింపు</a></div>
       </div>
     </aside></div>
 
@@ -1014,7 +1034,8 @@
   <!-- v45: SOCIAL RAIL — right side, vertically centered.
        PLACEHOLDER HANDLES: replace 919999999999 / studentup_in /
        studentup.in / @studentupin with mee real handles (search "su-social") -->
-  <nav class="su-social" aria-label="StudentUp సోషల్ మీడియా">
+  <nav class="su-social" id="surail" aria-label="StudentUp social links">
+    <button type="button" class="su-close" id="suclose" aria-label="Hide social icons">✕</button>
     <a class="su-wa" data-label="WhatsApp" href="https://wa.me/919999999999?text=StudentUp.in%20iniki%20question%20unnadi" target="_blank" rel="noopener" aria-label="WhatsApp">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.55-1.342-.797-1.937-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
     </a>
@@ -1028,6 +1049,7 @@
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
     </a>
   </nav>
+  <button type="button" class="su-tab" id="sutab" aria-label="Show social icons" title="Social links">‹</button>
   <button class="totop" id="totop" aria-label="Back to top">↑</button>
 
   <script>
@@ -1306,41 +1328,45 @@
 </script>
 
 <script>
-/* v54 — ఉచిత సమాచారం ఫారం (leads) → పరీక్షల పోర్టల్ API */
+/* ---------- v71: floating social rail — show → auto-hide → back every 2 minutes ----------
+   Enduku: rail eppudu kanipisthe mobile lo article text chadavadam kastam. Anduku
+   9 సెకన్లు చూపి, auto ga pakkaki velli, prati 2 నిమిషాలకు malli vastundi. ✕ నొక్కితే
+   ventane veltundi (2 నిమిషాల tarvata malli). ‹ tab నొక్కితే ventane tirigi vastundi. */
 (function(){
-  var f=document.getElementById("leadform"); if(!f) return;
-  function api(){
-    var h=location.hostname;
-    if(/^8000-/.test(h)) return location.protocol+"//"+h.replace(/^8000-/,"8080-");
-    if(h==="localhost"||h==="127.0.0.1") return "http://localhost:8080";
-    return "";
+  var rail=document.getElementById("surail"), closeBtn=document.getElementById("suclose"),
+      tab=document.getElementById("sutab");
+  if(!rail||!tab) return;
+  var SHOW_MS=9000, CYCLE_MS=120000, hover_MS=3500, hideT=null, cycleT=null;
+  function isOut(){ return rail.classList.contains("su-out"); }
+  function show(){
+    clearTimeout(hideT);
+    rail.classList.remove("su-out"); rail.removeAttribute("aria-hidden");
+    tab.classList.remove("on");
+    hideT=setTimeout(hide,SHOW_MS);
   }
-  var msg=document.getElementById("ld-msg"), btn=document.getElementById("ld-submit");
-  function say(text,ok){ msg.textContent=text; msg.className="leadmsg "+(ok?"ok":"err"); }
-  f.addEventListener("submit",function(e){
-    e.preventDefault();
-    var name=(document.getElementById("ld-name").value||"").trim();
-    var phone=(document.getElementById("ld-phone").value||"").replace(/\D/g,"");
-    var interest=document.getElementById("ld-interest").value;
-    var city=(document.getElementById("ld-city").value||"").trim();
-    var hp=(document.getElementById("ld-website").value||"").trim();
-    if(name.length<2){ say("⚠️ పేరు రాయండి.",false); return; }
-    if(!/^[6-9]\d{9}$/.test(phone)){ say("⚠️ 10 అంకెల మొబైల్ నంబర్ ఇవ్వండి (ఉదా: 9876543210).",false); return; }
-    if(typeof fetch!=="function"){ say("⚠️ ఈ బ్రౌజర్‌లో ఫారం పనిచేయదు — మాకు నేరుగా మెసేజ్ చేయండి.",false); return; }
-    btn.disabled=true; say("పంపుతోంది…",true);
-    fetch(api()+"/lead",{method:"POST",headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({name:name,phone:phone,interest:interest,city:city,website:hp,source:"site"})})
-      .then(function(r){return r.json().then(function(j){return {s:r.status,j:j};});})
-      .then(function(o){
-        btn.disabled=false;
-        if(o.s===200&&o.j&&o.j.ok){ say("✅ "+(o.j.message||"నమోదు అయ్యింది!"),true); f.reset(); }
-        else { say("⚠️ "+((o.j&&o.j.error)||"పంపలేకపోయింది — మళ్లీ ప్రయత్నించండి."),false); }
-      })
-      .catch(function(){ btn.disabled=false; say("⚠️ సర్వర్‌కు కనెక్ట్ కాలేదు — కొద్దిసేపటి తర్వాత మళ్లీ ప్రయత్నించండి.",false); });
-  });
+  function hide(){
+    clearTimeout(hideT);
+    rail.classList.add("su-out"); rail.setAttribute("aria-hidden","true");
+    tab.classList.add("on");
+  }
+  function restartCycle(){
+    clearInterval(cycleT);
+    cycleT=setInterval(function(){
+      if(document.body.classList.contains("mlock")) return;   /* mobile menu open — wait */
+      show();
+    },CYCLE_MS);
+  }
+  if(closeBtn) closeBtn.addEventListener("click",function(){ hide(); restartCycle(); });
+  tab.addEventListener("click",function(){ show(); restartCycle(); });
+  document.addEventListener("keydown",function(e){ if(e.key==="Escape"&&!isOut()) hide(); });
+  rail.addEventListener("mouseenter",function(){ clearTimeout(hideT); });
+  rail.addEventListener("mouseleave",function(){ clearTimeout(hideT); hideT=setTimeout(hide,hover_MS); });
+  rail.addEventListener("focusin",function(){ clearTimeout(hideT); });
+  rail.addEventListener("focusout",function(){ clearTimeout(hideT); hideT=setTimeout(hide,hover_MS); });
+  show(); restartCycle();
 })();
 
-    /* ============ v59: విద్యార్థులు ఎక్కువగా వెతికేవి — live counts ============ */
+/* ============ v59: విద్యార్థులు ఎక్కువగా వెతికేవి — live counts ============ */
     (function(){
       var cards=document.querySelectorAll("#grid .news");
       function catCount(cat){var n=0;Array.prototype.forEach.call(cards,function(c){

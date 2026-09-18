@@ -133,68 +133,83 @@ def test_broken_house_file_never_blocks_posting():
 
 # ------------------------------------------------- advertise page / revenue
 
-def test_advertise_page_exists_and_is_pure_telugu():
+def test_partner_page_exists_and_is_indexable():
+    """v71: advertise page = 'Partner with us' (English-first, indexable, canonical)."""
     assert ADV.exists(), "pages/advertise.html missing"
     html = ADV.read_text(encoding="utf-8")
     assert '<html lang="te">' in html
-    telugu = len(re.findall(r"[\u0C00-\u0C7F]", html))
-    assert telugu > 1500, telugu
     assert "canonical" in html and "studentup.in/pages/advertise.html" in html
-    print("  advertise page: pure Telugu (%d chars) + canonical ✔" % telugu)
+    assert "Partner with us" in html
+    assert "SPONSORED" in html and "house ads" in html.lower()
+    print("  partner page: exists · canonical · SPONSORED/house-ads explained ✔")
 
 
-def test_rate_card_has_all_slots_and_prices():
+def test_no_public_rate_card_on_the_website():
+    """v71 (mee directive): prices/slot table website lo undakoodadu — personal ga deal."""
     html = ADV.read_text(encoding="utf-8")
-    for slot in ["టాప్ లీడర్‌బోర్డ్", "ఇన్-ఫీడ్", "ఆర్టికల్ మధ్యలో",
-                 "సైడ్‌బార్", "విధాన పేజీల", "ఫుల్ ప్యాకేజీ"]:
-        assert slot in html, "rate card slot missing: " + slot
-    for price in ["₹4,000", "₹3,500", "₹3,000", "₹2,000", "₹1,000", "₹8,000"]:
-        assert price in html, "price missing: " + price
-    print("  advertise page: 6 slots with ₹ rate card (₹1,000–₹8,000/నెల) ✔")
+    assert "₹" not in html, "partner page lo ₹ price undi — prices public ga vaddhu"
+    assert "<table>" not in html, "partner page lo table (rate card/booking) undi"
+    assert "Booking" not in html and "బుకింగ్" not in html, "public booking flow vaddhu"
+    idx = (PREVIEW / "index.html").read_text(encoding="utf-8")
+    assert "₹" not in idx, "homepage lo rate card prices unnayi"
+    print("  no public prices/booking (homepage + partner page clean) ✔")
 
 
-def test_booking_flow_and_contact_channels():
+def test_rates_shared_personally_with_contact_routes():
     html = ADV.read_text(encoding="utf-8")
+    assert "personally" in html
     assert "mailto:" in html and "studentupinformative@gmail.com" in html
-    assert "t.me/studentup_in" in html
-    assert "బుకింగ్" in html and "3 అడుగులు" in html
-    assert "ఇన్‌వాయిస్" in html and "రిఫండ్" in html
-    print("  advertise page: 3-step booking + email/Telegram + invoice/refund policy ✔")
+    assert re.search(r"wa\.me/\d{6,}", html), "WhatsApp route ledu"
+    print("  partner page: rates shared personally + WhatsApp/email routes ✔")
+
+
+def test_internal_rate_card_is_the_source_of_truth():
+    """Prices ippudu internal card lo (autoblog/rate_card.py) — bot/owner ki mattrame."""
+    from autoblog import rate_card
+
+    rows = rate_card.as_rows()
+    assert len(rows) == 6, f"6 rows (5 slots + package) undali, vachhindi {len(rows)}"
+    assert sorted(int(r["price"]) for r in rows) == [1000, 2000, 3000, 3500, 4000, 8000]
+    assert len([r for r in rows if r["bundle"]]) == 1
+    assert len(rate_card.PREMIUM) >= 3, "premium services (advertorial/leads/broadcast) undali"
+    assert "₹" in rate_card.as_markdown(), "Telegram/console card lo prices undali"
+    print("  internal rate card: 5 slots + package ₹1,000–₹8,000 + 3 premium services ✔")
 
 
 def test_ad_policy_is_strict_and_adsense_safe():
     html = ADV.read_text(encoding="utf-8")
-    for rule in ["SPONSORED", 'rel="sponsored nofollow"', "క్లిక్‌బైట్",
-                 "నకిలీ క్లిక్", "పాపప్", "జూదం"]:
+    for rule in ["SPONSORED", 'rel="sponsored nofollow"', "Clickbait", "Fake clicks",
+                 "pop-ups", "gambling"]:
         assert rule in html, "policy rule missing: " + rule
-    assert "హామీ" in html, "honest no-guarantee note missing"
-    print("  advertise page: strict policy (no clickbait/fake clicks/popups) + honest note ✔")
+    assert "never guarantee" in html, "honest no-guarantee note missing"
+    print("  partner page: strict policy (no clickbait/fake clicks/popups) + honest note ✔")
 
 
 def test_house_ads_explained_to_advertisers():
     html = ADV.read_text(encoding="utf-8")
-    assert "StudentUp సొంత" in html or "హౌస్" in html
-    assert "ఖాళీగా కనిపించదు" in html, "must explain that slots never look empty"
-    print("  advertise page: house ads explained (slot never looks empty) ✔")
+    assert "house ads" in html.lower()
+    assert "never looks empty" in html, "must explain that slots never look empty"
+    print("  partner page: house ads explained (slot never looks empty) ✔")
 
 
 def test_site_links_to_the_advertise_page():
     index = (PREVIEW / "index.html").read_text(encoding="utf-8")
     assert "pages/advertise.html" in index, "index does not link the advertise page"
-    assert index.count("pages/advertise.html") >= 2, "link in dropdown + ads card"
+    assert index.count("pages/advertise.html") >= 2, "link in dropdown + mobile panel"
     sm = (PREVIEW / "sitemap.xml").read_text(encoding="utf-8")
     assert "advertise.html" in sm
     robots = (PREVIEW / "robots.txt").read_text(encoding="utf-8")
     assert "advertise" not in robots.lower() or "Allow" in robots
-    print("  site: dropdown + rate-card card link it · sitemap included ✔")
+    print("  site: dropdown + mobile panel link it · sitemap included ✔")
 
 
-def test_index_rate_card_shows_live_prices():
+def test_index_has_no_rate_card_and_shows_service_card():
+    """v71: sidebar lo rate card ledu — Students Internet Center card + partner link undi."""
     index = (PREVIEW / "index.html").read_text(encoding="utf-8")
-    for price in ["₹4,000", "₹8,000"]:
-        assert price in index, "index rate card missing: " + price
-    assert "పూర్తి రేట్ కార్డ్" in index
-    print("  site: sidebar card shows the live rate card + booking link ✔")
+    assert "₹" not in index, "homepage lo prices unnayi (public rate card vaddhu)"
+    assert "Students Internet Center" in index, "services card ledu"
+    assert 'href="pages/advertise.html"' in index, "partner page link ledu"
+    print("  site: no public rate card · Students Internet Center card + partner link ✔")
 
 
 def test_advertise_page_passes_public_audit():
@@ -216,13 +231,14 @@ def main() -> None:
     test_paid_ad_always_beats_house_ad()
     test_house_rotation_and_disable_switch()
     test_broken_house_file_never_blocks_posting()
-    test_advertise_page_exists_and_is_pure_telugu()
-    test_rate_card_has_all_slots_and_prices()
-    test_booking_flow_and_contact_channels()
+    test_partner_page_exists_and_is_indexable()
+    test_no_public_rate_card_on_the_website()
+    test_internal_rate_card_is_the_source_of_truth()
+    test_rates_shared_personally_with_contact_routes()
     test_ad_policy_is_strict_and_adsense_safe()
     test_house_ads_explained_to_advertisers()
     test_site_links_to_the_advertise_page()
-    test_index_rate_card_shows_live_prices()
+    test_index_has_no_rate_card_and_shows_service_card()
     test_advertise_page_passes_public_audit()
     print("ALL v52 HOUSE-AD + ADVERTISE-PAGE TESTS PASSED ✔")
 

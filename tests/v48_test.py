@@ -72,7 +72,10 @@ def test_policy_pages_are_telugu_and_link_back():
     for slug in POLICY_PAGES:
         html = _t(slug)
         telugu = len(re.findall(r"[\u0C00-\u0C7F]", html))
-        assert telugu > 800, (slug, telugu)
+        # v71: business pages (partner/contact) English-first — Telugu akkada kuda undali,
+        # kaani threshold takkuva (premium English copy + Telugu line).
+        limit = 250 if slug in ("advertise", "contact") else 800
+        assert telugu > limit, (slug, telugu)
         assert 'href="../index.html"' in html, slug + ": no back-home link"
         for other in POLICY_PAGES:
             assert (other + ".html") in html, "%s missing link to %s" % (slug, other)

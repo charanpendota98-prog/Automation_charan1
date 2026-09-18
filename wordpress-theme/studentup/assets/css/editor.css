@@ -1,23 +1,29 @@
-/*
- * StudentUp — block editor styles (v69)
- * Front-end lo kanipinche look ey editor lo kuda kanipinchali (editor parity).
- * add_editor_style('assets/css/editor.css') tho load avutundi.
+/*!
+ * StudentUp — block editor styles (v71)
+ * Front-end tokens tho same look: navy/blue/orange accents, Telugu-friendly type,
+ * wider (760px) writing column, styled tables/quotes/buttons.
  */
-
-.editor-styles-wrapper {
+:root {
+	/* same token names as the front-end (style.css) — editor = front-end */
 	--navy: #0f2e62;
 	--blue: #2463b7;
 	--orange: #ed8a32;
-	--ink: #162235;
-	--muted: #64748b;
-	--line: #e5ebf4;
-	--soft: #f5f8fc;
-	font-family: "Noto Sans Telugu", "Hind Guntur", system-ui, -apple-system,
-		"Segoe UI", Roboto, Arial, sans-serif;
-	color: var(--ink);
-	line-height: 1.75;
+	--ink: #16243a;
+	--soft: #f2f6fc;
+	--line: #dbe4f0;
+	--su-navy: var(--navy);
+	--su-blue: var(--blue);
+	--su-orange: var(--orange);
+	--su-ink: var(--ink);
+	--su-line: var(--line);
+	--su-soft: var(--soft);
+}
+
+.editor-styles-wrapper {
+	font-family: "Noto Sans Telugu", "Segoe UI", system-ui, -apple-system, sans-serif;
 	font-size: 17px;
-	background: #fff;
+	line-height: 1.85;
+	color: var(--su-ink);
 }
 
 .editor-styles-wrapper .wp-block {
@@ -26,70 +32,73 @@
 
 .editor-styles-wrapper h1,
 .editor-styles-wrapper h2,
-.editor-styles-wrapper h3 {
-	color: var(--navy);
+.editor-styles-wrapper h3,
+.editor-styles-wrapper h4 {
+	font-family: inherit;
+	color: var(--su-navy);
 	line-height: 1.35;
-	letter-spacing: -0.01em;
 }
 
 .editor-styles-wrapper h2 {
 	margin-top: 1.6em;
-	border-left: 4px solid var(--orange);
-	padding-left: 10px;
+	border-left: 4px solid var(--su-orange);
+	padding-left: 12px;
 }
 
 .editor-styles-wrapper a {
-	color: var(--blue);
-	text-underline-offset: 3px;
-}
-
-.editor-styles-wrapper p,
-.editor-styles-wrapper li {
-	font-size: 17px;
-}
-
-.editor-styles-wrapper ul,
-.editor-styles-wrapper ol {
-	padding-left: 1.4em;
-}
-
-.editor-styles-wrapper li {
-	margin-bottom: 6px;
+	color: var(--su-blue);
+	text-decoration: underline;
+	text-underline-offset: 2px;
 }
 
 .editor-styles-wrapper blockquote {
-	border-left: 4px solid var(--blue);
-	background: var(--soft);
-	margin: 1.2em 0;
-	padding: 12px 16px;
-	border-radius: 0 10px 10px 0;
-	color: #22344f;
+	border-left: 4px solid var(--su-blue);
+	background: var(--su-soft);
+	padding: 14px 18px;
+	margin: 18px 0;
+	font-style: normal;
 }
 
 .editor-styles-wrapper table {
-	border-collapse: collapse;
 	width: 100%;
+	border-collapse: collapse;
 	font-size: 15.5px;
 }
 
 .editor-styles-wrapper th,
 .editor-styles-wrapper td {
-	border: 1px solid var(--line);
-	padding: 10px 12px;
+	border: 1px solid var(--su-line);
+	padding: 9px 11px;
 	text-align: left;
 }
 
 .editor-styles-wrapper th {
-	background: var(--soft);
-	color: var(--navy);
+	background: var(--su-soft);
+	color: var(--su-navy);
 }
 
-/* Editor lo image/quote alignment front-end lage kanipinchali */
-.editor-styles-wrapper .wp-block-image img {
-	border-radius: 12px;
-	height: auto;
+.editor-styles-wrapper .wp-block-button__link {
+	background: var(--su-blue);
+	border-radius: 10px;
+	font-weight: 700;
 }
 
 .editor-styles-wrapper .wp-block-separator {
-	border-color: var(--line);
+	border-color: var(--su-line);
+}
+
+.editor-styles-wrapper code {
+	background: var(--su-soft);
+	padding: 2px 6px;
+	border-radius: 6px;
+}
+
+.editor-styles-wrapper .wp-block-image img {
+	border-radius: 12px;
+}
+
+.editor-styles-wrapper figcaption {
+	font-size: 14px;
+	color: #5b6b85;
+	text-align: center;
 }

@@ -117,4 +117,4 @@ Console / AdSense account lo ne vastayi.
 Posting rhythm idi follow avvali: breaking/exam-mechanics items (ఫలితాలు · హాల్ టికెట్లు ·
 గడువు) ki **priority** — avi students ekkuvaga vethikevi.
 
-*Last updated: v59 (2026-09-18) — 17 pillars · 143 official sources · 55/55 test suites · 119/119 runtime checks*
+*Last updated: v71 (2026-09-18) — 17 pillars · 143 official sources · 55/55 test suites · 138/138 runtime checks · theme v1.6.0*

@@ -66,7 +66,26 @@ footer{border-top:1px solid var(--line);margin-top:8px;padding:18px 0 30px;font-
 footer .wrap{display:flex;flex-wrap:wrap;gap:8px 18px;max-width:900px;margin:0 auto}
 footer a{color:var(--blue);text-decoration:none}
 footer .fine{width:100%;font-size:12px;line-height:1.7;margin-top:6px}
-@media(max-width:620px){main{margin:12px;padding:20px 18px;border-radius:14px}h1{font-size:22px}}
+.steps{margin:10px 0 12px;padding-left:20px;line-height:1.7}
+.steps li{margin-bottom:5px}
+.wa-box{display:inline-block;background:linear-gradient(135deg,#25d366,#128c7e);color:#fff!important;
+  border-radius:13px;padding:12px 16px;text-decoration:none;font-weight:800;margin:4px 8px 4px 0;
+  box-shadow:0 10px 22px rgba(18,140,126,.22)}
+.wa-box small{font-weight:600;opacity:.93}
+.leadgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0 0}
+.leadgrid input,.leadgrid select{width:100%;padding:11px 12px;border:1px solid var(--line);
+  border-radius:11px;font:inherit;background:var(--card);color:inherit}
+.leadgrid input:focus,.leadgrid select:focus{outline:2px solid var(--blue);outline-offset:1px}
+.lead-hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
+.leadbtn{margin-top:12px;width:100%;padding:13px;border:0;border-radius:12px;background:var(--blue);
+  color:#fff;font-weight:700;font-size:14.5px;cursor:pointer}
+.leadbtn:disabled{opacity:.6;cursor:default}
+.leadnote{font-size:12px;color:var(--muted);margin:10px 0 0;line-height:1.6}
+.leadmsg{margin-top:11px;font-size:13px;font-weight:600;display:none}
+.leadmsg.ok{display:block;color:#0a7a3d}
+.leadmsg.err{display:block;color:#b3261e}
+@media(max-width:620px){main{margin:12px;padding:20px 18px;border-radius:14px}h1{font-size:22px}
+  .leadgrid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -78,41 +97,121 @@ footer .fine{width:100%;font-size:12px;line-height:1.7;margin-top:6px}
   <h1>సంప్రదించండి</h1>
   <p class="sub">సవరణలు · ప్రకటనలు · విద్యార్థి సహాయం</p>
 
-  <p>మీ ప్రశ్న, సవరణ, ప్రకటన లేదా సహాయం కోసం క్రింది మార్గాలలో సంప్రదించండి.
-  సాధారణంగా 1–2 పని దినాలలో స్పందిస్తాము.</p>
+  <p><b>Students Internet Center (TS &amp; AP)</b> · corrections · partnerships — reach us on WhatsApp
+  first; it is the fastest route. We usually reply within one working day.</p>
 
-  <h2>మార్గాలు</h2>
+  <h2>Students Internet Center — apply without travelling</h2>
+  <p>You do not need to visit any centre, cyber café or office to apply for a job or scholarship.
+  Call us and WhatsApp your documents — we complete the application and send you the PDF. Service
+  charge is kept as low as possible.</p>
+  <ol class="steps">
+    <li><b>Call us</b> with the post or notification you want to apply for.</li>
+    <li><b>WhatsApp your documents</b> — photo, signature, certificates, resume (clear photos are enough).</li>
+    <li><b>We apply &amp; send the PDF</b> — the filled application PDF reaches you on WhatsApp; corrections free.</li>
+  </ol>
+  <p class="sub">దరఖాస్తు మొత్తం మేము చేస్తాము — PDF మీకు WhatsApp లో పంపుతాము.</p>
+  <p><a class="wa-box" href="https://wa.me/919999999999?text=StudentUp%20Students%20Internet%20Center" target="_blank" rel="noopener"><b>WhatsApp your documents</b><br>
+     <small>Tap to open our WhatsApp chat</small></a>
+     <a class="cta alt" href="tel:+919999999999">Call +919999999999</a>
+     <a class="cta alt" href="mailto:studentupinformative@gmail.com?subject=Student%20Help">Email</a>
+     <a class="cta alt" href="https://t.me/studentup_in" target="_blank" rel="noopener">Telegram</a></p>
+
+  <h2>Get free job &amp; exam updates</h2>
+  <p>Daily job notifications, exam dates and results — free, straight to your phone. No spam calls,
+  and you can stop anytime.</p>
+  <form id="leadform" novalidate>
+    <div class="leadgrid">
+      <input type="text" id="ld-name" name="name" maxlength="60" autocomplete="name"
+             placeholder="Your name" aria-label="Your name" required>
+      <input type="tel" id="ld-phone" name="phone" maxlength="15" inputmode="numeric"
+             autocomplete="tel" placeholder="Mobile number (10 digits)" aria-label="Mobile number" required>
+      <select id="ld-interest" name="interest" aria-label="What are you looking for?">
+        <option value="jobs">Jobs</option>
+        <option value="scholarships">Scholarships</option>
+        <option value="college">College admissions</option>
+        <option value="coaching">Coaching</option>
+        <option value="exams">Exams</option>
+        <option value="other">Other</option>
+      </select>
+      <input type="text" id="ld-city" name="city" maxlength="40" autocomplete="address-level2"
+             placeholder="City (optional)" aria-label="City">
+      <input type="text" class="lead-hp" id="ld-website" name="website" tabindex="-1"
+             autocomplete="off" aria-hidden="true">
+    </div>
+    <button type="submit" class="leadbtn" id="ld-submit">Get free updates</button>
+    <p class="leadmsg" id="ld-msg" role="status" aria-live="polite"></p>
+    <p class="leadnote">We never sell your number and never pass it to advertisers. You can ask us to
+      stop anytime — see <a href="privacy.html">privacy policy</a>.</p>
+  </form>
+
+  <h2>Other ways to reach us</h2>
   <table>
-    <tr><th>అవసరం</th><th>ఎక్కడ</th><th>స్పందన</th></tr>
-    <tr><td><b>సవరణలు / తప్పు సమాచారం</b></td><td><a href="mailto:studentupinformative@gmail.com?subject=Correction">studentupinformative@gmail.com</a></td><td>24–48 గంటలు</td></tr>
-    <tr><td><b>ప్రకటనలు (కళాశాల బ్యానర్, షాప్, కోచింగ్, సేవలు)</b></td><td><a href="mailto:studentupinformative@gmail.com?subject=Advertising">studentupinformative@gmail.com</a> ·
-      <a href="https://t.me/studentup_in" target="_blank" rel="noopener">Telegram</a></td><td>1–2 పని దినాలు</td></tr>
-    <tr><td><b>విద్యార్థి సహాయం (దరఖాస్తు, పత్రాలు)</b></td><td><a href="mailto:studentupinformative@gmail.com?subject=Student%20Help">studentupinformative@gmail.com</a></td><td>2–3 పని దినాలు</td></tr>
+    <tr><th>What you need</th><th>Where</th><th>Reply time</th></tr>
+    <tr><td><b>Corrections / wrong information</b></td><td><a href="mailto:studentupinformative@gmail.com?subject=Correction">studentupinformative@gmail.com</a></td><td>24–48 hours</td></tr>
+    <tr><td><b>Partnership / advertising</b> (colleges, coaching, shops, services)</td>
+      <td><a href="https://wa.me/919999999999?text=StudentUp%20Students%20Internet%20Center" target="_blank" rel="noopener">WhatsApp</a> ·
+      <a href="mailto:studentupinformative@gmail.com?subject=Advertising%20enquiry">studentupinformative@gmail.com</a></td><td>1–2 working days</td></tr>
+    <tr><td><b>Student help</b> (applications, documents)</td>
+      <td><a href="tel:+919999999999">Call</a> · <a href="https://wa.me/919999999999?text=StudentUp%20Students%20Internet%20Center" target="_blank" rel="noopener">WhatsApp</a> ·
+      <a href="https://t.me/studentup_in" target="_blank" rel="noopener">Telegram</a></td><td>same day</td></tr>
   </table>
-    <aside class="su-ad" aria-label="Sponsored content" data-slot="policy-inline">
+
+  <h2>When you email or message us, include</h2>
+  <ul>
+    <li>Page link, screenshot (if any) and the official source link for the correct information.</li>
+    <li>For partnerships: business name, city, target link and the duration you have in mind.</li>
+  </ul>
+
+  <div class="note warn"><b>Beware of fraud:</b> nobody from studentup.in will ever call and ask for Aadhaar,
+  OTP, bank details or a fee. If that happens, it is a scam — <a href="mailto:studentupinformative@gmail.com">tell us immediately</a>.</div>
+
+  <aside class="su-ad" aria-label="Sponsored content" data-slot="policy-inline">
     <div class="su-ad-kicker">SPONSORED · భాగస్వామి ప్రకటన స్థలం</div>
     <div class="su-ad-title">మీ కళాశాల / షాప్ / కోచింగ్ ఇక్కడ కనిపించగలదు</div>
     <p class="su-ad-desc">విద్యార్థులు ఎక్కువగా చూసే పేజీలలో శుభ్రమైన, లేబుల్ చేసిన ప్రకటన స్థలం —
       తప్పుడు క్లిక్‌లు లేవు, క్లిక్‌బైట్ లేదు.</p>
-    <a class="go" href="../index.html#ads" rel="sponsored">ప్రకటన ఇవ్వండి</a>
+    <a class="go" href="advertise.html" rel="sponsored">Partner with us</a>
   </aside>
 
-<p><a class="cta" href="mailto:studentupinformative@gmail.com">📧 ఇమెయిల్ చేయండి</a>
-     <a class="cta alt" href="https://t.me/studentup_in" target="_blank" rel="noopener">💬 Telegram సంప్రదింపు</a></p>
-
-  <h2>ఇమెయిల్ పంపేటప్పుడు ఇవి చేర్చండి</h2>
-  <ul>
-    <li>పేజీ లింకు, స్క్రీన్‌షాట్ (ఉంటే), మరియు సరైన సమాచారం యొక్క అధికారిక మూల లింకు.</li>
-    <li>ప్రకటనల కోసం: వ్యాపారం పేరు, నగరం, బ్యానర్/ఇమేజ్, లక్ష్య లింకు, కాల పరిమితి.</li>
-  </ul>
-
-  <div class="note warn"><b>మోసాల నుండి జాగ్రత్త:</b> studentup.in తరఫున ఎవరూ ఫోన్ చేసి
-  Aadhaar, OTP, బ్యాంకు ఖాతా వివరాలు లేదా రుసుము అడగరు. అలా అడిగితే అది మోసం —
-  వెంటనే <a href="mailto:studentupinformative@gmail.com">మాకు తెలియజేయండి</a>.</div>
 
 </main>
+<script>
+/* v71 — free-updates form (leads) → exam portal API. Homepage nunchi ikkadaki move ayyindi. */
+(function(){
+  var f=document.getElementById("leadform"); if(!f) return;
+  function api(){
+    var h=location.hostname;
+    if(/^8000-/.test(h)) return location.protocol+"//"+h.replace(/^8000-/,"8080-");
+    if(h==="localhost"||h==="127.0.0.1") return "http://localhost:8080";
+    return "";
+  }
+  var msg=document.getElementById("ld-msg"), btn=document.getElementById("ld-submit");
+  function say(text,ok){ msg.textContent=text; msg.className="leadmsg "+(ok?"ok":"err"); }
+  f.addEventListener("submit",function(e){
+    e.preventDefault();
+    var name=(document.getElementById("ld-name").value||"").trim();
+    var phone=(document.getElementById("ld-phone").value||"").replace(/\D/g,"");
+    var interest=document.getElementById("ld-interest").value;
+    var city=(document.getElementById("ld-city").value||"").trim();
+    var hp=(document.getElementById("ld-website").value||"").trim();
+    if(name.length<2){ say("⚠️ Please enter your name.",false); return; }
+    if(!/^[6-9]\d{9}$/.test(phone)){ say("⚠️ Enter a valid 10-digit mobile number (e.g. 9876543210).",false); return; }
+    if(typeof fetch!=="function"){ say("⚠️ This browser cannot send the form — message us directly.",false); return; }
+    btn.disabled=true; say("Sending…",true);
+    fetch(api()+"/lead",{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({name:name,phone:phone,interest:interest,city:city,website:hp,source:"site"})})
+      .then(function(r){return r.json().then(function(j){return {s:r.status,j:j};});})
+      .then(function(o){
+        btn.disabled=false;
+        if(o.s===200&&o.j&&o.j.ok){ say("✅ "+(o.j.message||"You are on the list!"),true); f.reset(); }
+        else { say("⚠️ "+((o.j&&o.j.error)||"Could not send — please try again."),false); }
+      })
+      .catch(function(){ btn.disabled=false; say("⚠️ Server not reachable — please try again later.",false); });
+  });
+})();
+</script>
 <footer><div class="wrap">
-  <a href="about.html">మా గురించి</a><a href="advertise.html">ప్రకటనలు ఇవ్వండి</a><a href="contact.html">సంప్రదించండి</a><a href="privacy.html">గోప్యతా విధానం</a><a href="disclaimer.html">నిరాకరణ</a><a href="editorial-policy.html">సంపాదకీయ విధానం</a>
+  <a href="about.html">మా గురించి</a><a href="advertise.html">Partner with us</a><a href="contact.html">సంప్రదించండి</a><a href="privacy.html">గోప్యతా విధానం</a><a href="disclaimer.html">నిరాకరణ</a><a href="editorial-policy.html">సంపాదకీయ విధానం</a>
   <p class="fine">© 2026 studentup.in · తెలంగాణ (33 జిల్లాలు) + ఆంధ్రప్రదేశ్ (26 జిల్లాలు) విద్యార్థుల కోసం.
   ప్రకటన ఆదాయం, ర్యాంకింగ్‌లు, ఉద్యోగ ఫలితాలు ఎప్పుడూ హామీ ఇవ్వబడవు — నిజమైన సమాచారం అధికారిక నోటిఫికేషన్‌లలో మాత్రమే నిర్ధారించుకోవాలి.
   సవరణలు: <a href="mailto:studentupinformative@gmail.com">studentupinformative@gmail.com</a> · ఈ పేజీ చివరి నవీకరణ: 2026-09-18</p>

@@ -178,4 +178,45 @@
       el.textContent = S.i18n && S.i18n.updates ? "—" : el.textContent;
     }
   });
+
+  /* ---------- v71: floating social rail — show, auto-hide, return every 2 minutes ----------
+     Eppudu kanipisthe mobile lo article chadavadam kastam — anduku 9s chupi, pakkaki
+     velli, prati 2 nimishalaki malli vastundi. Close = ventane hide, 2 min tarvata malli. */
+  var rail = document.getElementById("surail"), railTab = document.getElementById("sutab"),
+      railClose = document.getElementById("suclose");
+  if (rail && railTab) {
+    var SU_SHOW = 9000, SU_CYCLE = 120000, SU_HOVER = 3500, suHideT = null, suCycleT = null;
+    var suShow = function () {
+      clearTimeout(suHideT);
+      rail.classList.remove("su-out");
+      rail.removeAttribute("aria-hidden");
+      railTab.classList.remove("on");
+      suHideT = setTimeout(suHide, SU_SHOW);
+    };
+    var suHide = function () {
+      clearTimeout(suHideT);
+      rail.classList.add("su-out");
+      rail.setAttribute("aria-hidden", "true");
+      railTab.classList.add("on");
+    };
+    var suRestart = function () {
+      clearInterval(suCycleT);
+      suCycleT = setInterval(function () {
+        if (document.body.classList.contains("mlock")) return;  /* menu open — wait */
+        suShow();
+      }, SU_CYCLE);
+    };
+    if (railClose) {
+      railClose.addEventListener("click", function () { suHide(); suRestart(); });
+    }
+    railTab.addEventListener("click", function () { suShow(); suRestart(); });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape") suHide(); });
+    rail.addEventListener("mouseenter", function () { clearTimeout(suHideT); });
+    rail.addEventListener("mouseleave", function () { clearTimeout(suHideT); suHideT = setTimeout(suHide, SU_HOVER); });
+    rail.addEventListener("focusin", function () { clearTimeout(suHideT); });
+    rail.addEventListener("focusout", function () { clearTimeout(suHideT); suHideT = setTimeout(suHide, SU_HOVER); });
+    suShow();
+    suRestart();
+  }
+
 })();

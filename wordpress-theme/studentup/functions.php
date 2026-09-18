@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'STUDENTUP_VERSION', '1.5.0' );  // v69: + author archive (E-E-A-T) · standards pass 3
+define( 'STUDENTUP_VERSION', '1.6.0' );  // v71: Internet Center + join CTA blocks · social rail cycle
 
 require_once get_template_directory() . '/inc/options.php';
 require_once get_template_directory() . '/inc/breaking.php';
@@ -29,6 +29,8 @@ require_once get_template_directory() . '/inc/news-sitemap.php';
 require_once get_template_directory() . '/inc/security.php';
 require_once get_template_directory() . '/inc/indexnow.php';
 require_once get_template_directory() . '/inc/pwa.php';
+require_once get_template_directory() . '/inc/cta.php';
+require_once get_template_directory() . '/inc/editor.php';
 
 /**
  * "విద్యార్థులు ఎక్కువగా వెతికేవి" — order okkate source (bot lo autoblog/breaking.py

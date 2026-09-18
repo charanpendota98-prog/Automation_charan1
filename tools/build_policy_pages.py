@@ -20,6 +20,9 @@ OUT = ROOT / "preview"
 PAGES = OUT / "pages"
 EMAIL = "studentupinformative@gmail.com"
 TG = "https://t.me/studentup_in"
+# v71: Students Internet Center — WhatsApp first contact (placeholder number till owner sets it)
+PHONE = "+919999999999"
+WA_LINK = "https://wa.me/919999999999?text=StudentUp%20Students%20Internet%20Center"
 UPDATED = "2026-09-18"
 
 CSS = """
@@ -66,12 +69,31 @@ footer{border-top:1px solid var(--line);margin-top:8px;padding:18px 0 30px;font-
 footer .wrap{display:flex;flex-wrap:wrap;gap:8px 18px;max-width:900px;margin:0 auto}
 footer a{color:var(--blue);text-decoration:none}
 footer .fine{width:100%;font-size:12px;line-height:1.7;margin-top:6px}
-@media(max-width:620px){main{margin:12px;padding:20px 18px;border-radius:14px}h1{font-size:22px}}
+.steps{margin:10px 0 12px;padding-left:20px;line-height:1.7}
+.steps li{margin-bottom:5px}
+.wa-box{display:inline-block;background:linear-gradient(135deg,#25d366,#128c7e);color:#fff!important;
+  border-radius:13px;padding:12px 16px;text-decoration:none;font-weight:800;margin:4px 8px 4px 0;
+  box-shadow:0 10px 22px rgba(18,140,126,.22)}
+.wa-box small{font-weight:600;opacity:.93}
+.leadgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0 0}
+.leadgrid input,.leadgrid select{width:100%;padding:11px 12px;border:1px solid var(--line);
+  border-radius:11px;font:inherit;background:var(--card);color:inherit}
+.leadgrid input:focus,.leadgrid select:focus{outline:2px solid var(--blue);outline-offset:1px}
+.lead-hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
+.leadbtn{margin-top:12px;width:100%;padding:13px;border:0;border-radius:12px;background:var(--blue);
+  color:#fff;font-weight:700;font-size:14.5px;cursor:pointer}
+.leadbtn:disabled{opacity:.6;cursor:default}
+.leadnote{font-size:12px;color:var(--muted);margin:10px 0 0;line-height:1.6}
+.leadmsg{margin-top:11px;font-size:13px;font-weight:600;display:none}
+.leadmsg.ok{display:block;color:#0a7a3d}
+.leadmsg.err{display:block;color:#b3261e}
+@media(max-width:620px){main{margin:12px;padding:20px 18px;border-radius:14px}h1{font-size:22px}
+  .leadgrid{grid-template-columns:1fr}}
 """.strip()
 
 NAV = [
     ("about.html", "మా గురించి"),
-    ("advertise.html", "ప్రకటనలు ఇవ్వండి"),
+    ("advertise.html", "Partner with us"),
     ("contact.html", "సంప్రదించండి"),
     ("privacy.html", "గోప్యతా విధానం"),
     ("disclaimer.html", "నిరాకరణ"),
@@ -116,6 +138,7 @@ SHELL = """<!DOCTYPE html>
   <p class="sub">{sub}</p>
 {body}
 </main>
+{script}
 <footer><div class="wrap">
   {nav}
   <p class="fine">© 2026 studentup.in · తెలంగాణ (33 జిల్లాలు) + ఆంధ్రప్రదేశ్ (26 జిల్లాలు) విద్యార్థుల కోసం.
@@ -132,7 +155,7 @@ AD_SLOT = """  <aside class="su-ad" aria-label="Sponsored content" data-slot="po
     <div class="su-ad-title">మీ కళాశాల / షాప్ / కోచింగ్ ఇక్కడ కనిపించగలదు</div>
     <p class="su-ad-desc">విద్యార్థులు ఎక్కువగా చూసే పేజీలలో శుభ్రమైన, లేబుల్ చేసిన ప్రకటన స్థలం —
       తప్పుడు క్లిక్‌లు లేవు, క్లిక్‌బైట్ లేదు.</p>
-    <a class="go" href="../index.html#ads" rel="sponsored">ప్రకటన ఇవ్వండి</a>
+    <a class="go" href="advertise.html" rel="sponsored">Partner with us</a>
   </aside>
 
 """
@@ -142,14 +165,16 @@ def nav_html() -> str:
     return "".join('<a href="%s">%s</a>' % (h, t) for h, t in NAV)
 
 
-def build(slug: str, title: str, desc: str, h1: str, sub: str, body: str) -> str:
+def build(slug: str, title: str, desc: str, h1: str, sub: str, body: str,
+          script: str = "") -> str:
     marker = '<p><a class="cta"'
     if marker in body:
         body = body.replace(marker, AD_SLOT + marker, 1)
     else:
         body = body + "\n" + AD_SLOT
     return SHELL.format(title=title, desc=desc, slug=slug, h1=h1, sub=sub,
-                        body=body, css=CSS, nav=nav_html(), email=EMAIL, updated=UPDATED)
+                        body=body, css=CSS, nav=nav_html(), email=EMAIL, updated=UPDATED,
+                        wa=WA_LINK, phone=PHONE, script=script)
 
 
 ABOUT = """
@@ -187,30 +212,110 @@ ABOUT = """
 """
 
 CONTACT = """
-  <p>మీ ప్రశ్న, సవరణ, ప్రకటన లేదా సహాయం కోసం క్రింది మార్గాలలో సంప్రదించండి.
-  సాధారణంగా 1–2 పని దినాలలో స్పందిస్తాము.</p>
+  <p><b>Students Internet Center (TS &amp; AP)</b> · corrections · partnerships — reach us on WhatsApp
+  first; it is the fastest route. We usually reply within one working day.</p>
 
-  <h2>మార్గాలు</h2>
+  <h2>Students Internet Center — apply without travelling</h2>
+  <p>You do not need to visit any centre, cyber café or office to apply for a job or scholarship.
+  Call us and WhatsApp your documents — we complete the application and send you the PDF. Service
+  charge is kept as low as possible.</p>
+  <ol class="steps">
+    <li><b>Call us</b> with the post or notification you want to apply for.</li>
+    <li><b>WhatsApp your documents</b> — photo, signature, certificates, resume (clear photos are enough).</li>
+    <li><b>We apply &amp; send the PDF</b> — the filled application PDF reaches you on WhatsApp; corrections free.</li>
+  </ol>
+  <p class="sub">దరఖాస్తు మొత్తం మేము చేస్తాము — PDF మీకు WhatsApp లో పంపుతాము.</p>
+  <p><a class="wa-box" href="{wa}" target="_blank" rel="noopener"><b>WhatsApp your documents</b><br>
+     <small>Tap to open our WhatsApp chat</small></a>
+     <a class="cta alt" href="tel:{phone}">Call {phone}</a>
+     <a class="cta alt" href="mailto:{email}?subject=Student%20Help">Email</a>
+     <a class="cta alt" href="{tg}" target="_blank" rel="noopener">Telegram</a></p>
+
+  <h2>Get free job &amp; exam updates</h2>
+  <p>Daily job notifications, exam dates and results — free, straight to your phone. No spam calls,
+  and you can stop anytime.</p>
+  <form id="leadform" novalidate>
+    <div class="leadgrid">
+      <input type="text" id="ld-name" name="name" maxlength="60" autocomplete="name"
+             placeholder="Your name" aria-label="Your name" required>
+      <input type="tel" id="ld-phone" name="phone" maxlength="15" inputmode="numeric"
+             autocomplete="tel" placeholder="Mobile number (10 digits)" aria-label="Mobile number" required>
+      <select id="ld-interest" name="interest" aria-label="What are you looking for?">
+        <option value="jobs">Jobs</option>
+        <option value="scholarships">Scholarships</option>
+        <option value="college">College admissions</option>
+        <option value="coaching">Coaching</option>
+        <option value="exams">Exams</option>
+        <option value="other">Other</option>
+      </select>
+      <input type="text" id="ld-city" name="city" maxlength="40" autocomplete="address-level2"
+             placeholder="City (optional)" aria-label="City">
+      <input type="text" class="lead-hp" id="ld-website" name="website" tabindex="-1"
+             autocomplete="off" aria-hidden="true">
+    </div>
+    <button type="submit" class="leadbtn" id="ld-submit">Get free updates</button>
+    <p class="leadmsg" id="ld-msg" role="status" aria-live="polite"></p>
+    <p class="leadnote">We never sell your number and never pass it to advertisers. You can ask us to
+      stop anytime — see <a href="privacy.html">privacy policy</a>.</p>
+  </form>
+
+  <h2>Other ways to reach us</h2>
   <table>
-    <tr><th>అవసరం</th><th>ఎక్కడ</th><th>స్పందన</th></tr>
-    <tr><td><b>సవరణలు / తప్పు సమాచారం</b></td><td><a href="mailto:{email}?subject=Correction">{email}</a></td><td>24–48 గంటలు</td></tr>
-    <tr><td><b>ప్రకటనలు (కళాశాల బ్యానర్, షాప్, కోచింగ్, సేవలు)</b></td><td><a href="mailto:{email}?subject=Advertising">{email}</a> ·
-      <a href="{tg}" target="_blank" rel="noopener">Telegram</a></td><td>1–2 పని దినాలు</td></tr>
-    <tr><td><b>విద్యార్థి సహాయం (దరఖాస్తు, పత్రాలు)</b></td><td><a href="mailto:{email}?subject=Student%20Help">{email}</a></td><td>2–3 పని దినాలు</td></tr>
+    <tr><th>What you need</th><th>Where</th><th>Reply time</th></tr>
+    <tr><td><b>Corrections / wrong information</b></td><td><a href="mailto:{email}?subject=Correction">{email}</a></td><td>24–48 hours</td></tr>
+    <tr><td><b>Partnership / advertising</b> (colleges, coaching, shops, services)</td>
+      <td><a href="{wa}" target="_blank" rel="noopener">WhatsApp</a> ·
+      <a href="mailto:{email}?subject=Advertising%20enquiry">{email}</a></td><td>1–2 working days</td></tr>
+    <tr><td><b>Student help</b> (applications, documents)</td>
+      <td><a href="tel:{phone}">Call</a> · <a href="{wa}" target="_blank" rel="noopener">WhatsApp</a> ·
+      <a href="{tg}" target="_blank" rel="noopener">Telegram</a></td><td>same day</td></tr>
   </table>
-  <p><a class="cta" href="mailto:{email}">📧 ఇమెయిల్ చేయండి</a>
-     <a class="cta alt" href="{tg}" target="_blank" rel="noopener">💬 Telegram సంప్రదింపు</a></p>
 
-  <h2>ఇమెయిల్ పంపేటప్పుడు ఇవి చేర్చండి</h2>
+  <h2>When you email or message us, include</h2>
   <ul>
-    <li>పేజీ లింకు, స్క్రీన్‌షాట్ (ఉంటే), మరియు సరైన సమాచారం యొక్క అధికారిక మూల లింకు.</li>
-    <li>ప్రకటనల కోసం: వ్యాపారం పేరు, నగరం, బ్యానర్/ఇమేజ్, లక్ష్య లింకు, కాల పరిమితి.</li>
+    <li>Page link, screenshot (if any) and the official source link for the correct information.</li>
+    <li>For partnerships: business name, city, target link and the duration you have in mind.</li>
   </ul>
 
-  <div class="note warn"><b>మోసాల నుండి జాగ్రత్త:</b> studentup.in తరఫున ఎవరూ ఫోన్ చేసి
-  Aadhaar, OTP, బ్యాంకు ఖాతా వివరాలు లేదా రుసుము అడగరు. అలా అడిగితే అది మోసం —
-  వెంటనే <a href="mailto:{email}">మాకు తెలియజేయండి</a>.</div>
+  <div class="note warn"><b>Beware of fraud:</b> nobody from studentup.in will ever call and ask for Aadhaar,
+  OTP, bank details or a fee. If that happens, it is a scam — <a href="mailto:{email}">tell us immediately</a>.</div>
 """
+
+CONTACT_SCRIPT = """<script>
+/* v71 — free-updates form (leads) → exam portal API. Homepage nunchi ikkadaki move ayyindi. */
+(function(){
+  var f=document.getElementById("leadform"); if(!f) return;
+  function api(){
+    var h=location.hostname;
+    if(/^8000-/.test(h)) return location.protocol+"//"+h.replace(/^8000-/,"8080-");
+    if(h==="localhost"||h==="127.0.0.1") return "http://localhost:8080";
+    return "";
+  }
+  var msg=document.getElementById("ld-msg"), btn=document.getElementById("ld-submit");
+  function say(text,ok){ msg.textContent=text; msg.className="leadmsg "+(ok?"ok":"err"); }
+  f.addEventListener("submit",function(e){
+    e.preventDefault();
+    var name=(document.getElementById("ld-name").value||"").trim();
+    var phone=(document.getElementById("ld-phone").value||"").replace(/\D/g,"");
+    var interest=document.getElementById("ld-interest").value;
+    var city=(document.getElementById("ld-city").value||"").trim();
+    var hp=(document.getElementById("ld-website").value||"").trim();
+    if(name.length<2){ say("⚠️ Please enter your name.",false); return; }
+    if(!/^[6-9]\d{9}$/.test(phone)){ say("⚠️ Enter a valid 10-digit mobile number (e.g. 9876543210).",false); return; }
+    if(typeof fetch!=="function"){ say("⚠️ This browser cannot send the form — message us directly.",false); return; }
+    btn.disabled=true; say("Sending…",true);
+    fetch(api()+"/lead",{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({name:name,phone:phone,interest:interest,city:city,website:hp,source:"site"})})
+      .then(function(r){return r.json().then(function(j){return {s:r.status,j:j};});})
+      .then(function(o){
+        btn.disabled=false;
+        if(o.s===200&&o.j&&o.j.ok){ say("✅ "+(o.j.message||"You are on the list!"),true); f.reset(); }
+        else { say("⚠️ "+((o.j&&o.j.error)||"Could not send — please try again."),false); }
+      })
+      .catch(function(){ btn.disabled=false; say("⚠️ Server not reachable — please try again later.",false); });
+  });
+})();
+</script>"""
 
 PRIVACY = """
   <p>ఈ విధానం studentup.in వెబ్‌సైట్, పరీక్షల పోర్టల్ మరియు పోల్‌కు వర్తిస్తుంది.
@@ -326,105 +431,59 @@ EDITORIAL = """
 """
 
 ADVERTISE = '''
-  <div class="note"><b>మీ వ్యాపారం / కళాశాల / షాప్ / కోచింగ్ / సేవలు</b> — తెలంగాణ &amp;
-  ఆంధ్రప్రదేశ్ విద్యార్థులు, తల్లిదండ్రులు, ఉద్యోగ ఆకాంక్షులు చూసే పేజీల్లో, స్పష్టమైన
-  <b>SPONSORED</b> లేబుల్‌తో మీ ప్రకటన కనిపిస్తుంది. నకిలీ క్లిక్‌లు, పాపప్‌లు, క్లిక్‌బైట్ — అసలు ఉండవు.</div>
+  <div class="note"><b>Partner with StudentUp.</b> We work with a limited number of local colleges,
+  coaching centres, hostels, shops and service providers across Telangana &amp; Andhra Pradesh —
+  clean, clearly labelled <b>SPONSORED</b> placements on the pages students and parents actually read.</div>
 
-  <h2>స్లాట్‌లు &amp; ధర (రేట్ కార్డ్)</h2>
-  <table>
-    <tr><th>స్లాట్</th><th>ఎక్కడ కనిపిస్తుంది</th><th>రూపం</th><th>నెలకు</th></tr>
-    <tr><td><b>టాప్ లీడర్‌బోర్డ్</b><br><small>అత్యధిక కనిపించే స్థలం</small></td>
-        <td>హోమ్ పేజీ, హెడర్ కింద (అందరు చూస్తారు)</td><td>బ్యానర్</td><td><b>₹4,000</b></td></tr>
-    <tr><td><b>ఇన్-ఫీడ్ కార్డ్</b></td>
-        <td>న్యూస్ గ్రిడ్ మధ్యలో (స్క్రోల్ చేసేటప్పుడు)</td><td>కార్డ్</td><td><b>₹3,000</b></td></tr>
-    <tr><td><b>ఆర్టికల్ మధ్యలో</b></td>
-        <td>ప్రతి ఆర్టికల్‌లో క్విక్-ఆన్సర్ తర్వాత (చదివే ఆడియన్స్)</td><td>బ్యానర్ / కార్డ్</td><td><b>₹3,500</b></td></tr>
-    <tr><td><b>సైడ్‌బార్ స్టిక్కీ</b></td>
-        <td>డెస్క్‌టాప్‌లో పక్కన, స్క్రోల్‌తో పాటు (మళ్లీ మళ్లీ కనిపిస్తుంది)</td><td>కార్డ్</td><td><b>₹2,000</b></td></tr>
-    <tr><td><b>విధాన పేజీల స్లాట్</b></td>
-        <td>About / Contact / Editorial పేజీలు (నమ్మకమైన పేజీలు)</td><td>కార్డ్</td><td><b>₹1,000</b></td></tr>
-    <tr><td><b>ఫుల్ ప్యాకేజీ</b> <small>(ఉత్తమ విలువ)</small></td>
-        <td>అన్ని స్లాట్‌లు + రోజూ వచ్చే బాట్ ఆర్టికల్స్‌లో కూడా</td><td>అన్ని రూపాలు</td><td><b>₹8,000</b></td></tr>
-  </table>
-  <p class="sub" style="margin-top:-4px">GST / పన్నులు వర్తిస్తాయి. చిన్న వ్యాపారం / స్థానిక షాప్‌కు
-  సీజన్ ఆధారిత ప్యాకేజీలు కూడా ఉన్నాయి — ఇమెయిల్ చేసి అడగండి.</p>
-
-  <h2>ప్రీమియం సేవలు (అత్యధిక ఫలితం)</h2>
-  <table>
-    <tr><th>సేవ</th><th>ఏమి ఇస్తాము</th><th>ధర</th></tr>
-    <tr><td><b>స్పాన్సర్డ్ ఆర్టికల్</b><br><small>Advertorial</small></td>
-        <td>మా బోట్ + ఎడిటర్ రాసిన, 100% SEO ఫీల్డ్స్‌తో కూడిన పూర్తి పాజ్ — మీ కోర్సు / కళాశాల /
-        సేవల గురించి, స్పష్టమైన <b>SPONSORED</b> లేబుల్‌తో. Google News / search కోసం సిద్ధం.</td>
-        <td><b>₹8,000–₹15,000</b><br><small>ఒక్క పాజ్‌కు</small></td></tr>
-    <tr><td><b>లీడ్ జనరేషన్</b><br><small>కళాశాలలు · కోచింగ్ · హాస్టళ్లు</small></td>
-        <td>మా పేజీల్లో "ఉచిత సమాచారం" ఫారం నుంచి విద్యార్థి పేరు + నంబర్ + ఆసక్తి — వెరిఫైడ్,
-        మీకు మాత్రమే (exclusive). కనీసం 50 లీడ్‌లు.</td>
-        <td><b>₹150–₹400</b><br><small>ఒక్క లీడ్‌కు</small></td></tr>
-    <tr><td><b>వాట్సాప్/టెలిగ్రామ్ బ్రాడ్‌కాస్ట్</b></td>
-        <td>మా ఛానెల్‌లో ఒక స్పాన్సర్డ్ మెసేజ్ + పోస్ట్ లింక్ (స్పష్టమైన ప్రకటన లేబుల్‌తో).</td>
-        <td><b>₹1,500</b><br><small>ఒక్క బ్రాడ్‌కాస్ట్</small></td></tr>
-  </table>
-  <p class="sub">ప్రీమియం సేవలు ముందు చెల్లింపు (advance) తో మాత్రమే బుక్ అవుతాయి. లీడ్‌ల నాణ్యత
-  నిర్ధారణ తర్వాత మాత్రమే బిల్లు — నకిలీ/డూప్లికేట్ నంబర్లు లెక్కించము.</p>
-
-  <h2>ఇక్కడ ప్రకటన ఇవ్వడం ఎందుకు మేలు?</h2>
+  <h2>What we offer</h2>
   <ul>
-    <li><b>స్థానిక ఆడియన్స్:</b> తెలంగాణ (33 జిల్లాలు) + ఆంధ్రప్రదేశ్ (26 జిల్లాలు) విద్యార్థులు, తల్లిదండ్రులు, ఉద్యోగ ఆకాంక్షులు.</li>
-    <li><b>ఉద్దేశం ఉన్న పేజీలు:</b> ఉద్యోగాలు, స్కాలర్‌షిప్‌లు, పరీక్షల క్యాలెండర్, ఫలితాలు — ఇక్కడే నిజమైన శోధనలు జరుగుతాయి.</li>
-    <li><b>రోజూ కొత్త కంటెంట్:</b> ప్రతిరోజూ కొత్త నోటిఫికేషన్‌లు + ఆర్టికల్స్ (ఆటో-రిఫ్రెష్‌తో పాత పోస్ట్‌లు కూడా మళ్లీ క్రాల్ అవుతాయి).</li>
-    <li><b>కచ్చితమైన లేబుల్:</b> SPONSORED కిక్కర్ + <code>rel="sponsored nofollow"</code> — Google విధానాలకు సురక్షితం.</li>
-    <li><b>రిపోర్ట్:</b> మీ ప్రకటన ఎన్నిసార్లు కనిపించింది, ఎన్ని క్లిక్‌లు వచ్చాయి — అడిగితే నెలకు ఒకసారి పంపుతాము.</li>
+    <li><b>Home page placements</b> — top banner and in-feed cards (highest visibility).</li>
+    <li><b>In-article placements</b> — inside daily job and exam articles, seen by real readers.</li>
+    <li><b>Sidebar &amp; policy-page placements</b> — steady, long-duration visibility.</li>
+    <li><b>Sponsored explainer</b> — a full article about your course, college or service, written and
+      SEO-checked by our editorial team, labelled SPONSORED.</li>
+    <li><b>WhatsApp / Telegram broadcast</b> — one sponsored message to our student channel.</li>
   </ul>
 
-  <h2>బుకింగ్ ఎలా? (3 అడుగులు)</h2>
-  <table>
-    <tr><th>అడుగు</th><th>ఏమి చేయాలి</th><th>సమయం</th></tr>
-    <tr><td><b>1. వివరాలు పంపండి</b></td>
-        <td><a href="mailto:{email}?subject=Ad%20Booking&body=Business%20peru:%0APattanam:%0ASlot:%0AKaalapramanam%20(nelalu):%0ABudget:%0ALink:%0ABanner%20image%20attach%20cheyandi:">ఇమెయిల్</a> లేదా
-        <a href="{tg}" target="_blank" rel="noopener">Telegram</a> — వ్యాపారం పేరు, పట్టణం, స్లాట్, నెలలు, లింకు, బ్యానర్ ఇమేజ్.</td>
-        <td>2 నిమిషాలు</td></tr>
-    <tr><td><b>2. ఆమోదం + చెల్లింపు</b></td>
-        <td>స్లాట్ ఖాళీగా ఉందో చెప్పి, ఇన్‌వాయిస్ / చెల్లింపు వివరాలు (UPI / బ్యాంకు) పంపుతాము. చెల్లింపు తర్వాత స్లాట్ లాక్.</td>
-        <td>1–2 రోజులు</td></tr>
-    <tr><td><b>3. ప్రకటన లైవ్</b></td>
-        <td>అడ్మిన్ కన్సోల్‌లో యాడ్ యాడ్ చేస్తాము → వెబ్‌సైట్‌లో + తర్వాత రోజుల్లో వచ్చే ఆర్టికల్స్‌లో కనిపిస్తుంది.
-        కాలపరిమితి అయ్యాక ఆటోగా ఆగిపోతుంది (ప్రారంభ / ముగింపు తేదీలతో).</td>
-        <td>అదే రోజు</td></tr>
-  </table>
+  <h2>Rates &amp; availability</h2>
+  <p>We do not publish a public rate card. Availability, packages and pricing are shared personally —
+  one WhatsApp message is enough. This keeps the site clean for readers and lets us give you an honest
+  number for your budget and duration instead of a fixed table.</p>
+  <p><a class="cta" href="{wa}" target="_blank" rel="noopener">WhatsApp us</a>
+     <a class="cta alt" href="mailto:{email}?subject=Advertising%20enquiry">Email us</a></p>
 
-  <h2>ఏమి పంపాలి (జాబితా)</h2>
+  <h2>Why partner with us</h2>
   <ul>
-    <li>వ్యాపారం / సంస్థ పేరు, లోగో లేదా బ్యానర్ (1200×360 బ్యానర్, 728×90 లీడర్‌బోర్డ్).</li>
-    <li>లక్ష్య లింకు (https:// తో) — ల్యాండింగ్ పేజీ, WhatsApp నంబర్ లేదా దరఖాస్తు పేజీ.</li>
-    <li>కాలపరిమితి (ప్రారంభ &amp; ముగింపు తేదీలు), స్లాట్(లు), బడ్జెట్.</li>
-    <li>ఏమి చెబుతున్నారో ఒక్క లైన్ (మా బ్యాచ్‌లు · స్కాలర్‌షిప్ సహాయం · హాస్టల్ సౌకర్యం …).</li>
+    <li><b>Local, intent-driven audience:</b> students, parents and job-seekers from Telangana
+      (33 districts) and Andhra Pradesh (26 districts).</li>
+    <li><b>Pages that get searched:</b> jobs, scholarships, exam calendar, results, admissions.</li>
+    <li><b>Fresh content every day:</b> new notifications and articles daily; older posts are refreshed
+      and re-crawled too.</li>
+    <li><b>Clean labelling:</b> SPONSORED kicker + <code>rel="sponsored nofollow"</code> — Google-policy safe.</li>
+    <li><b>Simple reporting:</b> on request we share real impression and click numbers — no inflated claims.</li>
   </ul>
 
-  <h2>ఏవి తీసుకోము (విధానం)</h2>
+  <h2>What we do not accept</h2>
   <ul>
-    <li>క్లిక్‌బైట్, మోసపూరిత ఆఫర్లు, "ఉద్యోగం ఖాయం / ర్యాంకు ఖాయం" అనే వాగ్దానాలు — <b>తీసుకోము</b>.</li>
-    <li>నకిలీ క్లిక్‌లు, పాపప్ / ఇంటర్‌స్టిషియల్, ఆటో-రీడైరెక్ట్, పెద్దవాళ్లు / జూదం / అప్పుల యాప్‌లు — <b>బ్లాక్</b>.</li>
-    <li>చెల్లింపు తర్వాతే ప్రకటన పెడతాము; రిఫండ్: ప్రకటన మొదలుకాకముందు రద్దు చేస్తే పూర్తి రిఫండ్.</li>
+    <li>Clickbait, misleading offers, "job guaranteed / rank guaranteed" promises — <b>not accepted</b>.</li>
+    <li>Fake clicks, pop-ups, interstitials, auto-redirects, adult / gambling / instant-loan ads — <b>blocked</b>.</li>
+    <li>A placement goes live only after payment is confirmed; full refund if you cancel before it starts.</li>
   </ul>
 
-  <h2>StudentUp సొంత ప్రకటనలు (హౌస్ యాడ్స్)</h2>
-  <p>స్లాట్ ఖాళీగా ఉంటే, మీ ప్రకటన వచ్చేవరకు <b>StudentUp సొంత సేవలు</b>
-  (క్విజ్, పరీక్షల పోర్టల్, దరఖాస్తు సహాయం) కనిపిస్తాయి — అవి SPONSORED కావు,
-  "StudentUp · మా సేవ" అని వేరుగా లేబుల్ చేయబడతాయి. అంటే: <b>స్లాట్ ఎప్పుడూ ఖాళీగా కనిపించదు</b>,
-  కానీ మీ పెయిడ్ యాడ్ ఉంటే అదే ముందు వస్తుంది (రొటేషన్ + ప్రాధాన్యత).</p>
+  <h2>Our own house ads</h2>
+  <p>If a paid slot is empty, StudentUp's own services (daily quiz, exam portal, application help) fill
+  it — never labelled SPONSORED, always marked "StudentUp · our service". A paid placement always takes
+  priority, with rotation. <b>A slot never looks empty to a reader.</b></p>
 
-  <div class="note warn"><b>నిజాయితీగా చెబుతున్నాం:</b> ర్యాంకింగ్, ట్రాఫిక్ లేదా ఆదాయానికి మేము హామీ
-  ఇవ్వము. మీకు ఇంప్రెషన్స్, క్లిక్‌లు, ఎలా కనిపిస్తున్నది అన్న నిజమైన సంఖ్యలు మాత్రమే ఇస్తాము. Google
-  AdSense ఆమోదం తర్వాత ఈ స్లాట్‌లు AdSense పరిమితులకు అనుగుణంగా ఉంటాయి.</div>
-
-  <p><a class="cta" href="mailto:{email}?subject=Ad%20Booking">📧 స్లాట్ బుక్ చేయండి</a>
-     <a class="cta alt" href="{tg}" target="_blank" rel="noopener">💬 Telegram లో మాట్లాడండి</a></p>
+  <div class="note warn"><b>Straight talk:</b> we never guarantee rankings, traffic or revenue. You get real
+  numbers (impressions, clicks, how the ad appeared) and nothing more. After AdSense approval, placements
+  follow AdSense policies and limits.</div>
 '''
 
 PAGE_DEFS = [
-    ("advertise", "ప్రకటనలు ఇవ్వండి",
-     "studentup.in lo ప్రకటనలు: leaderboard, in-feed, mid-article, sidebar slots — telangana & andhra students audience ki. Rate card, booking process, policy.",
-     "ప్రకటనలు ఇవ్వండి (Advertise)", "మీ కళాశాల · షాప్ · కోచింగ్ · సేవలు — విద్యార్థుల దృష్టికి చేరండి", ADVERTISE),
+    ("advertise", "Partner with us",
+     "Advertise on studentup.in — labelled SPONSORED placements read by Telangana & Andhra Pradesh students. Availability and pricing shared personally on WhatsApp.",
+     "Partner with us", "Clean, clearly labelled placements for colleges, coaching, shops and services", ADVERTISE),
     ("about", "మా గురించి",
      "studentup.in ఎవరు, ఎలా పని చేస్తాము, ఏమి చేయము — తెలంగాణ మరియు ఆంధ్రప్రదేశ్ విద్యార్థుల కోసం అధికారిక మూలాలతో నడిచే నిజాయితీ విద్యా వేదిక.",
      "మా గురించి", "తెలంగాణ &amp; ఆంధ్రప్రదేశ్ విద్యార్థుల కోసం ఒక నిజాయితీ వేదిక", ABOUT),
@@ -569,8 +628,11 @@ def write_keyword_csv(limit: int = 200) -> str:
 
 def main() -> None:
     PAGES.mkdir(parents=True, exist_ok=True)
+    scripts = {"contact": CONTACT_SCRIPT}
     for slug, title, desc, h1, sub, body in PAGE_DEFS:
-        html = build(slug, title, desc, h1, sub, body.replace("{email}", EMAIL).replace("{tg}", TG))
+        filled = (body.replace("{email}", EMAIL).replace("{tg}", TG)
+                      .replace("{wa}", WA_LINK).replace("{phone}", PHONE))
+        html = build(slug, title, desc, h1, sub, filled, script=scripts.get(slug, ""))
         (PAGES / ("%s.html" % slug)).write_text(html, encoding="utf-8")
         print("  wrote pages/%s.html (%d bytes)" % (slug, len(html)))
     (OUT / "favicon.svg").write_text(FAVICON, encoding="utf-8")

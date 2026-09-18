@@ -5,8 +5,9 @@
 
 Do not overpromise: numbers are ranges from public 2026 benchmarks for Indian
 traffic, not a guarantee. AdSense line uses blended page RPM for the
-jobs/education niche (Indian traffic); direct line uses the LIVE rate card
-printed on preview/pages/advertise.html (single source of truth).
+jobs/education niche (Indian traffic); the direct-sales line uses the INTERNAL
+rate card (autoblog/rate_card.py) — v71 rule: prices are never published on the
+website, they are shared personally with the partner.
 
 Usage:
     .venv/bin/python tools/revenue_estimate.py                # 10k views/month
@@ -47,28 +48,18 @@ FILL_BANDS = (
 )
 
 
-def parse_rate_card(path: Path = ADVERTISE) -> list[dict]:
-    """Live rate card table → [{'slot','price','bundle'}] (single source of truth)."""
-    html = io.open(path, encoding="utf-8").read()
-    table = re.search(r"<table>.*?</table>", html, re.S)
-    if not table:
-        raise SystemExit(f"rate card table dorakaledu: {path}")
-    slots = []
-    for row in re.findall(r"<tr>(.*?)</tr>", table.group(0), re.S):
-        name = re.search(r"<b>([^<]+)</b>", row)
-        price = re.search(r"<b>₹([\d,]+)</b>", row)
-        if not name or not price:
-            continue
-        slots.append({
-            "slot": name.group(1).strip(),
-            "price": int(price.group(1).replace(",", "")),
-            "bundle": False,
-        })
+def parse_rate_card(path: Path = None) -> list[dict]:
+    """Internal rate card (v71) → [{'slot','price','bundle'}] — autoblog/rate_card.py.
+
+    `path` argument is kept only for backwards compatibility (old tests/CLI passed
+    the public advertise page); the numbers now come from the internal card.
+    """
+    sys.path.insert(0, str(ROOT))
+    from autoblog import rate_card  # noqa: PLC0415
+
+    slots = rate_card.as_rows()
     if len(slots) < 5:
-        raise SystemExit("rate card lo 5+ slots undali")
-    top = max(s["price"] for s in slots)
-    for s in slots:
-        s["bundle"] = s["price"] == top and len(slots) > 1
+        raise SystemExit("rate card lo 5+ slots undali (autoblog/rate_card.py)")
     return slots
 
 
@@ -123,7 +114,7 @@ def market_reference(views: int) -> dict:
 # --- Advanced (top-level) lines — mee sales effort tho matrame (assumptions clear ga)
 LEAD_CAPTURE = (0.003, 0.008)      # pageviews lo 0.3%–0.8% ఫారం నింపుతారు
 LEAD_PRICE = (150, 300)            # ₹/వెరిఫైడ్ లీడ్ (కళాశాల/కోచింగ్, TS & AP)
-ADVERTORIAL = (8_000, 15_000)      # ₹/స్పాన్సర్డ్ ఆర్టికల్
+ADVERTORIAL = (8_000, 15_000)      # ₹/స్పాన్సర్డ్ ఆర్టికల్ (autoblog/rate_card.py nunchi)
 ADVERTORIAL_PER_MONTH = (1, 2)
 BROADCAST_PRICE = 1_500            # ₹/వాట్సాప్-టెలిగ్రామ్ బ్రాడ్‌కాస్ట్
 BROADCAST_PER_MONTH = (2, 4)

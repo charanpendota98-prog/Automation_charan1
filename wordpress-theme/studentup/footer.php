@@ -11,6 +11,8 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 
 ?>
+<?php studentup_cta_section(); ?>
+
 <footer class="footer">
 	<div class="wrap">
 		<div class="footer-grid">
@@ -54,12 +56,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 </footer>
 
 <?php $su_soc = studentup_social_links(); ?>
-<nav class="su-social" aria-label="సోషల్ మీడియా">
+<!-- v71: rail auto-hides after 9s, returns every 2 minutes (see assets/js/studentup.js).
+     ✕ = hide now · ‹ tab = show again instantly. -->
+<nav class="su-social" id="surail" aria-label="<?php esc_attr_e( 'సోషల్ మీడియా', 'studentup' ); ?>">
+	<button type="button" class="su-close" id="suclose" aria-label="<?php esc_attr_e( 'Hide social icons', 'studentup' ); ?>">✕</button>
 	<a href="<?php echo esc_url( $su_soc['whatsapp'] ); ?>" target="_blank" rel="noopener" aria-label="WhatsApp">💬</a>
 	<a href="<?php echo esc_url( $su_soc['telegram'] ); ?>" target="_blank" rel="noopener" aria-label="Telegram">✈️</a>
 	<a href="<?php echo esc_url( $su_soc['instagram'] ); ?>" target="_blank" rel="noopener" aria-label="Instagram">📸</a>
 	<a href="<?php echo esc_url( $su_soc['youtube'] ); ?>" target="_blank" rel="noopener" aria-label="YouTube">▶️</a>
 </nav>
+<button type="button" class="su-tab" id="sutab" aria-label="<?php esc_attr_e( 'Show social icons', 'studentup' ); ?>">‹</button>
 
 <?php
 // v64: sticky bottom ad (option: StudentUp → Ads → Sticky bottom ad ON)

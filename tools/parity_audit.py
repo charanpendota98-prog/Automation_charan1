@@ -196,6 +196,20 @@ def p8_count_parity(rep: dict) -> None:
     if f"{suites}/{suites}" not in manual:
         rep["errors"].append(f"P8 MANUAL lo '{suites}/{suites}' suites claim ledu")
     index = _read(PREVIEW / "index.html")
+    # NOTE (v70/v71): public homepage lo stat-tile lu levu (developer proof text remove chesam) —
+    # anduku suites count ni docs (README/MANUAL) tho matrame compare chestunnam.
+    # jsdom count: jsdom file lo EXPECTED_CHECKS ↔ README/MANUAL/GO_LIVE claims (v71)
+    jsdom = _read(ROOT / "tests" / "runtime" / "jsdom_runtime_test.js")
+    m = re.search(r"EXPECTED_CHECKS\s*=\s*(\d+)", jsdom)
+    if not m:
+        rep["errors"].append("P8 jsdom EXPECTED_CHECKS constant ledu (tests/runtime/jsdom_runtime_test.js)")
+    else:
+        n = int(m.group(1))
+        for name, txt in (("README", readme), ("MANUAL", manual),
+                          ("GO_LIVE", _read(ROOT / "GO_LIVE_CHECKLIST.md"))):
+            if f"{n}/{n}" not in txt:
+                rep["errors"].append(f"P8 {name} lo '{n}/{n}' jsdom-runtime claim ledu "
+                                     f"(jsdom EXPECTED_CHECKS)")
     theme_php = "".join(p.read_text(encoding="utf-8")
                         for p in (ROOT / "wordpress-theme" / "studentup").rglob("*.php"))
     if "qtile" in index or "టెస్ట్ సూట్" in index:

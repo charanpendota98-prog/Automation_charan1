@@ -157,7 +157,7 @@ Message lo reason undi — exact ga fix cheyandi:
 ## ⚠️ Honest note
 Perfect = **machine gates + human 5-min verify**. Gates mistakes ramigadu (conflicts/stale/dates/originality), kaani official numbers mee mata tho final check — AdSense/Google/reputation thartham lo idi matrame safety.
 
-*Last updated: v69 (2026-09-18) — THEME STANDARDS PASS 3 (version parity · editor-styles · post_class · no_found_rows · admin nonce) + PARITY AUDIT (CLI ↔ docs · dead modules · preview links/meta · counts): 18 checks · 55/55 suites · 119/119 runtime · readiness 100/100 (28/28) · code audit 0/0 · parity 0/0*
+*Last updated: v71 (2026-09-18) — STUDENTS INTERNET CENTER + CLEAN MONETISATION (premium English copy · no public rate card · WhatsApp/Telegram join · 2-minute rail cycle · block-editor parity): 55/55 suites · 138/138 runtime · readiness 100/100 (28/28) · code audit 0/0 · parity 0/0 · theme audit 0/0 · theme v1.6.0*
 
 ## PART 26 — v67: DEEP AUDIT (expert/BA) + TOP-THEME HARDENING + 6/6 REVENUE SLOTS
 
@@ -206,7 +206,7 @@ REVENUE (6/6 slots · privacy-safe):
   anchor/sticky-bottom (mobile) — anni density cap + lazy + reserved height + consent tho.
 
 TESTS            : tests/v67_test.py = 11 checks · run.py --test-all 53/53 ·
-                   jsdom 119/119 · readiness 100/100 (27/27) · theme audit 0/0 ·
+                   jsdom 138/138 · readiness 100/100 (27/27) · theme audit 0/0 ·
                    code audit 0/0 · parity 0/0 · php-lint 29/29 · zip 37 files ·
                    BA matrix docs/BA_REQUIREMENTS_MATRIX.md
 ```
@@ -474,7 +474,7 @@ BOT      : python run.py --breaking-feed              (radar → feed + Telegram
 HONESTY  : feed lo radar (Google News తెలుగు + 143 official sources) verified items
            matrame · item lekapote site "కొత్త verified బ్రేకింగ్ అప్డేట్‌లు లేవు" +
            "రాడార్ ప్రతి 6 గంటలకు చెక్ చేస్తుంది" ani cheptundi — fake/clickbait ledu
-TESTS    : tests/v59_test.py = 12 checks · run.py --test-all 45/45 · jsdom 119/119
+TESTS    : tests/v59_test.py = 12 checks · run.py --test-all 45/45 · jsdom 138/138
 ```
 
 ---
@@ -785,7 +785,7 @@ AUTOMATIC (v60 rule): guardian lo code_audit + parity_audit checks (13/15 = 2 wa
   readiness lo +1 check → 100/100 (28/28)
 
 PROOF: tests/v69_test.py 18 checks (parity detection fixture to) · --test-all 55/55 ·
-  jsdom 119/119 · code audit 0/0 · parity 0/0 · theme audit 0/0 · php-lint 29/29 ·
+  jsdom 138/138 · code audit 0/0 · parity 0/0 · theme audit 0/0 · php-lint 29/29 ·
   zip 37 files 629 KB · theme v1.5.0
 
 ## PART 29 — v70: PUBLIC SURFACE CLEANUP (proof/developer text ledu) + 100% verification
@@ -818,8 +818,40 @@ NIJAMAINA BUG (ee cleanup lo pattukunnadi + fix):
   poyayi (proof block tho pattu) → daily hook khali payload pampedi (options/deadline/indexnow
   sync aagipoyedi). Ippudu restore + 'proof_json' mapping remove.
 
-PROOF (v70): tests/v70 lock — --test-all 55/55 · jsdom 119/119 · readiness 100/100 (28/28) ·
+PROOF (v70): tests/v70 lock — --test-all 55/55 · jsdom 138/138 · readiness 100/100 (28/28) ·
   guardian 14/15 (1 warn-only env) · code audit 0/0 · parity 0/0 · theme audit 0/0 · php-lint 29/29 ·
   zip 37 files 628 KB · theme v1.5.0 · proof doc: output/v70-proof-2026-09-18.md
+
+## PART 30 — v71: STUDENTS INTERNET CENTER + CLEAN MONETISATION (English-first)
+
+**Your brief:** neat English where a premium site needs it, Telugu only where it helps; explain the
+application-help service properly; keep rates off the website (deal personally); replace the
+newsletter form with WhatsApp/Telegram join; smaller mobile icons; floating rail that comes and
+goes every 2 minutes so it never covers the article text.
+
+WHAT CHANGED
+  Homepage   : "Students Internet Center (TS & AP)" card — call → WhatsApp documents → PDF back,
+               plus a green WhatsApp CTA box (opens your WhatsApp), call + email fallback.
+               Sidebar "Advertise" rate-card card deleted.
+               Newsletter form deleted → "Join on WhatsApp/Telegram" block (2 buttons + honest note).
+  Partner page (pages/advertise.html): premium English page — placements, policy, house-ads note,
+               "rates & availability shared personally". No prices, no table, no booking flow.
+  Rate card  : autoblog/rate_card.py (5 slots ₹1,000–₹4,000 + full package ₹8,000 + 3 premium
+               services). `python run.py --rate-card` prints the WhatsApp-ready card.
+  Lead engine: form moved to pages/contact.html (same /lead API, honeypot, phone validation,
+               English labels). Homepage keeps the lead engine via the join block links.
+  Social rail: shows 9 s → slides away → returns every 2 minutes; ✕ = hide now (2 min later back),
+               ‹ = show now; Escape hides; hover/focus holds it open; reduced-motion respected.
+  Mobile     : social chips 34 px (31 px < 400 px), tighter mobile-nav icons, full-width join CTA.
+  Theme      : v1.6.0 — inc/cta.php (Internet Center + join on every page), inc/editor.php +
+               assets/css/editor.css (block-editor parity), style.css ↔ STUDENTUP_VERSION ↔
+               readme.txt Stable tag kept identical by the audit.
+
+AUTOMATIC (v60 rule): guardian `counts_sync` · readiness `c_counts_sync` · parity **P8** (suites +
+jsdom count from the jsdom `EXPECTED_CHECKS` constant) · jsdom drift guard · theme audit pass 3.
+
+PROOF (v71): --test-all 55/55 · jsdom 138/138 · readiness 100/100 (28/28) · guardian 14/15
+  (1 warn-only owner env) · code audit 0/0 · parity 0/0 · theme audit 0/0 · php-lint 31/31 ·
+  zip 39 files 633 KB · theme v1.6.0 · proof doc: output/v71-proof-2026-09-18.md
 
 ```

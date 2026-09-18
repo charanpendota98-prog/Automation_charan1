@@ -10,6 +10,10 @@ const { JSDOM } = require("jsdom");
 const PAGE = path.resolve(__dirname, "../../preview/index.html");
 const html = fs.readFileSync(PAGE, "utf8");
 
+/* v71: total check count — docs (README/MANUAL/GO_LIVE) claim this number and
+ * tools/parity_audit.py P8 reads it, so a silent drift cannot slip through. */
+const EXPECTED_CHECKS = 138;
+
 const passed = [];
 const failed = [];
 function ok(name, cond, extra) {
@@ -203,8 +207,8 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
   const drop = document.querySelector(".has-drop .drop");
   const dropItems = drop ? drop.querySelectorAll("a").length : 0;
   ok("dropdowns present with 5+ items each (jobs / exams / more)", !!drop && dropItems >= 5, "items=" + dropItems);
-  ok("dropdown contains Advertise With Us link",
-     Array.from(document.querySelectorAll(".drop a")).some(a => a.textContent.indexOf("ప్రకటన") > -1));
+  ok("dropdown contains Partner with us link (v71 label)",
+     Array.from(document.querySelectorAll(".drop a")).some(a => /Partner with us/.test(a.textContent)));
   ok("desktop nav underline animation CSS (scaleX)", /\.nav a::after\{[^}]*transform:scaleX\(0\)/.test(styleText));
   // hamburger
   const menubtn = document.getElementById("menubtn");
@@ -219,8 +223,8 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
   ok("mobile panel: 11 links + CTA + 4 socials",
      mpanel.querySelectorAll("a").length >= 15,
      "links=" + mpanel.querySelectorAll("a").length);
-  ok("mobile panel has Advertise + Exam CTA",
-     Array.from(mpanel.querySelectorAll("a")).some(a => a.textContent.indexOf("ప్రకటన") > -1) &&
+  ok("mobile panel has Partner + Exam CTA",
+     Array.from(mpanel.querySelectorAll("a")).some(a => /Partner with us/.test(a.textContent)) &&
      Array.from(mpanel.querySelectorAll("a")).some(a => a.textContent.indexOf("ప్రత్యక్ష పరీక్ష") > -1));
   mpanel.querySelector('a[href="#jobs"]').click();
   ok("panel link click closes menu", !mpanel.classList.contains("open") && !document.body.classList.contains("mlock"));
@@ -246,7 +250,8 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
        (a.getAttribute("rel") || "").indexOf("sponsored") > -1 && a.getAttribute("target") === "_blank"));
   ok("all ad slots labeled SPONSORED + visible disclosure",
      Array.from(ads).every(a => /SPONSORED/i.test(a.textContent) && a.getAttribute("aria-label") === "Sponsored content"));
-  ok("Advertise-with-us anchor exists (#ads)", !!document.getElementById("ads"));
+  ok("sidebar promo card removed — no public rate-card anchor (#ads)",
+     !document.getElementById("ads") && !!document.getElementById("services"));
 
 
   /* ---------- v47: pure-Telugu content + trust + daily poll ---------- */
@@ -360,50 +365,68 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
      Array.from(document.querySelectorAll("#grid .news")).filter(n => !n.classList.contains("hidden")).length >= 13);
 
 
-  /* ---------- v52: revenue wiring (rate card + advertise page) ---------- */
+  /* ---------- v52 + v71: revenue wiring (partner page, no public rate card) ---------- */
   const advLinks = Array.from(document.querySelectorAll('a[href="pages/advertise.html"]'));
-  ok("site links the advertise page (rate card / booking)", advLinks.length >= 2, "links=" + advLinks.length);
-  const adsCard = document.getElementById("ads");
-  ok("sidebar ad card shows live rate card (₹ prices + book CTA)",
-     !!adsCard && /₹4,000/.test(adsCard.textContent) && /₹8,000/.test(adsCard.textContent) &&
-     /పూర్తి రేట్ కార్డ్/.test(adsCard.textContent));
+  ok("site links the partner page (2+ places: dropdown + mobile panel)",
+     advLinks.length >= 2, "links=" + advLinks.length);
+  ok("no sidebar rate card — pricing handled personally (v71)",
+     !document.getElementById("ads") && !/₹\s?\d/.test(document.body.textContent));
   ok("house ads documented on site (StudentUp own promos, not SPONSORED)",
-     /StudentUp/.test(adsCard ? adsCard.textContent : "") ||
      /StudentUp/.test(document.body.textContent));
 
 
-  /* ---------- v54: ఉచిత సమాచారం lead form (highest-revenue engine) ---------- */
-  const leadForm = document.getElementById("leadform");
-  ok("lead form present (ఉచిత ఉద్యోగ & పరీక్ష సమాచారం)", !!leadForm);
-  ok("lead form fields: name + phone + interest + city",
-     !!document.getElementById("ld-name") && !!document.getElementById("ld-phone") &&
-     !!document.getElementById("ld-interest") && !!document.getElementById("ld-city"));
-  const hpField = document.getElementById("ld-website");
-  ok("lead honeypot hidden (spam trap)",
-     !!hpField && hpField.getAttribute("aria-hidden") === "true" && /lead-hp/.test(hpField.className));
-  const ldSel = document.getElementById("ld-interest");
-  const ldOpts = ldSel ? Array.from(ldSel.options).map(o => o.textContent).join(" ") : "";
-  ok("interest options pure Telugu (no Latin letters)",
-     /ఉద్యోగాలు/.test(ldOpts) && /స్కాలర్‌షిప్‌లు/.test(ldOpts) && /కళాశాల/.test(ldOpts) &&
-     !/[A-Za-z]/.test(ldOpts));
-  if (leadForm) {
-    let sent = false;
-    leadForm.addEventListener("submit", () => { sent = true; }, true);
-    document.getElementById("ld-name").value = "రవి";
-    document.getElementById("ld-phone").value = "123";
-    leadForm.dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
-    await sleep(60);
-    const msg = document.getElementById("ld-msg");
-    ok("bad phone → Telugu error shown (form not sent)",
-       sent === true && !!msg && /10 అంకెల/.test(msg.textContent) && /err/.test(msg.className),
-       msg ? msg.textContent.slice(0, 40) : "no message");
+  /* ---------- v71: join block (WhatsApp + Telegram) — lead form ippudu contact page lo ---------- */
+  ok("homepage lead form removed (v71 — contact page ki move ayyindi)",
+     !document.getElementById("leadform"));
+  const join = document.getElementById("join");
+  ok("join block present on homepage", !!join);
+  const joinWa = join ? join.querySelector('a[href*="wa.me"]') : null;
+  const joinTg = join ? join.querySelector('a[href*="t.me"]') : null;
+  ok("join block: WhatsApp + Telegram channel buttons",
+     !!joinWa && !!joinTg && /wa\.me\/\d{6,}/.test(joinWa.getAttribute("href")));
+  ok("join block: free + no-spam promise", !!join && /free/i.test(join.textContent),
+     join ? join.textContent.slice(0, 40) : "missing");
+
+  /* ---------- v71: Students Internet Center (apply from home) ---------- */
+  const ic = document.getElementById("services");
+  ok("Students Internet Center block present",
+     !!ic && /Students Internet Center/.test(ic.textContent));
+  const icWa = ic ? ic.querySelector('a[href*="wa.me"]') : null;
+  ok("Internet Center: WhatsApp box opens our chat (wa.me)",
+     !!icWa && /wa\.me\/\d{6,}/.test(icWa.getAttribute("href")),
+     icWa ? icWa.getAttribute("href").slice(0, 32) : "missing");
+  ok("Internet Center: 3 steps (call → documents → PDF)",
+     !!ic && /Call/i.test(ic.textContent) && /documents/i.test(ic.textContent) &&
+     /PDF/.test(ic.textContent));
+  ok("Internet Center: call + email fallback",
+     !!ic && !!ic.querySelector('a[href^="tel:"]') && !!ic.querySelector('a[href^="mailto:"]'));
+  ok("no public rate card anywhere on homepage (no ₹ pricing)",
+     !/₹\s?\d/.test(document.body.textContent));
+
+  /* ---------- v71: social rail — auto-hide cycle + controls ---------- */
+  const railClose = document.getElementById("suclose");
+  const railTab = document.getElementById("sutab");
+  ok("rail cycle: hide (✕) + instant show (‹) controls present", !!railClose && !!railTab);
+  ok("rail cycle: 9s show / 2-minute return coded",
+     /SHOW_MS\s*=\s*9000/.test(html) && /CYCLE_MS\s*=\s*120000/.test(html));
+  ok("rail cycle CSS: hidden state slides away",
+     /\.su-social\.su-out\{[^}]*visibility:hidden/.test(styleText));
+  if (rail && railClose && railTab) {
+    railClose.dispatchEvent(new window.Event("click", { bubbles: true }));
+    await sleep(30);
+    const hiddenOk = rail.classList.contains("su-out") && railTab.classList.contains("on") &&
+                     rail.getAttribute("aria-hidden") === "true";
+    railTab.dispatchEvent(new window.Event("click", { bubbles: true }));
+    await sleep(30);
+    const backOk = !rail.classList.contains("su-out") && !railTab.classList.contains("on");
+    ok("rail cycle: ✕ hides it, ‹ brings it back (aria-hidden toggles)", hiddenOk && backOk,
+       "hidden=" + hiddenOk + " back=" + backOk);
   } else {
-    ok("bad phone → Telugu error shown (form not sent)", false, "no form");
+    ok("rail cycle: ✕ hides it, ‹ brings it back (aria-hidden toggles)", false, "controls missing");
   }
-  const ldNote = document.querySelector(".leadnote");
-  ok("lead form privacy note + policy link",
-     !!ldNote && /ఆపమని చెప్పవచ్చు/.test(ldNote.textContent) &&
-     !!ldNote.querySelector('a[href="pages/privacy.html"]'));
+  ok("mobile: social chips smaller (<= 34px) + mobile nav icons smaller",
+     /\.su-social a\{width:34px;height:34px/.test(styleText) &&
+     /\.mobile-nav b\{display:block;font-size:13px/.test(styleText));
 
   /* ---------- v59: బ్రేకింగ్ టికర్ + ఎక్కువగా వెతికేవి + పర్ఫెక్ట్ మెనూ ---------- */
   const tickerw = document.getElementById("tickerwrap");
@@ -491,6 +514,61 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
        /^https:\/\/example\.org\/a$/.test(d2.querySelector("#tmove a").getAttribute("href")),
        "hidden=" + (tick2 ? tick2.hasAttribute("hidden") : "missing"));
     dom2.window.close();
+  }
+
+  /* ---------- v71: contact page (lead form) + partner page (no public rates) ---------- */
+  {
+    const contactHtml = fs.readFileSync(path.resolve(__dirname, "../../preview/pages/contact.html"), "utf8");
+    const cdom = new JSDOM(contactHtml, {
+      url: "http://localhost/pages/contact.html", runScripts: "dangerously", pretendToBeVisual: true,
+    });
+    await sleep(200);
+    const cdoc = cdom.window.document;
+    const cform = cdoc.getElementById("leadform");
+    ok("contact page: free-updates form present", !!cform);
+    ok("contact page: name + phone + interest + city fields",
+       !!cdoc.getElementById("ld-name") && !!cdoc.getElementById("ld-phone") &&
+       !!cdoc.getElementById("ld-interest") && !!cdoc.getElementById("ld-city"));
+    const chp = cdoc.getElementById("ld-website");
+    ok("contact page: honeypot hidden (spam trap)",
+       !!chp && chp.getAttribute("aria-hidden") === "true" && /lead-hp/.test(chp.className));
+    ok("contact page: Internet Center WhatsApp box (wa.me)",
+       !!cdoc.querySelector('a.wa-box[href*="wa.me"]'));
+    ok("contact page: call link (tel:) + email link",
+       !!cdoc.querySelector('a[href^="tel:"]') && !!cdoc.querySelector('a[href^="mailto:"]'));
+    ok("contact page: no public rate card (no ₹ pricing)", !/₹\s?\d/.test(contactHtml));
+    if (cform) {
+      let sent = false;
+      cform.addEventListener("submit", () => { sent = true; }, true);
+      cdoc.getElementById("ld-name").value = "Ravi";
+      cdoc.getElementById("ld-phone").value = "123";
+      cform.dispatchEvent(new cdom.window.Event("submit", { bubbles: true, cancelable: true }));
+      await sleep(80);
+      const cmsg = cdoc.getElementById("ld-msg");
+      ok("contact page: bad phone → error shown, form not sent",
+         sent === true && !!cmsg && /10-digit/.test(cmsg.textContent) && /err/.test(cmsg.className),
+         cmsg ? cmsg.textContent.slice(0, 40) : "no message");
+    } else {
+      ok("contact page: bad phone → error shown, form not sent", false, "no form");
+    }
+    cdom.window.close();
+
+    const advHtml = fs.readFileSync(path.resolve(__dirname, "../../preview/pages/advertise.html"), "utf8");
+    ok("partner page: no public price table / booking flow",
+       !/₹\s?\d/.test(advHtml) && !/<table[\s\S]{0,400}₹/.test(advHtml) &&
+       !/Booking/.test(advHtml));
+    ok("partner page: WhatsApp + email contact routes",
+       /wa\.me\/\d{6,}/.test(advHtml) && /mailto:/.test(advHtml));
+    ok("partner page: SPONSORED labelling + policy rules kept",
+       /SPONSORED/.test(advHtml) && /rel="sponsored nofollow"/.test(advHtml));
+    ok("partner page: rates shared personally (honest note)",
+       /shared personally|personally/i.test(advHtml) && /never guarantee/i.test(advHtml));
+  }
+
+  /* ---------- check-count drift guard (docs parity) ---------- */
+  if (passed.length !== EXPECTED_CHECKS) {
+    failed.push(`check count drift: ${passed.length} ran vs EXPECTED_CHECKS ${EXPECTED_CHECKS} ` +
+                `(jsdom counts ni README/MANUAL/GO_LIVE lo update cheyandi)`);
   }
 
   /* ---------- summary ---------- */

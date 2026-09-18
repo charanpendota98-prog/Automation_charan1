@@ -1519,6 +1519,9 @@ def main() -> int:
     parser.add_argument("--ads", action="store_true",
                         help="v43: AD MANAGER — owner ads (college banners/shop/"
                              "services) inventory status + per-category slot plan")
+    parser.add_argument("--rate-card", action="store_true",
+                        help="v71: rate card (internal) — prices site meeda public ga levu; "
+                             "ee card ni WhatsApp/Telegram lo personal ga deal cheyyadaniki vaadandi")
     parser.add_argument("--ads-demo", action="store_true",
                         help="v43: AD MANAGER — visible ad placement preview "
                              "(output/ads-preview.html — browser lo open cheyandi)")
@@ -1639,6 +1642,12 @@ def main() -> int:
         return service_center_setup(dry=args.dry_run, force=args.force)
     if args.content_audit:
         return content_audit_run(limit=max(1, min(args.content_limit, 5000)))
+    if args.rate_card:
+        from . import rate_card as rc
+
+        print(rc.as_markdown())
+        print("\n⚠️  Public site lo prices chupinchakandi (v71 rule) — personal ga deal cheyandi.")
+        return 0
     if args.ads or args.ads_demo:
         from . import ad_manager
 

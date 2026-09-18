@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: StudentUp 1.3.0\n"
 "Report-Msgid-Bugs-To: https://studentup.in/\n"
-"POT-Creation-Date: 2026-09-18 15:01+0000\n"
+"POT-Creation-Date: 2026-09-18 15:50+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -19,12 +19,84 @@ msgstr ""
 msgid "%s వ్యాసాలు"
 msgstr ""
 
+#: inc/cta.php:71
+msgid "100% free · no calls · 1–3 updates a day"
+msgstr ""
+
+#: inc/cta.php:30
+msgid "Apply for any job or scholarship from home. No need to visit any centre — one call is enough."
+msgstr ""
+
+#: inc/cta.php:46
+msgid "Call now"
+msgstr ""
+
+#: inc/cta.php:32
+msgid "Call us with the post you want to apply for."
+msgstr ""
+
+#: inc/cta.php:49
+msgid "Email"
+msgstr ""
+
+#: inc/cta.php:64
+msgid "Every job, exam date and result — first on your phone"
+msgstr ""
+
+#: inc/cta.php:65
+msgid "Free daily updates for Telangana & Andhra Pradesh students. No spam calls, leave anytime."
+msgstr ""
+
+#: footer.php:62
+msgid "Hide social icons"
+msgstr ""
+
+#: footer.php:68
+msgid "Show social icons"
+msgstr ""
+
+#: inc/editor.php:49
+msgid "StudentUp blocks"
+msgstr ""
+
 #: author.php:59
 msgid "StudentUp ఎడిటోరియల్ టీమ్ — అధికారిక మూలాల ఆధారంగా తెలంగాణ & ఆంధ్రప్రదేశ్ విద్యార్థుల కోసం నిజాయితీ వ్యాసాలు."
 msgstr ""
 
+#: inc/cta.php:42
+msgid "Tap to open our WhatsApp — we reply fast"
+msgstr ""
+
+#: inc/cta.php:70
+msgid "Telegram channel"
+msgstr ""
+
+#: inc/cta.php:28
+msgid "TS & AP"
+msgstr ""
+
+#: inc/cta.php:34
+msgid "We apply and send the PDF — your filled application reaches you at the lowest service charge."
+msgstr ""
+
+#: inc/cta.php:69
+msgid "WhatsApp updates"
+msgstr ""
+
+#: inc/cta.php:41
+msgid "WhatsApp your documents"
+msgstr ""
+
+#: inc/cta.php:33
+msgid "WhatsApp your documents — photo, signature, certificates, resume."
+msgstr ""
+
 #: author.php:79
 msgid "ఇటీవలి వ్యాసాలు"
+msgstr ""
+
+#: inc/cta.php:66
+msgid "ఉద్యోగాలు · నోటిఫికేషన్లు · ఫలితాలు — మా WhatsApp / Telegram లో ముందుగా."
 msgstr ""
 
 #: inc/security.php:124
@@ -53,6 +125,10 @@ msgstr ""
 
 #: index.php:26
 msgid "తాజా అప్డేట్‌లు"
+msgstr ""
+
+#: inc/cta.php:36
+msgid "దరఖాస్తు మొత్తం మేము చేస్తాము — PDF మీకు పంపుతాము."
 msgstr ""
 
 #: comments.php:45
@@ -89,6 +165,10 @@ msgstr ""
 
 #: sidebar.php:21
 msgid "సైడ్‌బార్"
+msgstr ""
+
+#: footer.php:61
+msgid "సోషల్ మీడియా"
 msgstr ""
 
 #: search.php:29
