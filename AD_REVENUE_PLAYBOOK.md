@@ -62,8 +62,8 @@ Per-view value (RPM) penche levers — anni ippude siddham:
 | Viewability (sticky sidebar + in-feed + leaderboard) | ✅ |
 | Page speed (fast load = ekkuva viewable impressions) | ✅ static site |
 | Session depth (ఒక్క విజిట్‌లో ఎక్కువ పేజీలు: hubs, quiz, poll, related) | ✅ |
-| High-CPC pillars (Govt jobs, Results, Current affairs, Scholarships) | ✅ 16 pillars |
-| Tier-1 / NRI-దేశీ ట్రాఫిక్ (విదేశీ ఉద్యోగాలు, IELTS, visa content) | ⏳ content plan lo add cheyyali |
+| High-CPC pillars (Govt jobs, Results, Current affairs, Scholarships) | ✅ 17 pillars |
+| Tier-1 / NRI-దేశీ ట్రాఫిక్ (విదేశీ ఉద్యోగాలు, IELTS, visa) | ✅ v58 pillar LIVE (roju 1–2 posts) |
 | Topa ki 2 ads cap (policy + UX protect) | ✅ |
 
 **Mana site ki asalu answer:** ads-only tho 1 లక్ష views = ₹5,000–₹23,100/నెల.
@@ -152,7 +152,7 @@ SPONSORED, mana ad ki "StudentUp సేవ".
 
 | Item | Status |
 |---|---|
-| 16 content pillars + 129 sources | ✅ |
+| 17 content pillars · 143 sources · 11,192 keywords (incl. విదేశీ/గల్ఫ్ = Tier-1 line) | ✅ |
 | Rank Math fields + canonical + JSON-LD + IndexNow | ✅ |
 | Manual gate (draft → Telegram ✅) + QA 80 + originality 72% | ✅ |
 | Daily poll + exam portal + admin ads console | ✅ |

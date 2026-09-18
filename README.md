@@ -388,7 +388,7 @@ the public research bundle.
 measurement. Kotha module: `autoblog/top_post.py` (offline, deterministic,
 no API key needed for planning).
 
-**1. ANNI KEYWORDS (10,682) — Keyword Universe**
+**1. ANNI KEYWORDS (11,192) — Keyword Universe**
 188 entities (SSC/UPSC/RRB/banks/defence, TSPSC/APPSC/DSC/Police, scholarships,
 entrances, universities, skills, internships) × **66 intents** (14 core +
 52 long-tail: last date, eligibility, age limit, fee, documents, district wise,
@@ -1025,7 +1025,7 @@ Prathi post lo automatic ga:
 
 ```bash
 # v38 TOP POST (blueprint → measure → publish)
-python run.py --keyword-universe                     # 10,682 keywords + CSV
+python run.py --keyword-universe                     # 11,192 keywords + CSV
 python run.py --top-post "TSPSC Group 2 2026 notification"
 python run.py --top-post-plan --top-post-days 90     # domination calendar
 python run.py --score-post file.html --score-keyword "ssc cgl 2026"
@@ -1172,7 +1172,7 @@ Marpali te: `.env` edit chesi scheduler ni restart cheyandi: `sudo systemctl res
 ├── DEPLOY.md               # deployment guide — VPS(systemd+Caddy) / Docker / PaaS
 ├── DEPLOY_MILESWEB.md      # v49 cPanel/MilesWeb guide (Python App, cron, storage)
 ├── DEPLOY_ORACLE_CLOUD.md  # v51 Oracle Always Free vs MilesWeb split + crash-proofing
-├── CONTENT_PLAN_DAILY.md   # v50 daily plan: 16 pillars, rhythm, refresh, SEO gates
+├── CONTENT_PLAN_DAILY.md   # v58 daily plan: 17 pillars, rhythm, refresh, SEO gates
 ├── AD_REVENUE_PLAYBOOK.md  # v52 revenue lines, rate card, sponsor + house ad flows
 ├── ad_advisor (autoblog/ad_advisor.py) # v57 network advisor + automatic alerts
 ├── GO_LIVE_CHECKLIST.md    # v53 deploy order + owner actions + revenue table

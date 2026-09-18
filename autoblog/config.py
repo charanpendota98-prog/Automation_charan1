@@ -213,7 +213,7 @@ CATEGORIES = [
         "Scholarships,Central Govt Jobs,TS Govt Jobs,AP Govt Jobs,"
         "Private Jobs,Software Jobs,Part Time Jobs,Walkin Jobs,"
         "Outsourcing Jobs,Hall Tickets,Results,Internships,Online Education,"
-        "Current Affairs,Exam Tips,Upcoming Exams",
+        "Current Affairs,Exam Tips,Upcoming Exams,Abroad Jobs",
     ).split(",")
     if c.strip()
 ]
@@ -226,7 +226,10 @@ for _pair in _get("CATEGORY_PRIORITY",
                   "Central Govt Jobs:4,TS Govt Jobs:4,AP Govt Jobs:3,"
                   "Results:3,Software Jobs:2,Private Jobs:2,"
                   "Upcoming Exams:4,Outsourcing Jobs:3,Current Affairs:3,"
-                  "Scholarships:3,Exam Tips:2").split(","):
+                  "Scholarships:3,Exam Tips:2,"
+                  # v58: విదేశీ ఉద్యోగాలు — Gulf/NRI audience + high-CPC
+                  # (IELTS, visa, education loan, consultancy)
+                  "Abroad Jobs:4").split(","):
     if ":" in _pair:
         _k, _v = _pair.split(":", 1)
         try:

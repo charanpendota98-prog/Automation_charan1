@@ -50,6 +50,21 @@ def _save_provenance(article: Dict) -> None:
 
 CATEGORY_RULES = [
     # live-site categories (v14) — specific rules first (tie-break priority)
+    # v58: విదేశీ ఉద్యోగాలు — Gulf/abroad jobs, visa, IELTS/PTE, NRI.
+    # List MODATI rule (telugu "ఉద్యోగాలు" generic word Central ki vellakudadu;
+    # "గల్ఫ్ ఉద్యోగాలు" → Abroad Jobs). Phrases ki 2x weight, Telugu ki 2x.
+    ("Abroad Jobs", ["gulf job", "gulf jobs", "abroad job", "abroad jobs",
+                     "overseas job", "overseas jobs", "work visa", "visa slot",
+                     "visa appointment", "study abroad", "ielts exam", "ielts test",
+                     "pte exam", "toefl", "green card", "h1b", "h-1b", "e-migrate",
+                     "గల్ఫ్ ఉద్యోగాలు", "విదేశీ ఉద్యోగాలు", "విదేశీ ఉద్యోగ",
+                     "దుబాయ్", "సౌదీ", "కువైట్", "ఖతార్", "ఒమన్", "బహ్రెయిన్",
+                     "abroad", "overseas", "gulf", "dubai", "abu dhabi", "saudi",
+                     "qatar", "kuwait", "oman", "bahrain", "uae", "sharjah",
+                     "singapore", "malaysia", "japan", "south korea", "germany",
+                     "canada", "australia", "uk ", "usa ", "ielts", "pte",
+                     "emigrate", "nri", "passport", "oci", "visa",
+                     "విదేశీ", "గల్ఫ్", "వీసా", "ఐఎల్‌టీఎస్", "ప్రవాస"]),
     ("TS Govt Jobs", ["tspsc", "telangana", "ts police", "ts genco", "transco",
                       "తెలంగాణ", "gurukul", "tgpsc"]),
     ("AP Govt Jobs", ["appsc", "andhra", "ap police", "apsrtc", "ap genco",

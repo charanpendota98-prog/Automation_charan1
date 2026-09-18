@@ -441,7 +441,8 @@ def render(result: Dict[str, Any]) -> str:
                 A(f"    • {g['name']}: {human(g['need'])} sessions kavali ({human(g['gap'])} dooram)")
             else:
                 A(f"    • {g['name']}: Tier-1 {int(g['need'] * 100)}%+ kavali "
-                  f"(ippudu {int(g['have'] * 100)}%)")
+                  f"(ippudu {int(g['have'] * 100)}%) — 'విదేశీ ఉద్యోగాలు "
+                  f"(Abroad Jobs)' pillar posts tho perugutundi")
     A("")
     A("  ── Publisher ID vishayam ──")
     A("    " + result["publisher_id_note"])

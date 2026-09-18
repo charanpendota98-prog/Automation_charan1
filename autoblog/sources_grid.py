@@ -1,4 +1,4 @@
-"""v16.1: Official Sources Grid — 100+ curated sources, ZERO misses.
+"""v58: Official Sources Grid — 143 curated sources, ZERO misses.
 
 Official first (SSC/UPSC/TSPSC/APPSC/NEET...), private+software+walkins next.
 Prathi source = Google News query. 17 daily hot-list sources prathi radar
@@ -161,6 +161,21 @@ _S = [
     ("APPSC Preparation", "APPSC group 2 preparation strategy syllabus", "Exam Tips", False),
     ("SSC Preparation", "SSC exam preparation strategy previous papers", "Exam Tips", False),
     ("Board Exam Prep", "10th inter board exam preparation tips 2026", "Exam Tips", False),
+    # --- v58: విదేశీ ఉద్యోగాలు (Abroad/Gulf/NRI) — Tier-1 + high-CPC pillar ---
+    ("eMigrate MEA", "eMigrate overseas job emigration India notification", "Abroad Jobs", True),
+    ("MEA Emigration", "Ministry of External Affairs emigration update Indians", "Abroad Jobs", False),
+    ("Gulf Jobs News", "Gulf jobs for Indians vacancy recruitment 2026", "Abroad Jobs", True),
+    ("UAE Jobs", "UAE Dubai Abu Dhabi jobs for Indians 2026", "Abroad Jobs", False),
+    ("Saudi Qatar Jobs", "Saudi Arabia Qatar jobs Indian workers recruitment", "Abroad Jobs", False),
+    ("Kuwait Oman Bahrain Jobs", "Kuwait Oman Bahrain jobs for Indians 2026", "Abroad Jobs", False),
+    ("IELTS Test Update", "IELTS PTE TOEFL test date fee change 2026", "Abroad Jobs", True),
+    ("Study Abroad", "study abroad for Indian students intake scholarship 2026", "Abroad Jobs", True),
+    ("Canada Visa", "Canada express entry study permit updates Indian students", "Abroad Jobs", False),
+    ("UK Australia Visa", "UK skilled worker Australia student visa update 2026", "Abroad Jobs", False),
+    ("Germany Japan Korea", "Germany opportunity card Japan Korea care work visa India", "Abroad Jobs", False),
+    ("Passport Visa Update", "passport visa appointment rules update India 2026", "Abroad Jobs", False),
+    ("NRI Guidance", "NRI students Telugu workers abroad guidance news", "Abroad Jobs", False),
+    ("Overseas Scholarship", "overseas scholarship fellowship for Indian students 2026", "Abroad Jobs", False),
 ]
 
 SOURCES_GRID = [

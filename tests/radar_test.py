@@ -186,6 +186,7 @@ def main():
             "Private Jobs", "Software Jobs", "Part Time Jobs", "Walkin Jobs",
             "Hall Tickets", "Results", "Internships", "Online Education",
             "Outsourcing Jobs", "Current Affairs", "Exam Tips", "Upcoming Exams",
+            "Abroad Jobs",
             "Uncategorized"}
     assert cats <= LIVE, cats - LIVE
     names = " ".join(e["name"] for e in grid)

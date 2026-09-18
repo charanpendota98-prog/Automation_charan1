@@ -74,6 +74,13 @@ CATEGORY_SEEDS = {
         "Telangana ePASS / TS scholarships, AP Jnanabhumi / JVD schemes, "
         "NMMS, state minority & BC scholarships"
     ),
+    "Abroad Jobs": (
+        "Gulf jobs for Indians (UAE, Saudi, Qatar, Kuwait, Oman, Bahrain), eMigrate/MEA "
+        "protector of emigrants rules, overseas recruitment drives, IELTS/PTE/TOEFL test "
+        "dates and score requirements, study abroad + work visa updates (Canada express "
+        "entry, UK skilled worker, Germany opportunity card, Australia skilled migration, "
+        "Japan/Korea care work), passport & visa appointment process, NRI student guidance"
+    ),
     "Govt Jobs": (
         "SSC CGL/CHSL/MTS/GD, RRB NTPC & Group D, UPSC Civil Services, "
         "TSPSC & APPSC Group exams, TS/AP Police SI & Constable, "

@@ -87,7 +87,7 @@ sudo systemctl restart autoblog.timer
 
 | Em | Command |
 |---|---|
-| Anni 10,682 keywords + CSV export | `run.py --keyword-universe` |
+| Anni 11,192 keywords + CSV export | `run.py --keyword-universe` |
 | Oka keyword ki top-post blueprint (title/meta/outline/keywords/schema/E-E-A-T) | `run.py --top-post "TSPSC Group 2 2026 notification"` |
 | 90-day publishing calendar (pillar + support mix) | `run.py --top-post-plan --top-post-days 90` |
 | Blueprint nunchi article generate + draft | `run.py --top-post "NSP Scholarship last date" --publish-top-post` |

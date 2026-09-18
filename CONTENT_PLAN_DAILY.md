@@ -6,7 +6,7 @@ verify chestundi).
 
 ---
 
-## 1) PILLARS — 16 categories (TS + AP students kosam)
+## 1) PILLARS — 17 categories (TS + AP students kosam)
 
 | # | Pillar | Enduku | Priority tickets | Official sources |
 |---|--------|--------|------------------|------------------|
@@ -27,14 +27,17 @@ verify chestundi).
 | 15 | **Internships** | internships, training programs | 0 | 4 |
 | 16 | **Online Education** | admissions, counselling, online degrees | 0 | 15 |
 
-**Total: 129 official-source queries**, 4×/day check (daily hot-list + rotation).
+**Total: 143 official-source queries · 11,192 keywords (203 అంశాలు)**, 4×/day check (daily hot-list + rotation).
 Kotha pillar ki source ledu anukunte: `autoblog/sources_grid.py` lo add cheyandi —
 `tests/v50_test.py::test_official_source_grid_covers_every_pillar` ventane fail avutundi.
+
+### విదేశీ ఉద్యోగాలు (Abroad Jobs) — 17వ pillar
+Gulf/abroad jobs, visa, IELTS/PTE, study abroad, NRI guidance · roju 1–2 posts · Tier-1 ట్రాఫిక్ + high-CPC
 
 ## 2) ROJU PLAN (daily rhythm)
 
 ```
-06:00  RADAR run      → 129 sources check → edu-relevant items → topic queue
+06:00  RADAR run      → 143 sources check → edu-relevant items → topic queue
 07:00  DEEP run       → top queued topic: multi-source facts + cross-verify
        (NotebookLM brief optional — unte inka strong)
 08:00  DRAFTS         → 3-5 drafts (pillars rotate: jobs → scholarships →
@@ -105,4 +108,4 @@ AdSense approval leda revenue evi guarantee cheyyaledu. Final numbers mee Search
 Console / AdSense account lo ne vastayi.
 
 ---
-*Last updated: v50 (2026-09-18) — 16 pillars · 129 official sources · 36/36 test suites · 82/82 runtime checks*
+*Last updated: v58 (2026-09-18) — 17 pillars · 143 official sources · 44/44 test suites · 109/109 runtime checks*

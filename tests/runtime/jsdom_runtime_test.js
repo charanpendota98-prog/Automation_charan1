@@ -263,11 +263,11 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
   ok("no Romanized Tenglish words in visible text", tenglishHits.length === 0, "hits=" + tenglishHits.join(","));
   const trust = document.getElementById("trust");
   ok("trust section: 100% verify headline (Telugu)", !!trust && /100%/.test(trust.textContent) && /ధృవీకరించి/.test(trust.textContent));
-  ok("trust proof tiles: 43/43 + 11/11 + 108/108 + 10,682",
-     /43\/43/.test(trust.textContent) && /11\/11/.test(trust.textContent) &&
-     /108\/108/.test(trust.textContent) && /10,682/.test(trust.textContent));
-  ok("trust tiles prove pillar + source coverage (16 categories · 129 sources)",
-     /16/.test(trust.textContent) && /129/.test(trust.textContent) &&
+  ok("trust proof tiles: 44/44 + 11/11 + 109/109 + 11,192",
+     /44\/44/.test(trust.textContent) && /11\/11/.test(trust.textContent) &&
+     /109\/109/.test(trust.textContent) && /11,192/.test(trust.textContent));
+  ok("trust tiles prove pillar + source coverage (17 categories · 143 sources)",
+     /17/.test(trust.textContent) && /143/.test(trust.textContent) &&
      /అవుట్‌సోర్సింగ్/.test(trust.textContent) && /ప్రస్తుతాంశాలు/.test(trust.textContent));
   ok("trust has 5 verification gates incl. deep cross-verification (v44)",
      trust.querySelectorAll(".vstep").length === 5 && /క్రాస్-వెరిఫికేషన్/.test(trust.textContent));
@@ -318,9 +318,9 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
   const jobsDrop = document.querySelector(".has-drop .drop");
   const jobsItems = jobsDrop ? Array.from(jobsDrop.querySelectorAll("a")) : [];
   const jobsCats = jobsItems.map(a => a.getAttribute("data-goto-cat")).filter(Boolean);
-  ok("ఉద్యోగాలు dropdown: 8 category links (TS/AP/Central/Walk-in/Software/Private/Outsourcing/Part-time)",
-     jobsCats.length === 8, "cats=" + jobsCats.join(","));
-  for (const want of ["ts-jobs", "ap-jobs", "central-jobs", "walkin", "software", "private", "outsourcing", "parttime"]) {
+  ok("ఉద్యోగాలు dropdown: 9 category links (+ విదేశీ/గల్ఫ్ pillar)",
+     jobsCats.length === 9, "cats=" + jobsCats.join(","));
+  for (const want of ["ts-jobs", "ap-jobs", "central-jobs", "abroad", "walkin", "software", "private", "outsourcing", "parttime"]) {
     ok("jobs menu has " + want, jobsCats.indexOf(want) > -1);
   }
   const examDrop = document.querySelectorAll(".has-drop .drop")[1];
@@ -330,7 +330,7 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
      "cats=" + examCats.join(","));
   const chips = Array.from(document.querySelectorAll(".chip"));
   const chipCats = chips.map(c => c.getAttribute("data-cat"));
-  ok("category chip row present with 15 filters (all + 14 pillars)", chips.length === 15, "chips=" + chips.length);
+  ok("category chip row present with 16 filters (all + 15 pillars)", chips.length === 16, "chips=" + chips.length);
   const articleCats = new Set();
   Array.from(document.querySelectorAll("#grid .news")).forEach(n =>
     (n.getAttribute("data-cat") || "").split(" ").forEach(c => c && articleCats.add(c)));

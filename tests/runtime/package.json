@@ -7,6 +7,6 @@
     "test": "node jsdom_runtime_test.js"
   },
   "dependencies": {
-    "jsdom": "^24.0.0"
+    "jsdom": "^24.1.3"
   }
 }

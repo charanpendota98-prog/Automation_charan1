@@ -151,7 +151,28 @@ Message lo reason undi — exact ga fix cheyandi:
 ## ⚠️ Honest note
 Perfect = **machine gates + human 5-min verify**. Gates mistakes ramigadu (conflicts/stale/dates/originality), kaani official numbers mee mata tho final check — AdSense/Google/reputation thartham lo idi matrame safety.
 
-*Last updated: v57 (2026-09-18) — AUTO AD ADVISOR: 9 checks · 43/43 suites · 108/108 runtime checks*
+*Last updated: v58 (2026-09-18) — 17వ pillar (Abroad Jobs) + Tier-1 revenue line: 9 checks · 44/44 suites · 109/109 runtime checks*
+
+---
+
+## PART 17 — v58: విదేశీ ఉద్యోగాలు (Abroad Jobs) — Tier-1 revenue unlock
+
+```
+PILLAR   : Abroad Jobs (17వది) — Gulf/abroad jobs · visa · IELTS/PTE · study abroad · NRI
+WHY      : Tier-1 (US/UK/Gulf) ట్రాఫిక్ + high-CPC (visa, IELTS, education loan,
+           consultancy) → AdSense RPM 3–5x + Raptive/Mediavine eligibility ki daari
+CODE     : config CATEGORIES + priority 4 · pipeline rule (LIST MODATI — "గల్ఫ్
+           ఉద్యోగాలు" → Abroad, Central kaadu) · Gemini CATEGORY_SEEDS ·
+           14 sources (eMigrate/MEA/IELTS/Study abroad/Canada/UK…), 4 daily
+SITE     : nav dropdown + chip "విదేశీ ఉద్యోగాలు" + mobile link + #grid card
+           tiles: 17 content categories · 143 official sources · 11,192 keywords
+KEYWORDS : top_post ENTITIES 188 → 203 (+15 abroad: Gulf/eMigrate/IELTS/PTE/Canada…)
+           universe 10,682 → 11,192 (510 abroad keywords) · exam-mechanics intents skip
+TOP_POST : LIVE_CATEGORIES lo 17 pillars (mundu 12 matrame — 5 pillars
+           "Online Education" ki map ayyevi!) + abroad intent filter
+ADVISOR  : Tier-1 gap unte — 'విదేశీ ఉద్యోగాలు (Abroad Jobs)' pillar posts cheyyamani cheptundi
+CLASSIFY : "Dubai jobs", "IELTS exam date", "గల్ఫ్ ఉద్యోగాలు", "Canada work visa" → Abroad Jobs
+```
 
 ---
 

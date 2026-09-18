@@ -9,11 +9,11 @@ Ee doc = okka page lo motham. Kramam ga cheyyandi.
 
 | Item | Proof |
 |---|---|
-| Test suites | **43/43** pass (`python run.py --test-all`) |
+| Test suites | **44/44** pass (`python run.py --test-all`) |
 | Production check | **11/11** pass (`python run.py --production-audit`) |
 | Browser runtime | **108/108** checks (`node tests/runtime/jsdom_runtime_test.js`) |
 | Deploy check | 8 ok · 4 warn · 0 fail (`python run.py --deploy-check`) |
-| Website | 16 categories · 129 sources · 10,682 keywords · menu + chips |
+| Website | 17 categories · 143 sources · 11,192 keywords · menu + chips |
 | Ads | AdSense gate · sponsor console · rate card · house ads |
 | Safety | QA 80 · originality 72% · manual approval · corrections email |
 | Crash-proof | systemd restart · 2-min watchdog · backups · /healthz |
@@ -82,7 +82,7 @@ UptimeRobot → `https://exam.studentup.in/healthz` (5-min ping) — watchdog ki
 
 | Time | Pani | Evaru |
 |---|---|---|
-| 08:00 | 3–5 posts (16 pillars) → Telegram ✅/🗑️ | bot + **mee approval** |
+| 08:00 | 3–5 posts (17 pillars) → Telegram ✅/🗑️ | bot + **mee approval** |
 | 09:00, 18:00 | Current affairs + breaking refresh | auto |
 | Roju | Poll + quiz update + auto-refresh purana posts | auto |
 | Roju | 📞 లీడ్లు చూసి 2 అమ్మకాల మెసేజ్‌లు (కళాశాల/కోచింగ్) పంపండి | **మీరు (15 నిమిషాలు)** |
@@ -118,4 +118,4 @@ Detail: `python tools/revenue_estimate.py --views 10k`
 Clickbait titles · fake clicks · popups · "Google tricks" · ad ni content laaga dhaachadam ·
 job guarantee promises (advertisers kuda). Ivi AdSense ban + trust damage.
 
-*Last updated: v57 (2026-09-18) · 43/43 suites · 108/108 runtime · 11/11 production checks*
+*Last updated: v58 (2026-09-18) · 44/44 suites · 109/109 runtime · 11/11 production checks*
