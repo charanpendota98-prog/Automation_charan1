@@ -16,6 +16,15 @@ Ee doc = "adi best?" + "highest revenue ads" + "mana valu kuda post pettelaga" +
 Reason: website = static/WP (MilesWeb perfect) · bot + portal = long-running processes + cron
 + watchdog (VM perfect). Rendu dochulu: **motham deploy = website MilesWeb, engine Oracle**.
 
+## 0.1) Live calculator — "10k views vasthe entha?"
+
+```bash
+python tools/revenue_estimate.py --views 10k     # leda 50k / 1l / 3l / 1m
+```
+10,000 నెలవారీ views → **₹400–₹4,200/నెల** (AdSense ₹400–₹2,500 + 0–1 sponsor ₹0–₹2,700).
+1,00,000 views → ₹5,000–₹23,100. Tool rate card ni LIVE advertise page nunchi chaduvutundi
+(prices okate chota untayi), house ads ni revenue lo count cheyyadu.
+
 ## 1) Revenue lines (4 — anni ippude ready)
 
 | # | Line | Status | Ekkada control |

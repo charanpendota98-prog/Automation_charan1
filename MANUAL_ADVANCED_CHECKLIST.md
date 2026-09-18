@@ -151,7 +151,21 @@ Message lo reason undi — exact ga fix cheyandi:
 ## ⚠️ Honest note
 Perfect = **machine gates + human 5-min verify**. Gates mistakes ramigadu (conflicts/stale/dates/originality), kaani official numbers mee mata tho final check — AdSense/Google/reputation thartham lo idi matrame safety.
 
-*Last updated: v52 (2026-09-18) — advertise page + rate card + house ads: 14 tests · 38/38 suites · 102/102 runtime checks*
+*Last updated: v53 (2026-09-18) — revenue estimator + go-live checklist: 11 checks · 39/39 suites · 102/102 runtime checks*
+
+---
+
+## PART 12 — v53: REVENUE CALCULATOR + GO-LIVE
+
+```
+Tool      : tools/revenue_estimate.py  (--views 10k / 50k / 1l / 1m / --json)
+Source    : rate card LIVE ga preview/pages/advertise.html nunchi (okate chota prices)
+10k views : ₹400–₹4,200/నెల   · 1L views: ₹5,000–₹23,100 · 3L: ₹15,000–₹61,200
+Honesty   : RPM bands ₹40–₹250/1000 (Indian jobs/education 2026 benchmarks) ·
+            house ads ₹0 · no-guarantee line output lo untundi
+Deploy    : GO_LIVE_CHECKLIST.md — 5 owner panulu (domain/WP/Gemini/Telegram/Oracle) →
+            .env → production-audit 0 blockers → MilesWeb + Oracle VM → UptimeRobot
+```
 
 ---
 

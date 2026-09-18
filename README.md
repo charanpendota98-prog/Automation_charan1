@@ -1171,6 +1171,7 @@ Marpali te: `.env` edit chesi scheduler ni restart cheyandi: `sudo systemctl res
 ├── DEPLOY_ORACLE_CLOUD.md  # v51 Oracle Always Free vs MilesWeb split + crash-proofing
 ├── CONTENT_PLAN_DAILY.md   # v50 daily plan: 16 pillars, rhythm, refresh, SEO gates
 ├── AD_REVENUE_PLAYBOOK.md  # v52 revenue lines, rate card, sponsor + house ad flows
+├── GO_LIVE_CHECKLIST.md    # v53 deploy order + owner actions + revenue table
 ├── deploy/                 # systemd units · Caddyfile · nginx · Dockerfile · compose · backup.sh · install-vps.sh
 ├── autoblog/deploy_check.py # deploy readiness (deps/env/disk/port + real /healthz boot)
 ├── autoblog/site_audit.py  # v41 deep audit + safe autofix + live publish gate
@@ -1186,6 +1187,7 @@ Marpali te: `.env` edit chesi scheduler ni restart cheyandi: `sudo systemctl res
 │   │                       #      /api/admin/ads CRUD → ads/inventory.json
 │   └── demo.py             #      sample exam seed (--exam-portal-demo)
 ├── tools/
-│   └── ui_smoke.mjs        # v39 optional jsdom full-flow UI smoke test
+│   ├── ui_smoke.mjs        # v39 optional jsdom full-flow UI smoke test
+│   └── revenue_estimate.py # v53 ad revenue calculator (--views 10k / 1l / --json)
 └── tests/                  # end-to-end tests (fake WP/Telegram/source servers)
 ```
