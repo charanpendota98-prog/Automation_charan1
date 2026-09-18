@@ -151,7 +151,22 @@ Message lo reason undi — exact ga fix cheyandi:
 ## ⚠️ Honest note
 Perfect = **machine gates + human 5-min verify**. Gates mistakes ramigadu (conflicts/stale/dates/originality), kaani official numbers mee mata tho final check — AdSense/Google/reputation thartham lo idi matrame safety.
 
-*Last updated: v51 (2026-09-18) — category menu (TS/AP/Central/Walk-in/Software/Private/Hall tickets/Results) + auto-heal watchdog: 10 tests · 37/37 suites · 99/99 runtime checks*
+*Last updated: v52 (2026-09-18) — advertise page + rate card + house ads: 14 tests · 38/38 suites · 102/102 runtime checks*
+
+---
+
+## PART 11 — v52: PRIVATE ADS + MANA SONTA ADS (house)
+
+```
+Advertise page : preview/pages/advertise.html  (rate card ₹1,000–₹8,000/నెల, 3-step booking)
+Private ad     : advertiser email/Telegram → admin "📢 ప్రకటనలు" → SPONSORED label tho live
+House ads      : ads/house.json (StudentUp sevalu · quiz · exam) — sponsor lekapote slot fill
+                 SPONSORED label veyyamu ("StudentUp · మా సేవ") · HOUSE_AD_ENABLED=0 tho off
+Gaps           : paid sponsor unte ade mundu; house ad rotation lo turn teesukuntundi
+Revenue plan   : AD_REVENUE_PLAYBOOK.md — 4 lines, levers, cheyyakudadu list
+```
+Rate card: leaderboard ₹4,000 · mid-article ₹3,500 · in-feed ₹3,000 · sidebar ₹2,000 ·
+policy ₹1,000 · **full package ₹8,000/నెల**.
 
 ---
 

@@ -79,6 +79,10 @@ MAX_PERSONAL_AD_SLOTS = int(_get("MAX_PERSONAL_AD_SLOTS", "2"))
 AD_FALLBACK_ALWAYS = _get("AD_FALLBACK_ALWAYS", "1") not in ("0", "false", "no")
 # Inventory path override (default: repo ads/inventory.json)
 ADS_INVENTORY_PATH = _get("ADS_INVENTORY_PATH", "")
+# v52: house ads — StudentUp sonta promos. Sponsor ad lekapoyinappudu slot
+# khali ga undakunda ivi rotation lo vastayi (SPONSORED label veyyamu).
+HOUSE_AD_ENABLED = _get("HOUSE_AD_ENABLED", "1") not in ("0", "false", "no")
+HOUSE_ADS_PATH = _get("HOUSE_ADS_PATH", "")
 # v44 DEEP POST ENGINE — deep analyse + cross-source verification.
 # ≥ DEEP_MIN_SOURCES sources unna posts ki "In-Depth Analysis" section +
 # perfect gate (conflicts/stale dates live publish lo block; drafts lo flags).

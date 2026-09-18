@@ -142,6 +142,48 @@ def _fairness_key(ad: Dict, rot: Dict[str, str]) -> str:
     return rot.get(ad.get("id") or "", "")
 
 
+def house_ads_path() -> Path:
+    """House ads (StudentUp sonta promos) — sponsor ad lekapoyinappudu ivi."""
+    env = (getattr(config, "HOUSE_ADS_PATH", "") or "").strip()
+    if env:
+        return Path(env)
+    return _rotation_path().parent / "house.json"
+
+
+def load_house_ads(path: Optional[Path] = None) -> List[Dict]:
+    """Load active house ads; missing/broken file → empty (never blocks posting)."""
+    if getattr(config, "HOUSE_AD_ENABLED", True) is False:
+        return []
+    p = path or house_ads_path()
+    try:
+        data = json.loads(Path(p).read_text(encoding="utf-8"))
+    except Exception:  # noqa: BLE001
+        return []
+    out = []
+    for ad in (data.get("ads") or []):
+        if isinstance(ad, dict) and ad.get("active", True) and (ad.get("link") or "").strip():
+            ad = dict(ad)
+            ad["house"] = True
+            out.append(ad)
+    return out
+
+
+def select_house_ads(inv: Optional[Dict] = None, today: Optional[date] = None,
+                     limit: int = 1, record: bool = True,
+                     path: Optional[Path] = None) -> List[Dict]:
+    """Rotating house ads — paid sponsors always win, house fills the gap."""
+    ads = load_house_ads(path)
+    if not ads:
+        return []
+    today = today or date.today()
+    rot = _load_rotation()
+    ads = sorted(ads, key=lambda a: (_fairness_key(a, rot), a.get("id", "")))
+    picked = ads[:max(1, limit)]
+    if picked and record:
+        _mark_shown(picked, today)
+    return picked
+
+
 def select_ads(art: Dict, inv: Dict, today: Optional[date] = None,
                record: bool = True) -> List[Dict]:
     """Pick which ads go into this article.
@@ -187,14 +229,15 @@ def select_ads(art: Dict, inv: Dict, today: Optional[date] = None,
 
 # ---------------------------------------------------------------- rendering
 
-def utm_url(link: str, ad_id: str, slot: str, pol: Dict) -> str:
+def utm_url(link: str, ad_id: str, slot: str, pol: Dict,
+            medium: str = "sponsored") -> str:
     """Tag the click so GA4/GSC can measure it. Preserves existing query."""
     parsed = urlparse(link)
     if not parsed.netloc:
         return link
     q = dict(re.findall(r"([^&=]+)=([^&]*)", parsed.query or ""))
     for key, val in (("utm_source", pol["utm_source"]),
-                     ("utm_medium", "sponsored"),
+                     ("utm_medium", medium),
                      ("utm_campaign", ad_id),
                      ("utm_content", slot)):
         q.setdefault(key, val)
@@ -213,7 +256,10 @@ def render_ad(ad: Dict, slot: str, pol: Dict) -> str:
     gradient fallback keeps the block clean without assets.
     """
     layout = (ad.get("layout") or "banner").strip()
-    label = _esc(pol["label"]) or "Sponsored"
+    is_house = bool(ad.get("house"))
+    # v52: house ads are StudentUp's own promos — never labelled "Sponsored"
+    label = (_esc(ad.get("label")) or "StudentUp") if is_house \
+        else (_esc(pol["label"]) or "Sponsored")
     kicker = _esc(ad.get("label") or ad.get("type") or "Advertisement")
     title = _esc(ad.get("title") or ad.get("name") or "")
     desc = _esc(ad.get("description") or "")
@@ -222,10 +268,13 @@ def render_ad(ad: Dict, slot: str, pol: Dict) -> str:
     parsed = urlparse(link)
     if parsed.scheme not in ("http", "https") or not parsed.netloc:
         return ""  # unsafe link → drop the block entirely
-    url = _esc(utm_url(link, ad.get("id", "ad"), slot, pol), quote=True)
-    rel = _esc(pol["rel"])
+    url = _esc(utm_url(link, ad.get("id", "ad"), slot, pol,
+                       medium="house" if is_house else "sponsored"), quote=True)
+    # paid partner links carry rel="sponsored nofollow"; own promos do not
+    rel = _esc("noopener") if is_house else _esc(pol["rel"])
     demo_note = ('<span class="su-ad-note">demo</span>'
                  if ad.get("demo") else "")
+    aria = "StudentUp ప్రచురణ" if is_house else "Sponsored content"
     img = (ad.get("image") or "").strip()
     img_html = ""
     if img:
@@ -237,28 +286,32 @@ def render_ad(ad: Dict, slot: str, pol: Dict) -> str:
                         f'border-radius:12px;display:block">')
     if layout == "card":
         return (
-            '<aside class="su-ad su-ad-card" aria-label="Sponsored content" '
+            f'<aside class="su-ad su-ad-card" aria-label="{aria}" '
             f'data-ad="{_esc(ad.get("id", ""), quote=True)}" data-slot="{_esc(slot)}">'
             f'<div class="su-ad-kicker">{label} · {kicker}{demo_note}</div>'
             f'<div class="su-ad-title">{title}</div>'
             + (f'<p class="su-ad-desc">{desc}</p>' if desc else "")
             + f'<a class="su-ad-cta" href="{url}" target="_blank" rel="{rel}">{cta} →</a>'
-            '<div class="su-ad-disc">Advertisement — partner ki direct link; '
-            'mana content separate ga untundi.</div></aside>'
+            + ('<div class="su-ad-disc">StudentUp సొంత ప్రచురణ — పెయిడ్ ప్రకటన కాదు; '
+               'మా సేవల గురించి మాత్రమే.</div></aside>' if is_house else
+               '<div class="su-ad-disc">Advertisement — partner ki direct link; '
+               'mana content separate ga untundi.</div></aside>')
         )
     # banner (default)
     return (
-        '<section class="su-ad su-ad-banner" aria-label="Sponsored content" '
+        f'<section class="su-ad su-ad-banner" aria-label="{aria}" '
         f'data-ad="{_esc(ad.get("id", ""), quote=True)}" data-slot="{_esc(slot)}" '
         'style="min-height:150px">'
-        f'<div class="su-ad-kicker">SPONSORED · {kicker}{demo_note}</div>'
+        f'<div class="su-ad-kicker">{label} · {kicker}{demo_note}</div>'
         + (img_html or '<div class="su-ad-grad" aria-hidden="true"></div>')
         + f'<div class="su-ad-title">{title}</div>'
         + (f'<p class="su-ad-desc">{desc}</p>' if desc else "")
         + f'<a class="su-ad-cta" href="{url}" target="_blank" rel="{rel}">{cta} →</a>'
-        '<div class="su-ad-disc">Sponsored — ee advertisement mee search results lo '
-        'content kuda aa ani mishtapadu chesukovadu; official notification links '
-        'site main content lo matrame untayi.</div></section>'
+        + ('<div class="su-ad-disc">StudentUp సొంత ప్రచురణ — పెయిడ్ ప్రకటన కాదు; '
+           'మా సేవల గురించి మాత్రమే.</div></section>' if is_house else
+           '<div class="su-ad-disc">Sponsored — ee advertisement mee search results lo '
+           'content kuda aa ani mishtapadu chesukovadu; official notification links '
+           'site main content lo matrame untayi.</div></section>')
     )
 
 
@@ -366,8 +419,13 @@ def inject(html_in: str, art: Dict, inv: Optional[Dict] = None,
         return html_in, []
     inv = inv if inv is not None else load_inventory()
     ads = select_ads(art, inv)
+    house = False
     if not ads:
-        return html_in, []
+        # v52: sponsor lekapoyina slot khali ga undakudadu → house ads (own promos)
+        ads = select_house_ads(today=None, limit=1)
+        house = bool(ads)
+        if not ads:
+            return html_in, []
     # CSS once
     if "su-ad-kicker" not in html_in:
         html_in = html_in + AD_CSS if html_in.rstrip().endswith("</body>") \
@@ -393,7 +451,8 @@ def inject(html_in: str, art: Dict, inv: Optional[Dict] = None,
         html_in = html_in[:pos] + "\n" + block + "\n" + html_in[pos:]
         report.append({"ad": ad.get("id"), "slot": slot, "status":
                        "inserted" if not dry else "planned",
-                       "layout": ad.get("layout") or "banner"})
+                       "layout": ad.get("layout") or "banner",
+                       "kind": "house" if ad.get("house") else "sponsor"})
     return html_in, report
 
 

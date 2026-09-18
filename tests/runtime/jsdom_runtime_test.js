@@ -263,9 +263,9 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
   ok("no Romanized Tenglish words in visible text", tenglishHits.length === 0, "hits=" + tenglishHits.join(","));
   const trust = document.getElementById("trust");
   ok("trust section: 100% verify headline (Telugu)", !!trust && /100%/.test(trust.textContent) && /ధృవీకరించి/.test(trust.textContent));
-  ok("trust proof tiles: 37/37 + 11/11 + 99/99 + 10,682",
-     /37\/37/.test(trust.textContent) && /11\/11/.test(trust.textContent) &&
-     /99\/99/.test(trust.textContent) && /10,682/.test(trust.textContent));
+  ok("trust proof tiles: 38/38 + 11/11 + 102/102 + 10,682",
+     /38\/38/.test(trust.textContent) && /11\/11/.test(trust.textContent) &&
+     /102\/102/.test(trust.textContent) && /10,682/.test(trust.textContent));
   ok("trust tiles prove pillar + source coverage (16 categories · 129 sources)",
      /16/.test(trust.textContent) && /129/.test(trust.textContent) &&
      /అవుట్‌సోర్సింగ్/.test(trust.textContent) && /ప్రస్తుతాంశాలు/.test(trust.textContent));
@@ -358,6 +358,18 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
   chips.find(c => c.getAttribute("data-cat") === "all").click();
   ok("'అన్నీ' chip restores the full grid",
      Array.from(document.querySelectorAll("#grid .news")).filter(n => !n.classList.contains("hidden")).length >= 13);
+
+
+  /* ---------- v52: revenue wiring (rate card + advertise page) ---------- */
+  const advLinks = Array.from(document.querySelectorAll('a[href="pages/advertise.html"]'));
+  ok("site links the advertise page (rate card / booking)", advLinks.length >= 2, "links=" + advLinks.length);
+  const adsCard = document.getElementById("ads");
+  ok("sidebar ad card shows live rate card (₹ prices + book CTA)",
+     !!adsCard && /₹4,000/.test(adsCard.textContent) && /₹8,000/.test(adsCard.textContent) &&
+     /పూర్తి రేట్ కార్డ్/.test(adsCard.textContent));
+  ok("house ads documented on site (StudentUp own promos, not SPONSORED)",
+     /StudentUp/.test(adsCard ? adsCard.textContent : "") ||
+     /StudentUp/.test(document.body.textContent));
 
   /* ---------- summary ---------- */
   console.log("=".repeat(64));

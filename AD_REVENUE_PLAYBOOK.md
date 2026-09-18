@@ -1,0 +1,98 @@
+# AD REVENUE PLAYBOOK (v52) — highest revenue, policy-safe
+
+Ee doc = "adi best?" + "highest revenue ads" + "mana valu kuda post pettelaga" +
+"private ads kuda pettelaga" — anni answers okka chota.
+
+---
+
+## 0) BEST OPTION (recommendation)
+
+| Priority | Setup | Enduku best |
+|---|---|---|
+| ⭐ **Recommended** | **MilesWeb** (website + WordPress) **+ Oracle Cloud Always Free VM** (portal + bot + watchdog) | Website fast & cheap; portal/bot 24×7 + auto-heal + mee data mee control. Rendu kalipi ~₹0–500/నెల |
+| Budget-only | MilesWeb lone anni (portal WSGI + cron) | Okka bill, okka panel — bot heavy runs lo slow avvochu |
+| Scale (100+ concurrent exam students) | Oracle PAYG (4 OCPU/24 GB free allowance) leda ₹500/నెల VPS | SQLite → Postgres ki move cheyyali |
+
+Reason: website = static/WP (MilesWeb perfect) · bot + portal = long-running processes + cron
++ watchdog (VM perfect). Rendu dochulu: **motham deploy = website MilesWeb, engine Oracle**.
+
+## 1) Revenue lines (4 — anni ippude ready)
+
+| # | Line | Status | Ekkada control |
+|---|---|---|---|
+| 1 | **Google AdSense** | `ADSENSE_APPROVED=0` (approval tarvata auto ON); max 1 personal ad/post | `.env` |
+| 2 | **Direct sponsors** (private ads) | ✅ LIVE — rate card + booking page | `pages/advertise.html` + admin console "📢 ప్రకటనలు" |
+| 3 | **House ads** (mana sonta promos) | ✅ LIVE — slot khali ga undadu | `ads/house.json` |
+| 4 | **Sponsor packages** (full package ₹8,000/నెల) | ✅ rate card ready | advertise page |
+
+### Rate card (site lo live)
+| Slot | ఎక్కడ | నెలకు |
+|---|---|---|
+| Top leaderboard | home header kinda (andariki) | ₹4,000 |
+| Mid-article | prathi article quick-answer tarvata | ₹3,500 |
+| In-feed card | news grid madhyalo | ₹3,000 |
+| Sidebar sticky | desktop pakkana | ₹2,000 |
+| Policy pages inline | About/Contact/Editorial | ₹1,000 |
+| **Full package** | anni slots + bot articles | **₹8,000** |
+
+## 2) Private ads (sponsors) — end-to-end flow
+
+```
+Advertiser → pages/advertise.html → email/Telegram (checklist: peru, pattanam, slot, nelalu, link, banner)
+   ↓
+Owner → admin console → "📢 ప్రకటనలు" → add (type: college_banner|coaching|shop|service|sponsorship)
+   ↓
+ads/inventory.json → website slots + bot articles (SPONSORED label, rel=sponsored nofollow)
+   ↓
+start/end dates → kaalapramanam ayyaka auto ga aagutundi
+```
+* **Private ad = paid sponsor ad** → eppudu SPONSORED label + `rel="sponsored nofollow"` + `utm_*` tag
+  (GA4 lo ee campaign clicks chudochu).
+* Google policy safe: max 2/post, link ki 150-char dooram, CLS-safe, popup ledu.
+
+## 3) House ads (mana valu kuda post pettelaga) — idi kotha feature
+
+```
+ads/house.json → StudentUp sonta promos (services · daily quiz · live exam)
+Kaani: SPONSORED label VEYYAMU — "StudentUp · మా సేవ" ani verega label
+Paid sponsor unte → sponsor FIRST (rotation + demo/real priority)
+House ads kuda rotation lo turn teesukuntayi (ads/rotation.json)
+Off cheyyali ante: .env → HOUSE_AD_ENABLED=0
+```
+Ante: **edi miss avvadu, slot khali ga kanipinchadu, kaani nijam kadu ani cheppamu** — paid ad ki
+SPONSORED, mana ad ki "StudentUp సేవ".
+
+## 4) "Anni generate ayyaaya?" — status board
+
+| Item | Status |
+|---|---|
+| 16 content pillars + 129 sources | ✅ |
+| Rank Math fields + canonical + JSON-LD + IndexNow | ✅ |
+| Manual gate (draft → Telegram ✅) + QA 80 + originality 72% | ✅ |
+| Daily poll + exam portal + admin ads console | ✅ |
+| Category menu (TS/AP/Central/Walk-in/Software/Private/Hall tickets/Results…) | ✅ |
+| Policy pages (About/Contact/Privacy/Disclaimer/Editorial) + robots/sitemap/favicon | ✅ |
+| **Advertise page + rate card + booking flow** | ✅ (v52) |
+| **House ads (mana sonta ads)** | ✅ (v52) |
+| Watchdog auto-heal + backups | ✅ |
+| AdSense ON | ⏳ `ADSENSE_APPROVED=1` pettagane (approval tarvata) |
+| Oracle VM + MilesWeb accounts, domain, GA4, Search Console | ⏳ mee accounts lo (nen guide cheyyagalanu) |
+
+## 5) Highest revenue — nijamaina levers (order lo)
+
+1. **Sponsor sales** (highest ₹ per slot) — advertise page + local outreach (colleges, coaching,
+   stationery, hostels, hospitals, banks, mobile shops). 1 full package = ₹8,000/నెల.
+2. **AdSense** — approve ayyaka auto; jobs/scholarships pages ki CPC ekkuva.
+3. **Repeat traffic** — daily poll, daily current affairs, auto-refresh → sessions per user ↑ → ad
+   impressions ↑.
+4. **Refresh + IndexNow** — purana posts malli crawl → impressions ↑.
+5. **House ads** — traffic ni quiz/services/exam ki pampistundi (mana own funnel).
+
+⛔ **Cheyyakudadu (once and for all):** clickbait titles, fake clicks, popup/interstitial,
+"Google tricks", ad ni content laaga dhaachadam, incentive clicks. Ivi AdSense ban + reputation damage.
+
+⚠️ **Nijam:** evi rank/revenue guarantee cheyyavu. Ee setup mistakes taggistundi + revenue
+opportunities add chestundi. Real numbers mee AdSense / Search Console / sponsor contracts lo ne.
+
+---
+*Last updated: v52 (2026-09-18) · 38/38 test suites · 102/102 runtime checks*
