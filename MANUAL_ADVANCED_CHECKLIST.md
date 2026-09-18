@@ -151,7 +151,27 @@ Message lo reason undi — exact ga fix cheyandi:
 ## ⚠️ Honest note
 Perfect = **machine gates + human 5-min verify**. Gates mistakes ramigadu (conflicts/stale/dates/originality), kaani official numbers mee mata tho final check — AdSense/Google/reputation thartham lo idi matrame safety.
 
-*Last updated: v48 (2026-09-18) — Real policy pages + robots/sitemap + "never miss an ad" rotation: 15 tests · 34/34 suites · 76/76 browser-runtime checks*
+*Last updated: v49 (2026-09-18) — MilesWeb/cPanel deployability: 8 WSGI tests · 35/35 suites · 76/76 browser-runtime checks*
+
+---
+
+## PART 8 — v49: MILESWEB / cPanel LO RUN CHEYYADAM
+
+Full guide: **DEPLOY_MILESWEB.md**
+
+```
+Website (static or WordPress)  → public_html          (పని చేస్తుంది ✔)
+Bot (Python)                   → cPanel Python App + cron (5 cronjobs base plan)
+Exam portal (poll/admin/exam)  → passenger_wsgi.py  (MilesWeb "Setup Python App")
+Storage                        → python tools/prune_media.py [--apply]
+```
+- Portal ni WSGI ga run cheyyadam valla same features: `/exam`, `/admin`, `/poll/today`,
+  `/poll/vote`, ads API — `tests/v49_wsgi_test.py` lo 8 checks.
+- GitHub Actions cron **optional** (free) kaani: default branch lo ne fire avutundi,
+  15–45 నిమిషాలు delay avvochu, private repo free plan ki 2,000 min/month limit.
+  Predictable kaavali ante MilesWeb cron better.
+- Storage: site 276 KB · DB ~96 KB · 1 పోస్ట్/రోజు ≈ 6 MB/నెల → base plan 50 GB ki
+  ఎన్నేళ్లైనా సరిపోతుంది. Inodes (file count) important — prune tool vaadandi.
 
 ---
 

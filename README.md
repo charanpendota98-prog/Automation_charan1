@@ -1167,6 +1167,7 @@ Marpali te: `.env` edit chesi scheduler ni restart cheyandi: `sudo systemctl res
 │                           #      scorer, harden, gate, dominance calendar
 ├── ci/github-actions-tests.yml  # v41 CI — 30 suites × 3 py versions (copy to .github/workflows/)
 ├── DEPLOY.md               # deployment guide — VPS(systemd+Caddy) / Docker / PaaS
+├── DEPLOY_MILESWEB.md      # v49 cPanel/MilesWeb guide (Python App, cron, storage)
 ├── deploy/                 # systemd units · Caddyfile · nginx · Dockerfile · compose · backup.sh · install-vps.sh
 ├── autoblog/deploy_check.py # deploy readiness (deps/env/disk/port + real /healthz boot)
 ├── autoblog/site_audit.py  # v41 deep audit + safe autofix + live publish gate

@@ -258,8 +258,8 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
   ok("no Romanized Tenglish words in visible text", tenglishHits.length === 0, "hits=" + tenglishHits.join(","));
   const trust = document.getElementById("trust");
   ok("trust section: 100% verify headline (Telugu)", !!trust && /100%/.test(trust.textContent) && /ధృవీకరించి/.test(trust.textContent));
-  ok("trust proof tiles: 34/34 + 11/11 + 76/76 + 10,682",
-     /34\/34/.test(trust.textContent) && /11\/11/.test(trust.textContent) &&
+  ok("trust proof tiles: 35/35 + 11/11 + 76/76 + 10,682",
+     /35\/35/.test(trust.textContent) && /11\/11/.test(trust.textContent) &&
      /76\/76/.test(trust.textContent) && /10,682/.test(trust.textContent));
   ok("trust has 5 verification gates incl. deep cross-verification (v44)",
      trust.querySelectorAll(".vstep").length === 5 && /క్రాస్-వెరిఫికేషన్/.test(trust.textContent));
