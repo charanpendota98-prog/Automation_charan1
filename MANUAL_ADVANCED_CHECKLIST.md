@@ -170,7 +170,9 @@ THEME AUDIT (tools/theme_audit.py) — "theme lo mistakes" ni vetike static scan
     wp_footer · `<main id="main">` · breadcrumbs · author box
   · ads readiness (adsbygoogle · reserved height · lazy · gating) · ads.txt · consent
   · exit 1 on errors → tools/build_wp_theme.py LO hard gate + guardian + readiness
-  · run: .venv/bin/python tools/theme_audit.py   (24 files · 62 functions · 30 options)
+  · run: .venv/bin/python tools/theme_audit.py --verbose   (24 files · 63 functions ·
+    31 options) — --verbose lo info rows: dynamic prefix reads · dead admin fields ·
+    unused functions (aa row lu errors kaavu, kaani user confusion pattukuntayi)
 
 AD REVENUE ENGINE (theme — "highest ads ki miss avthunna" fix):
   · inc/consent.php      : Consent Mode v2 head lo (priority 1) — ad_storage/ad_user_data/
@@ -181,6 +183,10 @@ AD REVENUE ENGINE (theme — "highest ads ki miss avthunna" fix):
                            `google.com, pub-XXXX, DIRECT, f08c47fec0942fa0` auto line
                            → direct ad demand + reseller path open (noindex header)
   · inc/ads.php REWRITE  : AdSense-first render (client + slot unte unit) → house fallback
+                           · kotha IN-ARTICLE ad: the_content filter (priority 20) — content
+                             3rd paragraph tarvata okka unit (highest CTR) · density cap ·
+                             lazy · idempotency marker su-ad-anchor-mid (double render ledu) ·
+                             <3 paragraphs unte skip (thin content)
                            · page gating (admin/feed/404/search/attachment/policy out)
                            · density cap max_ads (default 4) · reserved min-height (CLS 0)
                            · lazy ads (leaderboard/anchor tappa) · ads_enabled master switch
@@ -213,7 +219,7 @@ SEMANTIC CHECKS (bot side — "blog rasthunnapudu inka chala check cheyali"):
 
 TESTS            : tests/v66_test.py = 12 checks (audit detection ability tho!) ·
                    run.py --test-all 52/52 · readiness 100/100 (26/26 system checks) ·
-                   pin gate 67 checks · zip 29 files
+                   pin gate 67 checks · zip 29 files 616 KB
 ```
 
 ---

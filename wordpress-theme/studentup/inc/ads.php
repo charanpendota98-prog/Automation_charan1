@@ -205,3 +205,46 @@ function studentup_ad( $place = 'mid' ) {
 	echo '<div class="su-ad-disc">ప్రకటన — భాగస్వామికి నేరు లింక్. అధికారిక నోటిఫికేషన్‌లు ప్రధాన కంటెంట్‌లో మాత్రమే ఉంటాయి.</div>';
 	echo '</aside></div>';
 }
+
+/**
+ * v66: in-article ad — content lo 3rd paragraph tarvata (highest-CTR placement).
+ *
+ * Enduku: article madhya lo unna ad ki CTR + RPM anni placements kanna ekkuva.
+ * Policy-safe: paragraphs madhya lo (nav/button pakkana kaadu) · density cap ·
+ * lazy load · page gating anni studentup_ad() lo ne untayi.
+ *
+ * @param string $content Post content HTML.
+ * @return string
+ */
+function studentup_inject_in_article_ad( $content ) {
+	if ( ! is_singular( 'post' ) || ! in_the_loop() || ! is_main_query() ) {
+		return $content;
+	}
+	if ( '0' === (string) studentup_opt( 'in_article_ad', '1' ) ) {
+		return $content;
+	}
+	if ( false !== strpos( $content, 'su-ad-anchor-mid' ) ) {
+		return $content;   // already inject ayyindi (double render ledu)
+	}
+	if ( ! studentup_ads_allowed( 'mid' ) ) {
+		return $content;
+	}
+	$max = (int) studentup_opt( 'max_ads', '4' );
+	if ( studentup_ad_count() >= max( 1, $max ) ) {
+		return $content;
+	}
+	$parts = explode( '</p>', $content, 4 );
+	if ( count( $parts ) < 4 ) {
+		return $content;   // 3 paragraphs kanna takkuva → ad vaddu (thin content)
+	}
+	ob_start();
+	studentup_ad( 'mid' );
+	$ad = trim( (string) ob_get_clean() );
+	if ( '' === $ad ) {
+		return $content;
+	}
+	$out = $parts[0] . '</p>' . $parts[1] . '</p>' . $parts[2] . '</p>'
+		. '<!--su-ad-anchor-mid-->' . $ad . $parts[3];
+	return $out;
+}
+add_filter( 'the_content', 'studentup_inject_in_article_ad', 20 );

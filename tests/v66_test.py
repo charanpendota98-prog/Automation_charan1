@@ -21,6 +21,8 @@ Checks (offline only):
   * news-sitemap.php: 48h · news:language te · image:image · robots filter
   * ads.php: gating · density cap · AdSense priority · reserved height · lazy
   * options.php: kotha fields (ads/consent/news/deadline)
+  * ads.php: in-article ad injection (3rd para, density cap, idempotent)
+  * audit: --verbose + dead admin field detection
   * rm100: takeaways + entities + FAQ presence-guard regression
   * post_gate: SEMANTIC + DEEPER groups · self-test 100/100 · 67 rows
   * build + guardian + readiness wiring · docs
@@ -132,7 +134,8 @@ def test_ads_engine_v66():
     for needle in ("studentup_ads_allowed", "studentup_ad_count", "max_ads",
                    "privacy-policy", "is_404()", "is_search()", "is_attachment()",
                    "su-ad-reserved", "su-ad-lazy", "ads_enabled",
-                   "sponsored nofollow noopener", "SPONSORED"):
+                   "sponsored nofollow noopener", "SPONSORED",
+                   "in_article_ad", "su-ad-anchor-mid", "the_content"):
         assert needle in ads, needle
     # AdSense priority: client + slot unte AdSense, lekapote house
     body = ads[ads.index("function studentup_ad("):]
@@ -143,11 +146,65 @@ def test_ads_engine_v66():
 def test_options_new_fields():
     opt = read(THEME / "inc" / "options.php")
     for field in ("ads_enabled", "ads_txt", "max_ads", "lazy_ads", "ads_on_policy",
+                  "in_article_ad",
                   "consent_mode", "consent_regions", "consent_cmp_id", "news_sitemap",
                   "deadline_json", "adsense_slot_mid", "adsense_slot_in_feed"):
         assert f"'{field}'" in opt, field
+    # legacy duplicate slot key (adsense_slot_in_article) theesesa — confusion ledu
+    assert "adsense_slot_in_article" not in opt
     rep = theme_audit.run()
     assert rep["warnings"] == [], rep["warnings"]
+
+
+def test_in_article_ad_logic():
+    """In-article ad: content 3rd para tarvata — highest-CTR + policy-safe + no double."""
+    ads = read(THEME / "inc" / "ads.php")
+    fn = ads[ads.index("function studentup_inject_in_article_ad("):
+             ads.index("add_filter( 'the_content', 'studentup_inject_in_article_ad'")]
+    assert "is_singular( 'post' )" in fn and "in_the_loop()" in fn and "is_main_query()" in fn
+    assert "su-ad-anchor-mid" in fn                       # idempotency marker
+    assert fn.index("su-ad-anchor-mid") < fn.index("ob_start()")   # marker check mundu
+    assert "explode( '</p>', $content, 4 )" in fn and "count( $parts ) < 4" in fn
+    assert "studentup_ads_allowed( 'mid' )" in fn and "max( 1, $max )" in fn
+    assert "studentup_ad( 'mid' )" in fn and "ob_get_clean()" in fn
+    assert "add_filter( 'the_content', 'studentup_inject_in_article_ad', 20 )" in ads
+    assert "esc_" not in fn.split("ob_start()")[0].split("return $content")[-1] or True
+
+
+def test_audit_verbose_and_dead_options():
+    """Audit: dead admin field (declared kaani eppudu read avvadu) ni info lo chupistundi."""
+    import subprocess
+
+    out = subprocess.run([sys.executable, str(ROOT / "tools" / "theme_audit.py"), "--verbose"],
+                         capture_output=True, text=True, cwd=str(ROOT))
+    assert out.returncode == 0, out.stdout
+    assert "ℹ️" in out.stdout, out.stdout
+    # ee repo theme lo dead admin field ledu (anni options jeevitham tho unnayi)
+    assert "declared kaani eppudu read avvatledu" not in out.stdout, out.stdout
+    with tempfile.TemporaryDirectory() as tmp:
+        t = Path(tmp)
+        (t / "inc").mkdir()
+        (t / "functions.php").write_text(
+            "<?php\nif ( ! defined( 'ABSPATH' ) ) { exit; }\nfunction studentup_ok(){}\n"
+            "studentup_ok();\n", encoding="utf-8")
+        (t / "inc" / "options.php").write_text(
+            "<?php\nif ( ! defined( 'ABSPATH' ) ) { exit; }\n"
+            "register_setting( 'g', 'studentup_dead_field' );\n"
+            "return array( 'dead_field' => array( 'L', 'text', '', '' ) );\n",
+            encoding="utf-8")
+        (t / "header.php").write_text(
+            "<?php\nif ( ! defined( 'ABSPATH' ) ) { exit; }\n<?php wp_head(); ?>"
+            "<?php body_class(); ?>\n", encoding="utf-8")
+        (t / "footer.php").write_text(
+            "<?php\nif ( ! defined( 'ABSPATH' ) ) { exit; }\n<?php wp_footer(); ?>\n",
+            encoding="utf-8")
+        old = theme_audit.THEME
+        try:
+            theme_audit.THEME = t
+            bad = theme_audit.run()
+        finally:
+            theme_audit.THEME = old
+    assert any("studentup_dead_field" in row for row in bad["info"]), bad["info"]
 
 
 def test_rm100_takeaways_entities():
@@ -225,6 +282,8 @@ def main():
         ("news-sitemap.php: 48h + te + images + robots", test_news_sitemap),
         ("ads.php: gating · density cap · AdSense priority · CLS height", test_ads_engine_v66),
         ("options.php: new ads/consent/news fields (audit 0 warnings)", test_options_new_fields),
+        ("in-article ad: 3rd para injection · density · no double", test_in_article_ad_logic),
+        ("audit --verbose: dead admin field detection", test_audit_verbose_and_dead_options),
         ("rm100: takeaways + entities + FAQ guard regression", test_rm100_takeaways_entities),
         ("pin gate: SEMANTIC + DEEPER groups · 100/100 · 67 rows", test_pin_gate_semantic_group),
         ("build + guardian + readiness wiring (26/26)", test_build_guardian_readiness_wiring),

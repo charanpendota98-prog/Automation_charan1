@@ -146,6 +146,15 @@ def collect(report: dict) -> dict:
                 continue
         warnings.append(f"option '{opt}' read — admin page lo field ledu "
                         f"(StudentUp Settings lo add cheyandi)")
+    # 2b) declared-but-never-read options (info) — admin lo field undi kaani code
+    #     eppudu chadavadu → user set chesi "pani cheyyatledu" anukuntadu
+    dyn_prefixes = [o for o in options_read if o.endswith("_")]
+    for opt in sorted(options_declared - options_read):
+        if opt.endswith("_") or any(opt.startswith(p) for p in dyn_prefixes):
+            continue   # dynamic read (get_option( 'prefix_' . $x )) — alive
+        info.append(f"option '{opt}' declared kaani eppudu read avvatledu "
+                    f"(admin field dead undi)")
+
     # 3) unused functions (info)
     for name in sorted(defined):
         if name not in called and not name.endswith("_fallback"):
@@ -170,9 +179,12 @@ def collect(report: dict) -> dict:
 
     # 5) ads / monetization readiness
     ads = _tpl("inc/ads.php")
-    for key in ("adsbygoogle", "reserved", "lazy", "is_page", "su-ad"):
+    for key in ("adsbygoogle", "reserved", "lazy", "is_page", "su-ad",
+                "in_article_ad", "the_content", "max_ads"):
         if key not in ads:
             warnings.append(f"inc/ads.php: '{key}' ledu — ad revenue/CLS check cheyandi")
+    if "sticky_ad" not in footer and "sticky_ad" not in _tpl("inc/options.php"):
+        warnings.append("sticky/anchor ad option ledu — mobile lo highest-CTR slot miss")
     if "ads.txt" not in _tpl("inc/ads.txt.php") + _tpl("inc/ads-txt.php") + \
             "".join(p.read_text(encoding="utf-8") for p in _php_files() if "ads" in p.name):
         warnings.append("ads.txt serving ledu (direct ad demand padipothundi)")
@@ -198,6 +210,8 @@ def run() -> dict:
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description="StudentUp theme static audit")
     ap.add_argument("--json", default="")
+    ap.add_argument("--verbose", action="store_true",
+                    help="info rows kuda chupinchu (unused fns · dead options)")
     args = ap.parse_args(argv)
     rep = run()
     print("=" * 70)
@@ -209,6 +223,9 @@ def main(argv=None) -> int:
         print("  ❌ " + row)
     for row in rep["warnings"]:
         print("  ⚠️  " + row)
+    if args.verbose:
+        for row in rep.get("info", []):
+            print("  ℹ️  " + row)
     if args.json:
         Path(args.json).parent.mkdir(parents=True, exist_ok=True)
         Path(args.json).write_text(json.dumps(rep, ensure_ascii=False, indent=2),
