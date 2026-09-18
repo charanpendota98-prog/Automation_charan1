@@ -16,6 +16,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from autoblog import config, ad_manager  # noqa: E402
 
 HERE = Path(__file__).resolve().parent.parent
+# v48: rotation bookkeeping follows ADS_INVENTORY_PATH — keep it out of the repo
+config.ADS_INVENTORY_PATH = str(Path(tempfile.mkdtemp(prefix="v43-ads-")) / "inventory.json")
 
 
 def _inv(ads, policy=None):
@@ -51,7 +53,8 @@ def _sample_content():
 
 
 def test_inventory_load_default():
-    inv = ad_manager.load_inventory()
+    # real repo inventory (rotation override below must not hide it)
+    inv = ad_manager.load_inventory(HERE / "ads" / "inventory.json")
     assert isinstance(inv, dict) and "ads" in inv
     assert len(inv["ads"]) >= 1
     # missing / broken path → safe empty inventory (never raises)
@@ -76,8 +79,15 @@ def test_selection_category_cap_and_dedupe():
     ids = {a["id"] for a in picked}
     # only Admissions-eligible, capped at 2, no dupes
     assert ids <= {"admit", "admit2"} and len(picked) == 2
-    # a category with no match → empty
-    assert ad_manager.select_ads(_article("Results"), inv) == []
+    # category with no match: v48 default = never-miss fallback (fair rotation)
+    try:
+        old_flag = getattr(config, "AD_FALLBACK_ALWAYS", True)
+        config.AD_FALLBACK_ALWAYS = True
+        assert len(ad_manager.select_ads(_article("Results"), inv, record=False)) == 2
+        config.AD_FALLBACK_ALWAYS = False
+        assert ad_manager.select_ads(_article("Results"), inv, record=False) == []
+    finally:
+        config.AD_FALLBACK_ALWAYS = old_flag
 
 
 def test_selection_adsense_cap_tightens():
@@ -93,11 +103,24 @@ def test_selection_adsense_cap_tightens():
 
 
 def test_selection_deterministic():
-    inv = _inv([_ad(id="a", categories=""), _ad(id="b", categories=""),
-                _ad(id="c", categories="")])
-    a1 = [x["id"] for x in ad_manager.select_ads(_article(), inv)]
-    a2 = [x["id"] for x in ad_manager.select_ads(_article(), inv)]
-    assert a1 == a2  # same day+category → same order
+    # unique ids + clean rotation so this test never depends on test order
+    rot = ad_manager._rotation_path()
+    try:
+        rot.unlink()
+    except FileNotFoundError:
+        pass
+    inv = _inv([_ad(id="rot-a", categories=""), _ad(id="rot-b", categories=""),
+                _ad(id="rot-c", categories="")])
+    # read-only (record=False): same day+category → same order, no state touched
+    a1 = [x["id"] for x in ad_manager.select_ads(_article(), inv, record=False)]
+    a2 = [x["id"] for x in ad_manager.select_ads(_article(), inv, record=False)]
+    assert a1 == a2, (a1, a2)
+    # v48 rotation: real calls record "last shown", so the next post gets the
+    # ad that waited longest — every active ad gets its turn (never missed).
+    pick1 = [x["id"] for x in ad_manager.select_ads(_article(), inv)]
+    pick2 = [x["id"] for x in ad_manager.select_ads(_article(), inv)]
+    unseen = ({"rot-a", "rot-b", "rot-c"} - set(pick1)).pop()
+    assert pick2[0] == unseen, (pick1, pick2)  # the ad waiting longest runs next
 
 
 def test_utm_tagging_and_existing_query():

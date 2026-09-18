@@ -74,6 +74,9 @@ AD_CLS_WRAPPER = _get("AD_CLS_WRAPPER", "1") not in ("0", "false", "no")
 AD_MANAGER_ENABLED = _get("AD_MANAGER_ENABLED", "1") not in ("0", "false", "no")
 # Post lo max personal ad slots (AdSense slots ki separate — ee varam matrame)
 MAX_PERSONAL_AD_SLOTS = int(_get("MAX_PERSONAL_AD_SLOTS", "2"))
+# v48: category match lekapoyina okka ad slot miss avvakunda fallback (round-robin).
+# AD_FALLBACK_ALWAYS=0 → peddaga strict: category match unte ne ad vestundi.
+AD_FALLBACK_ALWAYS = _get("AD_FALLBACK_ALWAYS", "1") not in ("0", "false", "no")
 # Inventory path override (default: repo ads/inventory.json)
 ADS_INVENTORY_PATH = _get("ADS_INVENTORY_PATH", "")
 # v44 DEEP POST ENGINE — deep analyse + cross-source verification.

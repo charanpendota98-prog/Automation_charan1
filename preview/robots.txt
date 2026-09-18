@@ -1,0 +1,12 @@
+# studentup.in — public preview build
+User-agent: *
+Allow: /
+Disallow: /legacy-concept.html
+Disallow: /ads-preview.html
+Disallow: /admin
+
+# AdSense/verification crawlers
+User-agent: Mediapartners-Google
+Allow: /
+
+Sitemap: https://studentup.in/sitemap.xml

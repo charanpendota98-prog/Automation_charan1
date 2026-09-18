@@ -23,6 +23,7 @@ from __future__ import annotations
 import hashlib
 import html as _html
 import json
+import os
 import re
 from datetime import date, datetime
 from pathlib import Path
@@ -30,6 +31,8 @@ from typing import Dict, List, Optional, Tuple
 from urllib.parse import urlencode, urlparse
 
 from . import config
+
+ROOT = Path(__file__).resolve().parent.parent
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_INVENTORY = REPO_ROOT / "ads" / "inventory.json"
@@ -99,31 +102,86 @@ def _matches(ad: Dict, art: Dict) -> bool:
     return any(c.strip().lower() in blob for c in cats.split(","))
 
 
-def select_ads(art: Dict, inv: Dict, today: Optional[date] = None) -> List[Dict]:
+def _rotation_path() -> Path:
+    """Where per-ad 'last shown' dates live (next to the inventory file)."""
+    inv = Path(config.ADS_INVENTORY_PATH) if getattr(config, "ADS_INVENTORY_PATH", "") \
+        else ROOT / "ads" / "inventory.json"
+    return inv.parent / "rotation.json"
+
+
+def _load_rotation() -> Dict[str, str]:
+    try:
+        data = json.loads(_rotation_path().read_text(encoding="utf-8"))
+        return data if isinstance(data, dict) else {}
+    except Exception:  # noqa: BLE001 — missing/corrupt rotation never blocks posting
+        return {}
+
+
+def _mark_shown(ads: List[Dict], today: date) -> None:
+    """Remember when each ad last ran → next slot goes to the one waiting longest."""
+    if not ads:
+        return
+    data = _load_rotation()
+    for ad in ads:
+        ad_id = ad.get("id")
+        if ad_id:
+            data[ad_id] = today.isoformat()
+    try:
+        path = _rotation_path()
+        path.parent.mkdir(parents=True, exist_ok=True)
+        tmp = path.with_suffix(".json.tmp")
+        tmp.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n",
+                       encoding="utf-8")
+        os.replace(tmp, path)
+    except OSError:
+        pass  # rotation is best-effort bookkeeping, never a publish blocker
+
+
+def _fairness_key(ad: Dict, rot: Dict[str, str]) -> str:
+    """Oldest-shown first; ads never shown sort first ('' < any date)."""
+    return rot.get(ad.get("id") or "", "")
+
+
+def select_ads(art: Dict, inv: Dict, today: Optional[date] = None,
+               record: bool = True) -> List[Dict]:
     """Pick which ads go into this article.
 
-    Deterministic: category-matched first, daily-rotated order, deduped,
-    capped by policy (AdSense approval tightens the cap).
+    Rules (all policy-safe):
+      1. category-matched ads first, daily-rotated, deduped, capped by policy;
+      2. NEVER MISS: when no active ad matches the category, fall back to the
+         active ad that has waited longest — a sponsored slot is never
+         silently dropped while at least one active ad exists;
+      3. real partner ads outrank demo placeholders.
     """
     pol = policy_of(inv)
     cap = min(int(pol["max_personal_ads_per_post"]),
               int(getattr(config, "MAX_PERSONAL_AD_SLOTS", 2)))
     if getattr(config, "ADSENSE_APPROVED", False):
         cap = min(cap, 1)
-    pool = [a for a in active_ads(inv, today) if _matches(a, art)]
-    if not pool:
-        return []
+    today = today or date.today()
+    live = active_ads(inv, today)
+    if not live:
+        return []  # nothing active anywhere → honest empty
+    rot = _load_rotation()
     seed = _day_seed(art)
-    pool = sorted(pool, key=lambda a: (0 if not a.get("demo") else 1,
-                                       (seed + len(a.get("id", ""))) % len(pool)))
-    seen, out = set(), []
-    for ad in pool:
-        if ad.get("id") in seen:
+
+    def _order(pool: List[Dict]) -> List[Dict]:
+        return sorted(pool, key=lambda a: (0 if not a.get("demo") else 1,
+                                           _fairness_key(a, rot),
+                                           (seed + len(a.get("id", ""))) % max(len(pool), 1)))
+
+    out: List[Dict] = []
+    for ad in _order([a for a in live if _matches(a, art)]):
+        if ad.get("id") in {x.get("id") for x in out}:
             continue
-        seen.add(ad.get("id"))
         out.append(ad)
         if len(out) >= cap:
             break
+    if not out and getattr(config, "AD_FALLBACK_ALWAYS", True):
+        # Category miss must not mean "no ad" unless the owner turned fallback off.
+        out = _order(live)[:cap]
+    if out and record:
+        _mark_shown(out, today)
     return out
 
 
@@ -348,7 +406,7 @@ def plan(art: Dict, inv: Optional[Dict] = None) -> Dict:
     if getattr(config, "ADSENSE_APPROVED", False):
         cap = min(cap, 1)
     pool = [a for a in active_ads(inv) if _matches(a, art)]
-    picked = select_ads(art, inv)
+    picked = select_ads(art, inv, record=False)
     return {
         "enabled": getattr(config, "AD_MANAGER_ENABLED", True) is not False,
         "adsense_approved": bool(getattr(config, "ADSENSE_APPROVED", False)),

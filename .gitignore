@@ -24,3 +24,4 @@ state.db
 state.db-journal
 tests/runtime/node_modules/
 venv/
+ads/rotation.json

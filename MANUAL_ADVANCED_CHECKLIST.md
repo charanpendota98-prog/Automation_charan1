@@ -151,7 +151,28 @@ Message lo reason undi — exact ga fix cheyandi:
 ## ⚠️ Honest note
 Perfect = **machine gates + human 5-min verify**. Gates mistakes ramigadu (conflicts/stale/dates/originality), kaani official numbers mee mata tho final check — AdSense/Google/reputation thartham lo idi matrame safety.
 
-*Last updated: v47 (2026-09-18) — Daily Poll + Admin Ad Manager + 100% Telugu public site: 13 tests · 33/33 suites · 73/73 browser-runtime checks*
+*Last updated: v48 (2026-09-18) — Real policy pages + robots/sitemap + "never miss an ad" rotation: 15 tests · 34/34 suites · 76/76 browser-runtime checks*
+
+---
+
+## PART 7 — v48: POLICY PAGES + ADS NEVER-MISS
+
+**Real pages (AdSense review & trust ki kavali):**
+```
+preview/pages/about.html · contact.html · privacy.html · disclaimer.html · editorial-policy.html
+```
+- Footer + topbar + dropdown links ivi — dead `#trust` anchor lu poyayi.
+- Prathi page Telugu, mobile-clean, canonical + OG + JSON-LD + okka SPONSORED slot.
+- Mallee build cheyyali ante: `.venv/bin/python tools/build_policy_pages.py`
+
+**SEO files:** `preview/robots.txt` (Mediapartners-Google allow, /admin disallow) · `preview/sitemap.xml` (anni URLs real files) · `preview/favicon.svg`.
+
+**Ads guarantee (daily posts lo ad miss avvadu):**
+- Category match lekapoyina, active ad unte **fallback rotation** tho ad vestundi.
+- `ads/rotation.json` lo "last shown" date — **andariki turn vastundi** (real partner ad demo placeholder ni outrank chestundi).
+- Strict ga kavali ante `.env` lo: `AD_FALLBACK_ALWAYS=0` (category match unte matrame ad).
+- Cap: policy (`max_personal_ads_per_post`) + env hard cap `MAX_PERSONAL_AD_SLOTS` (AdSense approve ayyaka auto 1).
+- Dry run okkate chudali ante: `python run.py --ads` (rotation ni touch cheyyadu).
 
 ---
 
