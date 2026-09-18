@@ -5,7 +5,7 @@ Enduku (v65 lo pattukunna bug + mee requirement):
   1) `seo.jobposting_obj` lo `rec["salary_min"]` KeyError — salary keys lekapote
      publish path lo **crash** (500). Ippudu safe int() + regression test.
   2) "Pin to pin check chesi rasetappudu real time ga anni perfect ga undala" →
-     `autoblog/post_gate.py` = 47 checks (content/SEO/schema/media/links/ads/
+     `autoblog/post_gate.py` = 67 checks (v65 lo 47 · v66 lo +20) (content/SEO/schema/media/links/ads/
      freshness/Google readiness) + prathi post ki certificate file + critical
      fail unte publish block (PIN_GATE_BLOCK).
   3) "Google suggest cheyali + trending lo undali" → `autoblog/trends.py` =

@@ -621,7 +621,7 @@ GET `/wp-json/studentup/v1/theme-info` → theme version + seo_bridge + rankmath
 python run.py --readiness      # 18 system checks score/100 + 6 owner-pending items
 ```
 
-**Ee command ee repo lo prastuta: 100/100 · 25/25 system checks · 8 owner-pending.**
+**Ee command ee repo lo prastuta: 100/100 · 26/26 system checks · 8 owner-pending.**
 Artifacts: `logs/readiness.json` + `output/readiness-<date>.md` (markdown report).
 
 | Section | Enti verify avutundi (verifiable number) |

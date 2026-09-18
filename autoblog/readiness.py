@@ -273,7 +273,7 @@ def c_php_lint() -> List[dict]:
 
 
 def c_pin_gate() -> List[dict]:
-    """v65: pin-to-pin certificate gate — 47 checks, prathi post ki proof."""
+    """v65/v66: pin-to-pin certificate gate — 67 checks, prathi post ki proof."""
     from . import post_gate
 
     res = post_gate.self_test()

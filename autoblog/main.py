@@ -709,7 +709,7 @@ def trends_check() -> int:
 
 
 def pin_check_run() -> int:
-    """v65: pin-to-pin certificate proof (47 checks · deterministic fixture)."""
+    """v65/v66: pin-to-pin certificate proof (67 checks · deterministic fixture)."""
     from . import post_gate
 
     return post_gate.main()
@@ -1554,7 +1554,7 @@ def main() -> int:
     parser.add_argument("--trends", action="store_true",
                         help="Google Trends India education trends chupinchindi")
     parser.add_argument("--pin-check", action="store_true",
-                        help="Pin-to-pin certificate proof (47 checks, offline)")
+                        help="Pin-to-pin certificate proof (67 checks, offline)")
     parser.add_argument("--trends-queue", action="store_true",
                         help="v65: --trends tho paatu Suggest capture + topic queue")
     parser.add_argument("--rm100", action="store_true",
