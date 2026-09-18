@@ -529,7 +529,29 @@ python tests/v39_exam_portal_test.py    # 14 sections: parse → validate → ST
 node tools/ui_smoke.mjs                 # optional: real DOM (jsdom) full-flow smoke
 python run.py --ad-advisor              # v57: eppudu e ad-network ki apply cheyyali
 python run.py --ad-advisor --traffic-csv ga4.csv   # GA4 export → advisor (logs/traffic.json)
+python run.py --breaking-feed           # v59: radar → site బ్రేకింగ్ న్యూస్ feed (ticker+section)
+python run.py --breaking-from file.json # v59: feed ni JSON nunchi (offline/approved list)
 ```
+
+### v59 — First Look: బ్రేకింగ్ న్యూస్ + "విద్యార్థులు ఎక్కువగా వెతికేవి" + పర్ఫెక్ట్ మెనూ
+
+Student site open cheyagane modati 3 sekundullo kanipinche order:
+
+| Position | Enti | Detail |
+|---|---|---|
+| 1 | 🔴 **బ్రేకింగ్ టికర్** | radar feed (Google News తెలుగు + 143 official sources) — verified items matrame; feed khali aithe ticker **hide** (fake news ledu) |
+| 2 | **విద్యార్థులు ఎక్కువగా వెతికేవి** | 8 tiles: టీఎస్ · ఏపీ ప్రభుత్వ ఉద్యోగాలు · హాల్ టికెట్లు · ఫలితాలు · వాక్-ఇన్ · సాఫ్ట్‌వేర్ · ప్రైవేట్ · ప్రస్తుతాంశాలు — prathi tile ki **live count** + one-tap filter |
+| 3 | ప్రకటన (leaderboard) | highest-visibility slot — content ki bhaadha lekunda |
+| 4 | Hero + ముఖ్య గడువు countdown | trust tiles (45/45 · 11/11 · 122/122 · 11,192 · 17 cats · 143 sources) |
+| 5 | బ్రేకింగ్ న్యూస్ section + తాజా అవకాశాలు grid | grid lo **TS/AP ప్రభుత్వ ఉద్యోగాలు modati cards** |
+
+Menu (desktop + mobile same order): హోమ్ · ఉద్యోగాలు▾ (టీఎస్ · ఏపీ · కేంద్ర · ప్రైవేట్ ·
+వాక్-ఇన్ · సాఫ్ట్‌వేర్ · అవుట్‌సోర్సింగ్ · పార్ట్-టైమ్ · విదేశీ) · **హాల్ టికెట్లు** ·
+**ఫలితాలు** · **బ్రేకింగ్ న్యూస్** (live dot) · స్కాలర్‌షిప్‌లు · ప్రస్తుతాంశాలు · పరీక్షలు▾ · మరికొన్ని▾
+
+Bot side: `autoblog/breaking.py` (feed build + tag classifier + honest empty note),
+radar run lo auto hook, `MOST_USED` order okate source (bot + site + tests sync).
+Evidence: tests/v59_test.py 12 checks · `run.py --test-all` 45/45 · jsdom 122/122.
 
 > ℹ️ Ee system exam conduct cheyyadaniki matrame — student data (roll, answers,
 > scores) mee server lo untundi, bayata pampabadadu. Public internet lo pettali
@@ -1173,6 +1195,8 @@ Marpali te: `.env` edit chesi scheduler ni restart cheyandi: `sudo systemctl res
 ├── DEPLOY_MILESWEB.md      # v49 cPanel/MilesWeb guide (Python App, cron, storage)
 ├── DEPLOY_ORACLE_CLOUD.md  # v51 Oracle Always Free vs MilesWeb split + crash-proofing
 ├── CONTENT_PLAN_DAILY.md   # v58 daily plan: 17 pillars, rhythm, refresh, SEO gates
+├── breaking (autoblog/breaking.py)      # v59 site బ్రేకింగ్ feed + most-used order
+├── preview/data/breaking.json           # v59 ticker/section feed (radar writes)
 ├── AD_REVENUE_PLAYBOOK.md  # v52 revenue lines, rate card, sponsor + house ad flows
 ├── ad_advisor (autoblog/ad_advisor.py) # v57 network advisor + automatic alerts
 ├── GO_LIVE_CHECKLIST.md    # v53 deploy order + owner actions + revenue table

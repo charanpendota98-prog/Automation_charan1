@@ -108,4 +108,13 @@ AdSense approval leda revenue evi guarantee cheyyaledu. Final numbers mee Search
 Console / AdSense account lo ne vastayi.
 
 ---
-*Last updated: v58 (2026-09-18) — 17 pillars · 143 official sources · 44/44 test suites · 109/109 runtime checks*
+## First look (v59) — site open cheyagane
+
+1. 🔴 బ్రేకింగ్ టికర్ (radar verified feed; khali aithe hide)
+2. విద్యార్థులు ఎక్కువగా వెతికేవి: టీఎస్ · ఏపీ · హాల్ టికెట్లు · ఫలితాలు · వాక్-ఇన్ · సాఫ్ట్‌వేర్ · ప్రైవేట్ · ప్రస్తుతాంశాలు (live counts)
+3. బ్రేకింగ్ న్యూస్ section (top 6) + grid lo TS/AP cards mundu
+
+Posting rhythm idi follow avvali: breaking/exam-mechanics items (ఫలితాలు · హాల్ టికెట్లు ·
+గడువు) ki **priority** — avi students ekkuvaga vethikevi.
+
+*Last updated: v59 (2026-09-18) — 17 pillars · 143 official sources · 45/45 test suites · 122/122 runtime checks*

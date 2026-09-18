@@ -151,7 +151,35 @@ Message lo reason undi — exact ga fix cheyandi:
 ## ⚠️ Honest note
 Perfect = **machine gates + human 5-min verify**. Gates mistakes ramigadu (conflicts/stale/dates/originality), kaani official numbers mee mata tho final check — AdSense/Google/reputation thartham lo idi matrame safety.
 
-*Last updated: v58 (2026-09-18) — 17వ pillar (Abroad Jobs) + Tier-1 revenue line: 12 checks (v58_test.py) · 44/44 suites · 109/109 runtime checks*
+*Last updated: v59 (2026-09-18) — first-look: బ్రేకింగ్ న్యూస్ + విద్యార్థులు ఎక్కువగా వెతికేవి + పర్ఫెక్ట్ మెనూ: 12 checks (v59_test.py) · 45/45 suites · 122/122 runtime checks*
+
+## PART 18 — v59: FIRST LOOK (బ్రేకింగ్ న్యూస్ + విద్యార్థులు ఎక్కువగా వెతికేవి + పర్ఫెక్ట్ మెనూ)
+
+```
+WHY      : student site open cheyagane (3 sec lo) rendu kanipinchali —
+           (a) ippude em jarigindi (బ్రేకింగ్), (b) naaku panikocchede (TS/AP jobs …)
+ORDER    : టికర్ (breaing) → "విద్యార్థులు ఎక్కువగా వెతికేవి" 8 tiles → ప్రకటన (high
+           visibility) → hero (countdown) → main (బ్రేకింగ్ section + grid)
+TICKER   : verified feed nunchi; 18 గంటల rolling window (sweep lo kotha item
+           lekuna chivari headlines nilabadtayi, paatavi expire) · feed khali aithe
+           ticker HIDE (fake news ledu)
+MOST-USED: టీఎస్ ప్రభుత్వ ఉద్యోగాలు · ఏపీ ప్రభుత్వ ఉద్యోగాలు · హాల్ టికెట్లు ·
+           ఫలితాలు · వాక్-ఇన్ · సాఫ్ట్‌వేర్ · ప్రైవేట్ · ప్రస్తుతాంశాలు
+           (ordinate bot nunchi vasthundi: autoblog/breaking.MOST_USED — okate source)
+           prathi tile ki LIVE count ("ఎన్ని అప్డేట్‌లు") + one-tap filter
+MENU     : హోమ్ · ఉద్యోగాలు▾ (TS · AP · కేంద్ర · ప్రైవేట్ · వాక్-ఇన్ · సాఫ్ట్‌వేర్ ·
+           అవుట్‌సోర్సింగ్ · పార్ట్-టైమ్ · విదేశీ) · హాల్ టికెట్లు · ఫలితాలు ·
+           బ్రేకింగ్ న్యూస్ (red dot) · స్కాలర్‌షిప్‌లు · ప్రస్తుతాంశాలు · పరీక్షలు▾ ·
+           మరికొన్ని▾ — mobile panel kuda ade order
+GRID     : TS/AP ప్రభుత్వ ఉద్యోగాలు modati cards (student-vadana order)
+BOT      : python run.py --breaking-feed              (radar → feed + Telegram flow alage)
+           python run.py --breaking-from file.json    (offline/approved list)
+           radar run lo auto hook: news_radar sweep → breaking.publish()
+HONESTY  : feed lo radar (Google News తెలుగు + 143 official sources) verified items
+           matrame · item lekapote site "కొత్త verified బ్రేకింగ్ అప్డేట్‌లు లేవు" +
+           "రాడార్ ప్రతి 6 గంటలకు చెక్ చేస్తుంది" ani cheptundi — fake/clickbait ledu
+TESTS    : tests/v59_test.py = 12 checks · run.py --test-all 45/45 · jsdom 122/122
+```
 
 ---
 

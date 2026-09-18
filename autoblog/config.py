@@ -125,6 +125,13 @@ RADAR_INTERVAL_HOURS = int(_get("RADAR_INTERVAL_HOURS", "6"))  # 4x/day scan
 RADAR_DISTRICTS_PER_RUN = int(_get("RADAR_DISTRICTS_PER_RUN", "10"))
 RADAR_SOURCES_PER_RUN = int(_get("RADAR_SOURCES_PER_RUN", "10"))
 RADAR_POSTS_PER_DAY = int(_get("RADAR_POSTS_PER_DAY", "2"))
+
+# v59: site బ్రేకింగ్ న్యూస్ feed (radar → preview/data/breaking.json → ticker)
+BREAKING_ENABLED = _get("BREAKING_ENABLED", "1") not in ("0", "false", "no")
+BREAKING_MAX = int(_get("BREAKING_MAX", "8"))
+BREAKING_KEEP_HOURS = float(_get("BREAKING_KEEP_HOURS", "18"))
+BREAKING_FEED_PATH = Path(_get(
+    "BREAKING_FEED_PATH", str(BASE_DIR / "preview" / "data" / "breaking.json")))
 # comma-separated: https://t.me/s/yourchannel,https://site.com/feed
 WATCH_SOURCES = _get("WATCH_SOURCES", "")
 

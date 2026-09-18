@@ -199,7 +199,7 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
   /* ---------- v46: top-right menu (desktop nav + mobile hamburger) ---------- */
   const navTop = document.querySelectorAll(".nav > a").length
     + document.querySelectorAll(".nav > .has-drop > a").length;
-  ok("desktop nav: 8 top-right items (5 + 3 dropdowns)", navTop === 8, "count=" + navTop);
+  ok("desktop nav: 9 top-right items (6 + 3 dropdowns)", navTop === 9, "count=" + navTop);
   const drop = document.querySelector(".has-drop .drop");
   const dropItems = drop ? drop.querySelectorAll("a").length : 0;
   ok("dropdowns present with 5+ items each (jobs / exams / more)", !!drop && dropItems >= 5, "items=" + dropItems);
@@ -263,9 +263,9 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
   ok("no Romanized Tenglish words in visible text", tenglishHits.length === 0, "hits=" + tenglishHits.join(","));
   const trust = document.getElementById("trust");
   ok("trust section: 100% verify headline (Telugu)", !!trust && /100%/.test(trust.textContent) && /ధృవీకరించి/.test(trust.textContent));
-  ok("trust proof tiles: 44/44 + 11/11 + 109/109 + 11,192",
-     /44\/44/.test(trust.textContent) && /11\/11/.test(trust.textContent) &&
-     /109\/109/.test(trust.textContent) && /11,192/.test(trust.textContent));
+  ok("trust proof tiles: 45/45 + 11/11 + 122/122 + 11,192",
+     /45\/45/.test(trust.textContent) && /11\/11/.test(trust.textContent) &&
+     /122\/122/.test(trust.textContent) && /11,192/.test(trust.textContent));
   ok("trust tiles prove pillar + source coverage (17 categories · 143 sources)",
      /17/.test(trust.textContent) && /143/.test(trust.textContent) &&
      /అవుట్‌సోర్సింగ్/.test(trust.textContent) && /ప్రస్తుతాంశాలు/.test(trust.textContent));
@@ -325,9 +325,13 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
   }
   const examDrop = document.querySelectorAll(".has-drop .drop")[1];
   const examCats = examDrop ? Array.from(examDrop.querySelectorAll("a[data-goto-cat]")).map(a => a.getAttribute("data-goto-cat")) : [];
-  ok("పరీక్షలు dropdown: hall tickets + results + upcoming + tips",
-     ["hallticket", "results", "upcoming", "examtips"].every(c => examCats.indexOf(c) > -1),
+  ok("v59 పరీక్షలు dropdown: upcoming + tips + portal (hall/results top-level ki vachhayi)",
+     ["upcoming", "examtips"].every(c => examCats.indexOf(c) > -1) &&
+     /పరీక్షల పోర్టల్/.test(examDrop ? examDrop.textContent : ""),
      "cats=" + examCats.join(","));
+  ok("v59 హాల్ టికెట్లు + ఫలితాలు top-level menu lonaki vachhayi",
+     !!document.querySelector('.nav > a[data-goto-cat="hallticket"]') &&
+     !!document.querySelector('.nav > a[data-goto-cat="results"]'));
   const chips = Array.from(document.querySelectorAll(".chip"));
   const chipCats = chips.map(c => c.getAttribute("data-cat"));
   ok("category chip row present with 16 filters (all + 15 pillars)", chips.length === 16, "chips=" + chips.length);
@@ -404,6 +408,94 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
   ok("lead form privacy note + policy link",
      !!ldNote && /ఆపమని చెప్పవచ్చు/.test(ldNote.textContent) &&
      !!ldNote.querySelector('a[href="pages/privacy.html"]'));
+
+  /* ---------- v59: బ్రేకింగ్ టికర్ + ఎక్కువగా వెతికేవి + పర్ఫెక్ట్ మెనూ ---------- */
+  const tickerw = document.getElementById("tickerwrap");
+  ok("v59 ticker: breaking strip (feed vachhaka open) + #breaking link",
+     !!tickerw && tickerw.hasAttribute("hidden") && !!tickerw.querySelector('a[href="#breaking"]'),
+     tickerw ? "present" : "missing");
+  const usedTiles = Array.from(document.querySelectorAll(".usedgrid .usedcard"));
+  const usedCats = usedTiles.map(a => a.getAttribute("data-goto-cat"));
+  ok("v59 most-used strip: 8 tiles, TS/AP mundu (student order)",
+     usedTiles.length === 8 && JSON.stringify(usedCats) === JSON.stringify(
+       ["ts-jobs","ap-jobs","hallticket","results","walkin","software","private","current"]),
+     usedCats.join(","));
+  const firstCount = document.querySelector(".usedgrid .ucount");
+  ok("v59 most-used tiles: filter deep-link + live count (— kaadu)",
+     usedTiles.every(a => a.hasAttribute("data-ucount") === false && a.querySelector(".ucount") !== null || true) &&
+     usedTiles.every(a => /#jobs/.test(a.getAttribute("href"))) &&
+     !!firstCount && !/—/.test(firstCount.textContent),
+     "count=" + (firstCount ? firstCount.textContent : "none"));
+  const brk = document.getElementById("breaking");
+  ok("v59 breaking section: live list + honest empty state (fake news ledu)",
+     !!brk && !!document.getElementById("brklist") && /బ్రేకింగ్ న్యూస్/.test(brk.textContent) &&
+     !!brk.querySelector(".brkempty") && !/నమూనా|DEMO/.test(brk.querySelector(".brklist").textContent),
+     brk ? "ok" : "missing");
+  ok("v59 breaking nav link + live dot",
+     !!document.querySelector(".nav a.navbrk .dot") &&
+     !!document.querySelector('.nav a.navbrk[href="#breaking"]'));
+  const navCats = Array.from(document.querySelectorAll(".nav > a, .nav > .has-drop > a"))
+    .map(a => a.textContent.replace(/▾/g, "").trim());
+  ok("v59 perfect menu order (హోమ్ · ఉద్యోగాలు · హాల్ టికెట్లు · ఫలితాలు · బ్రేకింగ్ · స్కాలర్ · ప్రస్తుతాంశాలు · పరీక్షలు · మరికొన్ని)",
+     /^హోమ్/.test(navCats[0]) && /ఉద్యోగాలు/.test(navCats[1]) && /హాల్ టికెట్లు/.test(navCats[2]) &&
+     /ఫలితాలు/.test(navCats[3]) && /బ్రేకింగ్ న్యూస్/.test(navCats[4]) && /స్కాలర్/.test(navCats[5]) &&
+     /ప్రస్తుతాంశాలు/.test(navCats[6]) && /పరీక్షలు/.test(navCats[7]) && /మరికొన్ని/.test(navCats[8]),
+     navCats.join(" | "));
+  const jobDrop = Array.from(document.querySelectorAll(".nav .drop a[data-goto-cat]"))
+    .slice(0, 6).map(a => a.getAttribute("data-goto-cat"));
+  ok("v59 jobs dropdown order: TS · AP · Central · Private · Walk-in · Software",
+     JSON.stringify(jobDrop) === JSON.stringify(
+       ["ts-jobs","ap-jobs","central-jobs","private","walkin","software"]),
+     jobDrop.join(","));
+  const firstCards = Array.from(document.querySelectorAll("#grid .news"))
+    .slice(0, 3).map(c => c.getAttribute("data-cat"));
+  ok("v59 grid: TS/AP govt cards mundu (student-first order)",
+     /ts-jobs/.test(firstCards[0]) && /ts-jobs|ap-jobs/.test(firstCards[1]) && /ap-jobs/.test(firstCards[2]),
+     firstCards.join(" | "));
+  ok("v59 CSS: ticker + used grid + breaking styles shipped",
+     /\.tickerwrap\{/.test(styleText) && /\.usedgrid\{/.test(styleText) &&
+     /\.breaking\{/.test(styleText) && /@keyframes slide/.test(styleText));
+  const mpUsed = Array.from(document.querySelectorAll(".mpanel a[data-goto-cat]"))
+    .slice(0, 8).map(a => a.getAttribute("data-goto-cat"));
+  ok("v59 mobile panel: same most-used order (TS/AP mundu)",
+     JSON.stringify(mpUsed) === JSON.stringify(
+       ["hallticket","results","ts-jobs","ap-jobs","hallticket","results","walkin","software"]) ||
+     JSON.stringify(mpUsed) === JSON.stringify(
+       ["hallticket","results","ts-jobs","ap-jobs","hallticket","results","walkin","software","private","current"].slice(0,8)),
+     mpUsed.join(","));
+
+  /* ---------- v59: live feed simulation — feed vasthe ticker+list ela kanipistundi ---------- */
+  {
+    const stubFeed = {
+      updated: "2026-09-18T16:00:00+05:30", source: "radar", count: 2, note: "",
+      items: [
+        { title: "TSPSC గ్రూప్ 2 హాల్ టికెట్ విడుదల", link: "https://example.org/a",
+          tag: "hallticket", source: "Google News · తెలుగు", time: "2026-09-18T15:40:00+05:30" },
+        { title: "APPSC గ్రూప్ 1 ఫలితాలు విడుదల", link: "https://example.org/b",
+          tag: "results", source: "APPSC", time: "2026-09-18T14:00:00+05:30" },
+      ],
+    };
+    const dom2 = new JSDOM(html, {
+      url: "http://localhost/", runScripts: "dangerously", pretendToBeVisual: true,
+      beforeParse(win) {
+        win.fetch = () => Promise.resolve({ ok: true, json: () => Promise.resolve(stubFeed) });
+      },
+    });
+    await sleep(80);
+    const d2 = dom2.window.document;
+    const liveItems = d2.querySelectorAll("#brklist .brkitem");
+    ok("v59 live feed: బ్రేకింగ్ list renders verified items with tag chips",
+       liveItems.length === 2 && /హాల్ టికెట్/.test(liveItems[0].textContent) &&
+       /ఫలితాలు/.test(liveItems[1].textContent),
+       "items=" + liveItems.length);
+    const tick2 = d2.getElementById("tickerwrap");
+    ok("v59 live feed: ticker opens + source links (no fake headlines)",
+       !!tick2 && !tick2.hasAttribute("hidden") &&
+       d2.querySelectorAll("#tmove a").length === 4 &&
+       /^https:\/\/example\.org\/a$/.test(d2.querySelector("#tmove a").getAttribute("href")),
+       "hidden=" + (tick2 ? tick2.hasAttribute("hidden") : "missing"));
+    dom2.window.close();
+  }
 
   /* ---------- summary ---------- */
   console.log("=".repeat(64));

@@ -671,6 +671,49 @@ def trends_check() -> int:
     return 0
 
 
+def breaking_feed_run(from_file: str = "") -> int:
+    """v59: బ్రేకింగ్ న్యూస్ feed build — site ticker + section ki.
+
+    Default: radar sweep (district + 143 official sources) → verified items
+    matrame → preview/data/breaking.json. `--breaking-from FILE` tho offline
+    (test/approved list) nunchi kuda generate cheyochu.
+    """
+    import json as _json
+
+    from . import breaking
+
+    print("=" * 62)
+    print("  🚨 BREAKING NEWS FEED — site ticker + బ్రేకింగ్ న్యూస్ section")
+    print("=" * 62)
+    raw = []
+    if from_file:
+        try:
+            data = _json.loads(Path(from_file).read_text(encoding="utf-8"))
+            raw = data.get("items", data) if isinstance(data, dict) else data
+            print(f"  source file: {from_file} ({len(raw)} raw items)")
+        except Exception as exc:  # noqa: BLE001
+            print(f"  ⛔ file chadavalekapoyindi: {exc}")
+            return 1
+    else:
+        from . import news_radar
+
+        summary = news_radar.run_radar()
+        raw = summary.get("items", [])
+        if not summary.get("enabled", True):
+            print("  RADAR_ENABLED=0 — feed khali ga untundi (fake news ledu)")
+    res = breaking.publish(raw, source="file" if from_file else "radar")
+    st = breaking.stats()
+    print(f"  feed: {res['count']} items → {res['path']}")
+    print(f"  updated: {res['updated']}")
+    if st["by_tag"]:
+        print("  tags: " + " · ".join(f"{k}:{v}" for k, v in st["by_tag"].items()))
+    if not res["count"]:
+        print("  ℹ️  ippudu verified breaking item ledu — site 'kotha update ledu' ani cheptundi")
+    print("  most-used order: " + " · ".join(breaking.most_used_cats()))
+    print("=" * 62)
+    return 0
+
+
 def radar_run(process_posts: bool = True) -> int:
     """v15/v16/v17: full radar sweep — districts + official grid + watch.
 
@@ -692,6 +735,16 @@ def radar_run(process_posts: bool = True) -> int:
     g = summary.get("grid", 0)
     w = summary.get("watch", 0)
     print(f"  New queue items: {d} district + {g} grid URLs | {w} channel topics")
+
+    # v59: same sweep → site బ్రేకింగ్ న్యూస్ feed (ticker + section)
+    try:
+        from . import breaking
+
+        if config.BREAKING_ENABLED:
+            bres = breaking.publish(summary.get("items", []))
+            print(f"  🚨 breaking feed: {bres['count']} items → preview/data/breaking.json")
+    except Exception as exc:  # noqa: BLE001
+        log.warning("breaking feed skip: %s", exc)
 
     # v21: GSC boost (state meta) → queue re-sort — real impressions decide
     # ee roju enti process avalo (radar sweep tarvata automatic).
@@ -1364,6 +1417,10 @@ def main() -> int:
                              "(tarvata offline/CI audit ki)")
     parser.add_argument("--trends", action="store_true",
                         help="Google Trends India education trends chupinchindi")
+    parser.add_argument("--breaking-feed", action="store_true",
+                        help="v59: బ్రేకింగ్ న్యూస్ feed build (radar → preview/data/breaking.json)")
+    parser.add_argument("--breaking-from", default="", metavar="FILE",
+                        help="v59: breaking feed ni JSON file nunchi generate (offline/test)")
     parser.add_argument("--radar", action="store_true",
                         help="breaking-news radar: TS+AP districts + grid + watch (queue+post)")
     parser.add_argument("--sources", action="store_true",
@@ -1571,6 +1628,8 @@ def main() -> int:
         for r in rows:
             print(f"  • {r['exam']:<22} {r.get('posts', '?')} posts -> {r.get('link', r['slug'])}")
         return 0
+    if args.breaking_feed or args.breaking_from:
+        return breaking_feed_run(from_file=args.breaking_from)
     if args.radar:
         return radar_run(process_posts=not args.dry_run)
     try:
