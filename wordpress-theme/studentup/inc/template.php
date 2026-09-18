@@ -201,3 +201,14 @@ function studentup_breadcrumbs() {
 	}
 	return $out;
 }
+
+/**
+ * v67: కామెంట్లు OFF (admin option) → comment form + list render avvadu.
+ *
+ * @param bool $open Comments open state.
+ * @return bool
+ */
+function studentup_comments_open( $open ) {
+	return '0' === (string) studentup_opt( 'comments_on', '1' ) ? false : $open;
+}
+add_filter( 'comments_open', 'studentup_comments_open' );

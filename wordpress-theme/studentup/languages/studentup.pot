@@ -1,0 +1,68 @@
+# Copyright (C) 2026 StudentUp
+# This file is distributed under the GNU GPL v2 or later.
+msgid ""
+msgstr ""
+"Project-Id-Version: StudentUp 1.3.0\n"
+"Report-Msgid-Bugs-To: https://studentup.in/\n"
+"POT-Creation-Date: 2026-09-18 13:29+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language-Team: Telugu (te_IN)\n"
+"X-Generator: tools/build_pot.py\n"
+
+#: comments.php:60
+msgid "%s కి జవాబు రాయండి"
+msgstr ""
+
+#: inc/security.php:124
+msgid "ఒక కామెంట్‌లో 3 కంటే ఎక్కువ లింక్‌లు అనుమతి లేదు."
+msgstr ""
+
+#: comments.php:67
+msgid "కామెంట్"
+msgstr ""
+
+#: inc/security.php:125
+msgid "కామెంట్ నిరాకరించబడింది"
+msgstr ""
+
+#: comments.php:61
+msgid "కామెంట్ పంపండి"
+msgstr ""
+
+#: comments.php:53
+msgid "కామెంట్లు మూసివేయబడ్డాయి."
+msgstr ""
+
+#: comments.php:46
+msgid "కొత్త కామెంట్లు"
+msgstr ""
+
+#: index.php:26
+msgid "తాజా అప్డేట్‌లు"
+msgstr ""
+
+#: comments.php:45
+msgid "పాత కామెంట్లు"
+msgstr ""
+
+#: search.php:26
+msgid "ఫలితాలు లేవు — వేరే పదంతో మళ్లీ వెతకండి."
+msgstr ""
+
+#: comments.php:59
+msgid "మీ అభిప్రాయం రాయండి"
+msgstr ""
+
+#: comments.php:64
+msgid "మీ ఇమెయిల్ ప్రచురించబడదు. అధికారిక సమాచారం కోసం మాత్రమే వ్యక్తిగత వివరాలు ఇవ్వండి."
+msgstr ""
+
+#: sidebar.php:21
+msgid "సైడ్‌బార్"
+msgstr ""
+
+#: search.php:29
+msgid "హోమ్‌కి వెళ్లండి"
+msgstr ""

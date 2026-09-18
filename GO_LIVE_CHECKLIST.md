@@ -80,7 +80,7 @@ Detail docs: `DEPLOY_MILESWEB.md` (cPanel steps) · `DEPLOY_ORACLE_CLOUD.md` (VM
 
 | Item | Proof |
 |---|---|
-| Test suites | **52/52** pass (`python run.py --test-all`) |
+| Test suites | **53/53** pass (`python run.py --test-all`) |
 | Site guardian | **`python run.py --guardian`** — site/UI/SEO/ads/feed/storage/theme 12 checks (11 ok · 1 owner-pending) |
 | Readiness score | **`python run.py --readiness`** — **100/100** · 26/26 system checks · 8 owner-pending |
 | Production check | **11/11** pass (`python run.py --production-audit`) |
@@ -163,7 +163,11 @@ python run.py --deploy-check         # 0 fail
 python run.py --google-audit https://studentup.in
 curl -s https://studentup.in/ads.txt      # ads.txt host ayyindi leda chudandi
 curl -s https://studentup.in/news-sitemap.xml | head -5   # v66: News/Discover eligibility
-python tools/theme_audit.py --verbose     # v66: theme mistakes 0 errors · 0 warnings
+python tools/theme_audit.py --verbose     # v66/v67: theme mistakes 0 errors · 0 warnings
+python tools/theme_audit_deep.py          # v67: deep audit (templates · security · perf · a11y · ads)
+# v67 notes: theme lo security hardening ON (XML-RPC off · headers · enumeration block).
+# Jetpack/old mobile apps vaadithe StudentUp → Advanced → Security hardening OFF cheyandi.
+# Comments: StudentUp → Advanced → కామెంట్లు ON/OFF (default ON — engagement + freshness).
 python run.py --readiness | head -30      # v66: ads/consent/audit checks kalisi 100/100
 python tools/revenue_estimate.py --views 10000        # leads/premium kalipi
 python tools/revenue_estimate.py --views 10000 --ads-only   # ads-only ladder

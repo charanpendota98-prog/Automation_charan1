@@ -21,6 +21,14 @@ get_header();
 				<p><?php echo esc_html( wp_strip_all_tags( get_the_archive_description() ) ); ?></p>
 			</div>
 		</div>
+		<?php if ( ! have_posts() ) : ?>
+			<div class="su-empty">
+				<p><?php esc_html_e( 'ఫలితాలు లేవు — వేరే పదంతో మళ్లీ వెతకండి.', 'studentup' ); ?></p>
+				<?php get_search_form(); ?>
+				<p><a class="su-btn" href="<?php echo esc_url( home_url( '/' ) ); ?>">
+					<?php esc_html_e( 'హోమ్‌కి వెళ్లండి', 'studentup' ); ?></a></p>
+			</div>
+		<?php endif; ?>
 		<div class="newsgrid">
 			<?php
 			$su_i = 0;
@@ -37,6 +45,7 @@ get_header();
 		<?php studentup_ad( 'mid' ); ?>
 		<nav class="sectionhead" aria-label="పేజీలు"><div><?php echo wp_kses_post( paginate_links() ); ?></div></nav>
 	</div>
+	<?php get_sidebar(); ?>
 </main>
 <?php
 get_footer();

@@ -84,3 +84,59 @@ function studentup_lazy_ads_js() {
 	<?php
 }
 add_action( 'wp_footer', 'studentup_lazy_ads_js', 20 );
+
+/**
+ * v67: preconnect / dns-prefetch — 3rd-party (ads/analytics) latency thagginchadam.
+ *
+ * AdSense + GA connection setup ~200-400ms thintundi; preconnect tho ad load fast
+ * avutundi → viewability + RPM penchutundi (adi nijamaina revenue lever).
+ */
+function studentup_resource_hints( $hints, $relation_type ) {
+	if ( 'preconnect' === $relation_type ) {
+		$hints[] = array( 'href' => 'https://pagead2.googlesyndication.com', 'crossorigin' => 'anonymous' );
+		$hints[] = array( 'href' => 'https://googleads.g.doubleclick.net', 'crossorigin' => 'anonymous' );
+		$hints[] = 'https://www.googletagmanager.com';
+		$hints[] = 'https://www.google-analytics.com';
+	}
+	if ( 'dns-prefetch' === $relation_type ) {
+		$hints[] = 'https://fonts.gstatic.com';
+	}
+	return $hints;
+}
+add_filter( 'wp_resource_hints', 'studentup_resource_hints', 10, 2 );
+
+/**
+ * v67: thin pages ki noindex — search results + 404 index ayyi crawl budget thinakunda.
+ *
+ * Archive/paginated pages index lo undali (Google ni crawl cheyyali) — so only
+ * search + 404 ni block chestunnamu.
+ */
+function studentup_robots_thin( $robots ) {
+	if ( is_search() ) {
+		$robots['noindex'] = true;
+		$robots['follow']  = true;
+		unset( $robots['index'] );
+	}
+	if ( is_404() ) {
+		$robots['noindex'] = true;
+		$robots['nofollow'] = true;
+		unset( $robots['index'], $robots['follow'] );
+	}
+	return $robots;
+}
+add_filter( 'wp_robots', 'studentup_robots_thin' );
+
+/**
+ * v67: content-visibility toggle — ON unte body ki `su-cv` class (CSS aa class ki
+ * content-visibility apply chestundi). Option ni nijam ga wire chestundi (dead field kaadu).
+ *
+ * @param array $classes Body classes.
+ * @return array
+ */
+function studentup_cv_body_class( $classes ) {
+	if ( '0' !== (string) studentup_opt( 'content_visibility', '1' ) ) {
+		$classes[] = 'su-cv';
+	}
+	return $classes;
+}
+add_filter( 'body_class', 'studentup_cv_body_class' );

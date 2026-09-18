@@ -103,9 +103,9 @@ $su_deadline = studentup_deadline();
 		</div>
 
 		<div class="chips" id="chips" role="tablist" aria-label="విభాగ ఫిల్టర్లు">
-			<button class="chip active" data-cat="all" role="tab" aria-selected="true">అన్నీ</button>
+			<button type="button" class="chip active" data-cat="all" role="tab" aria-selected="true">అన్నీ</button>
 			<?php foreach ( studentup_most_used() as $m ) : ?>
-				<button class="chip" data-cat="<?php echo esc_attr( sanitize_html_class( $m['slug'] ) ); ?>" role="tab" aria-selected="false"><?php echo esc_html( $m['label'] ); ?></button>
+				<button type="button" class="chip" data-cat="<?php echo esc_attr( sanitize_html_class( $m['slug'] ) ); ?>" role="tab" aria-selected="false"><?php echo esc_html( $m['label'] ); ?></button>
 			<?php endforeach; ?>
 		</div>
 

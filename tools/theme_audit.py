@@ -70,10 +70,58 @@ def _php_files() -> list:
     return sorted(THEME.rglob("*.php"))
 
 
+def _tpl_raw(name: str) -> str:
+    """Template file raw text (lekapote '')."""
+    p = THEME / name
+    return p.read_text(encoding="utf-8") if p.exists() else ""
+
+
 def _strip_php_comments(text: str) -> str:
-    text = re.sub(r"/\*.*?\*/", " ", text, flags=re.S)
-    text = re.sub(r"//[^\n]*", " ", text)
-    return re.sub(r"#[^\n]*", " ", text)
+    """PHP comments theeseyadam — **string-aware** (URLs lo `//` comment kaadu!).
+
+    v67 fix: puratana version line-wise `//` cut cheyyadam valla `https://...` URLs
+    comments la theesesaru → audit ki code kanipinchaledu (false negatives +
+    false positives). Ippudu quote state track chestunnamu.
+    """
+    out = []
+    i, n = 0, len(text)
+    in_block, quote = False, ""
+    while i < n:
+        ch = text[i]
+        if in_block:
+            if text.startswith("*/", i):
+                in_block = False
+                i += 2
+                continue
+            i += 1
+            continue
+        if quote:
+            out.append(ch)
+            if ch == "\\":
+                if i + 1 < n:
+                    out.append(text[i + 1])
+                    i += 2
+                    continue
+            elif ch == quote:
+                quote = ""
+            i += 1
+            continue
+        if text.startswith("/*", i):
+            in_block = True
+            i += 2
+            continue
+        if text.startswith("//", i):
+            j = text.find("\n", i)
+            i = n if j == -1 else j
+            continue
+        if ch in ("'", '"'):
+            quote = ch
+            out.append(ch)
+            i += 1
+            continue
+        out.append(ch)
+        i += 1
+    return "".join(out)
 
 
 def collect(report: dict) -> dict:
@@ -203,6 +251,16 @@ def collect(report: dict) -> dict:
 def run() -> dict:
     report = {"errors": [], "warnings": [], "info": [], "theme_files": len(_php_files())}
     report = collect(report)
+    # v67: DEEP pass (templates · security · perf · a11y · SEO · ads · standards)
+    try:
+        import sys as _s
+
+        _s.path.insert(0, str(Path(__file__).resolve().parent))
+        import theme_audit_deep
+
+        report = theme_audit_deep.deep_checks(report)
+    except Exception as exc:  # noqa: BLE001 — deep pass fail aithe kuda basic audit nadavali
+        report["warnings"].append(f"deep audit skip ({type(exc).__name__}: {exc})")
     report["ok"] = not report["errors"]
     return report
 

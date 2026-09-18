@@ -157,7 +157,60 @@ Message lo reason undi — exact ga fix cheyandi:
 ## ⚠️ Honest note
 Perfect = **machine gates + human 5-min verify**. Gates mistakes ramigadu (conflicts/stale/dates/originality), kaani official numbers mee mata tho final check — AdSense/Google/reputation thartham lo idi matrame safety.
 
-*Last updated: v66 (2026-09-18) — THEME AUDIT (mistakes hunter) + ADS REVENUE ENGINE (Consent Mode v2 · ads.txt · News sitemap · gating · density cap · CLS) + SEMANTIC CHECKS (67-check gate): 12 checks · 52/52 suites · 122/122 runtime · readiness 100/100 (26/26)*
+*Last updated: v67 (2026-09-18) — DEEP AUDIT (expert/BA: templates · security · perf · a11y · standards · KPI) + TOP-THEME HARDENING (security module · comments · sidebar · readme · POT) + 6/6 REVENUE SLOTS: 11 checks · 53/53 suites · 122/122 runtime · readiness 100/100 (26/26) · audit 0 errors 0 warnings*
+
+## PART 26 — v67: DEEP AUDIT (expert/BA) + TOP-THEME HARDENING + 6/6 REVENUE SLOTS
+
+```
+DEEP AUDIT PASS 2 (tools/theme_audit_deep.py):
+  · templates  : required files (index/functions/style/header/footer/single/page/archive/
+                 search/404/theme.json/screenshot) · recommended (comments/sidebar/POT/readme)
+                 · style.css header fields · theme.json v2 + layout settings
+  · security   : ABSPATH guard prathi file lo · eval/base64/shell_exec/system/extract/unserialize
+                 · file_get_contents(remote) → wp_remote_get · admin nonce (Settings API ok)
+                 · REST permission_callback · register_setting sanitize_callback
+  · escaping   : `echo $var` lines ki esc_*/int/kses wrap unda
+  · perf       : script footer load · preconnect hosts · @import · style.css <120 KB
+  · a11y       : skip-link · focus-visible · nav aria-label · button type · sr-only CSS ·
+                 lang (language_attributes ok)
+  · SEO        : multi-H1 templates · thin-page noindex (search/404) · canonical/og notes
+  · ads/policy : 6 positions (leaderboard · in-article · in-feed · sidebar · below-content ·
+                 anchor) · .su-ad spacing/margin CSS · AdSense code · ad-refresh code ledu
+  · standards  : inc/*.php anni functions.php lo require (dead module pattukuntundi) ·
+                 title-tag/post-thumbnails/nav menus supports · html5/responsive-embeds
+  · i18n       : POT file + load_theme_textdomain · KPI row (ad positions · css KB · php files)
+
+AUDIT TOOL BUG FIX (v67):
+  comment stripper line-wise `//` cut cheyyadam valla `https://...` URLs comments la
+  theesesaru → audit ki code kanipinchaledu. Ippudu **string-aware** stripper (quote state)
+  → URLs safe, comments mattrame cut. Regression test v67_test lo undi.
+
+THEME HARDENING (top-most level):
+  inc/security.php NEW : security headers · XML-RPC off · ?author=N block · attachment →
+                         parent redirect · comment link-flood guard · DISALLOW_FILE_EDIT
+  comments.php NEW     : clean comments (Telugu labels, spam-safe, pagination)
+  sidebar.php NEW      : widget area + STICKY ad (widgets lekapote render avvadu)
+  readme.txt NEW       : WP standard readme + changelog
+  languages/*.pot      : auto-generated (tools/build_pot.py → build lo regenerate)
+  ads.php              : +below-content slot (280) · sidebar sticky class
+  perf.php             : preconnect (pagead2 · doubleclick · GTM · GA) + wp_robots noindex
+                         (search/404) + content-visibility body class (`su-cv`)
+  style.css            : focus-visible · skip-link focus · ad spacing · sidebar widgets ·
+                         comments · content-visibility (gated) · reduced-motion
+  options.php          : +adsense_slot_below_content · comments_on · security_hardening ·
+                         content_visibility (anni read avutunnayi — dead field ledu)
+
+REVENUE (6/6 slots · privacy-safe):
+  leaderboard (front) · in-article (content 3rd para, the_content filter) · in-feed (grids) ·
+  sidebar sticky (archive/search + widgets) · below-content (single, article tarvata) ·
+  anchor/sticky-bottom (mobile) — anni density cap + lazy + reserved height + consent tho.
+
+TESTS            : tests/v67_test.py = 11 checks · run.py --test-all 53/53 ·
+                   jsdom 122/122 · readiness 100/100 (26/26) · audit 0/0 · php-lint 27/27 ·
+                   zip 34 files · BA matrix docs/BA_REQUIREMENTS_MATRIX.md
+```
+
+---
 
 ## PART 25 — v66: THEME AUDIT + ADS REVENUE ENGINE + SEMANTIC CHECKS
 

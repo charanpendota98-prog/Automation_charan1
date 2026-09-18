@@ -131,6 +131,12 @@ def main(argv: list[str] | None = None) -> int:
         print("  ✅ structure + theme header + tokens + escaping — ANNI OK")
     code, msg = php_lint()
     print(("  ✅ " if code == 0 else "  ❌ ") + msg)
+    # v67: POT (i18n) ni build lo regenerate — strings maarithe stale avvakunda
+    pot = subprocess.run([sys.executable, str(ROOT / "tools" / "build_pot.py")],
+                         capture_output=True, text=True, cwd=str(ROOT))
+    pot_line = [l for l in (pot.stdout or "").splitlines() if "strings:" in l]
+    print(("  ✅ " if pot.returncode == 0 else "  ❌ ")
+          + "pot: " + (pot_line[0].strip() if pot_line else "fail"))
     # v66: static theme audit (undefined functions · option keys · hooks · ads)
     audit = subprocess.run([sys.executable, str(ROOT / "tools" / "theme_audit.py")],
                            capture_output=True, text=True, cwd=str(ROOT))

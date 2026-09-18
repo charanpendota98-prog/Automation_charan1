@@ -52,8 +52,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 		<div class="headactions">
 			<a class="navbrk" href="<?php echo esc_url( home_url( '/#breaking' ) ); ?>"><span class="dot" aria-hidden="true"></span>బ్రేకింగ్</a>
-			<button class="iconbtn" id="theme" aria-label="డార్క్ మోడ్" aria-pressed="false">☾</button>
-			<button class="menubtn" id="menubtn" aria-label="మెనూ" aria-expanded="false" aria-controls="mpanel">☰</button>
+			<button type="button" class="iconbtn" id="theme" aria-label="డార్క్ మోడ్" aria-pressed="false">☾</button>
+			<button type="button" class="menubtn" id="menubtn" aria-label="మెనూ" aria-expanded="false" aria-controls="mpanel">☰</button>
 			<?php if ( get_option( 'studentup_exam_url' ) ) : ?>
 				<a class="callbtn" href="<?php echo esc_url( (string) get_option( 'studentup_exam_url' ) ); ?>">🎓 ప్రత్యక్ష పరీక్ష</a>
 			<?php endif; ?>

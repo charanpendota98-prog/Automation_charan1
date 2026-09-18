@@ -533,6 +533,25 @@ python run.py --breaking-feed           # v59: radar → site బ్రేకి
 python run.py --breaking-from file.json # v59: feed ni JSON nunchi (offline/approved list)
 ```
 
+### v67 — DEEP AUDIT (expert/BA level) + TOP-THEME HARDENING + 6/6 REVENUE SLOTS
+
+**Mee maatalu: "inka chala mistakes unnayi · deep audit cheyyi · expert level · BA level ·
+anni fix cheyyi · theme top-most ga · highest revenue safe ga".** → guess kaadu — **audit
+tool** rasi, adi cheppina mistakes **anni fix** chesamu (0 errors · 0 warnings ippudu).
+
+| # | Enti | Ela |
+|---|---|---|
+| 1 | **Deep audit pass 2** (`tools/theme_audit_deep.py`) | templates · security/nonces · escaping · performance · a11y · SEO/noindex · ads/policy spacing · i18n · WordPress standards · **KPI row** (ad positions · css KB · php files) — anni **build gate + guardian + readiness** lo |
+| 2 | **Audit detection ability** (test tho prove) | dead module (require ledu) · `eval()` · dead admin field · screenshot 1000×800 (WRONG size) — anni pattukuntunda ani `tests/v67_test.py` prove chestundi |
+| 3 | **Audit tool bug kuda fix** | puratana comment-stripper `https://...` URLs ni comments la theeseyedi → **string-aware stripper** (URLs safe, comments cut) |
+| 4 | **Security hardening** (`inc/security.php` NEW) | security headers (nosniff · SAMEORIGIN · Referrer-Policy · Permissions-Policy) · XML-RPC off · `?author=N` enumeration block · attachment → parent redirect · comment link-flood guard · `DISALLOW_FILE_EDIT` · admin toggle |
+| 5 | **Top-most theme files** | `comments.php` (clean, Telugu labels, spam-safe) · `sidebar.php` (widgets + **sticky ad**) · `readme.txt` (WP standard + changelog) · `languages/studentup.pot` (**auto-generated** in build) · screenshot 1200×900 |
+| 6 | **6/6 ad slots** (highest revenue) | leaderboard · **in-article** · in-feed · **sidebar-sticky** · **below-content (NEW)** · anchor/sticky-bottom · spacing policy CSS · density cap · house fallback |
+| 7 | **Speed + a11y** | preconnect (adsense/doubleclick/GTM/GA) · LCP preload+fetchpriority · `content-visibility` toggle (`su-cv`) · `:focus-visible` · skip-link · button types · reduced-motion support |
+| 8 | **Thin pages policy** | `wp_robots` → search results + 404 **noindex** (crawl budget + AdSense quality) · search page lo form + empty state |
+| 9 | **BA artifacts** (business level) | `docs/BA_REQUIREMENTS_MATRIX.md` — requirement → implementation → test → evidence + **KPI dashboard** + **risk register** + owner-pending |
+| 10 | **Proof** | `--test-all` **53/53** · jsdom **122/122** · audit **0 errors · 0 warnings** · php-lint **27/27** · zip **34 files 624 KB** · readiness **100/100 (26/26)** |
+
 ### v66 — THEME AUDIT (mistake hunter) + ADS REVENUE ENGINE + WRITING-TIME SEMANTIC CHECKS
 
 **Mee maatalu: "blog rasthunnapudu inka chala check cheyali" + "highest ads ravataniki
@@ -551,7 +570,7 @@ chala miss chesthunnam" + "theme lo kuda chala mistakes unnayi"** → moodintiki
 | 7 | **Writing-time SEMANTIC + DEEPER checks** | **SEMANTIC group**: entity coverage 3+ · **ముఖ్యాంశాలు** box · **question-form headings** 2+ (PAA) · **సంబంధిత అంశాలు** cluster block · avg sentence ≤24 · current year · quick answer. **DEEPER batch**: heading hierarchy (H1 ledu/skip ledu) · markdown leftovers ledu · list ≤12 words · **table ≤5 cols (mobile)** · **job-guarantee/clickbait claims ledu** (trust+policy) · **keyword cannibalization ledu** · slug ≤60 · **meta lo CTA+number** · secondary keywords body lo · img width/height (CLS) · descriptive anchors · FAQ answers 12+ words → gate **67 checks** · fails → **LLM refine hints** (writing loop lo ne fix, publish block kaadu) |
 | 8 | **rm100 fixers + FAQ bug** | `fix_takeaways` + `fix_entities` (content nunchi mattrame — invent ledu) · **nijamaina bug**: puratana FAQ guard (`<h3` 3+ unte skip) valla **FAQ section asalu rakapovadam** → ippudu questions nijam ga content lo unnaya ani check (regression test) |
 | 9 | **+12 website options** | `ads_enabled` · `adsense_slot_mid` · `adsense_slot_in_feed` · `ads_txt` · `max_ads` · `lazy_ads` · `ads_on_policy` · `consent_mode` · `consent_regions` · `consent_cmp_id` · `news_sitemap` · `deadline_json` (anni WP Admin → StudentUp nunchi) |
-| 10 | **Proof** | `python run.py --test-all` → **52/52 suites** · jsdom **122/122** · `--readiness` **100/100 (26/26)** · pin gate **67/67** · theme audit **0 errors · 0 warnings** · PHP lint **24/24** · zip **29 files (616 KB)** |
+| 10 | **Proof** | `python run.py --test-all` → **53/53 suites** · jsdom **122/122** · `--readiness` **100/100 (26/26)** · pin gate **67/67** · theme audit **0 errors · 0 warnings** · PHP lint **27/27** · zip **34 files (624 KB)** |
 
 **v66 honest note:** Consent Mode v2 + ads.txt + gating + CLS + lazy = AdSense **policy-safe**
 revenue foundations. Kaani **revenue numbers Google + traffic + country RPM batti** — idi
@@ -704,7 +723,7 @@ Menu (desktop + mobile same order): హోమ్ · ఉద్యోగాలు�
 
 Bot side: `autoblog/breaking.py` (feed build + tag classifier + honest empty note),
 radar run lo auto hook, `MOST_USED` order okate source (bot + site + tests sync).
-Evidence: tests/v59_test.py 12 checks · `run.py --test-all` 52/52 · jsdom 122/122.
+Evidence: tests/v59_test.py 12 checks · `run.py --test-all` 53/53 · jsdom 122/122.
 
 > ℹ️ Ee system exam conduct cheyyadaniki matrame — student data (roll, answers,
 > scores) mee server lo untundi, bayata pampabadadu. Public internet lo pettali

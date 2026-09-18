@@ -37,6 +37,7 @@ get_header();
 		<?php studentup_ad( 'mid' ); ?>
 		<nav class="sectionhead" aria-label="పేజీలు"><div><?php echo wp_kses_post( paginate_links() ); ?></div></nav>
 	</div>
+	<?php get_sidebar(); ?>
 </main>
 <?php
 get_footer();

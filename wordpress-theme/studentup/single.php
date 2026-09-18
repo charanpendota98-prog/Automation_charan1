@@ -49,6 +49,13 @@ get_header();
 				<?php studentup_author_box(); ?>
 			</article>
 
+			<?php studentup_ad( 'below-content' ); ?>
+			<?php
+			if ( comments_open() || get_comments_number() ) {
+				comments_template();
+			}
+			?>
+
 			<?php
 			$su_rel = get_the_category();
 			if ( $su_rel ) {

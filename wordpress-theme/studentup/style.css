@@ -302,3 +302,47 @@ body.dark .su-related-entities{background:#132318;border-color:#2a4a35}
 body.dark .su-related-title,body.dark .su-related-entities li a{color:#9fe0b8}
 /* Consent note (CMP off unte) */
 .su-consent-note{font-size:13px;color:#5b6b80;background:#f7f9fc;border-radius:8px;padding:8px 12px;margin:10px 0}
+
+/* ==================== v67 additions (deep-audit fixes) ==================== */
+/* Keyboard accessibility — focus kanipinchali (WCAG 2.4.7) */
+:focus-visible{outline:3px solid #ed8a32;outline-offset:2px;border-radius:6px}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #ed8a32;outline-offset:2px}
+.skip-link:focus{left:8px;top:8px;background:#0f2e62;color:#fff;padding:8px 14px;border-radius:8px;z-index:9999}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms !important;transition-duration:.01ms !important;scroll-behavior:auto !important}}
+
+/* Ad slots — policy spacing (content nunchi gap) + CLS-safe reserved box */
+.su-ad{display:block;margin:20px auto;max-width:736px;border-radius:12px;overflow:hidden}
+.su-ad-below{margin:26px auto 8px}
+.su-ad-leader{margin:14px auto}
+.su-ad-kicker{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#8fa3bf;margin-bottom:6px}
+.su-ad-disc{font-size:11px;color:#8fa3bf;margin-top:6px;line-height:1.5}
+
+/* Sidebar + sticky ad (desktop viewability → RPM) */
+.su-sidebar{width:100%}
+.su-sidebar-ad{margin-bottom:18px}
+@media (min-width:1000px){.su-sidebar-ad .su-ad-sticky{position:sticky;top:88px}}
+.su-sidebar .widget{background:#fff;border:1px solid #e6ecf5;border-radius:12px;padding:14px 16px;margin-bottom:16px}
+.su-sidebar .widget-title{font-size:16px;margin:0 0 8px}
+.su-sidebar .widget ul{list-style:none;margin:0;padding:0}
+.su-sidebar .widget li{padding:6px 0;border-bottom:1px dashed #eef2f8}
+.su-sidebar .widget li:last-child{border-bottom:0}
+
+/* Comments (engagement + freshness signal) */
+.su-comments{margin:26px auto;max-width:736px}
+.su-comments-title{font-size:19px;margin:0 0 12px}
+.su-comment-list{list-style:none;margin:0 0 18px;padding:0}
+.su-comment-list .comment{background:#fff;border:1px solid #e6ecf5;border-radius:12px;padding:12px 14px;margin-bottom:12px}
+.su-comment-list .children{list-style:none;margin:12px 0 0 18px;padding:0}
+.su-comment-meta{font-size:12px;color:#5b6b80}
+.su-comment-note{font-size:12px;color:#5b6b80}
+.su-comments-closed{font-size:14px;color:#5b6b80}
+.su-btn,.su-comments .submit{display:inline-block;background:#0f2e62;color:#fff;border:0;border-radius:10px;padding:10px 18px;font-size:15px;cursor:pointer;text-decoration:none}
+.su-btn:hover{background:#2463b7}
+.su-empty{background:#f7f9fc;border:1px dashed #cfd9e6;border-radius:12px;padding:18px;text-align:center}
+
+/* Perf: below-fold render skip (LCP/INP) — modern browsers mattrame */
+@supports (content-visibility:auto){
+  body.su-cv .su-box,body.su-cv .su-comments,body.su-cv .su-sidebar .widget{content-visibility:auto;contain-intrinsic-size:auto 480px}
+}
+body.dark .su-sidebar .widget,body.dark .su-comment-list .comment{background:#141b26;border-color:#243044}
+body.dark .su-empty{background:#141b26;border-color:#2a3a52}

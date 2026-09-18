@@ -148,7 +148,7 @@ function studentup_ad( $place = 'mid' ) {
 	$client = studentup_adsense_client();
 	$slot   = (string) get_option( 'studentup_adsense_slot_' . str_replace( '-', '_', $place ), '' );
 	$sizes  = array( 'leaderboard' => 110, 'in-feed' => 160, 'mid' => 250,
-		'sidebar' => 250, 'anchor' => 60 );
+		'sidebar' => 250, 'below-content' => 280, 'anchor' => 60 );
 	$height = isset( $sizes[ $place ] ) ? $sizes[ $place ] : 250;
 	$lazy   = (bool) studentup_opt( 'lazy_ads', '1' ) && ! in_array( $place, array( 'leaderboard', 'anchor' ), true );
 
@@ -170,7 +170,10 @@ function studentup_ad( $place = 'mid' ) {
 		return;
 	}
 	studentup_ad_count( true );
-	$cls = 'in-feed' === $place ? 'su-ad su-ad-feed' : ( 'leaderboard' === $place ? 'su-ad su-ad-leader' : 'su-ad' );
+	$cls = 'in-feed' === $place ? 'su-ad su-ad-feed'
+		: ( 'leaderboard' === $place ? 'su-ad su-ad-leader'
+		: ( 'below-content' === $place ? 'su-ad su-ad-below'
+		: ( 'sidebar' === $place ? 'su-ad su-ad-sticky' : 'su-ad' ) ) );
 
 	echo '<div class="su-ad-reserved" style="min-height:' . (int) $height . 'px" data-su-height="' . (int) $height . '">';
 	echo '<aside class="' . esc_attr( $cls ) . '" aria-label="Sponsored content">';
