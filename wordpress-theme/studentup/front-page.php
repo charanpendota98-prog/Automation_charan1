@@ -13,7 +13,6 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 
 get_header();
-$su_tiles    = studentup_proof_tiles();
 $su_deadline = studentup_deadline();
 ?>
 
@@ -57,11 +56,6 @@ $su_deadline = studentup_deadline();
 				<?php if ( get_option( 'studentup_exam_url' ) ) : ?>
 					<a class="ghostbtn" href="<?php echo esc_url( (string) get_option( 'studentup_exam_url' ) ); ?>">🎓 ప్రత్యక్ష పరీక్షల పోర్టల్</a>
 				<?php endif; ?>
-			</div>
-			<div class="hero-proof">
-				<?php foreach ( $su_tiles as $t ) : ?>
-					<div class="proof"><strong><?php echo esc_html( $t['value'] ); ?></strong><span><?php echo esc_html( $t['label'] ); ?></span></div>
-				<?php endforeach; ?>
 			</div>
 		</div>
 		<div class="hero-card">

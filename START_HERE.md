@@ -98,7 +98,7 @@ sudo systemctl restart autoblog.timer
 - Publish apudu bot **automatic ga** score chestundi (30+ checks) + structural
   harden (meta/slug/snippet/FAQ/density cap). Score < 78 unte **live publish block**
   (`TOP_POST_STRICT=0` tho off cheyochu) — draft-first lo block undadu.
-- Repo sample: `preview/top-post-blueprint.html` + `preview/dominance-plan-90-days.md`
+- Repo sample: `preview/_dev/top-post-blueprint.html` + `preview/_dev/dominance-plan-90-days.md`
 - ⚠️ Volume/difficulty bands **heuristic estimate** (Google data kaadu); ranking
   guarantee ledu; dates/fee/vacancies official notice nunchi matrame.
 

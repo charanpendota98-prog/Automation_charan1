@@ -177,11 +177,11 @@ function studentup_set_breaking_json( $json ) {
 }
 
 /**
- * REST endpoint — bot (website nunchi) breaking/proof/deadline/house-ads ni
+ * REST endpoint — bot (website nunchi) breaking/deadline/house-ads ni
  * WordPress ki push cheyyadaniki. Auth: Application Password + edit_posts.
  *
  *   POST /wp-json/studentup/v1/theme-data
- *   body: { "breaking": [...], "proof": {...}, "deadline": {...}, "house_ads": [...] }
+ *   body: { "breaking": [...], "deadline": {...}, "house_ads": [...] }
  */
 function studentup_register_rest() {
 	register_rest_route(
@@ -198,11 +198,6 @@ function studentup_register_rest() {
 				if ( is_array( $breaking ) ) {
 					studentup_set_breaking_json( wp_json_encode( array( 'items' => $breaking ) ) );
 					$done[] = 'breaking';
-				}
-				$proof = $req->get_param( 'proof' );
-				if ( is_array( $proof ) ) {
-					update_option( 'studentup_proof_json', wp_json_encode( $proof ), false );
-					$done[] = 'proof';
 				}
 				$deadline = $req->get_param( 'deadline' );
 				if ( is_array( $deadline ) && ! empty( $deadline['date'] ) ) {

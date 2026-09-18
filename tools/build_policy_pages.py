@@ -178,9 +178,9 @@ ABOUT = """
     <li>వ్యక్తిగత డేటా అమ్మకం చేయము — వివరాలకు <a href="privacy.html">గోప్యతా విధానం</a> చూడండి.</li>
   </ul>
 
-  <div class="note">నిజాయితీ గమనిక: ఈ వెబ్‌సైట్ ఒక ఆటో-బ్లాగర్ పైప్‌లైన్‌తో నిర్మించబడింది —
-  కానీ ప్రతి పోస్ట్ మానవ సమీక్ష దాటిన తర్వాతే ప్రచురణ అవుతుంది.
-  గేట్లు తప్పులను తగ్గిస్తాయి, తుది సంఖ్యలు అధికారిక నోటిఫికేషన్‌లోనే ఉంటాయి.</div>
+  <div class="note">నిజాయితీ గమనిక: తుది తేదీలు, ఖాళీల సంఖ్య, ఫలితాలు — అన్నీ
+  అధికారిక నోటిఫికేషన్‌లోనే ఒకసారి నిర్ధారించుకోండి. తప్పు కనిపిస్తే మెయిల్ చేయండి —
+  వెంటనే సరిచేస్తాము.</div>
 
   <p><a class="cta" href="../index.html">ఈరోజు అప్‌డేట్‌లు చూడండి</a>
      <a class="cta alt" href="contact.html">సంప్రదించండి</a></p>
@@ -323,8 +323,6 @@ EDITORIAL = """
   <code>rel="sponsored nofollow"</code> తో ఉంటాయి. AdSense ఆమోదం తర్వాత ప్రకటనల సంఖ్య
   విధాన పరిమితులకు లోబడి ఉంటుంది.</p>
 
-  <div class="note">నిజాయితీ గమనిక: ఈ గేట్లు తప్పులను గణనీయంగా తగ్గిస్తాయి, కానీ
-  గూగుల్ ర్యాంకింగ్, AdSense ఆమోదం, ఆదాయం — వీటిని ఏ కోడ్ కూడా హామీ ఇవ్వదు.</div>
 """
 
 ADVERTISE = '''
@@ -456,15 +454,9 @@ ROBOTS = """# studentup.in — public preview build
 User-agent: *
 Allow: /
 Disallow: /admin
-# internal artifacts — strategy/keyword data, public pages kaadu (v58 audit)
-Disallow: /legacy-concept.html
-Disallow: /ads-preview.html
-Disallow: /dominance-plan-90-days.md
-Disallow: /top-post-blueprint.html
+# internal artifacts — design archive + strategy/keyword data, public pages kaadu (v58/v70)
+Disallow: /_dev/
 Disallow: /keyword-universe-top200.csv
-Disallow: /v38.html
-Disallow: /v39.html
-Disallow: /v41.html
 
 # AdSense/verification crawlers
 User-agent: Mediapartners-Google

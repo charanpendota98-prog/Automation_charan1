@@ -9,7 +9,7 @@ Checks (offline only):
   * classifier: Gulf/visa/IELTS/study-abroad → Abroad Jobs; TS/AP/Central tests intact
   * Gemini seeds + 14 official sources (grid category + daily hot-list)
   * radar source whitelist + config CATEGORIES round-trip
-  * website: nav dropdown + chip + mobile link + card + tiles 17/143
+  * website: nav dropdown + chip + mobile link + card + public-text clean (v70)
   * advisor Tier-1 advice prakaram ee pillar ni suggest chestundi
   * robots.txt internal artifacts ni block chestundi + top-200 CSV engine tho match
 
@@ -100,10 +100,9 @@ def test_website_wiring():
     grid_zone = html.split('id="grid"')[1].split('id="nores"')[0]
     assert 'data-cat="abroad"' in grid_zone, "card #grid lopala undali (v51 lesson)"
     assert "విదేశీ ఉద్యోగాలు" in html
-    assert "<b>17</b>" in html, "tile 17 categories"
-    assert "<b>143</b>" in html, "tile 143 sources"
-    # tiles: suites/runtime numbers
-    assert "<b>55/55</b>" in html and "<b>122/122</b>" in html
+    # v70: developer proof tiles/text public site lo undakoodadu
+    assert "qtile" not in html and "టెస్ట్ సూట్" not in html, "developer proof text undi"
+    assert 'href="#trust"' not in html, "broken #trust anchor undi"
 
 
 def test_card_has_pure_telugu_and_no_leaks():
@@ -162,11 +161,15 @@ def test_keyword_universe_has_abroad():
 def test_robots_blocks_internal_artifacts():
     """v58 audit: internal strategy/keyword artifacts public ga index avvakudadu."""
     txt = (ROOT / "preview" / "robots.txt").read_text(encoding="utf-8")
-    for path in ("/admin", "/legacy-concept.html", "/ads-preview.html",
-                 "/dominance-plan-90-days.md", "/top-post-blueprint.html",
-                 "/keyword-universe-top200.csv", "/v38.html", "/v39.html",
-                 "/v41.html"):
+    # v70: dev/proof HTML + strategy docs preview/_dev/ loki move ayyayi (public root clean)
+    for path in ("/admin", "/_dev/", "/keyword-universe-top200.csv"):
         assert "Disallow: %s" % path in txt, "robots disallow missing: " + path
+    for stray in ("v38.html", "v39.html", "v41.html", "legacy-concept.html",
+                  "ads-preview.html", "top-post-blueprint.html",
+                  "dominance-plan-90-days.md"):
+        assert not (ROOT / "preview" / stray).exists(), \
+            "public preview root lo developer file undakoodadu: " + stray
+        assert (ROOT / "preview" / "_dev" / stray).exists(), "archive miss: " + stray
     assert "Allow: /\n" in txt, "public pages allow avvali"
     assert "Sitemap: https://studentup.in/sitemap.xml" in txt
 
@@ -196,7 +199,7 @@ def main():
         ("Abroad rule list modati di + phrases", test_classifier_abroad_rule_is_first),
         ("Gemini seeds + 14 abroad sources (daily hot-list)", test_gemini_seeds_and_sources),
         ("grid categories anni config lo unnai (17)", test_source_categories_are_valid),
-        ("site: nav + chip + mpanel + card + tiles 17/143", test_website_wiring),
+        ("site: nav + chip + mpanel + card + public-text clean", test_website_wiring),
         ("card content pure-Telugu + leaks ledu", test_card_has_pure_telugu_and_no_leaks),
         ("advisor Tier-1 advice ee daari chupistundi", test_advisor_uses_abroad_pillar_for_tier1),
         ("keyword universe: 203 entities · 11,192 keywords (+abroad)", test_keyword_universe_has_abroad),

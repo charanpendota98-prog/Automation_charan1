@@ -100,10 +100,6 @@ border-radius:999px;padding:6px 13px;font-size:12px;color:var(--muted);font-weig
 .hero-actions{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0 18px}
 .bluebtn{background:linear-gradient(135deg,var(--navy),var(--blue));color:#fff;padding:12px 18px;border-radius:12px;font-weight:700;font-size:14px}
 .ghostbtn{background:#fff;border:1px solid var(--line);color:var(--navy);padding:12px 18px;border-radius:12px;font-weight:700;font-size:14px}
-.hero-proof{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
-.proof{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px}
-.proof strong{display:block;font-size:20px;color:var(--navy)}
-.proof span{font-size:11px;color:var(--muted)}
 .hero-card{background:linear-gradient(160deg,#0f2e62,#12356b);border-radius:20px;padding:20px;color:#fff;box-shadow:var(--shadow)}
 .hero-card .hcard-title{font-size:12px;opacity:.85;font-weight:700}
 .hero-card .live{float:right;font-size:11px;color:#ffd9a8}
@@ -235,7 +231,6 @@ body.dark .mpanel a{color:#dbe7f8}
 .hero h1{font-size:26px}
 .usedgrid{grid-template-columns:1fr 1fr;gap:8px}
 .usedcard{padding:11px}
-.hero-proof{grid-template-columns:1fr 1fr}
 .sectionhead h2{font-size:19px}
 .article h1,.article-head h1{font-size:23px}
 .su-social{bottom:10px;right:10px}

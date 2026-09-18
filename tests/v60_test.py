@@ -2,13 +2,13 @@
 """v60 tests — SITE GUARDIAN: "eppatiki advanced ga" automatic keeper.
 
 Enduku idi:
-  Site/bot rojuki roju advanced ga undali ante — tiles desync, menu item poyadam,
+  Site/bot rojuki roju advanced ga undali ante — counts desync, public developer text,
   feed aagipovadam, ads.txt poyadam lantivi silent ga jaruguthayi. Guardian roju
   okkasari anni check chesi Telegram alert + logs/guardian.json status istundi.
 
 Checks (offline only):
   * 11 checks unnayi, okkokkati (ok, detail, fix) istundi
-  * tiles sync: site tiles ↔ tests/*.py count ↔ jsdom literal
+  * counts sync: tests/*.py count ↔ README claim + public surfaces lo developer text ledu
   * first-look UI blocks (ticker/used/breaking/feed fetch/nav) guard — remove ayithe fail
   * warn_only severity: env creds pending = warn (system break kaadu), exit 0
   * status file: atomic + 14-run history
@@ -40,7 +40,7 @@ MAIN = ROOT / "autoblog" / "main.py"
 def test_checks_contract():
     assert len(guardian.CHECKS) >= 11, guardian.CHECKS
     ids = [c[0] for c in guardian.CHECKS]
-    for want in ("site_files", "first_look_ui", "tiles_sync", "robots_sitemap",
+    for want in ("site_files", "first_look_ui", "counts_sync", "robots_sitemap",
                  "ads_txt", "breaking_feed", "ads_inventory", "keyword_pillar_lock",
                  "menu_wiring", "storage", "env_readiness"):
         assert want in ids, want
@@ -62,41 +62,24 @@ def test_summary_shape_and_severity():
     assert warn_only_ids == {"env_readiness"}, warn_only_ids
 
 
-def test_tiles_sync_detects_desync():
-    """Tile number ni temporarily change chesi — guardian pattukuntunda?"""
-    html = INDEX.read_text(encoding="utf-8")
+def test_counts_sync_detects_developer_text():
+    """Public site lo developer proof text unte — guardian pattukuntunda? (v70 rule)"""
     suites = len(list((ROOT / "tests").glob("*_test.py")))
-    m = re.search(r'<div class="qtile"><b>(\d+)/\1</b>', html)
-    assert m and m.group(1) == str(suites), "suite tile %s vs files %d" % (m.group(1) if m else "?", suites)  # noqa: E501
-    broken = html.replace("<b>%d/%d</b>" % (suites, suites), "<b>7/7</b>", 1)
-    with tempfile.TemporaryDirectory() as tmp:
-        preview = Path(tmp) / "preview"
-        preview.mkdir()
-        (preview / "index.html").write_text(broken, encoding="utf-8")
-        orig = guardian.PREVIEW
-        try:
-            guardian.PREVIEW = preview
-            ok, detail, fix = guardian.check_tiles_sync()
-        finally:
-            guardian.PREVIEW = orig
-    assert not ok, "desync pattukovadam ledu: " + detail
-    assert "7/7" in detail, detail
-
-
-def test_first_look_guard_detects_missing_block():
     html = INDEX.read_text(encoding="utf-8")
-    stripped = html.replace('id="tickerwrap"', 'id="gone"', 1)
+    assert "qtile" not in html, "public site lo tiles undakoodadu"
+    dirty = html.replace("</main>", '<div class="qtile"><b>%d/%d</b></div></main>' % (suites, suites), 1)
     with tempfile.TemporaryDirectory() as tmp:
         preview = Path(tmp) / "preview"
         preview.mkdir()
-        (preview / "index.html").write_text(stripped, encoding="utf-8")
+        (preview / "index.html").write_text(dirty, encoding="utf-8")
         orig = guardian.PREVIEW
         try:
             guardian.PREVIEW = preview
-            ok, detail, _fix = guardian.check_first_look_ui()
+            ok, detail, fix = guardian.check_counts_sync()
         finally:
             guardian.PREVIEW = orig
-    assert not ok and "టికర్" in detail, detail
+    assert not ok, "developer text pattukovadam ledu: " + detail
+    assert "developer proof" in detail or "public site" in detail, detail
 
 
 def test_status_file_history():
@@ -116,7 +99,7 @@ def test_status_file_history():
 def test_telegram_summary_text():
     results = [
         {"id": "site_files", "ok": True, "warn_only": False, "detail": "12 files ready", "fix": "", "ms": 1},
-        {"id": "tiles_sync", "ok": False, "warn_only": False, "detail": "tile mismatch", "fix": "bump", "ms": 1},
+        {"id": "counts_sync", "ok": False, "warn_only": False, "detail": "public text", "fix": "remove", "ms": 1},
         {"id": "env_readiness", "ok": False, "warn_only": True, "detail": "creds ledu", "fix": ".env", "ms": 1},
     ]
     summary = {"checked": 3, "passed": 1, "failed": 1, "warned": 1, "results": results,
@@ -124,9 +107,9 @@ def test_telegram_summary_text():
     tg = guardian.summary_text(summary, telegram=True)
     assert "SITE GUARDIAN" in tg and "1/3" in tg
     assert "❌" in tg and "⚠️" in tg, tg[:200]
-    assert "↳ fix:" in tg and "<code>bump</code>" in tg
+    assert "↳ fix:" in tg and "<code>remove</code>" in tg
     plain = guardian.summary_text(summary)
-    assert "owner-pending" in plain and "tiles_sync" in plain
+    assert "owner-pending" in plain and "counts_sync" in plain
 
 
 def test_guard_writes_status_and_returns():
@@ -183,8 +166,7 @@ def main():
     tests = [
         ("11 checks contract (ok/detail/fix)", test_checks_contract),
         ("summary shape + severity (warn_only)", test_summary_shape_and_severity),
-        ("tiles desync pattukuntundi", test_tiles_sync_detects_desync),
-        ("first-look block poyinappudu fail", test_first_look_guard_detects_missing_block),
+        ("developer text pattukuntundi", test_counts_sync_detects_developer_text),
         ("status file: atomic + 14-run history", test_status_file_history),
         ("Telegram summary: icons + fix lines", test_telegram_summary_text),
         ("guard() status rasi summary istundi", test_guard_writes_status_and_returns),

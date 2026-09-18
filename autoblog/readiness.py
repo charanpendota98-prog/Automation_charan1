@@ -492,16 +492,22 @@ def c_first_look() -> List[dict]:
                  "v59 blocks restore")]
 
 
-def c_tests_sync() -> List[dict]:
+def c_counts_sync() -> List[dict]:
+    """v70: suites count ↔ docs claims (public site lo developer proof text **ledu**)."""
     suites = len(list((ROOT / "tests").glob("*_test.py")))
-    tile = re.search(r'<div class="qtile"><b>(\d+)/\1</b>', _read(PREVIEW / "index.html"))
-    jsdom = re.search(r"trust proof tiles: (\d+)/(\d+) \+ 11/11 \+ (\d+)/(\d+)",
-                      _read(ROOT / "tests" / "runtime" / "jsdom_runtime_test.js"))
-    good = tile and int(tile.group(1)) == suites and jsdom and int(jsdom.group(1)) == suites
-    value = f"{suites} suites · tile {tile.group(1) if tile else '?'} · runtime {jsdom.group(3) if jsdom else '?'}"
-    return [_ok("Test proof tiles sync", value, "AUTOMATION")
-            if good else _bad("Test proof tiles sync", value, "AUTOMATION",
-                              "tiles + jsdom okate change lo bump")]
+    readme = _read(ROOT / "README.md")
+    html = _read(PREVIEW / "index.html")
+    theme_php = "".join(p.read_text(encoding="utf-8")
+                        for p in (ROOT / "wordpress-theme" / "studentup").rglob("*.php"))
+    clean = ("qtile" not in html and "టెస్ట్ సూట్" not in html
+             and "studentup_proof_tiles" not in theme_php and "proof_json" not in theme_php)
+    claimed = f"{suites}/{suites}" in readme
+    value = (f"{suites} suites · README claim {'ok' if claimed else 'MISSING'} · "
+             f"public surfaces {'clean' if clean else 'DEVELOPER TEXT UNDI'}")
+    if claimed and clean:
+        return [_ok("Counts sync + public text clean", value, "AUTOMATION")]
+    return [_bad("Counts sync + public text clean", value, "AUTOMATION",
+                 "docs claim update cheyandi · preview/theme nunchi developer proof text teeseyandi")]
 
 
 def c_owner_pending() -> List[dict]:
@@ -617,7 +623,7 @@ CHECKS: List[Tuple[str, Callable[[], List[dict]]]] = [
     ("theme_audit", c_theme_audit),
     ("php_lint", c_php_lint),
     ("first_look", c_first_look),
-    ("tests_sync", c_tests_sync),
+    ("counts_sync", c_counts_sync),
     ("code_audit", c_code_audit),
     ("parity_audit", c_parity_audit),
     ("instant_indexing", c_instant_indexing),

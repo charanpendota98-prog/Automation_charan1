@@ -313,18 +313,6 @@
     body.dark .su-ad-title{color:#e7f0ff}
     body.dark .su-ad-desc,body.dark .su-ad-disc{color:#93a4bd}
     /* quality gate */
-    .qgate{margin-top:34px;border:1px solid #dbe6f5;border-radius:22px;background:linear-gradient(135deg,#0f2e62,#1b4a8f);color:#fff;padding:28px;box-shadow:0 16px 36px rgba(15,46,98,.22)}
-    .qgate h2{margin:0 0 4px;font-size:22px;letter-spacing:-.03em}
-    .qgate .sub{font-size:12px;color:#bcd2f5;margin:0 0 18px}
-    .qgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
-    .qtile{background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:15px}
-    .qtile b{display:block;font-size:22px;letter-spacing:-.03em;color:#ffd9ae}
-    .qtile span{font-size:11px;color:#cfe0fb;line-height:1.4;display:block;margin-top:3px}
-    .vsteps{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}
-    .vstep{background:rgba(255,255,255,.06);border-radius:12px;padding:13px}
-    .vstep b{font-size:12px;display:flex;gap:8px;align-items:center}
-    .vstep span{font-size:11px;color:#cfe0fb;display:block;margin-top:5px;line-height:1.5}
-    .honest{font-size:11px;color:#a9c3ec;margin-top:16px;line-height:1.6}
     /* footer */
     .footer{background:#0e2449;color:#c6d5ec;padding:34px 0 86px}
     .footergrid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1.2fr;gap:30px}
@@ -383,8 +371,7 @@
     body.dark .checklist li{color:#b9c6da;border-color:#22344e}
     body.dark .checklist .num{background:#152a4a;color:#9cc3f5}
     body.dark .opt{background:#0f1e35;color:#dbe6f7}
-    body.dark .qtile b{color:#ffd9ae}
-    body.dark .mobile-nav{background:rgba(13,23,40,.97)}
+    body.dark    body.dark .mobile-nav{background:rgba(13,23,40,.97)}
     body.dark .newsfoot{border-color:#22344e}
     body.dark .trend{border-color:#22344e}
     body.dark .news{box-shadow:0 5px 16px rgba(0,0,0,.25)}
@@ -402,8 +389,6 @@
       .side{display:grid;grid-template-columns:1fr 1fr;gap:16px}
       .sidecard,.exam-card{margin:0}
       .service-card{grid-column:1/-1}
-      .qgrid{grid-template-columns:repeat(2,1fr)}
-      .vsteps{grid-template-columns:1fr}
       .toplinks{display:none}
     }
     @media(max-width:600px){
@@ -639,9 +624,9 @@
     <div class="mlabel">మరికొన్ని</div>
     <a href="#services"><span class="mico" aria-hidden="true">🧭</span>సేవలు</a>
     <a href="pages/advertise.html"><span class="mico" aria-hidden="true">📢</span>మాతో ప్రకటన ఇవ్వండి (రేట్ కార్డ్)</a>
-    <a href="#trust"><span class="mico" aria-hidden="true">🛡</span>సంపాదకీయ విధానం</a>
-    <a href="#trust"><span class="mico" aria-hidden="true">✉️</span>సవరణలు</a>
-    <a href="#trust"><span class="mico" aria-hidden="true">🔒</span>గోప్యతా విధానం</a>
+    <a href="pages/editorial-policy.html"><span class="mico" aria-hidden="true">🛡</span>సంపాదకీయ విధానం</a>
+    <a href="pages/contact.html"><span class="mico" aria-hidden="true">✉️</span>సవరణలు</a>
+    <a href="pages/privacy.html"><span class="mico" aria-hidden="true">🔒</span>గోప్యతా విధానం</a>
     <a class="mcta" href="#exam">🎓 ప్రత్యక్ష పరీక్ష — KBHA5W</a>
     <div class="msocial" aria-label="మమ్మల్ని అనుసరించండి">
       <a href="https://wa.me/919999999999?text=StudentUp.in%20iniki%20question%20unnadi" target="_blank" rel="noopener">WhatsApp</a>
@@ -1009,27 +994,6 @@
       </div>
     </aside></div>
 
-    <section class="qgate" id="trust" aria-label="నాణ్యత మరియు ధృవీకరణ">
-      <h2>100% ధృవీకరించి, తర్వాతే ప్రచురణ</h2>
-      <p class="sub">studentup.in బాట్ పైప్‌లైన్ — ప్రతి పోస్ట్‌కు 30+ ఆటోమేటిక్ తనిఖీలు + మానవ సమీక్ష. ఈరోజు (2026-09-18) నిరూపక సంఖ్యలు — సైట్-ఆడిట్‌లో 31 ఫలితాలలో 20 ఆటో-ఫిక్స్ చేయగలిగేవి.</p>
-      <div class="qgrid">
-        <div class="qtile"><b>55/55</b><span>టెస్ట్ సూట్‌లు పాస్ (అన్నీ ఆకుపచ్చ)</span></div>
-        <div class="qtile"><b>11/11</b><span>ప్రొడక్షన్ భద్రతా తనిఖీలు పాస్ (v30 గేట్)</span></div>
-        <div class="qtile"><b>122/122</b><span>బ్రౌజర్-స్థాయి రన్‌టైమ్ తనిఖీలు (ఈ వెబ్‌సైట్)</span></div>
-        <div class="qtile"><b>11,192</b><span>కీవర్డ్ విశ్వం (203 అంశాలు × 66 ఉద్దేశాలు)</span></div>
-        <div class="qtile"><b>17</b><span>కంటెంట్ విభాగాలు: ఉద్యోగాలు (TS · AP · కేంద్ర · అవుట్‌సోర్సింగ్ · వాక్-ఇన్ · విదేశీ/గల్ఫ్), స్కాలర్‌షిప్‌లు, రానున్న పరీక్షలు, ప్రస్తుతాంశాలు, పరీక్షా చిట్కాలు, ఫలితాలు మొదలైనవి</span></div>
-        <div class="qtile"><b>0</b><span>కోడ్-స్థాయి బగ్గులు — బాట్ + థీమ్ లోతైన ఆడిట్ (E1–E12 · W1–W7) తర్వాత</span></div>
-        <div class="qtile"><b>143</b><span>అధికారిక మూలాల పర్యవేక్షణ (రోజుకు 4 సార్లు — ఉద్యోగ నోటిఫికేషన్, పరీక్షల క్యాలెండర్, ప్రభుత్వ ప్రకటనలు)</span></div>
-      </div>
-      <div class="vsteps">
-        <div class="vstep"><b>① మూల తనిఖీ (ఫాక్ట్ గార్డ్)</b><span>ప్రతి తేదీ, ఖాళీల సంఖ్య మూల పత్రాలలో సరిపోలాలి. నకిలీ “చివరి తేదీ” → ఆటో-ఫ్లాగ్ + మెరుగుదల. అబద్ధ డేటా = నంబర్ 1 ప్రమాదం — మెషీన్ ద్వారానే గుర్తింపు.</span></div>
-        <div class="vstep"><b>② లోతైన క్రాస్-వెరిఫికేషన్ (v44)</b><span>2+ మూలాల నుండి పరిశీలన: అధికారిక మూలాలకు ప్రాధాన్యం · విరుద్ధ తేదీలు ఉంటే లైవ్ ప్రచురణ నిరోధం · పాత సంవత్సరాల తేదీలు నిరోధం · విశ్వాస స్కోరు 0–100. NotebookLM సారాంశాలు కూడా ఉల్లేఖనాలతోనే ఆమోదం.</span></div>
-        <div class="vstep"><b>③ అసలుతనం కనీసం 72%</b><span>ఇతర సైట్ల కాపీ కాదు — బహు-మూల పరిశోధనతో 100% అసలైన రీరైట్. దగ్గరి నకిలీ (≥62% పోలిక) ప్రచురణ కాదు — కఠిన నిరోధం.</span></div>
-        <div class="vstep"><b>④ మానవ సమీక్ష (డ్రాఫ్ట్ ముందుగా)</b><span>పోస్టులు డ్రాఫ్ట్‌లో వస్తాయి → Telegram ✅/🗑️ బటన్లతో యజమాని మాత్రమే ఆమోదిస్తారు. లైవ్ ప్రచురణకు QA 80/100 గేట్.</span></div>
-        <div class="vstep"><b>⑤ ప్రకటనలు = విధాన-సురక్షితం (v43)</b><span>SPONSORED లేబుల్ తప్పనిసరి · rel=sponsored nofollow · లింకుల పక్కన ప్రకటనలు ఉండవు · CLS రక్షణ · AdSense ఆమోదం తర్వాత సంఖ్య పరిమితి. క్లిక్‌బైట్ / నకిలీ క్లిక్కులు = సున్నా.</span></div>
-      </div>
-      <p class="honest">నిజాయితీ గమనిక: Google ర్యాంకింగ్, AdSense ఆమోదం, RPM — వీటిని ఈ కోడ్ హామీ ఇవ్వదు. కంటెంట్ నాణ్యత + అధికారిక మూలాలు + మానవ సమీక్ష మాత్రమే. ఫలితాలు, గడువులు, కీలు అన్నీ అధికారిక నోటిఫికేషన్‌ల నుండే ధృవీకరించబడతాయి. <a href="mailto:studentupinformative@gmail.com" style="color:#ffd9ae;text-decoration:underline">సవరణలు: studentupinformative@gmail.com</a></p>
-    </section>
   </div></main>
 
   <footer class="footer"><div class="wrap footergrid">

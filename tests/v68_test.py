@@ -324,15 +324,18 @@ def test_theme_zip_fresh_and_complete():
         assert need in names, need
 
 
-def test_counts_synced():
-    """Test suites count == preview tile (readiness row 'Test proof tiles sync')."""
+def test_counts_synced_and_public_clean():
+    """v70: suites count ↔ README/MANUAL claims + public site lo developer proof text **ledu**."""
     suites = len(list((ROOT / "tests").glob("*_test.py")))
+    readme = read(ROOT / "README.md")
+    manual = read(ROOT / "MANUAL_ADVANCED_CHECKLIST.md")
+    assert f"{suites}/{suites}" in readme, f"README claim ledu ({suites})"
+    assert f"{suites}/{suites}" in manual, f"MANUAL claim ledu ({suites})"
     idx = read(ROOT / "preview" / "index.html")
-    tile = re.findall(r"<b>(\d+)/\1</b>", idx)
-    assert tile, "tile kanipinchaledu"
-    assert str(suites) in tile, f"tests {suites} vs tiles {tile}"
-    jsdom = read(ROOT / "tests" / "runtime" / "jsdom_runtime_test.js")
-    assert f"{suites}/{suites}" in jsdom, f"jsdom literal sync ledu ({suites})"
+    assert "qtile" not in idx and "టెస్ట్ సూట్" not in idx, "preview lo developer proof text"
+    theme = "".join(p.read_text(encoding="utf-8")
+                    for p in (ROOT / "wordpress-theme" / "studentup").rglob("*.php"))
+    assert "studentup_proof_tiles" not in theme and "proof_json" not in theme
 
 
 # --------------------------------------------------------------- runner

@@ -24,8 +24,9 @@ Option A — **static preview** (what `preview/` is):
 cPanel → File Manager → public_html/
   upload every file from preview/   (index.html, pages/, robots.txt, sitemap.xml, favicon.svg)
 ```
-Keep `ads-preview.html`, `legacy-concept.html`, `v*.html` inside a `_dev/` folder and
-`Disallow: /_dev/` in robots.txt — they are internal drafts.
+Design drafts (`ads-preview.html`, `legacy-concept.html`, `v*.html`, `top-post-blueprint.html`)
+**ippudu `preview/_dev/` lo unnayi** (v70) — deploy appudu aa folder ni upload cheyyakapoyina
+parvaledu; upload chesina `Disallow: /_dev/` robots.txt lo already undi (internal drafts).
 
 Option B — **WordPress** (recommended for the real blog):
 ```

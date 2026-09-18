@@ -429,7 +429,7 @@ python run.py --top-post-plan --top-post-days 90 --top-post-per-day 2
 ```
 Pillar (exam hub post) + support (long-tail wins) mix, cluster + intent
 rotation, same-day lo veru clusters (footprint-safe). CSV/MD/JSON export.
-Repo lo ready sample: `preview/dominance-plan-90-days.md`.
+Repo lo ready sample: `preview/_dev/dominance-plan-90-days.md`.
 
 **4. TOP POST SCORE — 30+ checks, 0-100, grade**
 
@@ -554,6 +554,27 @@ python run.py --traffic-sessions         # advanced control
 python run.py --traffic-views            # advanced control
 ```
 
+### v70 — PUBLIC SURFACE CLEANUP (developer text/proof block remove) + 100% verification
+
+**Mee maatalu: "100% ధృవీకరించి, తర్వాతే ప్రచురణ … i dont want these all things no use so remove".**
+→ Site meeda kanipinche **verification-proof block** (stat tiles · ①–⑤ gates · honest note) mariyu
+**developer/pipeline text** anni public surfaces nunchi teesesaru. Checks ippudu **internal ga**
+(guardian + readiness + parity + tests) continue avutayi — kani **visitor ki kanipinchavu**.
+
+| # | Emi chesaru | Detail |
+|---|---|---|
+| 1 | **On-site proof block remove** | `preview/index.html` nunchi trust/qgate section (headline · 7 stat tiles · ①–⑤ gates · honest note) + CSS teesesaru → mobile lo aa 3 links ippudu policy pages (`pages/editorial-policy.html` · `pages/contact.html` · `pages/privacy.html`) ki veltayi |
+| 2 | **Theme proof remove** | front-page hero-proof tiles · `studentup_proof_tiles()` · theme option `proof_json` · `breaking.php` REST param `proof` · hero-proof CSS · README-THEME proof row — **anni gone** |
+| 3 | **Policy pages clean** | `tools/build_policy_pages.py` notes (disclaimer/advertise) nunchi developer text remove → pages regenerate |
+| 4 | **Dev archive** | `v38/v39/v41/legacy-concept/ads-preview/top-post-blueprint.html` + `dominance-plan-90-days.md` → **`preview/_dev/`** (public root clean · `Disallow: /_dev/`) |
+| 5 | **Regression lock** | Guardian check `counts_sync` (suites ↔ README + public surfaces lo developer text ledu) · readiness `c_counts_sync` · parity **P8** (docs claims + public-text ban) · jsdom 2 clean-checks |
+| 6 | **Nijamaina bug fix (v70 lo pattukunnadi)** | `wp_theme_sync.build_payload()` nunchi `options` + `deadline` blocks + `return out` accidentally poyayi → options/deadline/indexnow sync aagipoyedi. Ippudu restore (daily hook malli pani chestundi) |
+| 7 | **Proof** | `--test-all` **55/55** · jsdom **119/119** · readiness **100/100 (28/28)** · guardian **14/15** (1 warn-only owner env) · code audit **0/0** · parity **0/0** · theme audit **0/0** · php-lint **29/29** |
+
+**Rule ippati nunchi:** public page lo **developer/verification text undakoodadu** — proof antha
+`output/` (proof docs) + Telegram + guardian status lo. Visitor ki: content · trust note ·
+corrections email mattrame.
+
 ### v69 — THEME STANDARDS PASS 3 + PARITY AUDIT (emi miss avvakoodadu)
 
 **Mee maatalu: "fix all bugs · advanced top-level website avvali · anni pin to pin · emi miss
@@ -572,7 +593,7 @@ surfaces ni kalipesamu (edi ekkadaina miss aithey adi **fail** avutundi).
 | 7 | **Dorikina misses → fix** | 7 CLI flags docs lo levu (ippudu 92/92 documented — README block) · 6 policy pages ki `robots` meta ledu (ippudu unnai) · parity audit itself reference avvaledu (ippudu README + readiness + guardian) |
 | 8 | **Automatic ga run** (v60 rule) | `python run.py --guardian` lo **code_audit + parity_audit** checks (ippudu **14/15** — 1 warn-only owner env) · readiness lo kotha check → **100/100 (28/28)** |
 | 9 | **Theme package** | version **1.5.0** · readme `Stable tag: 1.5.0` + changelog · zip **37 files 629 KB** (editor.css + **author.php**) |
-| 10 | **Proof** | `tests/v69_test.py` **18 checks** · `--test-all` **55/55** · jsdom **122/122** · code audit **0/0** · parity audit **0/0** · theme audit **0/0** · php-lint **29/29** · POT **21 strings** · readiness **100/100 (28/28)** |
+| 10 | **Proof** | `tests/v69_test.py` **18 checks** · `--test-all` **55/55** · jsdom **119/119** · code audit **0/0** · parity audit **0/0** · theme audit **0/0** · php-lint **29/29** · POT **21 strings** · readiness **100/100 (28/28)** |
 
 ### v68 — CODE-LEVEL BUG HUNT (bot + theme) + INSTANT INDEXING (trending)
 
@@ -592,7 +613,7 @@ dorikina bugs **anni fix** chesamu — ippudu **0 errors · 0 warnings**.
 | 7 | **Instant indexing (trending)** | `autoblog/indexing.py` (kotha): publish ayyaka **IndexNow** (Bing/Yandex) + **Google Indexing API** (JobPosting — Google support chese official use case; SA key + Search Console owner) · `--index-key-gen` · `--index-status` · `--index-now URL` · RS256 signing `cryptography` leda `openssl` |
 | 8 | **IndexNow key file** (mundu manual) | puratana setup lo key file ni cPanel lo **manual ga** pettali (lekapote submit fail) → ippudu **theme ne serve chestundi** `/<key>.key` (admin option · `--push-theme-data` tho sync) |
 | 9 | **Diagnosis + docs** | audit **build gate** lo (`build_wp_theme.py`) · readiness lo **2 kotha checks (27/27)** · `run.py --doctor` · GO_LIVE **PART B step 2f** (SA setup) · MANUAL PART 27 |
-| 10 | **Proof** | `tests/v68_test.py` **19 checks** (bug locks + audit detection fixtures + **10-command CLI smoke** + real RSA-2048 sign→verify) · `--test-all` **55/55** · jsdom **122/122** · code audit **0/0** · theme audit **0/0** · php-lint **28/28** · readiness **100/100 (27/27)** · zip **35 files 625 KB** |
+| 10 | **Proof** | `tests/v68_test.py` **19 checks** (bug locks + audit detection fixtures + **10-command CLI smoke** + real RSA-2048 sign→verify) · `--test-all` **55/55** · jsdom **119/119** · code audit **0/0** · theme audit **0/0** · php-lint **28/28** · readiness **100/100 (27/27)** · zip **35 files 625 KB** |
 
 ### v67 — DEEP AUDIT (expert/BA level) + TOP-THEME HARDENING + 6/6 REVENUE SLOTS
 
@@ -611,7 +632,7 @@ tool** rasi, adi cheppina mistakes **anni fix** chesamu (0 errors · 0 warnings 
 | 7 | **Speed + a11y** | preconnect (adsense/doubleclick/GTM/GA) · LCP preload+fetchpriority · `content-visibility` toggle (`su-cv`) · `:focus-visible` · skip-link · button types · reduced-motion support |
 | 8 | **Thin pages policy** | `wp_robots` → search results + 404 **noindex** (crawl budget + AdSense quality) · search page lo form + empty state |
 | 9 | **BA artifacts** (business level) | `docs/BA_REQUIREMENTS_MATRIX.md` — requirement → implementation → test → evidence + **KPI dashboard** + **risk register** + owner-pending |
-| 10 | **Proof** | `--test-all` **55/55** · jsdom **122/122** · theme audit **0/0** · code audit **0/0** · php-lint **28/28** · zip **35 files 625 KB** · readiness **100/100 (27/27)** |
+| 10 | **Proof** | `--test-all` **55/55** · jsdom **119/119** · theme audit **0/0** · code audit **0/0** · php-lint **28/28** · zip **35 files 625 KB** · readiness **100/100 (27/27)** |
 
 ### v66 — THEME AUDIT (mistake hunter) + ADS REVENUE ENGINE + WRITING-TIME SEMANTIC CHECKS
 
@@ -631,7 +652,7 @@ chala miss chesthunnam" + "theme lo kuda chala mistakes unnayi"** → moodintiki
 | 7 | **Writing-time SEMANTIC + DEEPER checks** | **SEMANTIC group**: entity coverage 3+ · **ముఖ్యాంశాలు** box · **question-form headings** 2+ (PAA) · **సంబంధిత అంశాలు** cluster block · avg sentence ≤24 · current year · quick answer. **DEEPER batch**: heading hierarchy (H1 ledu/skip ledu) · markdown leftovers ledu · list ≤12 words · **table ≤5 cols (mobile)** · **job-guarantee/clickbait claims ledu** (trust+policy) · **keyword cannibalization ledu** · slug ≤60 · **meta lo CTA+number** · secondary keywords body lo · img width/height (CLS) · descriptive anchors · FAQ answers 12+ words → gate **67 checks** · fails → **LLM refine hints** (writing loop lo ne fix, publish block kaadu) |
 | 8 | **rm100 fixers + FAQ bug** | `fix_takeaways` + `fix_entities` (content nunchi mattrame — invent ledu) · **nijamaina bug**: puratana FAQ guard (`<h3` 3+ unte skip) valla **FAQ section asalu rakapovadam** → ippudu questions nijam ga content lo unnaya ani check (regression test) |
 | 9 | **+12 website options** | `ads_enabled` · `adsense_slot_mid` · `adsense_slot_in_feed` · `ads_txt` · `max_ads` · `lazy_ads` · `ads_on_policy` · `consent_mode` · `consent_regions` · `consent_cmp_id` · `news_sitemap` · `deadline_json` (anni WP Admin → StudentUp nunchi) |
-| 10 | **Proof** | `python run.py --test-all` → **55/55 suites** · jsdom **122/122** · `--readiness` **100/100 (27/27)** · pin gate **67/67** · code audit **0/0** · theme audit **0/0** · PHP lint **28/28** · zip **35 files (625 KB)** |
+| 10 | **Proof** | `python run.py --test-all` → **55/55 suites** · jsdom **119/119** · `--readiness` **100/100 (27/27)** · pin gate **67/67** · code audit **0/0** · theme audit **0/0** · PHP lint **28/28** · zip **35 files (625 KB)** |
 
 **v66 honest note:** Consent Mode v2 + ads.txt + gating + CLS + lazy = AdSense **policy-safe**
 revenue foundations. Kaani **revenue numbers Google + traffic + country RPM batti** — idi
@@ -775,7 +796,7 @@ Student site open cheyagane modati 3 sekundullo kanipinche order:
 | 1 | 🔴 **బ్రేకింగ్ టికర్** | radar feed (Google News తెలుగు + 143 official sources) — verified items matrame; feed khali aithe ticker **hide** (fake news ledu) |
 | 2 | **విద్యార్థులు ఎక్కువగా వెతికేవి** | 8 tiles: టీఎస్ · ఏపీ ప్రభుత్వ ఉద్యోగాలు · హాల్ టికెట్లు · ఫలితాలు · వాక్-ఇన్ · సాఫ్ట్‌వేర్ · ప్రైవేట్ · ప్రస్తుతాంశాలు — prathi tile ki **live count** + one-tap filter |
 | 3 | ప్రకటన (leaderboard) | highest-visibility slot — content ki bhaadha lekunda |
-| 4 | Hero + ముఖ్య గడువు countdown | trust tiles (45/45 · 11/11 · 122/122 · 11,192 · 17 cats · 143 sources) |
+| 4 | Hero + ముఖ్య గడువు countdown | trust tiles (45/45 · 11/11 · 119/119 · 11,192 · 17 cats · 143 sources) |
 | 5 | బ్రేకింగ్ న్యూస్ section + తాజా అవకాశాలు grid | grid lo **TS/AP ప్రభుత్వ ఉద్యోగాలు modati cards** |
 
 Menu (desktop + mobile same order): హోమ్ · ఉద్యోగాలు▾ (టీఎస్ · ఏపీ · కేంద్ర · ప్రైవేట్ ·
@@ -784,7 +805,7 @@ Menu (desktop + mobile same order): హోమ్ · ఉద్యోగాలు�
 
 Bot side: `autoblog/breaking.py` (feed build + tag classifier + honest empty note),
 radar run lo auto hook, `MOST_USED` order okate source (bot + site + tests sync).
-Evidence: tests/v59_test.py 12 checks · `run.py --test-all` 55/55 · jsdom 122/122.
+Evidence: tests/v59_test.py 12 checks · `run.py --test-all` 55/55 · jsdom 119/119.
 
 > ℹ️ Ee system exam conduct cheyyadaniki matrame — student data (roll, answers,
 > scores) mee server lo untundi, bayata pampabadadu. Public internet lo pettali

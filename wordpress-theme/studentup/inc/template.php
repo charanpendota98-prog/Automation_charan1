@@ -1,38 +1,12 @@
 <?php
 /**
- * Template helpers — proof tiles, deadline countdown, post cards, trust note.
+ * Template helpers — deadline countdown, post cards, breadcrumbs, trust note.
  *
  * @package studentup
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
-}
-
-/**
- * Trust proof tiles — LIVE WordPress numbers (fake numbers ledu).
- * Bot option 'studentup_proof_json' pedithe keyword/source numbers kuda vasthayi.
- *
- * @return array[]
- */
-function studentup_proof_tiles() {
-	$posts   = (int) wp_count_posts()->publish;
-	$cats    = (int) wp_count_terms( array( 'taxonomy' => 'category', 'hide_empty' => true ) );
-	$tiles   = array(
-		array( 'value' => number_format_i18n( $posts ), 'label' => 'ప్రచురిత కథనాలు' ),
-		array( 'value' => number_format_i18n( $cats ), 'label' => 'విభాగాలు (జాబ్/పరీక్షలు)' ),
-	);
-	$proof = json_decode( (string) get_option( 'studentup_proof_json', '' ), true );
-	if ( is_array( $proof ) ) {
-		if ( ! empty( $proof['keywords'] ) ) {
-			$tiles[] = array( 'value' => number_format_i18n( (int) $proof['keywords'] ), 'label' => 'ట్రాక్ చేసిన కీవర్డ్‌లు' );
-		} elseif ( ! empty( $proof['sources'] ) ) {
-			$tiles[] = array( 'value' => number_format_i18n( (int) $proof['sources'] ), 'label' => 'అధికారిక మూలాల గ్రిడ్' );
-		}
-	} else {
-		$tiles[] = array( 'value' => 'రోజూ', 'label' => 'కొత్త అప్డేట్‌లు' );
-	}
-	return $tiles;
 }
 
 /**

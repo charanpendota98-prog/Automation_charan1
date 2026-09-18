@@ -248,7 +248,7 @@ def test_theme_data_options_sync():
     assert '"options"' in sync and "SOCIAL_WHATSAPP" in sync
     payload = __import__("autoblog.wp_theme_sync", fromlist=["wp_theme_sync"]).build_payload()
     assert "options" in payload, sorted(payload)
-    assert "proof_json" in payload["options"]
+    assert "proof_json" not in payload["options"], "v70: proof public surface nunchi teesesaru"
 
 
 def test_readiness_v64_checks():

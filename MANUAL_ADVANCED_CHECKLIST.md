@@ -157,7 +157,7 @@ Message lo reason undi — exact ga fix cheyandi:
 ## ⚠️ Honest note
 Perfect = **machine gates + human 5-min verify**. Gates mistakes ramigadu (conflicts/stale/dates/originality), kaani official numbers mee mata tho final check — AdSense/Google/reputation thartham lo idi matrame safety.
 
-*Last updated: v69 (2026-09-18) — THEME STANDARDS PASS 3 (version parity · editor-styles · post_class · no_found_rows · admin nonce) + PARITY AUDIT (CLI ↔ docs · dead modules · preview links/meta · counts): 18 checks · 55/55 suites · 122/122 runtime · readiness 100/100 (28/28) · code audit 0/0 · parity 0/0*
+*Last updated: v69 (2026-09-18) — THEME STANDARDS PASS 3 (version parity · editor-styles · post_class · no_found_rows · admin nonce) + PARITY AUDIT (CLI ↔ docs · dead modules · preview links/meta · counts): 18 checks · 55/55 suites · 119/119 runtime · readiness 100/100 (28/28) · code audit 0/0 · parity 0/0*
 
 ## PART 26 — v67: DEEP AUDIT (expert/BA) + TOP-THEME HARDENING + 6/6 REVENUE SLOTS
 
@@ -206,7 +206,7 @@ REVENUE (6/6 slots · privacy-safe):
   anchor/sticky-bottom (mobile) — anni density cap + lazy + reserved height + consent tho.
 
 TESTS            : tests/v67_test.py = 11 checks · run.py --test-all 53/53 ·
-                   jsdom 122/122 · readiness 100/100 (27/27) · theme audit 0/0 ·
+                   jsdom 119/119 · readiness 100/100 (27/27) · theme audit 0/0 ·
                    code audit 0/0 · parity 0/0 · php-lint 29/29 · zip 37 files ·
                    BA matrix docs/BA_REQUIREMENTS_MATRIX.md
 ```
@@ -474,7 +474,7 @@ BOT      : python run.py --breaking-feed              (radar → feed + Telegram
 HONESTY  : feed lo radar (Google News తెలుగు + 143 official sources) verified items
            matrame · item lekapote site "కొత్త verified బ్రేకింగ్ అప్డేట్‌లు లేవు" +
            "రాడార్ ప్రతి 6 గంటలకు చెక్ చేస్తుంది" ani cheptundi — fake/clickbait ledu
-TESTS    : tests/v59_test.py = 12 checks · run.py --test-all 45/45 · jsdom 122/122
+TESTS    : tests/v59_test.py = 12 checks · run.py --test-all 45/45 · jsdom 119/119
 ```
 
 ---
@@ -785,6 +785,41 @@ AUTOMATIC (v60 rule): guardian lo code_audit + parity_audit checks (13/15 = 2 wa
   readiness lo +1 check → 100/100 (28/28)
 
 PROOF: tests/v69_test.py 18 checks (parity detection fixture to) · --test-all 55/55 ·
-  jsdom 122/122 · code audit 0/0 · parity 0/0 · theme audit 0/0 · php-lint 29/29 ·
+  jsdom 119/119 · code audit 0/0 · parity 0/0 · theme audit 0/0 · php-lint 29/29 ·
   zip 37 files 629 KB · theme v1.5.0
+
+## PART 29 — v70: PUBLIC SURFACE CLEANUP (proof/developer text ledu) + 100% verification
+
+**Enduku:** mee directive — "100% ధృవీకరించి, తర్వాతే ప్రచురణ … i dont want these all things
+no use so remove". Verification-proof block (tiles · gates · honest note) site meeda
+kanipisthe visitor ki adi **developer text** — anduku anni public surfaces nunchi teesesaru.
+
+EMI TEESESARU (public surfaces):
+  preview/index.html : trust/qgate section (2863 chars) + qtile/vsteps CSS · mobile panel links
+                       → pages/editorial-policy.html · pages/contact.html · pages/privacy.html
+  theme (studentup)  : front-page hero-proof tiles · studentup_proof_tiles() · option proof_json ·
+                       breaking.php REST param 'proof' · hero-proof CSS · README-THEME proof row
+  policy pages       : builder notes lo developer text remove (disclaimer · advertise)
+  preview root       : v38/v39/v41/legacy-concept/ads-preview/top-post-blueprint.html +
+                       dominance-plan-90-days.md → preview/_dev/  (robots: Disallow: /_dev/)
+
+EMI MIGILINDI (visitor-facing — user cheppinattu): per-post trust note (sources + last updated) ·
+  corrections email links · content.
+
+ENFORCEMENT (silent ga malli ravakoodadu):
+  guardian  counts_sync  : suites count ↔ README + public surfaces lo developer text ledu
+  readiness c_counts_sync: iddari madhya (28 checks lo okati)
+  parity P8              : docs claims + public-surface developer-text ban
+  jsdom                  : 2 clean-checks (preview lo dev strings ledu)
+  v58/v60/v68/v69 tests  : reworked — public-clean assertions
+
+NIJAMAINA BUG (ee cleanup lo pattukunnadi + fix):
+  autoblog/wp_theme_sync.py build_payload() nunchi 'options' + 'deadline' blocks + 'return out'
+  poyayi (proof block tho pattu) → daily hook khali payload pampedi (options/deadline/indexnow
+  sync aagipoyedi). Ippudu restore + 'proof_json' mapping remove.
+
+PROOF (v70): tests/v70 lock — --test-all 55/55 · jsdom 119/119 · readiness 100/100 (28/28) ·
+  guardian 14/15 (1 warn-only env) · code audit 0/0 · parity 0/0 · theme audit 0/0 · php-lint 29/29 ·
+  zip 37 files 628 KB · theme v1.5.0 · proof doc: output/v70-proof-2026-09-18.md
+
 ```

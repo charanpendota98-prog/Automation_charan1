@@ -190,9 +190,8 @@ def test_packager_builds_zip():
 
 def test_bot_bridge_payload_and_cli():
     payload = wp_theme_sync.build_payload()
-    assert "proof" in payload
-    assert payload["proof"]["keywords"] == 11_192 and payload["proof"]["sources"] == 143
-    assert payload["proof"]["categories"] == len(config.CATEGORIES)
+    # v70: proof block public surface nunchi teesesaru — payload lo undakoodadu
+    assert "proof" not in payload and "options" in payload
     assert "house_ads" in payload and isinstance(payload["house_ads"], list)
     assert "breaking" in payload and isinstance(payload["breaking"], list)
     res = wp_theme_sync.push(payload, dry_run=True)
@@ -206,7 +205,8 @@ def test_bot_bridge_payload_and_cli():
 
 
 def IS_SENT(res: dict) -> bool:
-    return all(k in res.get("sent", {}) for k in ("proof", "house_ads", "breaking"))
+    sent = res.get("sent", {})
+    return "house_ads" in sent and "proof" not in sent
 
 
 def test_docs_v61():

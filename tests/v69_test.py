@@ -232,11 +232,15 @@ def test_theme_zip_fresh_with_editor_css():
 
 
 def test_counts_synced():
+    """v70: docs claims ↔ nijamaina suite count · public surfaces lo developer text ledu."""
     suites = len(list((ROOT / "tests").glob("*_test.py")))
-    tiles = re.findall(r"<b>(\d+)/\1</b>", read(PREVIEW / "index.html"))
-    assert str(suites) in tiles, f"tests {suites} vs tiles {tiles}"
-    assert f"{suites}/{suites}" in read(ROOT / "tests" / "runtime" / "jsdom_runtime_test.js")
-    assert f"{suites}/{suites}" in read(ROOT / "README.md")
+    readme = read(ROOT / "README.md")
+    assert f"{suites}/{suites}" in readme, f"README claim ledu ({suites})"
+    assert f"{suites}/{suites}" in read(ROOT / "MANUAL_ADVANCED_CHECKLIST.md")
+    idx = read(PREVIEW / "index.html")
+    assert "qtile" not in idx and "టెస్ట్ సూట్" not in idx
+    theme = "".join(p.read_text(encoding="utf-8") for p in THEME.rglob("*.php"))
+    assert "studentup_proof_tiles" not in theme and "proof_json" not in theme
 
 
 def test_docs_current():

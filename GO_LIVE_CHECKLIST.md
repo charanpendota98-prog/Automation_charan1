@@ -84,7 +84,8 @@ Detail docs: `DEPLOY_MILESWEB.md` (cPanel steps) · `DEPLOY_ORACLE_CLOUD.md` (VM
 | Site guardian | **`python run.py --guardian`** — site/UI/SEO/ads/feed/storage/theme 12 checks (11 ok · 1 owner-pending) |
 | Readiness score | **`python run.py --readiness`** — **100/100** · 27/27 system checks · 10 owner-pending |
 | Production check | **11/11** pass (`python run.py --production-audit`) |
-| Browser runtime | **122/122** checks (`node tests/runtime/jsdom_runtime_test.js`) |
+| Browser runtime | **119/119** checks (`node tests/runtime/jsdom_runtime_test.js`) |
+| Public surface | developer/proof text **ledu** — `python run.py --guardian` → `counts_sync` · dev archive `preview/_dev/` (robots disallowed) |
 | Deploy check | 8 ok · 4 warn · 0 fail (`python run.py --deploy-check`) |
 | Website | 17 categories · 143 sources · 11,192 keywords · menu + chips |
 | Ads | AdSense gate · sponsor console · rate card · house ads |
@@ -237,4 +238,4 @@ Detail: `python tools/revenue_estimate.py --views 10k`
 Clickbait titles · fake clicks · popups · "Google tricks" · ad ni content laaga dhaachadam ·
 job guarantee promises (advertisers kuda). Ivi AdSense ban + trust damage.
 
-*Last updated: v60 (2026-09-18) · 45/45 suites · 122/122 runtime · 11/11 production checks*
+*Last updated: v60 (2026-09-18) · 45/45 suites · 119/119 runtime · 11/11 production checks*

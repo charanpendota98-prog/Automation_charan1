@@ -34,9 +34,9 @@ REST_PATH = "/wp-json/studentup/v1/theme-data"
 
 def build_payload(root: Optional[Path] = None,
                   include: Optional[List[str]] = None) -> Dict[str, object]:
-    """Local files nunchi theme payload — breaking + house ads + proof + deadline."""
+    """Local files nunchi theme payload — breaking + house ads + deadline + options."""
     root = Path(root or config.BASE_DIR)
-    include = include or ["breaking", "house_ads", "proof", "deadline", "options"]
+    include = include or ["breaking", "house_ads", "deadline", "options"]
     out: Dict[str, object] = {}
 
     if "breaking" in include:
@@ -57,19 +57,6 @@ def build_payload(root: Optional[Path] = None,
         except Exception as exc:  # noqa: BLE001
             log.debug("house ads read skip: %s", exc)
 
-    if "proof" in include:
-        try:
-            from . import sources_grid, top_post
-
-            out["proof"] = {
-                "keywords": len(top_post.keyword_universe()),
-                "entities": len(top_post.ENTITIES),
-                "sources": len(sources_grid.SOURCES_GRID),
-                "categories": len(config.CATEGORIES),
-            }
-        except Exception as exc:  # noqa: BLE001
-            log.debug("proof build skip: %s", exc)
-
     if "options" in include:
         # v64: .env nunchi website options (unna vi mattrame pampistundi — invent ledu)
         mapping = {
@@ -82,8 +69,7 @@ def build_payload(root: Optional[Path] = None,
             "sticky_ad": getattr(config, "STICKY_AD", ""),
             "contact_email": getattr(config, "CONTACT_EMAIL", ""),
             "exam_url": getattr(config, "EXAM_PUBLIC_URL", ""),
-            'indexnow_key': config.INDEXNOW_KEY,
-            "proof_json": json.dumps(out.get("proof") or {}),
+            "indexnow_key": config.INDEXNOW_KEY,
         }
         opts = {k: v for k, v in mapping.items() if isinstance(v, str) and v.strip()}
         if opts:

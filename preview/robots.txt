@@ -2,15 +2,9 @@
 User-agent: *
 Allow: /
 Disallow: /admin
-# internal artifacts — strategy/keyword data, public pages kaadu (v58 audit)
-Disallow: /legacy-concept.html
-Disallow: /ads-preview.html
-Disallow: /dominance-plan-90-days.md
-Disallow: /top-post-blueprint.html
+# internal artifacts — design archive + strategy/keyword data, public pages kaadu (v58/v70)
+Disallow: /_dev/
 Disallow: /keyword-universe-top200.csv
-Disallow: /v38.html
-Disallow: /v39.html
-Disallow: /v41.html
 
 # AdSense/verification crawlers
 User-agent: Mediapartners-Google

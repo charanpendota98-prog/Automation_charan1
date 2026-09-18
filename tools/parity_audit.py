@@ -66,7 +66,8 @@ def p2_module_parity(rep: dict) -> None:
 
 def p3_preview_links(rep: dict) -> None:
     checked = broken = 0
-    for html in sorted(PREVIEW.rglob("*.html")):
+    # v70: preview/_dev/ = internal design archive (robots Disallow) — deploy avvadu, anduku skip
+    for html in sorted(h for h in PREVIEW.rglob("*.html") if "_dev" not in h.parts):
         text = _read(html)
         body = re.sub(r"<script.*?</script>", "", text, flags=re.S)  # JS templates skip
         for m in re.finditer(r'(?:href|src)="([^"#][^"]*)"', body):
@@ -185,18 +186,24 @@ def p7_placeholders(rep: dict) -> None:
 
 
 def p8_count_parity(rep: dict) -> None:
+    """Docs claims ↔ nijamaina counts + public surfaces lo developer proof text **ledu** (v70)."""
     suites = len(list((ROOT / "tests").glob("*_test.py")))
-    tiles = re.findall(r"<b>(\d+)/\1</b>", _read(PREVIEW / "index.html"))
-    jsdom = re.search(r"trust proof tiles: (\d+)/\d+", _read(ROOT / "tests" / "runtime" /
-                                                             "jsdom_runtime_test.js"))
     readme = _read(ROOT / "README.md")
-    ok = (str(suites) in tiles) and jsdom and int(jsdom.group(1)) == suites
-    if not ok:
-        rep["errors"].append(f"P8 count parity: suites {suites} · tiles {tiles} · "
-                             f"jsdom {jsdom.group(1) if jsdom else '?'}")
+    manual = _read(ROOT / "MANUAL_ADVANCED_CHECKLIST.md")
     if f"{suites}/{suites}" not in readme:
-        rep["warnings"].append(f"P8 README lo '{suites}/{suites}' claim ledu")
-    rep["info"].append(f"P8 counts: suites {suites} · tiles {tiles}")
+        rep["errors"].append(f"P8 README lo '{suites}/{suites}' suites claim ledu (tests {suites})")
+    if f"{suites}/{suites}" not in manual:
+        rep["errors"].append(f"P8 MANUAL lo '{suites}/{suites}' suites claim ledu")
+    index = _read(PREVIEW / "index.html")
+    theme_php = "".join(p.read_text(encoding="utf-8")
+                        for p in (ROOT / "wordpress-theme" / "studentup").rglob("*.php"))
+    if "qtile" in index or "టెస్ట్ సూట్" in index:
+        rep["errors"].append("P8 preview lo developer proof text (tiles/test-count) undi — "
+                             "public site ki vaddhu")
+    for needle in ("studentup_proof_tiles", "proof_json"):
+        if needle in theme_php:
+            rep["errors"].append(f"P8 theme lo '{needle}' undi — public site ki developer proof vaddhu")
+    rep["info"].append(f"P8 counts: suites {suites}/{suites} · public surfaces clean")
 
 
 

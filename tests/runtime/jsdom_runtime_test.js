@@ -261,18 +261,14 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
   const tenglish = ["kosam", "cheyandi", "cheyali", "avutundi", "matrame", "ledu ", "undi ", "cheyyandi", "vachey", "petandi"];
   const tenglishHits = tenglish.filter(w => new RegExp("\\b" + w.trim() + "\\b", "i").test(bodyTxt));
   ok("no Romanized Tenglish words in visible text", tenglishHits.length === 0, "hits=" + tenglishHits.join(","));
-  const trust = document.getElementById("trust");
-  ok("trust section: 100% verify headline (Telugu)", !!trust && /100%/.test(trust.textContent) && /ధృవీకరించి/.test(trust.textContent));
-  ok("trust proof tiles: 55/55 + 11/11 + 122/122 + 11,192",
-     /5[0-9]\/5[0-9]/.test(trust.textContent) && /11\/11/.test(trust.textContent) &&
-     /122\/122/.test(trust.textContent) && /11,192/.test(trust.textContent));
-  ok("trust tiles prove pillar + source coverage (17 categories · 143 sources)",
-     /17/.test(trust.textContent) && /143/.test(trust.textContent) &&
-     /అవుట్‌సోర్సింగ్/.test(trust.textContent) && /ప్రస్తుతాంశాలు/.test(trust.textContent));
-  ok("trust has 5 verification gates incl. deep cross-verification (v44)",
-     trust.querySelectorAll(".vstep").length === 5 && /క్రాస్-వెరిఫికేషన్/.test(trust.textContent));
-  ok("trust honest note + corrections email present",
-     /హామీ ఇవ్వదు/.test(trust.textContent) && /studentupinformative@gmail\.com/.test(trust.innerHTML));
+  /* v70: developer proof text public site lo undakoodadu (user rule) */
+  ok("developer proof text ledu (టెస్ట్ సూట్ tiles / verification gates / bug counts)",
+     !document.getElementById("trust") && !document.querySelector(".qtile") &&
+     !document.querySelector(".vsteps") && !/టెస్ట్ సూట్/.test(bodyTxt) &&
+     !/బగ్గులు/.test(bodyTxt) && !/హామీ ఇవ్వదు/.test(bodyTxt));
+  ok("policy links mobile panel lo nijamaina pages ki (broken #trust anchor ledu)",
+     !/href="#trust"/.test(document.body.innerHTML) &&
+     /pages\/editorial-policy\.html/.test(document.body.innerHTML));
   const poll = document.getElementById("poll");
   ok("daily poll section present (ఈరోజు పోల్)", !!poll && /ఈరోజు పోల్/.test(poll.textContent));
   ok("poll widget has fetch fallback (portal offline → graceful note)",

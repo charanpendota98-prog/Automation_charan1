@@ -25,7 +25,6 @@ WP Admin → (bot nunchi) → python run.py --push-theme-data
 | Option | Enti | Example |
 |---|---|---|
 | `studentup_breaking_json` | బ్రేకింగ్ ఐటమ్స్ (radar feed) | `{"items":[{"title":"…","link":"…","tag":"results","time":"…"}]}` |
-| `studentup_proof_json` | trust tiles numbers | `{"keywords":11192,"sources":143,"entities":203}` |
 | `studentup_deadline_json` | ముఖ్య గడువు countdown | `{"title":"TSPSC దరఖాస్తు","date":"2026-10-15T17:00:00+05:30"}` |
 | `studentup_house_ads` | house/sponsor ads (day rotation) | `[{"title":"…","desc":"…","link":"https://…","cta":"…"}]` |
 | `studentup_adsense_client` | AdSense client id | `ca-pub-1234567890123456` |

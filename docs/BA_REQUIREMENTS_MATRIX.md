@@ -1,4 +1,4 @@
-# BA REQUIREMENTS MATRIX — studentup.in (v42 → v67)
+# BA REQUIREMENTS MATRIX — studentup.in (v42 → v70)
 
 **Idi enduku:** business analyst (BA) level lo prathi requirement → implementation → automated
 test → evidence command → status. Ee file chuste "asalu enti chesindi, enti verify ayyindi,
@@ -23,7 +23,7 @@ python tools/build_wp_theme.py    # php-lint + audit + POT + zip (theme install 
 | Post quality gates | 100/100 · 0 critical | **100/100 · 67/67 · critical 0** | `python run.py --pin-check` |
 | Rank Math score | 100 | **100** (draft 33 → 100 deterministic) | `--pin-check` / WP post edit |
 | System readiness | 100/100 | **100/100 · 28/28 system · 10 owner-pending** | `python run.py --readiness` |
-| Test coverage | all green | **55/55 suites · 122/122 runtime · 19 v68 + 18 v69 checks** | `--test-all` + jsdom |
+| Test coverage | all green | **55/55 suites · 119/119 runtime · 19 v68 + 18 v69 checks** | `--test-all` + jsdom |
 | Theme audit | 0 errors · 0 warnings | **0 · 0** (27 files · 75 functions · 34 options) | `tools/theme_audit.py` |
 | PHP syntax (real PHP 8) | 100% | **27/27 files OK** | `tools/build_wp_theme.py` |
 | Ad positions live in theme | 6/6 | **6/6** (leaderboard · in-article · in-feed · sidebar-sticky · below-content · anchor) | audit KPI row |
@@ -56,7 +56,7 @@ python tools/build_wp_theme.py    # php-lint + audit + POT + zip (theme install 
 | R7 | Menu = your category list, Telugu labels | v51/v59 | `inc/template.php` + WP menus + `menu_wiring` guardian check | `v51_test`, `v59_test`, guardian | `--guardian` |
 | R8 | Socials right side, vertically centered | v50 | `footer.php` `.su-social` (WhatsApp/Telegram/Instagram/YouTube) | `v50_test` | theme zip |
 | R9 | Breaking news best-grade + ticker | v59 | `inc/breaking.php`, `autoblog/breaking.py`, feed JSON | `v59_test`, `live_feed_test` | `--breaking-feed` |
-| R10 | Website must look like the preview | v61 | WordPress custom theme `wordpress-theme/studentup/` | `v61_test`, jsdom 122 checks | `preview/index.html` + zip |
+| R10 | Website must look like the preview | v61 | WordPress custom theme `wordpress-theme/studentup/` | `v61_test`, jsdom 119 checks | `preview/index.html` + zip |
 | R11 | Everything changeable from admin (ads esp.) | v52/v64 | StudentUp Settings page (Ads · Socials · Content · Advanced) + REST | `v64_test` | WP Admin → StudentUp |
 | R12 | 100% SEO fields never silently miss | v63 | `inc/seo-bridge.php` (REST meta bridge) + post-publish verify + Telegram warning | `v63_test` | bot logs + `--readiness` |
 | R13 | Rank Math 100 per post | v64 | `autoblog/rm100.py` deterministic fixers + `RM_TARGET=100` + refine rounds | `v64_test` (33→100 idempotent) | `--pin-check` shows 100/100 |
@@ -105,8 +105,11 @@ python tools/build_wp_theme.py    # php-lint + audit + POT + zip (theme install 
 | Bot publish without approval | reputation risk | draft-first + Telegram ✅/🗑️ + pin gate block on critical | ✅ mitigated |
 | Credentials shared in chat | security | never asked; App Password + REST + `.env` only | ✅ policy |
 | Revenue/ranking expectations | wrong decisions | v62 no-guarantee rule + measured readiness only | ✅ policy |
+| R70 | **Public surface lo developer/verification text ledu** (a paina unna proof block remove) | v70 | preview · theme · policy pages clean · dev archive `preview/_dev/` | `v60_test`, `v68_test`, `v69_test`, jsdom clean-checks, parity P8 | `python run.py --guardian` → `counts_sync` |
 
 ---
 
-*Last updated: v67 (2026-09-18) — deep audit (expert/BA) · top-theme hardening · 6/6 ad slots ·
-55/55 suites · readiness 100/100 (28/28) · theme audit 0/0 · code audit 0/0 · parity audit 0/0.*
+*Last updated: v70 (2026-09-18) — public surface cleanup (verification-proof block + developer
+text remove, dev archive `preview/_dev/`) · `wp_theme_sync` payload restore · 55/55 suites ·
+jsdom 119/119 · readiness 100/100 (28/28) · guardian 14/15 (1 warn-only owner env) ·
+theme audit 0/0 · code audit 0/0 · parity audit 0/0.*

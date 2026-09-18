@@ -3,7 +3,7 @@
 
 Enti idi:
   Roju okkasari (GUARDIAN_HOUR tarvata) bot motham system ni check chestundi —
-  site files · tiles/counts sync (jaari poyaya?) · menu/first-look UI blocks ·
+  site files · counts sync + public-text clean · menu/first-look UI blocks ·
   robots/sitemap/ads.txt · breaking feed freshness · ad inventory validity ·
   keyword/pillar lock · storage · .env readiness. Edaina padipoyindi/desynca
   aithe: Telegram alert + logs/guardian.json lo status + exact fix line.
@@ -39,7 +39,6 @@ PREVIEW = ROOT / "preview"
 STATE_FILE = ROOT / "logs" / "guardian.json"
 
 # Tile regexes — site (preview/index.html) nunchi live numbers teesukuntayi
-TILE_RE = re.compile(r'<div class="qtile"><b>([^<]+)</b>')
 UI_BLOCKS = [
     ('id="tickerwrap"', "బ్రేకింగ్ టికర్"),
     ('class="usedwrap"', "విద్యార్థులు ఎక్కువగా వెతికేవి"),
@@ -92,28 +91,32 @@ def check_first_look_ui() -> tuple:
     return True, "ticker → most-used → hero order intact", ""
 
 
-def check_tiles_sync() -> tuple:
-    """Site tiles ↔ test files + jsdom literal — desync ayithe high alert."""
-    html = _read(PREVIEW / "index.html")
-    tiles = TILE_RE.findall(html)
-    if not tiles:
-        return False, "tiles kanipinchaledu", "trust section tiles check cheyandi"
-    frac = [t for t in tiles if re.fullmatch(r"(\d+)/\1", t)]
-    suite_files = len(list((ROOT / "tests").glob("*_test.py")))
-    jsdom = _read(ROOT / "tests" / "runtime" / "jsdom_runtime_test.js")
-    m = re.search(r'trust proof tiles: (\d+)/(\d+) \+ 11/11 \+ (\d+)/(\d+)', jsdom)
+def check_counts_sync() -> tuple:
+    """Suites count ↔ README claim + public surfaces lo developer proof text ledu (v70 rule).
+
+    Motam: preview/theme lo test/audit numbers **kanipinchakoodadu** (user rule — public site
+    ki developer text vaddhu). Kaani docs lo unna claims nijamaina count tho match avvali.
+    """
+    suites = len(list((ROOT / "tests").glob("*_test.py")))
+    readme = _read(ROOT / "README.md")
+    manual = _read(ROOT / "MANUAL_ADVANCED_CHECKLIST.md")
     problems = []
-    if f"{suite_files}/{suite_files}" not in frac:
-        problems.append(f"suite tile {frac} lo {suite_files}/{suite_files} ledu (test files {suite_files})")
-    runtime_note = ""
-    if m:
-        n = int(m.group(3))
-        if f"{n}/{n}" not in frac:
-            problems.append(f"jsdom {n}/{n} tile lo ledu (tiles: {frac})")
-        runtime_note = f" · jsdom {n}/{n}"
+    if f"{suites}/{suites}" not in readme:
+        problems.append(f"README lo '{suites}/{suites}' suites claim ledu (tests {suites})")
+    if f"{suites}/{suites}" not in manual:
+        problems.append(f"MANUAL lo '{suites}/{suites}' suites claim ledu")
+    # developer proof numbers public surfaces lo undakoodadu
+    html = _read(PREVIEW / "index.html")
+    if "qtile" in html or "టెస్ట్ సూట్" in html:
+        problems.append("preview lo developer proof tiles/text undi (public site)")
+    theme_php = "".join(p.read_text(encoding="utf-8")
+                        for p in (ROOT / "wordpress-theme" / "studentup").rglob("*.php"))
+    for needle in ("studentup_proof_tiles", "proof_json"):
+        if needle in theme_php:
+            problems.append(f"theme lo '{needle}' undi (public site ki developer proof vaddhu)")
     if problems:
-        return False, "; ".join(problems), "tiles + jsdom okate change lo bump cheyandi (v58 nunchi rule)"
-    return True, f"suites {suite_files}/{suite_files} · tiles {frac}{runtime_note}", ""
+        return False, "; ".join(problems), "public text + docs counts sync cheyandi"
+    return True, f"suites {suites}/{suites} · public surfaces clean ✔", ""
 
 
 def check_robots_sitemap() -> tuple:
@@ -316,7 +319,7 @@ def check_parity_audit() -> tuple:
 CHECKS: List[tuple] = [
     ("site_files", check_site_files, False),
     ("first_look_ui", check_first_look_ui, False),
-    ("tiles_sync", check_tiles_sync, False),
+    ("counts_sync", check_counts_sync, False),
     ("robots_sitemap", check_robots_sitemap, False),
     ("ads_txt", check_ads_txt, False),
     ("breaking_feed", check_breaking_feed, False),

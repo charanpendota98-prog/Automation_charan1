@@ -82,7 +82,6 @@ function studentup_option_fields() {
 				'security_hardening' => array( 'Security hardening (headers · XML-RPC off · enumeration block)', 'check', '1', 'Default ON — adi 100% safe (REST bot ki impact ledu)' ),
 				'content_visibility' => array( 'content-visibility (below-fold render skip → fast)', 'check', '1', 'LCP/INP improvement — modern browsers lo mattrame' ),
 				'indexnow_key' => array( 'IndexNow key (hex, 8+ chars)', 'text', '', 'Bot nimpustundi — /<key>.key file automatic ga serve avutundi (Bing/Yandex instant indexing)' ),
-				'proof_json'   => array( 'Trust proof tiles (JSON)', 'textarea', '', 'Bot nimpustundi' ),
 				'api_base'     => array( 'Bot API base URL', 'text', '', 'పరీక్ష పోర్టల్/ఇతర internal API (optional)' ),
 			),
 		),
@@ -203,7 +202,7 @@ function studentup_settings_page() {
 		</form>
 		<hr>
 		<p><strong>Bot commands:</strong>
-			<code>python run.py --push-theme-data</code> — JSON fields (breaking/house/proof/deadline) ni
+			<code>python run.py --push-theme-data</code> — JSON fields (breaking/house/deadline) ni
 			ee options ki sync chestundi.</p>
 	</div>
 	<?php
@@ -262,7 +261,7 @@ function studentup_rest_get_options() {
 }
 
 /**
- * POST — bot sync (breaking/house/proof/deadline JSON + slots).
+ * POST — bot sync (breaking/house/deadline JSON + slots).
  */
 function studentup_rest_set_options( WP_REST_Request $request ) {
 	$body    = $request->get_json_params();

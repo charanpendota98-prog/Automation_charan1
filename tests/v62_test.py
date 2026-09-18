@@ -43,7 +43,7 @@ def test_checks_contract():
     names = [n for n, _ in readiness.CHECKS]
     for want in ("blueprint", "gates", "coverage", "freshness", "schema", "index_files",
                  "rankmath", "ad_slots", "ads_txt", "money_engine", "ad_safety", "hooks",
-                 "approval", "theme", "first_look", "tests_sync", "owner_pending"):
+                 "approval", "theme", "first_look", "counts_sync", "owner_pending"):
         assert want in names, want
     assert readiness.SECTION_ORDER == ["CONTENT ENGINE", "SEO", "ADS & MONEY", "AUTOMATION",
                                        "REAL SITE (WordPress theme)", "OWNER PENDING"]
