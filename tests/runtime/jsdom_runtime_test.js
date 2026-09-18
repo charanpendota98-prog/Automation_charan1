@@ -126,7 +126,7 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
      document.getElementById("qscore").textContent);
   ok("best score persisted to localStorage",
      window.localStorage.getItem("studentup-quiz-best") === "6");
-  ok("best label updated (Best: 6/6)",
+  ok("best label updated (ఉత్తమం: 6/6)",
      document.getElementById("qbest").textContent.indexOf("6/6") > -1);
   document.getElementById("qretry").click();
   await sleep(50);
@@ -149,7 +149,7 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
   /* ---------- exam + share + theme + totop ---------- */
   const examHref = document.getElementById("examlink").getAttribute("href");
   ok("exam link resolves to live demo exam (env-aware URL)",
-     /\/exam\/NYZPD6$/.test(examHref), examHref);
+     /\/exam\/KBHA5W$/.test(examHref), examHref);
   const wa = document.getElementById("wa");
   wa.click();
   ok("WhatsApp share sets wa.me href", wa.getAttribute("href").indexOf("wa.me") > -1, wa.getAttribute("href"));
@@ -199,7 +199,7 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
   const dropItems = drop ? drop.querySelectorAll("a").length : 0;
   ok("More dropdown: 5+ neat items (services/ads/policy)", !!drop && dropItems >= 5, "items=" + dropItems);
   ok("dropdown contains Advertise With Us link",
-     Array.from(document.querySelectorAll(".drop a")).some(a => a.textContent.indexOf("Advertise") > -1));
+     Array.from(document.querySelectorAll(".drop a")).some(a => a.textContent.indexOf("ప్రకటన") > -1));
   ok("desktop nav underline animation CSS (scaleX)", /\.nav a::after\{[^}]*transform:scaleX\(0\)/.test(styleText));
   // hamburger
   const menubtn = document.getElementById("menubtn");
@@ -215,8 +215,8 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
      mpanel.querySelectorAll("a").length >= 15,
      "links=" + mpanel.querySelectorAll("a").length);
   ok("mobile panel has Advertise + Exam CTA",
-     Array.from(mpanel.querySelectorAll("a")).some(a => a.textContent.indexOf("Advertise") > -1) &&
-     Array.from(mpanel.querySelectorAll("a")).some(a => a.textContent.indexOf("Try Live Exam") > -1));
+     Array.from(mpanel.querySelectorAll("a")).some(a => a.textContent.indexOf("ప్రకటన") > -1) &&
+     Array.from(mpanel.querySelectorAll("a")).some(a => a.textContent.indexOf("ప్రత్యక్ష పరీక్ష") > -1));
   mpanel.querySelector('a[href="#jobs"]').click();
   ok("panel link click closes menu", !mpanel.classList.contains("open") && !document.body.classList.contains("mlock"));
   menubtn.click();
@@ -242,6 +242,37 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
   ok("all ad slots labeled SPONSORED + visible disclosure",
      Array.from(ads).every(a => /SPONSORED/i.test(a.textContent) && a.getAttribute("aria-label") === "Sponsored content"));
   ok("Advertise-with-us anchor exists (#ads)", !!document.getElementById("ads"));
+
+
+  /* ---------- v47: pure-Telugu content + trust + daily poll ---------- */
+  const heroText = document.querySelector(".hero h1").textContent;
+  ok("hero rendered in Telugu script (no Romanized mix)", /[\u0C00-\u0C7F]/.test(heroText) && !/\b(kosam|cheyandi|ledu|undi|avutundi)\b/i.test(heroText), heroText.slice(0, 48));
+  const telCount = (document.body.textContent.match(/[\u0C00-\u0C7F]/g) || []).length;
+  ok("Telugu script dominant across page body (300+ chars)", telCount > 300, "telugu chars=" + telCount);
+  const bodyTxt = document.body.textContent;
+  ok("developer-facing demo text removed (no .env / Demo contact leaks)",
+     !/\.env/.test(bodyTxt) && !/Demo contact/i.test(bodyTxt) && !/Call \(demo\)/i.test(bodyTxt) &&
+     !/real number/i.test(bodyTxt));
+  const tenglish = ["kosam", "cheyandi", "cheyali", "avutundi", "matrame", "ledu ", "undi ", "cheyyandi", "vachey", "petandi"];
+  const tenglishHits = tenglish.filter(w => new RegExp("\\b" + w.trim() + "\\b", "i").test(bodyTxt));
+  ok("no Romanized Tenglish words in visible text", tenglishHits.length === 0, "hits=" + tenglishHits.join(","));
+  const trust = document.getElementById("trust");
+  ok("trust section: 100% verify headline (Telugu)", !!trust && /100%/.test(trust.textContent) && /ధృవీకరించి/.test(trust.textContent));
+  ok("trust proof tiles: 33/33 + 11/11 + 73/73 + 10,682",
+     /33\/33/.test(trust.textContent) && /11\/11/.test(trust.textContent) &&
+     /73\/73/.test(trust.textContent) && /10,682/.test(trust.textContent));
+  ok("trust has 5 verification gates incl. deep cross-verification (v44)",
+     trust.querySelectorAll(".vstep").length === 5 && /క్రాస్-వెరిఫికేషన్/.test(trust.textContent));
+  ok("trust honest note + corrections email present",
+     /హామీ ఇవ్వదు/.test(trust.textContent) && /studentupinformative@gmail\.com/.test(trust.innerHTML));
+  const poll = document.getElementById("poll");
+  ok("daily poll section present (ఈరోజు పోల్)", !!poll && /ఈరోజు పోల్/.test(poll.textContent));
+  ok("poll widget has fetch fallback (portal offline → graceful note)",
+     /పోల్ అందుబాటులో లేదు|poll-error/.test(poll.innerHTML + Array.from(document.querySelectorAll("style")).map(s=>s.textContent).join("")));
+  ok("poll CSS: responsive + dark-mode rules", /\.poll\{/.test(styleText) && /body\.dark \.poll-opt/.test(styleText));
+  ok("services card: working contact paths (no dev placeholders)",
+     !!document.querySelector('#services a[href^="mailto:"]') &&
+     !/\$\{/.test(document.getElementById("services").textContent));
 
   /* ---------- summary ---------- */
   console.log("=".repeat(64));

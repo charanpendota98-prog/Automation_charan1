@@ -151,4 +151,28 @@ Message lo reason undi — exact ga fix cheyandi:
 ## ⚠️ Honest note
 Perfect = **machine gates + human 5-min verify**. Gates mistakes ramigadu (conflicts/stale/dates/originality), kaani official numbers mee mata tho final check — AdSense/Google/reputation thartham lo idi matrame safety.
 
-*Last updated: v44 (2026-09-17) — Deep Post Engine: 13 tests · 32/32 suites · CLI `--deep-research` + NotebookLM passes 6-8*
+*Last updated: v47 (2026-09-18) — Daily Poll + Admin Ad Manager + 100% Telugu public site: 13 tests · 33/33 suites · 73/73 browser-runtime checks*
+
+---
+
+## PART 6 — v47: DAILY POLL + ADMIN ADS + TELUGU SITE
+
+**Daily poll (website → exam portal):**
+```
+Admin console → (kotha exam create cheyyakunda) question bank lo questions add cheyandi
+Website "ఈరోజు పోల్" → /poll/today (rotates daily: day.toordinal() % bank)
+Vote → 1 IP = 1 vote/day · % bars + correct answer + explanation
+```
+- Bank peddaga aithe rojuki kotha prashna — exams laage questions update avutune untayi.
+- Endpoint offline unte website "⚠️ పోల్ అందుబాటులో లేదు" ani clean ga chupistundi (broken UI ledu).
+
+**Admin ads (owner control):**
+```
+Admin login → "📢 ప్రకటనలు" card → add / edit / delete
+Save → ads/inventory.json (bot next post lo SPONSORED + rel=sponsored tho use chestundi)
+```
+- Validation: id/title/link(http-only)/type/layout/dates — javascript: & data: URLs block.
+- Atomic write (.tmp + os.replace) — version/policy never overwritten.
+- 5 ad types: college_banner · coaching · shop · service · sponsorship.
+
+**Public site:** fully Telugu script (no Romanized mixing), trust section with live verified numbers, dev-facing demo text removed, daily poll widget, mobile-clean CSS.

@@ -1170,12 +1170,16 @@ Marpali te: `.env` edit chesi scheduler ni restart cheyandi: `sudo systemctl res
 ├── deploy/                 # systemd units · Caddyfile · nginx · Dockerfile · compose · backup.sh · install-vps.sh
 ├── autoblog/deploy_check.py # deploy readiness (deps/env/disk/port + real /healthz boot)
 ├── autoblog/site_audit.py  # v41 deep audit + safe autofix + live publish gate
-├── exam_portal/            # v39 college exam portal (stdlib only)
+├── exam_portal/            # v39/v47 college exam portal (stdlib only)
 │   ├── store.py            #      SQLite: exams/questions/roster/sessions/answers
+│   │                       #      + v47 poll_votes (daily poll bank + dedup)
 │   ├── engine.py           #      validate, START/CLOSE, scoring, sweeper, exports
 │   ├── notify.py           #      Telegram/webhook/in-app + copy-paste templates
 │   ├── ui.py               #      landing + admin console + manage + student app
+│   │                       #      + v47 "ప్రకటనలు" ads manager card
 │   ├── server.py           #      HTTP server + CLI (no framework)
+│   │                       #      + v47 /poll/today · /poll/vote (CORS) and
+│   │                       #      /api/admin/ads CRUD → ads/inventory.json
 │   └── demo.py             #      sample exam seed (--exam-portal-demo)
 ├── tools/
 │   └── ui_smoke.mjs        # v39 optional jsdom full-flow UI smoke test

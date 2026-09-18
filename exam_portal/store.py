@@ -128,6 +128,17 @@ class Store:
                     UNIQUE (exam_id, roll)
                 );
 
+                CREATE TABLE IF NOT EXISTS poll_votes (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    day TEXT NOT NULL,                  -- YYYY-MM-DD (IST day)
+                    qid INTEGER NOT NULL,               -- question bank id
+                    choice INTEGER NOT NULL,
+                    ip TEXT NOT NULL DEFAULT '',
+                    created_at TEXT NOT NULL
+                );
+
+                CREATE INDEX IF NOT EXISTS idx_poll_day ON poll_votes(day, qid);
+
                 CREATE TABLE IF NOT EXISTS sessions (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     exam_id INTEGER NOT NULL REFERENCES exams(id) ON DELETE CASCADE,
@@ -313,6 +324,62 @@ class Store:
             sql += " AND dropped = 0"
         with self.connect() as conn:
             return conn.execute(sql, (exam_id,)).fetchone()["c"]
+
+    # ---------------------------------------------------------------- v47 poll
+    def bank_questions(self) -> List[Dict]:
+        """Question bank for the daily poll: every live question across exams.
+
+        Admin console lo exam ki kotha questions add chesinappudalla ee bank
+        penchutundi — anduke daily poll roju kotha prashna chupistundi.
+        """
+        sql = ("SELECT q.id, q.exam_id, q.text, q.options, q.correct_index, "
+               "q.explanation, q.topic FROM questions q "
+               "WHERE q.dropped = 0 ORDER BY q.id")
+        with self.connect() as conn:
+            rows = conn.execute(sql).fetchall()
+        out: List[Dict] = []
+        for r in rows:
+            d = dict(r)
+            opts = _unjson(d.get("options"), [])
+            if not isinstance(opts, list) or len(opts) < 2:
+                continue
+            d["options"] = [str(o) for o in opts]
+            d["correct_index"] = int(d.get("correct_index") or 0)
+            out.append(d)
+        return out
+
+    def record_poll_vote(self, day: str, qid: int, choice: int, ip: str = "") -> None:
+        with self.connect() as conn:
+            conn.execute(
+                "INSERT INTO poll_votes (day, qid, choice, ip, created_at) "
+                "VALUES (?, ?, ?, ?, ?)",
+                (day, int(qid), int(choice), (ip or "")[:64], now_iso()),
+            )
+
+    def has_poll_vote(self, day: str, qid: int, ip: str = "") -> bool:
+        if not ip:
+            return False
+        with self.connect() as conn:
+            row = conn.execute(
+                "SELECT 1 FROM poll_votes WHERE day = ? AND qid = ? AND ip = ? LIMIT 1",
+                (day, int(qid), ip[:64]),
+            ).fetchone()
+        return bool(row)
+
+    def poll_vote_counts(self, day: str, qid: int) -> List[int]:
+        with self.connect() as conn:
+            rows = conn.execute(
+                "SELECT choice, COUNT(*) c FROM poll_votes "
+                "WHERE day = ? AND qid = ? GROUP BY choice",
+                (day, int(qid)),
+            ).fetchall()
+        out: Dict[int, int] = {}
+        for r in rows:
+            out[int(r["choice"])] = int(r["c"])
+        if not out:
+            return []
+        size = max(out) + 1
+        return [out.get(i, 0) for i in range(size)]
 
     def update_question(self, qid: int, **fields: Any) -> None:
         if not fields:

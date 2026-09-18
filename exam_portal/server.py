@@ -15,11 +15,13 @@ import argparse
 import json
 import logging
 import os
+import re
 import secrets
 import threading
+from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 from urllib.parse import parse_qs, unquote, urlparse
 
 from . import engine, notify, ui
@@ -349,6 +351,191 @@ class Api:
                                      auto=bool(payload.get("auto")),
                                      reason=payload.get("reason") or "")
 
+    # ------------------------------------------------------ v47: daily poll
+    @staticmethod
+    def _poll_day() -> str:
+        return datetime.now(timezone.utc).astimezone().strftime("%Y-%m-%d")
+
+    def _poll_question(self) -> Dict:
+        bank = self.store.bank_questions()
+        if not bank:
+            raise engine.ExamError(
+                "Prashna bank khali — admin console lo questions add cheyandi",
+                "no-bank", 404)
+        day = self._poll_day()
+        idx = datetime.strptime(day, "%Y-%m-%d").toordinal() % len(bank)
+        q = bank[idx]
+        return {"day": day, "q": q, "bank_size": len(bank)}
+
+    def today_poll(self) -> Dict:
+        """Public: roju kotha prashna (question bank rotate avutundi)."""
+        pick = self._poll_question()
+        q = pick["q"]
+        return {"ok": True, "day": pick["day"], "qid": q["id"], "text": q["text"],
+                "options": q["options"], "topic": q.get("topic", ""),
+                "bank_size": pick["bank_size"]}
+
+    def vote_poll(self, payload: Dict) -> Dict:
+        """Public: oka vote (IP ki oka vote per day)."""
+        pick = self._poll_question()
+        q = pick["q"]
+        try:
+            qid = int(payload.get("qid") or 0)
+            choice = int(payload.get("choice", -1))
+        except (TypeError, ValueError):
+            raise engine.ExamError("Vote format tappu", "bad-vote", 400)
+        if qid != q["id"]:
+            raise engine.ExamError("Ee poll marindi — page refresh chesi malli vote cheyandi",
+                                   "stale-poll", 409)
+        if not (0 <= choice < len(q["options"])):
+            raise engine.ExamError("Choice valid kaadu", "bad-choice", 400)
+        ip = str(payload.get("_ip") or payload.get("ip") or "")[:64]
+        already = self.store.has_poll_vote(pick["day"], qid, ip)
+        if not already:
+            self.store.record_poll_vote(pick["day"], qid, choice, ip)
+        counts = self.store.poll_vote_counts(pick["day"], qid)
+        size = len(q["options"])
+        counts = (counts + [0] * size)[:size]
+        return {"ok": True, "votes": counts, "total": sum(counts),
+                "correct_index": q["correct_index"], "already_voted": already,
+                "explanation": q.get("explanation", ""), "day": pick["day"]}
+
+    # ------------------------------------------------- v47: admin ad manager
+    @staticmethod
+    def _ads_path() -> Path:
+        p = (os.environ.get("ADS_INVENTORY_PATH") or "").strip()
+        if p:
+            return Path(p)
+        return Path(__file__).resolve().parent.parent / "ads" / "inventory.json"
+
+    @staticmethod
+    def _read_inventory(path: Path) -> Dict:
+        if not path.exists():
+            return {"version": 1, "policy": {}, "ads": []}
+        try:
+            raw = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, ValueError) as exc:
+            raise engine.ExamError(f"Ad inventory chadavaleka poyindi: {exc}",
+                                   "ads-read", 500)
+        if isinstance(raw, list):
+            return {"version": 1, "policy": {}, "ads": raw}
+        if not isinstance(raw, dict):
+            return {"version": 1, "policy": {}, "ads": []}
+        raw.setdefault("version", 1)
+        raw.setdefault("policy", {})
+        raw.setdefault("ads", [])
+        if not isinstance(raw["ads"], list):
+            raw["ads"] = []
+        return raw
+
+    def admin_ads(self, key: str) -> Dict:
+        self.require_admin(key)
+        path = self._ads_path()
+        inv = self._read_inventory(path)
+        return {"ok": True, "path": str(path), "version": inv.get("version", 1),
+                "policy": inv.get("policy", {}), "ads": inv.get("ads", [])}
+
+    def upsert_ad(self, key: str, payload: Dict) -> Dict:
+        """Create/update an ad in ads/inventory.json (bot next post lo vaadutundi)."""
+        self.require_admin(key)
+        ad = self._validate_ad(payload)
+        path = self._ads_path()
+        inv = self._read_inventory(path)
+        ads = [a for a in inv.get("ads", []) if not (isinstance(a, dict) and a.get("id") == ad["id"])]
+        ads.append(ad)
+        inv["ads"] = ads
+        try:
+            path.parent.mkdir(parents=True, exist_ok=True)
+            tmp = path.with_suffix(".json.tmp")
+            tmp.write_text(json.dumps(inv, ensure_ascii=False, indent=2) + "\n",
+                           encoding="utf-8")
+            os.replace(tmp, path)
+        except OSError as exc:
+            raise engine.ExamError(f"Ad save avvaledu: {exc}", "ads-write", 500)
+        return {"ok": True, "ad": ad, "count": len(ads)}
+
+    def delete_ad(self, key: str, ad_id: str) -> Dict:
+        self.require_admin(key)
+        path = self._ads_path()
+        inv = self._read_inventory(path)
+        before = len(inv.get("ads", []))
+        inv["ads"] = [a for a in inv.get("ads", [])
+                      if not (isinstance(a, dict) and a.get("id") == ad_id)]
+        if len(inv["ads"]) == before:
+            raise engine.ExamError("Ee id tho ad ledu", "ads-missing", 404)
+        try:
+            path.parent.mkdir(parents=True, exist_ok=True)
+            tmp = path.with_suffix(".json.tmp")
+            tmp.write_text(json.dumps(inv, ensure_ascii=False, indent=2) + "\n",
+                           encoding="utf-8")
+            os.replace(tmp, path)
+        except OSError as exc:
+            raise engine.ExamError(f"Ad delete avvaledu: {exc}", "ads-write", 500)
+        return {"ok": True, "count": len(inv["ads"])}
+
+    @staticmethod
+    def _validate_ad(payload: Dict) -> Dict:
+        def s(key: str, default: str = "", limit: int = 300) -> str:
+            return str(payload.get(key, default) or default).strip()[:limit]
+
+        ad_id = s("id", limit=52).lower()
+        if not re.fullmatch(r"[a-z0-9][a-z0-9\-_]{2,51}", ad_id):
+            raise engine.ExamError(
+                "Ad id: chinna aksharalu/sankhyalu/hyphen matrame (3-52)",
+                "bad-ad-id", 400)
+        title = s("title", limit=140)
+        if len(title) < 8:
+            raise engine.ExamError("Ad title kaneesam 8 aksharalu kavali", "bad-ad-title", 400)
+        atype = s("type", "college_banner", limit=30).lower()
+        if atype not in ("college_banner", "shop", "service", "coaching", "sponsorship"):
+            raise engine.ExamError(
+                "type: college_banner | shop | service | coaching | sponsorship",
+                "bad-ad-type", 400)
+        layout = s("layout", "banner", limit=12).lower()
+        if layout not in ("banner", "card", "auto"):
+            raise engine.ExamError("layout: banner | card | auto", "bad-ad-layout", 400)
+        link = s("link", limit=500)
+        if not re.fullmatch(r"https?://[^\s]+", link):
+            raise engine.ExamError(
+                "link http/https tho start avvali (javascript: vaddu — safety)",
+                "bad-ad-link", 400)
+        image = s("image", limit=500)
+        if image and not re.fullmatch(r"https?://[^\s]+", image):
+            raise engine.ExamError("image URL http/https matrame", "bad-ad-image", 400)
+        for dkey in ("start", "end"):
+            v = s(dkey, limit=10)
+            if v and not re.fullmatch(r"\d{4}-\d{2}-\d{2}", v):
+                raise engine.ExamError(f"{dkey}: YYYY-MM-DD format lo ivvandi",
+                                       f"bad-ad-{dkey}", 400)
+        raw_pl = payload.get("placements")
+        if isinstance(raw_pl, (list, tuple)):
+            placements = [str(x).strip() for x in raw_pl if str(x).strip()]
+        elif raw_pl:
+            placements = [p.strip() for p in str(raw_pl).split(",") if p.strip()]
+        else:
+            placements = ["top", "mid", "bottom"]
+        placements = placements[:6]
+
+        return {
+            "id": ad_id,
+            "name": s("name", title, limit=80) or title,
+            "type": atype,
+            "layout": layout,
+            "active": bool(payload.get("active", True)),
+            "demo": bool(payload.get("demo", False)),
+            "label": s("label", limit=40),
+            "name": s("name", limit=140) or title,
+            "title": title,
+            "description": s("description", limit=300),
+            "cta": s("cta", "Know More", limit=40) or "Know More",
+            "image": image,
+            "link": link,
+            "categories": s("categories", "", limit=200),
+            "placements": placements,
+            "start": s("start", limit=10),
+            "end": s("end", limit=10),
+        }
+
     def _require_session(self, payload: Dict) -> Dict:
         session = self.store.session_by_token(payload.get("token", ""))
         if not session:
@@ -377,9 +564,14 @@ class Handler(BaseHTTPRequestHandler):
         if self.command != "HEAD":
             self.wfile.write(body)
 
-    def json_out(self, data: Any, status: int = 200) -> None:
+    def json_out(self, data: Any, status: int = 200, cors: bool = False) -> None:
+        extra = {"Cache-Control": "no-store"}
+        if cors:  # v47: public poll endpoints — website (different port/origin) fetch cheyyagaladu
+            extra["Access-Control-Allow-Origin"] = "*"
+            extra["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+            extra["Access-Control-Allow-Headers"] = "Content-Type"
         self._send(status, json.dumps(data, ensure_ascii=False).encode("utf-8"),
-                   JSON_HEADERS["Content-Type"], {"Cache-Control": "no-store"})
+                   JSON_HEADERS["Content-Type"], extra)
 
     def html_out(self, html: str, status: int = 200) -> None:
         self._send(status, html.encode("utf-8"), "text/html; charset=utf-8",
@@ -479,9 +671,23 @@ class Handler(BaseHTTPRequestHandler):
             self.json_out(self.api.session_state(q.get("token", "")))
             return
 
+        if path == "/poll/today":
+            self.json_out(self.api.today_poll(), cors=True)
+            return
+        if path == "/api/admin/ads":
+            self.json_out(self.api.admin_ads(self.query().get("key", "")))
+            return
+
         self.json_out({"error": "Page dorakaledu", "path": path}, 404)
 
     # --------------------------------------------------------------- POST
+    def do_OPTIONS(self) -> None:  # noqa: N802 — v47 CORS preflight (public poll)
+        self._send(204, b"", "text/plain", {
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+            "Access-Control-Allow-Headers": "Content-Type",
+        })
+
     def do_POST(self) -> None:  # noqa: N802
         try:
             self._route_post()
@@ -551,6 +757,17 @@ class Handler(BaseHTTPRequestHandler):
         }
         if path in student:
             self.json_out(student[path](body))
+            return
+
+        if path == "/poll/vote":
+            body["_ip"] = self.client_ip()
+            self.json_out(self.api.vote_poll(body), cors=True)
+            return
+        if path == "/api/admin/ads":
+            self.json_out(self.api.upsert_ad(body.get("key", ""), body))
+            return
+        if path == "/api/admin/ads/delete":
+            self.json_out(self.api.delete_ad(body.get("key", ""), str(body.get("id") or "")))
             return
 
         self.json_out({"error": "Endpoint dorakaledu", "path": path}, 404)
