@@ -8,6 +8,12 @@ Bot automatic ga chesthunna varam rework cheyakapovadu — idi mee 15-min/day ri
 
 ## PART 0 — ONE-TIME SETUP (Day 1 · ~90 min)
 
+> 🏗 **Modata architecture clear chesukondi:** WordPress = website (MilesWeb) · Bot + portal =
+> engine (Oracle leda MilesWeb cron). Rendu kalipi okate system — link = **WordPress REST API**.
+> Diagram + 3 combos: **GO_LIVE_CHECKLIST.md → section A0**. ⛔ Bot ni rendu chotla schedule
+> cheyyakandi (duplicate posts).
+
+
 | # | Action | Where | Command / Step |
 |---|---|---|---|
 | 1 | Gemini keys (2-3 free) | aistudio.google.com | `.env` → `GEMINI_API_KEYS=k2,k3` |

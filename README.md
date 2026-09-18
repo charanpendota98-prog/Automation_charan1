@@ -1221,6 +1221,7 @@ Marpali te: `.env` edit chesi scheduler ni restart cheyandi: `sudo systemctl res
 ├── CONTENT_PLAN_DAILY.md   # v58 daily plan: 17 pillars, rhythm, refresh, SEO gates
 ├── breaking (autoblog/breaking.py)      # v59 site బ్రేకింగ్ feed + most-used order
 ├── guardian (autoblog/guardian.py)      # v60 roju automatic system check + alert
+├── GO_LIVE_CHECKLIST.md A0              # edi ekkada run avutundi (architecture + 3 combos)
 ├── preview/data/breaking.json           # v59 ticker/section feed (radar writes)
 ├── AD_REVENUE_PLAYBOOK.md  # v52 revenue lines, rate card, sponsor + house ad flows
 ├── ad_advisor (autoblog/ad_advisor.py) # v57 network advisor + automatic alerts

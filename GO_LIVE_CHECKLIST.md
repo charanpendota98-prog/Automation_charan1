@@ -1,7 +1,77 @@
-# GO-LIVE CHECKLIST (v53) — deploy cheyocha? Enti migilindi?
+# GO-LIVE CHECKLIST (v60) — deploy cheyocha? Enti migilindi?
 
 **Short answer: CODE ready ✅ · DEPLOY ready ✅ · 5 panulu MEE accounts lo cheyyali ⏳.**
 Ee doc = okka page lo motham. Kramam ga cheyyandi.
+
+---
+
+## A0) ARCHITECTURE — edi ekkada run avutundi? (rendu kaavala?)
+
+**Short answer: 🌐 WordPress = website (MilesWeb) · ⚙️ Bot + portal = engine (Oracle leda MilesWeb cron).
+Rendu "support" kaadu — rendu okate system lo rendu roles. Bot ki WordPress tho link = HTTPS REST API.**
+
+```
+        విద్యార్థులు / మీరు (browser)
+                  │  https://studentup.in
+                  ▼
+  ┌──────────────────────────────────────────┐
+  │  studentup.in  ── MilesWeb public face ──│
+  │  WordPress + Rank Math + AdSense ads     │
+  │  (posts · pages · ads.txt · sitemap.xml) │
+  └───────────────┬──────────────────────────┘
+                  │  WordPress REST API  (https://studentup.in/wp-json/wp/v2)
+                  │  Application Password tho — internet meeda link, folder kaadu
+                  ▼
+  ┌──────────────────────────────────────────┐
+  │  BOT (Python) ── engine room ────────────│
+  │  research → fact-guard → draft → publish │
+  │  radar (6h) · breaking feed · guardian   │
+  │  ── EKKADA run avvali? okka chota: ──    │
+  │    (a) Oracle VM 24×7 systemd  ⭐ best   │
+  │    (b) MilesWeb cron (5-job limit)       │
+  └──────────────────────────────────────────┘
+                  ▲
+  ┌───────────────┴──────────────────────────┐
+  │  EXAM PORTAL (Python) — /exam /admin     │
+  │  Oracle VM WSGI  leda  MilesWeb WSGI App │
+  └──────────────────────────────────────────┘
+```
+
+### Motham chain (links anni ela kalisi pani chestayi)
+
+```
+GitHub repo (mee code)  →  server lo git pull  →  cron/systemd bot ni run chestundi
+   →  bot sources chadivi post rasi  →  WP REST API tho studentup.in lo draft  →
+   →  Telegram lo ✅/🗑️  →  mee approval  →  post live  →  ads.txt/sitemap WP root lo serve
+   →  GA4 + Search Console + AdSense ee domain ni track chestayi
+```
+
+⛔ **Okate trap undi:** bot ni **rendu chotla** schedule cheyyakandi (MilesWeb cron + Oracle timer
+rendu) — **duplicate posts** vasthayi. Bot ki okka home select cheyandi; migilinadi backup ga undochu
+(bot off, uptime monitor matrame).
+
+### Rendu kaadu — 3 combos (okati select cheyandi)
+
+| Combo | Ekkada enti | Kharchu | Evariki |
+|---|---|---|---|
+| **A. MilesWeb only** | WP + bot (cron) + portal (Setup Python App) anni MilesWeb lo | ₹59–180/నెల | Simple, budget — kaani cron 5-job limit + 24×7 daemon ledu (approval poll cron tho) |
+| **B. MilesWeb + Oracle** ⭐ | WP = MilesWeb · bot + portal + guardian = Oracle Always Free 24×7 | ₹0 extra | **Recommended** — heavy bot runs + uptime + mee data mee control lo |
+| **C. Oracle only** | WP kuda Oracle VM lo (PHP + MySQL + Caddy) | ₹0 | Server telisina vallaki — WP updates/backups meeru chuskovali |
+
+**Frontend kuda okati select cheyandi** (rendu kaadu): studentup.in root lo **WordPress** (Rank Math
++ ads + bot posts) ⭐ leda **static preview** (`preview/index.html` → public_html). WP select chesthe
+`preview/` = mee design blueprint/landing (subfolder lo pettukovachu); static select chesthe bot posts
+WP lo untayi kaani site lo kanipinchavu.
+
+**Ippude cheyyalsina 5 steps (combo B):**
+1. MilesWeb: domain + WordPress + SSL + Application Password → `.env`
+2. Oracle: VM create → `bash deploy/install-vps.sh` → bot systemd timer + portal HTTPS
+3. Oracle lo `.env` pettandi (Gemini · Telegram · WP creds) → `python run.py --doctor` 0 problems
+4. `python run.py --check-wp` (Oracle nunchi WP ki link test) · `python run.py --guardian` 10/11
+5. UptimeRobot → `https://<domain>/healthz` + roju Telegram guardian report
+
+Detail docs: `DEPLOY_MILESWEB.md` (cPanel steps) · `DEPLOY_ORACLE_CLOUD.md` (VM + watchdog + limits) ·
+`DEPLOY.md` (VPS/Docker/PaaS paths).
 
 ---
 

@@ -167,6 +167,9 @@ def test_docs_v60():
     assert "PART 19" in manual and "SITE GUARDIAN" in manual
     go = (ROOT / "GO_LIVE_CHECKLIST.md").read_text(encoding="utf-8")
     assert "--guardian" in go
+    # A0: "edi ekkada run avutundi" architecture + duplicate-cron trap
+    assert "A0) ARCHITECTURE" in go and "WordPress REST API" in go
+    assert "duplicate posts" in go and "Combo" in go
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
     assert "--guardian" in readme
     env = (ROOT / ".env.example").read_text(encoding="utf-8")
