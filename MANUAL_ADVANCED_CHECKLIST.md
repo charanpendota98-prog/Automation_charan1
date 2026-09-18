@@ -151,7 +151,28 @@ Message lo reason undi — exact ga fix cheyandi:
 ## ⚠️ Honest note
 Perfect = **machine gates + human 5-min verify**. Gates mistakes ramigadu (conflicts/stale/dates/originality), kaani official numbers mee mata tho final check — AdSense/Google/reputation thartham lo idi matrame safety.
 
-*Last updated: v50 (2026-09-18) — 16 content pillars + manual gate + Rank Math + daily refresh: 15 tests · 36/36 suites · 82/82 runtime checks*
+*Last updated: v51 (2026-09-18) — category menu (TS/AP/Central/Walk-in/Software/Private/Hall tickets/Results) + auto-heal watchdog: 10 tests · 37/37 suites · 99/99 runtime checks*
+
+---
+
+## PART 10 — v51: CATEGORY MENU + CRASH-PROOF DEPLOY
+
+**Menu (owner list):** ఉద్యోగాలు dropdown = టీఎస్ · ఏపీ · కేంద్ర · వాక్-ఇన్ · సాఫ్ట్‌వేర్ ·
+ప్రైవేట్ · అవుట్‌సోర్సింగ్ · పార్ట్-టైమ్ · **పరీక్షలు dropdown** = హాల్ టికెట్లు · ఫలితాలు ·
+రానున్న పరీక్షలు · పరీక్షా చిట్కాలు. Mobile panel lo kuda ade 12 categories.
+Grid lo **15 filter chips** (state + category + search kalipi pani chestayi); shareable links: `#cat-walkin`.
+
+**Crash-proof (Oracle/VPS):**
+```
+systemd Restart=always        → process chachina 3 sec lo malli start
+su-watchdog.timer (2 min)     → /healthz fail 3x → auto-restart + Telegram alert
+                              → disk / memory / load / TLS expiry alerts too
+tools/prune_media.py          → disk clean · backup.sh → nightly DB backup
+website graceful degrade      → poll down aithe note chupistundi, page crash ledu
+external: UptimeRobot → /healthz (VM motham down aithe kuda alert)
+```
+Ekkada emi run cheyyali + Oracle free-tier nijamaina limits (2 OCPU/12 GB new free
+tenancies, PAYG ki 4/24, idle reclaim risk): **DEPLOY_ORACLE_CLOUD.md**.
 
 ---
 

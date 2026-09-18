@@ -62,19 +62,24 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
   const cards = Array.from(document.querySelectorAll("#grid .news"));
   const visible = () => cards.filter(c => !c.classList.contains("hidden")).length;
   const click = sel => { document.querySelector(sel).click(); };
+  // v51: expected counts derived from data-state/data-cat so adding cards
+  // (new pillars) never breaks the suite.
+  const has = (card, attr, val) => (" " + (card.getAttribute(attr) || "") + " ").indexOf(" " + val + " ") > -1;
+  const expectState = st => cards.filter(c => has(c, "data-state", st)).length;
+  const expectCat = cat => cards.filter(c => has(c, "data-cat", cat)).length;
 
   click('.tab[data-state="ts"]');
   click('.tab[data-state="all"]');
   click('.tab[data-state="ts"]');
-  ok("TS filter -> 5 cards, all contain ts (multi-state cards by design)",
-     visible() === 5 && cards.filter(c => !c.classList.contains("hidden")).every(c => (" " + c.getAttribute("data-state") + " ").indexOf(" ts ") > -1),
-     "visible=" + visible());
+  ok("TS filter -> all ts cards (count from DOM, multi-state by design)",
+     visible() === expectState("ts") && cards.filter(c => !c.classList.contains("hidden")).every(c => has(c, "data-state", "ts")),
+     "visible=" + visible() + " expected=" + expectState("ts"));
   click('.tab[data-state="ap"]');
-  ok("AP filter -> 3 cards (incl. ts ap cards)", visible() === 3, "visible=" + visible());
+  ok("AP filter -> all ap cards (incl. ts+ap)", visible() === expectState("ap"), "visible=" + visible());
   click('.tab[data-state="central"]');
-  ok("Central filter -> 3 cards (incl. ts central)", visible() === 3, "visible=" + visible());
+  ok("Central filter -> all central cards", visible() === expectState("central"), "visible=" + visible());
   click('.tab[data-state="all"]');
-  ok("All filter -> 8 cards", visible() === 8, "visible=" + visible());
+  ok("All filter -> every card visible", visible() === cards.length, "visible=" + visible() + "/" + cards.length);
   click('.tab[data-state="ts"]');
   ok("active class follows clicks",
      document.querySelector('.tab[data-state="ts"]').classList.contains("active") &&
@@ -91,14 +96,14 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
   click('.tab[data-state="all"]');
   q.value = "";
   q.dispatchEvent(new window.Event("input", { bubbles: true }));
-  ok("clear search -> 8 cards back", visible() === 8, "visible=" + visible());
+  ok("clear search -> every card back", visible() === cards.length, "visible=" + visible());
   q.value = "zzqx123notfound";
   q.dispatchEvent(new window.Event("input", { bubbles: true }));
   ok("no-match -> #nores shown, 0 cards",
      nores.style.display !== "none" && visible() === 0, "nores=" + nores.style.display + " visible=" + visible());
   q.value = "";
   q.dispatchEvent(new window.Event("input", { bubbles: true }));
-  ok("clear -> cards restored", visible() === 8);
+  ok("clear -> cards restored", visible() === cards.length);
 
   /* ---------- daily quiz ---------- */
   const qboxes = Array.from(document.querySelectorAll("#qwrap .qbox"));
@@ -194,10 +199,10 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
   /* ---------- v46: top-right menu (desktop nav + mobile hamburger) ---------- */
   const navTop = document.querySelectorAll(".nav > a").length
     + document.querySelectorAll(".nav > .has-drop > a").length;
-  ok("desktop nav: 7 top-right items (6 + More)", navTop === 7, "count=" + navTop);
+  ok("desktop nav: 8 top-right items (5 + 3 dropdowns)", navTop === 8, "count=" + navTop);
   const drop = document.querySelector(".has-drop .drop");
   const dropItems = drop ? drop.querySelectorAll("a").length : 0;
-  ok("More dropdown: 5+ neat items (services/ads/policy)", !!drop && dropItems >= 5, "items=" + dropItems);
+  ok("dropdowns present with 5+ items each (jobs / exams / more)", !!drop && dropItems >= 5, "items=" + dropItems);
   ok("dropdown contains Advertise With Us link",
      Array.from(document.querySelectorAll(".drop a")).some(a => a.textContent.indexOf("ప్రకటన") > -1));
   ok("desktop nav underline animation CSS (scaleX)", /\.nav a::after\{[^}]*transform:scaleX\(0\)/.test(styleText));
@@ -258,9 +263,9 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
   ok("no Romanized Tenglish words in visible text", tenglishHits.length === 0, "hits=" + tenglishHits.join(","));
   const trust = document.getElementById("trust");
   ok("trust section: 100% verify headline (Telugu)", !!trust && /100%/.test(trust.textContent) && /ధృవీకరించి/.test(trust.textContent));
-  ok("trust proof tiles: 36/36 + 11/11 + 83/83 + 10,682",
-     /36\/36/.test(trust.textContent) && /11\/11/.test(trust.textContent) &&
-     /83\/83/.test(trust.textContent) && /10,682/.test(trust.textContent));
+  ok("trust proof tiles: 37/37 + 11/11 + 99/99 + 10,682",
+     /37\/37/.test(trust.textContent) && /11\/11/.test(trust.textContent) &&
+     /99\/99/.test(trust.textContent) && /10,682/.test(trust.textContent));
   ok("trust tiles prove pillar + source coverage (16 categories · 129 sources)",
      /16/.test(trust.textContent) && /129/.test(trust.textContent) &&
      /అవుట్‌సోర్సింగ్/.test(trust.textContent) && /ప్రస్తుతాంశాలు/.test(trust.textContent));
@@ -307,6 +312,52 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
   ok("phone: bottom nav has 5 labelled destinations",
      navLinks.length === 5 && navLinks.every(a => a.textContent.trim().length > 0),
      "count=" + navLinks.length);
+
+
+  /* ---------- v51: category menu + filter chips ---------- */
+  const jobsDrop = document.querySelector(".has-drop .drop");
+  const jobsItems = jobsDrop ? Array.from(jobsDrop.querySelectorAll("a")) : [];
+  const jobsCats = jobsItems.map(a => a.getAttribute("data-goto-cat")).filter(Boolean);
+  ok("ఉద్యోగాలు dropdown: 8 category links (TS/AP/Central/Walk-in/Software/Private/Outsourcing/Part-time)",
+     jobsCats.length === 8, "cats=" + jobsCats.join(","));
+  for (const want of ["ts-jobs", "ap-jobs", "central-jobs", "walkin", "software", "private", "outsourcing", "parttime"]) {
+    ok("jobs menu has " + want, jobsCats.indexOf(want) > -1);
+  }
+  const examDrop = document.querySelectorAll(".has-drop .drop")[1];
+  const examCats = examDrop ? Array.from(examDrop.querySelectorAll("a[data-goto-cat]")).map(a => a.getAttribute("data-goto-cat")) : [];
+  ok("పరీక్షలు dropdown: hall tickets + results + upcoming + tips",
+     ["hallticket", "results", "upcoming", "examtips"].every(c => examCats.indexOf(c) > -1),
+     "cats=" + examCats.join(","));
+  const chips = Array.from(document.querySelectorAll(".chip"));
+  const chipCats = chips.map(c => c.getAttribute("data-cat"));
+  ok("category chip row present with 15 filters (all + 14 pillars)", chips.length === 15, "chips=" + chips.length);
+  const articleCats = new Set();
+  Array.from(document.querySelectorAll("#grid .news")).forEach(n =>
+    (n.getAttribute("data-cat") || "").split(" ").forEach(c => c && articleCats.add(c)));
+  const orphan = chipCats.filter(c => c !== "all" && !articleCats.has(c));
+  ok("every chip has matching content (no dead filter)", orphan.length === 0, "orphans=" + orphan.join(","));
+  // clicking a chip filters the grid
+  const walkinChip = chips.find(c => c.getAttribute("data-cat") === "walkin");
+  walkinChip.click();
+  const visibleAfter = Array.from(document.querySelectorAll("#grid .news"))
+    .filter(n => !n.classList.contains("hidden"));
+  ok("clicking వాక్-ఇన్ chip filters to only walk-in cards",
+     visibleAfter.length > 0 && visibleAfter.every(n => (n.getAttribute("data-cat") || "").indexOf("walkin") > -1),
+     "visible=" + visibleAfter.length);
+  // menu deep-link also sets the filter (shareable behaviour)
+  const tsLink = jobsItems.find(a => a.getAttribute("data-goto-cat") === "ts-jobs");
+  tsLink.click();
+  const afterMenu = Array.from(document.querySelectorAll("#grid .news")).filter(n => !n.classList.contains("hidden"));
+  ok("menu link (టీఎస్ ఉద్యోగాలు) deep-filters the grid",
+     afterMenu.length > 0 && afterMenu.every(n => (n.getAttribute("data-cat") || "").indexOf("ts-jobs") > -1),
+     "visible=" + afterMenu.length);
+  ok("chip CSS: active state + dark mode + tap size",
+     /\.chip\.active\{/.test(styleText) && /body\.dark \.chip/.test(styleText) &&
+     /\.chip\{[^}]*border-radius:999px/.test(styleText));
+  // reset back to all for later checks
+  chips.find(c => c.getAttribute("data-cat") === "all").click();
+  ok("'అన్నీ' chip restores the full grid",
+     Array.from(document.querySelectorAll("#grid .news")).filter(n => !n.classList.contains("hidden")).length >= 13);
 
   /* ---------- summary ---------- */
   console.log("=".repeat(64));
