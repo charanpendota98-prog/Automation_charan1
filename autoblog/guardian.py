@@ -261,6 +261,27 @@ def check_env_readiness() -> tuple:
 
 
 # (id, fn, warn_only) — warn_only = mee pani (owner creds), system break kaadu
+def check_theme_audit() -> tuple:
+    """v66: static theme audit — undefined functions / option keys / ads·consent."""
+    import subprocess
+    import sys
+
+    tool = ROOT / "tools" / "theme_audit.py"
+    if not tool.exists():
+        return False, "theme_audit.py ledu", "tools/theme_audit.py restore"
+    try:
+        out = subprocess.run([sys.executable, str(tool)], capture_output=True,
+                             text=True, cwd=str(ROOT), timeout=120)
+    except Exception as exc:  # noqa: BLE001
+        return False, f"audit run fail ({type(exc).__name__})", "python tools/theme_audit.py"
+    lines = [l.strip() for l in (out.stdout or "").splitlines() if l.strip()]
+    summary = lines[-2] if len(lines) >= 2 else ""
+    if out.returncode == 0:
+        return True, summary.replace("  ", ""), ""
+    errs = [l for l in lines if l.startswith("❌")]
+    return False, (errs[0][:120] if errs else summary[:120]), "python tools/theme_audit.py"
+
+
 CHECKS: List[tuple] = [
     ("site_files", check_site_files, False),
     ("first_look_ui", check_first_look_ui, False),
@@ -273,6 +294,7 @@ CHECKS: List[tuple] = [
     ("menu_wiring", check_menu_wiring, False),
     ("storage", check_storage, False),
     ("wp_theme", check_wp_theme, False),
+    ("theme_audit", check_theme_audit, False),
     ("env_readiness", check_env_readiness, True),
 ]
 

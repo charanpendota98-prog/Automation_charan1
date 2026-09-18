@@ -18,6 +18,8 @@ from __future__ import annotations
 import json
 import logging
 import re
+import subprocess
+import sys
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Callable, Dict, List, Tuple
@@ -254,7 +256,6 @@ def c_php_lint() -> List[dict]:
     if not linter.exists():
         return [_bad("PHP syntax lint (php-parser)", "tools/php_lint.js ledu",
                      "REAL SITE (WordPress theme)", "tools/php_lint.js add cheyandi")]
-    import subprocess
     try:
         out = subprocess.run(["node", str(linter)], capture_output=True, text=True,
                              cwd=str(ROOT), timeout=60)
@@ -322,6 +323,32 @@ def c_trends() -> List[dict]:
         return [_ok("Google Trends + Suggest engine", value, "SEO")]
     return [_bad("Google Trends + Suggest engine", value, "SEO",
                  "trends.py parse/filter/queue check cheyandi")]
+
+
+def c_theme_audit() -> List[dict]:
+    """v66: static theme audit — undefined functions · option keys · hooks · ads."""
+    import subprocess
+
+    tool = ROOT / "tools" / "theme_audit.py"
+    if not tool.exists():
+        return [_bad("Theme static audit", "tools/theme_audit.py ledu",
+                     "REAL SITE (WordPress theme)", "tool restore cheyandi")]
+    try:
+        out = subprocess.run([sys.executable, str(tool)], capture_output=True,
+                             text=True, cwd=str(ROOT), timeout=120)
+    except Exception as exc:  # noqa: BLE001
+        return [_ok("Theme static audit", f"skip ({type(exc).__name__})",
+                    "REAL SITE (WordPress theme)")]
+    lines = [l.strip() for l in (out.stdout or "").splitlines() if l.strip()]
+    summary = lines[-2].strip() if len(lines) >= 2 else ""
+    build = _read(ROOT / "tools" / "build_wp_theme.py")
+    wired = "theme_audit.py" in build
+    if out.returncode == 0 and wired:
+        return [_ok("Theme static audit (functions · options · hooks)",
+                    summary + " · build gate ON", "REAL SITE (WordPress theme)")]
+    errs = [l for l in lines if l.startswith("❌")]
+    return [_bad("Theme static audit", (errs[0] if errs else summary)[:140],
+                 "REAL SITE (WordPress theme)", "python tools/theme_audit.py")]
 
 
 def c_ad_slots() -> List[dict]:
@@ -519,6 +546,7 @@ CHECKS: List[Tuple[str, Callable[[], List[dict]]]] = [
     ("approval", c_approval_flow),
     ("theme", c_theme),
     ("theme_v64", c_theme_v64),
+    ("theme_audit", c_theme_audit),
     ("php_lint", c_php_lint),
     ("first_look", c_first_look),
     ("tests_sync", c_tests_sync),

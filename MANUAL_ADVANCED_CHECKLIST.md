@@ -157,7 +157,66 @@ Message lo reason undi — exact ga fix cheyandi:
 ## ⚠️ Honest note
 Perfect = **machine gates + human 5-min verify**. Gates mistakes ramigadu (conflicts/stale/dates/originality), kaani official numbers mee mata tho final check — AdSense/Google/reputation thartham lo idi matrame safety.
 
-*Last updated: v65 (2026-09-18) — PIN-TO-PIN GATE (47 checks + certificate + critical block) + GOOGLE VISIBILITY (Trends/Suggest → topic queue): 13 checks · 51/51 suites · 122/122 runtime · readiness 100/100 (25/25)*
+*Last updated: v66 (2026-09-18) — THEME AUDIT (mistakes hunter) + ADS REVENUE ENGINE (Consent Mode v2 · ads.txt · News sitemap · gating · density cap · CLS) + SEMANTIC CHECKS (67-check gate): 12 checks · 52/52 suites · 122/122 runtime · readiness 100/100 (26/26)*
+
+## PART 25 — v66: THEME AUDIT + ADS REVENUE ENGINE + SEMANTIC CHECKS
+
+```
+THEME AUDIT (tools/theme_audit.py) — "theme lo mistakes" ni vetike static scanner:
+  · undefined studentup_* function calls (WP core allowlist tho) → white-screen prevent
+  · options read ayyi admin page lo declare avvakapovadam (read vs declared)
+  · XSS patterns (`echo $var`, `$_GET` echo)
+  · critical hooks: wp_head · wp_body_open · body_class · language_attributes ·
+    wp_footer · `<main id="main">` · breadcrumbs · author box
+  · ads readiness (adsbygoogle · reserved height · lazy · gating) · ads.txt · consent
+  · exit 1 on errors → tools/build_wp_theme.py LO hard gate + guardian + readiness
+  · run: .venv/bin/python tools/theme_audit.py   (24 files · 62 functions · 30 options)
+
+AD REVENUE ENGINE (theme — "highest ads ki miss avthunna" fix):
+  · inc/consent.php      : Consent Mode v2 head lo (priority 1) — ad_storage/ad_user_data/
+                           ad_personalization/analytics_storage default denied [EEA,GB,CH]
+                           + granted fallback + ads_data_redaction + region sanitize (A-Z0-9)
+                           + CMP snippet option (priority 2) → EEA/UK ads block avvavu
+  · inc/ads-txt.php      : /ads.txt serve (template_redirect) — AdSense client nunchi
+                           `google.com, pub-XXXX, DIRECT, f08c47fec0942fa0` auto line
+                           → direct ad demand + reseller path open (noindex header)
+  · inc/ads.php REWRITE  : AdSense-first render (client + slot unte unit) → house fallback
+                           · page gating (admin/feed/404/search/attachment/policy out)
+                           · density cap max_ads (default 4) · reserved min-height (CLS 0)
+                           · lazy ads (leaderboard/anchor tappa) · ads_enabled master switch
+  · inc/perf.php         : LCP preload + fetchpriority=high (single) · img decoding=async
+                           · lazy-ads IntersectionObserver (rootMargin 300px, viewability)
+  · inc/news-sitemap.php : /news-sitemap.xml (48h posts + news:publication/image) +
+                           robots.txt lo news sitemap line (Google News/Discover eligibility)
+  · options.php +12      : ads_enabled · adsense_slot_mid · adsense_slot_in_feed · ads_txt ·
+                           max_ads · lazy_ads · ads_on_policy · consent_mode ·
+                           consent_regions · consent_cmp_id · news_sitemap · deadline_json
+  · style.css            : takeaways/entities/dark-mode/consent-note/ad-reserved blocks
+
+SEMANTIC CHECKS (bot side — "blog rasthunnapudu inka chala check cheyali"):
+  · post_gate lo kotha SEMANTIC group (7 checks): entity coverage (3+) · ముఖ్యాంశాలు box ·
+    question-form headings 2+ · సంబంధిత అంశాలు cluster block · avg sentence ≤24 words ·
+    current year · quick answer
+  · DEEPER batch (12 checks — "inka chala check cheyali"): heading hierarchy (H1 ledu ·
+    level-skip ledu) · heading ≤70 ch · markdown/escape leftovers ledu · list items ≤12 words ·
+    table ≤5 columns (mobile) · job-guarantee/clickbait claims ledu (trust+policy) ·
+    focus-keyword cannibalization ledu · slug ≤60 ch · meta lo CTA+number (CTR) ·
+    secondary keywords body lo · content img width/height (CLS) · descriptive anchors ·
+    FAQ answers 12+ words → **gate ippudu 67 checks**
+  · gate fails → LLM refine hints ga (CONTENT/SEMANTIC/SEO) — writing loop lo ne fix
+    (publish-time lo block kaadu; pin gate lo mattrame block)
+  · rm100 fixers: fix_takeaways (ముఖ్యాంశాలు box) + fix_entities (సంబంధిత అంశాలు, internal
+    search links) — content nunchi mattrame, invent cheyyadu
+  · rm100.fix_faq BUG FIX: puratana guard (`<h3` 3+ unte skip) valla FAQ asalu rakapovadam
+    → ippudu FAQ questions nijam ga content lo unnaya ani check chestundi (regression test)
+  · trends queue match check: article keyword + trending queue overlap
+
+TESTS            : tests/v66_test.py = 12 checks (audit detection ability tho!) ·
+                   run.py --test-all 52/52 · readiness 100/100 (26/26 system checks) ·
+                   pin gate 67 checks · zip 29 files
+```
+
+---
 
 ## PART 24 — v65: PIN-TO-PIN GATE + GOOGLE VISIBILITY (Trends/Suggest)
 

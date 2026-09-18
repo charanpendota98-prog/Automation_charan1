@@ -131,7 +131,17 @@ def main(argv: list[str] | None = None) -> int:
         print("  ✅ structure + theme header + tokens + escaping — ANNI OK")
     code, msg = php_lint()
     print(("  ✅ " if code == 0 else "  ❌ ") + msg)
-    if problems or code:
+    # v66: static theme audit (undefined functions · option keys · hooks · ads)
+    audit = subprocess.run([sys.executable, str(ROOT / "tools" / "theme_audit.py")],
+                           capture_output=True, text=True, cwd=str(ROOT))
+    tail = [l for l in (audit.stdout or "").splitlines() if l.strip()]
+    summary = tail[-2].strip() if len(tail) >= 2 else ""
+    print(("  ✅ " if audit.returncode == 0 else "  ❌ ") + "theme audit: " + summary)
+    if audit.returncode != 0:
+        for line in tail:
+            if line.strip().startswith("❌"):
+                print("     " + line.strip())
+    if problems or code or audit.returncode:
         print("  ⛔ package cheyyaledu — paina problems fix cheyandi")
         return 1
     out = Path(args.out)

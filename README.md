@@ -533,6 +533,30 @@ python run.py --breaking-feed           # v59: radar → site బ్రేకి
 python run.py --breaking-from file.json # v59: feed ni JSON nunchi (offline/approved list)
 ```
 
+### v66 — THEME AUDIT (mistake hunter) + ADS REVENUE ENGINE + WRITING-TIME SEMANTIC CHECKS
+
+**Mee maatalu: "blog rasthunnapudu inka chala check cheyali" + "highest ads ravataniki
+chala miss chesthunnam" + "theme lo kuda chala mistakes unnayi"** → moodintiki
+**measure-cheyyi-fix** approach (v65 pin gate + v66 audit + 54-check gate).
+
+| # | Enti | Ela |
+|---|---|---|
+| 1 | **Theme mistake hunter** | `tools/theme_audit.py` — static scanner: **undefined `studentup_*` calls** (WP core allowlist) · options read ayyi admin page lo declare avvakapovadam · XSS patterns (`echo $var`, `$_GET` echo) · hooks (wp_head · wp_body_open · body_class · language_attributes · wp_footer · `<main id="main">`) · breadcrumbs/author box · ads readiness · **exit 1 on errors** → **build gate + guardian + readiness** |
+| 2 | **Audit tho pattukunna nijamaina ads misses (anni fix)** | ① house ad **eppudu** render ayyedi (AdSense unna kuda) → AdSense-first render ② page-level gating ledu → 404/search/attachment/**policy pages** out ③ **density cap** ledu → `max_ads` (default 4) ④ **reserved height** ledu → CLS penalty → min-height ⑤ **lazy load** ledu → viewability low ⑥ **ads.txt** serve avvatledu → direct demand closed ⑦ **Consent Mode v2** ledu → EEA/UK ads block ⑧ **News sitemap** ledu → Discover/News eligibility miss ⑨ LCP preload ledu |
+| 3 | **AdSense-first, house fallback** | `studentup_ad()` → client + slot unte **AdSense unit** (reserved `su-ad-reserved` + `su-ad-lazy`), lekapote house ad. Master switch `ads_enabled`, policy pages ki `ads_on_policy` (default OFF — AdSense safety) |
+| 4 | **Consent Mode v2** (`inc/consent.php`) | head lo priority 1 — `ad_storage`/`ad_user_data`/`ad_personalization`/`analytics_storage` default **denied** [EEA,GB,CH] + rest of world granted + `ads_data_redaction` + `wait_for_update`; regions sanitize (A-Z0-9); CMP snippet option (priority 2) → **Google-certified CMP** tho kalisi EEA/UK revenue open |
+| 5 | **ads.txt serving** (`inc/ads-txt.php`) | `/ads.txt` → `google.com, pub-XXXX, DIRECT, f08c47fec0942fa0` (AdSense client nunchi auto) + manual entries; `X-Robots-Tag: noindex` |
+| 6 | **News sitemap + perf** | `/news-sitemap.xml` (48h posts · `news:language te` · images) + robots.txt line · `inc/perf.php` (LCP `preload`+`fetchpriority=high` · `decoding=async` · lazy-ads `IntersectionObserver` rootMargin 300px) |
+| 7 | **Writing-time SEMANTIC + DEEPER checks** | **SEMANTIC group**: entity coverage 3+ · **ముఖ్యాంశాలు** box · **question-form headings** 2+ (PAA) · **సంబంధిత అంశాలు** cluster block · avg sentence ≤24 · current year · quick answer. **DEEPER batch**: heading hierarchy (H1 ledu/skip ledu) · markdown leftovers ledu · list ≤12 words · **table ≤5 cols (mobile)** · **job-guarantee/clickbait claims ledu** (trust+policy) · **keyword cannibalization ledu** · slug ≤60 · **meta lo CTA+number** · secondary keywords body lo · img width/height (CLS) · descriptive anchors · FAQ answers 12+ words → gate **67 checks** · fails → **LLM refine hints** (writing loop lo ne fix, publish block kaadu) |
+| 8 | **rm100 fixers + FAQ bug** | `fix_takeaways` + `fix_entities` (content nunchi mattrame — invent ledu) · **nijamaina bug**: puratana FAQ guard (`<h3` 3+ unte skip) valla **FAQ section asalu rakapovadam** → ippudu questions nijam ga content lo unnaya ani check (regression test) |
+| 9 | **+12 website options** | `ads_enabled` · `adsense_slot_mid` · `adsense_slot_in_feed` · `ads_txt` · `max_ads` · `lazy_ads` · `ads_on_policy` · `consent_mode` · `consent_regions` · `consent_cmp_id` · `news_sitemap` · `deadline_json` (anni WP Admin → StudentUp nunchi) |
+| 10 | **Proof** | `python run.py --test-all` → **52/52 suites** · jsdom **122/122** · `--readiness` **100/100 (26/26)** · pin gate **67/67** · theme audit **0 errors · 0 warnings** · PHP lint **24/24** · zip **29 files** |
+
+**v66 honest note:** Consent Mode v2 + ads.txt + gating + CLS + lazy = AdSense **policy-safe**
+revenue foundations. Kaani **revenue numbers Google + traffic + country RPM batti** — idi
+guarantee kaadu (v62 rule). Theme audit "0 errors" ante **static mistakes ledu**; ranking
+ledu revenue ledu ani guarantee kaadu — avi traffic + time tho vastayi.
+
 ### v65 — PIN-TO-PIN GATE (47 checks + certificate) + GOOGLE VISIBILITY (Trends/Suggest)
 
 **"Pin to pin check chesi rasetappudu real time ga anni perfect ga undala?"** → publish
@@ -679,7 +703,7 @@ Menu (desktop + mobile same order): హోమ్ · ఉద్యోగాలు�
 
 Bot side: `autoblog/breaking.py` (feed build + tag classifier + honest empty note),
 radar run lo auto hook, `MOST_USED` order okate source (bot + site + tests sync).
-Evidence: tests/v59_test.py 12 checks · `run.py --test-all` 51/51 · jsdom 122/122.
+Evidence: tests/v59_test.py 12 checks · `run.py --test-all` 52/52 · jsdom 122/122.
 
 > ℹ️ Ee system exam conduct cheyyadaniki matrame — student data (roll, answers,
 > scores) mee server lo untundi, bayata pampabadadu. Public internet lo pettali

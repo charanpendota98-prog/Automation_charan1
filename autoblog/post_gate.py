@@ -35,8 +35,8 @@ log = logging.getLogger("autoblog.pin_gate")
 
 CERT_DIR = Path(getattr(config, "OUTPUT_DIR", "output")) / "certificates"
 
-GROUPS = ("CONTENT", "SEO", "SCHEMA", "MEDIA", "LINKS", "ADSENSE", "FRESHNESS",
-          "GOOGLE READINESS")
+GROUPS = ("CONTENT", "SEMANTIC", "SEO", "SCHEMA", "MEDIA", "LINKS", "ADSENSE",
+          "FRESHNESS", "GOOGLE READINESS")
 
 # ee ids fail aithe publish aaputamu (data integrity / policy)
 CRITICAL = {
@@ -115,7 +115,7 @@ def run(article: dict, html: str = "", media_id: Optional[int] = None,
     add("faq", "CONTENT", "FAQ 3+ ప్రశ్నలు", len(faq) >= 3 or html.count("<h3") >= 3,
         f"{len(faq)} faq · {html.count('<h3')} h3", "FAQ section add cheyandi", 1)
     add("facts_table", "CONTENT", "ముఖ్య వివరాలు table", "<table" in html,
-        "table ledu", "rm100 facts table (unna facts tho)", 1)
+        f"{html.count('<table')} table", "rm100 facts table (unna facts tho)", 1)
     toc_ok, toc_detail = True, "TOC ledu (optional)"
     if "su-toc" in html:
         head_ids = set(re.findall(r'<h[23][^>]*id="([^"]+)"', html))
@@ -151,6 +151,137 @@ def run(article: dict, html: str = "", media_id: Optional[int] = None,
     dup_h = len(heads) - len(set(heads))
     add("dup_h2", "CONTENT", "Duplicate H2s ledu", dup_h == 0, f"{dup_h} duplicates",
         "samana H2 theeseyandi", 1)
+
+    # ------------------------------------------------------------ DEEPER (v66 batch 2)
+    # Google + reader + mobile quality — "blog rasthunnapudu inka chala check cheyali"
+    heads = re.findall(r"<(h[1-6])[^>]*>(.*?)</\1>", html or "", flags=re.S)
+    levels = [int(t[1]) for t, _ in heads]
+    skips, prev = 0, None
+    for lv in levels:
+        if prev and lv > prev + 1:
+            skips += 1
+        prev = lv
+    h1 = levels.count(1)
+    add("heading_hierarchy", "CONTENT", "Heading hierarchy (H1 ledu · skip ledu)",
+        h1 == 0 and skips == 0, f"H1 {h1} · level-skip {skips}",
+        "content lo H1 vaddu (theme okati istundi) · H2→H4 skip cheyyaku", 2)
+    long_h = [validator.strip_tags(t) for _, t in heads if len(validator.strip_tags(t)) > 70]
+    add("heading_length", "CONTENT", "Headings ≤70 chars (mobile truncate kaadu)",
+        not long_h, f"{len(long_h)} long", "heading ni short ga rayandi", 1)
+    md = [pat for pat in ("**", "](http", "## ", "~~", "&lt;p&gt;") if pat in (html or "")]
+    add("markdown_artifacts", "CONTENT", "Markdown/escape leftovers ledu",
+        not md, ", ".join(md) or "clean", "LLM markdown output → HTML convert cheyandi", 2)
+    long_items = [validator.strip_tags(x) for x in
+                  re.findall(r"<li[^>]*>(.*?)</li>", html or "", flags=re.S)
+                  if len(validator.strip_tags(x).split()) > 12]
+    add("list_item_len", "CONTENT", "List items ≤12 words", not long_items,
+        f"{len(long_items)} long", "list items ni short ga cheyandi", 1)
+    tables = re.findall(r"<table.*?</table>", html or "", flags=re.S)
+    if tables:
+        first_row = re.search(r"<tr[^>]*>(.*?)</tr>", tables[0], flags=re.S)
+        cols = len(re.findall(r"<t[hd][^>]*>", first_row.group(1))) if first_row else 0
+        add("table_mobile", "CONTENT", "Table ≤5 columns (mobile lo scroll kaadu)",
+            cols <= 5, f"{cols} cols", "table columns thaggandi", 1)
+    else:
+        add("table_mobile", "CONTENT", "Table ≤5 columns (table ledu — skip)",
+            True, "table ledu", "", 1, scored=False)
+    # Google quality/compliance: guarantee/clickbait claims (AdSense + trust risk)
+    bait = [p for p in BAIT_PATTERNS if p in plain.lower()]
+    add("no_scam_claims", "GOOGLE READINESS",
+        "Job-guarantee/clickbait claims ledu (trust + policy)",
+        not bait, ", ".join(bait) or "clean",
+        "gurantee type claims theeseyandi (Google + AdSense policy)", 2)
+    # keyword cannibalization: same keyword tho inkoka post unte rendu rank avvavu
+    cann_ok, cann_detail = _cannibalization(article)
+    add("ik_kw_unique", "SEO", "Focus keyword cannibalization ledu",
+        cann_ok, cann_detail, "vere keyword angle theesukondi leda purana post update cheyandi", 1)
+    add("slug_length", "SEO", "Slug ≤60 chars · 3+ words",
+        bool(slug) and 3 <= len(slug) <= 60 and "_" not in slug,
+        f"{len(slug)} ch · {len(slug.split('-'))} words", "slug ni clean cheyandi", 1)
+    cta = [w for w in ("దరఖాస్తు", "తెలుసుకోండి", "చూడండి", "వివరాలు", "అప్‌డేట్",
+                       "apply", "details", "check") if w in meta.lower()]
+    has_num = bool(re.search(r"\d", meta))
+    add("meta_cta", "SEO", "Meta lo CTA/action word (CTR)", bool(cta) and has_num,
+        f"cta {cta or 'ledu'} · number {'yes' if has_num else 'no'}",
+        "meta lo number + action word pettandi (CTR penchutundi)", 1)
+    sec = [k for k in (article.get("secondary_keywords") or []) if str(k).strip()]
+    if sec:
+        used = [k for k in sec
+                if any(tok in plain.lower() for tok in str(k).lower().split() if len(tok) > 4)]
+        add("sec_kw_used", "SEO", "Secondary keywords body lo", bool(used),
+            f"{len(used)}/{len(sec)} used", "secondary keywords ni content lo kalapandi", 1)
+    else:
+        add("sec_kw_used", "SEO", "Secondary keywords body lo", True,
+            "secondary levu", "", 1, scored=False)
+    imgs = re.findall(r"<img[^>]*>", html or "")
+    if imgs:
+        bad = [i for i in imgs if "width=" not in i or "height=" not in i]
+        add("img_dimensions", "MEDIA", "Content images ki width/height (CLS)",
+            not bad, f"{len(bad)}/{len(imgs)} without size", "img ki width/height ivvandi", 1)
+    else:
+        add("img_dimensions", "MEDIA", "Content images ki width/height (CLS)", True,
+            "content img ledu · featured image theme handle chestundi", "", 1, scored=False)
+    anchors = re.findall(r"<a[^>]*>(.*?)</a>", html or "", flags=re.S)
+    weak = [a.strip().lower() for a in anchors
+            if a.strip().lower() in ("click here", "here", "ఇక్కడ", "ఇక్కడ క్లిక్",
+                                     "link", "ఇక్కడ నొక్కండి", "")
+            or a.strip().lower().startswith("http")]
+    add("anchor_text", "LINKS", "Anchor text descriptive (click here ledu)",
+        not weak, f"{len(weak)} weak anchors", "anchor text lo ardham unna maatalu pettandi", 1)
+    faq_list = article.get("faq") or []
+    if faq_list:
+        deep_ans = 0
+        for item in faq_list:
+            if isinstance(item, dict):
+                a = item.get("a") or item.get("answer") or ""
+            elif isinstance(item, (list, tuple)) and len(item) >= 2:
+                a = item[1]
+            else:
+                continue
+            if len(validator.strip_tags(str(a)).split()) >= 12:
+                deep_ans += 1
+        add("faq_depth", "SEMANTIC", "FAQ answers 3+ deep (12+ words)",
+            deep_ans >= 3, f"{deep_ans}/{len(faq_list)} deep",
+            "FAQ javabl̄u konchem deep ga rayandi (ఉపయోగకరం + snippet)", 1)
+    else:
+        add("faq_depth", "SEMANTIC", "FAQ answers deep (faq list ledu — skip)",
+            True, "faq list ledu", "", 1, scored=False)
+
+    # ------------------------------------------------------------ SEMANTIC (v66)
+    # Google "ee page aa prashnaki saripoyina answer aa?" + topic authority.
+    entities, questions, sentences = _semantic_metrics(article, html)
+    add("entity_coverage", "SEMANTIC", "Primary entity + related entities (2+)",
+        entities >= 3, f"{entities} entities", "rm100 entities block + body lo related terms", 2)
+    add("takeaways", "SEMANTIC", "ముఖ్యాంశాలు (key takeaways) box",
+        "su-takeaways" in html, "", "rm100 takeaways fix", 2)
+    add("question_headings", "SEMANTIC", "Question-form headings 2+",
+        questions >= 2, f"{questions} questions",
+        "PAA-style ప్రశ్నలు H2/H3 ga (seo.related_questions_block)", 2)
+    add("related_block", "SEMANTIC", "సంబంధిత అంశాలు block (topic cluster)",
+        "su-related-entities" in html or "related-questions" in html, "",
+        "rm100 entities block", 1)
+    avg_sent = (sum(len(x.split()) for x in sentences) / len(sentences)) if sentences else 0
+    add("readability", "SEMANTIC", "Avg sentence ≤24 words (చదవడానికి easy)",
+        avg_sent and avg_sent <= 24, f"avg {avg_sent:.1f} words",
+        "pedda vakyalu rendu ga cheyandi", 2)
+    year = str(date.today().year)
+    add("freshness_words", "SEMANTIC", "Current year content lo (fresh signal)",
+        year in plain, f"{year}", "year/prathi తేదీ update cheyandi", 1)
+    add("quick_answer", "SEMANTIC", "Quick answer / summary block",
+        "quick-answer" in html or "su-takeaways" in html, "",
+        "seo.enhance quick answer", 1)
+    try:
+        from . import trends
+
+        queue = trends.next_topics(limit=12)
+        if queue:
+            qkw = [str(t.get("title", "")).lower() for t in queue]
+            hit = any(kw_l and (kw_l in q or q[:24] in kw_l) for q in qkw)
+            add("trend_match", "SEMANTIC", "Trending queue keyword match", hit,
+                f"{len(queue)} topics in queue", "run.py --trends --trends-queue", 2)
+    except Exception as exc:  # noqa: BLE001
+        add("trend_match", "SEMANTIC", "Trending queue check", True,
+            f"skip ({type(exc).__name__})", "", 1, scored=False)
 
     # ------------------------------------------------------------ SEO
     add("title_len", "SEO", "Title 40–62 chars", 40 <= len(title) <= 62,
@@ -319,6 +450,74 @@ def run(article: dict, html: str = "", media_id: Optional[int] = None,
         "block": bool(crit) and bool(getattr(config, "PIN_GATE_BLOCK", True)),
         "rows": rows, "words": words, "rankmath": rm_score,
     }
+
+
+def _semantic_metrics(article: dict, html: str) -> tuple:
+    """(entity_count, question_headings, sentences) — semantic coverage metrics."""
+    kw = (article.get("focus_keyword") or "").lower()
+    plain = validator.strip_tags(html or "").lower()
+    heads = [validator.strip_tags(h) for h in
+             re.findall(r"<h[23][^>]*>(.*?)</h[23]>", html or "", flags=re.S)]
+    questions = sum(1 for h in heads if "?" in h or "ఏమిటి" in h or "ఎలా" in h
+                    or "ఎప్పుడు" in h or "ఎంత" in h or "ఎందుకు" in h)
+    sentences = [x for x in re.split(r"[.!?\u0964]\s", validator.strip_tags(html or ""))
+                 if len(x.split()) >= 4]
+    entities = 0
+    try:
+        from . import top_post
+
+        ent = top_post.detect_entity(article.get("focus_keyword") or "")
+        if ent:
+            entities = 1
+        for row in top_post.keyword_universe():
+            name = str(row.get("kw", "")).lower()
+            if not name or name == kw:
+                continue
+            toks = [t for t in name.split() if len(t) > 3]
+            if toks and all(t in plain for t in toks[:3]):
+                entities += 1
+            if entities >= 6:
+                break
+    except Exception:  # noqa: BLE001
+        entities = 1 if kw else 0
+    return entities, questions, sentences
+
+
+BAIT_PATTERNS = (
+    "job guarantee", "guaranteed job", "guaranteed selection", "100% job",
+    "ఉద్యోగం గ్యారెంటీ", "గ్యారెంటీ ఉద్యోగం", "ఉద్యోగం గ్యారంటీ", "గ్యారంటీ ఉద్యోగం",
+    "click here to earn", "get rich quick", "guaranteed income",
+)
+STOPWORDS = {"the", "and", "for", "with", "from", "this", "that", "notification", "details"}
+
+
+def _kw_tokens(article: dict) -> list:
+    kw = (article.get("focus_keyword") or "").lower()
+    return [t for t in re.split(r"[^a-z0-9\u0c00-\u0c7f]+", kw)
+            if len(t) >= 3 and t not in STOPWORDS]
+
+
+def _cannibalization(article: dict) -> tuple:
+    """Same focus keyword tho inkoka post unte — Google rendu ni compete cheyyistundi."""
+    toks = _kw_tokens(article)
+    if not toks:
+        return True, "kw ledu"
+    try:
+        from . import config as _cfg
+        from . import state as _st
+
+        titles = _st.recent_titles(_cfg.STATE_DB, limit=200)
+    except Exception as exc:  # noqa: BLE001 — state lekapote skip (publish aapadu)
+        return True, f"skip ({type(exc).__name__})"
+    cur_slug = (article.get("slug") or "").lower()
+    for t in titles:
+        tl = str(t).lower()
+        if cur_slug and cur_slug.replace("-", " ") in tl:
+            continue
+        need = max(2, len(toks) - 1)
+        if sum(1 for tk in toks if tk in tl) >= need:
+            return False, f"'{str(t)[:44]}' tho overlap"
+    return True, "overlap ledu"
 
 
 def _host() -> str:

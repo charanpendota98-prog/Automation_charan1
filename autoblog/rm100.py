@@ -36,6 +36,7 @@ import html as _html
 import re
 from datetime import date
 from typing import Dict, List, Optional
+from urllib.parse import urlencode
 
 from . import config, validator
 
@@ -378,9 +379,13 @@ def fix_table(article: dict, html: str) -> str:
 
 
 def fix_faq(article: dict, html: str) -> str:
-    """FAQ section — article['faq'] nunchi (3+ ప్రశ్నలు)."""
-    if html.count("<h3") >= 3:
-        return html
+    """FAQ section — article['faq'] nunchi (3+ ప్రశ్నలు).
+
+    v66 fix: puratana guard `html.count('<h3') >= 3` valla **eppudaina 3 H3
+    unte** FAQ skip ayyēdi (FAQ section asalu raadēdi!). Ippudu: FAQ questions
+    content lo nijam ga unnaya ani chusi, lekapote add chestundi (invent ledu —
+    prashnlu/javabl̄u article['faq'] nunchi).
+    """
     faq = article.get("faq") or []
     pairs = []
     for item in faq:
@@ -394,9 +399,12 @@ def fix_faq(article: dict, html: str) -> str:
             pairs.append((_text(q), _text(a)))
     if len(pairs) < 3:
         return html
+    plain = validator.strip_tags(html).lower()
+    first_q = re.sub(r"\s+", " ", pairs[0][0].lower())[:40]
+    if first_q and first_q in plain:
+        return html                     # FAQ already content lo undi
     body = "".join(f"<h3>{_html.escape(q)}</h3><p>{a}</p>" for q, a in pairs[:6])
     return html + ('\n<h2>తరచుగా అడిగే ప్రశ్నలు (FAQ)</h2>\n' + body + "\n")
-
 
 def fix_links(article: dict, html: str) -> str:
     """External (source) + internal (site hub) link — kotha URL invent cheyyadu."""
@@ -490,6 +498,72 @@ def fix_paragraph_len(article: dict, html: str) -> str:
         return "\n".join(out)
     return re.sub(r"(<p[^>]*>)(.*?)</p>", _split, html, flags=re.S)
 
+def fix_takeaways(article: dict, html: str) -> str:
+    """'ముఖ్యాంశాలు' (Key Takeaways) box — unna content nunchi mattrame.
+
+    Snippet/Discover ki + reader ki top lo summary. Kotha vishayalu **invent
+    cheyyadu**: existing list items leda short sentences theesukuntundi.
+    """
+    if "su-takeaways" in html:
+        return html
+    items = [validator.strip_tags(x).strip()
+             for x in re.findall(r"<li[^>]*>(.*?)</li>", html, flags=re.S)]
+    items = [i for i in items if 3 <= len(i.split()) <= 14]
+    if len(items) < 3:
+        sents = [x.strip() for x in re.split(r"(?<=[.!?\u0964])\s+",
+                                             validator.strip_tags(html))
+                 if 6 <= len(x.split()) <= 22]
+        items = sents[:5]
+    if len(items) < 3:
+        return html
+    box = ('<div class="su-takeaways"><div class="su-takeaways-title">ముఖ్యాంశాలు</div><ul>'
+           + "".join(f"<li>{_html.escape(i)}</li>" for i in items[:5])
+           + "</ul></div>\n")
+    paras = re.findall(r"<p[^>]*>.*?</p>", html, flags=re.S)
+    if paras:
+        return html.replace(paras[0], paras[0] + "\n" + box, 1)
+    return box + html
+
+
+def fix_entities(article: dict, html: str) -> str:
+    """'సంబంధిత అంశాలు' — primary entity ki related entities (universe nunchi).
+
+    Link = site internal search URL (always valid — invent cheyyadu). Idi
+    hub-spoke internal linking + semantic coverage (Google topic authority).
+    """
+    if "su-related-entities" in html:
+        return html
+    kw = _kw(article)
+    if not kw:
+        return html
+    try:
+        from . import top_post
+    except Exception:  # noqa: BLE001
+        return html
+    try:
+        ent = top_post.detect_entity(kw)
+        universe = top_post.keyword_universe()
+    except Exception:  # noqa: BLE001
+        return html
+    names = []
+    if ent:
+        names = [e["kw"] for e in universe
+                 if e.get("cluster") == ent.get("name") and e["kw"].lower() != kw.lower()][:4]
+    if len(names) < 2:
+        toks = set(kw.lower().split())
+        names = [e["kw"] for e in universe
+                 if len(toks & set(e["kw"].split())) >= 2 and e["kw"].lower() != kw.lower()][:4]
+    if len(names) < 2:
+        return html
+    base = config.WP_SITE.rstrip("/")
+    links = "".join(
+        f'<li><a href="{_html.escape(base)}/?s={_html.escape(urlencode({"q": n})[2:])}">{_html.escape(n.title())}</a></li>'
+        for n in names[:4])
+    block = ('<div class="su-related-entities"><div class="su-related-title">సంబంధిత అంశాలు</div>'
+             f'<ul>{links}</ul></div>\n')
+    return html + block
+
+
 # ------------------------------------------------------------------ pipeline
 
 FIXERS = (
@@ -522,7 +596,8 @@ def apply(article: dict, rounds: int = 1) -> Dict:
         if fix_slug(article):
             changed = True
         html = article.get("content_html") or ""
-        for name, fn in (("lede", fix_lede), ("toc", fix_toc),
+        for name, fn in (("lede", fix_lede), ("takeaways", fix_takeaways),
+                         ("entities", fix_entities), ("toc", fix_toc),
                          ("h2_keyword", fix_h2_keyword), ("table", fix_table),
                          ("faq", fix_faq), ("links", fix_links),
                          ("density", fix_density), ("transitions", fix_transitions),
@@ -618,13 +693,21 @@ def sample_article() -> dict:
         "content_html": "\n".join(body),
         "faq": [
             ("TSPSC Group 2 Notification ఎప్పుడు విడుదల అవుతుంది?",
-             "అధికారిక వెబ్‌సైట్‌లో నోటిఫికేషన్ ప్రకటన ప్రకారం తేదీలు అప్‌డేట్ అవుతాయి."),
+             "అధికారిక వెబ్‌సైట్‌లో నోటిఫికేషన్ ప్రకటన ప్రకారం తేదీలు అప్‌డేట్ అవుతాయి. "
+             "ప్రకటన వచ్చిన వెంటనే ఈ పోస్ట్‌లోని ముఖ్య తేదీల పట్టికని మేము అప్‌డేట్ చేస్తాము, "
+             "అభ్యర్థులు రోజూ ఒకసారి ఈ పేజీని చూడటం మంచిది."),
             ("దరఖాస్తు ఫీజు ఎంత?",
-             "కేటగిరీ ప్రకారం ఫీజు మారుతుంది — అధికారిక నోటిఫికేషన్‌లో పూర్తి వివరాలు ఉంటాయి."),
+             "కేటగిరీ ప్రకారం ఫీజు మారుతుంది — అధికారిక నోటిఫికేషన్‌లో పూర్తి వివరాలు ఉంటాయి. "
+             "SC/ST/PH మరియు మహిళా అభ్యర్థులకు చాలా పరీక్షల్లో రాయితీ ఉంటుంది, కాబట్టి "
+             "ఫీజు చెల్లించే ముందు నోటిఫికేషన్ చదవడం తప్పనిసరి."),
             ("పరీక్ష ఎన్ని దశల్లో ఉంటుంది?",
-             "ప్రిలిమ్స్, మెయిన్స్ అనే రెండు దశల్లో పరీక్ష నిర్వహిస్తారు."),
+             "ప్రిలిమ్స్, మెయిన్స్ అనే రెండు దశల్లో పరీక్ష నిర్వహిస్తారు. ప్రిలిమ్స్‌లో "
+             "వస్తుగత ప్రశ్నలు, మెయిన్స్‌లో వివరణాత్మక జవాబులు ఉంటాయి, కాబట్టి రెండు "
+             "దశలకు వేరుగా ప్రణాళిక వేసుకోవడం ఉపయోగకరం."),
             ("అభ్యర్థులకు ఏమైనా సూచనలు ఉన్నాయా?",
-             "సిలబస్ ప్రకారం క్రమం తప్పకుండా సాధన చేయడం ఉత్తమ మార్గం."),
+             "సిలబస్ ప్రకారం క్రమం తప్పకుండా సాధన చేయడం ఉత్తమ మార్గం. ప్రతి వారం ఒక "
+             "మాక్ టెస్ట్ రాసి, తప్పులను నోట్‌బుక్‌లో రాసుకుంటే చివరి వారాల్లో "
+             "పునశ్చరణ సులభం అవుతుంది."),
         ],
     }
 

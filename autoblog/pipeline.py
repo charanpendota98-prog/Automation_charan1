@@ -176,6 +176,14 @@ def _hygiene(article: Dict) -> Dict:
     return article
 
 
+_PG_PUBLISH_TIME_CHECKS = {
+    "media", "media_size", "media_alt", "img_host", "ad_present", "house_ratio",
+    "ad_after_para", "ads_txt", "internal_links", "external_auth", "sponsored_label",
+    "schema_article", "schema_breadcrumb", "schema_job", "schema_org_link",
+    "no_duplicate", "indexnow", "deadline_valid",
+}
+
+
 def _rankmath_gate(article: dict, category: str) -> dict:
     """v64: Rank Math 100 gate — DETERMINISTIC rm100 fixes + LLM refine rounds.
 
@@ -214,8 +222,25 @@ def _rankmath_gate(article: dict, category: str) -> dict:
             if facts_before:
                 log.warning("FACT GUARD: %d unverified data item(s): %s",
                             len(facts_before), "; ".join(str(x) for x in facts_before[:3]))
-        fixes = list(strict["fixes"]) + [
-            f"SUSPECT data remove/verify cheyandi — {x}" for x in facts_before]
+        # SUSPECT (data accuracy) fixes eppudu mundu — v66 gate hints venaka
+        fixes = [f"SUSPECT data remove/verify cheyandi — {x}" for x in facts_before] + \
+                list(strict["fixes"])
+        # v66: pin-gate (67 checks) failures ni kuda refine hint ga ivvadam —
+        # "blog rasthunnapudu inka chala check cheyali" → writing loop lo ne fix avvali.
+        try:
+            from . import post_gate as _pg
+
+            early = _pg.run(article)
+            hints: list = []
+            for row in early["rows"]:
+                if (row["ok"] or not row["fix"] or row["scored"] is False
+                        or row["id"] in _PG_PUBLISH_TIME_CHECKS):
+                    continue
+                if row["group"] in ("CONTENT", "SEMANTIC", "SEO"):
+                    hints.append(f"GATE {row['id']}: {row['fix']}")
+            fixes = fixes[:10] + hints[:4]
+        except Exception as exc:  # noqa: BLE001 — gate hint best-effort (publish aapadu)
+            log.debug("post_gate early hints skip: %s", exc)
         if not fixes:
             break
         log.info("RankMath %d/100 (target %d) — refine round %d/%d (%d fixes)",

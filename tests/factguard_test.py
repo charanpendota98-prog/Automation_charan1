@@ -40,7 +40,9 @@ def main():
         seen_fixes = {}
 
         def refine(a, fixes):
-            seen_fixes["f"] = list(fixes)
+            # v66: RM_REFINE_ROUNDS >1 → refine multiple rounds avvachu, so anni calls
+            # collect chestamu (loop count tho test brittle avvakudadu)
+            seen_fixes.setdefault("f", []).append(list(fixes))
             return {**a, "title": "Fixed Title", "content_html": "<p>clean</p>"}
 
         gc.refine_article = refine
@@ -49,7 +51,10 @@ def main():
                "_source_texts": ["real source"]}
         res = pipeline._rankmath_gate(dict(art), "X")
         assert res["refined"] and "Fixed Title" in res["title"], res["title"]
-        assert any("SUSPECT data" in f for f in seen_fixes["f"]), seen_fixes
+        all_fixes = [f for fl in seen_fixes["f"] for f in fl]
+        assert any("SUSPECT data" in f for f in all_fixes), seen_fixes
+        # v66: pin-gate (67 checks) fails kuda refine hints ga veltayi
+        assert any(f.startswith("GATE ") for f in all_fixes), all_fixes
         assert res["_fact"] == []
 
         # facts NOT fixed + score same → keep original, flags preserved

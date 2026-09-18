@@ -80,7 +80,7 @@ Detail docs: `DEPLOY_MILESWEB.md` (cPanel steps) · `DEPLOY_ORACLE_CLOUD.md` (VM
 
 | Item | Proof |
 |---|---|
-| Test suites | **51/51** pass (`python run.py --test-all`) |
+| Test suites | **52/52** pass (`python run.py --test-all`) |
 | Site guardian | **`python run.py --guardian`** — site/UI/SEO/ads/feed/storage/theme 12 checks (11 ok · 1 owner-pending) |
 | Readiness score | **`python run.py --readiness`** — **100/100** · 25/25 system checks · 8 owner-pending |
 | Production check | **11/11** pass (`python run.py --production-audit`) |
@@ -111,7 +111,10 @@ Detail docs: `DEPLOY_MILESWEB.md` (cPanel steps) · `DEPLOY_ORACLE_CLOUD.md` (VM
       AdSense client + slots, sticky ad ON/OFF pettandi. Bot `--push-theme-data` tho
       JSON fields (breaking/house/proof/deadline) automatic ga sync avutayi.
 - [ ] **2c. AdSense CMP (EEA/UK consent)** — AdSense → **Privacy & messaging** → GDPR/CCPA
-      message + Google-certified CMP **ON**. (Ee step lekapote EEA/UK users ki ads
+      message + Google-certified CMP **ON**. Theme lo **Consent Mode v2** (v66) already ON:
+      EEA/GB/CH ki ad_storage/ad_user_data/ad_personalization **denied** default, mee CMP
+      snippet sattinappudu `consent_cmp_id` option tho message banner (WP Admin → StudentUp).
+      (Ee step lekapote EEA/UK users ki ads
       chupinchadu — Google rule; India ki impact ledu kaani overseas traffic ki important.)
 - [ ] **2d. 25k pageviews tarvata** — `python tools/ad_network_plan.py --views 50k --tier1 0.3`
       → Raptive/Ezoic ki apply (detail: AD_NETWORKS_PLAN.md). Partner lines ni
@@ -159,6 +162,9 @@ python run.py --production-audit     # 0 blockers
 python run.py --deploy-check         # 0 fail
 python run.py --google-audit https://studentup.in
 curl -s https://studentup.in/ads.txt      # ads.txt host ayyindi leda chudandi
+curl -s https://studentup.in/news-sitemap.xml | head -5   # v66: News/Discover eligibility
+python tools/theme_audit.py --verbose     # v66: theme mistakes 0 errors · 0 warnings
+python run.py --readiness | head -30      # v66: ads/consent/audit checks kalisi 100/100
 python tools/revenue_estimate.py --views 10000        # leads/premium kalipi
 python tools/revenue_estimate.py --views 10000 --ads-only   # ads-only ladder
 ```

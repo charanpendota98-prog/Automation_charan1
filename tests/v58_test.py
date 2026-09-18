@@ -103,7 +103,7 @@ def test_website_wiring():
     assert "<b>17</b>" in html, "tile 17 categories"
     assert "<b>143</b>" in html, "tile 143 sources"
     # tiles: suites/runtime numbers
-    assert "<b>51/51</b>" in html and "<b>122/122</b>" in html
+    assert "<b>52/52</b>" in html and "<b>122/122</b>" in html
 
 
 def test_card_has_pure_telugu_and_no_leaks():

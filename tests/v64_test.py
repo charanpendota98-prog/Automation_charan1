@@ -181,7 +181,7 @@ def test_theme_v64_modules():
                 "inc/author-box.php", "inc/pwa.php"):
         assert (THEME / rel).exists(), rel
         assert rel in fn, rel
-    assert "STUDENTUP_VERSION', '1.1.0" in fn
+    assert re.search(r"STUDENTUP_VERSION', '1\.[2-9]\d*\.\d+", fn), "theme version bump"
     opts = read(THEME / "inc" / "options.php")
     for needle in ("add_menu_page", "register_setting", "settings_fields",
                    "studentup_social_links", "studentup_contact_email",

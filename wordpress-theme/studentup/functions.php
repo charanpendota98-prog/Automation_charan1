@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'STUDENTUP_VERSION', '1.1.0' );  // v64: options · TOC · schema · E-E-A-T · PWA
+define( 'STUDENTUP_VERSION', '1.2.0' );  // v66: consent · ads.txt · perf · news sitemap
 
 require_once get_template_directory() . '/inc/options.php';
 require_once get_template_directory() . '/inc/breaking.php';
@@ -22,6 +22,10 @@ require_once get_template_directory() . '/inc/seo-bridge.php';
 require_once get_template_directory() . '/inc/toc.php';
 require_once get_template_directory() . '/inc/schema.php';
 require_once get_template_directory() . '/inc/author-box.php';
+require_once get_template_directory() . '/inc/consent.php';
+require_once get_template_directory() . '/inc/ads-txt.php';
+require_once get_template_directory() . '/inc/perf.php';
+require_once get_template_directory() . '/inc/news-sitemap.php';
 require_once get_template_directory() . '/inc/pwa.php';
 
 /**

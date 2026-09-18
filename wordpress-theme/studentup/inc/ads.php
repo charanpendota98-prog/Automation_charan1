@@ -32,16 +32,22 @@ function studentup_adsense_client() {
  * @param string $slot slot name.
  * @param string $layout display layout (auto|in-article|fluid).
  */
-function studentup_adsense_unit( $slot, $layout = 'auto' ) {
+function studentup_adsense_unit( $slot, $layout = 'auto', $lazy = false, $height = 250 ) {
 	$client = studentup_adsense_client();
 	if ( ! $client ) {
 		return;
 	}
 	printf(
-		'<div class="adsense-slot"><ins class="adsbygoogle" style="display:block" data-ad-client="%s" data-ad-slot="%s" data-ad-format="%s" data-full-width-responsive="true"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({});</script></div>',
+		'<div class="adsense-slot su-ad-reserved%1$s" style="min-height:%2$dpx" data-su-lazy="%3$d" data-su-height="%2$d">'
+		. '<ins class="adsbygoogle" style="display:block" data-ad-client="%4$s" data-ad-slot="%5$s" '
+		. 'data-ad-format="%6$s" data-full-width-responsive="true"></ins>%7$s</div>',
+		$lazy ? ' su-ad-lazy' : '',
+		(int) $height,
+		$lazy ? 1 : 0,
 		esc_attr( $client ),
 		esc_attr( $slot ),
-		esc_attr( $layout )
+		esc_attr( $layout ),
+		$lazy ? '' : '<script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>'
 	);
 }
 
@@ -94,56 +100,108 @@ function studentup_rotate_house( $ads ) {
  *
  * @param string $place leaderboard|in-feed|mid|sidebar.
  */
-function studentup_ad( $place = 'mid' ) {
-	$house = studentup_rotate_house( studentup_house_ads() );
-	$cls   = 'in-feed' === $place ? 'su-ad su-ad-feed' : ( 'leaderboard' === $place ? 'su-ad su-ad-leader' : 'su-ad' );
-
-	if ( $house ) {
-		echo '<aside class="' . esc_attr( $cls ) . '" aria-label="Sponsored content">';
-		echo '<div class="su-ad-kicker">SPONSORED · భాగస్వామి</div>';
-		if ( 'leaderboard' === $place ) {
-			echo '<div class="su-ad-leader-body"><div>';
-			echo '<div class="su-ad-title">' . esc_html( $house['title'] ) . '</div>';
-			if ( $house['desc'] ) {
-				echo '<p class="su-ad-desc">' . esc_html( $house['desc'] ) . '</p>';
-			}
-			echo '</div>';
-			printf(
-				'<a class="su-ad-cta" href="%s" target="_blank" rel="sponsored nofollow noopener">%s</a>',
-				esc_url( $house['link'] ),
-				esc_html( $house['cta'] )
-			);
-			echo '</div>';
-		} else {
-			if ( 'in-feed' === $place ) {
-				echo '<div class="fthumb" aria-hidden="true">' . esc_html( $house['title'] ) . '</div>';
-			}
-			echo '<h3>' . esc_html( $house['title'] ) . '</h3>';
-			if ( $house['desc'] ) {
-				echo '<p>' . esc_html( $house['desc'] ) . '</p>';
-			}
-			printf(
-				'<a class="su-ad-cta" href="%s" target="_blank" rel="sponsored nofollow noopener">%s</a>',
-				esc_url( $house['link'] ),
-				esc_html( $house['cta'] )
-			);
+function studentup_ads_allowed( $place = '' ) {
+	// AdSense policy: content leni pages lo ads vaddu (404/search/attachment),
+	// legal pages lo owner ishtam (default OFF), feed/admin lo eppudu vaddu.
+	if ( is_admin() || is_feed() || is_404() || is_search() || is_attachment() ) {
+		return false;
+	}
+	if ( is_page() ) {
+		$slug   = (string) get_post_field( 'post_name', get_queried_object_id() );
+		$policy = array( 'privacy-policy', 'about-us', 'contact-us',
+			'corrections-policy', 'editorial-policy' );
+		if ( in_array( $slug, $policy, true ) && ! studentup_opt( 'ads_on_policy', '0' ) ) {
+			return false;
 		}
-		echo '<div class="su-ad-disc">ప్రకటన — భాగస్వామికి నేరు లింక్. అధికారిక నోటిఫికేషన్‌లు ప్రధాన కంటెంట్‌లో మాత్రమే ఉంటాయి.</div>';
-		echo '</aside>';
+	}
+	return (bool) studentup_opt( 'ads_enabled', '1' );
+}
+
+/**
+ * Page ki enni ads render ayyayi (density cap).
+ */
+function studentup_ad_count( $bump = false ) {
+	static $n = 0;
+	if ( $bump ) {
+		$n++;
+	}
+	return $n;
+}
+
+/**
+ * Ad slot renderer — AdSense (priority) leda house/sponsor (SPONSORED label).
+ *
+ * v66: page gating · density cap · reserved height (CLS 0) · lazy load
+ * (below-fold → viewability + CWV) · consent mode safe.
+ *
+ * @param string $place leaderboard|in-feed|mid|sidebar|anchor.
+ */
+function studentup_ad( $place = 'mid' ) {
+	if ( ! studentup_ads_allowed( $place ) ) {
+		return;
+	}
+	$max = (int) studentup_opt( 'max_ads', '4' );
+	$max = $max > 0 ? $max : 4;
+	if ( studentup_ad_count() >= $max ) {
+		return; // density cap — AdSense safe + UX
+	}
+	$client = studentup_adsense_client();
+	$slot   = (string) get_option( 'studentup_adsense_slot_' . str_replace( '-', '_', $place ), '' );
+	$sizes  = array( 'leaderboard' => 110, 'in-feed' => 160, 'mid' => 250,
+		'sidebar' => 250, 'anchor' => 60 );
+	$height = isset( $sizes[ $place ] ) ? $sizes[ $place ] : 250;
+	$lazy   = (bool) studentup_opt( 'lazy_ads', '1' ) && ! in_array( $place, array( 'leaderboard', 'anchor' ), true );
+
+	// 1) AdSense (publisher id + slot id unte) — highest revenue path
+	if ( $client && $slot && studentup_consent_ok() ) {
+		studentup_ad_count( true );
+		studentup_adsense_unit(
+			$slot,
+			'mid' === $place ? 'in-article' : ( 'in-feed' === $place ? 'fluid' : 'auto' ),
+			$lazy,
+			$height
+		);
+		return;
 	}
 
-	// AdSense slot names: option lo 'top-<slot>' style ids pettandi (ca-pub-… tarvata).
-	$map = array(
-		'leaderboard' => '1234567890',
-		'in-feed'     => '2345678901',
-		'mid'         => '3456789012',
-		'sidebar'     => '4567890123',
-	);
-	$slot_id = (string) get_option( 'studentup_adsense_slot_' . str_replace( '-', '_', $place ), '' );
-	if ( ! $slot_id && isset( $map[ $place ] ) ) {
-		$slot_id = '';
+	// 2) House/sponsor ad (AdSense lekapote leda slot set kaakapote)
+	$house = studentup_rotate_house( studentup_house_ads() );
+	if ( ! $house ) {
+		return;
 	}
-	if ( $slot_id ) {
-		studentup_adsense_unit( $slot_id, 'in-article' === $place ? 'in-article' : 'auto' );
+	studentup_ad_count( true );
+	$cls = 'in-feed' === $place ? 'su-ad su-ad-feed' : ( 'leaderboard' === $place ? 'su-ad su-ad-leader' : 'su-ad' );
+
+	echo '<div class="su-ad-reserved" style="min-height:' . (int) $height . 'px" data-su-height="' . (int) $height . '">';
+	echo '<aside class="' . esc_attr( $cls ) . '" aria-label="Sponsored content">';
+	echo '<div class="su-ad-kicker">SPONSORED · భాగస్వామి</div>';
+	if ( 'leaderboard' === $place ) {
+		echo '<div class="su-ad-leader-body"><div>';
+		echo '<div class="su-ad-title">' . esc_html( $house['title'] ) . '</div>';
+		if ( $house['desc'] ) {
+			echo '<p class="su-ad-desc">' . esc_html( $house['desc'] ) . '</p>';
+		}
+		echo '</div>';
+		printf(
+			'<a class="su-ad-cta" href="%s" target="_blank" rel="sponsored nofollow noopener">%s</a>',
+			esc_url( $house['link'] ),
+			esc_html( $house['cta'] )
+		);
+		echo '</div>';
+	} else {
+		if ( 'in-feed' === $place ) {
+			echo '<div class="fthumb" aria-hidden="true">' . esc_html( $house['title'] ) . '</div>';
+		}
+		echo '<h3>' . esc_html( $house['title'] ) . '</h3>';
+		if ( $house['desc'] ) {
+			echo '<p>' . esc_html( $house['desc'] ) . '</p>';
+		}
+		printf(
+			'<a class="su-ad-cta" href="%s" target="_blank" rel="sponsored nofollow noopener">%s</a>',
+			esc_url( $house['link'] ),
+			esc_html( $house['cta'] )
+		);
 	}
+	echo '<div class="su-ad-disc">ప్రకటన — భాగస్వామికి నేరు లింక్. అధికారిక నోటిఫికేషన్‌లు ప్రధాన కంటెంట్‌లో మాత్రమే ఉంటాయి.</div>';
+	echo '</aside></div>';
 }

@@ -231,7 +231,7 @@ def test_readiness_v65():
 def test_docs_v65():
     manual = read(ROOT / "MANUAL_ADVANCED_CHECKLIST.md")
     assert "PART 24" in manual and "post_gate" in manual and "trends" in manual
-    assert "Last updated: v65" in manual
+    assert re.search(r"Last updated: v6[5-9]|Last updated: v[7-9]\d", manual), "footer"
     readme = read(ROOT / "README.md")
     assert "v65" in readme and "post_gate" in readme
     go = read(ROOT / "GO_LIVE_CHECKLIST.md")
