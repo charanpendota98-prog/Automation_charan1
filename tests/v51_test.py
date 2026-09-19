@@ -2,6 +2,9 @@
 """v51 tests — category menu (TS/AP/Central/Walk-in/Software/Private/Hall tickets/
 Results + new pillars), phone neatness, and crash-proof deployment artifacts.
 
+v74: exam portal ledu → watchdog ippudu website + bot-freshness + disk/TLS
+(no PORTAL_URL, no restarts — alerts matrame).
+
 Offline only: reads the built site + deploy scripts, runs the watchdog in a
 sandbox (dry-run) so nothing real is restarted.
 
@@ -99,34 +102,56 @@ def test_phone_neatness_rules_still_present():
 # --------------------------------------------------------- deploy / crash
 
 def test_systemd_units_restart_and_watchdog():
-    portal = (ROOT / "deploy" / "exam-portal.service").read_text(encoding="utf-8")
-    assert "Restart=always" in portal and "RestartSec=" in portal
-    assert "--exam-host 127.0.0.1" in portal, "portal must not bind publicly"
+    bot = (ROOT / "deploy" / "studentup-bot.service").read_text(encoding="utf-8")
+    assert "Type=oneshot" in bot and "run.py" in bot
+    assert "NoNewPrivileges=true" in bot, "bot unit hardening kavali"
+    assert not (ROOT / "deploy" / "exam-portal.service").exists(), "portal unit poyundali (v74)"
     wd = (ROOT / "deploy" / "systemd" / "su-watchdog.service").read_text(encoding="utf-8")
     timer = (ROOT / "deploy" / "systemd" / "su-watchdog.timer").read_text(encoding="utf-8")
-    assert "su-watchdog.sh" in wd and "PORTAL_URL=" in wd
+    assert "su-watchdog.sh" in wd and "SITE_URL=" in wd
+    assert "PORTAL_URL" not in wd, "PORTAL_URL poyundali (v74)"
     assert "OnUnitActiveSec=2min" in timer and "WantedBy=timers.target" in timer
-    print("  crash-proof: systemd Restart=always + 2-min watchdog timer ✔")
+    print("  crash-proof: bot oneshot+timer · watchdog SITE_URL · 2-min timer ✔")
 
 
 def test_watchdog_logic_live_dry_run():
-    """Run the real script against a dead port — must count, restart (dry), alert."""
+    """Real script, dead site + fresh/stale bot — must alert, never fail."""
     script = ROOT / "deploy" / "su-watchdog.sh"
     assert script.exists()
-    tmp = Path(tempfile.mkdtemp(prefix="v51-wd-"))
-    env = dict(os.environ,
-               WATCHDOG_DRY="1", STATE_DIR=str(tmp), LOG_FILE=str(tmp / "wd.log"),
-               PORTAL_URL="http://127.0.0.1:9/healthz", FAIL_THRESHOLD="1",
-               SERVICES="exam-portal", TELEGRAM_BOT_TOKEN="", TELEGRAM_CHAT_ID="")
-    r1 = subprocess.run(["bash", str(script)], env=env, capture_output=True, text=True, timeout=90)
-    out = r1.stdout + r1.stderr
-    assert r1.returncode == 0, out
-    assert "portal check FAILED" in out, out
-    assert "would restart exam-portal" in out, out
-    assert "portal STILL down" in out, out
-    log = (tmp / "wd.log").read_text(encoding="utf-8")
-    assert "ALERT portal" in log
-    print("  crash-proof: watchdog detects → restarts → alerts (live dry-run) ✔")
+    assert "PORTAL_URL" not in script.read_text(encoding="utf-8")
+
+    def _run(site_url: str, state_db_age_h: int | None) -> tuple[str, str]:
+        tmp = Path(tempfile.mkdtemp(prefix="v51-wd-"))
+        app = tmp / "app"
+        app.mkdir()
+        if state_db_age_h is not None:
+            db = app / "state.db"
+            db.write_bytes(b"fake-db")
+            old = __import__("time").time() - state_db_age_h * 3600
+            os.utime(db, (old, old))
+        env = dict(os.environ,
+                   WATCHDOG_DRY="1", APP_DIR=str(app), STATE_DIR=str(tmp),
+                   LOG_FILE=str(tmp / "wd.log"), SITE_URL=site_url,
+                   BOT_STALE_HOURS="26",
+                   TELEGRAM_BOT_TOKEN="", TELEGRAM_CHAT_ID="")
+        r = subprocess.run(["bash", str(script)], env=env, capture_output=True,
+                           text=True, timeout=90)
+        out = r.stdout + r.stderr
+        assert r.returncode == 0, out
+        return out, (tmp / "wd.log").read_text(encoding="utf-8")
+
+    # dead site → site_down alert
+    out, log = _run("http://127.0.0.1:9/", None)
+    assert "ALERT site_down" in out, out
+    assert "ALERT site_down" in log
+    # fresh bot → ok line, no stale alert
+    out, _ = _run("", 1)
+    assert "bot fresh" in out, out
+    assert "bot_stale" not in out, out
+    # stale bot → bot_stale alert
+    out, _ = _run("", 30)
+    assert "ALERT bot_stale" in out, out
+    print("  crash-proof: site_down + bot fresh/stale alerts (live dry-run) ✔")
 
 
 def test_oracle_and_milesweb_docs_answer_hosting():
@@ -135,8 +160,10 @@ def test_oracle_and_milesweb_docs_answer_hosting():
                  "watchdog", "UptimeRobot", "guarantee"]:
         assert fact.lower() in oracle.lower(), "Oracle doc missing: " + fact
     miles = (ROOT / "DEPLOY_MILESWEB.md").read_text(encoding="utf-8")
-    assert "passenger_wsgi" in miles and "cron" in miles
-    print("  hosting answer: Oracle Always Free facts + MilesWeb split documented ✔")
+    assert "cron" in miles and "--approval-poll" in miles
+    assert "passenger_wsgi" not in miles, "WSGI path poyundali (v74 cron-only)"
+    assert "exam portal" not in miles.lower(), "portal vestige undi"
+    print("  hosting answer: Oracle Always Free facts + MilesWeb cron-only documented ✔")
 
 
 def test_money_claims_are_policy_safe_and_honest():

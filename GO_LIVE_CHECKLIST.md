@@ -7,7 +7,7 @@ Ee doc = okka page lo motham. Kramam ga cheyyandi.
 
 ## A0) ARCHITECTURE — edi ekkada run avutundi? (rendu kaavala?)
 
-**Short answer: 🌐 WordPress = website (MilesWeb) · ⚙️ Bot + portal = engine (Oracle leda MilesWeb cron).
+**Short answer: 🌐 WordPress = website (MilesWeb) · ⚙️ Bot = engine (Oracle leda MilesWeb cron).
 Rendu "support" kaadu — rendu okate system lo rendu roles. Bot ki WordPress tho link = HTTPS REST API.**
 
 ```
@@ -32,8 +32,8 @@ Rendu "support" kaadu — rendu okate system lo rendu roles. Bot ki WordPress th
   └──────────────────────────────────────────┘
                   ▲
   ┌───────────────┴──────────────────────────┐
-  │  EXAM PORTAL (Python) — /exam /admin     │
-  │  Oracle VM WSGI  leda  MilesWeb WSGI App │
+  │  APPROVALS — Telegram ✅/🗑️ (cron poll)  │
+  │  Oracle daemon leda MilesWeb cron */5    │
   └──────────────────────────────────────────┘
 ```
 
@@ -54,8 +54,8 @@ rendu) — **duplicate posts** vasthayi. Bot ki okka home select cheyandi; migil
 
 | Combo | Ekkada enti | Kharchu | Evariki |
 |---|---|---|---|
-| **A. MilesWeb only** | WP + bot (cron) + portal (Setup Python App) anni MilesWeb lo | ₹59–180/నెల | Simple, budget — kaani cron 5-job limit + 24×7 daemon ledu (approval poll cron tho) |
-| **B. MilesWeb + Oracle** ⭐ | WP = MilesWeb · bot + portal + guardian = Oracle Always Free 24×7 | ₹0 extra | **Recommended** — heavy bot runs + uptime + mee data mee control lo |
+| **A. MilesWeb only** | WP + bot (cron) + approvals (`--approval-poll` cron) anni MilesWeb lo | ₹59–180/నెల | Simple, budget — approvals ~5 min late (cron rhythm), daemon ledu |
+| **B. MilesWeb + Oracle** ⭐ | WP = MilesWeb · bot + guardian + watchdog = Oracle Always Free 24×7 | ₹0 extra | **Recommended** — heavy bot runs + uptime + mee data mee control lo |
 | **C. Oracle only** | WP kuda Oracle VM lo (PHP + MySQL + Caddy) | ₹0 | Server telisina vallaki — WP updates/backups meeru chuskovali |
 
 **Frontend kuda okati select cheyandi** (rendu kaadu): studentup.in root lo **WordPress + StudentUp theme** ⭐
@@ -66,10 +66,10 @@ Static select chesthe bot posts WP lo untayi kaani site lo kanipinchavu.
 
 **Ippude cheyyalsina 5 steps (combo B):**
 1. MilesWeb: domain + WordPress + SSL + Application Password → `.env`
-2. Oracle: VM create → `bash deploy/install-vps.sh` → bot systemd timer + portal HTTPS
+2. Oracle: VM create → `bash deploy/install-vps.sh` → bot systemd timer + watchdog timer
 3. Oracle lo `.env` pettandi (Gemini · Telegram · WP creds) → `python run.py --doctor` 0 problems
 4. `python run.py --check-wp` (Oracle nunchi WP ki link test) · `python run.py --guardian` 10/11
-5. UptimeRobot → `https://<domain>/healthz` + roju Telegram guardian report
+5. UptimeRobot → `https://<domain>/` (5-min ping) + roju Telegram guardian report
 
 Detail docs: `DEPLOY_MILESWEB.md` (cPanel steps) · `DEPLOY_ORACLE_CLOUD.md` (VM + watchdog + limits) ·
 `DEPLOY.md` (VPS/Docker/PaaS paths).
@@ -80,22 +80,22 @@ Detail docs: `DEPLOY_MILESWEB.md` (cPanel steps) · `DEPLOY_ORACLE_CLOUD.md` (VM
 
 | Item | Proof |
 |---|---|
-| Test suites | **57/57** pass (`python run.py --test-all`) |
+| Test suites | **56/56** pass (`python run.py --test-all`) |
 | Site guardian | **`python run.py --guardian`** — site/UI/SEO/ads/feed/storage/theme 12 checks (11 ok · 1 owner-pending) |
 | Readiness score | **`python run.py --readiness`** — **100/100** · 27/27 system checks · 10 owner-pending |
 | Production check | **11/11** pass (`python run.py --production-audit`) |
-| Browser runtime | **162/162** checks (`node tests/runtime/jsdom_runtime_test.js`) |
+| Browser runtime | **164/164** checks (`node tests/runtime/jsdom_runtime_test.js`) |
 | Public surface | developer/proof text **ledu** — `python run.py --guardian` → `counts_sync` · dev archive `docs/design-archive/` (website meeda serve avvadu) |
 | Business deal | no public rate card — prices live in `autoblog/rate_card.py`, print with `python run.py --rate-card` and negotiate personally |
 | Contact routes | set `SOCIAL_WHATSAPP` + `SOCIAL_TELEGRAM` in `.env` → `python run.py --push-theme-data` (site WhatsApp boxes + rail follow it) |
 | Qualification filter | theme `inc/qual-filter.php` — post save tho automatic tags + `wp studentup-qual-backfill` (purana posts) + bot `autoblog/qual.py` meta; proof: `python tests/v72_test.py` |
 | Install as an app | `preview/manifest.webmanifest` + `preview/sw.js` · theme `?studentup_sw=1` (root-scope SW, server config avasaram ledu) + install prompt |
 | Site copy clean | బ్రేకింగ్/internal metrics/demo maatalu public lo levu — `python run.py --guardian` → `first_look_ui` |
-| Deploy check | 8 ok · 4 warn · 0 fail (`python run.py --deploy-check`) |
+| Deploy check | 9 ok · 3 warn · 0 fail (`python run.py --deploy-check`) |
 | Website | 17 categories · 143 sources · 11,192 keywords · menu + chips |
-| Ads | AdSense gate · sponsor console · rate card · house ads |
+| Ads | AdSense gate · sponsor inventory · rate card · house ads |
 | Safety | QA 80 · originality 72% · manual approval · corrections email |
-| Crash-proof | systemd restart · 2-min watchdog · backups · /healthz |
+| Crash-proof | systemd timers · 2-min watchdog (site+bot+TLS) · backups · homepage ping |
 
 ⛔ Deploy ni aaputhunna vi (nijam): **WordPress creds · Gemini key · Telegram token** ledu +
 `studentup.in` registrations mee daggara ledu. Code valla kaadu — accounts valla.
@@ -106,7 +106,7 @@ Detail docs: `DEPLOY_MILESWEB.md` (cPanel steps) · `DEPLOY_ORACLE_CLOUD.md` (VM
 
 - [ ] **1. Domain + hosting** — studentup.in (leda mee peru) + MilesWeb cPanel plan (₹59–180/నెల).
       → WordPress install + SSL (Let's Encrypt) ON.
-- [ ] **2. WordPress setup** — Rank Math; theme install (**v72.1**: theme **1.7.1** —
+- [ ] **2. WordPress setup** — Rank Math; theme install (**v74**: theme **1.7.2** —
       `python tools/build_wp_theme.py` → zip → Appearance → Themes → Upload → Activate);
       `wp-admin → Users → Application Passwords` → app password create cheyyandi.
       **v68**: IndexNow key file ni **theme ne serve chestundi** (`/<key>.key`) — cPanel lo
@@ -116,9 +116,9 @@ Detail docs: `DEPLOY_MILESWEB.md` (cPanel steps) · `DEPLOY_ORACLE_CLOUD.md` (VM
       GA4 property create → measurement ID. (GSC = rankings data, GA4 = traffic data —
       bot ki `--gsc` CSV tho ee data tho priority decide chestundi.)
 - [ ] **2b. Website options** — WP Admin → **StudentUp** menu → tabs (Ads · Socials ·
-      Content · Advanced) lo mee WhatsApp/Telegram/Instagram/YouTube, exam portal URL,
+      Content · Advanced) lo mee WhatsApp/Telegram/Instagram/YouTube,
       AdSense client + slots, sticky ad ON/OFF pettandi. Bot `--push-theme-data` tho
-      JSON fields (breaking/house/proof/deadline) automatic ga sync avutayi.
+      JSON fields (breaking/house/indexnow) automatic ga sync avutayi.
 - [ ] **2c. AdSense CMP (EEA/UK consent)** — AdSense → **Privacy & messaging** → GDPR/CCPA
       message + Google-certified CMP **ON**. Theme lo **Consent Mode v2** (v66) already ON:
       EEA/GB/CH ki ad_storage/ad_user_data/ad_personalization **denied** default, mee CMP
@@ -164,17 +164,16 @@ python run.py --production-audit     # 3 blockers → 0 avvali
 
 ## C) Deploy order (2 dochulu)
 
-**1) Website → MilesWeb** (`DEPLOY_MILESWEB.md`)
+**1) Website + bot → MilesWeb** (`DEPLOY_MILESWEB.md`)
 ```bash
-# cPanel → Setup Python App (Python 3.11, app root examportal, URI /exam)
-# Git Version Control → clone → pip install -r requirements.txt
+# cPanel → Terminal: mkdir ~/bot → repo upload → python3 -m venv .venv → pip install
+# cPanel → Cron Jobs: hourly run.py + */5 run.py --approval-poll (+ guardian/audit)
 python run.py --production-audit && python run.py --check-wp
 ```
-**2) Engine (portal + bot + watchdog) → Oracle VM** (`DEPLOY_ORACLE_CLOUD.md`)
+**2) Engine (bot + watchdog) → Oracle VM** (`DEPLOY_ORACLE_CLOUD.md`)
 ```bash
-sudo bash deploy/install-vps.sh          # systemd + Caddy + venv
-sudo systemctl enable --now exam-portal studentup-bot.timer su-watchdog.timer
-curl -s https://exam.studentup.in/healthz   # {"status":"ok"}
+sudo DOMAIN=studentup.in bash deploy/install-vps.sh   # systemd timers + venv + check
+sudo systemctl status studentup-bot.timer su-watchdog.timer --no-pager
 ```
 **3) Deploy tarvata verify**
 ```bash
@@ -202,7 +201,7 @@ python run.py --readiness | head -30      # v66: ads/consent/audit checks kalisi
 python tools/revenue_estimate.py --views 10000        # leads/premium kalipi
 python tools/revenue_estimate.py --views 10000 --ads-only   # ads-only ladder
 ```
-UptimeRobot → `https://exam.studentup.in/healthz` (5-min ping) — watchdog ki rendo kanna.
+UptimeRobot → `https://studentup.in/` (5-min ping) — watchdog ki rendo kanna.
 
 ---
 
@@ -212,11 +211,11 @@ UptimeRobot → `https://exam.studentup.in/healthz` (5-min ping) — watchdog ki
 |---|---|---|
 | 08:00 | 3–5 posts (17 pillars) → Telegram ✅/🗑️ | bot + **mee approval** |
 | 09:00, 18:00 | Current affairs + breaking refresh | auto |
-| Roju | Poll + quiz update + auto-refresh purana posts | auto |
-| Roju | 📞 లీడ్లు చూసి 2 అమ్మకాల మెసేజ్‌లు (కళాశాల/కోచింగ్) పంపండి | **మీరు (15 నిమిషాలు)** |
+| Roju | Daily question + quiz (server lekunda) + auto-refresh purana posts | auto |
+| Roju | 📞 WhatsApp లీడ్లు చూసి 2 అమ్మకాల మెసేజ్‌లు (కళాశాల/కోచింగ్) పంపండి | **మీరు (15 నిమిషాలు)** |
 | Roju 10:00 | **ad advisor** — e network ki eppudu apply cheyyali (kotha milestone ki Telegram) | auto |
 | నెలకు ఒకసారి | GA4 CSV export → `python run.py --ad-advisor --traffic-csv ga4.csv` | మీరు (2 నిమిషాలు) |
-| 2 nimishalku okasari | Health check → crash ayite restart + alert | watchdog |
+| 2 nimishalku okasari | Website + bot + TLS check → alert | watchdog |
 | 02:00 | Backup + media prune | cron |
 
 ---
@@ -237,7 +236,7 @@ Detail: `python tools/revenue_estimate.py --views 10k`
 * AdSense RPM band ₹40–₹250/1000 views (Indian jobs/education niche, 2026 benchmarks).
 * Real ga ₹ varaku ravali ante **direct sponsors** (rate card) — adi 4–5× ekkuva.
 * **1 lakh views** daggara revenue break-out avvala: daily ~3,300 views + 2–3 sponsors.
-* House ads = ₹0 (mana quiz/exam ki traffic).
+* House ads = ₹0 (mana quiz/services ki traffic).
 * ⚠️ Ivi benchmarks — **AdSense approval / ranking / revenue గ్యారంటీ కావు**.
 
 ---
@@ -246,4 +245,4 @@ Detail: `python tools/revenue_estimate.py --views 10k`
 Clickbait titles · fake clicks · popups · "Google tricks" · ad ni content laaga dhaachadam ·
 job guarantee promises (advertisers kuda). Ivi AdSense ban + trust damage.
 
-*Last updated: v73 (2026-09-18) · 57/57 suites · 162/162 runtime · 11/11 production checks · theme v1.7.1*
+*Last updated: v74 (2026-09-19) · 56/56 suites · 164/164 runtime · 11/11 production checks · theme v1.7.2 · cron-only bot (portal retired)*

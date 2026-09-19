@@ -37,10 +37,10 @@
 
 ## 🎬 ONE-TIME DEPLOY (server SSH lo — ee order ga)
 
-> 🚀 **Kotha (v41 deploy pack):** full guide `DEPLOY.md` lo — 3 paths (VPS+Caddy ⭐ /
-> Docker / PaaS). Okka command install: `sudo DOMAIN=exams.college.edu bash deploy/install-vps.sh`
-> Ready-a ani check: `python run.py --deploy-check` (deps/env/disk/port + exam portal ni
-> **nijamga boot chesi** `/healthz` hit chestundi).
+> 🚀 **Deploy pack:** full guide `DEPLOY.md` lo — 3 paths (VPS timers ⭐ /
+> Docker / shared-cron). Okka command install: `sudo DOMAIN=studentup.in bash deploy/install-vps.sh`
+> Ready-a ani check: `python run.py --deploy-check` (python/deps/files/disk/env +
+> artifacts + bot import smoke test).
 
 ```bash
 # 0. deploy readiness (ee okka command chalu — enti miss undo cheptundi)
@@ -106,147 +106,21 @@ sudo systemctl restart autoblog.timer
 
 ---
 
-## 🎓 v39 COLLEGE EXAM PORTAL — "college ki exams easy ga, students easy ga join" (new)
+## ✅ v74 APPROVALS (cron mode — shared hosting friendly)
 
 | Em | Command |
 |---|---|
-| Sample exam + students tho portal start (try cheyyadaniki) | `run.py --exam-portal-demo` |
-| Empty portal (kotha exams create cheyyandi) | `run.py --exam-portal` |
-| Port / public URL tho | `run.py --exam-portal --exam-port 9000 --exam-base-url https://exams.college.edu` |
-| Telegram/webhook notification test | `run.py --exam-portal-test-channels` |
-| Test suite (14 sections) | `python tests/v39_exam_portal_test.py` |
+| Telegram approvals — okka poll pass | `run.py --approval-poll` |
+| Cron (MilesWeb/cPanel, prathi 5 min) | `*/5 * * * * .../python run.py --approval-poll` |
+| VPS daemon (24/7, optional) | `python -m autoblog.approval_bot` |
+| Approval test (offline mock tho) | `python tests/v74_test.py` |
 
-**College ki 5 nimishalu setup:**
-1. `run.py --exam-portal` → boot lo **admin key** print avutundi (adhi save cheyandi).
-2. Browser lo `/admin` → key tho login → **+ New exam** (title, duration, marks,
-   negative marks, pass marks, roster ON/OFF …).
-3. **Questions tab** → Word/Excel nunchi paste (blocks / CSV / JSON — prathi
-   tappu line-wise report avutundi, silent ga skip avvadu) → Publish.
-4. **Student list tab** → roll numbers paste (oka line ki okka roll).
-5. **Share tab** → student link + WhatsApp/notice template copy → students ki pampandi.
+**Flow:** bot drafts prepare chestundi → Telegram lo ✅ Publish / 🗑️ Delete
+buttons → mee tap 5 nimishallo apply avutundi (cron rhythm). Emi auto-publish
+avvadu — human review gate eppudu untundi.
 
-**Exam day (okka click):**
-- Students link open chesi **roll number** tho join avutaru (password ledu;
-  okka roll = okka device; same device lo resume ayithe answers safe).
-- Andaru join ayyaka admin **🚀 START NOW** → andariki same timer + paper lock.
-- Admin **🔒 CLOSE NOW** → pending students auto-submit + results compute
-  (idempotent — rendu sarlu chesina okkate). Time ayyaka **automatic close**
-  kuda untundi (admin marchipoyina kuda).
-- Live monitor: evaru writing/submitted/offline, tab-switch count, announcement
-  banner (students screen lo live), `+5 min` extend, late-join ON/OFF.
-- Results tab: rank, pass/fail, topper, average, question-wise analysis
-  (ekkada andaru tappu chesaro), CSV exports (results/questions/analysis/audit).
-
-⚠️ Honest note: ranking/AdSense/RPM guarantee ledu (ade repo policy) — exam lo
-kuda ilage: results, deadlines, keys anni **meeru verify chesi** publish cheyandi.
-Public internet lo pettali ante HTTPS reverse proxy vadandi, admin key share
-cheyyakandi (per-exam manage link share cheyandi).
-
----
-
-## 🧹 v41 SITE AUDIT + FIX — "anni tappalu okate scan lo, malli raakunda" (new)
-
-| Em kavali | Command |
-|---|---|
-| Audit matrame (read-only, emi maradu) | `run.py --site-audit` |
-| Audit + fixes plan (dry-run — emi apply avvadu) | `run.py --site-audit-fix` |
-| Fixes ni nijamga apply | `run.py --site-audit-fix --site-audit-apply` |
-| Junk/demo pages ni trash cheyyadaniki permission | `run.py --site-audit-fix --site-audit-apply --site-audit-trash` |
-| Only konni fixers (ex: PII + shortcode) | `... --site-audit-action strip_pii,strip_shortcode` |
-| Network ledu / site reach avvatledu (offline proof) | `run.py --site-audit --site-audit-snapshot demo` |
-| Test suite (14 sections) | `python tests/v41_site_audit_test.py` |
-| ANNI suites okate command tho (30/30) | `run.py --test-all` |
-
-**Enti pattukuntundi:** title ledu / content khali / junk HTML dump / broken heading tags /
-featured image ledu / private company "Govt Jobs" category lo / walk-in job
-"Internships" lo / Uncategorized posts / body lo phone number (PII) / raw
-`[adinsert]` shortcode / TOC lo duplicate anchors / off-topic article / stale dates /
-mixed image formats / theme demo pages live / `/privacy-policy/` lo "About us" /
-duplicate contact pages / 200+ tags (85% zero) / truncated tag name / duplicate tags /
-empty categories / timezone UTC / Rank Math Local SEO location lekunda.
-
-**Safety (zero-mistake rules):**
-- Default **dry-run** → `--site-audit-apply` ivvakapote okka write kuda jaragadu.
-- Destructive (draft/trash) ki **`--site-audit-trash`** permission kavali.
-- Junk content **delete avvadu** — draft/trash matrame (revisions tho tirigi techukovachu).
-- Duplicate tags **lossless merge** — posts anni keep-tag ki reassign ayyaka ne delete.
-- Prathi fix audit log + `output/audit/site-audit-<date>.md` report.
-
-**Malli raakunda (root cause):** live publish (`DEFAULT_POST_STATUS=publish`) ki mundu
-ippudu **v41 site gate** kuda run avutundi — empty title/excerpt, image ledu, junk HTML,
-registered-kaani shortcode, duplicate anchor, `U+2011`/"today" template, stale date,
-PII phone, Govt category lo private company, off-topic entity → **block**. Drafts
-eppudu allow (human review ki).
-
-**CI:** `ci/github-actions-tests.yml` — prathi push/PR ki **30 suites** (Python
-3.10/3.11/3.12) + offline audit job. Okka manual step: aa file ni GitHub lo
-`.github/workflows/tests.yml` ki copy cheyandi (agent token ki `workflows`
-permission ledu — workflow file push cheyyaleru; migilinavi automatic).
-Local ga same: `run.py --test-all`.
-
-⚠️ Audit ni **mee network nunchi** run cheyandi (repo sandbox/proxy lo studentup.in
-direct access block avutundi — appudu `--site-audit-snapshot` mode undi, leda mee
-server lo `--site-audit-save` tho snapshot teesukoni ikkada run cheyandi).
-
----
-
-## 📢 v43 AD MANAGER — "vare ads: college banners, shop, services" (new)
-
-| Em kavali | Command |
-|---|---|
-| Inventory status + slot plans | `run.py --ads` |
-| Visible placement preview (browser lo) | `run.py --ads-demo` → `output/ads-preview.html` |
-| Real ad add cheyandi | `ads/inventory.json` lo ad add (demo:true remove) → next post automatic |
-
-- **Highest-CTR slots:** TOP (Quick Answer taruvata) · MID (first H2 taruvata) · BOTTOM (related mundu)
-- **100% safe:** visible SPONSORED label + `rel="sponsored nofollow"` + no-ads-near-links + CLS-safe + max 2/post (AdSense approval ayyaka auto 1)
-- **UTM auto-tagging** → GA4 lo ad-wise CTR reports
-- Strategy + 14 safe high-CTR tricks + college deal template: `AD_STRATEGY_ADVANCED.md`
-
-## 🔬 v44 DEEP POST ENGINE — "deep analyse, perfect posts, mistakes leku" (new)
-
-| Em kavali | Command |
-|---|---|
-| Deep research report (confidence/conflicts/gaps) | `run.py --deep-research "TSPSC Group 2 2027" --research-year 2027` |
-| NotebookLM deep prompt (passes 6–8) | `run.py --deep-research "..." --deep` |
-| NotebookLM output merge + verify | `run.py --deep-research "..." --notebooklm-brief brief.txt` |
-| Post ki deep analysis auto | Automatic — ≥2 sources unna posts lo "In-Depth Analysis" section |
-
-**Perfect gates (live publish lo BLOCK):** source conflicts (2 last dates) · article lo 2
-different "last date" values · stale years (current year dates levu) · uncited NotebookLM
-brief. Drafts lo flags (Telegram review) — override cheyaku.
-
-**Mee manual workflow:** `MANUAL_ADVANCED_CHECKLIST.md` — Part 1 (per-post 10-15 min:
-deep-research → NotebookLM loop → generate → review) + Part 2 (weekly loop) + Part 3
-(10 zero-mistake rules) + Part 4 (LIVE-PUBLISH BLOCKED fix table).
-
-- **Source tiering:** T1 official (.gov.in/.edu.in) > T2 major media > T3 other — T1-weighted
-- **Cross-verification:** confirmed (2+ sources) / official (T1) / single-source / ⛔ conflict
-- **Confidence 0-100** — 75+ strong, <50 = official source add cheyandi
-- Reports: `output/deep/<topic>-<date>.md` + `.json`
-
-## 💰 Money — honest plan (expectations realistic ga)
-
-| Phase | Timeline | Expected | Chese padaluku |
-|---|---|---|---|
-| Foundation | Month 1-2 | Revenue unknown; traffic baseline build cheyali | 3–5 quality drafts/day, human review, hubs and corrections workflow |
-| Traction | Month 2-4 | Search Console data tho measure cheyali | Striking-distance queries, indexing and Core Web Vitals improve cheyali |
-| Monetize | After approval | AdSense RPM/CPC unknown; Google account/traffic batti change avtayi | CMP, ads.txt, policy center and placements manually verify cheyali |
-| Diversify | Later | Service/affiliate/partner revenue only if real demand exists | Clear disclosures, configured contact details and no forced sales |
-
-> Single AdSense meeda 100% dependence = one policy review distance. Playbook rule: **5 streams** — bot + routine lo anni wired unnayi.
-
----
-
-## 🔥 Viral levers (top-site pattern — bot lo automatic)
-1. **Result/Hall-ticket = instant share** — deadline countdown + "N days left 🔥" badge (already in every post)
-2. **Cut-off trend tables** — niche lo ekkuva re-shared content; keyword engine gap-targets veetini cover chesthundhi
-3. **WhatsApp forward-friendly** — quick answer box first 40 words lo complete answer (forward chesinappudu adhe kanipisthundi)
-4. **Colloquial headlines** — "Apply ela cheyali?" style (student bhasha) = CTR
-5. **Bylines + corrections** — trust signals; Google News/Discover visibility is editorially and algorithmically decided, not guaranteed by applying
-6. **Telegram channel** — `TELEGRAM_CHANNEL_CHAT_ID` pettaka prathi published post automatic channel ki (monthly audience compound avutundi)
-
----
+> v74 note: live exam portal teesesam (owner decision) — history kosam
+> `docs/design-archive/v39.html` chudandi.
 
 ## ❓ "Asalu naku settings teliyadu" — tension enduku?
 - Teliyalsinadi **emmi ledu** — anni commands eppudu copy-paste matrame
@@ -254,4 +128,4 @@ deep-research → NotebookLM loop → generate → review) + Part 2 (weekly loop
 - Edaina doubt → `run.py --doctor` + `run.py --setup --dry-run` — rendu milipi **meeru cheppalsinanni English/Telugu lo checkisthayi**
 - Code problem vasthe Arena lo cheppandi — fix chestha 🔧
 
-*Last updated: v39 (College Exam Portal — admin START/CLOSE, roll-number join, auto-close/auto-submit, multi-channel notifications + 14-section test suite). Ee file repo lo unnadi — server lo kuda adhe path.*
+*Last updated: v74 (cron-only bot — live exam teesesam · approvals `--approval-poll` cron tho · deploy = VPS timers / Docker / MilesWeb cron). Ee file repo lo unnadi — server lo kuda adhe path.*

@@ -288,12 +288,12 @@
     .rank{color:var(--orange);font-size:16px;font-weight:800}
     .trend b{display:block;color:#35455c;font-size:12px;line-height:1.35}
     .trend span{color:var(--muted);font-size:10px;display:block;margin-top:3px}
-    .exam-card{color:#fff;background:linear-gradient(150deg,#12356b,#214f93);border-radius:17px;padding:19px;box-shadow:0 12px 25px rgba(18,53,107,.2);margin-bottom:16px}
-    .exam-card h3{color:#fff;margin:0 0 8px;font-size:17px}
-    .exam-card p{font-size:12px;line-height:1.6;color:#dbe8ff;margin:0}
-    .exam-feats{list-style:none;margin:12px 0 0;padding:0}
-    .exam-feats li{font-size:11px;color:#eaf1ff;padding:6px 0;display:flex;gap:8px;border-bottom:1px solid rgba(255,255,255,.12)}
-    .exam-feats li:last-child{border:0}
+    .quiz-card{color:#fff;background:linear-gradient(150deg,#12356b,#214f93);border-radius:17px;padding:19px;box-shadow:0 12px 25px rgba(18,53,107,.2);margin-bottom:16px}
+    .quiz-card h3{color:#fff;margin:0 0 8px;font-size:17px}
+    .quiz-card p{font-size:12px;line-height:1.6;color:#dbe8ff;margin:0}
+    .quiz-feats{list-style:none;margin:12px 0 0;padding:0}
+    .quiz-feats li{font-size:11px;color:#eaf1ff;padding:6px 0;display:flex;gap:8px;border-bottom:1px solid rgba(255,255,255,.12)}
+    .quiz-feats li:last-child{border:0}
     .service-actions{display:flex;gap:7px;margin-top:16px;flex-wrap:wrap}
     .service-actions a{font-size:11px;border-radius:9px;padding:9px 11px;font-weight:800;background:var(--orange);color:#fff}
     .service-actions a.alt{background:rgba(255,255,255,.14)}
@@ -444,7 +444,7 @@
 
       .layout{grid-template-columns:1fr}
       .side{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-      .sidecard,.exam-card{margin:0}
+      .sidecard,.quiz-card{margin:0}
       .service-card{grid-column:1/-1}
     }
     @media(max-width:600px){
@@ -596,7 +596,7 @@
         <span class="drop" role="menu" aria-label="Exam sections">
           <a href="#jobs" role="menuitem" data-goto-cat="upcoming">Upcoming Exams<small>Exam calendar</small></a>
           <a href="#jobs" role="menuitem" data-goto-cat="examtips">Exam Tips<small>Strategy · Revision · Past papers</small></a>
-          <a href="#exam" role="menuitem">Online Exams</a>
+          <a href="#quiz" role="menuitem">Daily Quiz<small>6 questions · instant answers</small></a>
         </span>
       </span>
       <span class="has-drop">
@@ -618,7 +618,7 @@
       <button class="iconbtn" id="searchbtn" aria-label="Search" aria-expanded="false" aria-controls="searchpanel">🔍</button>
       <button class="iconbtn" id="theme" aria-label="Toggle dark mode" aria-pressed="false">☾</button>
       <button class="menubtn" id="menubtn" aria-label="Open menu" aria-expanded="false" aria-controls="mpanel">☰</button>
-      <a class="callbtn" href="#exam">🎓 Online Exam</a>
+      <a class="callbtn" href="#quiz">🧠 Daily Quiz</a>
     </div>
   </div>
   <div class="searchpanel" id="searchpanel" hidden>
@@ -657,7 +657,6 @@
     <a href="#jobs" data-goto-cat="hallticket"><span class="mico" aria-hidden="true">🎫</span>Hall Tickets</a>
     <a href="#jobs" data-goto-cat="results"><span class="mico" aria-hidden="true">📄</span>Results</a>
     <a href="#scholarships"><span class="mico" aria-hidden="true">🎓</span>Scholarships</a>
-    <a href="#exam"><span class="mico" aria-hidden="true">⏱</span>Exam Portal</a>
     <a href="#quiz"><span class="mico" aria-hidden="true">🧠</span>Daily Quiz</a>
     <div class="msep" aria-hidden="true"></div>
     <div class="mlabel">Most searched by students</div>
@@ -686,7 +685,7 @@
     <a href="pages/editorial-policy.html"><span class="mico" aria-hidden="true">🛡</span>Editorial Policy</a>
     <a href="pages/contact.html"><span class="mico" aria-hidden="true">✉️</span>Corrections</a>
     <a href="pages/privacy.html"><span class="mico" aria-hidden="true">🔒</span>Privacy Policy</a>
-    <a class="mcta" href="#exam">🎓 Online Exams — try one now</a>
+    <a class="mcta" href="#quiz">🧠 Daily Quiz — try now</a>
     <div class="msocial" aria-label="Follow us">
       <a href="https://wa.me/919999999999?text=StudentUp.in%20iniki%20question%20unnadi" target="_blank" rel="noopener">WhatsApp</a>
       <a href="https://t.me/studentup_in" target="_blank" rel="noopener">Telegram</a>
@@ -935,9 +934,9 @@
       </section>
 
 
-          <section class="poll" id="poll" aria-label="Today's poll">
+          <section class="poll" id="poll" aria-label="Today's question">
       <div class="poll-head">
-        <div><h3>📊 Today's poll</h3><div class="sub">A new question every day — vote and see the result</div></div>
+        <div><h3>📊 Today's question</h3><div class="sub">One GK question every day — answer and see the correct one instantly</div></div>
         <span class="poll-day" id="pollday"></span>
       </div>
       <div id="pollbox" aria-live="polite"><p class="poll-error">Loading poll…</p></div>
@@ -1006,16 +1005,15 @@
         <a class="su-ad-cta" href="pages/advertise.html" rel="sponsored nofollow">Ad details →</a>
         <div class="su-ad-disc">Ad slot — for partners.</div>
       </aside>
-      <div class="exam-card" id="exam"><h3>🎓 Online Exam Portal</h3>
-        <p>A real exam system — join with your roll number, single timer, tab-switch tracking, auto-close, instant results.</p>
-        <ul class="exam-feats">
-          <li>✓ One roll number = one device (no passwords)</li>
-          <li>✓ Admin START / CLOSE + live monitor</li>
-          <li>✓ Ranks, topper, question-wise analysis</li>
-          <li>✓ CSV exports (results / questions / audit)</li>
+      <div class="quiz-card" id="quizpromo"><h3>📝 Daily Quiz</h3>
+        <p>6 questions on Telangana &amp; Andhra Pradesh GK — instant answers, best score saved in your browser.</p>
+        <ul class="quiz-feats">
+          <li>✓ New set every day</li>
+          <li>✓ Instant right/wrong with explanation</li>
+          <li>✓ No login needed</li>
         </ul>
         <div class="service-actions">
-          <a id="examlink" href="#" target="_blank" rel="noopener">▶ Try an exam</a>
+          <a id="quizlink" href="#quiz">▶ Start the quiz</a>
         </div>
       </div>
     </aside></div>
@@ -1024,7 +1022,7 @@
 
   <footer class="footer"><div class="wrap footergrid">
     <div><h3>studentup<span style="color:#ed8a32">.</span>in</h3><p>Jobs, scholarships, results and exam guidance for Telangana &amp; Andhra Pradesh students — simple and honest.</p></div>
-    <div><h3>Explore</h3><a href="#jobs">Jobs</a><a href="#scholarships">Scholarships</a><a href="#results">Results</a><a href="#exam">Exam Portal</a><a href="#quiz">Daily Quiz</a></div>
+    <div><h3>Explore</h3><a href="#jobs">Jobs</a><a href="#scholarships">Scholarships</a><a href="#results">Results</a><a href="#quiz">Daily Quiz</a></div>
     <div><h3>Trust</h3><a href="pages/about.html">About Us</a><a href="pages/editorial-policy.html">Editorial Policy</a><a href="pages/contact.html">Corrections / Contact</a><a href="pages/privacy.html">Privacy Policy</a><a href="pages/disclaimer.html">Disclaimer</a><a href="mailto:studentupinformative@gmail.com">Report a correction</a></div>
     <div><h3>Official sources</h3><p>Every article cites official portals only: TSPSC, APPSC, SSC, SSC results, NSP, state boards, DSC, DISCOMs — a 105-source grid, no agency copies.</p></div>
   </div>
@@ -1034,7 +1032,7 @@
     <a href="#top"><b>⌂</b>Home</a>
     <a href="#jobs"><b>⌕</b>Explore</a>
     <a href="#quiz"><b>✦</b>Quiz</a>
-    <a href="#exam"><b>🎓</b>Exam</a>
+    <a href="#quiz"><b>🧠</b>Quiz</a>
     <a href="#services"><b>☎</b>Help</a>
   </nav>
   <!-- v45: SOCIAL RAIL — right side, vertically centered.
@@ -1327,16 +1325,6 @@
       if(m){setCat(m[1],true);}
     })();
 
-    /* ---------- live exam link (works in this preview env + localhost) ---------- */
-    var examLink=document.getElementById("examlink");
-    (function(){
-      var h=location.hostname, target;
-      if(/^8000-/.test(h)){target=location.protocol+"//"+h.replace(/^8000-/,"8080-")+"/exam/KBHA5W";}
-      else if(h==="localhost"||h==="127.0.0.1"){target="http://localhost:8080/exam/KBHA5W";}
-      else{target="/exam/KBHA5W";}
-      examLink.href=target;
-    })();
-
     /* ---------- daily quiz ---------- */
     var QUIZ=[
       {q:"తెలంగాణ రాష్ట్ర రాజధాని ఏది?",opts:["వరంగల్","హైదరాబాద్","అమరావతి","కర్నూలు"],a:1,why:"తెలంగాణ రాష్ట్ర రాజధాని హైదరాబాద్."},
@@ -1417,7 +1405,7 @@
     totop.addEventListener("click",function(){window.scrollTo({top:0,behavior:"smooth"});});
 
     /* ---------- scrollspy for mobile nav ---------- */
-    var spy=document.querySelectorAll("main section[id], main .sectionhead[id], .newsgrid, aside .exam-card, .quiz"), mnav=document.querySelectorAll(".mobile-nav a");
+    var spy=document.querySelectorAll("main section[id], main .sectionhead[id], .newsgrid, aside .quiz-card, .quiz"), mnav=document.querySelectorAll(".mobile-nav a");
     Array.prototype.forEach.call(mnav,function(a){
       a.addEventListener("click",function(){
         Array.prototype.forEach.call(mnav,function(x){x.classList.remove("active");});
@@ -1425,54 +1413,54 @@
       });
     });
   })();
-      /* ---------- v47: today's poll (new question from the exam portal every day) ---------- */
+      /* ---------- v74: today's question (self-contained — no server needed) ----------
+         7-question bank rotates by date (IST); your answer is saved in this
+         browser only. No vote counts shown (no server = no fake numbers). */
+    var POLL_BANK=[
+      {t:"Which city is the capital of Telangana?",o:["Warangal","Hyderabad","Nizamabad","Karimnagar"],a:1,w:"Hyderabad is the capital of Telangana."},
+      {t:"How many districts are there in Andhra Pradesh?",o:["13","26","33","23"],a:1,w:"Andhra Pradesh has 26 districts (Telangana has 33)."},
+      {t:"Which river is called the 'Dakshina Ganga'?",o:["Krishna","Kaveri","Godavari","Tungabhadra"],a:2,w:"The Godavari is called the Dakshina Ganga — it flows through both Telugu states."},
+      {t:"APPSC stands for?",o:["Andhra Pradesh Public Service Commission","AP Police Service Cell","Andhra Pradesh Power Supply Company","AP Panel & Schedules Council"],a:0,w:"APPSC = Andhra Pradesh Public Service Commission (psc.ap.gov.in)."},
+      {t:"The official portal for central scholarships (NSP) is?",o:["scholarships.gov.in","nsp.gov.in","myscholarship.in","scholarship.ap.gov.in"],a:0,w:"National Scholarship Portal = scholarships.gov.in — always apply on official portals only."},
+      {t:"Which of these is a Navratna-level state power utility pair of Telangana?",o:["TSNPDCL & TSSPDCL","APEPDCL & APCPDCL","TGDISCOM & APDISCOM","TSGENCO & APGENCO"],a:0,w:"Telangana discoms: TSNPDCL (north) & TSSPDCL (south)."},
+      {t:"SSC CGL is conducted for recruitment to?",o:["Bank PO posts","Group B & C posts in central ministries","Police constable posts","Teaching posts"],a:1,w:"SSC CGL recruits Group B & C officers for central government ministries (ssc.gov.in)."}
+    ];
     (function(){
       var box=document.getElementById("pollbox"); if(!box) return;
-      function base(){
-        var h=location.hostname;
-        if(/^8000-/.test(h)) return location.protocol+"//"+h.replace(/^8000-/,"8080-");
-        if(h==="localhost"||h==="127.0.0.1") return "http://localhost:8080";
-        return "";
-      }
       function esc(x){return String(x).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
-      var P={qid:0,text:"",options:[]};
-      function render(p){
-        P=p;
-        var d=document.getElementById("pollday"); if(d) d.textContent=p.day||"";
-        var h='<p class="poll-q">'+esc(p.text)+"</p>";
-        (p.options||[]).forEach(function(o,i){ h+='<button class="poll-opt" data-i="'+i+'">'+esc(o)+"</button>"; });
-        h+='<p class="poll-total">A new question from the bank every day · one vote per IP</p>';
+      /* IST day number → same question for everyone, all day */
+      var now=new Date(Date.now()+(330+new Date().getTimezoneOffset())*60000);
+      var dayNum=Math.floor(Date.UTC(now.getFullYear(),now.getMonth(),now.getDate())/86400000);
+      var P=POLL_BANK[dayNum%POLL_BANK.length];
+      var KEY="studentup-poll-v1-"+dayNum;
+      var d=document.getElementById("pollday");
+      if(d) d.textContent=now.toLocaleDateString("en-IN",{day:"numeric",month:"short"});
+      function saved(){ try{ var v=window.localStorage.getItem(KEY); return v===null?null:parseInt(v,10); }catch(e){ return null; } }
+      function render(){
+        var h='<p class="poll-q">'+esc(P.t)+"</p>";
+        P.o.forEach(function(o,i){ h+='<button class="poll-opt" data-i="'+i+'">'+esc(o)+"</button>"; });
+        h+='<p class="poll-total">A new question every day · your answer stays in this browser</p>';
         box.innerHTML=h;
         Array.prototype.forEach.call(box.querySelectorAll(".poll-opt"),function(b){
           b.addEventListener("click",function(){ vote(parseInt(b.getAttribute("data-i"),10)); });
         });
       }
       function vote(i){
-        Array.prototype.forEach.call(box.querySelectorAll(".poll-opt"),function(b){b.disabled=true;});
-        fetch(base()+"/poll/vote",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({qid:P.qid,choice:i})})
-          .then(function(r){return r.json();}).then(function(v){ show(v,i); }).catch(function(){ show(null,i); });
+        try{ window.localStorage.setItem(KEY,String(i)); }catch(e){}
+        show(i);
       }
-      function show(v,my){
-        if(!v||!v.votes){
-          box.innerHTML='<p class="poll-error">⚠️ Poll results are unavailable — the exam portal is offline. Please try again shortly.</p>';
-          return;
-        }
-        var total=v.total||1;
-        var h='<p class="poll-q">'+esc(P.text)+"</p>";
-        (v.votes||[]).forEach(function(c,i){
-          var pct= total? Math.round(c*100/total):0;
-          var cls="poll-opt"+(i===v.correct_index?" correct":"")+((i===my&&i!==v.correct_index)?" wrong":"");
-          h+='<div class="'+cls+'"><span>'+esc(P.options[i])+(i===v.correct_index?" ✓":"")+"</span></div>";
-          h+='<div class="poll-bar"><span class="track"><span class="fill" style="width:'+pct+'%"></span></span><b>'+pct+"%</b></div>";
+      function show(my){
+        var h='<p class="poll-q">'+esc(P.t)+"</p>";
+        P.o.forEach(function(o,i){
+          var cls="poll-opt"+(i===P.a?" correct":"")+((i===my&&i!==P.a)?" wrong":"");
+          h+='<div class="'+cls+'"><span>'+esc(o)+(i===P.a?" ✓":"")+"</span></div>";
         });
-        h+='<p class="poll-total">Total votes: '+total+(v.already_voted?" · your vote is already recorded":"")+" · a new question tomorrow!</p>";
-        if(v.explanation) h+='<div class="poll-result-note">💡 '+esc(v.explanation)+"</div>";
+        h+='<p class="poll-total">'+(my===P.a?"🎉 Correct!":"Your answer is marked — correct one has ✓")+" · new question tomorrow!</p>";
+        h+='<div class="poll-result-note">💡 '+esc(P.w)+"</div>";
         box.innerHTML=h;
       }
-      if(typeof fetch!=="function"){ box.innerHTML='<p class="poll-error">This browser does not support the poll.</p>'; return; }
-      fetch(base()+"/poll/today").then(function(r){return r.json();})
-        .then(function(p){ if(!p||!p.ok||!p.options) throw new Error("no-poll"); render(p); })
-        .catch(function(){ box.innerHTML='<p class="poll-error">⚠️ Poll unavailable — it will appear here once the exam portal is online.</p>'; });
+      var prev=saved();
+      if(prev===null||isNaN(prev)){ render(); } else { show(prev); }
     })();
 
 </script>

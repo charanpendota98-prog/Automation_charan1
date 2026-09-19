@@ -8,7 +8,7 @@ Bot automatic ga chesthunna varam rework cheyakapovadu — idi mee 15-min/day ri
 
 ## PART 0 — ONE-TIME SETUP (Day 1 · ~90 min)
 
-> 🏗 **Modata architecture clear chesukondi:** WordPress = website (MilesWeb) · Bot + portal =
+> 🏗 **Modata architecture clear chesukondi:** WordPress = website (MilesWeb) · Bot =
 > engine (Oracle leda MilesWeb cron). Rendu kalipi okate system — link = **WordPress REST API**.
 > Diagram + 3 combos: **GO_LIVE_CHECKLIST.md → section A0**. ⛔ Bot ni rendu chotla schedule
 > cheyyakandi (duplicate posts).
@@ -20,7 +20,7 @@ Bot automatic ga chesthunna varam rework cheyakapovadu — idi mee 15-min/day ri
 | 2 | WP Application Password | wp-admin → Users | `.env` → `WP_USERNAME` + `WP_APP_PASSWORD` |
 | 3 | Telegram bot | @BotFather | `.env` → `TELEGRAM_BOT_TOKEN` + `/start` chat id |
 | 4 | Logo 512×512 | — | `.env` → `SITE_LOGO_URL=https://studentup.in/logo.png` |
-| 5 | Bot install (server SSH) | server | `sudo apt install git && git clone ... /opt/studentup-src && sudo DOMAIN=exams.college.edu bash /opt/studentup-src/deploy/install-vps.sh` (DEPLOY.md Path A) |
+| 5 | Bot install (server SSH) | server | `sudo apt install git && git clone ... /opt/studentup-src && sudo DOMAIN=studentup.in bash /opt/studentup-src/deploy/install-vps.sh` (DEPLOY.md Path A) |
 | 6 | Bot auto-setup | server | `python run.py --setup && python run.py --polish && python run.py --plugins` |
 | 7 | **WP 60-min customization** | wp-admin | `WP_ADVANCED_CUSTOMIZATION.md` Part 1-8 follow (theme, WP Code packs, Rank Math Local SEO location!, Cloudflare, Wordfence 2FA) |
 | 8 | AdSense apply | adsense.google.com | Policy pages bot create chesthundi (`--ensure-adsense`); approval ayyaka `.env` lo `ADSENSE_APPROVED=1` + client id |
@@ -157,7 +157,7 @@ Message lo reason undi — exact ga fix cheyandi:
 ## ⚠️ Honest note
 Perfect = **machine gates + human 5-min verify**. Gates mistakes ramigadu (conflicts/stale/dates/originality), kaani official numbers mee mata tho final check — AdSense/Google/reputation thartham lo idi matrame safety.
 
-*Last updated: v73 (2026-09-18) — ENGLISH UI PASS + HERO BLOCK REMOVAL (site UI antha English · Telugu mattrame job/article content lo · hero countdown card + deadline plumbing teesesaamu · 6 policy pages English · theme copy English): 57/57 suites · 162/162 runtime · readiness 100/100 · code audit 0/0 · parity 0/0 · theme audit 0/0 · theme v1.7.1 (copy pass — version same)*
+*Last updated: v74 (2026-09-19) — LIVE EXAM REMOVAL + CRON-ONLY BOT (portal teesesam · static question/quiz · WhatsApp leads · `--approval-poll` cron): 56/56 suites · 164/164 runtime · readiness 100/100 · code audit 0/0 · parity 0/0 · theme audit 0/0 · theme v1.7.2*
 
 ## PART 26 — v67: DEEP AUDIT (expert/BA) + TOP-THEME HARDENING + 6/6 REVENUE SLOTS
 
@@ -410,18 +410,18 @@ INSTALL : 1) python tools/build_wp_theme.py
           3) Appearance → Menus → primary/mobile/footer assign (lekapote default
              Telugu menu vastundi)
           4) Settings → Reading → "Your latest posts" (front-page.php design home)
-          5) python run.py --push-theme-data   → breaking/proof/deadline/house ads push
+          5) python run.py --push-theme-data   → breaking/house/indexnow push
 BOT LINK: POST /wp-json/studentup/v1/theme-data (WP_SITE + WP_USERNAME +
           WP_APP_PASSWORD, edit_posts chaalu) — roju breaking feed tarvata auto push
-OPTIONS : studentup_breaking_json · studentup_proof_json · studentup_deadline_json ·
-          studentup_house_ads · studentup_adsense_client · studentup_exam_url
+OPTIONS : studentup_breaking_json · studentup_house_ads · studentup_adsense_client ·
+          studentup_indexnow_key (v74: proof/deadline/exam_url options poyayi)
 FILES   : front-page (home order) · header (menu+టికర్) · footer (socials+links) ·
           single (article+ads+share+related) · archive/search/page/404 ·
           inc/breaking (feed + REST) · inc/ads (AdSense + house, SPONSORED label) ·
           inc/template (cards · proof tiles · countdown · breadcrumbs)
 SPEED   : external JS library ledu (1 CSS + 1 JS) · lazy images · CLS-safe ad slots
 NIJAM   : theme = mee design; WP plugins (Rank Math · AdSense) vaalla pani vaalle chestayi.
-TESTS   : tests/v61_test.py = 14 checks · run.py --test-all 51/51
+TESTS   : tests/v61_test.py = 14 checks · run.py --test-all 56/56 · jsdom 164/164
 ```
 
 ---
@@ -558,9 +558,9 @@ nijam    : ads revenue = views × RPM — views perugakunda ceiling peragadu
 ## PART 13 — v54: HIGHEST REVENUE ENGINE (adi asalu pani)
 
 ```
-LEADS  : exam_portal/leads table + POST /lead (CORS) → website "ఉచిత సమాచారం" ఫారం
-         dedupe 24h · IP throttle 5/hour · honeypot spam trap · admin auth
-         admin console: 📞 లీడ్లు panel (status: కొత్త → సంప్రదించాం → అమ్మాం → స్పామ్) + CSV
+LEADS  : v74 — server/store ledu: contact ఫారం details WhatsApp message ga ready ayyi
+         owner number ki open avutundi (validation + honeypot same, DB ledu)
+         pipeline ippudu mee WhatsApp chat label/star (కొత్త → సంప్రదించాం → అమ్మాం)
 PREMIUM: advertise page lo 3 కొత్త products — స్పాన్సర్డ్ ఆర్టికల్ ₹8,000–₹15,000 ·
          లీడ్లు ₹150–₹400/లీడ్ (కనీసం 50) · బ్రాడ్కాస్ట్ ₹1,500
 TIERS  : tools/revenue_estimate.py → 1) BASELINE (AdSense) 2) STANDARD (+ slots)
@@ -590,7 +590,7 @@ Deploy    : GO_LIVE_CHECKLIST.md — 5 owner panulu (domain/WP/Gemini/Telegram/O
 ```
 Advertise page : preview/pages/advertise.html  (rate card ₹1,000–₹8,000/నెల, 3-step booking)
 Private ad     : advertiser email/Telegram → admin "📢 ప్రకటనలు" → SPONSORED label tho live
-House ads      : ads/house.json (StudentUp sevalu · quiz · exam) — sponsor lekapote slot fill
+House ads      : ads/house.json (StudentUp sevalu · quiz · services) — sponsor lekapote slot fill
                  SPONSORED label veyyamu ("StudentUp · మా సేవ") · HOUSE_AD_ENABLED=0 tho off
 Gaps           : paid sponsor unte ade mundu; house ad rotation lo turn teesukuntundi
 Revenue plan   : AD_REVENUE_PLAYBOOK.md — 4 lines, levers, cheyyakudadu list
@@ -610,11 +610,11 @@ Grid lo **15 filter chips** (state + category + search kalipi pani chestayi); sh
 **Crash-proof (Oracle/VPS):**
 ```
 systemd Restart=always        → process chachina 3 sec lo malli start
-su-watchdog.timer (2 min)     → /healthz fail 3x → auto-restart + Telegram alert
-                              → disk / memory / load / TLS expiry alerts too
-tools/prune_media.py          → disk clean · backup.sh → nightly DB backup
-website graceful degrade      → poll down aithe note chupistundi, page crash ledu
-external: UptimeRobot → /healthz (VM motham down aithe kuda alert)
+su-watchdog.timer (2 min)     → website (HTTP+keyword) + bot freshness + disk/TLS check
+                              → fail 3x ayite Telegram alert (auto-restart: bot timers ke)
+tools/prune_media.py          → disk clean · backup.sh → nightly data backup
+website graceful degrade      → static question/quiz (server ledu → down avvadu)
+external: UptimeRobot → https://studentup.in/ (VM motham down aithe kuda alert)
 ```
 Ekkada emi run cheyyali + Oracle free-tier nijamaina limits (2 OCPU/12 GB new free
 tenancies, PAYG ki 4/24, idle reclaim risk): **DEPLOY_ORACLE_CLOUD.md**.
@@ -647,13 +647,11 @@ Rate cheyyalsina command: `python run.py --test-only v50_test`
 Full guide: **DEPLOY_MILESWEB.md**
 
 ```
-Website (static or WordPress)  → public_html          (పని చేస్తుంది ✔)
-Bot (Python)                   → cPanel Python App + cron (5 cronjobs base plan)
-Exam portal (poll/admin/exam)  → passenger_wsgi.py  (MilesWeb "Setup Python App")
+Website (WordPress)            → public_html          (పని చేస్తుంది ✔)
+Bot (Python)                   → ~/bot venv + cron (hourly run.py + */5 --approval-poll)
+Live exam / WSGI               → v74 lo teesesam ✔ (cron-only — Setup Python App vaddu)
 Storage                        → python tools/prune_media.py [--apply]
 ```
-- Portal ni WSGI ga run cheyyadam valla same features: `/exam`, `/admin`, `/poll/today`,
-  `/poll/vote`, ads API — `tests/v49_wsgi_test.py` lo 8 checks.
 - GitHub Actions cron **optional** (free) kaani: default branch lo ne fire avutundi,
   15–45 నిమిషాలు delay avvochu, private repo free plan ki 2,000 min/month limit.
   Predictable kaavali ante MilesWeb cron better.
@@ -685,25 +683,24 @@ preview/pages/about.html · contact.html · privacy.html · disclaimer.html · e
 
 ## PART 6 — v47: DAILY POLL + ADMIN ADS + TELUGU SITE
 
-**Daily poll (website → exam portal):**
+**Daily question (v74: website → server lekunda, browser JS):**
 ```
-Admin console → (kotha exam create cheyyakunda) question bank lo questions add cheyandi
-Website "ఈరోజు పోల్" → /poll/today (rotates daily: day.toordinal() % bank)
-Vote → 1 IP = 1 vote/day · % bars + correct answer + explanation
+7-question bank → IST date tho rojuki okati rotate (day.toordinal() % bank)
+Vote → localStorage 1 vote/day · correct answer + explanation instant reveal
 ```
-- Bank peddaga aithe rojuki kotha prashna — exams laage questions update avutune untayi.
-- Endpoint offline unte website "⚠️ పోల్ అందుబాటులో లేదు" ani clean ga chupistundi (broken UI ledu).
+- Question marchali ante bank file lo edit — server/API ledu kabatti down avvadu.
+- Fake vote counts levu — honest by design (counts levu, answers untayi).
 
-**Admin ads (owner control):**
+**Sponsor ads (owner control — WP Admin):**
 ```
-Admin login → "📢 ప్రకటనలు" card → add / edit / delete
+WP Admin → StudentUp → Ads → add / edit / delete
 Save → ads/inventory.json (bot next post lo SPONSORED + rel=sponsored tho use chestundi)
 ```
 - Validation: id/title/link(http-only)/type/layout/dates — javascript: & data: URLs block.
 - Atomic write (.tmp + os.replace) — version/policy never overwritten.
 - 5 ad types: college_banner · coaching · shop · service · sponsorship.
 
-**Public site:** fully Telugu script (no Romanized mixing), trust section with live verified numbers, dev-facing demo text removed, daily poll widget, mobile-clean CSS.
+**Public site:** fully Telugu script (no Romanized mixing), trust section with live verified numbers, dev-facing demo text removed, daily question widget (v74: server lekunda), mobile-clean CSS.
 
 
 ---
@@ -716,7 +713,7 @@ AUDIT TOOL (kotha): tools/code_audit.py  — "errors 0 · warnings 0" = nijamain
   E2  sibling module attr typo           → AttributeError
   E3  bare `except:`                     → KeyboardInterrupt/SystemExit swallow
   E4  mutable default arg                → state leak between calls
-  E5  duplicate dict literal key         → SILENT data loss (exam_portal/server.py 'name')
+  E5  duplicate dict literal key         → SILENT data loss (portal server.py 'name' — file v74 lo retire)
   E6  wp.<method>() lekapovadam           → publish crash
   E7-E8  AdSense markup rules             → in-article invalid format = RPM miss
   E9  .env.example drift                 → owner ki teliyani setting (20 keys add chesam)
@@ -734,7 +731,7 @@ FIXED BUGS (nijamaina impact):
   3) AdSense in-article unit: `data-ad-format="in-article"` (**INVALID**) velledi →
      ippudu `data-ad-format="fluid" data-ad-layout="in-article"` (correct spec) + in-feed kuda
   4) news sitemap lo `<lastmod>` ledu → Google News reject → ippudu loc tarvata lastmod
-  5) exam_portal/server.py duplicate 'name' key → okati silent ga poyindi → clean
+  5) portal server.py duplicate 'name' key → okati silent ga poyindi → clean (file v74 lo retire)
   6) IndexNow: key file ni **manual ga cPanel lo pettali** (lekapote submit fail) →
      ippudu theme `/<key>.key` ne serve chestundi (admin option, end-to-end automatic)
   7) .env.example lo 20 keys ledu (socials · contact · instant indexing · overrides)
@@ -838,7 +835,8 @@ WHAT CHANGED
                "rates & availability shared personally". No prices, no table, no booking flow.
   Rate card  : autoblog/rate_card.py (5 slots ₹1,000–₹4,000 + full package ₹8,000 + 3 premium
                services). `python run.py --rate-card` prints the WhatsApp-ready card.
-  Lead engine: form moved to pages/contact.html (same /lead API, honeypot, phone validation,
+  Lead engine: form moved to pages/contact.html (v74: /lead API poyindi — WhatsApp-compose,
+               honeypot + phone validation same,
                English labels). Homepage keeps the lead engine via the join block links.
   Social rail: shows 9 s → slides away → returns every 2 minutes; ✕ = hide now (2 min later back),
                ‹ = show now; Escape hides; hover/focus holds it open; reduced-motion respected.
@@ -893,8 +891,8 @@ HOW IT STAYS AUTOMATIC
 
 VERIFY
 ```
-python run.py --test-all                     # 57/57 suites
-node tests/runtime/jsdom_runtime_test.js     # 162/162 browser checks
+python run.py --test-all                     # 56/56 suites
+node tests/runtime/jsdom_runtime_test.js     # 164/164 browser checks
 python run.py --readiness                    # 100/100 · python run.py --guardian
 python tools/parity_audit.py                 # PIN-TO-PIN · python tools/code_audit.py
 node tools/php_lint.js                       # 32/32 PHP files · python tools/build_wp_theme.py
@@ -957,8 +955,8 @@ BOT
 
 VERIFY (v72.1)
 ```
-python run.py --test-all                     # 57/57 suites
-node tests/runtime/jsdom_runtime_test.js     # 162/162 browser checks
+python run.py --test-all                     # 56/56 suites
+node tests/runtime/jsdom_runtime_test.js     # 164/164 browser checks
 python tests/v72_test.py                     # 27 checks (v72 + v72.1)
 python run.py --readiness                    # 100/100 · python run.py --guardian
 python tools/parity_audit.py                 # PIN-TO-PIN · python tools/code_audit.py # 0/0
@@ -1011,8 +1009,8 @@ config.py / .env.example : POST_DEADLINE_TITLE / POST_DEADLINE_ISO poyayi
 
 VERIFY (v73)
 ```
-python run.py --test-all                     # 57/57 suites (v73_test.py kotha: 9 checks)
-node tests/runtime/jsdom_runtime_test.js     # 162/162 browser checks (English UI + countdown removal)
+python run.py --test-all                     # 56/56 suites (v73_test.py kotha: 9 checks)
+node tests/runtime/jsdom_runtime_test.js     # 164/164 browser checks (English UI + countdown removal)
 python run.py --readiness                    # 100/100 · python run.py --guardian
 python tools/parity_audit.py                 # PIN-TO-PIN · python tools/code_audit.py # 0/0
 node tools/php_lint.js                       # 32/32 · python tools/build_wp_theme.py (zip rebuild LAST)

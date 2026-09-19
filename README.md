@@ -468,65 +468,17 @@ FAQ, density rule) — kaani **facts official source nunchi matrame**; teliyani
 > Blueprint + score manaki on-page discipline istundi; Google ni evaru
 > "order" cheyyaleru.
 
-## 🎓 v39 — College Exam Portal (online exams, zero-mistake flow)
+## 🎓 v39 — College Exam Portal (retired in v74)
 
-College ki **okka command tho** online exam system: students link + **roll number**
-matrame tho join avutaru (password ledu), admin **okka click tho START / CLOSE**
-chestadu — andaru join ayyaka start, time ayyaka automatic close + auto-submit.
-Kotha module: `exam_portal/` (Python stdlib + vanilla JS — no framework, no pip
-installs, oka VM lo ne run avutundi).
+> **v74 note:** live exam avasaram ledu (owner decision) → exam portal motham
+> teesesam (`exam_portal/` · `--exam-*` flags · `/exam` `/poll` `/lead` APIs ·
+> portal deploy units). History kosam: `docs/design-archive/v39.html`.
+> Daily quiz/question ippudu **server lekunda** (browser JS) pani chestayi;
+> approvals `--approval-poll` cron tho vastayi (details kindha v74 section).
 
-**1. Start (college admin)**
-
-```bash
-python run.py --exam-portal-demo        # sample exam + students tho start (try cheyyadaniki)
-python run.py --exam-portal             # empty portal — kotha exams create cheyyandi
-python run.py --exam-portal --exam-port 9000 --exam-base-url https://exams.college.edu
-python run.py --exam-portal-test-channels   # Telegram/webhook test ping
-```
-
-Boot lo admin key print avutundi (leda `EXAM_PORTAL_ADMIN_KEY` env). Console:
-`/admin` (exam create → questions paste → roster → publish → START/CLOSE),
-students ki share link: `/exam/<CODE>`.
-
-**2. Zero-mistake flow — built-in protections (mistakes lekunda)**
-
-| Risk | Protection |
-|---|---|
-| Questions tappu ga paste | `parse_questions` — 3 formats (blocks / CSV / JSON), prathi error line-wise report (silent skip ledu) |
-| Answer key miss / question galat | Validation blockers: options <2, duplicate options, answer set kaledu, pass marks > total, negative ≥ marks, duration 0 |
-| Live lo paper marchadam | Live/closed exam lo questions add/delete **block** (audit freeze) |
-| Tappu question valla unfair marks | Admin **Drop** → aa question andariki count avvadu, scores automatic recalculate |
-| Option shuffle valla tappu scoring | Scoring **text-anchored** — student chusina position ni original answer key ki map chestundi (v39 test 7b) |
-| Duplicate attempt (okate roll, rendu devices) | Okka roll = okka device; same token tho resume allowed (answers eppudu poyipovu) |
-| Time over — admin marchipoyadu | Background sweeper (5s): auto-close + auto-submit + "closing soon" ping |
-| Andaru join ayyaka start marchipoyadu | `auto_start_all_joined` ON unte roster full → automatic START |
-| START/CLOSE rendu sarlu click | Idempotent — rendu sarlu chesina okkate result, okkate end time |
-| Student page accidental close / net cut | localStorage pending-answer queue + 10s heartbeat + token resume |
-| Late join unfair advantage | Late joiners ki kuda **same end time** (grace minutes unte dani varaku matrame) |
-| Mass copy / tab switch | Tab-switch count + audit log + live monitor (integrity signals) |
-
-**3. Notifications — anni channels**
-
-Telegram (`EXAM_TELEGRAM_BOT_TOKEN` + `EXAM_TELEGRAM_CHAT_ID`, leda repo
-`TELEGRAM_*` fallback), webhook (`EXAM_WEBHOOK_URL`), in-app banner (students
-screen lo live announcement), plus **copy-paste templates** (WhatsApp group,
-SMS, notice board, email, JSON) — `/manage/<CODE>` → Share & Notify tab.
-Channel fail aithe exam **eppudu block avvadu** (log lo record avutundi).
-
-**4. Results, analysis, exports**
-
-Immediate result + per-question review (option text tho), rank, pass/fail,
-topper, average, question-wise analysis (which question everyone missed),
-CSV exports: results / questions / analysis / audit log.
-
-**5. Tests**
+Related commands (migilina versions — v39 test poyindi):
 
 ```bash
-python tests/v39_exam_portal_test.py    # 14 sections: parse → validate → START/CLOSE →
-                                        # scoring (shuffle-safe) → sweeper → notify →
-                                        # HTTP end-to-end → demo → UI JS guards
-node tools/ui_smoke.mjs                 # optional: real DOM (jsdom) full-flow smoke
 python run.py --ad-advisor              # v57: eppudu e ad-network ki apply cheyyali
 python run.py --ad-advisor --traffic-csv ga4.csv   # GA4 export → advisor (logs/traffic.json)
 python run.py --breaking-feed           # v59: radar → site బ్రేకింగ్ న్యూస్ feed (ticker+section)
@@ -543,16 +495,34 @@ python run.py --index-now URL           # v68: IndexNow + Google Indexing (JobPo
 python run.py --ads-demo                 # advanced control
 python run.py --deep                     # advanced control
 python run.py --deep-research            # advanced control
-python run.py --deploy-port              # advanced control
-python run.py --exam-admin-key           # advanced control
-python run.py --exam-db                  # advanced control
-python run.py --exam-host                # advanced control
+python run.py --approval-poll            # v74: Telegram approvals cron mode (*/5 min)
 python run.py --rebuild-hubs             # advanced control
 python run.py --research-limit           # advanced control
 python run.py --top-post-category        # advanced control
 python run.py --traffic-sessions         # advanced control
 python run.py --traffic-views            # advanced control
 ```
+
+### v74 — LIVE EXAM REMOVAL + CRON-ONLY BOT ("live exam avasaram ledu")
+
+**Mee brief:** live exam portal **vaddu** · anni neat + perfect + advanced · MilesWeb
+premium lo **pakka deploy** avvali. And that's what this is: portal motham teesesam,
+bot ippudu cron-only (servers/ports levu) — shared hosting lo anni pani chestayi.
+
+| # | What changed | Detail |
+|---|---|---|
+| 1 | **Portal deleted** | `exam_portal/` (4,864 lines) · `passenger_wsgi.py` · `wsgi_dev.py` · `--exam-*` flags · `EXAM_*` env · portal systemd units/proxy · `tests/v39` + `tests/v49` · `tools/ui_smoke.mjs` — anni poyayi |
+| 2 | **Static daily question** | `/poll/today` + `/poll/vote` API badulu **7-question bank** (IST date rotation, localStorage vote, instant correct-answer reveal) — server ledu kabatti fake counts levu |
+| 3 | **WhatsApp-compose lead form** | `/lead` API badulu contact form details ni **WhatsApp message ga** ready chesi owner ki open chestundi (validation + honeypot same, store ledu) |
+| 4 | **Approvals via cron** | `run.py --approval-poll` — okka poll pass (Telegram ✅/🗑️ buttons cron lo kuda pani chestayi, ~5 min rhythm); VPS daemon optional ga migilindi |
+| 5 | **Deploy simplified** | Bot timer + watchdog (website + bot-freshness + disk/TLS) + Docker loop + `crontab.example`; Caddyfile ippudu **static site** kosam (proxy ledu) |
+| 6 | **Theme 1.7.2** | `exam_url` + `api_base` options · header exam buttons · dead `?studentup_exam=1` PWA shortcut poyayi; shortcuts = Jobs · Qualification · Results · Quiz |
+| 7 | **Fresh-clone proof** | `php-parser` ippudu declared dep + CI lo node install (mundu fresh clone lo 8 suites fail ayyevi — env trap, ippudu ledu) |
+| 8 | **Proof** | `--test-all` **56/56** · jsdom **164/164** · readiness **100/100** · guardian · parity **0/0** · code audit **0/0** · theme audit **0/0** · php-lint **32/32** · theme **1.7.2** |
+
+MilesWeb answer (honest): WordPress site + bot cron + Telegram approvals + static
+quiz/question — **anni MilesWeb premium shared lo run avutayi** (details:
+`DEPLOY_MILESWEB.md`). Okkate tradeoff: approvals ~5 min late (cron rhythm).
 
 ### v73 — ENGLISH UI PASS + HERO BLOCK REMOVAL ("idi avasram ledu")
 
@@ -624,7 +594,7 @@ floating rail that appears, hides, and returns every 2 minutes so it never cover
 | 1 | **Students Internet Center (TS & AP)** | New card on the homepage + a section on every theme page: *call us → WhatsApp your documents → we apply and send the PDF*, lowest service charge. Wallet-friendly `wa.me` CTA box (opens your WhatsApp), `tel:` call button and email fallback. |
 | 2 | **Public rate card removed** | The ₹4,000/₹3,500/₹3,000/₹2,000/₹8,000 table, the 3-step booking flow and the sidebar "Advertise" card are gone. `pages/advertise.html` is now a clean **Partner with us** page: placements, policy, house-ads note, and "rates & availability are shared personally". |
 | 3 | **Rate card is internal now** | `autoblog/rate_card.py` is the single source of truth (5 slots + full package + 3 premium services). `tools/revenue_estimate.py` reads it; `--rate-card` prints the WhatsApp/Telegram-ready card for personal dealing. |
-| 4 | **Newsletter form → join block** | The "free updates" form was replaced on the homepage by a **WhatsApp + Telegram join block**. The lead form itself moved to `pages/contact.html` (same `/lead` API, honeypot and validation), so the lead engine keeps working. |
+| 4 | **Newsletter form → join block** | The "free updates" form was replaced on the homepage by a **WhatsApp + Telegram join block**. The lead form itself moved to `pages/contact.html` (v74: `/lead` API poyindi — ippudu WhatsApp-compose form, honeypot + validation same), so the lead engine keeps working. |
 | 5 | **Social rail with a 2-minute cycle** | Rail shows for 9 s, slides away, returns every 2 minutes. ✕ hides it instantly (returns after 2 min), ‹ pulls it back. Hover/focus keeps it, `Escape` closes it, reduced-motion respected. Same behaviour in the theme (`assets/js/studentup.js`). |
 | 6 | **Mobile polish** | Social chips 34 px (31 px under 400 px), mobile-nav icon row tighter, join CTA full-width on phones — text stays readable. |
 | 7 | **Theme v1.6.0** | New `inc/cta.php` (Internet Center + join blocks on every page) and `inc/editor.php` (block-editor parity with `assets/css/editor.css`). Version parity: `style.css` ↔ `STUDENTUP_VERSION` ↔ `readme.txt` Stable tag. |
@@ -688,7 +658,7 @@ dorikina bugs **anni fix** chesamu — ippudu **0 errors · 0 warnings**.
 | 3 | **Nijamaina bug #2 — silent failures** | **34 × `except Exception: pass`** (14 bot-critical) → edi fail aina teliyadu → ippudu prathi okkati **reason tho log** avutundi (`debug`/`warning`) |
 | 4 | **Nijamaina bug #3 — REVENUE** | in-article AdSense unit ki `data-ad-format="in-article"` (**invalid attribute**) velledi → Google generic display ga treat chesi **in-article RPM miss** → ippudu `data-ad-format="fluid" data-ad-layout="in-article"` (spec correct) + in-feed kuda |
 | 5 | **Nijamaina bug #4 — Google News** | news sitemap lo **`<lastmod>` ledu** → News sitemap reject avvachu → ippudu loc tarvata lastmod (modified time) |
-| 6 | **Nijamaina bug #5 — dalit data** | `exam_portal/server.py` lo **duplicate dict key** (`name` rendu sarlu) → okati silent ga poyedi → clean |
+| 6 | **Nijamaina bug #5 — dalit data** | `server.py` lo **duplicate dict key** (`name` rendu sarlu) → okati silent ga poyedi → clean (file v74 lo retire ayyindi) |
 | 7 | **Instant indexing (trending)** | `autoblog/indexing.py` (kotha): publish ayyaka **IndexNow** (Bing/Yandex) + **Google Indexing API** (JobPosting — Google support chese official use case; SA key + Search Console owner) · `--index-key-gen` · `--index-status` · `--index-now URL` · RS256 signing `cryptography` leda `openssl` |
 | 8 | **IndexNow key file** (mundu manual) | puratana setup lo key file ni cPanel lo **manual ga** pettali (lekapote submit fail) → ippudu **theme ne serve chestundi** `/<key>.key` (admin option · `--push-theme-data` tho sync) |
 | 9 | **Diagnosis + docs** | audit **build gate** lo (`build_wp_theme.py`) · readiness lo **2 kotha checks (27/27)** · `run.py --doctor` · GO_LIVE **PART B step 2f** (SA setup) · MANUAL PART 27 |
@@ -1388,12 +1358,9 @@ python run.py --top-post "NSP Scholarship last date" --publish-top-post
 ```
 
 ```bash
-# v39 COLLEGE EXAM PORTAL (students + admin console)
-python run.py --exam-portal-demo            # sample exam tho start (try cheyyandi)
-python run.py --exam-portal                 # production portal (admin key print avutundi)
-python run.py --exam-portal --exam-port 9000 --exam-base-url https://exams.college.edu
-python run.py --exam-portal-test-channels   # Telegram/webhook notification test
-python tests/v39_exam_portal_test.py        # 14-section suite
+# v74 APPROVALS (cron mode — shared hosting friendly)
+python run.py --approval-poll               # okka poll pass (cron: */5 * * * *)
+python -m autoblog.approval_bot             # VPS daemon (24/7 long-polling)
 ```
 
 ```bash
@@ -1403,7 +1370,7 @@ python run.py --site-audit-fix              # audit + fixes (dry-run default)
 python run.py --site-audit-fix --site-audit-apply [--site-audit-trash]
 python run.py --site-audit --site-audit-snapshot demo    # offline (network ledu)
 python run.py --test-all                    # ANNI suites (30/30) okate command tho
-python run.py --deploy-check                # deploy readiness + exam portal boot proof
+python run.py --deploy-check                # deploy readiness (imports + artifacts + cron hint)
 python tests/v41_site_audit_test.py         # 15-section suite
 ```
 
@@ -1493,7 +1460,6 @@ Marpali te: `.env` edit chesi scheduler ni restart cheyandi: `sudo systemctl res
 ## Project structure
 
 ```
-├── wsgi_dev.py             # v54 dev WSGI runner (:8090) for poll + lead forms
 ├── run.py                  # CLI entry point
 ├── setup_oracle.sh         # One-command Oracle Cloud installer
 ├── requirements.txt        # requests + pillow + beautifulsoup4
@@ -1541,22 +1507,10 @@ Marpali te: `.env` edit chesi scheduler ni restart cheyandi: `sudo systemctl res
 ├── SALES_KIT_ADVERTISERS.md # v54 advertiser outreach templates + 90-day plan
 ├── AD_NETWORKS_PLAN.md     # v56 network thresholds (2026), uplift reality, apply checklist
 ├── SALES_KIT_ADVERTISERS.md # v54 advertiser outreach templates + 90-day plan
-├── deploy/                 # systemd units · Caddyfile · nginx · Dockerfile · compose · backup.sh · install-vps.sh
-├── autoblog/deploy_check.py # deploy readiness (deps/env/disk/port + real /healthz boot)
+├── deploy/                 # bot timer · watchdog · Caddyfile (static) · Dockerfile · compose · backup.sh · install-vps.sh
+├── autoblog/deploy_check.py # deploy readiness (imports + artifacts + cron hint)
 ├── autoblog/site_audit.py  # v41 deep audit + safe autofix + live publish gate
-├── exam_portal/            # v39/v47 college exam portal (stdlib only)
-│   ├── store.py            #      SQLite: exams/questions/roster/sessions/answers
-│   │                       #      + v47 poll_votes (daily poll bank + dedup)
-│   ├── engine.py           #      validate, START/CLOSE, scoring, sweeper, exports
-│   ├── notify.py           #      Telegram/webhook/in-app + copy-paste templates
-│   ├── ui.py               #      landing + admin console + manage + student app
-│   │                       #      + v47 "ప్రకటనలు" ads manager card
-│   ├── server.py           #      HTTP server + CLI (no framework)
-│   │                       #      + v47 /poll/today · /poll/vote (CORS) and
-│   │                       #      /api/admin/ads CRUD → ads/inventory.json
-│   └── demo.py             #      sample exam seed (--exam-portal-demo)
 ├── tools/
-│   ├── ui_smoke.mjs        # v39 optional jsdom full-flow UI smoke test
 │   ├── revenue_estimate.py # v53 ad revenue calculator (--views 10k / 1l / --json)
 │   └── ad_network_plan.py  # v56 network eligibility + uplift (--views 50k --tier1 0.3)
 └── tests/                  # end-to-end tests (fake WP/Telegram/source servers)

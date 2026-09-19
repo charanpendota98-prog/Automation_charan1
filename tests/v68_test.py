@@ -8,7 +8,7 @@ Ee suite (a) aa bugs **malli raakunda lock** chestundi, (b) kotha engines ni ver
 
   · `config.GEMINI_API_BASE` — mundu **AttributeError** (research path crash) → ippudu defined
   · silent failures — `except Exception: pass` **0** (mundu 14) → ippudu log avutayi
-  · `exam_portal/server.py` duplicate dict key ('name') — silent data loss → clean
+  · duplicate dict keys repo-wide scan (v74: exam_portal teesesam — autoblog + tools + run.py)
   · AdSense markup — `<ins>` ki `data-ad-layout` + `data-ad-format="fluid"` (mundu invalid
     `data-ad-format="in-article"` → **in-article RPM miss**)
   · news sitemap `<lastmod>` (Google News reject ayyedi)
@@ -72,9 +72,9 @@ def test_no_silent_exception_pass():
 
 
 def test_no_duplicate_dict_keys():
-    """v68 bug: server.py lo 'name' key rendu sarlu — okati silent ga poyindi."""
+    """v68 bug class: same-dict duplicate keys (okati silent ga pothundi) — v74 scope: bot + tools."""
     offenders = []
-    for f in list(BOT.glob("*.py")) + list((ROOT / "exam_portal").glob("*.py")) + [ROOT / "run.py"]:
+    for f in list(BOT.glob("*.py")) + list((ROOT / "tools").glob("*.py")) + [ROOT / "run.py"]:
         tree = ast.parse(read(f))
         for node in ast.walk(tree):
             if isinstance(node, ast.Dict):

@@ -26,7 +26,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 MEDIA_GLOBS = ("output/**/*.jpg", "output/**/*.jpeg", "output/**/*.png",
                "output/**/*.webp", "media/**/*.jpg", "media/**/*.png")
-DB_FILES = ("state.db", "exam_portal.db", "service_center.db")
+DB_FILES = ("state.db", "service_center.db")  # v74: live-exam db poyindi (portal ledu)
 
 
 def human(n: float) -> str:

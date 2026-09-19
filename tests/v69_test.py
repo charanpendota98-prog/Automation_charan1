@@ -147,7 +147,8 @@ def test_cli_flags_documented():
                                        ROOT / "docs" / "BA_REQUIREMENTS_MATRIX.md"))
     missing = [f for f in flags if f not in docs]
     assert missing == [], f"docs lo leni flags: {missing}"
-    assert len(flags) >= 90, f"flag count {len(flags)}"
+    # v74: 9 dead flags poyayi (--exam-* ×8 + --deploy-port), 1 kotha (--approval-poll)
+    assert len(flags) >= 85, f"flag count {len(flags)}"
 
 
 def test_no_dead_modules():

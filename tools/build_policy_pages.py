@@ -254,8 +254,9 @@ CONTACT = """
     </div>
     <button type="submit" class="leadbtn" id="ld-submit">Get free updates</button>
     <p class="leadmsg" id="ld-msg" role="status" aria-live="polite"></p>
-    <p class="leadnote">We never sell your number and never pass it to advertisers. You can ask us to
-      stop anytime — see <a href="privacy.html">privacy policy</a>.</p>
+    <p class="leadnote">Pressing the button opens WhatsApp with your message ready — nothing is stored
+      on our site. We never sell your number. You can ask us to stop anytime —
+      see <a href="privacy.html">privacy policy</a>.</p>
   </form>
 
   <h2>Other ways to reach us</h2>
@@ -281,16 +282,13 @@ CONTACT = """
 """
 
 CONTACT_SCRIPT = """<script>
-/* v71 — free-updates form (leads) → exam portal API. Homepage nunchi ikkadaki move ayyindi. */
+/* v74 — free-updates form → WhatsApp compose (no server, no database).
+   Details ni WhatsApp message ga ready chesi owner number ki open chestundi —
+   press send, ayipoyindi. Server/store ledu kabatti leak avvadaniki emi ledu. */
 (function(){
   var f=document.getElementById("leadform"); if(!f) return;
-  function api(){
-    var h=location.hostname;
-    if(/^8000-/.test(h)) return location.protocol+"//"+h.replace(/^8000-/,"8080-");
-    if(h==="localhost"||h==="127.0.0.1") return "http://localhost:8080";
-    return "";
-  }
-  var msg=document.getElementById("ld-msg"), btn=document.getElementById("ld-submit");
+  var WA_NUMBER="919999999999"; /* same owner number as the links on this page */
+  var msg=document.getElementById("ld-msg");
   function say(text,ok){ msg.textContent=text; msg.className="leadmsg "+(ok?"ok":"err"); }
   f.addEventListener("submit",function(e){
     e.preventDefault();
@@ -299,25 +297,19 @@ CONTACT_SCRIPT = """<script>
     var interest=document.getElementById("ld-interest").value;
     var city=(document.getElementById("ld-city").value||"").trim();
     var hp=(document.getElementById("ld-website").value||"").trim();
+    if(hp){ say("✅ You are on the list!",true); f.reset(); return; } /* spam trap */
     if(name.length<2){ say("⚠️ Please enter your name.",false); return; }
     if(!/^[6-9]\d{9}$/.test(phone)){ say("⚠️ Enter a valid 10-digit mobile number (e.g. 9876543210).",false); return; }
-    if(typeof fetch!=="function"){ say("⚠️ This browser cannot send the form — message us directly.",false); return; }
-    btn.disabled=true; say("Sending…",true);
-    fetch(api()+"/lead",{method:"POST",headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({name:name,phone:phone,interest:interest,city:city,website:hp,source:"site"})})
-      .then(function(r){return r.json().then(function(j){return {s:r.status,j:j};});})
-      .then(function(o){
-        btn.disabled=false;
-        if(o.s===200&&o.j&&o.j.ok){ say("✅ "+(o.j.message||"You are on the list!"),true); f.reset(); }
-        else { say("⚠️ "+((o.j&&o.j.error)||"Could not send — please try again."),false); }
-      })
-      .catch(function(){ btn.disabled=false; say("⚠️ Server not reachable — please try again later.",false); });
+    var text="StudentUp free updates: name="+name+", mobile="+phone+", interest="+interest+(city?", city="+city:"");
+    var w=window.open("https://wa.me/"+WA_NUMBER+"?text="+encodeURIComponent(text),"_blank");
+    if(w){ w.opener=null; }
+    say("✅ Opening WhatsApp — press send to join the free updates list.",true); f.reset();
   });
 })();
 </script>"""
 
 PRIVACY = """
-  <p>This policy covers the studentup.in website, the exam portal and the daily poll.
+  <p>This policy covers the studentup.in website, the daily quiz and the daily poll question.
   In one line: we do not collect your name, phone number or Aadhaar details.</p>
 
   <h2>What we do not collect</h2>
@@ -332,7 +324,7 @@ PRIVACY = """
     <tr><th>Item</th><th>Why</th><th>Where</th></tr>
     <tr><td>Theme choice (dark / light)</td><td>So the site opens the way you left it</td><td>Your browser only</td></tr>
     <tr><td>Quiz best score</td><td>So you can see your own progress</td><td>Your browser only</td></tr>
-    <tr><td>Poll vote confirmation</td><td>So one person votes once a day</td><td>IP address (never linked to a personal identity)</td></tr>
+    <tr><td>Daily poll answer</td><td>So you see the correct answer once answered</td><td>Your browser only</td></tr>
   </table>
 
   <h2>Ads and measurement</h2>
@@ -469,7 +461,7 @@ ADVERTISE = '''
   </ul>
 
   <h2>Our own house ads</h2>
-  <p>If a paid slot is empty, StudentUp's own services (daily quiz, exam portal, application help) fill
+  <p>If a paid slot is empty, StudentUp's own services (daily quiz, daily question, application help) fill
   it — never labelled SPONSORED, always marked "StudentUp · our service". A paid placement always takes
   priority, with rotation. <b>A slot never looks empty to a reader.</b></p>
 

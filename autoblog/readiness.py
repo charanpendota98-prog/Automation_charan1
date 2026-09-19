@@ -419,8 +419,10 @@ def c_money_engine() -> List[dict]:
         "revenue calculator": (ROOT / "tools" / "revenue_estimate.py").exists(),
         "network plan": (ROOT / "AD_NETWORKS_PLAN.md").exists(),
         "auto advisor": (ROOT / "autoblog" / "ad_advisor.py").exists(),
-        "lead capture": (ROOT / "exam_portal" / "leads.py").exists()
-        or "leads" in _read(ROOT / "exam_portal" / "store.py"),
+        # v74: portal lead API poyindi → contact page WhatsApp-compose form
+        # (server lekunda) + sales-kit follow-up = lead engine.
+        "lead capture": 'id="leadform"' in _read(PREVIEW / "pages" / "contact.html")
+        and "wa.me" in _read(PREVIEW / "pages" / "contact.html"),
     }
     missing = [k for k, v in have.items() if not v]
     line = " · ".join(have)

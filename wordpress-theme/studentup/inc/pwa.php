@@ -50,9 +50,14 @@ function studentup_manifest() {
 				'url'        => home_url( '/#qualsplit' ),
 			),
 			array(
-				'name'       => 'Online Exams',
-				'short_name' => 'Exams',
-				'url'        => home_url( '/?studentup_exam=1' ),
+				'name'       => 'Results',
+				'short_name' => 'Results',
+				'url'        => home_url( '/#results' ),
+			),
+			array(
+				'name'       => 'Daily Quiz',
+				'short_name' => 'Quiz',
+				'url'        => home_url( '/#quiz' ),
 			),
 		),
 	);

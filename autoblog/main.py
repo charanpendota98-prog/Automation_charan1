@@ -1171,29 +1171,6 @@ def score_post_run(path: str, keyword: str = "") -> int:
     return top_post.run_score_file(path, keyword)
 
 
-# ------------------------------------------------------------- v39 exam portal
-
-def exam_portal_run(host: str = "0.0.0.0", port: int = 8080, db: str = "",
-                    admin_key: str = "", demo: bool = False,
-                    test_channels: bool = False, base_url: str = "") -> int:
-    """v39: College exam portal — admin console + student exam app."""
-    from exam_portal import server as portal_server
-    from exam_portal.store import DEFAULT_DB
-
-    db_path = db or str(DEFAULT_DB)
-    if test_channels:
-        import json as _json
-
-        print(_json.dumps(portal_server.notify.test_channels(), indent=2,
-                          ensure_ascii=False))
-        return 0
-    if demo:
-        from exam_portal import demo as portal_demo
-
-        portal_demo.run_demo(db_path)
-    return portal_server.run_server(host, port, db_path, admin_key, base_url)
-
-
 # ------------------------------------------------------------- test runner
 
 def test_all_run(only: str = "", quiet: bool = False) -> int:
@@ -1430,6 +1407,9 @@ def main() -> int:
     parser.add_argument("--status", action="store_true", help="show stats & today's plan")
     parser.add_argument("--check-wp", action="store_true", help="verify WP credentials")
     parser.add_argument("--notify-test", action="store_true", help="send test notification")
+    parser.add_argument("--approval-poll", action="store_true",
+                        help="v74: Telegram approvals — okka poll pass (cron mode; "
+                             "shared hosting lo */5 min cron; VPS lo daemon ki badulu)")
     parser.add_argument("--revenue-check", action="store_true",
                         help="revenue setup audit — em missing o cheptundi")
     parser.add_argument("--ad-advisor", action="store_true",
@@ -1500,25 +1480,6 @@ def main() -> int:
                              "(30+ checks + fixes)")
     parser.add_argument("--score-keyword", default="", metavar="KEYWORD",
                         help="v38: keyword for --score-post")
-    parser.add_argument("--exam-portal", action="store_true",
-                        help="v39: college EXAM PORTAL start (admin console + "
-                             "student exam app + auto start/close)")
-    parser.add_argument("--exam-portal-demo", action="store_true",
-                        help="v39: sample exam seed chesi portal start "
-                             "(college ki ippude chudataniki)")
-    parser.add_argument("--exam-portal-test-channels", action="store_true",
-                        help="v39: Telegram/webhook notification test ping")
-    parser.add_argument("--exam-host", default="0.0.0.0",
-                        help="v39: portal bind host (default 0.0.0.0)")
-    parser.add_argument("--exam-port", type=int, default=8080,
-                        help="v39: portal port (default 8080)")
-    parser.add_argument("--exam-db", default="",
-                        help="v39: SQLite path (default exam_portal.db)")
-    parser.add_argument("--exam-admin-key", default="",
-                        help="v39: admin key (default: env/file/auto-generate)")
-    parser.add_argument("--exam-base-url", default="",
-                        help="v39: public URL for share links/notifications "
-                             "(ex: https://exams.college.edu)")
     parser.add_argument("--ads", action="store_true",
                         help="v43: AD MANAGER — owner ads (college banners/shop/"
                              "services) inventory status + per-category slot plan")
@@ -1529,10 +1490,9 @@ def main() -> int:
                         help="v43: AD MANAGER — visible ad placement preview "
                              "(output/ads-preview.html — browser lo open cheyandi)")
     parser.add_argument("--deploy-check", action="store_true",
-                        help="v41: deploy readiness — deps/env/disk/port + exam portal "
-                             "ni nijamga boot chesi /healthz hit (server SSH lo)")
-    parser.add_argument("--deploy-port", type=int, default=8080,
-                        help="v41: --deploy-check port (default 8080)")
+                        help="v41: deploy readiness — python/deps/files/disk/env + "
+                             "artifacts (server SSH lo; v74: portal boot ledu — "
+                             "cron-only bot)")
     parser.add_argument("--test-all", action="store_true",
                         help="v41: ANNI suites okate command tho run chey "
                              "(--test-only NAME tho okka suite; CI idi ne run "
@@ -1620,7 +1580,7 @@ def main() -> int:
                         help="number of questions (default: QUIZ_QUESTIONS)")
     parser.add_argument("--quiz-kit", action="store_true",
                         help="v26: install/update site-wide quiz engine "
-                             "(CSS+JS footer widget) — exam UI, timers, scoring")
+                             "(CSS+JS footer widget) — quiz UI, timers, scoring")
     args = parser.parse_args()
 
     _setup_logging()
@@ -1631,6 +1591,10 @@ def main() -> int:
         return check_wp()
     if args.notify_test:
         return notify_test()
+    if args.approval_poll:
+        from . import approval_bot
+
+        return approval_bot.main_once()
     if args.revenue_check:
         return revenue_check()
     if args.gsc:
@@ -1679,17 +1643,10 @@ def main() -> int:
         return keyword_universe_view()
     if args.score_post:
         return score_post_run(args.score_post, args.score_keyword)
-    if args.exam_portal or args.exam_portal_demo or args.exam_portal_test_channels:
-        return exam_portal_run(
-            host=args.exam_host, port=args.exam_port, db=args.exam_db,
-            admin_key=args.exam_admin_key,
-            demo=args.exam_portal_demo,
-            test_channels=args.exam_portal_test_channels,
-            base_url=args.exam_base_url)
     if args.deploy_check:
         from . import deploy_check
 
-        return deploy_check.run_deploy_check(port=args.deploy_port)
+        return deploy_check.run_deploy_check()
     if args.test_all:
         return test_all_run(only=args.test_only)
     if args.site_audit or args.site_audit_fix:

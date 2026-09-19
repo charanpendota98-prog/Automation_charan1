@@ -6,16 +6,16 @@ Ee doc = "motham deploy ayyaka edi ekkada, crash avvakunda ela, money ela" — c
 
 | Part | Best place | Enduku |
 |---|---|---|
-| **Website (Telugu pages, ads, poll UI)** | **MilesWeb** `public_html` (static) leda WordPress | Static HTML ki 0 maintenance; WordPress ni cPanel 1-click |
-| **WordPress blog + plugins (Rank Math etc.)** | **MilesWeb** | WP shared hosting ki perfect fit |
-| **Exam portal + daily poll (`/exam`, `/admin`, `/poll`)** | **Oracle Cloud Always Free VM** (systemd + Caddy HTTPS) | 24×7 process, automatic restart, mee data mee control lo |
-| **Auto-blogger bot (deep research + NotebookLM)** | **Oracle Cloud VM** (systemd timer) | Heavy multi-source work + venv + long runs; shared hosting cron ki limit |
-| **Cron / backups / watchdog** | Oracle VM (systemd timers) | 5-cron limit undadu, 2-min checks possible |
+| **Website (WordPress blog + theme)** | **MilesWeb** (WordPress install) | WP shared hosting ki perfect fit |
+| **Static preview site (optional mirror)** | **MilesWeb** `public_html` leda Oracle VM (Caddy static) | Static HTML ki 0 maintenance |
+| **Auto-blogger bot (drafts + research + audits)** | **Oracle Cloud VM** (systemd timers) leda MilesWeb cron | Oracle: heavy runs + venv + long jobs; MilesWeb: simple cron (details `DEPLOY_MILESWEB.md`) |
+| **Telegram approvals (✅/🗑️)** | Oracle VM daemon leda cron `--approval-poll` | Rendu chotla cron mode pani chestundi |
+| **Cron / backups / watchdog** | Oracle VM (systemd timers) | 2-min checks + auto alerts possible |
 | **Database** | Oracle VM disk (SQLite) + nightly backup | Chinna data (MBs) — SQLite saripothundi |
 
 **Rendu kalipi vaadadam best:** MilesWeb = public face (website, WP, ads) · Oracle = engine room
-(portal, bot, watchdog). Rendu okkati iddamani lera — MilesWeb lone anni pani cheyyagalavu
-(portal WSGI tho: `DEPLOY_MILESWEB.md`), kaani bot heavy runs + 24×7 portal ki Oracle VM
+(bot, watchdog, backups). Rendu okkati iddamani lera — MilesWeb lone anni pani cheyyagalavu
+(cron-only: `DEPLOY_MILESWEB.md`), kaani heavy research runs + instant approvals ki Oracle VM
 comfortable.
 
 ---
@@ -46,22 +46,21 @@ chinna paid VPS.
      Boot volume : 50 GB (200 GB varaku free)
      SSH key : mee public key add cheyandi
 3. Networking → Security List → Ingress rules:
-     80/tcp 0.0.0.0/0   (HTTP → Caddy redirect)
-     443/tcp 0.0.0.0/0  (HTTPS)
-     ⛔ 8080/22 ni public ga open cheyyakandi (22 ni mee IP ki matrame)
+     80/tcp 0.0.0.0/0   (HTTP — static site vadithe)
+     443/tcp 0.0.0.0/0  (HTTPS — static site vadithe)
+     ⛔ 22 ni mee IP ki matrame open cheyandi
 4. SSH: ssh ubuntu@<public-ip>
      sudo apt update && sudo apt install -y git
      git clone https://github.com/charanpendota98-prog/Automation_charan1.git
      cd Automation_charan1
-     sudo DOMAIN=portal.studentup.in bash deploy/install-vps.sh
-5. Watchdog ON (crash-proof):
-     sudo cp deploy/su-watchdog.sh /opt/studentup/deploy/ && sudo chmod +x /opt/studentup/deploy/su-watchdog.sh
-     sudo cp deploy/systemd/su-watchdog.service deploy/systemd/su-watchdog.timer /etc/systemd/system/
-     sudo systemctl daemon-reload && sudo systemctl enable --now su-watchdog.timer
+     sudo DOMAIN=studentup.in bash deploy/install-vps.sh
+5. Watchdog ON (crash-proof) — installer automatic ga enable chestundi:
+     sudo systemctl status studentup-bot.timer su-watchdog.timer
 6. Verify:
-     curl -s https://portal.studentup.in/healthz
-     sudo systemctl status exam-portal su-watchdog.timer
-     python run.py --deploy-check
+     sudo -u studentup nano /opt/studentup/.env   # WP_* / GEMINI_* / TELEGRAM_*
+     sudo systemctl start studentup-bot
+     sudo journalctl -u studentup-bot -n 50
+     sudo -u studentup /opt/studentup/.venv/bin/python run.py --deploy-check
 ```
 Ubuntu ARM lo iptables rules kuda kavali (Oracle images lo default deny untundi):
 ```
@@ -70,27 +69,26 @@ sudo iptables -I INPUT 6 -m state --state NEW -p tcp --dport 443 -j ACCEPT
 sudo netfilter-persistent save
 ```
 
-## 3) "Crash avvakunda" — 7 layers (code lo unnayi)
+## 3) "Crash avvakunda" — 6 layers (code lo unnayi)
 
 | # | Layer | Enti chestundi |
 |---|---|---|
-| 1 | **systemd `Restart=always`** | Process chachina 3 sec lo automatic malli start (`deploy/exam-portal.service`) |
-| 2 | **Watchdog timer (2 min)** | `/healthz` check → 3 consecutive failures ayyaka **restart + Telegram alert**; disk/memory/load/TLS expiry alerts (`deploy/su-watchdog.sh`) |
-| 3 | **Health endpoint** | `/healthz` → `{"ok":true}` — monitor ki, watchdog ki okkate source of truth |
-| 4 | **Alerts (throttled)** | 30 min lo okkate alert — spam ledu, kaani crash gurtu thappadu |
-| 5 | **Auto-heal proof** | Watchdog ni live test chesanu: fail count → `DRY-RUN: would restart exam-portal` → `portal recovered` |
-| 6 | **Backups + prune** | `deploy/backup.sh` nightly DB/state backup; `tools/prune_media.py --days 30 --apply` disk clean; SQLite `VACUUM` |
-| 7 | **Graceful degradation** | Poll/portal down unte website "⚠️ పోల్ అందుబాటులో లేదు" ani chupistundi — page crash avvadu |
+| 1 | **systemd timers (`Persistent=true`)** | Missed runs catch-up (reboot tarvata kuda bot run avutundi) |
+| 2 | **Watchdog timer (2 min)** | Website HTTP check + bot freshness (`state.db` 26h stale?) + disk/memory/load/TLS expiry → Telegram alerts (`deploy/su-watchdog.sh`) |
+| 3 | **Alerts (throttled)** | 30 min lo okkate alert — spam ledu, kaani crash gurtu thappadu |
+| 4 | **Auto-check proof** | Watchdog ni live test chesanu: dead site → `ALERT site_down`; stale bot → `ALERT bot_stale` (`tests/v51_test.py`) |
+| 5 | **Backups + prune** | `deploy/backup.sh` nightly DB/state backup; `tools/prune_media.py --days 30 --apply` disk clean; SQLite `VACUUM` |
+| 6 | **Graceful degradation** | Daily question/quiz 100% browser JS — server ledu kabatti down ayye scope ledu |
 
-Ivi raka **uptime monitor** add cheyandi (free): UptimeRobot / BetterStack → `https://portal.studentup.in/healthz`
-ki 1-minute checks + email/Telegram alerts. Idi external check (VM motham down aithe kuda telustundi).
+Ivi raka **uptime monitor** add cheyandi (free): UptimeRobot / BetterStack → `https://studentup.in/`
+ki 5-minute checks + email/Telegram alerts. Idi external check (VM motham down aithe kuda telustundi).
 
 ## 4) Money: ads + sponsors (highest, kaani policy-safe)
 
 ```
 Revenue lines (ivi matrame):
   1. Google AdSense  → ADSENSE_APPROVED=1 ayyaka auto ON (max 1 personal ad/post)
-  2. Direct sponsors → admin console → "📢 ప్రకటనలు" → college banner / coaching /
+  2. Direct sponsors → ads/inventory.json → college banner / coaching /
                        shop / service / outsourcing partner
   3. High-value pillars (highest CPC/session value): Govt Jobs · Upcoming Exams ·
      Current Affairs · Scholarships · Results
@@ -105,17 +103,17 @@ Revenue lines (ivi matrame):
 * **Never**: "click cheyandi" ani adi, incentive clicks, ad ni content laaga dhaachesi
 
 **Nijam:** ivi reach + CTR + sponsor value penchutayi — kaani **revenue, ranking, AdSense approval
-eki guarantee ledu**. Final numbers mee AdSense/Search Console lo ne. (Ee doc lo unna 5 gates +
+ki guarantee ledu**. Final numbers mee AdSense/Search Console lo ne. (Ee doc lo unna gates +
 watchdog mistakes ni taggistayi, magic cheyyavu.)
 
 ## 5) Edaina inkedi kavali ante
 
 | Situation | Recommendation |
 |---|---|
-| Chinna start, tight budget | MilesWeb lone anni (`DEPLOY_MILESWEB.md` — WSGI portal + cron) |
-| Portfolio/platform build | MilesWeb (website+WP) + Oracle VM (portal + bot + watchdog) ← **recommended** |
-| Students exam concurrent — 100+ same time | Oracle PAYG 4 OCPU/24 GB leda ₹500/నెల VPS; SQLite → Postgres ki move |
+| Chinna start, tight budget | MilesWeb lone anni (`DEPLOY_MILESWEB.md` — cron-only bot) |
+| Portfolio/platform build | MilesWeb (website+WP) + Oracle VM (bot + watchdog + backups) ← **recommended** |
+| Heavy traffic / big research jobs | Oracle PAYG 4 OCPU/24 GB leda ₹500/నెల VPS |
 | Zero-maintenance | Website static ga MilesWeb, bot GitHub Actions (free, kaani 15–45 min delay + default-branch rule) |
 
 ---
-*Last updated: v51 (2026-09-18) · watchdog live-tested (dry-run auto-heal) · free-tier limits verified against 2026 sources.*
+*Last updated: v74 (2026-09-19) · cron-only bot · watchdog live-tested (dead-site + stale-bot alerts) · free-tier limits verified against 2026 sources.*

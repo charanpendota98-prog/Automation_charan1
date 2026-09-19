@@ -54,9 +54,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<button type="button" class="iconbtn" id="searchbtn" aria-label="Search" aria-expanded="false" aria-controls="searchpanel">🔍</button>
 			<button type="button" class="iconbtn" id="theme" aria-label="Dark mode" aria-pressed="false">☾</button>
 			<button type="button" class="menubtn" id="menubtn" aria-label="Menu" aria-expanded="false" aria-controls="mpanel">☰</button>
-			<?php if ( get_option( 'studentup_exam_url' ) ) : ?>
-				<a class="callbtn" href="<?php echo esc_url( (string) get_option( 'studentup_exam_url' ) ); ?>">🎓 Online Exam</a>
-			<?php endif; ?>
 		</div>
 	</div>
 	<div class="searchpanel" id="searchpanel" hidden>
@@ -104,10 +101,7 @@ studentup_breaking_ticker();
 			)
 		);
 	}
-	if ( get_option( 'studentup_exam_url' ) ) :
-		?>
-		<a class="mcta" href="<?php echo esc_url( (string) get_option( 'studentup_exam_url' ) ); ?>">🎓 Online Exams</a>
-	<?php endif; ?>
+	?>
 	<div class="mlabel">Social</div>
 	<a href="https://wa.me/919999999999" target="_blank" rel="noopener">WhatsApp</a>
 	<a href="https://t.me/studentup_in" target="_blank" rel="noopener">Telegram</a>

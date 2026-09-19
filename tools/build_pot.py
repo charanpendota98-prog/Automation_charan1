@@ -10,6 +10,7 @@ Run: python tools/build_pot.py            (writes wordpress-theme/studentup/lang
 """
 from __future__ import annotations
 
+import os
 import re
 from datetime import datetime, timezone
 from pathlib import Path
@@ -50,14 +51,32 @@ def extract() -> list:
     return sorted(found.items(), key=lambda kv: kv[0][0].lower())
 
 
+def _theme_version() -> str:
+    """style.css header nunchi version (build output version tho sync)."""
+    m = re.search(r"^Version:\s*(\S+)", (THEME / "style.css").read_text(encoding="utf-8"), re.M)
+    return m.group(1) if m else "1.0.0"
+
+
+def _stamp() -> str:
+    """Deterministic POT-Creation-Date: SOURCE_DATE_EPOCH unte adhi, lekapote
+    theme PHP files lo newest mtime (content marakapote output byte-identical)."""
+    epoch = os.environ.get("SOURCE_DATE_EPOCH")
+    if epoch and epoch.strip().isdigit():
+        dt = datetime.fromtimestamp(int(epoch.strip()), tz=timezone.utc)
+    else:
+        newest = max((p.stat().st_mtime for p in THEME.rglob("*.php")), default=0)
+        dt = datetime.fromtimestamp(newest, tz=timezone.utc)
+    return dt.strftime("%Y-%m-%d %H:%M+0000")
+
+
 def render(entries: list) -> str:
-    stamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M+0000")
+    stamp = _stamp()
     out = [
         '# Copyright (C) 2026 StudentUp',
         '# This file is distributed under the GNU GPL v2 or later.',
         'msgid ""',
         'msgstr ""',
-        '"Project-Id-Version: StudentUp 1.3.0\\n"',
+        f'"Project-Id-Version: StudentUp {_theme_version()}\\n"',
         '"Report-Msgid-Bugs-To: https://studentup.in/\\n"',
         f'"POT-Creation-Date: {stamp}\\n"',
         '"MIME-Version: 1.0\\n"',

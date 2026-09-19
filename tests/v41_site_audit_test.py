@@ -391,44 +391,52 @@ print("   ✔ audit twice = same findings · clean input = zero findings")
 # ------------------------------------------------------------------ §15
 
 section(15, "Deployment pack (deploy/ + DEPLOY.md + --deploy-check)")
-arts = ["deploy/exam-portal.service", "deploy/studentup-bot.service",
-        "deploy/studentup-bot.timer", "deploy/Caddyfile", "deploy/nginx-exam.conf",
-        "deploy/backup.sh", "deploy/install-vps.sh", "deploy/Dockerfile",
-        "deploy/docker-compose.yml", "DEPLOY.md"]
+# v74: exam portal ledu → bot-only artifacts (systemd timer / Docker loop / cron)
+arts = ["deploy/studentup-bot.service", "deploy/studentup-bot.timer",
+        "deploy/Caddyfile", "deploy/backup.sh", "deploy/install-vps.sh",
+        "deploy/Dockerfile", "deploy/docker-compose.yml", "deploy/bot-loop.sh",
+        "DEPLOY.md", "crontab.example"]
 for a in arts:
     path = ROOT / a
     assert path.exists(), f"{a} ledu"
     assert path.stat().st_size > 200, f"{a} chala chinnadi"
-unit = (ROOT / "deploy/exam-portal.service").read_text(encoding="utf-8")
-assert "ExecStart=" in unit and "--exam-portal" in unit and "Restart=always" in unit
-assert "--exam-host 127.0.0.1" in unit, "portal localhost lo bind avvali (proxy venaka)"
+assert not (ROOT / "deploy" / "exam-portal.service").exists(), "portal unit poyundali"
+assert not (ROOT / "deploy" / "nginx-exam.conf").exists(), "nginx-exam poyundali"
+unit = (ROOT / "deploy/studentup-bot.service").read_text(encoding="utf-8")
+assert "ExecStart=" in unit and "run.py" in unit and "Type=oneshot" in unit
 assert "ReadWritePaths" in unit and "NoNewPrivileges" in unit, "hardening kavali"
 compose = (ROOT / "deploy/docker-compose.yml").read_text(encoding="utf-8")
-assert "healthcheck" in compose and "/healthz" in compose and "unless-stopped" in compose
+assert "healthcheck" in compose and "unless-stopped" in compose
+assert "STATE_PATH" in compose and "8080" not in compose, "container lo ports undakoodadu"
+docker = (ROOT / "deploy/Dockerfile").read_text(encoding="utf-8")
+assert "bot-loop.sh" in docker and "EXPOSE 8080" not in docker
 timer = (ROOT / "deploy/studentup-bot.timer").read_text(encoding="utf-8")
 assert "OnCalendar=hourly" in timer and "Persistent=true" in timer
 caddy = (ROOT / "deploy/Caddyfile").read_text(encoding="utf-8")
-assert "reverse_proxy 127.0.0.1:8080" in caddy and "Strict-Transport-Security" in caddy
+assert "file_server" in caddy and "Strict-Transport-Security" in caddy
+assert "reverse_proxy" not in caddy, "proxy backend ledu (static site matrame)"
 deploy_md = (ROOT / "DEPLOY.md").read_text(encoding="utf-8")
 for path_name in ("Path A", "Path B", "Path C", "Backups", "Security checklist"):
     assert path_name in deploy_md, f"DEPLOY.md lo '{path_name}' ledu"
+assert "exam portal" not in deploy_md.lower(), "DEPLOY.md lo portal vestige"
 # bash scripts syntax-valid a undali
-for sh in ("deploy/backup.sh", "deploy/install-vps.sh"):
+for sh in ("deploy/backup.sh", "deploy/install-vps.sh",
+           "deploy/su-watchdog.sh", "deploy/bot-loop.sh"):
     p2 = subprocess.run(["bash", "-n", str(ROOT / sh)], capture_output=True, text=True)
     assert p2.returncode == 0, f"{sh} syntax error: {p2.stderr[:200]}"
-# deploy-check module nijamga exam portal boot chesi /healthz hit chestundi
+# deploy-check module nijamga bot imports + artifacts verify chestundi
 from autoblog import deploy_check  # noqa: E402
 for chk in (deploy_check.check_python(), deploy_check.check_deps(),
-            deploy_check.check_files(), deploy_check.check_writable()):
+            deploy_check.check_files(), deploy_check.check_writable(),
+            deploy_check.check_imports(), deploy_check.check_cron_hint(),
+            deploy_check.check_deploy_artifacts()):
     assert chk["status"] == "ok", chk
-boot = deploy_check.check_exam_portal(0)
-assert boot["status"] == "ok", boot
-assert "healthz ok" in boot["detail"]
+assert "healthz" not in str(deploy_check.run_deploy_check.__code__.co_names)
 help2 = subprocess.run([sys.executable, str(ROOT / "run.py"), "--help"],
                        capture_output=True, text=True, timeout=120).stdout
-assert "--deploy-check" in help2 and "--deploy-port" in help2
-print("   ✔ 10 deploy artifacts + systemd hardening + bash syntax + real boot "
-      "(/healthz) + CLI")
+assert "--deploy-check" in help2 and "--approval-poll" in help2
+assert "--exam-portal" not in help2 and "--deploy-port" not in help2
+print("   ✔ 10 bot-only artifacts + hardening + bash syntax + import smoke + CLI")
 
 print("\n" + "=" * 62)
 print("  ALL v41 SITE AUDIT TESTS PASSED ✔")

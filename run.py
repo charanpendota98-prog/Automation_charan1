@@ -32,10 +32,9 @@
                                                    preview/data/breaking.json → site)
   python run.py --breaking-from F.json       v59: feed ni JSON nunchi (offline/test)
   python run.py --score-post file.html --score-keyword "ssc cgl 2026"
-  python run.py --exam-portal              v39: college EXAM PORTAL (students +
-                                           admin START/CLOSE, auto-close, results)
-  python run.py --exam-portal-demo         v39: sample exam tho portal start
-  python run.py --exam-portal-test-channels v39: Telegram/webhook test ping
+  python run.py --approval-poll            v74: Telegram approvals — okka poll
+                                           pass (cron mode; shared hosting lo
+                                           */5 min ki; daemon avasaram ledu)
   python run.py --site-audit               v41: full site audit (junk content,
                                            wrong category, PII, tags, timezone)
   python run.py --site-audit-fix           v41: audit + safe fixes (dry-run)
@@ -48,8 +47,9 @@
     "TOPIC" --research-year 2027          + confidence report (--deep = NotebookLM
   python run.py --deep ... --notebooklm-          passes 6-8; --notebooklm-brief FILE
     brief FILE                              merges cited NotebookLM output)
-  python run.py --deploy-check            v41: deploy readiness (deps/env/disk/port +
-                                           exam portal boot + /healthz) — server SSH lo
+  python run.py --deploy-check            v41: deploy readiness (python/deps/files/
+                                           disk/env + artifacts) — server SSH lo
+                                           (v74: cron-only bot; portal boot ledu)
   python run.py --test-all                v41: ANNI suites okate command tho
   python run.py --test-all --test-only v41  v41: okka suite matrame
   python run.py --notify-test test Telegram/WhatsApp notifications
@@ -58,7 +58,8 @@
 Review flow (recommended): DEFAULT_POST_STATUS=draft in .env
   - Posts WordPress lo DRAFT lo vastayi
   - Telegram ki ✅ Publish / 🗑️ Delete buttons tho message vastundi
-  - Approval bot: python -m autoblog.approval_bot  (systemd lo 24/7 run avtundi)
+  - Approval bot VPS lo: python -m autoblog.approval_bot  (systemd lo 24/7 run avtundi)
+  - Approval shared hosting lo: cron → */5 * * * * .../python run.py --approval-poll
 """
 from autoblog.main import main
 
