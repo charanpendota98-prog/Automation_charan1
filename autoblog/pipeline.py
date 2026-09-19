@@ -275,6 +275,17 @@ def _rankmath_gate(article: dict, category: str) -> dict:
         except Exception as exc:  # noqa: BLE001 — refine best-effort, publish aapadu
             log.warning("Refine round %d failed (%s)", rnd, exc)
             break
+        # v85: anti-truncation — improved <70% length = sections lost
+        # (refine context cut valla) → reject, original keep.
+        # Threshold 2000: real drafts 9000+ chars; test fixtures ~1000
+        # (tiny fake-refines legit — guard real-posts ke).
+        orig_len = len(article.get("content_html", "") or "")
+        new_len = len(improved.get("content_html", "") or "")
+        if orig_len > 2000 and new_len < orig_len * 0.7:
+            log.warning("Refine truncated (%d → %d chars) — original keep",
+                        orig_len, new_len)
+            article["_fact"] = facts_before
+            break
         rm2 = validator.rankmath_strict(improved, improved.get("content_html", ""))
         facts_after = (validator.fact_guard(improved.get("content_html", ""),
                                             article["_source_texts"])

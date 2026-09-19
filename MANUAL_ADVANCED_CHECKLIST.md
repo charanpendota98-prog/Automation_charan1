@@ -1433,3 +1433,37 @@ python tools/build_wp_theme.py               # zip LAST (ads/options/pwa/perf/br
 python run.py --readiness                    # 100/100
 python -m pyflakes autoblog tools tests run.py  # 0 findings
 ```
+
+## PART 43 — v85: AUTO-BLOG PREP DEEP AUDIT (any URL + any length)
+
+**Brief:** Telegram-bot URL→post eme URL + entha lengthy ayina success;
+prompts correct/advanced; 100% RankMath/SEO/keywords. Fetch→prompt→parse→
+refine→bot full-path real-run audit (local HTTP fixtures + monkeypatch).
+
+**Fixes (9):**
+1. `sources.py` — `<table>` rows `TABLE:` lines + h2/h3 `[H]` + cap 18000
+   (vacancy/fee/age facts drop = hallucination cause)
+2. `gemini_client.py` — `JSON_SCHEMA_CONTRACT` (10 required keys, recruitment
+   object, empty-string-NOT-ok) both generate paths ki wire
+3. `gemini_client.py` — `_parse_json` repair (trailing commas/control chars)
+   + `_normalize_keys` aliases + faq `{q,a}`/`[q,a]` unify
+4. `sources.py` — JS-empty pages ki JSON-LD `articleBody` fallback
+   (decompose MUNDU capture); non-HTML/404 honest ValueError
+5. `refine_article` context 20000 + `_rankmath_gate` anti-truncation
+   (<70% length = reject, original keep)
+6. `rm100.fix_slug` ASCII-only (pure-Telugu keyword = untouched)
+7. `approval_bot.on_message` — mid-text URL extract (`https?://\S+`)
+8. `approval_bot` — pipeline daemon thread (polling freeze fix) +
+   honest exception message user ki
+9. `tests/v84_test.py` — `test_first_para_skips_ads` registration miss fix
+
+**Lesson:** same-file parallel edits race (last-write-wins) — sequential only.
+
+VERIFY (v85)
+```
+python tests/v85_test.py                     # 9/9 checks
+python run.py --test-all                     # 66/66 suites
+node tests/runtime/jsdom_runtime_test.js     # 164/164 browser checks
+python run.py --readiness                    # 100/100
+python -m pyflakes autoblog tools tests run.py  # 0 findings
+```

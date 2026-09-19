@@ -239,7 +239,7 @@ def test_docs_v84():
     go_live = (ROOT / "GO_LIVE_CHECKLIST.md").read_text(encoding="utf-8")
     assert "### v84" in readme and "65/65" in readme
     assert "PART 42" in manual and "v84" in manual and "65/65" in manual
-    assert "65/65" in go_live
+    assert "66/66" in go_live
     for name, txt in (("README", readme), ("MANUAL", manual)):
         assert "164/164" in txt, f"{name} lo jsdom claim poyindi"
     print("  docs: README v84 + MANUAL PART 42 + 65/65 ✔")
@@ -257,6 +257,7 @@ TESTS = [
     ("date noindex + stand-down", test_seo_needles),
     ("TOC idempotent", test_toc_idempotent),
     ("update rm100 + hour-claim", test_update_rm100_needle),
+    ("first-para skips ads", test_first_para_skips_ads),  # v85: missing reg fix
     ("docs: v84 + PART 42 + 65/65", test_docs_v84),
 ]
 

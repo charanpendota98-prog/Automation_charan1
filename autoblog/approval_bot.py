@@ -17,6 +17,7 @@ Commands:
 
 import json
 import logging
+import re
 import sys
 import threading
 import time
@@ -125,15 +126,17 @@ class ApprovalBot:
             })
             threading.Thread(target=self.run_update,
                              args=(pid, chat_id, extra), daemon=True).start()
-        elif text.startswith("http://") or text.startswith("https://"):
-            self.handle_source_url(chat_id, text)
+        elif "http://" in text or "https://" in text:
+            # v85: URL ekkada unna (caption/text tho) extract cheskovali
+            m = re.search(r"https?://\S+", text)
+            self.handle_source_url(chat_id, m.group(0) if m else text)
         else:
             self.tg("sendMessage", {"chat_id": chat_id,
                                     "text": "Ardham kaledu 🤔 — /help try cheyandi."})
 
     def handle_source_url(self, chat_id: str, url: str) -> None:
         """User pasted URL -> 100% original rewrite -> draft + buttons."""
-        from . import pipeline, sources as sources_mod
+        from . import sources as sources_mod
 
         url = url.split()[0]  # URL tarvata extra text unte drop
         if not sources_mod.is_valid_source_url(url):
@@ -152,6 +155,12 @@ class ApprovalBot:
                      "complete article + Rank Math 100% SEO\n"
                      "(2-3 nimishalu patinchandi)"),
         })
+        # v85: pipeline thread lo — polling block ayi bot freeze avvadhu
+        threading.Thread(target=self._run_source_pipeline,
+                         args=(chat_id, url), daemon=True).start()
+
+    def _run_source_pipeline(self, chat_id: str, url: str) -> None:
+        from . import pipeline
         try:
             mock = not config.GEMINI_API_KEY
             pipeline.create_from_source(url, mock=mock)
@@ -163,7 +172,8 @@ class ApprovalBot:
             log.exception("Source URL processing failed")
             self.tg("sendMessage", {
                 "chat_id": chat_id,
-                "text": f"❌ Source process cheyaledu: {str(exc)[:200]}",
+                "text": ("⚠️ Post create cheyalekapoyanu — "
+                         f"{type(exc).__name__}: {exc}\nMalli try cheyandi 🙏"),
             })
 
     def on_callback(self, cb: dict) -> None:

@@ -165,10 +165,10 @@ def test_docs_v82() -> None:
     go_live = (ROOT / "GO_LIVE_CHECKLIST.md").read_text(encoding="utf-8")
     assert "### v82" in readme and "65/65" in readme
     assert "PART 41" in manual and "v82" in manual and "65/65" in manual
-    assert "65/65" in go_live
+    assert "66/66" in go_live
     for name, txt in (("README", readme), ("MANUAL", manual)):
         assert "164/164" in txt, f"{name} lo jsdom claim poyindi"
-    print("  docs: README v82 + MANUAL PART 41 + 65/65 ✔")
+    print("  docs: README v82 + MANUAL PART 41 + 66/66 ✔")
 
 
 TESTS = [
@@ -180,7 +180,7 @@ TESTS = [
     ("crontab deploy lines", test_crontab_deploy_lines),
     ("approval fail-closed", test_approval_fail_closed),
     ("rm100 reaches TRUE 100", test_rm100_reaches_100),
-    ("docs: v82 + PART 41 + 65/65", test_docs_v82),
+    ("docs: v82 + PART 41 + 66/66", test_docs_v82),
 ]
 
 

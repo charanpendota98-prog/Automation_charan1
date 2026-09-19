@@ -503,6 +503,24 @@ python run.py --traffic-sessions         # advanced control
 python run.py --traffic-views            # advanced control
 ```
 
+### v85 — AUTO-BLOG PREP DEEP AUDIT (any URL + any length → 9 real fixes)
+
+**Mee brief:** "inka audit cheyu — auto-blog prep lo chala bugs; prompt
+correct/advanced, Telegram URL→post eme URL + entha lengthy ayina success,
+100% RankMath/SEO/keywords". Fetch→prompt→parse→refine→bot full path audit.
+
+**Real fixes (9):** source `<table>`+headings drop (vacancy/fee facts LLM
+invent chesedi!) + 6000→18000 chars · **JSON schema contract** (content_html
+key e prompt lo ledu — Empty-field fail loops!) · _parse_json repair
+(trailing commas/control chars) + key aliases (content/html/body→content_html)
++ faq shapes · JS-site **JSON-LD fallback** (articleBody recover) · refine
+context 20000 + **anti-truncation guard** (<70% = reject) · slug ASCII-only
+(Telugu %E0.. slugs vaddu) · mid-text URL extract · bot sync-freeze fix
+(pipeline thread + honest error message) · v84 test registration miss.
+
+**Proof:** `--test-all` **66/66** (v85_test.py kotha: 9 checks) · jsdom
+**164/164** · readiness **100/100** · theme-audit **0/0** · theme **1.7.2**.
+
 ### v84 — FULL BUG HUNT (money + ads + approvals → 11 real fixes)
 
 **Mee brief:** "inka chala bugs undochu — anni fix cheyali, lekapothe amount/

@@ -211,14 +211,19 @@ def fix_slug(article: dict) -> bool:
     kw = _kw(article)
     if not kw:
         return False
-    toks = [t for t in re.sub(r"[^\w\s-]", " ", kw.lower()).split() if len(t) > 2]
+    # v85: ASCII-only tokens (Telugu keyword → %E0.. URL-encoded slug vaddu;
+    # English kebab-case = share/CTR safe). LLM slug English unte touch kaadu.
+    toks = [t for t in re.sub(r"[^a-z0-9\s-]", " ", kw.lower()).split() if len(t) > 2]
     slug = (article.get("slug") or "").lower()
     need = min(2, len(toks)) if toks else 1
     have = sum(1 for t in toks if t in slug)
     if slug and have >= need:
         return False
-    prefix = "-".join(toks) or re.sub(r"[^\w]+", "-", kw.lower()).strip("-")
-    article["slug"] = re.sub(r"-{2,}", "-", f"{prefix}-{slug}").strip("-")[:70]
+    prefix = "-".join(toks) or re.sub(r"[^a-z0-9]+", "-", kw.lower()).strip("-")
+    if not prefix:
+        return False  # pure-Telugu keyword — existing slug ne keep (corrupt vaddu)
+    slug_ascii = re.sub(r"[^a-z0-9-]+", "-", slug).strip("-")
+    article["slug"] = re.sub(r"-{2,}", "-", f"{prefix}-{slug_ascii}").strip("-")[:70]
     return True
 
 
