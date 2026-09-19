@@ -210,7 +210,7 @@ ARTICLE STRUCTURE (HTML):
 - Use <strong> for key phrases; include one simple <table> (3-5 rows) if a comparison or summary table fits naturally.
 - End with a short conclusion paragraph and then an FAQ section: 3 <h3> questions each followed by a short answer paragraph.
 - Final paragraph: a friendly call-to-action in Telugu asking readers to share the article and ask doubts in comments.
-- Prefer a complete, readable article over a word-count target; usually 1500-2200 words when the topic warrants it. Use ONLY these HTML tags: h2 h3 p ul ol li strong em table thead tbody tr th td a. No <html>/<head>/<body>, no markdown, no code fences.
+- Prefer a complete, readable article over a word-count target; usually 1500-2200 words when the topic warrants it. Use ONLY these HTML tags: h2 h3 p ul ol li strong em table thead tbody tr th td a blockquote pre code. No <html>/<head>/<body>, no markdown, no code fences.
 
 ALSO RETURN:
 - slug: English kebab-case URL slug for this post ( transliterate the topic, e.g. "ssc-cgl-preparation-guide" ), max 60 chars, lowercase, hyphens only.
@@ -254,7 +254,7 @@ ACCURACY RULES:
 - Keep only facts from the source + well-known real information. Do NOT invent dates/deadlines/vacancy numbers beyond what the source states.
 - Official website links: mention only well-known real portals.
 
-ARTICLE STRUCTURE (HTML only — h2 h3 p ul ol li strong em table thead tbody tr th td a):
+ARTICLE STRUCTURE (HTML only — h2 h3 p ul ol li strong em table thead tbody tr th td a blockquote pre code):
 - 2-3 intro paragraphs (focus keyword in FIRST paragraph).
 - <h2> sections: overview, eligibility/details, benefits, step-by-step how to apply/check (as lists), documents required, tips & common mistakes, one <table> summary.
 - Conclusion paragraph + FAQ section (4 <h3> questions with answers).
@@ -294,7 +294,7 @@ RESEARCH AND VALUE STRATEGY (very important):
 - Prefer concise, complete answers over a fixed word count; usually 1500-2200 words when the topic warrants it.
 - LANGUAGE: TELUGU SCRIPT with natural English terms (scholarship, apply, eligibility, official website, vacancy, notification...) like Telugu news sites.
 
-ARTICLE STRUCTURE (HTML only — h2 h3 p ul ol li strong em table thead tbody tr th td a):
+ARTICLE STRUCTURE (HTML only — h2 h3 p ul ol li strong em table thead tbody tr th td a blockquote pre code):
 - 2-3 intro paragraphs (focus keyword in FIRST paragraph).
 - <h2> sections for each major area + step-by-step process as lists + at least one <table>.
 - Conclusion + FAQ (<h3> questions — must match the faq JSON you return).

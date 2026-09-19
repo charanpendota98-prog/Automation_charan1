@@ -522,7 +522,7 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
         log.debug("publish_article skip: %s", exc)
 
     # --- featured image (alt text lo focus keyword) ---
-    image_path = Path(config.OUTPUT_DIR / "images" / f"{article['slug']}.jpg")
+    image_path = Path(config.OUTPUT_DIR / "images" / f"{article['slug']}.webp")
     media_id = None
     if config.IMAGE_ENABLED:
         fk = article.get("focus_keyword") or article["banner_text"]

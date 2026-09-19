@@ -359,4 +359,17 @@
       event_label: href.slice(0, 200)
     });
   });
+
+  /* ---------- v81 (§37): site-search tracking (GA4 gated) ---------- */
+  document.addEventListener("submit", function (e) {
+    if (typeof window.gtag !== "function") return;
+    var f = e.target && e.target.tagName === "FORM" ? e.target : null;
+    if (!f) return;
+    var q = f.querySelector('input[name="s"]');
+    if (!q || !q.value) return;
+    window.gtag("event", "search", {
+      event_category: "engagement",
+      event_label: String(q.value).slice(0, 100)
+    });
+  });
 })();

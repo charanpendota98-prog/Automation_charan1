@@ -503,6 +503,35 @@ python run.py --traffic-sessions         # advanced control
 python run.py --traffic-views            # advanced control
 ```
 
+### v81 — ULTIMATE SPEC GAP CLOSE (99 sections verify → 8 real gaps fix)
+
+**Mee brief:** 99-section Ultimate Spec — FIRST AUDIT → PLAN → IMPLEMENT →
+TEST → VERIFY. v80 overlap skip chesi kotha areas verify chesamu:
+
+**Already covered (proof):** TOC smooth+dup-safe ✓ · JobPosting
+future-validThrough-only ✓ · quiz analysis (✔/✘/skip/%/streak/review) ✓ ·
+nav/footer menus ✓ · PWA offline ✓ · RSS (WP) · images slug-named+alt ✓ ·
+revisions/scheduled (WP) · email→TG/WA channels ✓ · env secrets ✓.
+
+**v81 lo fix chesina 8 NIJAMAINA gaps:**
+
+| # | Section | Gap → Fix |
+| 1 | §72 | `?qual=` filter URLs indexable → noindex,follow (category canonical only) |
+| 2 | §2 | Sanitizer strips blockquote/pre/code → keep (callouts + code); iframe/video/script OUT (XSS) + prompt 3 spots |
+| 3 | §7 | Mobile tables overflow → block+scroll-x CSS + pre/code styles + dark |
+| 4 | §22 | JPEG only → **WebP emit** (smaller, PIL-verified) + .jpg compat |
+| 5 | §32/§60 | Orphan detection ledu → `--orphans` sitemap crawl (inbound-0 report) |
+| 6 | §65 | Admin health widget → published/drafts/expiring/expired/redirects |
+| 7 | §37 | Search tracking ledu → GA4 `search` event (gtag-gated) |
+| 8 | §76 | HSTS option (default OFF + is_ssl guard); CSP deliberate skip (AdSense risk) |
+
+**Honest NOT IMPLEMENTED (spec §95 format):** mock-test series (needs
+accounts/infra — roadmap; daily quiz + analysis live) · server page-cache
+(hosting) · CSP header (break risk) · GSC-data dashboard (needs OAuth/API).
+
+**Proof:** `--test-all` **63/63** (v81_test.py kotha: 10 checks) · jsdom
+**164/164** · readiness **100/100** · php-lint **34/34** · theme **1.7.2**.
+
 ### v80 — MASTER PROMPT GAP CLOSE (50 phases verify → 7 real gaps fix)
 
 **Mee brief:** 50-phase Production Master Prompt + 5 mandatory additions —

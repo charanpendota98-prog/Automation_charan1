@@ -122,6 +122,13 @@ function studentup_robots_thin( $robots ) {
 		$robots['nofollow'] = true;
 		unset( $robots['index'], $robots['follow'] );
 	}
+	if ( isset( $_GET['qual'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification
+		// v81 (§72): filter combos ki independent search value ledu —
+		// canonical category page kevalam index (duplicates ledu).
+		$robots['noindex'] = true;
+		$robots['follow']  = true;
+		unset( $robots['index'] );
+	}
 	return $robots;
 }
 add_filter( 'wp_robots', 'studentup_robots_thin' );

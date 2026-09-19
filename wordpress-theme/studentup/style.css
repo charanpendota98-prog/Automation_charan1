@@ -425,6 +425,14 @@ body.dark .su-tags{color:#c3d3ea}
 .post-nav a:hover{text-decoration:underline}
 body.dark .post-nav a{color:#9ec4ff}
 
+/* ================= v81: mobile tables + code blocks ================= */
+.article-content table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100%}
+.article-content pre{background:#0f2e62;color:#e7f0ff;border-radius:10px;padding:12px 14px;overflow-x:auto;font-size:13.5px;line-height:1.6}
+.article-content code{font-family:ui-monospace,Consolas,monospace}
+.article-content p code{background:#eef3fc;padding:1px 6px;border-radius:6px;font-size:.9em}
+body.dark .article-content pre{background:#0a1428}
+body.dark .article-content p code{background:#1a2547;color:#d7e6ff}
+
 /* ================= v80: subcats + 404 recovery + expired ================= */
 .su-subcats{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
 .su-subcats a{display:inline-block;background:#f2f7ff;border:1px solid #dbe6f7;border-radius:999px;padding:5px 14px;font-size:13px;color:#1c4d8f;text-decoration:none}

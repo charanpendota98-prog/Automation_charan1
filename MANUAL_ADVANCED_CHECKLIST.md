@@ -157,7 +157,7 @@ Message lo reason undi — exact ga fix cheyandi:
 ## ⚠️ Honest note
 Perfect = **machine gates + human 5-min verify**. Gates mistakes ramigadu (conflicts/stale/dates/originality), kaani official numbers mee mata tho final check — AdSense/Google/reputation thartham lo idi matrame safety.
 
-*Last updated: v80 (2026-09-19) — MASTER PROMPT GAP CLOSE (301 manager · archive H1+subcats · 404 recovery · GA4/GSC · expired notice · SEO fallback · link checker): 62/62 suites · 164/164 runtime · readiness 100/100 · code audit 0/0 · parity 0/0 · theme audit 0/0 · theme v1.7.2*
+*Last updated: v81 (2026-09-19) — ULTIMATE SPEC GAP CLOSE (qual-noindex · rich tags · mobile tables · webp · orphans · health widget · search-track · HSTS): 63/63 suites · 164/164 runtime · readiness 100/100 · code audit 0/0 · parity 0/0 · theme audit 0/0 · theme v1.7.2*
 
 ## PART 26 — v67: DEEP AUDIT (expert/BA) + TOP-THEME HARDENING + 6/6 REVENUE SLOTS
 
@@ -1321,5 +1321,45 @@ VERIFY (v80)
 python run.py --test-all                     # 62/62 suites (v80_test.py kotha: 12 checks)
 python run.py --check-links <post-URL>       # dead outbound report
 node tools/php_lint.js                       # 33/33 · python tools/build_wp_theme.py (zip LAST)
+python run.py --readiness                    # 100/100 · python run.py --guardian
+```
+
+## PART 40 — v81: ULTIMATE SPEC GAP CLOSE (99-section audit)
+
+**Mee brief (2026-09-19):** Ultimate master spec — audit→plan→implement→
+test→verify. v80-covered skip; kotha/expand areas (blog-advanced · job
+entity · exam chain · mock tests · images · orphans · dashboards ·
+filters · i18n · CSP · observability) verify.
+
+COVERED (proof, no code): TOC smooth+dup-ids · JobPosting future-only+
+org-guard (expired=past validThrough → Google drops ✓) · quiz analysis
+chips+review · menus nav/footer · PWA offline page · RSS WP · images
+slug-name+alt+srcset(WP) · revisions/scheduled WP · alerts=TG/WA ·
+secrets=.env gitignored · scorecard=readiness report.
+
+V81 FIXES (8)
+```
+§72 perf.php: $_GET['qual'] → noindex+follow (v67 pins hold)
+§2  validator ALLOWED_TAGS += blockquote/pre/code (iframe/video/script
+    OUT — WP auto-embed plain URLs) · gemini prompt 3 tag-lists sync
+§7  style.css: .article-content table block+scroll-x · pre/code (+dark)
+§22 image_gen: .webp→WEBP q82 · .jpg→JPEG (compat) · pipeline slug.webp
+§32/60 tools/check_links --orphans SITEMAP (limit 200, inbound-0 report)
+    + run.py --orphans wiring
+§65 inc/health.php dashboard widget: published/drafts/expiring-7d/
+    expired/redirects (counts-only queries) + functions require
+§37 studentup.js: form[name=s] submit → gtag search event (gated)
+§76 hsts_enforce opt (default 0) + is_ssl guard · CSP skip documented
+```
+
+NOT IMPLEMENTED (honest §95): mock-test series (accounts/infra roadmap) ·
+server page-cache (hosting) · CSP (AdSense/GA4 break risk) · GSC-data
+dashboard (OAuth/API post-launch) · Lighthouse run (needs deploy URL).
+
+VERIFY (v81)
+```
+python run.py --test-all                     # 63/63 suites (v81_test.py kotha: 10 checks)
+python run.py --orphans <sitemap.xml>        # orphan pages report
+node tools/php_lint.js                       # 34/34 · python tools/build_wp_theme.py (zip LAST)
 python run.py --readiness                    # 100/100 · python run.py --guardian
 ```

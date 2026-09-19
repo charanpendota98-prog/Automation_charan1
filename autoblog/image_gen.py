@@ -241,8 +241,14 @@ def generate_featured_image(
         _draw_layout(img, draw, w, h, banner_text, category, variant)
 
         out_path.parent.mkdir(parents=True, exist_ok=True)
-        img.convert("RGB").save(str(out_path), "JPEG", quality=86,
-                               optimize=True, progressive=True)
+        # v81 (§22): format follows extension — .webp (small) default for
+        # new posts, explicit .jpg callers (tests/variants) keep JPEG.
+        if str(out_path).lower().endswith(".webp"):
+            img.convert("RGB").save(str(out_path), "WEBP", quality=82,
+                                   method=6)
+        else:
+            img.convert("RGB").save(str(out_path), "JPEG", quality=86,
+                                   optimize=True, progressive=True)
         return out_path
     except Exception:
         log.exception("Featured image generation failed — continuing without image")

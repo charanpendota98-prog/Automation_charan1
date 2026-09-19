@@ -82,6 +82,7 @@ function studentup_option_fields() {
 				'news_sitemap'    => array( 'Google News sitemap (/news-sitemap.xml)', 'check', '1', 'Discover/News ki 48h posts + images' ),
 				'comments_on'  => array( 'Comments ON (engagement + freshness signal)', 'check', '1', 'OFF chesthe post lo comment form render avvadu' ),
 				'security_hardening' => array( 'Security hardening (headers · XML-RPC off · enumeration block)', 'check', '1', 'Default ON — adi 100% safe (REST bot ki impact ledu)' ),
+				'hsts_enforce' => array( 'HSTS enforce (HTTPS only)', 'check', '0', 'v81: SSL live confirm ayyaka matrame ON (HTTP staging lo lock risk)' ),
 				'content_visibility' => array( 'content-visibility (below-fold render skip → fast)', 'check', '1', 'LCP/INP improvement — modern browsers lo mattrame' ),
 				'indexnow_key' => array( 'IndexNow key (hex, 8+ chars)', 'text', '', 'Bot nimpustundi — /<key>.key file automatic ga serve avutundi (Bing/Yandex instant indexing)' ),
 				'redirects_json' => array( '301 redirects (JSON)', 'textarea', '', 'v80: {"/old-url/": "/new-url/"} — slug marina old links 404 kakunda 301 (chain/loop safe, relative paths only)' ),

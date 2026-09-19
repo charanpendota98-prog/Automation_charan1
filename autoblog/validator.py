@@ -15,6 +15,9 @@ log = logging.getLogger("autoblog.validator")
 ALLOWED_TAGS = {
     "h2", "h3", "p", "ul", "ol", "li", "strong", "em",
     "table", "thead", "tbody", "tr", "th", "td", "a",
+    # v81 (§2): callouts (blockquote) + code/pre — iframe/video/script
+    # deliberately OUT (XSS; WP auto-embeds plain URLs instead).
+    "blockquote", "pre", "code",
 }
 
 

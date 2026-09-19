@@ -33,6 +33,7 @@ require_once get_template_directory() . '/inc/pwa.php';
 require_once get_template_directory() . '/inc/cta.php';
 require_once get_template_directory() . '/inc/editor.php';
 require_once get_template_directory() . '/inc/redirects.php';  // v80: 301 redirect manager
+require_once get_template_directory() . '/inc/health.php';     // v81: admin SEO-health widget
 
 /**
  * "Most searched by students" — order okkate source (bot lo autoblog/breaking.py
