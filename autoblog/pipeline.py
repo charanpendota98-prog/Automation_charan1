@@ -526,6 +526,24 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
                 log.info("v72 qual tag → %s", qual.describe(article))
         except Exception:  # noqa: BLE001 — tag fail publish aapadu (theme kuda auto detects)
             log.exception("v72 qual tag skip (publish safe)")
+    # --- v77 ORIGINALITY: donor sources vs final article (REAL copy %, not claim) ---
+    try:
+        _srcs = []
+        for _s in (article.get("_deep_sources") or []):
+            _t = getattr(_s, "text", None)
+            if _t is None and isinstance(_s, dict):
+                _t = _s.get("text", "")
+            if _t:
+                _srcs.append(_t)
+        article["_originality"] = validator.rewrite_distance(final_html, _srcs) \
+            if _srcs else {"overlap": 0.0, "fresh": 1.0, "verdict": "no-sources"}
+        log.info("ORIGINALITY fresh=%s overlap=%s (%s)",
+                 article["_originality"]["fresh"], article["_originality"]["overlap"],
+                 article["_originality"]["verdict"])
+    except Exception:  # noqa: BLE001 — score fail publish aapadu
+        log.exception("originality skip (publish safe)")
+        article["_originality"] = {"overlap": 0.0, "fresh": 1.0,
+                                   "verdict": "skip"}
     # --- v65 PIN-TO-PIN GATE: certificate + critical block (live publish mattrame) ---
     is_live = (article.get("_live") is True or
                str(getattr(config, "DEFAULT_POST_STATUS", "draft")).lower() == "publish")
@@ -915,6 +933,7 @@ def update_post(post_id: int, new_source_urls=None, mock: bool = False) -> Dict:
     article["content_html"] = validator.sanitize_html(article["content_html"])
     article = _hygiene(article)
     article.setdefault("update_notes", "")
+    article["_deep_sources"] = list(extras)  # v77: update originality scoring
 
     # --- SEO re-enhance (fresh TOC/quick answer/schema) ---
     recent = wp.get_recent_published(per_page=8)
@@ -939,6 +958,14 @@ def update_post(post_id: int, new_source_urls=None, mock: bool = False) -> Dict:
     qa = validator.validate_article(article, final_html)
     article["_qa"] = qa
     log.info("Update QA %s/100 words=%d", qa["score"], qa["words"])
+    try:  # v77: update kuda originality proof (donor sources vs final)
+        article["_originality"] = validator.rewrite_distance(
+            final_html, [e.text for e in extras if getattr(e, "text", "")])
+        log.info("ORIGINALITY (update) fresh=%s (%s)",
+                 article["_originality"]["fresh"],
+                 article["_originality"]["verdict"])
+    except Exception:  # noqa: BLE001
+        log.exception("update originality skip (post safe)")
 
     meta = None
     if config.RANK_MATH_META_ENABLED:

@@ -7,10 +7,10 @@ extra advanced sections tho, Telugu+English mix lo rewrite chestundi.
 
 import logging
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from io import BytesIO
-from typing import Optional
-from urllib.parse import urlparse
+from typing import List, Optional
+from urllib.parse import urljoin, urlparse
 
 import requests
 from bs4 import BeautifulSoup
@@ -23,6 +23,12 @@ MAX_SOURCE_CHARS = 6000
 
 BLOCKED_HOSTS = ("facebook.com", "twitter.com", "x.com", "instagram.com")
 
+# v77: official-link priority — jobs/results/scholarships facts ki gov/edu first.
+OFFICIAL_SUFFIX = (".gov.in", ".nic.in", ".gov", ".edu", ".ac.in", ".edu.in")
+OFFICIAL_HOSTS = ("tspsc.gov.in", "appsc.gov.in", "upsc.gov.in", "ssc.gov.in",
+                  "ibps.in", "rrbcdg.gov.in", "nta.ac.in", "scholarships.gov.in",
+                  "nsdl.co.in", "cbse.gov.in", "bie.ap.gov.in", "bse.telangana.gov.in")
+
 
 @dataclass
 class SourceArticle:
@@ -34,6 +40,8 @@ class SourceArticle:
     image_url: str = ""
     published_date: str = ""
     updated_date: str = ""
+    # v77: source page lopala unna useful outbound links (official-first rank).
+    outbound: List[str] = field(default_factory=list)
 
 
 def is_valid_source_url(url: str) -> bool:
@@ -174,7 +182,55 @@ def fetch_source(url: str, retries: int = 2) -> SourceArticle:
     src.text = text[:MAX_SOURCE_CHARS]
     if not src.text:
         raise ValueError("Source article lo text dorakaledu (JavaScript site ayi untundi)")
+    # v77: related useful links — content lopala unna outbound (official-first).
+    src.outbound = rank_outbound(_page_links(container, url), url)
     return src
+
+
+def _page_links(container, base_url: str) -> List[str]:
+    """Content-area <a href> — boilerplate (nav/footer) mundhe decompose ayindi."""
+    out, seen = [], set()
+    for a in container.find_all("a", href=True):
+        href = (a.get("href") or "").strip()
+        if not href or href.startswith(("#", "javascript:", "mailto:", "tel:")):
+            continue
+        absu = urljoin(base_url, href).split("#")[0]
+        if not is_valid_source_url(absu) or absu in seen:
+            continue
+        seen.add(absu)
+        out.append(absu)
+    return out[:60]
+
+
+def _official_score(netloc: str) -> int:
+    host = (netloc or "").lower().replace("www.", "")
+    if host in OFFICIAL_HOSTS:
+        return 3
+    if host.endswith(OFFICIAL_SUFFIX):
+        return 2
+    if host.endswith((".org", ".info")):
+        return 1
+    return 0
+
+
+def rank_outbound(links: List[str], page_url: str) -> List[str]:
+    """Outbound links: official-first, same-site de-prioritized, social out."""
+    try:
+        own = urlparse(page_url).netloc.lower().replace("www.", "")
+    except Exception:  # noqa: BLE001
+        own = ""
+    scored = []
+    for i, link in enumerate(links or []):
+        try:
+            host = urlparse(link).netloc.lower().replace("www.", "")
+        except Exception:  # noqa: BLE001
+            continue
+        if not host or any(b in host for b in BLOCKED_HOSTS):
+            continue
+        same = 1 if host == own else 0
+        scored.append((-_official_score(host), same, i, link))
+    scored.sort()
+    return [link for _, _, _, link in scored][:25]
 
 
 # ------------------------------------------------------------------ queue file

@@ -308,6 +308,34 @@ def fingerprint_tokens(text: str, limit: int = 400) -> list:
     return grams
 
 
+def rewrite_distance(content_html: str, source_texts: list) -> dict:
+    """v77: article vs DONOR sources shingle overlap — copied sentences catch.
+
+    near_duplicate mana OWN posts tho compare chestundi; idi SOURCE tho —
+    rewrite nijamga fresh aa leda copy-paste aa ani REAL % istundi.
+    LOW overlap = truly rewritten. Returns {overlap, fresh, verdict}.
+
+    NOTE: full shingle sets (no 400-cap downsample) — capped sampling
+    donor matches ni champi copy-paste ni "rewrite" ga chupistundi.
+    """
+    _FULL = 1000000  # per-post scoring ki sets cheap; accuracy first
+    mine = set(fingerprint_tokens(strip_tags(content_html or ""), limit=_FULL))
+    if len(mine) < 60:
+        return {"overlap": 0.0, "fresh": 1.0, "verdict": "short"}
+    best = 0.0
+    for text in source_texts or []:
+        theirs = set(fingerprint_tokens(text or "", limit=_FULL))
+        if len(theirs) < 60:
+            continue
+        ov = len(mine & theirs) / min(len(mine), len(theirs))
+        best = max(best, ov)
+    fresh = 1.0 - best
+    verdict = ("fresh" if fresh >= 0.70 else
+               "rewrite" if fresh >= 0.40 else "copy-risk")
+    return {"overlap": round(best, 3), "fresh": round(fresh, 3),
+            "verdict": verdict}
+
+
 def near_duplicate(title: str, content_html: str,
                    stored: list, threshold: float = 0.62):
     """stored: [{"slug":..., "t":[shingles]}]. Returns (overlap, matched_slug)."""

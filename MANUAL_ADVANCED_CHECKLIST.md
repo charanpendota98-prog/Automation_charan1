@@ -157,7 +157,7 @@ Message lo reason undi — exact ga fix cheyandi:
 ## ⚠️ Honest note
 Perfect = **machine gates + human 5-min verify**. Gates mistakes ramigadu (conflicts/stale/dates/originality), kaani official numbers mee mata tho final check — AdSense/Google/reputation thartham lo idi matrame safety.
 
-*Last updated: v76 (2026-09-19) — QUALIFICATION DROPDOWN + UI DE-JUNK (chips → select · live counts · ?qual= links · theme parity · live-exam 0 · sodi clean): 58/58 suites · 164/164 runtime · readiness 100/100 · code audit 0/0 · parity 0/0 · theme audit 0/0 · theme v1.7.2*
+*Last updated: v77 (2026-09-19) — ORIGINAL CONTENT ENGINE + HIGH-ADS READINESS (official outbound gather · rewrite-distance REAL % · news re-entry · smart rotation · networks kit): 59/59 suites · 164/164 runtime · readiness 100/100 · code audit 0/0 · parity 0/0 · theme audit 0/0 · theme v1.7.2*
 
 ## PART 26 — v67: DEEP AUDIT (expert/BA) + TOP-THEME HARDENING + 6/6 REVENUE SLOTS
 
@@ -1133,3 +1133,58 @@ python run.py --readiness                    # 100/100 · python run.py --guardi
 
 No guarantee: rankings/traffic/AdSense/revenue Google + mee accounts + time batti — ee pass lo unna vi
 code-level measurements matrame.
+
+## PART 36 — v77: ORIGINAL CONTENT ENGINE + HIGH-ADS READINESS
+
+**Mee brief (2026-09-19):** fully advanced · high ads · ads auto na? · reach
+tavata vere networks apply · URL → related content gather · 100% RankMath/SEO
+real · no copy fresh · Telegram update = fresh re-trend · page-to-page fresh ads.
+
+GATHER (URL isthe related antha)
+```
+sources.py  : SourceArticle.outbound (content-area links, boilerplate out)
+              rank_outbound: official-hosts(3) > gov/edu(2) > org(1) > rest;
+              same-site last; social out; cap 25
+research.py : official outbound FIRST (4 varaku) → tarvata web search extras
+              (MERGE & BEAT same; max_extra cap same)
+```
+
+ORIGINALITY (REAL numbers — "dummy" doubt close)
+```
+validator.rewrite_distance(html, source_texts):
+  donor-vs-final 3-word shingle containment → {overlap, fresh, verdict}
+  fresh ≥0.70 · rewrite ≥0.40 · copy-risk kindha · short (<60 shingles) skip
+pipeline.publish_article: _originality compute + log (prathi post)
+pipeline.update_post    : _originality compute + log (prathi update)
+near_duplicate (own corpus) alage undi — rendu kalisi double-proof
+```
+
+UPDATE = RE-TREND (chain verify + 1 fix)
+```
+upd: button → approval_bot.run_update → update_post → date_modified schema +
+"Last Updated" badge + RankMath re-meta + IndexNow ping + Telegram confirm
+FIX: news-sitemap date_query publish OR modified 48h (mundu updated old posts
+re-enter ayyevi kaavu — trending miss; ippudu avtayi)
+```
+
+ADS SMART (high + fresh + auto)
+```
+theme rotate_house: day → hour-base (24 chances) + slot offset + static $shown
+  no-repeat (oke page lo vere ads; next hour kotha) — house/sponsor kevalam
+AdSense: auto-refresh LEKUNDE (policy) — test locks (setInterval = social only)
+auto proof: auto-head (option + ca-pub regex) · in-article filter ON ·
+  density cap · consent gate · house fallback — manual placing ZERO
+networks: AD_NETWORKS_APPLICATION_KIT.md (review + order + checklist + flips)
+```
+
+PINS: v61 rotation formula rebase (hour) · v75/v76 counts 59 · jsdom untouched 164.
+
+VERIFY (v77)
+```
+python run.py --test-all                     # 59/59 suites (v77_test.py kotha: 10 checks)
+node tools/php_lint.js                       # 32/32 · python tools/build_wp_theme.py (zip LAST)
+python run.py --readiness                    # 100/100 · python run.py --guardian
+```
+
+No guarantee: rankings/traffic/approval/revenue Google + accounts + time —
+v77 = copy-proof + deepest gather + fastest re-index path (code-side max).

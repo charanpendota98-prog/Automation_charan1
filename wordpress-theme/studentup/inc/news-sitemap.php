@@ -31,7 +31,12 @@ function studentup_news_sitemap() {
 		array(
 			'numberposts' => 1000,
 			'post_status' => 'publish',
-			'date_query'  => array( array( 'after' => '48 hours ago' ) ),
+			// v77: updated posts kuda trending loki — publish OR modified 48h lopala
+		'date_query'  => array(
+			'relation' => 'OR',
+			array( 'column' => 'post_date', 'after' => '48 hours ago' ),
+			array( 'column' => 'post_modified', 'after' => '48 hours ago' ),
+		),
 		)
 	);
 	header( 'Content-Type: application/xml; charset=utf-8' );

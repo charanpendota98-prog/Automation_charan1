@@ -94,12 +94,27 @@ function studentup_house_ads() {
  * @param array $ads ads list.
  * @return array|null
  */
-function studentup_rotate_house( $ads ) {
+function studentup_rotate_house( $ads, $place = '' ) {
 	$n = count( $ads );
 	if ( ! $n ) {
 		return null;
 	}
-	return $ads[ (int) gmdate( 'z' ) % $n ];
+	static $shown = array();
+	// v77: hour-base (rojulo 24 fresh chances — page to page kotha ad feel) +
+	// slot offset (oke page lo prathi slot ki vere ad, repeat ledu).
+	$base  = (int) gmdate( 'z' ) * 24 + (int) gmdate( 'G' );
+	$slots = array( 'leaderboard' => 0, 'in-feed' => 1, 'mid' => 2,
+		'sidebar' => 3, 'below-content' => 4, 'anchor' => 5 );
+	$off   = isset( $slots[ $place ] ) ? $slots[ $place ] : 0;
+	for ( $i = 0; $i < $n; $i++ ) {
+		$pick = $ads[ ( $base + $off + $i ) % $n ];
+		$key  = isset( $pick['title'] ) ? (string) $pick['title'] : (string) $i;
+		if ( ! in_array( $key, $shown, true ) ) {
+			$shown[] = $key;
+			return $pick;
+		}
+	}
+	return $ads[ ( $base + $off ) % $n ];
 }
 
 /**
@@ -172,7 +187,7 @@ function studentup_ad( $place = 'mid' ) {
 	}
 
 	// 2) House/sponsor ad (AdSense lekapote leda slot set kaakapote)
-	$house = studentup_rotate_house( studentup_house_ads() );
+	$house = studentup_rotate_house( studentup_house_ads(), $place );
 	if ( ! $house ) {
 		return;
 	}

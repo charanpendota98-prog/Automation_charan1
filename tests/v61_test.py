@@ -133,7 +133,9 @@ def test_ads_safety():
     assert "SPONSORED" in ads
     assert 'rel="sponsored nofollow noopener"' in ads
     assert re.search(r"\^ca-pub-\\d\{10,20\}\$", ads), "adsense client regex"
-    assert "studentup_rotate_house" in ads and "gmdate( 'z' ) % $n" in ads, "day rotation"
+    # v77: hour-base + slot offset + no-repeat (day rotation kanna smart)
+    assert "studentup_rotate_house" in ads and "gmdate( 'z' ) * 24" in ads, "hour rotation"
+    assert "gmdate( 'G' )" in ads and "static $shown" in ads, "slot variety"
     assert "esc_url(" in ads and "esc_html(" in ads and "esc_attr(" in ads
     assert "adsbygoogle" in ads
 

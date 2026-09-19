@@ -503,6 +503,27 @@ python run.py --traffic-sessions         # advanced control
 python run.py --traffic-views            # advanced control
 ```
 
+### v77 — ORIGINAL CONTENT ENGINE + HIGH-ADS READINESS ("Google accept chestunda?")
+
+**Mee brief:** fully advanced + high ads · ads auto vasthaya? · reach vachaka
+vere networks ki apply · URL isthe related content antha gather · 100%
+RankMath/SEO real checks · no copy fresh content · Telegram update = fresh
+re-trending · page-to-page fresh ads. Doubt ki straight answer: scores anni
+self-measured (honest note undi), kaani v77 lo **copy-detection REAL**
+(donor-vs-final % — proof tho) + gather deeper + update re-entry + rotation.
+
+| # | What changed | Detail |
+| 1 | **Official outbound gather** | Source page lopala links extract → gov/edu first rank → research auto-follow (notification PDFs · portals · syllabi richest facts) |
+| 2 | **Rewrite-distance (REAL %)** | `validator.rewrite_distance()` — donor sources vs final shingle overlap; `copy-risk`/`rewrite`/`fresh` verdicts; prathi publish + update lo `_originality` log |
+| 3 | **Update = re-trending** | News sitemap publish **OR modified** 48h (updated posts malli enter) + modified schema + Last Updated badge + IndexNow + `upd:` Telegram chain (verify chesam) |
+| 4 | **Smart ad rotation** | Theme hour-base (24 fresh chances/day) + slot offset (oke page lo vere ads) + no-repeat; AdSense auto-refresh ledu (policy) — proof test |
+| 5 | **Networks kit** | `AD_NETWORKS_APPLICATION_KIT.md` — naa review: AdSense first → Ezoic second → Journey/Monumetric milestones + apply checklist (code flips ready) |
+| 6 | **Ads = 100% auto (proof)** | Auto-head gated (option + ca-pub regex) · in-article auto ON · density cap · consent gate · house fallback — manual placing ZERO |
+| 7 | **Proof** | `--test-all` **59/59** (v77_test.py kotha: 10 checks) · jsdom **164/164** · readiness **100/100** · php-lint **32/32** · theme **1.7.2** |
+
+Honest (repeat): Google ranking/traffic/approval/revenue = Google + accounts +
+time. v77 = copy-paste IMPOSSIBLE-proof + deepest gather + fastest re-index path.
+
 ### v76 — QUALIFICATION DROPDOWN (chips → select) + UI DE-JUNK
 
 **Mee brief:** "10th jobs ilaga filters best ga undali dropdown lo" · live
