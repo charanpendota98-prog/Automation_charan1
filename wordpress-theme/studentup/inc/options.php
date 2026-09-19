@@ -50,7 +50,7 @@ function studentup_option_fields() {
 		'socials' => array(
 			'title'  => 'Social media',
 			'fields' => array(
-				'social_whatsapp'  => array( 'WhatsApp number', 'text', '919999999999', 'With country code, without + (example: 919876543210)' ),
+				'social_whatsapp'  => array( 'WhatsApp number', 'text', '919182739312', 'With country code, without + (example: 919876543210)' ),
 				'social_telegram'  => array( 'Telegram', 'text', 'studentup_in', 't.me/<idi> — channel username' ),
 				'social_instagram' => array( 'Instagram', 'text', 'studentup.in', 'instagram.com/<idi>' ),
 				'social_youtube'   => array( 'YouTube', 'text', '@studentupin', 'youtube.com/<idi>' ),
@@ -244,7 +244,7 @@ function studentup_rest_get_options() {
 			'theme'       => 'studentup',
 			'version'     => defined( 'STUDENTUP_VERSION' ) ? STUDENTUP_VERSION : '',
 			'socials'     => array(
-				'whatsapp'  => studentup_opt( 'social_whatsapp', '919999999999' ),
+				'whatsapp'  => studentup_opt( 'social_whatsapp', '919182739312' ),
 				'telegram'  => studentup_opt( 'social_telegram', 'studentup_in' ),
 				'instagram' => studentup_opt( 'social_instagram', 'studentup.in' ),
 				'youtube'   => studentup_opt( 'social_youtube', '@studentupin' ),
@@ -291,7 +291,7 @@ function studentup_rest_set_options( WP_REST_Request $request ) {
  * Social URLs — options nunchi (footer/header ki).
  */
 function studentup_social_links() {
-	$wa  = preg_replace( '/[^0-9]/', '', (string) studentup_opt( 'social_whatsapp', '919999999999' ) );
+	$wa  = preg_replace( '/[^0-9]/', '', (string) studentup_opt( 'social_whatsapp', '919182739312' ) );
 	$tg  = ltrim( (string) studentup_opt( 'social_telegram', 'studentup_in' ), '@' );
 	$ig  = ltrim( (string) studentup_opt( 'social_instagram', 'studentup.in' ), '@' );
 	$yt  = (string) studentup_opt( 'social_youtube', '@studentupin' );

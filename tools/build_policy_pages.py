@@ -21,8 +21,8 @@ PAGES = OUT / "pages"
 EMAIL = "studentupinformative@gmail.com"
 TG = "https://t.me/studentup_in"
 # v71: Students Internet Center — WhatsApp first contact (placeholder number till owner sets it)
-PHONE = "+919999999999"
-WA_LINK = "https://wa.me/919999999999?text=StudentUp%20Students%20Internet%20Center"
+PHONE = "+919182739312"
+WA_LINK = "https://wa.me/919182739312?text=StudentUp%20Students%20Internet%20Center"
 UPDATED = "2026-09-18"
 
 CSS = """
@@ -287,7 +287,7 @@ CONTACT_SCRIPT = """<script>
    press send, ayipoyindi. Server/store ledu kabatti leak avvadaniki emi ledu. */
 (function(){
   var f=document.getElementById("leadform"); if(!f) return;
-  var WA_NUMBER="919999999999"; /* same owner number as the links on this page */
+  var WA_NUMBER="919182739312"; /* same owner number as the links on this page */
   var msg=document.getElementById("ld-msg");
   function say(text,ok){ msg.textContent=text; msg.className="leadmsg "+(ok?"ok":"err"); }
   f.addEventListener("submit",function(e){
