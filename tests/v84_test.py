@@ -239,7 +239,8 @@ def test_docs_v84():
     go_live = (ROOT / "GO_LIVE_CHECKLIST.md").read_text(encoding="utf-8")
     assert "### v84" in readme and "65/65" in readme
     assert "PART 42" in manual and "v84" in manual and "65/65" in manual
-    assert "68/68" in go_live
+    _suites = len(list((ROOT / "tests").glob("*_test.py")))
+    assert f"{_suites}/{_suites}" in go_live
     for name, txt in (("README", readme), ("MANUAL", manual)):
         assert "164/164" in txt, f"{name} lo jsdom claim poyindi"
     print("  docs: README v84 + MANUAL PART 42 + 65/65 ✔")

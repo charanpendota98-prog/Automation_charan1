@@ -1532,3 +1532,54 @@ node tests/runtime/jsdom_runtime_test.js     # 164/164 browser checks
 python run.py --readiness                    # 100/100
 python -m pyflakes autoblog tools tests run.py  # 0 findings
 ```
+
+## PART 46 — v89: PREMIUM HOMEPAGE (theme 1.9.0)
+
+**Brief (screenshots):** TS/AP Govt Jobs asalu kanipinchaledu · Central ledu ·
+icons tappu · read-more dead · search live kadu · dropdown plain · scrolling
+ledu · Internet Center Telugu lo kavali · laptop messy.
+
+**Root cause:** live categories `ts-govt-jobs`/`ap-govt-jobs`/`central-govt-jobs`;
+theme `ts-jobs`/`ap-jobs` ni direct search chesedi → silent miss prathi chota.
+
+**Fixes:**
+1. Alias resolver `studentup_used_term()` (theme slug → live candidates) +
+   reverse `studentup_theme_cat()` (live slug → chip slug). Call-sites:
+   front-page cards · header mobile panel · footer categories · menu fallback.
+   Card `data-cat` eppudu theme slug → live chip filter match.
+2. Central Govt Jobs — most_used TS·AP·Central top-3 (theme + bot breaking.py
+   + preview + jsdom + guardian 9-tile pin anni sync).
+3. Latest Jobs ticker `studentup_latest_ticker()` — homepage only, own posts
+   (`su_latest_ticker` transient 10 min, save_post flush), link = post
+   permalink same-tab, hover pause, reduced-motion off. Option:
+   StudentUp → Content → Latest jobs scrolling ticker.
+4. Live search `#qtop` — WP REST `/wp/v2/search?per_page=7`, 220 ms debounce +
+   AbortController, ↑↓/Enter/Esc keyboard, combobox ARIA, click → exact post.
+5. Brand SVG icons `studentup_social_icon()` (Simple-Icons CC0 paths) — rail
+   (`su-rail-*`), mobile menu (`su-msoc-*`), single share (`su-share-*`),
+   author box, join blocks. Chrome emojis 💬✈️📸▶️ removed.
+6. Card "Read more" — real `<a class="su-readmore">` permalink (was dead `<b>`).
+7. విద్యార్థుల ఇంటర్నెట్ సెంటర్ (Students Internet Center · TS & AP) —
+   Telugu lead + perks row (Application PDF · పూర్తి Guidance · Preparation
+   Group) + brand WhatsApp button + tel:+91 Call.
+8. Animated qualification dropdown (`.quadd` custom UI; native select sr-only
+   tho no-JS/SEO safe) + `SSC · 10th` wording + SSC GD/MTS (10th) + SSC CHSL
+   (10+2) keyword mapping.
+9. Laptop layout: used-strip 3×3 + news grid 3-col (≥981 px) + menu no-wrap
+   scroll + current-page pill + animated submenu caret.
+10. Menu/mpanel/chips top: TS Govt Jobs · AP Govt Jobs · Central Govt Jobs.
+
+VERIFY (v89)
+```
+python tests/v89_test.py                     # 10/10 checks
+python run.py --test-all                     # 69/69 suites
+node tests/runtime/jsdom_runtime_test.js     # 164/164 browser checks
+python run.py --readiness                    # 100/100
+python -m pyflakes autoblog tools tests run.py  # 0 findings
+```
+
+* AdSense-safe: kotha UI anni ads.php slots ni block cheyyadu; house ads same;
+  AdSense toggle OFF aithe public pages lo e ad code render avvadu (v84 gate
+  unchanged).
+* Deploy: theme zip rebuild (`python tools/build_wp_theme.py`) → WP Admin →
+  Appearance → Themes → Add New → Upload → **Replace current** (1.9.0).

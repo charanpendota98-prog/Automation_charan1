@@ -17,7 +17,7 @@ Checks (offline only):
   * para split: 100+ word paras ~70 chunks; short untouched
   * theme CSS: su-lede + su-faq cards + dark + zebra
   * end-to-end: table + faq + tags + TOP>=85 (thin input tho kuda)
-  * docs: README v78 + MANUAL PART 37 + 68/68
+  * docs: README v78 + MANUAL PART 37 + 69/69
 
 Run: python tests/v78_test.py   (also via python run.py --test-all)
 """
@@ -240,17 +240,17 @@ def test_end_to_end_perfection():
 
 def test_docs_v78():
     suites = len(list((ROOT / "tests").glob("*_test.py")))
-    assert suites == 68, f"suites {suites} (v87 tho 68 expect)"
+    assert suites == 69, f"suites {suites} (v89 tho 69 expect)"
     readme = read(ROOT / "README.md")
     manual = read(ROOT / "MANUAL_ADVANCED_CHECKLIST.md")
     go_live = read(ROOT / "GO_LIVE_CHECKLIST.md")
-    assert "### v78" in readme and "68/68" in readme
-    assert "PART 37" in manual and "v78" in manual and "68/68" in manual
-    assert "68/68" in go_live
+    assert "### v78" in readme and "69/69" in readme
+    assert "PART 37" in manual and "v78" in manual and "69/69" in manual
+    assert "69/69" in go_live
     for name, txt in (("README", readme), ("MANUAL", manual),
                       ("GO_LIVE", go_live)):
         assert "164/164" in txt, f"{name} lo jsdom claim poyindi"
-    print("  docs: README v78 + MANUAL PART 37 + 68/68 ✔")
+    print("  docs: README v78 + MANUAL PART 37 + 69/69 ✔")
 
 
 TESTS = [
@@ -263,7 +263,7 @@ TESTS = [
     ("para split", test_para_split),
     ("theme neat CSS", test_theme_neat_css),
     ("end-to-end perfection", test_end_to_end_perfection),
-    ("docs: v78 + PART 37 + 68/68", test_docs_v78),
+    ("docs: v78 + PART 37 + 69/69", test_docs_v78),
 ]
 
 

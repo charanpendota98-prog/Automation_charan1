@@ -3,8 +3,8 @@ Theme Name: StudentUp Telugu News
 Theme URI: https://studentup.in/
 Author: StudentUp
 Author URI: https://studentup.in/
-Description: StudentUp design for Telangana & Andhra Pradesh students — qualification filter (10th/10+2/Degree/PG), search next to the menu, install as an app (PWA), job/exam cards, ad slots, dark mode. Mobile-first, Rank Math + AdSense friendly.
-Version: 1.7.2
+Description: StudentUp design for Telangana & Andhra Pradesh students — TS/AP/Central govt jobs, qualification filter (SSC/10th · Inter · Degree · PG), live search, latest-jobs scrolling ticker, brand social icons, install as an app (PWA), job/exam cards, AdSense-ready ad slots, dark mode. Mobile-first, Rank Math + AdSense friendly.
+Version: 1.9.0
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 7.4
@@ -560,3 +560,194 @@ body.dark .qgroup a{color:#dbe7f8}
 body.dark .qgroup h3 .qgnum{background:#132743;color:#9dc2ff}
 body.dark .qgroup .qgmeta{color:#ffc88a}
 @media(max-width:600px){.qsplit-grid{grid-template-columns:1fr}.qsplit-head h2{font-size:19px}}
+
+/* ==================== v89: PREMIUM — Central · grid 3-col · ticker · brand icons ==================== */
+
+/* --- layout: laptop lo 3×3 tiles + 3-col news grid (4-col strip chala jam ga undedi) --- */
+@media(min-width:981px){
+  .usedgrid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .newsgrid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .usedcard .ui{width:42px;height:42px;font-size:19px}
+  .usedcard{padding:15px 16px}
+  .usedcard b{font-size:13.5px}
+  .usedcard small{font-size:11.5px}
+}
+
+/* --- latest-jobs ticker (blue, distinct from breaking red) --- */
+.su-lticker{background:linear-gradient(90deg,#0b2149,#0f2e62 60%,#13406f)}
+.tlabel-blue{background:#fff;color:#0f2e62}
+.tlabel-blue i{background:#2463b7}
+.su-lticker .tmove{animation-duration:55s}
+.su-lticker .tmove a{color:#eaf2ff}
+.su-lticker .tmove a:hover{color:#ffd9a8;text-decoration:underline}
+.tclip:hover .tmove,.su-lticker:hover .tmove{animation-play-state:paused}
+body.dark .su-lticker{background:linear-gradient(90deg,#101a30,#16213a)}
+body.dark .tlabel-blue{background:#1a2547;color:#cfe1ff}
+
+/* --- nav polish: current page pill + animated submenu + safe laptop scroll --- */
+.menu-primary{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}
+.menu-primary::-webkit-scrollbar{display:none}
+.nav a{white-space:nowrap;transition:background .18s,color .18s,transform .15s}
+.nav a:hover{background:#eef4ff}
+.nav .current-menu-item>a,.nav .current_page_item>a{background:var(--navy);color:#fff!important;border-radius:10px}
+.nav a>small{display:block;font-weight:600}
+.menu-primary .sub-menu{display:block;visibility:hidden;opacity:0;transform:translateY(8px);
+  transition:opacity .18s ease,transform .18s ease,visibility .18s}
+.menu-primary .menu-item-has-children:hover>.sub-menu,
+.menu-primary .menu-item-has-children:focus-within>.sub-menu{visibility:visible;opacity:1;transform:translateY(0)}
+.menu-primary .menu-item-has-children>a::after{content:"";display:inline-block;margin-left:6px;width:7px;height:7px;
+  border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg) translateY(-2px);
+  transition:transform .18s}
+.menu-primary .menu-item-has-children:hover>a::after{transform:rotate(225deg) translateY(-2px)}
+@media(max-width:1180px){.nav a{padding:10px 9px;font-size:12.5px}}
+
+/* --- usedcard: central + hotter hover --- */
+.usedcard{transition:transform .18s,box-shadow .18s,border-color .18s}
+.usedcard.hot{border-width:1.5px}
+.usedcard.hot::after{content:"";position:absolute;inset:0;border-radius:14px;pointer-events:none;
+  box-shadow:inset 0 0 0 1px rgba(237,138,50,.28)}
+
+/* --- most-searched heading icon feel --- */
+.usedhead b{display:inline-flex;align-items:center;gap:7px}
+
+/* --- Card "Read more" link (v89: plain <b> dead text badulu real link) --- */
+.su-readmore{color:var(--blue);font-weight:800;font-size:12px;text-decoration:none;
+  display:inline-flex;align-items:center;gap:2px;transition:gap .15s,color .15s}
+.su-readmore:hover{gap:6px;color:var(--navy)}
+.newsfoot .su-readmore{margin-left:auto}
+body.dark .su-readmore{color:#9ec4ff}
+
+/* --- brand social rail: official brand colors (emoji poyayi — SVG pathalu) --- */
+.su-social a{border:0;color:#fff}
+.su-rail-wa{background:linear-gradient(135deg,#2bd46b,#128c7e)!important}
+.su-rail-tg{background:linear-gradient(135deg,#37aee2,#229ed9)!important}
+.su-rail-ig{background:linear-gradient(45deg,#f09433,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888)!important}
+.su-rail-yt{background:linear-gradient(135deg,#ff4e45,#c4302b)!important}
+.su-social a:hover{transform:scale(1.08);box-shadow:0 12px 26px rgba(15,46,98,.25)}
+.su-social a{transition:transform .18s,box-shadow .18s}
+.su-icn{display:inline-block;vertical-align:-3px}
+
+/* --- mobile menu social rows with brand chips --- */
+.su-msoc{display:flex!important;align-items:center;gap:10px}
+.su-msoc .su-icn{vertical-align:0}
+.su-msoc-wa{color:#128c50!important}
+.su-msoc-tg{color:#1d8fd1!important}
+.su-msoc-ig{color:#d62976!important}
+.su-msoc-yt{color:#d42a25!important}
+body.dark .su-msoc-wa{color:#5ee0a0!important}
+body.dark .su-msoc-tg{color:#7cc8f0!important}
+body.dark .su-msoc-ig{color:#ff7ab6!important}
+body.dark .su-msoc-yt{color:#ff8a80!important}
+
+/* --- v89: animated custom qualification dropdown (quadd) --- */
+.qualsel.quadd-src{position:absolute!important;opacity:0;pointer-events:none;width:1px;height:1px;
+  clip:rect(0 0 0 0);clip-path:inset(50%);overflow:hidden;white-space:nowrap}
+.quadd{position:relative;display:inline-block;min-width:230px;max-width:100%}
+.quadd-btn{display:flex;align-items:center;gap:10px;width:100%;cursor:pointer;font:inherit;
+  border:1.5px solid #f0cba0;background:linear-gradient(180deg,#fff9f1,#fff2e3);color:#8a4d00;
+  font-size:13.5px;font-weight:800;border-radius:14px;padding:11px 16px;
+  transition:border-color .18s,box-shadow .18s}
+.quadd-btn:hover{border-color:#e8a35c;box-shadow:0 8px 20px rgba(234,124,12,.16)}
+.quadd-btn .qi{font-size:17px}
+.quadd-btn .qt{color:#7a4a12}
+.quadd .qchev{margin-left:auto;width:9px;height:9px;border-right:2.5px solid #c57a1e;
+  border-bottom:2.5px solid #c57a1e;transform:rotate(45deg);transition:transform .2s}
+.quadd.open .qchev{transform:rotate(225deg)}
+.quadd-panel{position:absolute;z-index:70;top:calc(100% + 8px);left:0;min-width:100%;
+  background:#fff;border:1px solid #f2ddc0;border-radius:16px;box-shadow:0 22px 48px rgba(122,66,10,.22);
+  padding:7px;max-height:330px;overflow-y:auto;
+  opacity:0;transform:translateY(-8px) scale(.98);transition:opacity .16s ease,transform .16s cubic-bezier(.2,.9,.3,1.2)}
+.quadd.open .quadd-panel{opacity:1;transform:translateY(0) scale(1)}
+.quadd-item{display:flex;align-items:center;gap:11px;width:100%;border:0;background:transparent;
+  font:inherit;font-size:13.5px;font-weight:700;color:#33475b;text-align:left;
+  padding:10px 12px;border-radius:11px;cursor:pointer;transition:background .14s,color .14s,transform .14s}
+.quadd-item .qi{font-size:16px;width:22px;text-align:center}
+.quadd-item .qn{margin-left:auto;background:#fff3e2;color:#b4641b;border-radius:999px;
+  font-size:11px;font-weight:800;padding:2px 9px}
+.quadd-item:hover,.quadd-item.focus{background:#fff4e4;color:#8a4d00}
+.quadd-item[aria-selected="true"]{background:linear-gradient(135deg,#0f2e62,#2463b7);color:#fff}
+.quadd-item[aria-selected="true"] .qn{background:rgba(255,255,255,.22);color:#fff}
+.quadd-panel::before{content:"Jobs by qualification";display:block;font-size:10.5px;font-weight:800;
+  letter-spacing:.07em;color:#b4641b;padding:6px 12px 8px;text-transform:uppercase}
+body.dark .quadd-btn{background:linear-gradient(180deg,#241c10,#2a2113);border-color:#4a3a22;color:#ffc88a}
+body.dark .quadd-btn .qt{color:#ffd9a3}
+body.dark .quadd-panel{background:#17223a;border-color:#3a517a;box-shadow:0 22px 48px rgba(0,0,0,.5)}
+body.dark .quadd-panel::before{color:#ffc88a}
+body.dark .quadd-item{color:#c9d6ea}
+body.dark .quadd-item:hover,body.dark .quadd-item.focus{background:#1d2b47;color:#ffd9a3}
+body.dark .quadd-item .qn{background:#2a2013;color:#ffc88a}
+body.dark .quadd.open .qchev{border-color:#ffc88a}
+.quadd-btn{box-shadow:0 4px 14px rgba(122,66,10,.07)}
+@media(max-width:600px){.quadd{min-width:0;width:100%}}
+
+/* --- v89: LIVE search results dropdown --- */
+.su-livesearch{position:relative;flex:1;min-width:0}
+.su-livesearch input{width:100%}
+.su-sres{position:absolute;top:calc(100% + 8px);left:0;right:0;z-index:80;background:#fff;
+  border:1px solid var(--line);border-radius:15px;box-shadow:0 24px 50px rgba(15,46,98,.22);
+  padding:7px;max-height:60vh;overflow-y:auto;
+  animation:suSresIn .16s ease}
+.su-sres[hidden]{display:none}
+@keyframes suSresIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+.su-srow{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:11px;
+  color:var(--ink);text-decoration:none;font-weight:600;font-size:13.5px;line-height:1.45}
+.su-srow .su-stitle{flex:1;min-width:0}
+.su-srow .su-stype{flex-shrink:0;background:#eef4ff;color:var(--blue);font-size:10px;font-weight:800;
+  border-radius:999px;padding:2px 8px;text-transform:uppercase;letter-spacing:.05em}
+.su-srow:hover,.su-srow.active{background:#f2f7ff;color:var(--navy)}
+.su-sall{justify-content:center;color:var(--blue);font-weight:800;border-top:1px dashed var(--line);
+  border-radius:0 0 10px 10px;margin-top:5px;padding-top:11px}
+.su-sall:hover,.su-sall.active{color:var(--navy)}
+.su-sempty,.su-sloading{padding:14px;text-align:center;color:var(--muted);font-size:13px}
+body.dark .su-sres{background:#141d33;border-color:#2a3a52;box-shadow:0 24px 50px rgba(0,0,0,.55)}
+body.dark .su-srow{color:#dbe7f8}
+body.dark .su-srow:hover,body.dark .su-srow.active{background:#1d2b47;color:#eaf2ff}
+body.dark .su-srow .su-stype{background:#16213a;color:#9ec4ff}
+body.dark .su-sall{color:#9ec4ff;border-color:#243a5c}
+body.dark .su-sempty,body.dark .su-sloading{color:#93a4bd}
+
+/* --- v89: Students Internet Center (Telugu brand) --- */
+.su-ic{background:linear-gradient(160deg,#f4fbf7,#ffffff 55%)}
+.su-ic-sub{margin:2px 0 0;font-size:12px;font-weight:800;letter-spacing:.05em;color:#0b5f4a;text-transform:uppercase}
+.su-ic-lead.su-ic-te{font-size:16px;line-height:1.85;color:#1e3a2f}
+.su-ic-perks{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px;padding:0}
+.su-ic-perks span{background:#e6f7f0;border:1px solid #bde8d6;color:#0b5f4a;font-size:12px;
+  font-weight:800;border-radius:999px;padding:5px 13px}
+.su-ic-alt{display:inline-flex;align-items:center;gap:7px}
+.su-wa-box{transition:transform .18s,box-shadow .18s}
+.su-wa-box:hover{transform:translateY(-2px);box-shadow:0 16px 30px rgba(18,140,126,.35)}
+.su-wa-ico .su-icn{vertical-align:0}
+body.dark .su-ic{background:linear-gradient(160deg,#122019,#14243c 60%)}
+body.dark .su-ic-lead.su-ic-te{color:#d5ead9}
+body.dark .su-ic-sub{color:#7fe0bb}
+body.dark .su-ic-perks span{background:#12362c;border-color:#1d5b48;color:#7fe0bb}
+
+/* --- v89: single post share buttons — brand icons, neat small --- */
+.share{gap:9px}
+.share .su-share-btn{display:inline-flex;align-items:center;gap:8px;color:#fff!important;border:0;
+  border-radius:11px;padding:9px 14px;font-size:13px;font-weight:800;text-decoration:none;
+  transition:transform .16s,box-shadow .16s;background:transparent}
+.share .su-share-btn:hover{transform:translateY(-2px);box-shadow:0 10px 22px rgba(15,46,98,.18)}
+.share a.su-share-wa{background:linear-gradient(135deg,#2bd46b,#128c7e)}
+.share a.su-share-tg{background:linear-gradient(135deg,#37aee2,#229ed9)}
+.share a.su-share-x{background:#14171a}
+.su-share-copy{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:800;
+  padding:9px 14px;border-radius:11px}
+body.dark .su-share-x{background:#eef2f9;color:#14171a}
+.su-a-soc.tg{color:#1d8fd1}
+.su-a-soc.wa{color:#128c50}
+.su-a-soc a{color:inherit;font-weight:700}
+.su-join-wa,.su-join-tg{display:inline-flex!important;align-items:center;justify-content:center;gap:8px}
+.su-join-inline-btns a{display:inline-flex;align-items:center;gap:8px}
+
+/* --- v89: hero premium (subtle gradient headline) --- */
+.hero-slim h1{background:linear-gradient(120deg,#0f2e62 20%,#2463b7 55%,#c25e10);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
+.hero-slim .lede{color:var(--muted)}
+body.dark .hero-slim h1{background:linear-gradient(120deg,#cfe1ff,#7fb0ff 55%,#ffbe85);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+
+/* --- v89: chips polish --- */
+.chip{transition:background .16s,color .16s,border-color .16s,transform .14s}
+.chip:hover{transform:translateY(-1px);border-color:#b9cdec}
+@media(max-width:1180px){.headrow{gap:12px}.brand{font-size:18px}}

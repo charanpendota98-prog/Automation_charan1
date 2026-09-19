@@ -32,7 +32,14 @@ function studentup_card_cat( $post_id = 0 ) {
 	if ( ! $cats ) {
 		return 'current-affairs';
 	}
-	return sanitize_html_class( $cats[0]->slug );
+	// v89: live slug (‑govt heavy) → theme chip slug — TS/AP/Central chips filter match avvali.
+	foreach ( $cats as $c ) {
+		$theme_slug = studentup_theme_cat( $c->slug );
+		if ( $theme_slug !== $c->slug || in_array( $theme_slug, wp_list_pluck( studentup_most_used(), 'slug' ), true ) ) {
+			return sanitize_html_class( $theme_slug );
+		}
+	}
+	return sanitize_html_class( studentup_theme_cat( $cats[0]->slug ) );
 }
 
 /**
@@ -77,7 +84,7 @@ $label = $terms ? $terms[0]->name : 'Update';
 					echo wp_kses_post( studentup_last_date_badge() );
 				}
 				?>
-				<b><?php echo esc_html( 'Read guide →' ); ?></b>
+				<a class="su-readmore" href="<?php the_permalink(); ?>"><?php echo esc_html__( 'Read more', 'studentup' ) . ' →'; ?></a>
 			</div>
 		</div>
 	</article>
@@ -116,7 +123,7 @@ function studentup_menu_fallback() {
 		array( 'label' => 'Home', 'url' => home_url( '/' ) ),
 	);
 	foreach ( studentup_most_used() as $m ) {
-		$term = get_category_by_slug( $m['slug'] );
+		$term = studentup_used_term( $m['slug'] );   // v89: alias-aware (ts-jobs → ts-govt-jobs)
 		if ( $term ) {
 			$items[] = array( 'label' => $m['label'], 'url' => get_category_link( $term ), 'desc' => $m['hint'] );
 		}

@@ -39,6 +39,8 @@ MOST_USED: List[Dict[str, str]] = [
      "hint": "TSPSC · Police · Gurukul"},
     {"cat": "ap-jobs", "label": "AP Government Jobs", "icon": "🏛",
      "hint": "APPSC · Police · DSC · Secretariat"},
+    {"cat": "central-jobs", "label": "Central Govt Jobs", "icon": "🇮🇳",
+     "hint": "SSC · UPSC · Railways · Banks"},
     {"cat": "hallticket", "label": "Hall Tickets", "icon": "🎫",
      "hint": "Admit card · key instructions"},
     {"cat": "results", "label": "Results", "icon": "📄",

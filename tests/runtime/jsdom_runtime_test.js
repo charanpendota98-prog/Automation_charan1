@@ -484,9 +484,9 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
   /* ---------- v72: ఎక్కువగా వెతికేవి + పర్ఫెక్ట్ మెనూ ---------- */
   const usedTiles = Array.from(document.querySelectorAll(".usedgrid .usedcard"));
   const usedCats = usedTiles.map(a => a.getAttribute("data-goto-cat"));
-  ok("v59 most-used strip: 8 tiles, TS/AP mundu (student order)",
-     usedTiles.length === 8 && JSON.stringify(usedCats) === JSON.stringify(
-       ["ts-jobs","ap-jobs","hallticket","results","walkin","software","private","current"]),
+  ok("v59/v89 most-used strip: 9 tiles, TS/AP/Central mundu (student order)",
+     usedTiles.length === 9 && JSON.stringify(usedCats) === JSON.stringify(
+       ["ts-jobs","ap-jobs","central-jobs","hallticket","results","walkin","software","private","current"]),
      usedCats.join(","));
   const firstCount = document.querySelector(".usedgrid .ucount");
   ok("v59 most-used tiles: filter deep-link + live count (— kaadu)",
@@ -517,11 +517,9 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
      !/\.tickerwrap\{/.test(styleText) && !/\.breaking\{/.test(styleText));
   const mpUsed = Array.from(document.querySelectorAll(".mpanel a[data-goto-cat]"))
     .slice(0, 8).map(a => a.getAttribute("data-goto-cat"));
-  ok("v59 mobile panel: same most-used order (TS/AP mundu)",
+  ok("v59/v89 mobile panel: same most-used order (TS/AP/Central mundu)",
      JSON.stringify(mpUsed) === JSON.stringify(
-       ["hallticket","results","ts-jobs","ap-jobs","hallticket","results","walkin","software"]) ||
-     JSON.stringify(mpUsed) === JSON.stringify(
-       ["hallticket","results","ts-jobs","ap-jobs","hallticket","results","walkin","software","private","current"].slice(0,8)),
+       ["hallticket","results","ts-jobs","ap-jobs","central-jobs","hallticket","results","walkin"]),
      mpUsed.join(","));
   ok("v72 mobile panel: search link undi, breaking link ledu",
      !!document.querySelector('.mpanel a[href="#searchpanel"], .mpanel a[href*="?s="]') &&

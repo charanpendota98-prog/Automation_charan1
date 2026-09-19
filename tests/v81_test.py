@@ -199,13 +199,13 @@ def test_hsts_option():
 
 def test_docs_v81():
     suites = len(list((ROOT / "tests").glob("*_test.py")))
-    assert suites == 68, f"suites {suites} (v87 tho 68 expect)"
+    assert suites == 69, f"suites {suites} (v89 tho 69 expect)"
     readme = read(ROOT / "README.md")
     manual = read(ROOT / "MANUAL_ADVANCED_CHECKLIST.md")
     go_live = read(ROOT / "GO_LIVE_CHECKLIST.md")
-    assert "### v81" in readme and "68/68" in readme
-    assert "PART 40" in manual and "v81" in manual and "68/68" in manual
-    assert "68/68" in go_live
+    assert "### v81" in readme and f"{suites}/{suites}" in readme
+    assert "PART 40" in manual and "v81" in manual and f"{suites}/{suites}" in manual
+    assert f"{suites}/{suites}" in go_live
     for name, txt in (("README", readme), ("MANUAL", manual),
                       ("GO_LIVE", go_live)):
         assert "164/164" in txt, f"{name} lo jsdom claim poyindi"

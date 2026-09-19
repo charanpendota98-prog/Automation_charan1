@@ -121,8 +121,18 @@ def test_all_pages_english():
 
 # ------------------------------------------------------------------- theme
 
+def _strip_cta_telugu_brand(cta: str) -> str:
+    """v89: user-approved exception — Internet Center block deliberately Telugu
+    ("kinda telugu lo neatga" — owner brief). Remove just that function before
+    the English-UI scan so the rest of cta.php stays locked."""
+    m = re.search(r"function studentup_cta_internet_center\(\) \{(.*?)\n\}\n", cta, re.S)
+    assert m, "studentup_cta_internet_center() ledu"
+    assert TE.search(m.group(1)), "CTA Telugu brand block poyindi (v89 scope)"
+    return cta.replace(m.group(1), "")
+
+
 def test_theme_telugu_only_in_detection_keywords():
-    """Telugu mattrame `studentup_qual_keywords()` block lo (post auto-tag)."""
+    """Telugu mattrame `studentup_qual_keywords()` + v89 CTA brand block lo."""
     qf = read(THEME / "inc" / "qual-filter.php")
     m = re.search(r"function studentup_qual_keywords\(\)\s*\{(.*?)\n\}", qf, re.S)
     assert m, "studentup_qual_keywords() ledu"
@@ -133,7 +143,12 @@ def test_theme_telugu_only_in_detection_keywords():
         if f.is_file() and f.suffix in (".php", ".js", ".css", ".txt", ".json", ".pot"):
             if f.name == "qual-filter.php":
                 continue
-            assert not TE.search(read(f)), f"{f.relative_to(THEME)} lo Telugu undi"
+            if f.suffix == ".pot":
+                continue   # v89: pot = generated artifact — source-level scan (painey) covers it
+            src = read(f)
+            if f.name == "cta.php":
+                src = _strip_cta_telugu_brand(src)   # v89 allowed region
+            assert not TE.search(src), f"{f.relative_to(THEME)} lo Telugu undi"
 
 
 def test_theme_surfaces_english():

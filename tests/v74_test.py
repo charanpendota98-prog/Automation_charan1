@@ -124,8 +124,8 @@ def test_theme_has_no_exam():
         assert s in pwa, f"shortcut ledu: {s}"
     assert "studentup_exam=1" not in pwa
     css = re.search(r"^Version:\s*(\S+)", (theme / "style.css").read_text(encoding="utf-8"), re.M).group(1)
-    assert css == "1.7.2", css
-    print("  theme: exam options/buttons/dead-link poyayi · shortcuts aligned · 1.7.2 ✔")
+    assert css == "1.9.0", css
+    print("  theme: exam options/buttons/dead-link poyayi · shortcuts aligned · 1.9.0 ✔")
 
 
 # ------------------------------------------------------------- approval cron
@@ -242,7 +242,7 @@ def main() -> None:
         ("cli flags clean", test_cli_help_has_no_exam_flags),
         ("preview portal-free", test_preview_has_no_portal),
         ("poll bank valid", test_poll_bank_valid_and_english),
-        ("theme exam-free 1.7.2", test_theme_has_no_exam),
+        ("theme exam-free 1.9.0", test_theme_has_no_exam),
         ("approval no-token path", test_approval_poll_no_token_path),
         ("approval processes updates", test_approval_poll_processes_updates_offline),
         ("deploy-check green", test_deploy_check_green_without_portal),
