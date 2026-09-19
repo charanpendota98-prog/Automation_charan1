@@ -93,6 +93,10 @@ function studentup_seo_fallback_head() {
 	if ( defined( 'RANK_MATH_VERSION' ) || class_exists( 'RankMath' ) ) {
 		return;   // Rank Math handles everything
 	}
+	// v84: Yoast/AIOSEO unna double-meta vaddu (owner vere plugin vesthe).
+	if ( defined( 'WPSEO_VERSION' ) || defined( 'AIOSEO_VERSION' ) ) {
+		return;
+	}
 	$desc = '';
 	if ( is_singular() ) {
 		$desc = (string) get_post_meta( get_the_ID(), 'rank_math_description', true );

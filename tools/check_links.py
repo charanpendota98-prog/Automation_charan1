@@ -112,18 +112,28 @@ def orphan_crawl(sitemap_url: str, timeout: int = 12, limit: int = 200) -> int:
     print(f"sitemap: {sitemap_url}  (pages: {len(urls)})")
     inbound: dict = {u.rstrip("/") or u: 0 for u in urls}
     fetched = 0
+    dead: list = []  # v84: sitemap lone dead URLs (crawl-budget waste)
     for u in urls:
         try:
-            html = requests.get(u, timeout=timeout,
-                                headers={"User-Agent": "StudentUp-LinkCheck/1.0"}).text
-        except Exception:  # noqa: BLE001 — dead page = 0 outbound, skip
+            resp = requests.get(u, timeout=timeout,
+                                headers={"User-Agent": "StudentUp-LinkCheck/1.0"})
+            if resp.status_code >= 400:
+                dead.append(f"{resp.status_code} {u}")
+                continue
+            html = resp.text
+        except Exception:  # noqa: BLE001 — dead page = 0 outbound, record
+            dead.append(f"ERR {u}")
             continue
         fetched += 1
         for link in _internal_links(html, u):
             if link in inbound and link != (u.rstrip("/") or u):
                 inbound[link] += 1
     orphans = sorted(k for k, v in inbound.items() if v == 0)
-    print(f"  fetched {fetched}/{len(urls)} · orphans: {len(orphans)}")
+    print(f"  fetched {fetched}/{len(urls)} · dead: {len(dead)} · orphans: {len(orphans)}")
+    for d in dead[:20]:
+        print(f"  DEAD  {d}")
+    if len(dead) > 20:
+        print(f"  ... +{len(dead) - 20} more dead")
     for o in orphans[:30]:
         print(f"  ORPHAN  {o}")
     if len(orphans) > 30:

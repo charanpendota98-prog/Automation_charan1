@@ -18,3 +18,5 @@
 # Weekly site audit + media prune (Sunday 3 AM):
 0 3 * * 0 cd /opt/studentup && /opt/studentup/.venv/bin/python run.py --site-audit >> /opt/studentup/log/audit.log 2>&1
 30 3 * * 0 cd /opt/studentup && /opt/studentup/.venv/bin/python tools/prune_media.py --days 30 --apply >> /opt/studentup/log/prune.log 2>&1
+# Weekly dead-link + orphan scan (Sunday 3:45 AM — rot links = trust loss):
+45 3 * * 0 cd /opt/studentup && /opt/studentup/.venv/bin/python run.py --orphans >> /opt/studentup/log/links.log 2>&1

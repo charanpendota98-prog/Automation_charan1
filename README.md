@@ -503,6 +503,30 @@ python run.py --traffic-sessions         # advanced control
 python run.py --traffic-views            # advanced control
 ```
 
+### v84 — FULL BUG HUNT (money + ads + approvals → 11 real fixes)
+
+**Mee brief:** "inka chala bugs undochu — anni fix cheyali, lekapothe amount/
+ads/approvals pothayi". Systematic hunt (theme XSS · ad slots 6/6 · expiry ·
+cron race · gate holes · TOC · update flow) — prathi doubt real-run tho verify.
+
+**Real fixes (10):** strip_tags script/style drop (schema JSON +106 words →
+gate false-pass HOLE!) · IST-explicit deadlines (UTC server bug) · AdSense
+APPROVAL GATE (approved switch OFF unte code render kaadu — blank-box risk
+zero) + pwa shared gate · hour-slot claim (double-post race) · --orphans
+default sitemap + DEAD-url report + weekly cron · SQLite WAL+timeout · TG 4000
+truncate · date-archive noindex + Yoast/AIOSEO stand-down · **DOUBLE TOC fix**
+(rm100+enhance rendu — live posts lo 2 boxes!) · update_post rm100 re-run.
+
+**Proof:** `--test-all` **65/65** (v84_test.py kotha: 13 checks) · jsdom
+**164/164** · readiness **100/100** · theme-audit **0/0** · theme **1.7.2**.
+
+### v83 — rm100 TRUE-100 (self-contradiction fix)
+
+Engine-generated takeaways/TOC `<li>` ne engine check fail chesedi →
+100 unreachable. Fix: check nunchi engine boxes exclude + content-length
+message 1500 align. Proof live: 57→**100/100** (`reached100: True`).
+v82_test.py 9th check (64/64 intact — suite file kotha kaadu).
+
 ### v82 — SELF-AUDIT REGRESSIONS (proactive hunt → 6 real fixes pin)
 
 **Mee brief:** v81 tarvata "chala miss chesava" — nenu mundhe deep self-audit

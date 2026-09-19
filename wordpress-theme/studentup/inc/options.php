@@ -30,7 +30,8 @@ function studentup_option_fields() {
 			'title'  => 'Ads & monetisation',
 			'fields' => array(
 				'ads_enabled'    => array( 'Ads ON (site) — master switch', 'check', '1', 'OFF chesthe e pages lo ads render avvavu' ),
-				'adsense_client' => array( 'AdSense Client ID', 'text', '', 'ca-pub-XXXXXXXXXXXXXXXX (AdSense approve ayyaka)' ),
+				'adsense_client' => array( 'AdSense Client ID', 'text', '', 'ca-pub-XXXXXXXXXXXXXXXX (approve ayyaka)' ),
+				'adsense_approved' => array( 'AdSense APPROVED (email vachaka ON)', 'check', '0', 'v84: OFF unte AdSense code eppudu render kaadu — house ads matrame (blank-box/policy risk zero)' ),
 				'adsense_auto'   => array( 'AdSense Auto ads (head code)', 'check', '0', 'AdSense auto ads script ni head lo add chestundi' ),
 				'adsense_slot_top_leaderboard' => array( 'Slot: top-leaderboard', 'text', '', 'AdSense → Ads → By ad unit → code lo data-ad-slot' ),
 				'adsense_slot_sidebar'         => array( 'Slot: sidebar', 'text', '', '' ),

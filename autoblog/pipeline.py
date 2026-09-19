@@ -971,6 +971,19 @@ def update_post(post_id: int, new_source_urls=None, mock: bool = False) -> Dict:
     article.setdefault("update_notes", "")
     article["_deep_sources"] = list(extras)  # v77: update originality scoring
 
+    # v84: update kuda rm100 re-run (LLM rewrite structure degrade kakunda +
+    # rank_math_seo_score fresh). Fail ayina update aagadu (advisory).
+    try:
+        if not article.get("_no_rm100"):
+            _ures = rm100.optimize(
+                article, target=int(getattr(config, "RM_TARGET", 100) or 100),
+                max_passes=2)
+            article["_rm100"] = {"score": _ures["after"],
+                                 "before": _ures["before"]}
+            log.info("Update rm100 %s→%s", _ures["before"], _ures["after"])
+    except Exception:  # noqa: BLE001 — advisory (update safe)
+        log.exception("update rm100 skip (post safe)")
+
     # --- SEO re-enhance (fresh TOC/quick answer/schema) ---
     recent = wp.get_recent_published(per_page=8)
     internal = [p for p in recent if p.get("id") != post_id][:4]

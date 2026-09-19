@@ -156,7 +156,11 @@ def main():
     assert "slug" not in payload
     content = payload["content"]
     # fresh SEO sections exactly once (old ones strip + re-add, no duplicates)
-    assert content.count("విషయ సూచిక") == 1, content.count("విషయ సూచిక")
+    # v84: ONE TOC box (rm100 div XOR enhance nav — double-TOC bug fix).
+    # String count kaadu (rm100 box lo aria+title = 2 strings), BOX count.
+    toc_boxes = (content.count('<div class="su-toc"')
+                 + content.count('<nav class="su-toc"'))
+    assert toc_boxes == 1, f"TOC boxes: {toc_boxes}"
     assert content.count("FAQPage") == 0
     assert content.count("Quick Answer") <= 2  # h2 + TOC entry
     assert content.count("About This Article") == 1

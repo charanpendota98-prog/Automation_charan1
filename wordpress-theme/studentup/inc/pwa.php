@@ -200,8 +200,11 @@ function studentup_adsense_auto_head() {
 	if ( is_admin() || ! studentup_opt( 'adsense_auto', '0' ) ) {
 		return;
 	}
-	$client = (string) studentup_opt( 'adsense_client', '' );
-	if ( ! preg_match( '/^ca-pub-\d{10,}$/', $client ) ) {
+	// v84: approval gate + format check anni studentup_adsense_client() lone
+	// (ads.php mundhe load avutundi — functions.php line 20 vs 32).
+	$client = function_exists( 'studentup_adsense_client' )
+		? (string) studentup_adsense_client() : '';
+	if ( '' === $client ) {
 		return;
 	}
 	echo '<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client='

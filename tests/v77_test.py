@@ -19,7 +19,7 @@ Checks (offline only):
   * ad automation: auto-head gated · in-article auto · density cap ·
     consent gate · AdSense refresh ledu (policy)
   * update freshness chain: modified + indexnow + badge + upd: handler
-  * docs: README v77 + MANUAL PART 36 + 64/64 + networks kit
+  * docs: README v77 + MANUAL PART 36 + 65/65 + networks kit
 
 Run: python tests/v77_test.py   (also via python run.py --test-all)
 """
@@ -232,6 +232,7 @@ def test_news_sitemap_update_reentry():
 
 def test_rotation_smart():
     ads = read(THEME / "inc" / "ads.php")
+    assert "adsense_approved" in ads, "approval gate ledu (v84)"
     assert "gmdate( 'z' ) * 24" in ads and "gmdate( 'G' )" in ads
     assert "static $shown" in ads and "$place" in ads
     assert "studentup_rotate_house( studentup_house_ads(), $place )" in ads
@@ -243,7 +244,8 @@ def test_rotation_smart():
 def test_ad_automation_proof():
     pwa = read(THEME / "inc" / "pwa.php")
     assert "studentup_opt( 'adsense_auto', '0' )" in pwa
-    assert "/^ca-pub-\\d{10,}$/" in pwa, "client regex gate ledu"
+    # v84: regex pwa lone kaadu — shared studentup_adsense_client()
+    assert "studentup_adsense_client()" in pwa, "pwa gate bypass!"
     ads = read(THEME / "inc" / "ads.php")
     assert "add_filter( 'the_content', 'studentup_inject_in_article_ad', 20 )" in ads
     assert "'in_article_ad', '1'" in ads, "in-article default ON kaadu"
@@ -273,13 +275,13 @@ def test_update_freshness_chain():
 
 def test_docs_v77():
     suites = len(list((ROOT / "tests").glob("*_test.py")))
-    assert suites == 64, f"suites {suites} (v82 tho 64 expect)"
+    assert suites == 65, f"suites {suites} (v84 tho 65 expect)"
     readme = read(ROOT / "README.md")
     manual = read(ROOT / "MANUAL_ADVANCED_CHECKLIST.md")
     go_live = read(ROOT / "GO_LIVE_CHECKLIST.md")
-    assert "### v77" in readme and "64/64" in readme
-    assert "PART 36" in manual and "v77" in manual and "64/64" in manual
-    assert "64/64" in go_live
+    assert "### v77" in readme and "65/65" in readme
+    assert "PART 36" in manual and "v77" in manual and "65/65" in manual
+    assert "65/65" in go_live
     kit = read(ROOT / "AD_NETWORKS_APPLICATION_KIT.md")
     for needle in ("Ezoic", "Mediavine", "Media.net", "AdSense",
                    "APPLY FIRST", "Honest note"):
@@ -287,7 +289,7 @@ def test_docs_v77():
     for name, txt in (("README", readme), ("MANUAL", manual),
                       ("GO_LIVE", go_live)):
         assert "164/164" in txt, f"{name} lo jsdom claim poyindi"
-    print("  docs: README v77 + MANUAL PART 36 + 64/64 + kit ✔")
+    print("  docs: README v77 + MANUAL PART 36 + 65/65 + kit ✔")
 
 
 TESTS = [
@@ -300,7 +302,7 @@ TESTS = [
     ("rotation smart", test_rotation_smart),
     ("ad automation proof", test_ad_automation_proof),
     ("update freshness chain", test_update_freshness_chain),
-    ("docs: v77 + PART 36 + 64/64 + kit", test_docs_v77),
+    ("docs: v77 + PART 36 + 65/65 + kit", test_docs_v77),
 ]
 
 

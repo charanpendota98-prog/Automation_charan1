@@ -1852,7 +1852,11 @@ def write_plan(plan: List[dict], out_dir: Optional[Path] = None) -> Dict[str, st
 
 UTILITY_PARA_CLASSES = ("su-reading-badge", "su-qa", "su-byline",
                         "su-deadline", "su-breadcrumbs", "su-crumb-current",
-                        "su-reading", "screen-reader")
+                        "su-reading", "screen-reader",
+                        # v84: ad <p> content kaadu — in-content house ad
+                        # first-para check ni hijack chesedi (kw-first-para
+                        # false-fail → gate wrong).
+                        "su-ad-desc", "su-ad", "su-ad-text")
 UTILITY_PARA_STARTS = ("last updated", "source check", "reading time",
                        "reviewed by", "✍️", "⏱️", "🗓️", "📊")
 

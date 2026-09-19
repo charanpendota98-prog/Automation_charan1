@@ -1392,3 +1392,44 @@ python tools/build_wp_theme.py               # zip LAST (ads.php changes!)
 python run.py --readiness                    # 100/100
 python -m pyflakes autoblog tools tests      # 0 findings
 ```
+
+## PART 42 — v84: FULL BUG HUNT (money + ads + approvals)
+
+**Mee brief (2026-09-19):** "inka chala bugs undochu — anni fix cheyali".
+Systematic hunt areas: theme XSS · 6 ad slots mapping · expiry/validThrough ·
+cron race · gate false-pass · TOC duplication · update flow · SQLite lock ·
+TG limits · archive SEO. Prathi doubt real-run tho verify (assumption tho
+"gap" declare cheyaledu).
+
+V84 FIXES (11)
+```
+validator.strip_tags: <script>/<style> blocks drop (JSON-LD +106 words
+  gate words-check false-pass HOLE — 1400-word thin publish ayyedi!)
+validator.ist_today + seo/post_gate: IST-explicit deadlines (server UTC
+  00:00-05:30 window lo expired jobs 'valid' ayyevi)
+inc/options.php + ads.php + pwa.php: AdSense APPROVAL GATE —
+  adsense_approved OFF unte code render kaadu (house ads only)
+main.py run(): hour-slot claim post:DATE:HOUR (overlap double-post race)
+main.py --orphans: no-URL → WP sitemap default · check_links: DEAD-url
+  report (404 pages) · crontab: weekly orphans scan
+state.py _connect: timeout=30 + WAL (hourly + */5 overlap lock fix)
+notifier.send_telegram: 4000-char truncate (4096 reject = alert loss)
+perf.php robots: is_date() noindex,follow · seo-bridge: Yoast/AIOSEO
+  stand-down (double-meta)
+seo.add_table_of_contents: idempotent guard (rm100+enhance DOUBLE TOC —
+  live posts lo 2 boxes vachevi! user-visible bug)
+pipeline.update_post: rm100.optimize re-run (rewrite degrade fix +
+  rank_math_seo_score fresh)
+```
+
+ALSO (v83, no suite bump): rm100 TRUE-100 — takeaways/TOC self-fail fix
+(57→100 proven) · content-length message 1500 align · v82_test 9th check.
+
+VERIFY (v84)
+```
+python run.py --test-all                     # 65/65 suites (v84_test.py kotha: 13 checks)
+node tests/runtime/jsdom_runtime_test.js     # 164/164 browser checks
+python tools/build_wp_theme.py               # zip LAST (ads/options/pwa/perf/bridge changes!)
+python run.py --readiness                    # 100/100
+python -m pyflakes autoblog tools tests run.py  # 0 findings
+```

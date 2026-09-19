@@ -13,7 +13,7 @@ import re
 from typing import Dict, List, Optional
 from urllib.parse import urlparse
 
-from . import config
+from . import config, validator
 
 log = logging.getLogger("autoblog.seo")
 
@@ -25,6 +25,10 @@ def _slugify_id(text: str, index: int) -> str:
 
 def add_table_of_contents(html: str) -> str:
     """First paragraph tarvata TOC insert chestundi + h2 anchors."""
+    # v84: idempotent — rm100 already TOC pedithe malli vaddu
+    # (production posts lo DOUBLE TOC boxes vachayi — user-visible bug!).
+    if "su-toc" in html:
+        return html
     h2s = re.findall(r"<h2[^>]*>(.*?)</h2>", html, flags=re.S)
     if len(h2s) < 3:
         return html
@@ -223,12 +227,10 @@ def byline_block(slug: str, date_str: str) -> str:
 
 def deadline_badge(apply_end: str) -> str:
     """Countdown box — notification lo last date UNTE matrame (never invented)."""
-    from datetime import date as _date
-
     end = _parse_iso(apply_end)
     if not end:
         return ""
-    days = (end - _date.today()).days
+    days = (end - validator.ist_today()).days  # v84: IST (server UTC kaadu)
     pretty = end.strftime("%d-%b-%Y")
     if days < 0:
         return (
@@ -290,14 +292,12 @@ def jobposting_obj(recruitment, title: str, description: str,
     """Google-for-Jobs eligibility rules (2026): required fields COMPLETE ga
     future validThrough tho matrame emit — fake/incomplete data = manual action.
     Returns dict or None (silent skip)."""
-    from datetime import date as _date
-
     rec = recruitment or {}
     if not getattr(config, "JOB_SCHEMA_ENABLED", True):
         return None
     org = (rec.get("org_name") or "").strip()
     end = _parse_iso(rec.get("apply_end"))
-    if not org or not end or (end - _date.today()).days < 0:
+    if not org or not end or (end - validator.ist_today()).days < 0:  # v84 IST
         return None  # expired/unknown deadline → Google Jobs lo list cheyakudadu
     desc = (description or "").strip()
     if len(desc) < 100:
@@ -307,7 +307,7 @@ def jobposting_obj(recruitment, title: str, description: str,
         "@type": "JobPosting",
         "title": title[:110],
         "description": desc[:300],
-        "datePosted": (date_published or _date.today().isoformat())[:10],
+        "datePosted": (date_published or validator.ist_today().isoformat())[:10],
         "validThrough": end.isoformat() + "T23:59:59+05:30",
         "hiringOrganization": {
             "@type": "Organization", "name": org[:100],

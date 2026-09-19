@@ -38,6 +38,10 @@ def send_telegram(
     if not token or not chat:
         log.info("Telegram not configured — skipping notification")
         return False
+    # v84: Telegram 4096-char hard limit — long reports cut kakunda truncate
+    # (reject ayithe alert motham pothundi — approval miss = money loss).
+    if len(text_html) > 4000:
+        text_html = text_html[:3950] + "\n…(cut — log lo full undi)"
     payload = {
         "chat_id": chat,
         "text": text_html,

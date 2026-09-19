@@ -294,6 +294,14 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
         if now_hour not in plan:
             log.info("Hour %02d:00 not in today's plan %s — nothing to do.", now_hour, plan)
             return 0
+        # v84: hour-slot CLAIM (overlap race fix) — generation MUNDU set.
+        # Rendu runs okate hour lo vasthe okati matrame post chestundi.
+        # Crash ayithe hour skip (safe direction — over-post kanna under-post melu).
+        hclaim = f"post:{today.isoformat()}:{now_hour:02d}"
+        if state.meta_get(config.STATE_PATH, hclaim):
+            log.info("Hour %02d:00 already claimed — overlapping run, skipping.", now_hour)
+            return 0
+        state.meta_set(config.STATE_PATH, hclaim, "1")
         log.info("Hour %02d:00 in plan %s — generating post (%d done today).",
                  now_hour, plan, count)
 
@@ -1673,7 +1681,9 @@ def main() -> int:
         sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "tools"))
         import check_links as _cl
 
-        return _cl.main(["check_links", "--orphans"] + (args.orphans or []))
+        # v84: URL ivvakapote WP sitemap default (cron-friendly — usage kaadu)
+        urls = args.orphans or [config.WP_SITE.rstrip("/") + "/wp-sitemap.xml"]
+        return _cl.main(["check_links", "--orphans"] + urls)
     if args.site_audit or args.site_audit_fix:
         return site_audit_run(fix=args.site_audit_fix, apply=args.site_audit_apply,
                               allow_trash=args.site_audit_trash,

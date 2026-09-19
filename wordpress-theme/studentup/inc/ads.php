@@ -19,6 +19,11 @@ if ( ! defined( 'ABSPATH' ) ) {
  * AdSense client id (option leda ADSENSE_CLIENT_ID constant leda '').
  */
 function studentup_adsense_client() {
+	// v84: APPROVAL GATE — approved switch OFF unte ID unna render kaadu
+	// (mundhe paste chesina blank boxes ravavu, house ads vastayi — policy safe).
+	if ( ! studentup_opt( 'adsense_approved', '0' ) ) {
+		return '';
+	}
 	$client = (string) get_option( 'studentup_adsense_client', '' );
 	if ( ! $client && defined( 'ADSENSE_CLIENT_ID' ) ) {
 		$client = (string) ADSENSE_CLIENT_ID;

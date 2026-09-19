@@ -8,9 +8,21 @@
 
 import logging
 import re
+from datetime import date as _date
 from typing import Dict, List
+from zoneinfo import ZoneInfo
 
 log = logging.getLogger("autoblog.validator")
+
+IST = ZoneInfo("Asia/Kolkata")
+
+
+def ist_today() -> _date:
+    """v84: server TZ (UTC) kadu — IST date. Deadline-day 00:00-05:30
+    window lo UTC-date vadithe expired jobs kuda 'valid' avutayi."""
+    from datetime import datetime as _dt
+
+    return _dt.now(IST).date()
 
 ALLOWED_TAGS = {
     "h2", "h3", "p", "ul", "ol", "li", "strong", "em",
@@ -22,7 +34,14 @@ ALLOWED_TAGS = {
 
 
 def strip_tags(html: str) -> str:
-    return re.sub(r"<[^>]+>", " ", html)
+    # v84: <script>/<style> BLOCKS motham thollaru (JSON-LD schema words
+    # count loki vachi gate false-pass ayyedi: 1400 + 106 JSON = 1506!).
+    # Google kuda script content ni word-count lo lekkacheyadu.
+    no_script = re.sub(r"<script[^>]*>.*?</script>", " ", html or "",
+                       flags=re.S | re.I)
+    no_style = re.sub(r"<style[^>]*>.*?</style>", " ", no_script,
+                      flags=re.S | re.I)
+    return re.sub(r"<[^>]+>", " ", no_style)
 
 
 def _normalize_words(text: str) -> List[str]:

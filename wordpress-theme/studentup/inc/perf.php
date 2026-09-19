@@ -109,7 +109,7 @@ add_filter( 'wp_resource_hints', 'studentup_resource_hints', 10, 2 );
  * v67: thin pages ki noindex — search results + 404 index ayyi crawl budget thinakunda.
  *
  * Archive/paginated pages index lo undali (Google ni crawl cheyyali) — so only
- * search + 404 ni block chestunnamu.
+ * search + 404 (+ v84 date archives) ni block chestunnamu.
  */
 function studentup_robots_thin( $robots ) {
 	if ( is_search() ) {
@@ -121,6 +121,13 @@ function studentup_robots_thin( $robots ) {
 		$robots['noindex'] = true;
 		$robots['nofollow'] = true;
 		unset( $robots['index'], $robots['follow'] );
+	}
+	if ( is_date() ) {
+		// v84: date archives = thin duplicates (crawl budget waste).
+		// Author pages index lone (E-E-A-T); tags/categories meaningful.
+		$robots['noindex'] = true;
+		$robots['follow']  = true;
+		unset( $robots['index'] );
 	}
 	if ( isset( $_GET['qual'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification
 		// v81 (§72): filter combos ki independent search value ledu —
