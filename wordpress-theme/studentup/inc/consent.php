@@ -64,6 +64,32 @@ function studentup_consent_cmp() {
 add_action( 'wp_head', 'studentup_consent_cmp', 2 );
 
 /**
+ * v80 (P24/P25): Search Console verification meta + consent-aware GA4.
+ *
+ * GA4 gtag.js load aina — consent defaults (prio 1, denied in EEA/UK/CH)
+ * valla analytics hits consent varaku hold avutayi; India lo direct.
+ * ID format G-XXXXXXXXXX kakapothe load avvadu (typo-safe, no dummy hits).
+ */
+function studentup_ga4_head() {
+	if ( is_admin() ) {
+		return;
+	}
+	$gsc = trim( (string) studentup_opt( 'gsc_verify', '' ) );
+	if ( '' !== $gsc ) {
+		echo '<meta name="google-site-verification" content="' . esc_attr( $gsc ) . '">' . "\n";
+	}
+	$ga4 = trim( (string) studentup_opt( 'ga4_id', '' ) );
+	if ( '' === $ga4 || ! preg_match( '/^G-[A-Z0-9]{6,}$/', $ga4 ) ) {
+		return;
+	}
+	$src = 'https://www.googletagmanager.com/gtag/js?id=' . rawurlencode( $ga4 );
+	echo '<script async src="' . esc_url( $src ) . '"></script>' . "\n";
+	echo '<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}'
+		. "gtag('js',new Date());gtag('config','" . esc_js( $ga4 ) . "',{'anonymize_ip':true});</script>\n";
+}
+add_action( 'wp_head', 'studentup_ga4_head', 3 );
+
+/**
  * Ads render avvala? — consent + option check (AdSense Serve avvakapovadam ledu).
  */
 function studentup_consent_ok() {

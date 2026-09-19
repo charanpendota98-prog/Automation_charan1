@@ -84,6 +84,9 @@ function studentup_option_fields() {
 				'security_hardening' => array( 'Security hardening (headers · XML-RPC off · enumeration block)', 'check', '1', 'Default ON — adi 100% safe (REST bot ki impact ledu)' ),
 				'content_visibility' => array( 'content-visibility (below-fold render skip → fast)', 'check', '1', 'LCP/INP improvement — modern browsers lo mattrame' ),
 				'indexnow_key' => array( 'IndexNow key (hex, 8+ chars)', 'text', '', 'Bot nimpustundi — /<key>.key file automatic ga serve avutundi (Bing/Yandex instant indexing)' ),
+				'redirects_json' => array( '301 redirects (JSON)', 'textarea', '', 'v80: {"/old-url/": "/new-url/"} — slug marina old links 404 kakunda 301 (chain/loop safe, relative paths only)' ),
+				'ga4_id' => array( 'GA4 Measurement ID', 'text', '', 'v80: G-XXXXXXXXXX — consent-aware analytics (EEA regions lo consent varaku hold, India lo direct)' ),
+				'gsc_verify' => array( 'Search Console verification', 'text', '', 'v80: GSC → Settings → Ownership verification → HTML tag content value (meta tag auto)' ),
 			),
 		),
 	);

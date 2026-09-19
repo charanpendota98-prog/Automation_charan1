@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: StudentUp 1.7.2\n"
 "Report-Msgid-Bugs-To: https://studentup.in/\n"
-"POT-Creation-Date: 2026-09-19 08:27+0000\n"
+"POT-Creation-Date: 2026-09-19 10:07+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -59,6 +59,10 @@ msgstr ""
 msgid "Free daily updates for Telangana & Andhra Pradesh students. No spam calls, leave anytime."
 msgstr ""
 
+#: inc/cta.php:96
+msgid "Free job alerts on your phone"
+msgstr ""
+
 #: search.php:29
 msgid "Go to home"
 msgstr ""
@@ -69,6 +73,22 @@ msgstr ""
 
 #: inc/cta.php:66
 msgid "Jobs · notifications · results — first on our WhatsApp / Telegram."
+msgstr ""
+
+#: inc/cta.php:97
+msgid "Jobs · results · hall tickets — first on WhatsApp / Telegram."
+msgstr ""
+
+#: inc/cta.php:95
+msgid "Join our channels"
+msgstr ""
+
+#: inc/cta.php:100
+msgid "Join Telegram"
+msgstr ""
+
+#: inc/cta.php:99
+msgid "Join WhatsApp"
 msgstr ""
 
 #: index.php:26

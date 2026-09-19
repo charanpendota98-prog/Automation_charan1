@@ -177,13 +177,13 @@ def test_php_and_zip_fresh():
 
 def test_docs_v75():
     suites = len(list((ROOT / "tests").glob("*_test.py")))
-    assert suites == 61, f"suites {suites} (v79 tho 61 expect)"
+    assert suites == 62, f"suites {suites} (v80 tho 62 expect)"
     readme = read(ROOT / "README.md")
     manual = read(ROOT / "MANUAL_ADVANCED_CHECKLIST.md")
     go_live = read(ROOT / "GO_LIVE_CHECKLIST.md")
-    assert "### v75" in readme and "61/61" in readme
-    assert "PART 34" in manual and "v75" in manual and "61/61" in manual
-    assert "61/61" in go_live
+    assert "### v75" in readme and "62/62" in readme
+    assert "PART 34" in manual and "v75" in manual and "62/62" in manual
+    assert "62/62" in go_live
     for name, txt in (("README", readme), ("MANUAL", manual),
                       ("GO_LIVE", go_live)):
         assert "164/164" in txt, f"{name} lo jsdom claim poyindi"
@@ -199,7 +199,7 @@ TESTS = [
     ("house links alive + anchors", test_house_links_alive),
     ("theme sync inactive filter", test_theme_sync_filters_inactive),
     ("php-lint + zip fresh + normalizers", test_php_and_zip_fresh),
-    ("docs: README v75 + MANUAL PART 34 + 61/61", test_docs_v75),
+    ("docs: README v75 + MANUAL PART 34 + 62/62", test_docs_v75),
 ]
 
 

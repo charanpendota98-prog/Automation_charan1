@@ -341,4 +341,22 @@
       if (e.key === "Escape" && !spanel.hidden) searchOpen(false);
     });
   }
+
+  /* ---------- v80 (P25): outbound + apply-link click tracking (GA4 gated) ---------- */
+  document.addEventListener("click", function (e) {
+    if (typeof window.gtag !== "function") return;  /* GA4 ledu → track cheyyamu */
+    var a = e.target && e.target.closest ? e.target.closest("a[href]") : null;
+    if (!a) return;
+    var href = a.getAttribute("href") || "";
+    if (!/^https?:\/\//i.test(href)) return;
+    var same = false;
+    try { same = new URL(href, location.href).host === location.host; } catch (err) { return; }
+    if (same) return;
+    var isApply = /apply|application|register|registration|form/i.test(href) ||
+      /apply|register/i.test(a.textContent || "");
+    window.gtag("event", isApply ? "apply_click" : "outbound_click", {
+      event_category: "engagement",
+      event_label: href.slice(0, 200)
+    });
+  });
 })();

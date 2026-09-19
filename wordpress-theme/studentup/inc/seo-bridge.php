@@ -81,6 +81,48 @@ add_filter(
 );
 
 /**
+ * v80 (P5): on-page fallback — Rank Math ACTIVE lekapothe mattrame.
+ * Rank Math unte adi title/meta/canonical/OG anni output chestundi (duplicate vaddu).
+ * Lekapothe: WP core title + canonical untayi; description + OG maname isthamu
+ * (bot rasina rank_math_description/focus meta nunchi — kotha invent ledu).
+ */
+function studentup_seo_fallback_head() {
+	if ( is_admin() || is_feed() ) {
+		return;
+	}
+	if ( defined( 'RANK_MATH_VERSION' ) || class_exists( 'RankMath' ) ) {
+		return;   // Rank Math handles everything
+	}
+	$desc = '';
+	if ( is_singular() ) {
+		$desc = (string) get_post_meta( get_the_ID(), 'rank_math_description', true );
+		if ( '' === $desc ) {
+			$desc = get_the_excerpt();
+		}
+		$img = get_the_post_thumbnail_url( get_the_ID(), 'large' );
+	} else {
+		$desc = get_bloginfo( 'description' );
+		$img  = '';
+	}
+	$desc = trim( wp_strip_all_tags( (string) $desc ) );
+	if ( '' !== $desc ) {
+		echo '<meta name="description" content="' . esc_attr( mb_substr( $desc, 0, 160 ) ) . '">' . "\n";
+		echo '<meta property="og:description" content="' . esc_attr( mb_substr( $desc, 0, 200 ) ) . '">' . "\n";
+	}
+	if ( is_singular() ) {
+		echo '<meta property="og:title" content="' . esc_attr( wp_strip_all_tags( get_the_title() ) ) . '">' . "\n";
+		echo '<meta property="og:url" content="' . esc_url( get_permalink() ) . '">' . "\n";
+		echo '<meta property="og:type" content="article">' . "\n";
+		if ( $img ) {
+			echo '<meta property="og:image" content="' . esc_url( $img ) . '">' . "\n";
+		}
+		echo '<meta name="twitter:card" content="summary_large_image">' . "\n";
+	}
+	echo '<meta property="og:site_name" content="' . esc_attr( get_bloginfo( 'name' ) ) . '">' . "\n";
+}
+add_action( 'wp_head', 'studentup_seo_fallback_head', 5 );
+
+/**
  * Ee site ki SEO bridge active ani bot ki cheppadam (verification kosam).
  *   GET /wp-json/studentup/v1/theme-info
  */

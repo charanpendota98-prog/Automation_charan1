@@ -157,7 +157,7 @@ Message lo reason undi — exact ga fix cheyandi:
 ## ⚠️ Honest note
 Perfect = **machine gates + human 5-min verify**. Gates mistakes ramigadu (conflicts/stale/dates/originality), kaani official numbers mee mata tho final check — AdSense/Google/reputation thartham lo idi matrame safety.
 
-*Last updated: v79 (2026-09-19) — AUTHOR + MID-ARTICLE JOIN + MISS-AUDIT CLOSE (logo avatar · Person schema · join strip 2nd-para · tags + prev/next · 13/13 surface): 61/61 suites · 164/164 runtime · readiness 100/100 · code audit 0/0 · parity 0/0 · theme audit 0/0 · theme v1.7.2*
+*Last updated: v80 (2026-09-19) — MASTER PROMPT GAP CLOSE (301 manager · archive H1+subcats · 404 recovery · GA4/GSC · expired notice · SEO fallback · link checker): 62/62 suites · 164/164 runtime · readiness 100/100 · code audit 0/0 · parity 0/0 · theme audit 0/0 · theme v1.7.2*
 
 ## PART 26 — v67: DEEP AUDIT (expert/BA) + TOP-THEME HARDENING + 6/6 REVENUE SLOTS
 
@@ -1270,5 +1270,56 @@ VERIFY (v79)
 ```
 python run.py --test-all                     # 61/61 suites (v79_test.py kotha: 10 checks)
 node tools/php_lint.js                       # 32/32 · python tools/build_wp_theme.py (zip LAST)
+python run.py --readiness                    # 100/100 · python run.py --guardian
+```
+
+## PART 39 — v80: MASTER PROMPT GAP CLOSE (50-phase audit)
+
+**Mee brief (2026-09-19):** 50-phase master prompt + 5 additions verify —
+em miss ayyama? Method: phase-by-phase grep-proof audit.
+
+COVERED (verify chesamu — kotha code avasaram ledu)
+```
+P1 info-arch: WP cats + 17 bot rules + hubs · P2 URLs: WP permalinks +
+  bot slug hygiene · P3/P4/P22/P43 DB+admin+API: WP CORE (custom kaadu —
+  master prompt custom-stack assume chesindi) · P5 on-page: RankMath+WP
+  (+v80 fallback) · P6 H1: single/home ✓ (archive/search v80 fix) ·
+P7 content model: prompt sections + v78 fallbacks, no-fabrication guards ·
+P8/P37 linking: related/crumbs/prev-next/contextual/hubs · P9 crumbs+schema ·
+P10 sitemap WP+news · P11 robots WP+news · P12 canonical WP ·
+P13/P15 search/404 noindex perf.php ✓ · P14 schema Article/Breadcrumb/
+  JobPosting-eligible · P16 archive base (v80 enrich) · P17 images alt+lazy ·
+P18/P19/P20 CWV/mobile/perf: CLS-reserve/content-vis/lazy · P21/P22 security
+  headers+WP · P23 legal 6 · P26 badge+closing (v80 notice) · P27 quiz
+  practice+key (obfuscation=theater, honest skip) · P30 a11y skip/focus ·
+P31 share/OG · P32 audit engines · P33 61 suites · P34 live gates ·
+P38 dup-guards · P39 dates · P40 E-E-A-T · P41/42 ads/rel · P44 bot logs ·
+P46 GO_LIVE · P48/P49/P50 guardian+readiness (deploy-time verify).
+AI pipeline = Official→verify→extract→human-review(Telegram)→
+  draft→fact→SEO-gate→publish ✓ (addition #3 exact match).
+```
+
+V80 FIXES (7 real gaps)
+```
+P29  inc/redirects.php: redirects_json map · 404-only · resolve-chain
+     direct (5 hops) · loop/relative-only · wp_safe_redirect 301
+P6/16 archive+search h2→h1 (+CSS 3 spots) · studentup_subcat_chips()
+     (child+counts, hide_empty, 12 cap) · .su-subcats CSS+dark
+P28  404: popular 6 cats + latest 5 + reset postdata · CSS
+P24/25 ga4_id (G- regex) + gsc_verify options · consent-aware GA4
+     (prio 3, anonymize_ip) · JS outbound/apply_click (gtag-gated)
+P26  studentup_expired_notice() + single guarded call · .su-expired CSS
+P5   seo-fallback: RankMath absent → description+OG (bot meta reuse)
+P47  tools/check_links.py + run.py --check-links (dead+redir report)
+```
+
+OWNER/HOSTING (code kaadu): GSC submit · GA4 ID · backups+restore-test ·
+CDN · live GSC/GA4 monitoring · crawl post-deploy.
+
+VERIFY (v80)
+```
+python run.py --test-all                     # 62/62 suites (v80_test.py kotha: 12 checks)
+python run.py --check-links <post-URL>       # dead outbound report
+node tools/php_lint.js                       # 33/33 · python tools/build_wp_theme.py (zip LAST)
 python run.py --readiness                    # 100/100 · python run.py --guardian
 ```

@@ -46,6 +46,8 @@ get_header();
 					</div>
 				</div>
 
+				<?php echo function_exists( 'studentup_expired_notice' ) ? wp_kses_post( studentup_expired_notice() ) : ''; ?>
+
 				<?php studentup_ad( 'mid' ); ?>
 
 				<div class="article-content"><?php the_content(); ?></div>

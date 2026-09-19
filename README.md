@@ -503,6 +503,42 @@ python run.py --traffic-sessions         # advanced control
 python run.py --traffic-views            # advanced control
 ```
 
+### v80 — MASTER PROMPT GAP CLOSE (50 phases verify → 7 real gaps fix)
+
+**Mee brief:** 50-phase Production Master Prompt + 5 mandatory additions —
+"verify, em miss ayyama?" Phase-by-phase repo verify chesamu:
+
+**Already covered (proof):** on-page engine (RankMath+WP) · H1 single/home ·
+job content model (prompt sections + v78 fallbacks) · AI pipeline
+Official→verify→human-review→draft→fact→SEO-gate→publish ✓ · internal
+linking (related/crumbs/prev-next/contextual) · sitemap (WP+news) ·
+robots (WP+news) · canonical (WP) · search/404 noindex (perf.php) ·
+schema (Article/Breadcrumb/JobPosting-eligible; FAQPage retired-skip honest) ·
+category filters · image alt (bot) · CWV (lazy/CLS-reserved/content-vis) ·
+mobile-first CSS · security headers · legal 6 pages · expiry badge+closing ·
+404+search exist · a11y (skip-link/focus) · audit engines (post_gate/
+guardian/readiness/theme-audit) · quality gates (live blocks) · freshness
+dates · E-E-A-T author · ads policy-safe · logging (bot) · deploy checklist.
+
+**v80 lo fix chesina 7 NIJAMAINA gaps:**
+
+| # | Phase | Gap → Fix |
+| 1 | P29 | Redirect manager LEDU → `inc/redirects.php`: JSON map, 404-only 301, chain-resolve direct, loop/open-redirect safe |
+| 2 | P6/P16 | Archive/search H1 LEDU (h2) → H1 + CSS; category landing thin → subcat chips (child+counts) |
+| 3 | P28 | 404 thin → popular categories + latest 5 (recovery) |
+| 4 | P24/25 | GA4/GSC wiring LEDU → options + consent-aware GA4 load + verification meta + outbound/apply click events |
+| 5 | P26 | Expired notice LEDU (badge only) → single expired box + category link (URL stable) |
+| 6 | P5 | RankMath-absent fallback LEDU → description + OG (bot meta reuse) |
+| 7 | P47 | Link-liveness tool LEDU → `tools/check_links.py` + `run.py --check-links` |
+
+**Owner/hosting-side (code kaadu — GO_LIVE lo):** GSC verify submit · GA4 ID
+paste · backups · CDN · actual GSC/GA4 monitoring · restore test.
+**WP-core-provided (custom build avasaram ledu):** DB/admin/CMS/API/auth —
+master prompt custom-stack assume chesindi, manadi WP stack.
+
+**Proof:** `--test-all` **62/62** (v80_test.py kotha: 12 checks) · jsdom
+**164/164** · readiness **100/100** · theme **1.7.2**.
+
 ### v79 — AUTHOR + MID-ARTICLE JOIN + MISS-AUDIT CLOSE
 
 **Mee brief:** author kuda unte best kada? Blogs madhyalo Telegram/WhatsApp

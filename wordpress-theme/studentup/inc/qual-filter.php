@@ -261,6 +261,34 @@ function studentup_last_date_badge( $post_id = 0 ) {
 }
 
 /**
+ * v80 (P26): expired-job notice box (URL stable — delete/redirect vaddu).
+ * Deadline cross ayithe: clear expired status + same-category current link.
+ */
+function studentup_expired_notice( $post_id = 0 ) {
+	$post_id = $post_id ? $post_id : get_the_ID();
+	$iso      = trim( (string) get_post_meta( $post_id, 'studentup_last_date', true ) );
+	if ( '' === $iso || ! preg_match( '/^\d{4}-\d{2}-\d{2}$/', $iso ) ) {
+		return '';
+	}
+	$left = (int) floor( ( strtotime( $iso . ' 23:59:59' ) - current_time( 'timestamp' ) ) / DAY_IN_SECONDS ); // phpcs:ignore WordPress.DateTime.CurrentTimeTimestamp
+	if ( $left >= 0 ) {
+		return '';
+	}
+	$cat  = '';
+	$cats = get_the_category( $post_id );
+	if ( $cats ) {
+		$cat = sprintf(
+			' <a href="%s">%s</a>',
+			esc_url( get_category_link( $cats[0] ) ),
+			esc_html( $cats[0]->name )
+		);
+	}
+	return '<div class="su-expired" role="note">⏰ <strong>Gaduvu mugisindi (Expired).</strong>'
+		. ' Ee notification ki ippudu apply cheyyalem — kindha related current posts chudandi.'
+		. $cat . '</div>';
+}
+
+/**
  * Current filter (URL nunchi, whitelist).
  *
  * @return string slug | 'all'

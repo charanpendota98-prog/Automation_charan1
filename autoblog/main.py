@@ -1508,6 +1508,9 @@ def main() -> int:
                              "chestundi)")
     parser.add_argument("--test-only", default="", metavar="NAME",
                         help="v41: --test-all tho okka suite matrame (ex: v41)")
+    parser.add_argument("--check-links", nargs="*", default=None, metavar="URL",
+                        help="v80 (P47): page outbound links liveness — dead + "
+                             "redirect report (ex: --check-links https://.../post/)")
     parser.add_argument("--site-audit", action="store_true",
                         help="v41: full site audit (21 problem classes — thin/junk "
                              "content, wrong category, PII, tags, timezone) + report")
@@ -1658,6 +1661,11 @@ def main() -> int:
         return deploy_check.run_deploy_check()
     if args.test_all:
         return test_all_run(only=args.test_only)
+    if args.check_links is not None:
+        sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "tools"))
+        import check_links as _cl
+
+        return _cl.main(["check_links"] + (args.check_links or []))
     if args.site_audit or args.site_audit_fix:
         return site_audit_run(fix=args.site_audit_fix, apply=args.site_audit_apply,
                               allow_trash=args.site_audit_trash,
