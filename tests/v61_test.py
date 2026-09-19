@@ -25,7 +25,6 @@ Run: python tests/v61_test.py   (also via python run.py --test-all)
 """
 from __future__ import annotations
 
-import io
 import json
 import re
 import subprocess
@@ -36,7 +35,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from autoblog import config, wp_theme_sync  # noqa: E402
+from autoblog import wp_theme_sync  # noqa: E402
 
 SRC = ROOT / "wordpress-theme" / "studentup"
 ZIP = ROOT / "wordpress-theme" / "studentup-theme.zip"
@@ -133,7 +132,9 @@ def test_ads_safety():
     assert "SPONSORED" in ads
     assert 'rel="sponsored nofollow noopener"' in ads
     assert re.search(r"\^ca-pub-\\d\{10,20\}\$", ads), "adsense client regex"
-    assert "studentup_rotate_house" in ads and "gmdate( 'z' ) % $n" in ads, "day rotation"
+    # v77: hour-base + slot offset + no-repeat (day rotation kanna smart)
+    assert "studentup_rotate_house" in ads and "gmdate( 'z' ) * 24" in ads, "hour rotation"
+    assert "gmdate( 'G' )" in ads and "static $shown" in ads, "slot variety"
     assert "esc_url(" in ads and "esc_html(" in ads and "esc_attr(" in ads
     assert "adsbygoogle" in ads
 

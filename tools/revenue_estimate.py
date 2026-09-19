@@ -17,9 +17,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
-import io
 import json
-import re
 import sys
 from pathlib import Path
 
@@ -250,18 +248,18 @@ def render(views: int) -> str:
     A(f"  REVENUE ESTIMATE — నెలకు {human(views)} page views (studentup.in)")
     A("=" * 74)
     A("")
-    A(f"  ఈ ట్రాఫిక్‌కు AdSense (Indian jobs/education RPM ranges):")
+    A("  ఈ ట్రాఫిక్‌కు AdSense (Indian jobs/education RPM ranges):")
     for b in adsense_table(views):
         A(f"    {b['band']:<26} ₹{b['rpm']:>3}/1000 views  →  ₹{human(b['revenue'])}/నెల")
     A("")
-    A(f"  Direct (private) sponsors — LIVE rate card nunchi:")
+    A("  Direct (private) sponsors — LIVE rate card nunchi:")
     for s in direct["slots"]:
         tag = " (bundle)" if s["bundle"] else ""
         A(f"    {s['slot']}{tag:<0}  ₹{human(s['price'])}/నెల")
     A(f"    ఇప్పుడు అమ్మగలిగే స్లాట్లు: {direct['fill'][0]}–{direct['fill'][1]} (ఈ ట్రాఫిక్ స్థాయికి)")
     A(f"    → conservative ₹{human(direct['conservative'])} · realistic ₹{human(direct['realistic'])}/నెల")
     A("")
-    A(f"  House ads (మన సొంత ప్రచురణలు): ₹0 — ఇవి ఆదాయం కాదు, మన quiz/exam కి ట్రాఫిక్.")
+    A("  House ads (మన సొంత ప్రచురణలు): ₹0 — ఇవి ఆదాయం కాదు, మన quiz/exam కి ట్రాఫిక్.")
     A(f"  Advertiser market reference: Google Display ₹{ref['cpm']} CPM → ఈ views విలువ ₹{human(ref['value'])}")
     A("")
     A("-" * 74)
@@ -279,7 +277,7 @@ def render(views: int) -> str:
     A(f"    2) STANDARD  (+ స్పాన్సర్ స్లాట్లు)          ₹{human(t3['standard'][0])} – ₹{human(t3['standard'][1])}")
     A(f"    3) ADVANCED  (+ లీడ్లు, ఆర్టికల్స్, బ్రాడ్‌కాస్ట్) ₹{human(t3['advanced'][0])} – ₹{human(t3['advanced'][1])}")
     A("")
-    A(f"  3వ స్థాయి ఎలా వస్తుంది (అంచనాలు స్పష్టంగా):")
+    A("  3వ స్థాయి ఎలా వస్తుంది (అంచనాలు స్పష్టంగా):")
     A(f"    • లీడ్లు: {a3['leads_range'][0]}–{a3['leads_range'][1]} లీడ్లు (views లో 0.3–0.8%) × ₹{LEAD_PRICE[0]}–₹{LEAD_PRICE[1]}")
     A(f"      = ₹{human(a3['leads'][0])} – ₹{human(a3['leads'][1])}  ← కళాశాల/కోచింగ్ కొనుగోలుదారు ఉంటే మాత్రమే")
     A(f"    • స్పాన్సర్డ్ ఆర్టికల్స్: ₹{human(a3['advertorial'][0])} – ₹{human(a3['advertorial'][1])} (నెలకు 1–2)")

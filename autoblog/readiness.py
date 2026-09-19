@@ -231,8 +231,7 @@ def c_theme_v64() -> List[dict]:
         "PWA + head hints": ("inc/pwa.php", ("studentup_manifest", "preconnect",
                                              "adsense_auto")),
     }
-    fn = _read(THEME_PATH / "functions.php") if False else _read(
-        ROOT / "wordpress-theme" / "studentup" / "functions.php")
+    fn = _read(ROOT / "wordpress-theme" / "studentup" / "functions.php")
     missing, present = [], []
     for label, (rel, needles) in mods.items():
         path = ROOT / "wordpress-theme" / "studentup" / rel
@@ -431,7 +430,8 @@ def c_money_engine() -> List[dict]:
 
 
 def c_ad_safety() -> List[dict]:
-    from . import adsense_kit, ad_manager  # noqa: F401
+    from . import adsense_kit, ad_manager
+    _ = (adsense_kit, ad_manager)  # smoke: modules load avvali
 
     html = _read(PREVIEW / "index.html")
     # v72.1: ad CTAs internal (Partner page) or external — rendu case lo Google rule:
@@ -494,7 +494,8 @@ def c_first_look() -> List[dict]:
     blocks = [b for b, ok in (
         ("Most-searched strip", 'class="usedwrap"' in html),
         ("Search next to menu", 'id="searchbtn"' in html and 'id="searchpanel"' in html),
-        ("Qualification filter", 'data-qual="10th"' in html and 'studentup_qual_bar' in theme),
+        ("Qualification filter", 'id="qualsel"' in html and 'value="10th"' in html
+         and 'studentup_qual_bar' in theme and 'id="qualsel"' in theme),
         ("Install as app", 'id="installbtn"' in html and 'studentup-pwa' in _read(
             ROOT / "wordpress-theme" / "studentup" / "functions.php")),
     ) if ok]

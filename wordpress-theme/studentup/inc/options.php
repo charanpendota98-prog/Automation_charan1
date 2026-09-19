@@ -30,7 +30,8 @@ function studentup_option_fields() {
 			'title'  => 'Ads & monetisation',
 			'fields' => array(
 				'ads_enabled'    => array( 'Ads ON (site) — master switch', 'check', '1', 'OFF chesthe e pages lo ads render avvavu' ),
-				'adsense_client' => array( 'AdSense Client ID', 'text', '', 'ca-pub-XXXXXXXXXXXXXXXX (AdSense approve ayyaka)' ),
+				'adsense_client' => array( 'AdSense Client ID', 'text', '', 'ca-pub-XXXXXXXXXXXXXXXX (approve ayyaka)' ),
+				'adsense_approved' => array( 'AdSense APPROVED (email vachaka ON)', 'check', '0', 'v84: OFF unte AdSense code eppudu render kaadu — house ads matrame (blank-box/policy risk zero)' ),
 				'adsense_auto'   => array( 'AdSense Auto ads (head code)', 'check', '0', 'AdSense auto ads script ni head lo add chestundi' ),
 				'adsense_slot_top_leaderboard' => array( 'Slot: top-leaderboard', 'text', '', 'AdSense → Ads → By ad unit → code lo data-ad-slot' ),
 				'adsense_slot_sidebar'         => array( 'Slot: sidebar', 'text', '', '' ),
@@ -50,7 +51,7 @@ function studentup_option_fields() {
 		'socials' => array(
 			'title'  => 'Social media',
 			'fields' => array(
-				'social_whatsapp'  => array( 'WhatsApp number', 'text', '919999999999', 'With country code, without + (example: 919876543210)' ),
+				'social_whatsapp'  => array( 'WhatsApp number', 'text', '9182739312', '10-digit mobile — +91 avasaram ledu (example: 9182739312)' ),
 				'social_telegram'  => array( 'Telegram', 'text', 'studentup_in', 't.me/<idi> — channel username' ),
 				'social_instagram' => array( 'Instagram', 'text', 'studentup.in', 'instagram.com/<idi>' ),
 				'social_youtube'   => array( 'YouTube', 'text', '@studentupin', 'youtube.com/<idi>' ),
@@ -65,6 +66,7 @@ function studentup_option_fields() {
 				'breaking_json' => array( 'Breaking feed (JSON)', 'textarea', '', 'Bot nimpustundi (--push-theme-data). Format: {"items":[{"title":"..","link":"..","time":"..","tag":".."}]}' ),
 				'breaking_enabled' => array( 'Breaking news section ON (v72 default OFF)', 'check', '0', 'OFF lo site lo ticker/section render avvadu (feed data intact unthundi)' ),
 				'qual_filter' => array( 'Qualification filter (10th · 10+2 · Degree · PG)', 'check', '1', 'Chips on home/archive — the tag is set automatically when a post is saved' ),
+				'join_cta_inline' => array( 'Mid-article join strip (WhatsApp/Telegram)', 'check', '1', '2nd para tarvata compact join box — same social options (owner number/username)' ),
 			),
 		),
 		'advanced' => array(
@@ -81,8 +83,12 @@ function studentup_option_fields() {
 				'news_sitemap'    => array( 'Google News sitemap (/news-sitemap.xml)', 'check', '1', 'Discover/News ki 48h posts + images' ),
 				'comments_on'  => array( 'Comments ON (engagement + freshness signal)', 'check', '1', 'OFF chesthe post lo comment form render avvadu' ),
 				'security_hardening' => array( 'Security hardening (headers · XML-RPC off · enumeration block)', 'check', '1', 'Default ON — adi 100% safe (REST bot ki impact ledu)' ),
+				'hsts_enforce' => array( 'HSTS enforce (HTTPS only)', 'check', '0', 'v81: SSL live confirm ayyaka matrame ON (HTTP staging lo lock risk)' ),
 				'content_visibility' => array( 'content-visibility (below-fold render skip → fast)', 'check', '1', 'LCP/INP improvement — modern browsers lo mattrame' ),
 				'indexnow_key' => array( 'IndexNow key (hex, 8+ chars)', 'text', '', 'Bot nimpustundi — /<key>.key file automatic ga serve avutundi (Bing/Yandex instant indexing)' ),
+				'redirects_json' => array( '301 redirects (JSON)', 'textarea', '', 'v80: {"/old-url/": "/new-url/"} — slug marina old links 404 kakunda 301 (chain/loop safe, relative paths only)' ),
+				'ga4_id' => array( 'GA4 Measurement ID', 'text', '', 'v80: G-XXXXXXXXXX — consent-aware analytics (EEA regions lo consent varaku hold, India lo direct)' ),
+				'gsc_verify' => array( 'Search Console verification', 'text', '', 'v80: GSC → Settings → Ownership verification → HTML tag content value (meta tag auto)' ),
 			),
 		),
 	);
@@ -244,7 +250,7 @@ function studentup_rest_get_options() {
 			'theme'       => 'studentup',
 			'version'     => defined( 'STUDENTUP_VERSION' ) ? STUDENTUP_VERSION : '',
 			'socials'     => array(
-				'whatsapp'  => studentup_opt( 'social_whatsapp', '919999999999' ),
+				'whatsapp'  => studentup_opt( 'social_whatsapp', '9182739312' ),
 				'telegram'  => studentup_opt( 'social_telegram', 'studentup_in' ),
 				'instagram' => studentup_opt( 'social_instagram', 'studentup.in' ),
 				'youtube'   => studentup_opt( 'social_youtube', '@studentupin' ),
@@ -288,10 +294,39 @@ function studentup_rest_set_options( WP_REST_Request $request ) {
 }
 
 /**
+ * WhatsApp number normalizer — owner 10-digit mobile ichina (9182739312),
+ * +91 tho ichina (+919182739312), 0 tho ichina — anni cases lo wa.me ki
+ * panikocche digits (919182739312) vastayi. International numbers ni munchamu.
+ */
+function studentup_wa_number( $raw = '' ) {
+	$d = preg_replace( '/[^0-9]/', '', (string) $raw );
+	$d = ltrim( $d, '0' );
+	if ( 10 === strlen( $d ) && preg_match( '/^[6-9]/', $d ) ) {
+		return '91' . $d;
+	}
+	if ( 12 === strlen( $d ) && 0 === strpos( $d, '91' ) ) {
+		return $d;
+	}
+	return $d;
+}
+
+/**
+ * Call/display number — user ki +91 lekunda 10-digit (9182739312).
+ */
+function studentup_call_number( $raw = '' ) {
+	$d = preg_replace( '/[^0-9]/', '', (string) $raw );
+	$d = ltrim( $d, '0' );
+	if ( 12 === strlen( $d ) && 0 === strpos( $d, '91' ) ) {
+		$d = substr( $d, 2 );
+	}
+	return $d;
+}
+
+/**
  * Social URLs — options nunchi (footer/header ki).
  */
 function studentup_social_links() {
-	$wa  = preg_replace( '/[^0-9]/', '', (string) studentup_opt( 'social_whatsapp', '919999999999' ) );
+	$wa  = studentup_wa_number( studentup_opt( 'social_whatsapp', '9182739312' ) );
 	$tg  = ltrim( (string) studentup_opt( 'social_telegram', 'studentup_in' ), '@' );
 	$ig  = ltrim( (string) studentup_opt( 'social_instagram', 'studentup.in' ), '@' );
 	$yt  = (string) studentup_opt( 'social_youtube', '@studentupin' );

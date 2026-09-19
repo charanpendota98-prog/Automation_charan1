@@ -6,7 +6,6 @@ escape + CLS + unsafe-link drop), injection (top/mid/bottom slots, no-op,
 link-adjacency skip), demo page + CLI. No network, no WP.
 """
 import sys
-import json
 import tempfile
 from pathlib import Path
 from datetime import date

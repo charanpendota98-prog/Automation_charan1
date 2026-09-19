@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 function studentup_cta_internet_center() {
 	$soc   = studentup_social_links();
-	$phone = preg_replace( '/[^0-9+]/', '', (string) studentup_opt( 'social_whatsapp', '' ) );
+	$phone = studentup_call_number( studentup_opt( 'social_whatsapp', '' ) );
 	$tel   = $phone ? 'tel:' . $phone : '';
 	$mail  = studentup_contact_email();
 	?>
@@ -81,3 +81,54 @@ function studentup_cta_section() {
 	studentup_cta_internet_center();
 	studentup_cta_join();
 }
+
+/**
+ * v79: compact mid-article join strip (Telegram + WhatsApp).
+ *
+ * DELIBERATE markup rules: div/span/strong/a ONLY — no <p> (ad injector
+ * counts </p> for position) and no <h2> (TOC scans headings). Same social
+ * options as rail/footer — owner changes once, everywhere follows.
+ */
+function studentup_cta_join_inline() {
+	$soc = studentup_social_links();
+	?>
+	<div class="su-join-inline" role="complementary" aria-label="<?php esc_attr_e( 'Join our channels', 'studentup' ); ?>">
+		<span class="su-join-inline-txt"><strong>📲 <?php esc_html_e( 'Free job alerts on your phone', 'studentup' ); ?></strong>
+			<span><?php esc_html_e( 'Jobs · results · hall tickets — first on WhatsApp / Telegram.', 'studentup' ); ?></span></span>
+		<span class="su-join-inline-btns">
+			<a class="su-join-wa" href="<?php echo esc_url( $soc['whatsapp'] ); ?>" target="_blank" rel="noopener"><?php esc_html_e( 'Join WhatsApp', 'studentup' ); ?></a>
+			<a class="su-join-tg" href="<?php echo esc_url( $soc['telegram'] ); ?>" target="_blank" rel="noopener"><?php esc_html_e( 'Join Telegram', 'studentup' ); ?></a>
+		</span>
+	</div>
+	<?php
+}
+
+/**
+ * v79: inject the strip after the 2nd paragraph of single posts.
+ * Priority 12 = before the in-article ad (20); the strip has no </p>
+ * so the ad still lands after the 3rd ORIGINAL paragraph.
+ */
+function studentup_inject_join_cta( $content ) {
+	if ( ! is_singular( 'post' ) || ! in_the_loop() || ! is_main_query() || is_feed() ) {
+		return $content;
+	}
+	if ( '0' === (string) studentup_opt( 'join_cta_inline', '1' ) ) {
+		return $content;
+	}
+	if ( false !== strpos( $content, 'su-join-inline' ) ) {
+		return $content;   // already inject ayyindi (double render ledu)
+	}
+	$parts = explode( '</p>', $content, 3 );
+	if ( count( $parts ) < 3 ) {
+		return $content;   // 2 paragraphs kanna takkuva → strip vaddu
+	}
+	ob_start();
+	studentup_cta_join_inline();
+	$strip = trim( (string) ob_get_clean() );
+	if ( '' === $strip ) {
+		return $content;
+	}
+	return $parts[0] . '</p>' . $parts[1] . '</p>'
+		. '<!--su-join-inline-->' . $strip . $parts[2];
+}
+add_filter( 'the_content', 'studentup_inject_join_cta', 12 );

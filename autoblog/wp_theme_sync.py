@@ -53,7 +53,11 @@ def build_payload(root: Optional[Path] = None,
         try:
             data = json.loads(house.read_text(encoding="utf-8"))
             rows = data if isinstance(data, list) else data.get("ads", [])
-            out["house_ads"] = [x for x in rows if isinstance(x, dict)][:6]
+            # active + valid link unna promos matrame live theme ki (dead/dummy leak avvadu)
+            live = [x for x in rows
+                    if isinstance(x, dict) and x.get("active", True)
+                    and str(x.get("link") or "").strip().startswith("http")]
+            out["house_ads"] = live[:6]
         except Exception as exc:  # noqa: BLE001
             log.debug("house ads read skip: %s", exc)
 

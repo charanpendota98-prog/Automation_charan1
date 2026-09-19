@@ -84,9 +84,83 @@ def _load_font(size: int) -> ImageFont.FreeTypeFont:
     return ImageFont.load_default()
 
 
+# v87: Telugu → Latin (PIL has no Indic shaping — no raqm on server —
+# Telugu renders as tofu boxes □□□. Transliterated bold Latin = readable
+# thumbnails everywhere, deterministic local == server).
+_TE_VOWELS = {"అ": "a", "ఆ": "aa", "ఇ": "i", "ఈ": "ee", "ఉ": "u", "ఊ": "oo",
+              "ఋ": "ru", "ౠ": "roo", "ఎ": "e", "ఏ": "e", "ఐ": "ai", "ఒ": "o",
+              "ఓ": "o", "ఔ": "au"}
+_TE_CONS = {"క": "k", "ఖ": "kh", "గ": "g", "ఘ": "gh", "ఙ": "n", "చ": "ch",
+            "ఛ": "chh", "జ": "j", "ఝ": "jh", "ఞ": "n", "ట": "t", "ఠ": "th",
+            "డ": "d", "ఢ": "dh", "ణ": "n", "త": "t", "థ": "th", "ద": "d",
+            "ధ": "dh", "న": "n", "ప": "p", "ఫ": "ph", "బ": "b", "భ": "bh",
+            "మ": "m", "య": "y", "ర": "r", "ల": "l", "వ": "v", "శ": "sh",
+            "ష": "sh", "స": "s", "హ": "h", "ళ": "l", "ఱ": "r", "క్ష": "ksh"}
+_TE_MATRAS = {"ా": "aa", "ి": "i", "ీ": "ee", "ు": "u", "ూ": "oo",
+              "ృ": "ru", "ౄ": "roo", "ె": "e", "ే": "e", "ై": "ai",
+              "ొ": "o", "ో": "o", "ౌ": "au", "ం": "m", "ః": "h"}
+_TE_DIGITS = {"౦": "0", "౧": "1", "౨": "2", "౩": "3", "౪": "4",
+              "౫": "5", "౬": "6", "౭": "7", "౮": "8", "౯": "9"}
+_TE_VIRAMA = "్"
+
+
+def telugu_to_latin(text: str) -> str:
+    """Telugu runs → readable Latin (banner thumbnails kosam)."""
+    out: list = []
+    i, n = 0, len(text)
+    while i < n:
+        ch = text[i]
+        if ch in _TE_CONS:
+            base = _TE_CONS[ch]
+            j = i + 1
+            while j + 1 < n and text[j] == _TE_VIRAMA \
+                    and text[j + 1] in _TE_CONS:
+                base += _TE_CONS[text[j + 1]]
+                j += 2
+            if j < n and text[j] == _TE_VIRAMA:
+                out.append(base)
+                i = j + 1
+                continue
+            if j < n and text[j] in _TE_MATRAS:
+                out.append(base + _TE_MATRAS[text[j]])
+                i = j + 1
+                continue
+            out.append(base + "a")
+            i = j
+            continue
+        if ch in _TE_VOWELS:
+            out.append(_TE_VOWELS[ch])
+        elif ch in _TE_DIGITS:
+            out.append(_TE_DIGITS[ch])
+        else:
+            out.append(ch)
+        i += 1
+    return "".join(out)
+
+
+def _split_word(draw, word: str, font, max_width: int) -> list:
+    """v87: max_width kanna pedda single token → mid-word hard-break
+    (URL/long-compound canvas overflow fix)."""
+    if draw.textlength(word, font=font) <= max_width:
+        return [word]
+    parts, cur = [], ""
+    for ch in word:
+        if cur and draw.textlength(cur + ch, font=font) > max_width:
+            parts.append(cur)
+            cur = ch
+        else:
+            cur += ch
+    if cur:
+        parts.append(cur)
+    return parts or [word]
+
+
 def _wrap(draw: ImageDraw.ImageDraw, text: str, font, max_width: int,
            max_lines: int = 3) -> list:
-    words, lines, cur = text.split(), [], ""
+    words: list = []
+    for tok in text.split():
+        words.extend(_split_word(draw, tok, font, max_width))
+    lines, cur = [], ""
     for word in words:
         trial = (cur + " " + word).strip()
         if draw.textlength(trial, font=font) <= max_width:
@@ -142,16 +216,31 @@ def _center_lines(draw, lines, font, w, y0, lh, fill=(255, 255, 255)):
     return y0
 
 
+def _fit_banner(draw, text: str, size: int, max_w: int, max_h: int,
+                lh_pad: int = 12):
+    """v87: text box loki fit — shrink until lines*height fits
+    (3-line bottom overflow → footer collide fix)."""
+    size = max(28, size)
+    while size > 28:
+        font = _load_font(size)
+        lines = _wrap(draw, text, font, max_w, max_lines=3)
+        if len(lines) * (size + lh_pad) <= max_h:
+            return font, lines
+        size -= 6
+    font = _load_font(size)
+    return font, _wrap(draw, text, font, max_w, max_lines=2)
+
+
 def _draw_layout(img: Image.Image, draw: ImageDraw.ImageDraw, w: int, h: int,
                  banner_text: str, category: str, variant: str) -> None:
     """v24 layouts — every glyph centered inside the safe band."""
     year = str(date.today().year)
     label_font = _load_font(int(h * 0.044))
     brand_font = _load_font(int(h * 0.036))
-    label = _pill_label(category)
+    label = telugu_to_latin(_pill_label(category))
     brand = config.SITE_BRAND
-    tf = _load_font(int(h * 0.098))
-    lines = _wrap(draw, banner_text[:64], tf, int(w * 0.54), max_lines=3)
+    text = telugu_to_latin(banner_text[:64])
+    base_size = int(h * 0.098)
 
     if variant == "center":
         # soft full-width card behind centered text (magazine style)
@@ -161,6 +250,8 @@ def _draw_layout(img: Image.Image, draw: ImageDraw.ImageDraw, w: int, h: int,
         _center_pill(draw, label, label_font, ACCENT + (250,), (20, 20, 30),
                      int(h * 0.185), w)
         y = int(h * 0.33)
+        tf, lines = _fit_banner(draw, text, base_size, int(w * 0.54),
+                                int(h * 0.755) - 30 - y)
         y = _center_lines(draw, lines, tf, w, y, tf.size + 12)
         draw.rectangle([w / 2 - 70, y + 14, w / 2 + 70, y + 20], fill=ACCENT)
         _center_lines(draw, [f"{brand}  \u00b7  {year}"], brand_font, w,
@@ -172,6 +263,8 @@ def _draw_layout(img: Image.Image, draw: ImageDraw.ImageDraw, w: int, h: int,
         _center_pill(draw, f"{label}  \u00b7  {year}", label_font,
                      (255, 255, 255, 240), (25, 25, 45), int(h * 0.085), w)
         y = int(h * 0.32)
+        tf, lines = _fit_banner(draw, text, base_size, int(w * 0.54),
+                                int(h * 0.80) - 30 - y)
         y = _center_lines(draw, lines, tf, w, y, tf.size + 12)
         draw.rectangle([w / 2 - 80, y + 12, w / 2 + 80, y + 18], fill=ACCENT)
         _center_pill(draw, brand, brand_font, (10, 12, 30, 150),
@@ -184,8 +277,10 @@ def _draw_layout(img: Image.Image, draw: ImageDraw.ImageDraw, w: int, h: int,
     draw.line([0, panel_y0, w, panel_y0], fill=ACCENT + (255,), width=4)
     _center_pill(draw, label, label_font, (255, 255, 255, 235),
                  (25, 25, 45), int(h * 0.07), w)
-    y = _center_lines(draw, lines, tf, w, panel_y0 + int(h * 0.075),
-                      tf.size + 10)
+    y0 = panel_y0 + int(h * 0.075)
+    tf, lines = _fit_banner(draw, text, base_size, int(w * 0.54),
+                            int(h * 0.905) - 30 - y0, lh_pad=10)
+    y = _center_lines(draw, lines, tf, w, y0, tf.size + 10)
     draw.rectangle([w / 2 - 70, y + 12, w / 2 + 70, y + 18], fill=ACCENT)
     _center_lines(draw, [f"{brand}  \u00b7  {year}"], brand_font, w,
                   int(h * 0.905), brand_font.size, fill=(255, 255, 255, 210))
@@ -241,8 +336,14 @@ def generate_featured_image(
         _draw_layout(img, draw, w, h, banner_text, category, variant)
 
         out_path.parent.mkdir(parents=True, exist_ok=True)
-        img.convert("RGB").save(str(out_path), "JPEG", quality=86,
-                               optimize=True, progressive=True)
+        # v81 (§22): format follows extension — .webp (small) default for
+        # new posts, explicit .jpg callers (tests/variants) keep JPEG.
+        if str(out_path).lower().endswith(".webp"):
+            img.convert("RGB").save(str(out_path), "WEBP", quality=82,
+                                   method=6)
+        else:
+            img.convert("RGB").save(str(out_path), "JPEG", quality=86,
+                                   optimize=True, progressive=True)
         return out_path
     except Exception:
         log.exception("Featured image generation failed — continuing without image")

@@ -46,6 +46,12 @@ function studentup_security_headers() {
 	header( 'Referrer-Policy: strict-origin-when-cross-origin' );
 	header( 'Permissions-Policy: geolocation=(), microphone=(), camera=()' );
 	header( 'Cross-Origin-Opener-Policy: same-origin-allow-popups' );
+	// v81 (§76): HSTS — HTTPS live + SSL confirm ayyaka owner ON cheyali
+	// (default OFF: HTTP staging lo ON chesthe site lock avtundi).
+	// CSP deliberate skip: AdSense/GA4/YouTube embeds break risk (§76 rule).
+	if ( '1' === (string) studentup_opt( 'hsts_enforce', '0' ) && is_ssl() ) {
+		header( 'Strict-Transport-Security: max-age=31536000; includeSubDomains' );
+	}
 }
 add_action( 'send_headers', 'studentup_security_headers' );
 

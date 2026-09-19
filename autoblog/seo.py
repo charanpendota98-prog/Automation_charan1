@@ -13,7 +13,7 @@ import re
 from typing import Dict, List, Optional
 from urllib.parse import urlparse
 
-from . import config
+from . import config, validator
 
 log = logging.getLogger("autoblog.seo")
 
@@ -25,6 +25,10 @@ def _slugify_id(text: str, index: int) -> str:
 
 def add_table_of_contents(html: str) -> str:
     """First paragraph tarvata TOC insert chestundi + h2 anchors."""
+    # v84: idempotent — rm100 already TOC pedithe malli vaddu
+    # (production posts lo DOUBLE TOC boxes vachayi — user-visible bug!).
+    if "su-toc" in html:
+        return html
     h2s = re.findall(r"<h2[^>]*>(.*?)</h2>", html, flags=re.S)
     if len(h2s) < 3:
         return html
@@ -74,6 +78,7 @@ RELATED_HEADINGS = [
     "మరిన్ని ఉపయోగకరమైన ఆర్టికల్స్",
     "ఇవి కూడా చదవండి",
     "సంబంధిత ఆర్టికల్స్",
+    "వీటిని కూడా చదవండి",
 ]
 
 
@@ -101,8 +106,10 @@ def add_internal_links(html: str, links: List[Dict[str, str]], seed: str = "") -
     """Related articles section (internal links) — heading rotate avtundi."""
     if not links:
         return html
+    # v86: long titles truncate (mobile) — read-also `_short_title` merge
     items = "".join(
-        f'<li><a href="{l["link"]}">{l["title"]}</a></li>' for l in links
+        f'<li><a href="{l["link"]}">{_esc(_short_title(l["title"]))}</a></li>'
+        for l in links[:6]
     )
     heading = _pick(RELATED_HEADINGS, seed)
     section = ('<section class="su-related" aria-labelledby="related-articles">'
@@ -223,12 +230,10 @@ def byline_block(slug: str, date_str: str) -> str:
 
 def deadline_badge(apply_end: str) -> str:
     """Countdown box — notification lo last date UNTE matrame (never invented)."""
-    from datetime import date as _date
-
     end = _parse_iso(apply_end)
     if not end:
         return ""
-    days = (end - _date.today()).days
+    days = (end - validator.ist_today()).days  # v84: IST (server UTC kaadu)
     pretty = end.strftime("%d-%b-%Y")
     if days < 0:
         return (
@@ -290,14 +295,12 @@ def jobposting_obj(recruitment, title: str, description: str,
     """Google-for-Jobs eligibility rules (2026): required fields COMPLETE ga
     future validThrough tho matrame emit — fake/incomplete data = manual action.
     Returns dict or None (silent skip)."""
-    from datetime import date as _date
-
     rec = recruitment or {}
     if not getattr(config, "JOB_SCHEMA_ENABLED", True):
         return None
     org = (rec.get("org_name") or "").strip()
     end = _parse_iso(rec.get("apply_end"))
-    if not org or not end or (end - _date.today()).days < 0:
+    if not org or not end or (end - validator.ist_today()).days < 0:  # v84 IST
         return None  # expired/unknown deadline → Google Jobs lo list cheyakudadu
     desc = (description or "").strip()
     if len(desc) < 100:
@@ -307,7 +310,7 @@ def jobposting_obj(recruitment, title: str, description: str,
         "@type": "JobPosting",
         "title": title[:110],
         "description": desc[:300],
-        "datePosted": (date_published or _date.today().isoformat())[:10],
+        "datePosted": (date_published or validator.ist_today().isoformat())[:10],
         "validThrough": end.isoformat() + "T23:59:59+05:30",
         "hiringOrganization": {
             "@type": "Organization", "name": org[:100],
@@ -527,24 +530,18 @@ def enhance(
                                   date_modified or date_str) + html
     # v20: visible real byline (Google News/E-E-A-T)
     html = byline_block(slug, date_modified or date_str) + html
-    # v29: visible breadcrumb complements BreadcrumbList JSON-LD.
-    html = breadcrumb_block(category, title or focus_keyword) + html
+    # v86: visible breadcrumb REMOVED — theme single.php already renders
+    # `.crumbs` (studentup_breadcrumbs); content copy = DOUBLE breadcrumbs
+    # on every auto post. BreadcrumbList JSON-LD schema intact (untouched).
     # v19: deadline countdown (playbook — notification lo real date UNTE matrame)
     html = deadline_badge((recruitment or {}).get("apply_end", "")) + html
     # v29: structured facts card uses only model/source-backed values.
     html = key_facts_block(recruitment) + html
     html = add_table_of_contents(html)
+    # v86: ONE related block (su-related) — read-also duplicate delete
+    # (same links tho rendu sections = unprofessional; v86 probe finding)
     html = add_internal_links(html, internal_links, seed=slug)
     html = add_external_links(html, external_links)
-    # Read-also block: article end lo related posts (session time + crawl)
-    if internal_links:
-        items = "".join(
-            f'<li><a href="{l["link"]}" internal="true">'
-            f'{_esc(_short_title(l["title"]))}</a></li>'
-            for l in internal_links[:4]
-        )
-        html += ('<h2 id="read-also">వీటిని కూడా చదవండి</h2>'
-                 f'<ul>{items}</ul>')
     # v21: related-questions PAA block (own content, honest answers)
     html += related_questions_block(html, focus_keyword)
     html += trust_box(date_modified or date_str, source_domains)

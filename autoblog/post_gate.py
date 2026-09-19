@@ -380,7 +380,7 @@ def run(article: dict, html: str = "", media_id: Optional[int] = None,
         "run.py --adsense-kit", 1)
 
     # ------------------------------------------------------------ FRESHNESS
-    today = date.today()
+    today = validator.ist_today()  # v84: IST (server UTC kaadu)
     pub = (article.get("date_published") or "").strip()[:10]
     pub_ok = True
     if pub:

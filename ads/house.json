@@ -29,14 +29,14 @@
       "house": true
     },
     {
-      "id": "house-live-exam",
-      "name": "StudentUp live exam",
+      "id": "house-jobs",
+      "name": "StudentUp latest opportunities",
       "type": "house",
       "layout": "card",
-      "title": "ఉచిత లైవ్ నమూనా పరీక్ష — స్కోరు + ర్యాంకు వెంటనే",
-      "description": "కాలేజీలు మరియు విద్యార్థుల కోసం StudentUp పరీక్షల పోర్టల్ — ఆటో టైమర్, ఫలితాలు, ఎగ్జిట్ సారాంశం.",
-      "cta": "పరీక్ష ప్రయత్నించండి",
-      "link": "https://studentup.in/#exam",
+      "title": "తాజా అవకాశాలు — TS · AP · కేంద్ర ఉద్యోగాలు",
+      "description": "ఫ్యాక్ట్-చెక్ చేసిన గైడ్‌లు — నోటిఫికేషన్లు, హాల్ టికెట్లు, ఫలితాలు. రోజూ కొత్తవి.",
+      "cta": "అవకాశాలు చూడండి",
+      "link": "https://studentup.in/#jobs",
       "label": "StudentUp · మా సేవ",
       "active": true,
       "house": true

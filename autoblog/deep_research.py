@@ -41,7 +41,6 @@ from typing import Dict, List, Optional, Sequence, Tuple
 from urllib.parse import urlparse
 
 from . import config
-from .sources import SourceArticle
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 

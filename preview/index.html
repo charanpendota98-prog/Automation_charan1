@@ -128,14 +128,13 @@
       font:inherit;font-size:13.5px;background:var(--bg);color:var(--ink)}
     .searchpanel input:focus{outline:2px solid var(--blue);outline-offset:1px}
     .spanel-icon{font-size:15px;opacity:.7}
-    /* v72: qualification-wise job filter */
+    /* v76: qualification dropdown (chips → select: mobile-best + accessible + counts) */
     .qrow{margin-top:2px}
-    .qchip{background:#fff7ee;border-color:#f6d9b8;color:#8a4d00}
-    .qchip.active{background:linear-gradient(135deg,#ed8a32,#d9741f);border-color:#d9741f;color:#fff}
-    .soonchip{background:#eef6ff;border-color:#cfe0f7;color:#1d4f9c}
-    .soonchip.active{background:linear-gradient(135deg,#2463b7,#0f2e62);border-color:#0f2e62;color:#fff}
-    body.dark .qchip{background:#2a2013;border-color:#4a3a22;color:#ffc88a}
-    body.dark .soonchip{background:#132743;border-color:#24456f;color:#9dc2ff}
+    .qualwrap{display:inline-flex;align-items:center;gap:10px;flex-wrap:wrap}
+    .quallabel{font-size:12px;font-weight:800;color:var(--navy);white-space:nowrap}
+    .qualsel{appearance:none;-webkit-appearance:none;border:1px solid #f6d9b8;background-color:#fff7ee;color:#8a4d00;font:inherit;font-size:13px;font-weight:700;border-radius:12px;padding:10px 36px 10px 14px;cursor:pointer;max-width:min(100%,320px);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%238a4d00' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center}
+    .qualsel:focus{outline:2px solid var(--blue);outline-offset:1px}
+    body.dark .qualsel{background-color:#2a2013;border-color:#4a3a22;color:#ffc88a}
     .qcount{margin-left:auto;font-size:11.5px;font-weight:700;color:var(--muted)}
     .qbadge{display:inline-block;border-radius:999px;padding:2px 9px;font-size:10px;font-weight:800}
     .qbadge.soon{background:#fff3e2;color:#9a5b00;border:1px solid #f3d6ae}
@@ -687,7 +686,7 @@
     <a href="pages/privacy.html"><span class="mico" aria-hidden="true">🔒</span>Privacy Policy</a>
     <a class="mcta" href="#quiz">🧠 Daily Quiz — try now</a>
     <div class="msocial" aria-label="Follow us">
-      <a href="https://wa.me/919999999999?text=StudentUp.in%20iniki%20question%20unnadi" target="_blank" rel="noopener">WhatsApp</a>
+      <a href="https://wa.me/919182739312?text=StudentUp.in%20iniki%20question%20unnadi" target="_blank" rel="noopener">WhatsApp</a>
       <a href="https://t.me/studentup_in" target="_blank" rel="noopener">Telegram</a>
       <a href="https://www.instagram.com/studentup.in" target="_blank" rel="noopener">Instagram</a>
       <a href="https://www.youtube.com/@studentupin" target="_blank" rel="noopener">YouTube</a>
@@ -753,24 +752,28 @@
         <button class="chip" data-cat="examtips">Exam Tips</button>
         <button class="chip" data-cat="parttime">Part-time</button>
       </div>
-      <div class="catrow qrow" role="tablist" aria-label="Jobs by qualification">
-        <span class="catlabel" aria-hidden="true">Qualification:</span>
-        <button class="chip qchip active" data-qual="all">All</button>
-        <button class="chip qchip" data-qual="10th">10th</button>
-        <button class="chip qchip" data-qual="inter">Inter (10+2)</button>
-        <button class="chip qchip" data-qual="iti">ITI</button>
-        <button class="chip qchip" data-qual="diploma">Diploma</button>
-        <button class="chip qchip" data-qual="degree">Degree</button>
-        <button class="chip qchip" data-qual="pg">PG</button>
-        <button class="chip qchip" data-qual="btech">B.Tech</button>
-        <button class="chip qchip soonchip" data-qual="closing">⏳ Closing in 7 days</button>
+      <div class="catrow qrow">
+        <span class="qualwrap">
+          <label class="quallabel" for="qualsel">🎓 Qualification:</label>
+          <select id="qualsel" class="qualsel" aria-label="Filter jobs by qualification">
+            <option value="all">All qualifications</option>
+            <option value="10th">10th Pass</option>
+            <option value="inter">Inter (10+2)</option>
+            <option value="iti">ITI</option>
+            <option value="diploma">Diploma</option>
+            <option value="degree">Degree</option>
+            <option value="pg">PG</option>
+            <option value="btech">B.Tech</option>
+            <option value="closing">⏳ Closing in 7 days</option>
+          </select>
+        </span>
         <span class="qcount" id="qcount" aria-live="polite"></span>
       </div>
       <div class="newsgrid" id="grid">
         <!-- v46: IN-FEED native ad (blends with grid — high CTR; not .news so filters never hide ads) -->
         <aside class="su-ad su-ad-feed" aria-label="Sponsored content" data-ad="tuition-feed-demo" data-slot="in-feed">
           <div class="su-ad-kicker">SPONSORED · SLOT AVAILABLE</div>
-          <div class="fthumb" aria-hidden="true">Your brand<br>right here<br>Your brand here</div>
+          <div class="fthumb" aria-hidden="true">Your brand<br>right here</div>
           <h3>Your ad in this slot — straight to students searching for jobs</h3>
           <p>Colleges · coaching · stationery · hostels — for local partners.</p>
           <a class="fcta" href="pages/advertise.html" rel="sponsored nofollow">Partner with us →</a>
@@ -950,7 +953,7 @@
         <p class="join-te">Jobs · notifications · results — first on our WhatsApp / Telegram.</p>
       </div>
       <div class="join-cta">
-        <a class="join-wa" data-wa="channel" href="https://wa.me/919999999999?text=StudentUp%20updates%20kavali" target="_blank" rel="noopener">WhatsApp updates</a>
+        <a class="join-wa" data-wa="channel" href="https://wa.me/919182739312?text=StudentUp%20updates%20kavali" target="_blank" rel="noopener">WhatsApp updates</a>
         <a class="join-tg" href="https://t.me/studentup_in" target="_blank" rel="noopener">Telegram channel</a>
         <small>100% free · no calls · 1–3 updates a day</small>
       </div>
@@ -989,12 +992,12 @@
           <li><b>We apply &amp; send the PDF</b> — your filled application reaches you at the lowest service charge.</li>
         </ol>
         <p class="ic-te">We fill the whole application — the PDF is sent to you.</p>
-        <a class="wa-box" data-wa="service" href="https://wa.me/919999999999?text=StudentUp%20Students%20Internet%20Center%20-%20naa%20documents%20pampistanu" target="_blank" rel="noopener">
+        <a class="wa-box" data-wa="service" href="https://wa.me/919182739312?text=StudentUp%20Students%20Internet%20Center%20-%20naa%20documents%20pampistanu" target="_blank" rel="noopener">
           <span class="wa-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.55-1.342-.797-1.937-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></span>
           <span class="wa-txt"><b>WhatsApp your documents</b><small>Tap to open our WhatsApp — we reply fast</small></span>
         </a>
         <div class="service-actions">
-          <a href="tel:+919999999999">📞 Call now</a>
+          <a href="tel:9182739312">📞 Call now</a>
           <a class="alt" href="mailto:studentupinformative@gmail.com">✉️ Email</a>
         </div>
       </div>
@@ -1036,11 +1039,11 @@
     <a href="#services"><b>☎</b>Help</a>
   </nav>
   <!-- v45: SOCIAL RAIL — right side, vertically centered.
-       PLACEHOLDER HANDLES: replace 919999999999 / studentup_in /
-       studentup.in / @studentupin with mee real handles (search "su-social") -->
+       Owner-verified: WhatsApp 919182739312 + t.me/studentup_in +
+       youtube @studentupin (ivi real handles ayyunte ok, leda marchandi) -->
   <nav class="su-social" id="surail" aria-label="StudentUp social links">
     <button type="button" class="su-close" id="suclose" aria-label="Hide social icons">✕</button>
-    <a class="su-wa" data-label="WhatsApp" href="https://wa.me/919999999999?text=StudentUp.in%20iniki%20question%20unnadi" target="_blank" rel="noopener" aria-label="WhatsApp">
+    <a class="su-wa" data-label="WhatsApp" href="https://wa.me/919182739312?text=StudentUp.in%20iniki%20question%20unnadi" target="_blank" rel="noopener" aria-label="WhatsApp">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.55-1.342-.797-1.937-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
     </a>
     <a class="su-tg" data-label="Telegram" href="https://t.me/studentup_in" target="_blank" rel="noopener" aria-label="Telegram">
@@ -1207,12 +1210,36 @@
     buildQualSections();
 
     Array.prototype.forEach.call(cards,decorate);
-    Array.prototype.forEach.call(document.querySelectorAll(".qchip"),function(ch){
-      ch.addEventListener("click",function(){
-        Array.prototype.forEach.call(document.querySelectorAll(".qchip"),function(x){x.classList.remove("active");});
-        ch.classList.add("active"); activeQual=ch.getAttribute("data-qual")||"all"; applyFilter();
+    /* v76: qualification dropdown — live counts + shareable ?qual= URL */
+    var qualSel=document.getElementById("qualsel");
+    if(qualSel){
+      Array.prototype.forEach.call(qualSel.options,function(o){
+        if(o.value==="all"||o.value==="closing") return;
+        var n=0;
+        Array.prototype.forEach.call(document.querySelectorAll("#grid .news"),function(c){
+          var left=daysLeft(c); if(left!==null&&left<0) return;
+          if((c.getAttribute("data-qual")||"").toLowerCase().indexOf(o.value)>-1) n++;
+        });
+        if(n) o.textContent=o.textContent+" ("+n+")";
       });
-    });
+      try{
+        var _qm=(location.search||"").match(/[?&]qual=([a-z0-9]+)/);
+        if(_qm&&qualSel.querySelector('option[value="'+_qm[1]+'"]')){
+          qualSel.value=_qm[1]; activeQual=_qm[1];
+        }
+      }catch(e){}
+      qualSel.addEventListener("change",function(){
+        activeQual=qualSel.value||"all";
+        try{
+          var url=new URL(location.href);
+          if(activeQual==="all") url.searchParams.delete("qual");
+          else url.searchParams.set("qual",activeQual);
+          history.replaceState({},"",url.toString());
+        }catch(e){}
+        applyFilter();
+      });
+      if(activeQual!=="all") applyFilter();
+    }
     Array.prototype.forEach.call(document.querySelectorAll(".tab"),function(t){
       t.addEventListener("click",function(){
         Array.prototype.forEach.call(document.querySelectorAll(".tab"),function(x){x.classList.remove("active");});

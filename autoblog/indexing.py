@@ -198,7 +198,8 @@ def status() -> dict:
 
 def _has_crypto() -> bool:
     try:
-        import cryptography  # noqa: F401
+        import cryptography
+        _ = cryptography  # feature probe (import success = available)
 
         return True
     except ImportError:

@@ -356,7 +356,7 @@ SOURCES_QUEUE_PATH = Path(_get("SOURCES_QUEUE_PATH", str(BASE_DIR / "sources_que
 # Multi-source research: internet lo same topic articles search chesi
 # extra facts teesukuni article ni super-complete chestundi (no API key)
 RESEARCH_ENABLED = _get("RESEARCH_ENABLED", "1") not in ("0", "false", "no")
-RESEARCH_MAX_SOURCES = int(_get("RESEARCH_MAX_SOURCES", "3"))
+RESEARCH_MAX_SOURCES = int(_get("RESEARCH_MAX_SOURCES", "5"))
 SEARCH_ENDPOINT = _get("SEARCH_ENDPOINT", "https://html.duckduckgo.com/html/")
 SEARCH_FALLBACK_ENDPOINT = _get(
     "SEARCH_FALLBACK_ENDPOINT", "https://lite.duckduckgo.com/lite/"

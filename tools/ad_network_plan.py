@@ -33,9 +33,13 @@ from pathlib import Path as _Path
 
 _sys.path.insert(0, str(_Path(__file__).resolve().parents[1]))
 
-from autoblog.ad_advisor import (                        # noqa: E402
-    NETWORKS, assess, default_sessions, parse_views, uplift,  # noqa: F401
+from autoblog.ad_advisor import (  # noqa: E402
+    NETWORKS, assess, default_sessions, parse_views,
 )
+
+# v82: re-export (v56 + CLI use plan.NETWORKS) — __all__ = pyflakes-clean
+__all__ = ["NETWORKS", "assess", "default_sessions", "parse_views",
+           "uplift", "main"]
 
 
 def uplift(base: dict, other: dict) -> tuple[int, int]:

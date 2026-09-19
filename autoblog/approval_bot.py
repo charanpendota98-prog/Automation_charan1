@@ -17,6 +17,7 @@ Commands:
 
 import json
 import logging
+import re
 import sys
 import threading
 import time
@@ -69,13 +70,20 @@ class ApprovalBot:
             # first user to talk to the bot becomes the owner
             state.meta_set(config.STATE_PATH, CHAT_KEY, chat_id)
             registered = chat_id
-            log.info("Telegram owner registered: %s", chat_id)
+            # v82: first-claimer risk — loud warning (terminal/log)
+            log.warning("Telegram owner auto-registered: %s — .env lo "
+                        "TELEGRAM_CHAT_ID=%s set chesi lock cheyandi!",
+                        chat_id, chat_id)
         elif chat_id != registered:
             self.tg("sendMessage", {"chat_id": chat_id,
                                     "text": "⚠️ Ee bot already owner ni untundi. Access ledu."})
             return
 
         if text.startswith("/start"):
+            # v82: .env lock reminder (env lo CHAT_ID lekapote prathi /start lo)
+            lock_hint = ("" if config.TELEGRAM_CHAT_ID else
+                         "\n\n🔐 Security: .env lo TELEGRAM_CHAT_ID=" +
+                         chat_id + " set chesi owner lock cheyandi.")
             self.tg("sendMessage", {
                 "chat_id": chat_id,
                 "text": ("👋 Namaskaram! studentup.in Auto-Blogger lo ki welcome!\n\n"
@@ -87,7 +95,7 @@ class ApprovalBot:
                          "Commands:\n/pending – pending drafts\n"
                          "/stats – statistics\n"
                          "/update ID [url] – post ni kotha info tho improve\n"
-                         "/help – help"),
+                         "/help – help" + lock_hint),
             })
         elif text.startswith("/pending"):
             self.send_pending(chat_id)
@@ -118,15 +126,17 @@ class ApprovalBot:
             })
             threading.Thread(target=self.run_update,
                              args=(pid, chat_id, extra), daemon=True).start()
-        elif text.startswith("http://") or text.startswith("https://"):
-            self.handle_source_url(chat_id, text)
+        elif "http://" in text or "https://" in text:
+            # v85: URL ekkada unna (caption/text tho) extract cheskovali
+            m = re.search(r"https?://\S+", text)
+            self.handle_source_url(chat_id, m.group(0) if m else text)
         else:
             self.tg("sendMessage", {"chat_id": chat_id,
                                     "text": "Ardham kaledu 🤔 — /help try cheyandi."})
 
     def handle_source_url(self, chat_id: str, url: str) -> None:
         """User pasted URL -> 100% original rewrite -> draft + buttons."""
-        from . import pipeline, sources as sources_mod
+        from . import sources as sources_mod
 
         url = url.split()[0]  # URL tarvata extra text unte drop
         if not sources_mod.is_valid_source_url(url):
@@ -145,9 +155,25 @@ class ApprovalBot:
                      "complete article + Rank Math 100% SEO\n"
                      "(2-3 nimishalu patinchandi)"),
         })
+        # v85: pipeline thread lo — polling block ayi bot freeze avvadhu
+        threading.Thread(target=self._run_source_pipeline,
+                         args=(chat_id, url), daemon=True).start()
+
+    def _run_source_pipeline(self, chat_id: str, url: str) -> None:
+        from . import pipeline
         try:
             mock = not config.GEMINI_API_KEY
-            pipeline.create_from_source(url, mock=mock)
+            result = pipeline.create_from_source(url, mock=mock)
+            # v86: pin-gate block = error DICT (exception kaadu!) — silent
+            # success kakunda user ki honest message (live-mode hole).
+            if isinstance(result, dict) and result.get("error"):
+                self.tg("sendMessage", {
+                    "chat_id": chat_id,
+                    "text": ("⛔ Post aapindi (quality gate):\n"
+                             f"{result.get('detail', result['error'])}\n"
+                             "Draft lo save chesi /update tho fix cheyochu."),
+                })
+                return
             # draft aite notify_new_post buttons tho message already pampestundi
         except ValueError as exc:
             self.tg("sendMessage", {"chat_id": chat_id,
@@ -156,7 +182,8 @@ class ApprovalBot:
             log.exception("Source URL processing failed")
             self.tg("sendMessage", {
                 "chat_id": chat_id,
-                "text": f"❌ Source process cheyaledu: {str(exc)[:200]}",
+                "text": ("⚠️ Post create cheyalekapoyanu — "
+                         f"{type(exc).__name__}: {exc}\nMalli try cheyandi 🙏"),
             })
 
     def on_callback(self, cb: dict) -> None:
@@ -164,7 +191,8 @@ class ApprovalBot:
         chat_id = str(cb.get("message", {}).get("chat", {}).get("id", ""))
         data = cb.get("data", "")
         registered = self.registered_chat()
-        if registered and chat_id and chat_id != registered:
+        # v82: fail-closed — owner lekapote callbacks anni deny
+        if not registered or (chat_id and chat_id != registered):
             self.tg("answerCallbackQuery", {"callback_query_id": cb_id,
                                             "text": "⚠️ Access ledu!"})
             return
@@ -266,6 +294,14 @@ class ApprovalBot:
             urls = [extra_url] if extra_url else None
             result = pipeline.update_post(post_id, new_source_urls=urls,
                                           mock=not config.GEMINI_API_KEY)
+            # v86: pin-gate error dict ayina "ayyindi ✔" cheppakudadu!
+            if isinstance(result, dict) and result.get("error"):
+                self.tg("sendMessage", {
+                    "chat_id": chat_id,
+                    "text": ("⛔ Update aapindi (quality gate):\n"
+                             f"{result.get('detail', result['error'])}"),
+                })
+                return
             self.tg("sendMessage", {
                 "chat_id": chat_id,
                 "text": (f"🔄 Post update ayyindi ✔\n{result.get('link', '')}"),

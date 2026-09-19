@@ -169,3 +169,34 @@ function studentup_comments_open( $open ) {
 	return '0' === (string) studentup_opt( 'comments_on', '1' ) ? false : $open;
 }
 add_filter( 'comments_open', 'studentup_comments_open' );
+
+/**
+ * v80 (P16): subcategory chips for category archives (child cats + counts).
+ * Child categories levu → output emi ledu (honest empty, no dummy chips).
+ */
+function studentup_subcat_chips( $cat_id ) {
+	$cat_id = (int) $cat_id;
+	if ( $cat_id <= 0 ) {
+		return;
+	}
+	$kids = get_categories(
+		array(
+			'parent'     => $cat_id,
+			'hide_empty' => true,
+			'number'     => 12,
+		)
+	);
+	if ( ! $kids ) {
+		return;
+	}
+	echo '<nav class="su-subcats" aria-label="Subcategories">';
+	foreach ( $kids as $kid ) {
+		printf(
+			'<a href="%s">%s <span>(%d)</span></a>',
+			esc_url( get_category_link( $kid ) ),
+			esc_html( $kid->name ),
+			(int) $kid->count
+		);
+	}
+	echo '</nav>';
+}

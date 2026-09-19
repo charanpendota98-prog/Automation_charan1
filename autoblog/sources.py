@@ -5,12 +5,13 @@ Copyright-safe approach: source article lo FACTS matrame teesukuntamu
 extra advanced sections tho, Telugu+English mix lo rewrite chestundi.
 """
 
+import json
 import logging
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from io import BytesIO
-from typing import Optional
-from urllib.parse import urlparse
+from typing import List, Optional
+from urllib.parse import urljoin, urlparse
 
 import requests
 from bs4 import BeautifulSoup
@@ -19,9 +20,15 @@ from . import config
 
 log = logging.getLogger("autoblog.sources")
 
-MAX_SOURCE_CHARS = 6000
+MAX_SOURCE_CHARS = 18000  # v85: lengthy sources cut = thin/hallucinated posts
 
 BLOCKED_HOSTS = ("facebook.com", "twitter.com", "x.com", "instagram.com")
+
+# v77: official-link priority — jobs/results/scholarships facts ki gov/edu first.
+OFFICIAL_SUFFIX = (".gov.in", ".nic.in", ".gov", ".edu", ".ac.in", ".edu.in")
+OFFICIAL_HOSTS = ("tspsc.gov.in", "appsc.gov.in", "upsc.gov.in", "ssc.gov.in",
+                  "ibps.in", "rrbcdg.gov.in", "nta.ac.in", "scholarships.gov.in",
+                  "nsdl.co.in", "cbse.gov.in", "bie.ap.gov.in", "bse.telangana.gov.in")
 
 
 @dataclass
@@ -34,6 +41,8 @@ class SourceArticle:
     image_url: str = ""
     published_date: str = ""
     updated_date: str = ""
+    # v77: source page lopala unna useful outbound links (official-first rank).
+    outbound: List[str] = field(default_factory=list)
 
 
 def is_valid_source_url(url: str) -> bool:
@@ -120,6 +129,8 @@ def fetch_source(url: str, retries: int = 2) -> SourceArticle:
         raise ValueError(f"Not an HTML page: {ctype[:60]}")
 
     soup = BeautifulSoup(resp.text, "html.parser")
+    # v85: decompose MUNDU JSON-LD backup (JS-site fallback kosam).
+    jsonld_backup = _jsonld_article_text(soup)
     for tag in soup(["script", "style", "nav", "header", "footer", "aside",
                      "form", "iframe", "noscript", "button", "svg"]):
         tag.decompose()
@@ -168,13 +179,118 @@ def fetch_source(url: str, retries: int = 2) -> SourceArticle:
 
     # main text: prefer <article>, else whole body
     container = soup.find("article") or soup.body or soup
-    paragraphs = [p.get_text(" ", strip=True) for p in container.find_all(["p", "li"])]
-    text = "\n".join(p for p in paragraphs if len(p) > 25)
+    # v85: TABLES + HEADINGS kuda (job vacancy/fee/age tables miss ayithe
+    # LLM facts guess chestundi — hallucination root cause!).
+    chunks = []
+    for el in container.find_all(["h2", "h3", "p", "li", "table"]):
+        if el.name == "table":
+            rows = []
+            for tr in el.find_all("tr"):
+                cells = [c.get_text(" ", strip=True)
+                         for c in tr.find_all(["th", "td"])]
+                cells = [c for c in cells if c]
+                if cells:
+                    rows.append(" | ".join(cells))
+            if rows:
+                chunks.append("TABLE:\n" + "\n".join(rows[:30]))
+        else:
+            t = el.get_text(" ", strip=True)
+            min_len = 3 if el.name in ("h2", "h3") else 25
+            if len(t) > min_len:
+                chunks.append(("[H] " if el.name in ("h2", "h3") else "") + t)
+    text = "\n".join(chunks)
     text = re.sub(r"\n{2,}", "\n", text)
     src.text = text[:MAX_SOURCE_CHARS]
     if not src.text:
+        # v85: JS-site fallback — JSON-LD articleBody (news/SPA sites embed
+        # full text for Google; manam kuda vadukovachu — honest extraction).
+        src.text = jsonld_backup[:MAX_SOURCE_CHARS]
+    if not src.text:
         raise ValueError("Source article lo text dorakaledu (JavaScript site ayi untundi)")
+    # v77: related useful links — content lopala unna outbound (official-first).
+    src.outbound = rank_outbound(_page_links(container, url), url)
     return src
+
+
+def _jsonld_article_text(soup) -> str:
+    """JSON-LD blocks nunchi articleBody/headline/description (JS fallback)."""
+    out = []
+    for tag in soup.find_all("script", attrs={"type": "application/ld+json"}):
+        raw = (tag.string or "").strip()
+        if not raw:
+            continue
+        try:
+            data = json.loads(raw)
+        except Exception:  # noqa: BLE001 — broken JSON-LD skip
+            continue
+        nodes = data if isinstance(data, list) else [data]
+        for node in nodes:
+            if not isinstance(node, dict):
+                continue
+            for key in ("articleBody", "text"):
+                val = node.get(key)
+                if isinstance(val, str) and len(val.strip()) > 100:
+                    out.append(val.strip())
+            if not out:
+                head = node.get("headline") or ""
+                desc = node.get("description") or ""
+                if len((head + desc).strip()) > 100:
+                    out.append((head + "\n" + desc).strip())
+    return "\n".join(out)
+
+
+def _page_links(container, base_url: str) -> List[str]:
+    """Content-area <a href> — boilerplate (nav/footer) mundhe decompose ayindi."""
+    out, seen = [], set()
+    for a in container.find_all("a", href=True):
+        href = (a.get("href") or "").strip()
+        if not href or href.startswith(("#", "javascript:", "mailto:", "tel:")):
+            continue
+        absu = urljoin(base_url, href).split("#")[0]
+        if not is_valid_source_url(absu) or absu in seen:
+            continue
+        seen.add(absu)
+        out.append(absu)
+    return out[:60]
+
+
+def is_official_domain(netloc_or_url: str) -> bool:
+    """v86: gov/edu/nic ⇒ official (pipeline official-links gate)."""
+    host = (netloc_or_url or "").lower()
+    if "://" in host:
+        host = urlparse(host).netloc
+    return _official_score(host) > 0
+
+
+def _official_score(netloc: str) -> int:
+    host = (netloc or "").lower().replace("www.", "")
+    if host in OFFICIAL_HOSTS:
+        return 3
+    if host.endswith(OFFICIAL_SUFFIX):
+        return 2
+    if host.endswith((".org", ".info")):
+        return 1
+    return 0
+
+
+def rank_outbound(links: List[str], page_url: str) -> List[str]:
+    """Outbound links: official-first, same-site de-prioritized, social out."""
+    try:
+        own = urlparse(page_url).netloc.lower().replace("www.", "")
+    except Exception:  # noqa: BLE001
+        own = ""
+    scored = []
+    for i, link in enumerate(links or []):
+        try:
+            host = urlparse(link).netloc.lower().replace("www.", "")
+        except Exception:  # noqa: BLE001
+            continue
+        if not host or any(b in host for b in BLOCKED_HOSTS):
+            continue
+        same = 1 if host == own else 0
+        scored.append((-_official_score(host), same, i, link))
+    scored.sort()
+    return [link for _, _, _, link in scored][:25]
 
 
 # ------------------------------------------------------------------ queue file

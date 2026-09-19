@@ -7,6 +7,7 @@ and retries with backoff on rate limits.
 
 import json
 import logging
+import re
 import time
 from typing import Dict, List, Optional
 
@@ -210,7 +211,7 @@ ARTICLE STRUCTURE (HTML):
 - Use <strong> for key phrases; include one simple <table> (3-5 rows) if a comparison or summary table fits naturally.
 - End with a short conclusion paragraph and then an FAQ section: 3 <h3> questions each followed by a short answer paragraph.
 - Final paragraph: a friendly call-to-action in Telugu asking readers to share the article and ask doubts in comments.
-- Prefer a complete, readable article over a word-count target; usually 1500-2200 words when the topic warrants it. Use ONLY these HTML tags: h2 h3 p ul ol li strong em table thead tbody tr th td a. No <html>/<head>/<body>, no markdown, no code fences.
+- Prefer a complete, readable article over a word-count target; usually 1500-2200 words when the topic warrants it. Use ONLY these HTML tags: h2 h3 p ul ol li strong em table thead tbody tr th td a blockquote pre code. No <html>/<head>/<body>, no markdown, no code fences.
 
 ALSO RETURN:
 - slug: English kebab-case URL slug for this post ( transliterate the topic, e.g. "ssc-cgl-preparation-guide" ), max 60 chars, lowercase, hyphens only.
@@ -254,7 +255,7 @@ ACCURACY RULES:
 - Keep only facts from the source + well-known real information. Do NOT invent dates/deadlines/vacancy numbers beyond what the source states.
 - Official website links: mention only well-known real portals.
 
-ARTICLE STRUCTURE (HTML only — h2 h3 p ul ol li strong em table thead tbody tr th td a):
+ARTICLE STRUCTURE (HTML only — h2 h3 p ul ol li strong em table thead tbody tr th td a blockquote pre code):
 - 2-3 intro paragraphs (focus keyword in FIRST paragraph).
 - <h2> sections: overview, eligibility/details, benefits, step-by-step how to apply/check (as lists), documents required, tips & common mistakes, one <table> summary.
 - Conclusion paragraph + FAQ section (4 <h3> questions with answers).
@@ -294,7 +295,7 @@ RESEARCH AND VALUE STRATEGY (very important):
 - Prefer concise, complete answers over a fixed word count; usually 1500-2200 words when the topic warrants it.
 - LANGUAGE: TELUGU SCRIPT with natural English terms (scholarship, apply, eligibility, official website, vacancy, notification...) like Telugu news sites.
 
-ARTICLE STRUCTURE (HTML only — h2 h3 p ul ol li strong em table thead tbody tr th td a):
+ARTICLE STRUCTURE (HTML only — h2 h3 p ul ol li strong em table thead tbody tr th td a blockquote pre code):
 - 2-3 intro paragraphs (focus keyword in FIRST paragraph).
 - <h2> sections for each major area + step-by-step process as lists + at least one <table>.
 - Conclusion + FAQ (<h3> questions — must match the faq JSON you return).
@@ -627,6 +628,30 @@ VALUE-ADD — source notice ni mirror cheyyakundu (Google scaled-content rule):
 - Secondary keywords natural ga body lo (stuffing kaadu) — ee phrases Google lo related searches ga vastayi.
 """
 
+# v85: JSON SCHEMA CONTRACT — prompts "return valid JSON" annayi kaani KEY
+# NAMES eppudu cheppaledu (content_html guess → Empty-field fails!). Ippudu
+# prathi generation prompt chivara ee contract veltundi (both call sites).
+JSON_SCHEMA_CONTRACT = """
+OUTPUT FORMAT — Return ONLY valid JSON (no markdown, no fences, no commentary).
+EXACT keys (spellings marakudadu — bot idi parse chestundi):
+{
+  "title": "SEO Telugu+English title, 40-70 chars",
+  "slug": "english-kebab-case-max-60-chars",
+  "meta_description": "140-160 chars Telugu summary with focus keyword",
+  "content_html": "FULL article HTML here (h2/h3/p/ul/ol/li/table/a only). THIS key holds the article body — 'content'/'html'/'body' vaddu, 'content_html' matrame.",
+  "focus_keyword": "ONE exact search phrase",
+  "secondary_keywords": ["related phrase 1", "related phrase 2", "related phrase 3"],
+  "seo_title": "keyword-first title under 60 chars",
+  "tags": ["tag1", "tag2", "tag3", "tag4", "tag5"],
+  "banner_text": "ENGLISH banner max 6 words",
+  "quick_answer": "40-60 word Telugu direct answer with focus keyword",
+  "faq": [{"question": "Telugu question?", "answer": "2-3 sentence Telugu answer."}],
+  "external_links": [{"url": "https://official-portal.gov.in", "text": "Telugu anchor"}],
+  "recruitment": {"org_name": "ORG (ONLY if source states)", "org_url": "https://...", "apply_end": "YYYY-MM-DD or empty", "location": "city/state or empty"}
+}
+Rules: content_html KHALI vaddu (1500+ words HTML). faq 4+ items. recruitment facts source lo LEKAPOTE {"org_name": "", "apply_end": ""} — GUESS cheyyakundu.
+"""
+
 def _key_tag(key: str) -> str:
     import hashlib
 
@@ -837,7 +862,56 @@ def _parse_json(text: str) -> dict:
     start, end = text.find("{"), text.rfind("}")
     if start != -1 and end != -1:
         text = text[start : end + 1]
-    return json.loads(text)
+    try:
+        obj = json.loads(text)
+    except json.JSONDecodeError:
+        # v85: light repair — trailing commas + raw control chars
+        # (LLM frequent slips; full-retry waste kakunda).
+        fixed = re.sub(r",\s*([}\]])", r"\1", text)
+        fixed = re.sub(r"[\x00-\x08\x0b\x0c\x0e-\x1f]", "", fixed)
+        obj = json.loads(fixed)
+    if isinstance(obj, dict):
+        _normalize_keys(obj)
+    return obj
+
+
+# v85: key aliases — schema contract unna, models marustayi
+# ("content"/"html"/"body"). Parse-time normalize → Empty-field fails taggayi.
+_KEY_ALIASES = {
+    "content_html": ("content", "html", "body", "article_html", "article_body",
+                     "article_content", "contentHtml"),
+    "meta_description": ("meta", "description", "metaDescription", "excerpt",
+                         "meta_description_text"),
+    "focus_keyword": ("focus", "keyword", "focusKeyword", "main_keyword"),
+    "seo_title": ("seoTitle", "seo"),
+    "banner_text": ("banner", "bannerText", "image_text"),
+    "quick_answer": ("quickAnswer", "summary_answer", "snippet"),
+    "secondary_keywords": ("secondaryKeywords", "related_keywords"),
+    "external_links": ("externalLinks", "links", "sources_links"),
+}
+
+
+def _normalize_keys(obj: dict) -> None:
+    for canon, aliases in _KEY_ALIASES.items():
+        if obj.get(canon):
+            continue
+        for a in aliases:
+            if obj.get(a):
+                obj[canon] = obj.pop(a)
+                break
+    # faq items: {q,a} ↔ {question,answer} unify
+    faq = obj.get("faq")
+    if isinstance(faq, list):
+        norm = []
+        for item in faq:
+            if isinstance(item, dict):
+                q = item.get("question") or item.get("q") or ""
+                a = item.get("answer") or item.get("a") or ""
+                if q and a:
+                    norm.append({"question": q, "answer": a})
+            elif isinstance(item, (list, tuple)) and len(item) >= 2:
+                norm.append({"question": item[0], "answer": item[1]})
+        obj["faq"] = norm
 
 
 def generate_article(
@@ -880,13 +954,13 @@ def generate_article(
             "Trend context ni mana education angle tho connect cheyandi."
         )
 
-    prompt = prompt + WRITING_RULES
+    prompt = prompt + WRITING_RULES + JSON_SCHEMA_CONTRACT  # v85 schema
     return _generate_core(prompt, category, strict_category=True)
 
 
 def _generate_with_retries(prompt: str, category: str = "", source=None) -> Dict:
     """Common retry loop for all prompts. Returns article dict."""
-    prompt = prompt + WRITING_RULES
+    prompt = prompt + WRITING_RULES + JSON_SCHEMA_CONTRACT  # v85 schema
     return _generate_core(prompt, category, source=source)
 
 
@@ -924,7 +998,8 @@ def refine_article(article: Dict, fixes: List[str]) -> Dict:
         title=article.get("title", ""),
         kw=article.get("focus_keyword", ""),
         meta=article.get("meta_description", ""),
-        content=(article.get("content_html") or "")[:12000],
+        # v85: 12000 → lengthy posts sections LLM chudakunda poyayi
+        content=(article.get("content_html") or "")[:20000],
         fixes="\n".join(f"- {f}" for f in fixes[:12]),
     )
     improved = _generate_core(prompt, article.get("category", ""),

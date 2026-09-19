@@ -46,6 +46,8 @@ get_header();
 					</div>
 				</div>
 
+				<?php echo function_exists( 'studentup_expired_notice' ) ? wp_kses_post( studentup_expired_notice() ) : ''; ?>
+
 				<?php studentup_ad( 'mid' ); ?>
 
 				<div class="article-content"><?php the_content(); ?></div>
@@ -59,6 +61,13 @@ get_header();
 
 				<?php studentup_trust_note(); ?>
 				<?php studentup_author_box(); ?>
+				<?php if ( has_tag() ) : ?>
+					<div class="su-tags" aria-label="Tags">🏷 <?php the_tags( '', ' · ', '' ); ?></div>
+				<?php endif; ?>
+				<nav class="post-nav" aria-label="More posts">
+					<span class="post-nav-prev"><?php previous_post_link( '%link', '← %title' ); ?></span>
+					<span class="post-nav-next"><?php next_post_link( '%link', '%title →' ); ?></span>
+				</nav>
 			</article>
 
 			<?php studentup_ad( 'below-content' ); ?>

@@ -19,6 +19,11 @@ if ( ! defined( 'ABSPATH' ) ) {
  * AdSense client id (option leda ADSENSE_CLIENT_ID constant leda '').
  */
 function studentup_adsense_client() {
+	// v84: APPROVAL GATE — approved switch OFF unte ID unna render kaadu
+	// (mundhe paste chesina blank boxes ravavu, house ads vastayi — policy safe).
+	if ( ! studentup_opt( 'adsense_approved', '0' ) ) {
+		return '';
+	}
 	$client = (string) get_option( 'studentup_adsense_client', '' );
 	if ( ! $client && defined( 'ADSENSE_CLIENT_ID' ) ) {
 		$client = (string) ADSENSE_CLIENT_ID;
@@ -78,9 +83,12 @@ function studentup_house_ads() {
 		if ( '' === $title || '' === $link ) {
 			continue;
 		}
+		// v82: bot payload 'description' key kuda accept (house.json format).
+		$desc = isset( $ad['desc'] ) ? $ad['desc']
+			: ( isset( $ad['description'] ) ? $ad['description'] : '' );
 		$out[] = array(
 			'title' => $title,
-			'desc'  => isset( $ad['desc'] ) ? wp_strip_all_tags( (string) $ad['desc'] ) : '',
+			'desc'  => wp_strip_all_tags( (string) $desc ),
 			'link'  => $link,
 			'cta'   => isset( $ad['cta'] ) ? wp_strip_all_tags( (string) $ad['cta'] ) : 'Read →',
 		);
@@ -94,12 +102,27 @@ function studentup_house_ads() {
  * @param array $ads ads list.
  * @return array|null
  */
-function studentup_rotate_house( $ads ) {
+function studentup_rotate_house( $ads, $place = '' ) {
 	$n = count( $ads );
 	if ( ! $n ) {
 		return null;
 	}
-	return $ads[ (int) gmdate( 'z' ) % $n ];
+	static $shown = array();
+	// v77: hour-base (rojulo 24 fresh chances — page to page kotha ad feel) +
+	// slot offset (oke page lo prathi slot ki vere ad, repeat ledu).
+	$base  = (int) gmdate( 'z' ) * 24 + (int) gmdate( 'G' );
+	$slots = array( 'leaderboard' => 0, 'in-feed' => 1, 'mid' => 2,
+		'sidebar' => 3, 'below-content' => 4, 'anchor' => 5 );
+	$off   = isset( $slots[ $place ] ) ? $slots[ $place ] : 0;
+	for ( $i = 0; $i < $n; $i++ ) {
+		$pick = $ads[ ( $base + $off + $i ) % $n ];
+		$key  = isset( $pick['title'] ) ? (string) $pick['title'] : (string) $i;
+		if ( ! in_array( $key, $shown, true ) ) {
+			$shown[] = $key;
+			return $pick;
+		}
+	}
+	return $ads[ ( $base + $off ) % $n ];
 }
 
 /**
@@ -153,7 +176,10 @@ function studentup_ad( $place = 'mid' ) {
 		return; // density cap — AdSense safe + UX
 	}
 	$client = studentup_adsense_client();
-	$slot   = (string) get_option( 'studentup_adsense_slot_' . str_replace( '-', '_', $place ), '' );
+	// v82: place 'leaderboard' → option 'adsense_slot_top_leaderboard'
+	// (mundu key mismatch valla leaderboard AdSense unit eppudu load ayyedi kaadu).
+	$slot_key = ( 'leaderboard' === $place ) ? 'top_leaderboard' : str_replace( '-', '_', $place );
+	$slot     = (string) get_option( 'studentup_adsense_slot_' . $slot_key, '' );
 	$sizes  = array( 'leaderboard' => 110, 'in-feed' => 160, 'mid' => 250,
 		'sidebar' => 250, 'below-content' => 280, 'anchor' => 60 );
 	$height = isset( $sizes[ $place ] ) ? $sizes[ $place ] : 250;
@@ -172,7 +198,7 @@ function studentup_ad( $place = 'mid' ) {
 	}
 
 	// 2) House/sponsor ad (AdSense lekapote leda slot set kaakapote)
-	$house = studentup_rotate_house( studentup_house_ads() );
+	$house = studentup_rotate_house( studentup_house_ads(), $place );
 	if ( ! $house ) {
 		return;
 	}

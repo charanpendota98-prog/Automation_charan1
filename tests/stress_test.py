@@ -149,7 +149,7 @@ def main():
     # ---- 7. full mock pipeline 5x end-to-end ----
     for i in range(5):
         r = subprocess.run(
-            [str(Path(".venv/bin/python")), "run.py", "--dry-run", "--mock", "--force"],
+            [sys.executable, "run.py", "--dry-run", "--mock", "--force"],
             capture_output=True, text=True, timeout=120,
             env={"PATH": "/usr/bin:/bin", "PYTHONUNBUFFERED": "1",
                  "OUTPUT_DIR": "/tmp/stress_out", "STATE_PATH": "/tmp/stress_state.db"})
@@ -169,7 +169,7 @@ def main():
         w.writerow(["brand query", "900", "2000", "45.00%", "1.2"])   # excluded
         w.writerow(["tiny query", "0", "40", "0%", "10.0"])           # excluded
     r2 = subprocess.run(
-        [str(Path(".venv/bin/python")), "run.py", "--gsc", str(gsc)],
+        [sys.executable, "run.py", "--gsc", str(gsc)],
         capture_output=True, text=True, timeout=60, env={"PATH": "/usr/bin:/bin"})
     assert r2.returncode == 0 and "2 striking-distance" in r2.stdout, r2.stdout
     assert "nsp scholarship status" in r2.stdout

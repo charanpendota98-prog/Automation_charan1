@@ -22,7 +22,6 @@ Run: python tests/v69_test.py   (also via python run.py --test-all)
 """
 from __future__ import annotations
 
-import json
 import re
 import subprocess
 import sys

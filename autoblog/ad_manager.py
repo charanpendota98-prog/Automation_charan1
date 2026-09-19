@@ -420,11 +420,9 @@ def inject(html_in: str, art: Dict, inv: Optional[Dict] = None,
         return html_in, []
     inv = inv if inv is not None else load_inventory()
     ads = select_ads(art, inv)
-    house = False
     if not ads:
         # v52: sponsor lekapoyina slot khali ga undakudadu → house ads (own promos)
         ads = select_house_ads(today=None, limit=1)
-        house = bool(ads)
         if not ads:
             return html_in, []
     # CSS once

@@ -8,18 +8,40 @@
 
 import logging
 import re
+from datetime import date as _date
 from typing import Dict, List
+from zoneinfo import ZoneInfo
 
 log = logging.getLogger("autoblog.validator")
+
+IST = ZoneInfo("Asia/Kolkata")
+
+
+def ist_today() -> _date:
+    """v84: server TZ (UTC) kadu — IST date. Deadline-day 00:00-05:30
+    window lo UTC-date vadithe expired jobs kuda 'valid' avutayi."""
+    from datetime import datetime as _dt
+
+    return _dt.now(IST).date()
 
 ALLOWED_TAGS = {
     "h2", "h3", "p", "ul", "ol", "li", "strong", "em",
     "table", "thead", "tbody", "tr", "th", "td", "a",
+    # v81 (§2): callouts (blockquote) + code/pre — iframe/video/script
+    # deliberately OUT (XSS; WP auto-embeds plain URLs instead).
+    "blockquote", "pre", "code",
 }
 
 
 def strip_tags(html: str) -> str:
-    return re.sub(r"<[^>]+>", " ", html)
+    # v84: <script>/<style> BLOCKS motham thollaru (JSON-LD schema words
+    # count loki vachi gate false-pass ayyedi: 1400 + 106 JSON = 1506!).
+    # Google kuda script content ni word-count lo lekkacheyadu.
+    no_script = re.sub(r"<script[^>]*>.*?</script>", " ", html or "",
+                       flags=re.S | re.I)
+    no_style = re.sub(r"<style[^>]*>.*?</style>", " ", no_script,
+                      flags=re.S | re.I)
+    return re.sub(r"<[^>]+>", " ", no_style)
 
 
 def _normalize_words(text: str) -> List[str]:
@@ -239,9 +261,15 @@ def rankmath_strict(article: Dict, final_html: str = "") -> Dict:
               sum(1 for h in h2s if kw_l in strip_tags(h).lower()) >= 2, 5,
               "2+ H2 headings lo focus keyword undali")
     check("content-length", words >= 1500, 8,
-          f"content {words} words — 1600+ rayandi")
+          f"content {words} words — 1500+ rayandi")
+    # v83: engine-generated boxes (takeaways/TOC) <li> ni skip — check
+    # content STEPS kosam (takeaway summary = step kaadu; self-fail fix).
+    li_html = re.sub(r'<div class="su-takeaways".*?</ul>\s*</div>', "",
+                     html, flags=re.S)
+    li_html = re.sub(r'<div class="su-toc".*?</ol>\s*</div>', "",
+                     li_html, flags=re.S)
     lis = [strip_tags(x).split()
-           for x in re.findall(r"<li[^>]*>(.*?)</li>", html, flags=re.S)]
+           for x in re.findall(r"<li[^>]*>(.*?)</li>", li_html, flags=re.S)]
     bad_li = sum(1 for w in lis if len(w) > 12)
     check("list-items-short", bad_li == 0, 6,
           f"{bad_li} list items 12+ wordsunnayi — prathi step 10 words ki menta short cheyandi")
@@ -306,6 +334,34 @@ def fingerprint_tokens(text: str, limit: int = 400) -> list:
         step = len(grams) / limit
         grams = [grams[int(i * step)] for i in range(limit)]
     return grams
+
+
+def rewrite_distance(content_html: str, source_texts: list) -> dict:
+    """v77: article vs DONOR sources shingle overlap — copied sentences catch.
+
+    near_duplicate mana OWN posts tho compare chestundi; idi SOURCE tho —
+    rewrite nijamga fresh aa leda copy-paste aa ani REAL % istundi.
+    LOW overlap = truly rewritten. Returns {overlap, fresh, verdict}.
+
+    NOTE: full shingle sets (no 400-cap downsample) — capped sampling
+    donor matches ni champi copy-paste ni "rewrite" ga chupistundi.
+    """
+    _FULL = 1000000  # per-post scoring ki sets cheap; accuracy first
+    mine = set(fingerprint_tokens(strip_tags(content_html or ""), limit=_FULL))
+    if len(mine) < 60:
+        return {"overlap": 0.0, "fresh": 1.0, "verdict": "short"}
+    best = 0.0
+    for text in source_texts or []:
+        theirs = set(fingerprint_tokens(text or "", limit=_FULL))
+        if len(theirs) < 60:
+            continue
+        ov = len(mine & theirs) / min(len(mine), len(theirs))
+        best = max(best, ov)
+    fresh = 1.0 - best
+    verdict = ("fresh" if fresh >= 0.70 else
+               "rewrite" if fresh >= 0.40 else "copy-risk")
+    return {"overlap": round(best, 3), "fresh": round(fresh, 3),
+            "verdict": verdict}
 
 
 def near_duplicate(title: str, content_html: str,

@@ -102,7 +102,7 @@ def main():
 
     env = {"PATH": "/usr/bin:/bin", "TRENDS_RSS": "http://127.0.0.1:9/x",
            "PYTHONUNBUFFERED": "1"}
-    r = subprocess.run([str(Path(".venv/bin/python")), "run.py", "--trends"],
+    r = subprocess.run([sys.executable, "run.py", "--trends"],
                        capture_output=True, text=True, timeout=60, env=env)
     assert "GOOGLE TRENDS" in r.stdout and "fetch fail" in r.stdout
     assert r.returncode == 1  # graceful, not crash

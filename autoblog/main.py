@@ -92,6 +92,11 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
         quiz: bool = False, quiz_topic: str = "", quiz_level: int = 0,
         quiz_questions: int = 0, notebooklm_brief_file: str = "",
         target_year: int = 0) -> int:
+    # SAFETY: mock stubs eppudu LIVE publish avvavu (thin test content
+    # WordPress ki vellakudadu) — --mock ante automatic dry-run.
+    if mock and not dry_run:
+        log.warning("--mock tho live publish block chesamu (auto dry-run ON)")
+        dry_run = True
     now = _now()
     today = now.date()
     now_hour = now.hour
@@ -289,6 +294,14 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
         if now_hour not in plan:
             log.info("Hour %02d:00 not in today's plan %s — nothing to do.", now_hour, plan)
             return 0
+        # v84: hour-slot CLAIM (overlap race fix) — generation MUNDU set.
+        # Rendu runs okate hour lo vasthe okati matrame post chestundi.
+        # Crash ayithe hour skip (safe direction — over-post kanna under-post melu).
+        hclaim = f"post:{today.isoformat()}:{now_hour:02d}"
+        if state.meta_get(config.STATE_PATH, hclaim):
+            log.info("Hour %02d:00 already claimed — overlapping run, skipping.", now_hour)
+            return 0
+        state.meta_set(config.STATE_PATH, hclaim, "1")
         log.info("Hour %02d:00 in plan %s — generating post (%d done today).",
                  now_hour, plan, count)
 
@@ -1135,6 +1148,10 @@ def top_post_run(keyword: str, category: str = "", publish: bool = False,
     """v38: blueprint (plan) → optional article → draft/publish."""
     from . import top_post
 
+    # SAFETY: mock top-post eppudu WP ki velladu (auto dry-run).
+    if publish and mock and not dry_run:
+        log.warning("--publish-top-post --mock tho live block (auto dry-run ON)")
+        dry_run = True
     state.init(config.STATE_PATH)
     if publish:
         log.info("Top-post publish flow: keyword=%r mock=%s dry_run=%s",
@@ -1499,6 +1516,12 @@ def main() -> int:
                              "chestundi)")
     parser.add_argument("--test-only", default="", metavar="NAME",
                         help="v41: --test-all tho okka suite matrame (ex: v41)")
+    parser.add_argument("--check-links", nargs="*", default=None, metavar="URL",
+                        help="v80 (P47): page outbound links liveness — dead + "
+                             "redirect report (ex: --check-links https://.../post/)")
+    parser.add_argument("--orphans", nargs="*", default=None, metavar="SITEMAP-URL",
+                        help="v81 (§32): sitemap crawl → inbound-0 ORPHAN pages "
+                             "report (ex: --orphans https://site/sitemap.xml)")
     parser.add_argument("--site-audit", action="store_true",
                         help="v41: full site audit (21 problem classes — thin/junk "
                              "content, wrong category, PII, tags, timezone) + report")
@@ -1649,6 +1672,18 @@ def main() -> int:
         return deploy_check.run_deploy_check()
     if args.test_all:
         return test_all_run(only=args.test_only)
+    if args.check_links is not None:
+        sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "tools"))
+        import check_links as _cl
+
+        return _cl.main(["check_links"] + (args.check_links or []))
+    if args.orphans is not None:
+        sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "tools"))
+        import check_links as _cl
+
+        # v84: URL ivvakapote WP sitemap default (cron-friendly — usage kaadu)
+        urls = args.orphans or [config.WP_SITE.rstrip("/") + "/wp-sitemap.xml"]
+        return _cl.main(["check_links", "--orphans"] + urls)
     if args.site_audit or args.site_audit_fix:
         return site_audit_run(fix=args.site_audit_fix, apply=args.site_audit_apply,
                               allow_trash=args.site_audit_trash,

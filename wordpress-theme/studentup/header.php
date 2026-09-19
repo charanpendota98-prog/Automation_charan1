@@ -103,7 +103,7 @@ studentup_breaking_ticker();
 	}
 	?>
 	<div class="mlabel">Social</div>
-	<a href="https://wa.me/919999999999" target="_blank" rel="noopener">WhatsApp</a>
+	<a href="https://wa.me/919182739312" target="_blank" rel="noopener">WhatsApp</a>
 	<a href="https://t.me/studentup_in" target="_blank" rel="noopener">Telegram</a>
 	<a href="https://www.instagram.com/studentup.in" target="_blank" rel="noopener">Instagram</a>
 	<a href="https://www.youtube.com/@studentupin" target="_blank" rel="noopener">YouTube</a>

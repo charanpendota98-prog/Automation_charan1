@@ -27,7 +27,7 @@ import shutil
 import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import Callable, Dict, List, Optional
+from typing import List
 
 from . import config
 
@@ -43,7 +43,7 @@ UI_BLOCKS = [
     ('class="usedwrap"', "Most-searched strip"),
     ('id="searchbtn"', "search button next to menu"),
     ('id="searchpanel"', "search panel"),
-    ('data-qual="10th"', "qualification filter chip (10th)"),
+    ('id="qualsel"', "qualification dropdown"),
     ('id="installbtn"', "Install as app button"),
 ]
 
@@ -171,7 +171,7 @@ def check_breaking_feed(max_age_hours: float = None) -> tuple:
 
 
 def check_ads_inventory() -> tuple:
-    probs, total = [], 0
+    probs, total, live = [], 0, 0
     for name in ("inventory.json", "house.json"):
         path = ROOT / "ads" / name
         try:
@@ -182,12 +182,14 @@ def check_ads_inventory() -> tuple:
         rows = data if isinstance(data, list) else data.get("ads", data.get("items", []))
         for ad in rows or []:
             total += 1
+            if ad.get("active", True):
+                live += 1
             link = str(ad.get("link", ""))
             if link and not link.startswith("http"):
                 probs.append(f"{name}:{ad.get('id', '?')} link http kaadu")
     if probs:
         return False, "; ".join(probs[:4]), "ads/*.json lo link/title/id check cheyandi"
-    return True, f"{total} active ads valid", ""
+    return True, f"{live}/{total} ads active · links valid", ""
 
 
 def check_keyword_pillar_lock() -> tuple:

@@ -24,7 +24,7 @@ import json
 import logging
 import re
 import xml.etree.ElementTree as ET
-from datetime import date, datetime, timedelta
+from datetime import date, timedelta
 from pathlib import Path
 from typing import Callable, Dict, List, Optional
 

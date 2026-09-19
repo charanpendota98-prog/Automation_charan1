@@ -200,7 +200,6 @@ def test_auto_refresh_flow_exists_and_is_safe():
 
 
 def test_cli_exposes_refresh_and_manual_flags():
-    import argparse
     src = (ROOT / "autoblog" / "main.py").read_text(encoding="utf-8")
     for flag in ["--auto-refresh", "--update", "--dry-run", "--mock", "--site-audit"]:
         assert '"%s"' % flag in src, "CLI flag missing: " + flag

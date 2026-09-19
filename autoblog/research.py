@@ -114,6 +114,25 @@ def research_topic(
     ][:8]
 
     extras = []
+    # v77: source page lopala unna OFFICIAL links ni mundhu follow —
+    # (notification PDFs · apply portals · syllabi) — related facts richest.
+    for link in (getattr(primary, "outbound", None) or [])[:4]:
+        if len(extras) >= max_extra:
+            break
+        netloc = urlparse(link).netloc.replace("www.", "")
+        if netloc in skip_domains or not is_valid_source_url(link):
+            continue
+        try:
+            art = fetch_source(link)
+            if len(art.text) > 300:
+                extras.append(art)
+                skip_domains.add(netloc)
+                log.info("Research official add: %s (%d chars)", netloc,
+                         len(art.text))
+        except Exception as exc:
+            log.debug("Research official skip %s: %s", link[:60], exc)
+            continue
+        time.sleep(1.0)  # polite crawling
     for r in results:
         if len(extras) >= max_extra:
             break

@@ -157,7 +157,7 @@ Message lo reason undi — exact ga fix cheyandi:
 ## ⚠️ Honest note
 Perfect = **machine gates + human 5-min verify**. Gates mistakes ramigadu (conflicts/stale/dates/originality), kaani official numbers mee mata tho final check — AdSense/Google/reputation thartham lo idi matrame safety.
 
-*Last updated: v74 (2026-09-19) — LIVE EXAM REMOVAL + CRON-ONLY BOT (portal teesesam · static question/quiz · WhatsApp leads · `--approval-poll` cron): 56/56 suites · 164/164 runtime · readiness 100/100 · code audit 0/0 · parity 0/0 · theme audit 0/0 · theme v1.7.2*
+*Last updated: v81 (2026-09-19) — ULTIMATE SPEC GAP CLOSE (qual-noindex · rich tags · mobile tables · webp · orphans · health widget · search-track · HSTS): 63/63 suites · 164/164 runtime · readiness 100/100 · code audit 0/0 · parity 0/0 · theme audit 0/0 · theme v1.7.2*
 
 ## PART 26 — v67: DEEP AUDIT (expert/BA) + TOP-THEME HARDENING + 6/6 REVENUE SLOTS
 
@@ -1025,3 +1025,510 @@ TESTS REBASE (v73 lo maree pins update chesam — UI ni tirigi pettaledu):
 
 No guarantee: rankings/traffic/AdSense/revenue Google + mee accounts + time batti — ee pass lo unna vi
 code-level measurements matrame.
+
+## PART 34 — v75: CONTACT FINAL (+91 ledu) + PUBLISH SAFETY + DUMMY PURGE
+
+**Mee brief (2026-09-19):** "+91 avasaram ledu" · "more and more advanced" ·
+website fully finalise · all bugs fix · anni advanced implement.
+
+CONTACT (owner number 9182739312 — verified)
+```
+tel: links      : tel:9182739312 (preview index/contact · policy builder PHONE · theme CTA)
+visible text    : "Call 9182739312" (+91 ekkada kanipinchadu)
+wa.me links     : wa.me/919182739312 (country code MANDATORY — lekunte button work avvadu)
+theme helpers   : studentup_wa_number() (10-digit/+91/0 → wa.me digits) ·
+                  studentup_call_number() (display/tel kosam 10-digit) · defaults 10-digit
+header fallback : hardcoded wa.me full number (template safety-net, pani chestundi)
+```
+
+SAFETY (thin stubs live ki vellavu)
+```
+main.run()      : mock=True + dry_run=False → auto dry-run ON (log warning)
+top_post_run()  : publish + mock → auto dry-run ON
+offline harness : mock + FakeWP tests (listicle/research/seo_pipeline) alage work (CLI-level guard,
+                  pipeline-level kaadu — anduke test pattern break avvaledu)
+```
+
+DUMMY PURGE (live surfaces 0 fake content)
+```
+ads/inventory.json : demo ads active:false (FORMAT SAMPLES — posts loki ravu, demo page lo preview untundi)
+ads/house.json     : house-live-exam (dead #exam) → house-jobs (#jobs, real anchor)
+wp_theme_sync      : inactive + link-leni house ads live theme ki push avvavu
+guardian           : ads count honest ("live/total ads active")
+```
+
+BUG HUNT (pyflakes + review)
+```
+readiness.py    : THEME_PATH undefined dead branch teesesam
+ad_network_plan : uplift import shadow teesesam (local def canonical)
+ad_manager      : dead `house` var · rm100: dead `tests = analyze()` line
+v59_test        : fixed-date time-bomb → dynamic pub dates (sort deterministic, eppudu green)
+4 suites        : .venv/bin/python hardcode → sys.executable (fresh clone + CI safe)
+package-lock    : php-parser entry add (lock stale undindi)
+```
+
+VERIFY (v75)
+```
+python run.py --test-all                     # 57/57 suites (v75_test.py kotha: 10 checks)
+node tests/runtime/jsdom_runtime_test.js     # 164/164 browser checks
+python run.py --readiness                    # 100/100 · python run.py --guardian # 14/15 (creds pending)
+node tools/php_lint.js                       # 32/32 · python tools/build_wp_theme.py (zip rebuild LAST)
+python run.py --mock --force                 # auto dry-run ON + DRY-RUN saved (publish ledu)
+```
+
+No guarantee: rankings/traffic/AdSense/revenue Google + mee accounts + time batti — ee pass lo unna vi
+code-level measurements matrame.
+
+## PART 35 — v76: QUALIFICATION DROPDOWN (chips → select) + UI DE-JUNK
+
+**Mee brief (2026-09-19):** "10th jobs ilaga filters best ga undali dropdown lo" ·
+"live exam avasaram ledu" · "UI inkbest + sodi lekunda" · "more easy + advanced".
+
+PREVIEW (`preview/index.html`)
+```
+qrow chips (9 buttons) → select#qualsel + label.quallabel + span#qcount (same ids)
+options : all · 10th (label "10th Pass") · inter · iti · diploma · degree · pg · btech · closing
+JS      : change → activeQual + history ?qual= sync + applyFilter (v72 engine same)
+counts  : option labels ki grid nunchi live counts ("10th Pass (3)") — values same
+deep-link: ?qual=degree tho page open → pre-filtered (shareable links)
+CSS     : .qualsel + .quallabel (native arrow · dark mode) · .qchip/.soonchip teesesam
+sodi    : in-feed ad "Your brand" duplication fix (okasari)
+```
+
+THEME (`wordpress-theme/studentup/` — parity)
+```
+qual_bar()  : chips → <form GET> + select#qualsel + noscript Filter button
+              (no-JS kuda pani chestundi; counts server-side; closing option KOTHA)
+studentup.js: qchip clicks → qualsel change (reload-lekunda filter + history sync same)
+bug fix     : ?qual= tho page load ayithe JS activeQual select value nunchi init
+              (mundu category click qual filter ni reset chesedi — server/JS sync)
+style.css   : .qualsel rules (preview tho same look) · .qchip rules teesesam
+qualtags    : card qual tags wrapper rename (qchips → qualtags, confusion ledu)
+```
+
+PINS MOVED (chips → dropdown, logic same)
+```
+v72_test  : option order + label + JS needles (TESTS REBASE pattern)
+v59_test  : qualsel + value="10th" + qcount
+readiness : c_first_look qualsel needles (preview + theme)
+guardian  : UI_BLOCKS qualsel needle
+jsdom     : qual block select mechanics (setQual helper) — ok() count SAME (164/164)
+v75_test  : suites 57 → 58
+```
+
+LIVE-EXAM (user doubt — verified + locked)
+```
+grep live[ _-]*exam (preview · theme · ads · manifest) = 0 · #exam = 0
+quiz = practice questions matrame (6 Q · instant answers · browser score) — exam conduct kaadu
+manifest shortcuts = Jobs · Qualification · Results · Quiz (exam ledu)
+```
+
+VERIFY (v76)
+```
+python run.py --test-all                     # 58/58 suites (v76_test.py kotha: 10 checks)
+node tests/runtime/jsdom_runtime_test.js     # 164/164 browser checks (dropdown mechanics)
+node tools/php_lint.js                       # 32/32 · python tools/build_wp_theme.py (zip rebuild LAST)
+python run.py --readiness                    # 100/100 · python run.py --guardian
+```
+
+No guarantee: rankings/traffic/AdSense/revenue Google + mee accounts + time batti — ee pass lo unna vi
+code-level measurements matrame.
+
+## PART 36 — v77: ORIGINAL CONTENT ENGINE + HIGH-ADS READINESS
+
+**Mee brief (2026-09-19):** fully advanced · high ads · ads auto na? · reach
+tavata vere networks apply · URL → related content gather · 100% RankMath/SEO
+real · no copy fresh · Telegram update = fresh re-trend · page-to-page fresh ads.
+
+GATHER (URL isthe related antha)
+```
+sources.py  : SourceArticle.outbound (content-area links, boilerplate out)
+              rank_outbound: official-hosts(3) > gov/edu(2) > org(1) > rest;
+              same-site last; social out; cap 25
+research.py : official outbound FIRST (4 varaku) → tarvata web search extras
+              (MERGE & BEAT same; max_extra cap same)
+```
+
+ORIGINALITY (REAL numbers — "dummy" doubt close)
+```
+validator.rewrite_distance(html, source_texts):
+  donor-vs-final 3-word shingle containment → {overlap, fresh, verdict}
+  fresh ≥0.70 · rewrite ≥0.40 · copy-risk kindha · short (<60 shingles) skip
+pipeline.publish_article: _originality compute + log (prathi post)
+pipeline.update_post    : _originality compute + log (prathi update)
+near_duplicate (own corpus) alage undi — rendu kalisi double-proof
+```
+
+UPDATE = RE-TREND (chain verify + 1 fix)
+```
+upd: button → approval_bot.run_update → update_post → date_modified schema +
+"Last Updated" badge + RankMath re-meta + IndexNow ping + Telegram confirm
+FIX: news-sitemap date_query publish OR modified 48h (mundu updated old posts
+re-enter ayyevi kaavu — trending miss; ippudu avtayi)
+```
+
+ADS SMART (high + fresh + auto)
+```
+theme rotate_house: day → hour-base (24 chances) + slot offset + static $shown
+  no-repeat (oke page lo vere ads; next hour kotha) — house/sponsor kevalam
+AdSense: auto-refresh LEKUNDE (policy) — test locks (setInterval = social only)
+auto proof: auto-head (option + ca-pub regex) · in-article filter ON ·
+  density cap · consent gate · house fallback — manual placing ZERO
+networks: AD_NETWORKS_APPLICATION_KIT.md (review + order + checklist + flips)
+```
+
+PINS: v61 rotation formula rebase (hour) · v75/v76 counts 59 · jsdom untouched 164.
+
+VERIFY (v77)
+```
+python run.py --test-all                     # 59/59 suites (v77_test.py kotha: 10 checks)
+node tools/php_lint.js                       # 32/32 · python tools/build_wp_theme.py (zip LAST)
+python run.py --readiness                    # 100/100 · python run.py --guardian
+```
+
+No guarantee: rankings/traffic/approval/revenue Google + accounts + time —
+v77 = copy-proof + deepest gather + fastest re-index path (code-side max).
+
+## PART 37 — v78: TOP-BLOG PERFECTION PASS (real-probe → fix → re-probe)
+
+**Mee brief (2026-09-19):** anni points real check · dummy/sample vaddu ·
+retry-best loop · correct data + many sources + NotebookLM · neat blogs
+(text peddga vaddu) · colors/tables/tags/categories perfect · 100% top blog.
+
+METHOD (edo final kaadu): REAL probe publish (thin input, no FAQ, 1 tag) →
+gaps measure → code fix → RE-PROBE same input → numbers prove:
+tables 0→1 · FAQ 0→6 · tags 3→4+ · ORIG None→98.8 · RM 88→96 ·
+TOP 84→90 🏆 · GATE 86→92.
+
+FALLBACKS (LLM marchipoina kuda perfect — invent cheyyavu)
+```
+rm100.extract_facts(html): Telugu+English regex → last_date/exam_date/
+  vacancies/fee/age/qualification/salary (content phrases only)
+fix_table: fields <3 → facts merge (8 rows cap) → <3 = honest skip
+fix_faq:   pairs <3 → facts templates (6 cap) + <div class="su-faq">;
+  already-in-content guard same; <3 = honest skip
+suggest_tags: existing + focus + secondary[:4] + category + title
+  acronyms (TSPSC/[A-Z]{2,}) + Group-N → hygiene junk-block/dedupe/cap8
+```
+
+UNIFORM + DEPTH + NEAT
+```
+pipeline: _source_texts <= _deep_sources (no _source_texts unte) → _orig
+  live gate publish + rewrite paths ki (None bug fix)
+config: RESEARCH_MAX_SOURCES 3→5 (+ v77 outbound = deepest gather)
+fix_paragraph_len: split 120→100w, chunks 90→~70w (sentence boundary only)
+theme style.css: .su-lede · .su-faq h3 cards (+p answers) · dark variants ·
+  su-facts zebra — mundu lede/faq styles LEVU (live ugly root-cause)
+```
+
+VERIFIED REAL (no dummy): NotebookLM brief merge + hard-reject validation;
+17 category rules auto-detect; writer prompt = table/1500-2200w/tags/faq adugutundi;
+rm100 rich-content → 81 + honest remainder (length/density = content job).
+
+VERIFY (v78)
+```
+python run.py --test-all                     # 60/60 suites (v78_test.py kotha: 10 checks)
+node tools/php_lint.js                       # 32/32 · python tools/build_wp_theme.py (zip LAST)
+python run.py --readiness                    # 100/100 · python run.py --guardian
+```
+
+Loop rule (standing): best vache varaku probe→fix→reprobe; final-cheyatam kaadu.
+
+## PART 38 — v79: AUTHOR + MID-ARTICLE JOIN + MISS-AUDIT CLOSE
+
+**Mee brief (2026-09-19):** author unte best kada? mid-blog TG/WA join?
+inka em miss? — audit → fix → verify.
+
+AUTHOR (E-E-A-T upgrade, v64 pins hold)
+```
+inc/author-box.php: avatar custom_logo(64) → site-icon → 📝 fallback;
+  Person schema (name + jobTitle Education Editor) inside Organization;
+  🔍 Reviewed: <modified-date>; TG/WA follow (studentup_social_links);
+  corrections email + editorial policy same
+```
+
+MID-ARTICLE JOIN (reuse — duplicate kaadu)
+```
+inc/cta.php: studentup_cta_join_inline() — compact strip, div/span/a ONLY
+  (no <p> → ad explode-after-3rd-para intact; no <h2> → TOC clean);
+  same social options (owner changes once).
+  studentup_inject_join_cta @ the_content prio 12 (ad = 20): singular+
+  loop+main+!feed guards · join_cta_inline opt (default 1) · once-guard ·
+  2nd </p> tarvata. option: content section lo 'join_cta_inline' check.
+```
+
+MISS-AUDIT CLOSE (single.php)
+```
+the_tags (🏷 su-tags div, has_tag guard) + post-nav (prev/next) — rendu
+mundhu LEVU. Surface 13/13: progress·crumbs·read-time·mid-ad·share·
+trust·author·tags·prev/next·comments·related·last-date·qual.
+FAQPage schema = deliberate skip (Google retired 2026 — seo.py note).
+CSS: .su-join-inline(+dark) · .su-author-avatar img · .su-tags · .post-nav(+dark).
+```
+
+VERIFY (v79)
+```
+python run.py --test-all                     # 61/61 suites (v79_test.py kotha: 10 checks)
+node tools/php_lint.js                       # 32/32 · python tools/build_wp_theme.py (zip LAST)
+python run.py --readiness                    # 100/100 · python run.py --guardian
+```
+
+## PART 39 — v80: MASTER PROMPT GAP CLOSE (50-phase audit)
+
+**Mee brief (2026-09-19):** 50-phase master prompt + 5 additions verify —
+em miss ayyama? Method: phase-by-phase grep-proof audit.
+
+COVERED (verify chesamu — kotha code avasaram ledu)
+```
+P1 info-arch: WP cats + 17 bot rules + hubs · P2 URLs: WP permalinks +
+  bot slug hygiene · P3/P4/P22/P43 DB+admin+API: WP CORE (custom kaadu —
+  master prompt custom-stack assume chesindi) · P5 on-page: RankMath+WP
+  (+v80 fallback) · P6 H1: single/home ✓ (archive/search v80 fix) ·
+P7 content model: prompt sections + v78 fallbacks, no-fabrication guards ·
+P8/P37 linking: related/crumbs/prev-next/contextual/hubs · P9 crumbs+schema ·
+P10 sitemap WP+news · P11 robots WP+news · P12 canonical WP ·
+P13/P15 search/404 noindex perf.php ✓ · P14 schema Article/Breadcrumb/
+  JobPosting-eligible · P16 archive base (v80 enrich) · P17 images alt+lazy ·
+P18/P19/P20 CWV/mobile/perf: CLS-reserve/content-vis/lazy · P21/P22 security
+  headers+WP · P23 legal 6 · P26 badge+closing (v80 notice) · P27 quiz
+  practice+key (obfuscation=theater, honest skip) · P30 a11y skip/focus ·
+P31 share/OG · P32 audit engines · P33 61 suites · P34 live gates ·
+P38 dup-guards · P39 dates · P40 E-E-A-T · P41/42 ads/rel · P44 bot logs ·
+P46 GO_LIVE · P48/P49/P50 guardian+readiness (deploy-time verify).
+AI pipeline = Official→verify→extract→human-review(Telegram)→
+  draft→fact→SEO-gate→publish ✓ (addition #3 exact match).
+```
+
+V80 FIXES (7 real gaps)
+```
+P29  inc/redirects.php: redirects_json map · 404-only · resolve-chain
+     direct (5 hops) · loop/relative-only · wp_safe_redirect 301
+P6/16 archive+search h2→h1 (+CSS 3 spots) · studentup_subcat_chips()
+     (child+counts, hide_empty, 12 cap) · .su-subcats CSS+dark
+P28  404: popular 6 cats + latest 5 + reset postdata · CSS
+P24/25 ga4_id (G- regex) + gsc_verify options · consent-aware GA4
+     (prio 3, anonymize_ip) · JS outbound/apply_click (gtag-gated)
+P26  studentup_expired_notice() + single guarded call · .su-expired CSS
+P5   seo-fallback: RankMath absent → description+OG (bot meta reuse)
+P47  tools/check_links.py + run.py --check-links (dead+redir report)
+```
+
+OWNER/HOSTING (code kaadu): GSC submit · GA4 ID · backups+restore-test ·
+CDN · live GSC/GA4 monitoring · crawl post-deploy.
+
+VERIFY (v80)
+```
+python run.py --test-all                     # 62/62 suites (v80_test.py kotha: 12 checks)
+python run.py --check-links <post-URL>       # dead outbound report
+node tools/php_lint.js                       # 33/33 · python tools/build_wp_theme.py (zip LAST)
+python run.py --readiness                    # 100/100 · python run.py --guardian
+```
+
+## PART 40 — v81: ULTIMATE SPEC GAP CLOSE (99-section audit)
+
+**Mee brief (2026-09-19):** Ultimate master spec — audit→plan→implement→
+test→verify. v80-covered skip; kotha/expand areas (blog-advanced · job
+entity · exam chain · mock tests · images · orphans · dashboards ·
+filters · i18n · CSP · observability) verify.
+
+COVERED (proof, no code): TOC smooth+dup-ids · JobPosting future-only+
+org-guard (expired=past validThrough → Google drops ✓) · quiz analysis
+chips+review · menus nav/footer · PWA offline page · RSS WP · images
+slug-name+alt+srcset(WP) · revisions/scheduled WP · alerts=TG/WA ·
+secrets=.env gitignored · scorecard=readiness report.
+
+V81 FIXES (8)
+```
+§72 perf.php: $_GET['qual'] → noindex+follow (v67 pins hold)
+§2  validator ALLOWED_TAGS += blockquote/pre/code (iframe/video/script
+    OUT — WP auto-embed plain URLs) · gemini prompt 3 tag-lists sync
+§7  style.css: .article-content table block+scroll-x · pre/code (+dark)
+§22 image_gen: .webp→WEBP q82 · .jpg→JPEG (compat) · pipeline slug.webp
+§32/60 tools/check_links --orphans SITEMAP (limit 200, inbound-0 report)
+    + run.py --orphans wiring
+§65 inc/health.php dashboard widget: published/drafts/expiring-7d/
+    expired/redirects (counts-only queries) + functions require
+§37 studentup.js: form[name=s] submit → gtag search event (gated)
+§76 hsts_enforce opt (default 0) + is_ssl guard · CSP skip documented
+```
+
+NOT IMPLEMENTED (honest §95): mock-test series (accounts/infra roadmap) ·
+server page-cache (hosting) · CSP (AdSense/GA4 break risk) · GSC-data
+dashboard (OAuth/API post-launch) · Lighthouse run (needs deploy URL).
+
+VERIFY (v81)
+```
+python run.py --test-all                     # 63/63 suites (v81_test.py kotha: 10 checks)
+python run.py --orphans <sitemap.xml>        # orphan pages report
+node tools/php_lint.js                       # 34/34 · python tools/build_wp_theme.py (zip LAST)
+python run.py --readiness                    # 100/100 · python run.py --guardian
+```
+
+## PART 41 — v82: SELF-AUDIT REGRESSIONS (proactive hunt)
+
+**Mee brief (2026-09-19):** "chala miss chesava" — v81 tarvata nenu mundhe
+deep self-audit (real runs: update_post · guardian · mock E2E · --doctor ·
+deps · idempotency · house chain · approval auth). Assumptions tho "gap"
+declare cheyakunda prathi doubt ni code-run tho verify.
+
+V82 FIXES (6 + cleanup)
+```
+rm100 chain reorder: h2/table/faq MUNDU → toc TARVATA (single-pass
+  structure complete; optimize() 3-pass converge, no-dupes verified)
+inc/ads.php: leaderboard → top_leaderboard slot mapping (AdSense unit
+  never loaded — REAL revenue bug) + house 'description' key accept
+crontab.example: mkdir -p log step + cron.log monthly rotation line
+approval_bot: callbacks fail-closed (owner lekapote deny) + auto-claim
+  loud warning + TELEGRAM_CHAT_ID lock reminder
+pyflakes: 57 dead imports/vars cleanup (32 code + 25 tests) · f-strings
+re-export REGRESSION: tools/ad_network_plan.NETWORKS (v56 pin)
+```
+
+VERIFY (v82)
+```
+python run.py --test-all                     # 64/64 suites (v82_test.py kotha: 9 checks)
+node tests/runtime/jsdom_runtime_test.js     # 164/164 browser checks
+python tools/build_wp_theme.py               # zip LAST (ads.php changes!)
+python run.py --readiness                    # 100/100
+python -m pyflakes autoblog tools tests      # 0 findings
+```
+
+## PART 42 — v84: FULL BUG HUNT (money + ads + approvals)
+
+**Mee brief (2026-09-19):** "inka chala bugs undochu — anni fix cheyali".
+Systematic hunt areas: theme XSS · 6 ad slots mapping · expiry/validThrough ·
+cron race · gate false-pass · TOC duplication · update flow · SQLite lock ·
+TG limits · archive SEO. Prathi doubt real-run tho verify (assumption tho
+"gap" declare cheyaledu).
+
+V84 FIXES (11)
+```
+validator.strip_tags: <script>/<style> blocks drop (JSON-LD +106 words
+  gate words-check false-pass HOLE — 1400-word thin publish ayyedi!)
+validator.ist_today + seo/post_gate: IST-explicit deadlines (server UTC
+  00:00-05:30 window lo expired jobs 'valid' ayyevi)
+inc/options.php + ads.php + pwa.php: AdSense APPROVAL GATE —
+  adsense_approved OFF unte code render kaadu (house ads only)
+main.py run(): hour-slot claim post:DATE:HOUR (overlap double-post race)
+main.py --orphans: no-URL → WP sitemap default · check_links: DEAD-url
+  report (404 pages) · crontab: weekly orphans scan
+state.py _connect: timeout=30 + WAL (hourly + */5 overlap lock fix)
+notifier.send_telegram: 4000-char truncate (4096 reject = alert loss)
+perf.php robots: is_date() noindex,follow · seo-bridge: Yoast/AIOSEO
+  stand-down (double-meta)
+seo.add_table_of_contents: idempotent guard (rm100+enhance DOUBLE TOC —
+  live posts lo 2 boxes vachevi! user-visible bug)
+pipeline.update_post: rm100.optimize re-run (rewrite degrade fix +
+  rank_math_seo_score fresh)
+```
+
+ALSO (v83, no suite bump): rm100 TRUE-100 — takeaways/TOC self-fail fix
+(57→100 proven) · content-length message 1500 align · v82_test 9th check.
+
+VERIFY (v84)
+```
+python run.py --test-all                     # 65/65 suites (v84_test.py kotha: 13 checks)
+node tests/runtime/jsdom_runtime_test.js     # 164/164 browser checks
+python tools/build_wp_theme.py               # zip LAST (ads/options/pwa/perf/bridge changes!)
+python run.py --readiness                    # 100/100
+python -m pyflakes autoblog tools tests run.py  # 0 findings
+```
+
+## PART 43 — v85: AUTO-BLOG PREP DEEP AUDIT (any URL + any length)
+
+**Brief:** Telegram-bot URL→post eme URL + entha lengthy ayina success;
+prompts correct/advanced; 100% RankMath/SEO/keywords. Fetch→prompt→parse→
+refine→bot full-path real-run audit (local HTTP fixtures + monkeypatch).
+
+**Fixes (9):**
+1. `sources.py` — `<table>` rows `TABLE:` lines + h2/h3 `[H]` + cap 18000
+   (vacancy/fee/age facts drop = hallucination cause)
+2. `gemini_client.py` — `JSON_SCHEMA_CONTRACT` (10 required keys, recruitment
+   object, empty-string-NOT-ok) both generate paths ki wire
+3. `gemini_client.py` — `_parse_json` repair (trailing commas/control chars)
+   + `_normalize_keys` aliases + faq `{q,a}`/`[q,a]` unify
+4. `sources.py` — JS-empty pages ki JSON-LD `articleBody` fallback
+   (decompose MUNDU capture); non-HTML/404 honest ValueError
+5. `refine_article` context 20000 + `_rankmath_gate` anti-truncation
+   (<70% length = reject, original keep)
+6. `rm100.fix_slug` ASCII-only (pure-Telugu keyword = untouched)
+7. `approval_bot.on_message` — mid-text URL extract (`https?://\S+`)
+8. `approval_bot` — pipeline daemon thread (polling freeze fix) +
+   honest exception message user ki
+9. `tests/v84_test.py` — `test_first_para_skips_ads` registration miss fix
+
+**Lesson:** same-file parallel edits race (last-write-wins) — sequential only.
+
+VERIFY (v85)
+```
+python tests/v85_test.py                     # 9/9 checks
+python run.py --test-all                     # 66/66 suites
+node tests/runtime/jsdom_runtime_test.js     # 164/164 browser checks
+python run.py --readiness                    # 100/100
+python -m pyflakes autoblog tools tests run.py  # 0 findings
+```
+
+## PART 44 — v86: PROFESSIONAL POST AUDIT (final post end-to-end)
+
+**Brief:** oka professional post avvali — full pipeline local source tho
+end-to-end run chesi FINAL WP payload audit (structure/tags/anchors/
+provenance/featured/excerpt/slug).
+
+**Fixes (6):**
+1. `seo.py` — read-also duplicate delete; `su-related` single block +
+   `_short_title` + "వీటిని కూడా చదవండి" rotation (4 headings)
+2. `pipeline._append_official_sources` — gov/edu matrame official-links;
+   news sources skip (su-source + trust-box cover); dedupe
+3. `sources.is_official_domain` — hosts + full URLs (pipeline gate)
+4. `rm100._anchor_id` — ASCII-only (pure-Telugu → section-N); seo side
+   already ASCII (probe: rm100 TOC ne live path)
+5. `seo.enhance` — visible breadcrumb remove (theme `.crumbs` duplicate);
+   BreadcrumbList JSON-LD intact
+6. `approval_bot` — pin-gate error dict → honest ⛔ (source + update paths;
+   "ayyindi ✔" false-success hole closed)
+
+**False alarms (verify chesi vadilesina):** post lo "raw CSS" — `<style>`
+intact (text-view artifact); in-content images — feature, not bug (skip).
+
+VERIFY (v86)
+```
+python tests/v86_test.py                     # 6/6 checks (e2e FakeWP/Src/TG)
+python run.py --test-all                     # 67/67 suites
+node tests/runtime/jsdom_runtime_test.js     # 164/164 browser checks
+python run.py --readiness                    # 100/100
+python -m pyflakes autoblog tools tests run.py  # 0 findings
+```
+
+## PART 45 — v87: FIX-ALL ROUND (update e2e + quiz + banners)
+
+**Brief:** "fix all" — update flow e2e probe + quiz/banner visual audit.
+
+**Fixes (7):**
+1. `pipeline.update_post` — `_ures["after"]` → `["score"]` (×2: dict + log
+   line). `optimize()` returns "score"; v84 update-rm100 KeyError tho ALWAYS
+   skip ayyedi. (apply-vs-optimize key audit: migathavi anni correct)
+2. `update_post` — `_source_urls` + `_append_official_sources` (create parity);
+   helper None-safe (`article.get(...) or []`)
+3. `create_quiz` — manual level clamp 1-4 (KeyError crash fix), questions
+   clamp 1-30 (LLM truncate/cost), dup-guard generate MUNDU (title pre-compute)
+4. `image_gen.telugu_to_latin` — Telugu banner tofu boxes (□□□) fix. PIL ku
+   Indic shaping ledu (no raqm local + server) → deterministic Latin
+   (conjuncts/virama/matras/digits). Banner + pill label rendu.
+5. `image_gen` — `_split_word` hard-break (long-token canvas overflow) +
+   `_fit_banner` auto-shrink (bottom 3-line → footer overlap fix)
+6. `_hygiene` — empty focus_keyword → title-derived (41-score drafts + rm100
+   kw-skip fix). Validator empty-kw ni honest-41 ga handle chestundi (verified)
+7. `auto_refresh` — owner TG summary (cron silent fix; notify never breaks cron)
+
+**Visual proof:** /tmp/v87_img renders (before: tofu + overlap + overflow;
+after: clean Latin + fit). Probe artifacts noted: FakeWP routing
+(`?context=edit` endswith), dates/title/related anni real-run lo verify.
+
+VERIFY (v87)
+```
+python tests/v87_test.py                     # 7/7 checks
+python run.py --test-all                     # 68/68 suites
+node tests/runtime/jsdom_runtime_test.js     # 164/164 browser checks
+python run.py --readiness                    # 100/100
+python -m pyflakes autoblog tools tests run.py  # 0 findings
+```

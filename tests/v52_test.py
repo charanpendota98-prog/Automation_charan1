@@ -8,7 +8,6 @@ Offline only. Run: python tests/v52_test.py   (also via python run.py --test-all
 """
 from __future__ import annotations
 
-import io
 import json
 import re
 import sys
@@ -72,7 +71,7 @@ def test_house_json_shipped_with_studentup_promos():
     for a in data["ads"]:
         assert a.get("link", "").startswith("http"), a
         assert a.get("house") is True
-    print("  house ads: %d StudentUp promos shipped (services/quiz/exam) ✔" % len(ids))
+    print("  house ads: %d StudentUp promos shipped (services/quiz/jobs) ✔" % len(ids))
 
 
 def test_house_ad_fills_empty_slot():

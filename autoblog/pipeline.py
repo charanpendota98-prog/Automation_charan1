@@ -8,6 +8,7 @@ create_from_source(url): fetch source -> Gemini 100% original rewrite -> publish
 import hashlib
 import json
 import logging
+import re
 from datetime import date
 from pathlib import Path
 from typing import Dict, Optional
@@ -146,8 +147,32 @@ JUNK_TAGS = {"studentup", "studentup.in", "studentupin", "news", "latest",
              "trending", "2026", "2025", "students", "telugu news"}
 
 
+def suggest_tags(article: Dict) -> list:
+    """v78: keyword-derived auto-tags (5-8 guarantee ki base).
+
+    LLM tags marchipoina/2-3 iste: focus_keyword + secondary + category +
+    title acronyms (TSPSC/APPSC/SI...) nunchi build. Junk/dedupe/cap =
+    _hygiene tarvata handle (existing rules — no junk tags).
+    """
+    tags = [str(t).strip() for t in (article.get("tags") or []) if str(t).strip()]
+    cands = []
+    if article.get("focus_keyword"):
+        cands.append(str(article["focus_keyword"]).strip())
+    cands += [str(k).strip() for k in (article.get("secondary_keywords") or [])[:4]]
+    if article.get("category"):
+        cands.append(str(article["category"]).strip())
+    title = str(article.get("title") or "")
+    cands += re.findall(r"\b[A-Z]{2,}(?:\s*\d+)?\b", title)
+    cands += re.findall(r"\b(?:Group|Grade|Level)\s+\d+\b", title, flags=re.I)
+    for c in cands:
+        if c and c not in tags:
+            tags.append(c)
+    return tags
+
+
 def _hygiene(article: Dict) -> Dict:
     """Chinna chinna quality fixes publish mundhe."""
+    article["tags"] = suggest_tags(article)  # v78 auto-tags (hygiene dedupes)
     # title too long -> seo_title use cheyi (Rank Math 60-75 chars ideal)
     title = article.get("title", "")
     seo_title = article.get("seo_title", "")
@@ -166,6 +191,12 @@ def _hygiene(article: Dict) -> Dict:
     if not tags:
         tags = [article.get("category", "Students"), str(date.today().year)]
     article["tags"] = tags[:8]
+    # v87: focus_keyword empty (LLM omit) → title nunchi derive
+    # (lekapothe 41-score draft + rm100 kw-fixers anni skip!)
+    if not (article.get("focus_keyword") or "").strip():
+        toks = [t for t in re.sub(r"[^a-zA-Z0-9 ]", " ", title).split()
+                if len(t) > 2][:4]
+        article["focus_keyword"] = " ".join(toks) or title[:60]
     # meta description fallback: quick_answer or first para nunchi
     md = (article.get("meta_description") or "").strip()
     if len(md) < 120:
@@ -249,6 +280,17 @@ def _rankmath_gate(article: dict, category: str) -> dict:
             improved = gemini_client.refine_article(article, fixes[:12])
         except Exception as exc:  # noqa: BLE001 — refine best-effort, publish aapadu
             log.warning("Refine round %d failed (%s)", rnd, exc)
+            break
+        # v85: anti-truncation — improved <70% length = sections lost
+        # (refine context cut valla) → reject, original keep.
+        # Threshold 2000: real drafts 9000+ chars; test fixtures ~1000
+        # (tiny fake-refines legit — guard real-posts ke).
+        orig_len = len(article.get("content_html", "") or "")
+        new_len = len(improved.get("content_html", "") or "")
+        if orig_len > 2000 and new_len < orig_len * 0.7:
+            log.warning("Refine truncated (%d → %d chars) — original keep",
+                        orig_len, new_len)
+            article["_fact"] = facts_before
             break
         rm2 = validator.rankmath_strict(improved, improved.get("content_html", ""))
         facts_after = (validator.fact_guard(improved.get("content_html", ""),
@@ -406,6 +448,17 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
     qa = validator.validate_article(article, final_html)
     article["_qa"] = qa
     article["_rm"] = validator.rankmath_strict(article, final_html)
+    if not article.get("_source_texts") and article.get("_deep_sources"):
+        # v78: rewrite path (_deep_sources) nunchi kuda _orig score —
+        # live originality gate publish + rewrite rendu ki uniform (None kaadu).
+        _st = []
+        for _s in article["_deep_sources"]:
+            _t = getattr(_s, "text", None)
+            if _t is None and isinstance(_s, dict):
+                _t = _s.get("text", "")
+            if _t:
+                _st.append(_t)
+        article["_source_texts"] = _st
     if article.get("_source_texts"):
         article["_orig"] = validator.originality_score(
             final_html, article["_source_texts"])
@@ -486,7 +539,7 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
         log.debug("publish_article skip: %s", exc)
 
     # --- featured image (alt text lo focus keyword) ---
-    image_path = Path(config.OUTPUT_DIR / "images" / f"{article['slug']}.jpg")
+    image_path = Path(config.OUTPUT_DIR / "images" / f"{article['slug']}.webp")
     media_id = None
     if config.IMAGE_ENABLED:
         fk = article.get("focus_keyword") or article["banner_text"]
@@ -526,6 +579,24 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
                 log.info("v72 qual tag → %s", qual.describe(article))
         except Exception:  # noqa: BLE001 — tag fail publish aapadu (theme kuda auto detects)
             log.exception("v72 qual tag skip (publish safe)")
+    # --- v77 ORIGINALITY: donor sources vs final article (REAL copy %, not claim) ---
+    try:
+        _srcs = []
+        for _s in (article.get("_deep_sources") or []):
+            _t = getattr(_s, "text", None)
+            if _t is None and isinstance(_s, dict):
+                _t = _s.get("text", "")
+            if _t:
+                _srcs.append(_t)
+        article["_originality"] = validator.rewrite_distance(final_html, _srcs) \
+            if _srcs else {"overlap": 0.0, "fresh": 1.0, "verdict": "no-sources"}
+        log.info("ORIGINALITY fresh=%s overlap=%s (%s)",
+                 article["_originality"]["fresh"], article["_originality"]["overlap"],
+                 article["_originality"]["verdict"])
+    except Exception:  # noqa: BLE001 — score fail publish aapadu
+        log.exception("originality skip (publish safe)")
+        article["_originality"] = {"overlap": 0.0, "fresh": 1.0,
+                                   "verdict": "skip"}
     # --- v65 PIN-TO-PIN GATE: certificate + critical block (live publish mattrame) ---
     is_live = (article.get("_live") is True or
                str(getattr(config, "DEFAULT_POST_STATUS", "draft")).lower() == "publish")
@@ -641,6 +712,30 @@ def _after_publish_push(article: Dict, result: Dict) -> None:
             )
     except Exception:
         log.exception("Channel auto-post failed")
+
+
+def _append_official_sources(article: dict) -> None:
+    """Provenance → visible official links (v86 gated).
+
+    Article independently written; links let a student verify a date/fee
+    instead of trusting an AI summary. ONLY official domains → external
+    links ("అధికారిక లింక్స్"); news/blog sources stay out (su-source +
+    trust-box already give provenance, mislabel kakunda).
+    """
+    from .sources import is_official_domain
+    # v87: None-safe (update-path articles lo key missing/None untundi)
+    article["external_links"] = article.get("external_links") or []
+    known_links = {str(item.get("url", "")).rstrip("/")
+                   for item in article["external_links"] if isinstance(item, dict)}
+    for source_url in (article.get("_source_urls") or [])[:6]:
+        host = urlparse(source_url).netloc
+        if source_url.rstrip("/") in known_links or not is_official_domain(host):
+            continue
+        known_links.add(source_url.rstrip("/"))
+        article["external_links"].append({
+            "text": f"Official Notice — {host.replace('www.', '')}",
+            "url": source_url,
+        })
 
 
 def create_from_source(url: str, mock: bool = False, category: str = "",
@@ -808,18 +903,7 @@ def create_from_source(url: str, mock: bool = False, category: str = "",
         + [urlparse(e.url).netloc.replace("www.", "") for e in extras]
     ]
 
-    # Preserve provenance in visible official/reference links. The article is
-    # still independently written; these links let a student verify a date or
-    # fee instead of asking them to trust an AI summary.
-    article.setdefault("external_links", [])
-    known_links = {str(item.get("url", "")).rstrip("/")
-                   for item in article["external_links"] if isinstance(item, dict)}
-    for i, source_url in enumerate(article["_source_urls"][:6], 1):
-        if source_url.rstrip("/") not in known_links:
-            article["external_links"].append({
-                "text": f"Source {i} — {urlparse(source_url).netloc}",
-                "url": source_url,
-            })
+    _append_official_sources(article)
 
     # slug safe ga + Rank Math optimize (keyword tokens + stopwords)
     from .main import _safe_slug
@@ -915,6 +999,26 @@ def update_post(post_id: int, new_source_urls=None, mock: bool = False) -> Dict:
     article["content_html"] = validator.sanitize_html(article["content_html"])
     article = _hygiene(article)
     article.setdefault("update_notes", "")
+    article["_deep_sources"] = list(extras)  # v77: update originality scoring
+    # v87: update kuda official-source links (create-path parity — kotha
+    # gov notice links updates lo poyevai!)
+    article["_source_urls"] = [e.url for e in extras if getattr(e, "url", "")]
+    _append_official_sources(article)
+
+    # v84: update kuda rm100 re-run (LLM rewrite structure degrade kakunda +
+    # rank_math_seo_score fresh). Fail ayina update aagadu (advisory).
+    try:
+        if not article.get("_no_rm100"):
+            _ures = rm100.optimize(
+                article, target=int(getattr(config, "RM_TARGET", 100) or 100),
+                max_passes=2)
+            # v87: optimize returns "score" (not "after") — v84 key bug valla
+            # update rm100 ALWAYS skip ayyedi (KeyError → advisory catch)!
+            article["_rm100"] = {"score": _ures["score"],
+                                 "before": _ures["before"]}
+            log.info("Update rm100 %s→%s", _ures["before"], _ures["score"])
+    except Exception:  # noqa: BLE001 — advisory (update safe)
+        log.exception("update rm100 skip (post safe)")
 
     # --- SEO re-enhance (fresh TOC/quick answer/schema) ---
     recent = wp.get_recent_published(per_page=8)
@@ -939,6 +1043,14 @@ def update_post(post_id: int, new_source_urls=None, mock: bool = False) -> Dict:
     qa = validator.validate_article(article, final_html)
     article["_qa"] = qa
     log.info("Update QA %s/100 words=%d", qa["score"], qa["words"])
+    try:  # v77: update kuda originality proof (donor sources vs final)
+        article["_originality"] = validator.rewrite_distance(
+            final_html, [e.text for e in extras if getattr(e, "text", "")])
+        log.info("ORIGINALITY (update) fresh=%s (%s)",
+                 article["_originality"]["fresh"],
+                 article["_originality"]["verdict"])
+    except Exception:  # noqa: BLE001
+        log.exception("update originality skip (post safe)")
 
     meta = None
     if config.RANK_MATH_META_ENABLED:
@@ -1041,17 +1153,27 @@ def create_quiz(topic: str = "", level: int = 0, questions: int = 0,
         # manual topic (Telugu ok) — level default 2, questions default
         topic_en = topic.strip()
         topic_te = topic.strip()
-        lvl = level or 2
-        n = questions or config.QUIZ_QUESTIONS
+        # v87: manual level clamp (9 isthe LEVEL_NAMES KeyError crash!)
+        lvl = max(1, min(4, level)) if level else 2
+        # v87: questions clamp (500 adigithe LLM output truncate + cost!)
+        n = max(1, min(30, questions)) if questions else config.QUIZ_QUESTIONS
     else:
         topic_en, topic_te, lvl, n = quiz_engine.pick_daily_topic(now_day)
         if questions:
-            n = questions
+            n = max(1, min(30, questions))
         if level:
             lvl = max(1, min(4, level))
 
     log.info("Quiz mode: '%s' (%s) — L%d, %d questions%s",
              topic_en, topic_te, lvl, n, " [MOCK]" if mock else "")
+    # v87: duplicate guard GENERATE MUNDU (LLM call waste kakunda) —
+    # title ki quiz object avasaram ledu (topic/lvl matrame).
+    _dstr = now_day.strftime("%d %B %Y")
+    _qtitle = (f"Daily Quiz – {_dstr} | {topic_en} Telugu "
+               f"({quiz_engine.LEVEL_NAMES[lvl]})") if not topic else \
+        f"Quiz: {topic_en} Telugu ({quiz_engine.LEVEL_NAMES[lvl]})"
+    if state.title_exists(config.STATE_PATH, _qtitle):
+        raise ValueError(f"Quiz already generated today: {_qtitle}")
     if mock:
         quiz = quiz_engine.mock_quiz(topic_en, topic_te, lvl, n, now_day)
     else:
@@ -1064,13 +1186,7 @@ def create_quiz(topic: str = "", level: int = 0, questions: int = 0,
 
     content_html, uid = quiz_engine.build_quiz_html(quiz, topic_en, topic_te,
                                                     lvl, n, now_day)
-    dstr = now_day.strftime("%d %B %Y")
-    title = (f"Daily Quiz – {dstr} | {topic_en} Telugu "
-             f"({quiz_engine.LEVEL_NAMES[lvl]})") if not topic else \
-            f"Quiz: {topic_en} Telugu ({quiz_engine.LEVEL_NAMES[lvl]})"
-    # duplicate guard: same-day/same-topic quiz already unda?
-    if state.title_exists(config.STATE_PATH, title):
-        raise ValueError(f"Quiz already generated today: {title}")
+    dstr, title = _dstr, _qtitle  # v87: pre-computed (guard generate mundu)
     focus = "daily quiz telugu" if not topic else topic_en.lower()
     article = {
         "title": title,
@@ -1135,4 +1251,15 @@ def auto_refresh(limit: int = 1, older_days: int = None) -> list:
             results.append(update_post(t["wp_id"]))
         except Exception:
             log.exception("Auto-refresh fail: post %s", t["wp_id"])
+    # v87: owner summary (cron silent kakunda — updates jarigayo ledo teliyali)
+    try:
+        if results and config.TELEGRAM_BOT_TOKEN and config.TELEGRAM_CHAT_ID:
+            from .notifier import esc as _esc, send_telegram as _tg
+            lines = [f"🔄 <b>Auto-refresh: {len(results)} post(s)</b>"]
+            for r in results[:5]:
+                if isinstance(r, dict) and not r.get("error"):
+                    lines.append(f"✔ {_esc(r.get('link', ''))}")
+            _tg("\n".join(lines))
+    except Exception:  # noqa: BLE001 — notify never breaks cron
+        log.exception("auto-refresh summary skip (safe)")
     return results

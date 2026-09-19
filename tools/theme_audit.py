@@ -17,7 +17,6 @@ from __future__ import annotations
 import argparse
 import json
 import re
-import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -133,7 +132,6 @@ def collect(report: dict) -> dict:
     called: dict = {}
     options_read: set = set()
     options_declared: set = set()
-    h1_files: list = []
     hooks: dict = {}
 
     for path in _php_files():

@@ -20,9 +20,7 @@ Run: python tests/v60_test.py   (also via python run.py --test-all)
 """
 from __future__ import annotations
 
-import io
 import json
-import re
 import sys
 import tempfile
 from pathlib import Path

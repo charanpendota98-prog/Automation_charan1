@@ -55,13 +55,15 @@
     });
   }
 
-  /* ---------- chips filter (front page grid) + v72.1 qualification filter ---------- */
+  /* ---------- chips filter (front page grid) + v76 qualification dropdown ---------- */
   var grid = document.getElementById("grid");
   var chips = document.querySelectorAll(".chip[data-cat]");
-  var qchips = document.querySelectorAll(".qchip");
+  var qualsel = document.getElementById("qualsel");
   var nores = document.getElementById("nores");
   var activeCat = "all";
   var activeQual = "all";
+  /* v76: server-rendered ?qual= state tho JS sync (select value = truth) */
+  if (qualsel && qualsel.value && qualsel.value !== "all") activeQual = qualsel.value;
   var today = new Date();
   today.setHours(0, 0, 0, 0);
 
@@ -125,18 +127,11 @@
       applyFilter();
     });
   });
-  /* v72.1: qualification chips — with JS the filter combines with category without reloading
-   * (href server-side/SEO kosam alage untundi; JS unna browser lo URL history update). */
-  Array.prototype.forEach.call(qchips, function (chip) {
-    chip.addEventListener("click", function (e) {
-      var slug = chip.getAttribute("data-qual") || "all";
-      e.preventDefault();
-      Array.prototype.forEach.call(qchips, function (c) {
-        c.classList.remove("active");
-        c.setAttribute("aria-current", "false");
-      });
-      chip.classList.add("active");
-      chip.setAttribute("aria-current", "true");
+  /* v76: qualification dropdown — with JS the filter combines with category without reloading
+   * (form GET server-side/SEO + no-JS kosam alage untundi; JS unna browser lo URL history update). */
+  if (qualsel) {
+    qualsel.addEventListener("change", function () {
+      var slug = qualsel.value || "all";
       activeQual = slug;
       try {                                   /* shareable URL — server-side tho same */
         var url = new URL(location.href);
@@ -145,9 +140,9 @@
         history.replaceState({}, "", url.toString());
       } catch (err) {}
       applyFilter();
-      if (grid.scrollIntoView) grid.scrollIntoView({ behavior: "smooth", block: "start" });
+      if (grid && grid.scrollIntoView) grid.scrollIntoView({ behavior: "smooth", block: "start" });
     });
-  });
+  }
   /* hash deep-link (#cat-ts-jobs) */
   (function () {
     var m = (location.hash || "").match(/^#cat-([a-z0-9-]+)$/);
@@ -346,4 +341,35 @@
       if (e.key === "Escape" && !spanel.hidden) searchOpen(false);
     });
   }
+
+  /* ---------- v80 (P25): outbound + apply-link click tracking (GA4 gated) ---------- */
+  document.addEventListener("click", function (e) {
+    if (typeof window.gtag !== "function") return;  /* GA4 ledu → track cheyyamu */
+    var a = e.target && e.target.closest ? e.target.closest("a[href]") : null;
+    if (!a) return;
+    var href = a.getAttribute("href") || "";
+    if (!/^https?:\/\//i.test(href)) return;
+    var same = false;
+    try { same = new URL(href, location.href).host === location.host; } catch (err) { return; }
+    if (same) return;
+    var isApply = /apply|application|register|registration|form/i.test(href) ||
+      /apply|register/i.test(a.textContent || "");
+    window.gtag("event", isApply ? "apply_click" : "outbound_click", {
+      event_category: "engagement",
+      event_label: href.slice(0, 200)
+    });
+  });
+
+  /* ---------- v81 (§37): site-search tracking (GA4 gated) ---------- */
+  document.addEventListener("submit", function (e) {
+    if (typeof window.gtag !== "function") return;
+    var f = e.target && e.target.tagName === "FORM" ? e.target : null;
+    if (!f) return;
+    var q = f.querySelector('input[name="s"]');
+    if (!q || !q.value) return;
+    window.gtag("event", "search", {
+      event_category: "engagement",
+      event_label: String(q.value).slice(0, 100)
+    });
+  });
 })();
