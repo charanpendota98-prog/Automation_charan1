@@ -503,6 +503,21 @@ python run.py --traffic-sessions         # advanced control
 python run.py --traffic-views            # advanced control
 ```
 
+### v75 — CONTACT FINAL (+91 ledu) + PUBLISH SAFETY + DUMMY PURGE
+
+**Mee brief:** "+91 avasaram ledu" · website fully final · more advanced ·
+all bugs fix. Call links/display lo **10-digit number matrame**
+(`9182739312`); wa.me buttons work avvali kabatti links lo country code
+untundi (kanipinchadu). Theme auto-normalize chestundi — owner 10-digit /
++91 / 0 tho emichina anni chotla correct links.
+
+| # | What changed | Detail |
+| 1 | **Contact final** | `tel:` + visible text lo +91 ledu (preview · policy pages · theme CTA); wa.me/919182739312 buttons intact; `studentup_wa_number()` + `studentup_call_number()` normalizers + 10-digit defaults |
+| 2 | **Mock publish block** | `--mock` ante auto dry-run (`main.run` + `top_post_run`) — thin test stubs WordPress ki eppudu vellavu |
+| 3 | **Dummy purge** | Demo inventory ads `active:false` (fake ads live posts loki ravu) · dead `#exam` house ad → `#jobs` · theme sync inactive/dead-link promos filter |
+| 4 | **Bug hunt** | `THEME_PATH` dead code · `uplift` import shadow · dead vars · guardian ads count honest (live/total) · v59 time-bomb + `.venv` hardcodes fix |
+| 5 | **Proof** | `--test-all` **57/57** (v75_test.py kotha: 10 checks) · jsdom **164/164** · readiness **100/100** · guardian · parity **0/0** · code audit **0/0** · theme audit **0/0** · php-lint **32/32** · theme **1.7.2** |
+
 ### v74 — LIVE EXAM REMOVAL + CRON-ONLY BOT ("live exam avasaram ledu")
 
 **Mee brief:** live exam portal **vaddu** · anni neat + perfect + advanced · MilesWeb

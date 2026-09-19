@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 function studentup_cta_internet_center() {
 	$soc   = studentup_social_links();
-	$phone = preg_replace( '/[^0-9+]/', '', (string) studentup_opt( 'social_whatsapp', '' ) );
+	$phone = studentup_call_number( studentup_opt( 'social_whatsapp', '' ) );
 	$tel   = $phone ? 'tel:' . $phone : '';
 	$mail  = studentup_contact_email();
 	?>

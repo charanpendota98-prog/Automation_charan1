@@ -216,7 +216,7 @@ def test_rm100_takeaways_entities():
     assert res["after"] == 100 and res["remaining"] == []
     assert "takeaways" in res["applied"] and "entities" in res["applied"]
     # idempotent
-    again = rm100.apply(art)
+    rm100.apply(art)
     assert html.count("su-takeaways") == art["content_html"].count("su-takeaways")
     # FAQ presence-guard regression: 3 H3 unna, FAQ questions lekapote FAQ add avvali
     a2 = {"faq": [("Q1 ఏమిటి?", "A1."), ("Q2 ఎలా?", "A2."), ("Q3 ఎప్పుడు?", "A3.")],

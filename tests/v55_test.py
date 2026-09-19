@@ -92,7 +92,7 @@ def test_ads_txt_status_states():
     warn_file.write_text("google.com, pub-999, DIRECT, f08c47fec0942fa0\n", encoding="utf-8")
     assert adsense_kit.ads_txt_status(warn_file)[0] == "warn"
     good = tmp / "good.txt"
-    good.write_text(f"# hdr\ngoogle.com, pub-1234567890123456, DIRECT, f08c47fec0942fa0\n",
+    good.write_text("# hdr\ngoogle.com, pub-1234567890123456, DIRECT, f08c47fec0942fa0\n",
                     encoding="utf-8")
     state, detail = adsense_kit.ads_txt_status(good)
     assert state in ("live", "warn") and "pub-1234567890123456" in detail

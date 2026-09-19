@@ -157,7 +157,7 @@ Message lo reason undi — exact ga fix cheyandi:
 ## ⚠️ Honest note
 Perfect = **machine gates + human 5-min verify**. Gates mistakes ramigadu (conflicts/stale/dates/originality), kaani official numbers mee mata tho final check — AdSense/Google/reputation thartham lo idi matrame safety.
 
-*Last updated: v74 (2026-09-19) — LIVE EXAM REMOVAL + CRON-ONLY BOT (portal teesesam · static question/quiz · WhatsApp leads · `--approval-poll` cron): 56/56 suites · 164/164 runtime · readiness 100/100 · code audit 0/0 · parity 0/0 · theme audit 0/0 · theme v1.7.2*
+*Last updated: v75 (2026-09-19) — CONTACT FINAL (+91 ledu) + PUBLISH SAFETY + DUMMY PURGE (10-digit tel/display · wa.me intact · mock auto dry-run · demo ads off · dead #exam → #jobs): 57/57 suites · 164/164 runtime · readiness 100/100 · code audit 0/0 · parity 0/0 · theme audit 0/0 · theme v1.7.2*
 
 ## PART 26 — v67: DEEP AUDIT (expert/BA) + TOP-THEME HARDENING + 6/6 REVENUE SLOTS
 
@@ -1022,6 +1022,59 @@ TESTS REBASE (v73 lo maree pins update chesam — UI ni tirigi pettaledu):
 `tests/runtime/jsdom_runtime_test.js` (English chrome + hero + 162 checks) ·
 `autoblog/readiness.py` (`lang="en"` + og:locale · first-look labels) · `autoblog/guardian.py`
 (first-look needles + hero order).
+
+No guarantee: rankings/traffic/AdSense/revenue Google + mee accounts + time batti — ee pass lo unna vi
+code-level measurements matrame.
+
+## PART 34 — v75: CONTACT FINAL (+91 ledu) + PUBLISH SAFETY + DUMMY PURGE
+
+**Mee brief (2026-09-19):** "+91 avasaram ledu" · "more and more advanced" ·
+website fully finalise · all bugs fix · anni advanced implement.
+
+CONTACT (owner number 9182739312 — verified)
+```
+tel: links      : tel:9182739312 (preview index/contact · policy builder PHONE · theme CTA)
+visible text    : "Call 9182739312" (+91 ekkada kanipinchadu)
+wa.me links     : wa.me/919182739312 (country code MANDATORY — lekunte button work avvadu)
+theme helpers   : studentup_wa_number() (10-digit/+91/0 → wa.me digits) ·
+                  studentup_call_number() (display/tel kosam 10-digit) · defaults 10-digit
+header fallback : hardcoded wa.me full number (template safety-net, pani chestundi)
+```
+
+SAFETY (thin stubs live ki vellavu)
+```
+main.run()      : mock=True + dry_run=False → auto dry-run ON (log warning)
+top_post_run()  : publish + mock → auto dry-run ON
+offline harness : mock + FakeWP tests (listicle/research/seo_pipeline) alage work (CLI-level guard,
+                  pipeline-level kaadu — anduke test pattern break avvaledu)
+```
+
+DUMMY PURGE (live surfaces 0 fake content)
+```
+ads/inventory.json : demo ads active:false (FORMAT SAMPLES — posts loki ravu, demo page lo preview untundi)
+ads/house.json     : house-live-exam (dead #exam) → house-jobs (#jobs, real anchor)
+wp_theme_sync      : inactive + link-leni house ads live theme ki push avvavu
+guardian           : ads count honest ("live/total ads active")
+```
+
+BUG HUNT (pyflakes + review)
+```
+readiness.py    : THEME_PATH undefined dead branch teesesam
+ad_network_plan : uplift import shadow teesesam (local def canonical)
+ad_manager      : dead `house` var · rm100: dead `tests = analyze()` line
+v59_test        : fixed-date time-bomb → dynamic pub dates (sort deterministic, eppudu green)
+4 suites        : .venv/bin/python hardcode → sys.executable (fresh clone + CI safe)
+package-lock    : php-parser entry add (lock stale undindi)
+```
+
+VERIFY (v75)
+```
+python run.py --test-all                     # 57/57 suites (v75_test.py kotha: 10 checks)
+node tests/runtime/jsdom_runtime_test.js     # 164/164 browser checks
+python run.py --readiness                    # 100/100 · python run.py --guardian # 14/15 (creds pending)
+node tools/php_lint.js                       # 32/32 · python tools/build_wp_theme.py (zip rebuild LAST)
+python run.py --mock --force                 # auto dry-run ON + DRY-RUN saved (publish ledu)
+```
 
 No guarantee: rankings/traffic/AdSense/revenue Google + mee accounts + time batti — ee pass lo unna vi
 code-level measurements matrame.

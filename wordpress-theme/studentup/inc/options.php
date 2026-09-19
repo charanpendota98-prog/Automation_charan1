@@ -50,7 +50,7 @@ function studentup_option_fields() {
 		'socials' => array(
 			'title'  => 'Social media',
 			'fields' => array(
-				'social_whatsapp'  => array( 'WhatsApp number', 'text', '919182739312', 'With country code, without + (example: 919876543210)' ),
+				'social_whatsapp'  => array( 'WhatsApp number', 'text', '9182739312', '10-digit mobile — +91 avasaram ledu (example: 9182739312)' ),
 				'social_telegram'  => array( 'Telegram', 'text', 'studentup_in', 't.me/<idi> — channel username' ),
 				'social_instagram' => array( 'Instagram', 'text', 'studentup.in', 'instagram.com/<idi>' ),
 				'social_youtube'   => array( 'YouTube', 'text', '@studentupin', 'youtube.com/<idi>' ),
@@ -244,7 +244,7 @@ function studentup_rest_get_options() {
 			'theme'       => 'studentup',
 			'version'     => defined( 'STUDENTUP_VERSION' ) ? STUDENTUP_VERSION : '',
 			'socials'     => array(
-				'whatsapp'  => studentup_opt( 'social_whatsapp', '919182739312' ),
+				'whatsapp'  => studentup_opt( 'social_whatsapp', '9182739312' ),
 				'telegram'  => studentup_opt( 'social_telegram', 'studentup_in' ),
 				'instagram' => studentup_opt( 'social_instagram', 'studentup.in' ),
 				'youtube'   => studentup_opt( 'social_youtube', '@studentupin' ),
@@ -288,10 +288,39 @@ function studentup_rest_set_options( WP_REST_Request $request ) {
 }
 
 /**
+ * WhatsApp number normalizer — owner 10-digit mobile ichina (9182739312),
+ * +91 tho ichina (+919182739312), 0 tho ichina — anni cases lo wa.me ki
+ * panikocche digits (919182739312) vastayi. International numbers ni munchamu.
+ */
+function studentup_wa_number( $raw = '' ) {
+	$d = preg_replace( '/[^0-9]/', '', (string) $raw );
+	$d = ltrim( $d, '0' );
+	if ( 10 === strlen( $d ) && preg_match( '/^[6-9]/', $d ) ) {
+		return '91' . $d;
+	}
+	if ( 12 === strlen( $d ) && 0 === strpos( $d, '91' ) ) {
+		return $d;
+	}
+	return $d;
+}
+
+/**
+ * Call/display number — user ki +91 lekunda 10-digit (9182739312).
+ */
+function studentup_call_number( $raw = '' ) {
+	$d = preg_replace( '/[^0-9]/', '', (string) $raw );
+	$d = ltrim( $d, '0' );
+	if ( 12 === strlen( $d ) && 0 === strpos( $d, '91' ) ) {
+		$d = substr( $d, 2 );
+	}
+	return $d;
+}
+
+/**
  * Social URLs — options nunchi (footer/header ki).
  */
 function studentup_social_links() {
-	$wa  = preg_replace( '/[^0-9]/', '', (string) studentup_opt( 'social_whatsapp', '919182739312' ) );
+	$wa  = studentup_wa_number( studentup_opt( 'social_whatsapp', '9182739312' ) );
 	$tg  = ltrim( (string) studentup_opt( 'social_telegram', 'studentup_in' ), '@' );
 	$ig  = ltrim( (string) studentup_opt( 'social_instagram', 'studentup.in' ), '@' );
 	$yt  = (string) studentup_opt( 'social_youtube', '@studentupin' );

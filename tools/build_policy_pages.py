@@ -21,7 +21,7 @@ PAGES = OUT / "pages"
 EMAIL = "studentupinformative@gmail.com"
 TG = "https://t.me/studentup_in"
 # v71: Students Internet Center — WhatsApp first contact (placeholder number till owner sets it)
-PHONE = "+919182739312"
+PHONE = "9182739312"
 WA_LINK = "https://wa.me/919182739312?text=StudentUp%20Students%20Internet%20Center"
 UPDATED = "2026-09-18"
 

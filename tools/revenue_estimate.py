@@ -250,11 +250,11 @@ def render(views: int) -> str:
     A(f"  REVENUE ESTIMATE — నెలకు {human(views)} page views (studentup.in)")
     A("=" * 74)
     A("")
-    A(f"  ఈ ట్రాఫిక్‌కు AdSense (Indian jobs/education RPM ranges):")
+    A("  ఈ ట్రాఫిక్‌కు AdSense (Indian jobs/education RPM ranges):")
     for b in adsense_table(views):
         A(f"    {b['band']:<26} ₹{b['rpm']:>3}/1000 views  →  ₹{human(b['revenue'])}/నెల")
     A("")
-    A(f"  Direct (private) sponsors — LIVE rate card nunchi:")
+    A("  Direct (private) sponsors — LIVE rate card nunchi:")
     for s in direct["slots"]:
         tag = " (bundle)" if s["bundle"] else ""
         A(f"    {s['slot']}{tag:<0}  ₹{human(s['price'])}/నెల")
