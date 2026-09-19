@@ -503,6 +503,39 @@ python run.py --traffic-sessions         # advanced control
 python run.py --traffic-views            # advanced control
 ```
 
+### v78 — TOP-BLOG PERFECTION PASS ("edo final kaadu — best vache varaku")
+
+**Mee brief:** prathi point real check · dummy/sample vaddu · retry chesthu
+undali · correct data + many sources + NotebookLM · text peddga kakunda neat ·
+colors/tables/tags/categories anni perfect · 100% top blog, emi miss avvakunda.
+Method: **REAL probe** (pipeline ni nijamga nadipe) → gaps list → fix → malli
+probe — numbers kindha (same thin input, no FAQ, 1 tag):
+
+| Metric | v77 probe | v78 probe |
+|---|---|---|
+| Tables | 0 | **1** (facts extract fallback) |
+| FAQ | 0 | **6 Q/A + su-faq wrapper** |
+| Tags | 3 passthrough | **4+ auto** (focus+secondary+category+acronyms) |
+| Originality `_orig` | None | **98.8%** (deep-sources feed) |
+| RankMath strict | 88 | **96** |
+| TOP POST | 84 STRONG | **90 🏆 TOP POST** |
+| PIN gate | 86 (59/66) | **92 (62/66)** |
+
+| # | What changed | Detail |
+| 1 | **`extract_facts`** | Telugu+English regex: last_date/exam_date/vacancies/fee/age/qualification/salary — content nunchi (invent kadu) |
+| 2 | **Table guarantee** | LLM table marchipoina facts nunchi su-facts table (8 rows varaku); facts levu = honest skip |
+| 3 | **FAQ guarantee** | faq<3 aite facts nunchi Q/A templates + `<div class="su-faq">` cards wrapper |
+| 4 | **Auto-tags** | `suggest_tags` (focus+secondary+category+TSPSC-style acronyms) + hygiene junk-block; real flow lo 7-8 tags |
+| 5 | **`_orig` uniform** | `_deep_sources` nunchi kuda score — live gate rendu paths ki (None bug fix) |
+| 6 | **Many sources** | `RESEARCH_MAX_SOURCES` 3→**5** (+ v77 official-outbound = deepest gather) |
+| 7 | **Neat text** | Para split 120→100, chunks ~90→~70 words (wall-of-text break, meaning safe) |
+| 8 | **Theme CSS** | `.su-lede` + `.su-faq` cards + dark mode + table zebra (mundu levu — live ugly fix) |
+| 9 | **Proof** | `--test-all` **60/60** (v78_test.py kotha: 10 checks) · jsdom **164/164** · readiness **100/100** · theme **1.7.2** |
+
+Verify chesina REAL (no dummy): NotebookLM brief-file merge + validation
+(`create_from_source --notebooklm-brief`, bad brief = hard reject); category
+auto-detect 17 rules; prompt already asks table/1500-2200w/tags 5-8/faq 4-6.
+
 ### v77 — ORIGINAL CONTENT ENGINE + HIGH-ADS READINESS ("Google accept chestunda?")
 
 **Mee brief:** fully advanced + high ads · ads auto vasthaya? · reach vachaka

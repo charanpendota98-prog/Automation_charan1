@@ -267,6 +267,17 @@ body.dark p.su-kw,body.dark p.su-source,body.dark p.su-internal{color:#c3d3ea}
 .su-related-title{font-weight:700;color:#14663a;margin-bottom:6px}
 .su-related-entities ul{margin:0;padding-left:18px;display:flex;flex-wrap:wrap;gap:8px;list-style:none}
 .su-related-entities li a{display:inline-block;background:#fff;border:1px solid #cfe9d8;border-radius:999px;padding:4px 12px;text-decoration:none;color:#14663a;font-size:14px}
+/* ==================== v78: lede + FAQ cards + facts pop ==================== */
+.su-lede{font-size:17px;line-height:1.7;background:#f2f7ff;border-left:4px solid #1a5fd7;border-radius:0 10px 10px 0;padding:12px 16px;margin:14px 0;color:#122c55}
+body.dark .su-lede{background:#16213a;color:#d7e6ff;border-left-color:#ed8a32}
+.su-faq{margin:14px 0}
+.su-faq h3{background:#fff;border:1px solid #dbe6f7;border-left:4px solid #1a5fd7;border-radius:8px;padding:10px 14px;margin:10px 0 0;font-size:16px;color:#0f2e62}
+.su-faq h3+p{background:#f6f9ff;border:1px solid #dbe6f7;border-top:none;border-radius:0 0 8px 8px;padding:10px 14px;margin:0 0 10px}
+body.dark .su-faq h3{background:#1a2547;border-color:#25406b;border-left-color:#ed8a32;color:#d7e6ff}
+body.dark .su-faq h3+p{background:#101a30;border-color:#25406b}
+table.su-facts caption{font-weight:700;color:#0f2e62;padding:6px 0}
+table.su-facts tr:nth-child(even) td{background:#f6f9ff}
+body.dark table.su-facts tr:nth-child(even) td{background:#101a30}
 /* Ad reserved space (CLS 0) + lazy placeholder */
 .su-ad-reserved{display:block;overflow:hidden}
 .su-ad-lazy::after{content:"Advertisement";display:block;height:100%;min-height:inherit;display:grid;place-items:center;color:#8fa3bf;font-size:12px;background:#f7f9fc;border-radius:8px}

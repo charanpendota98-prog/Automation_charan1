@@ -18,7 +18,7 @@ Enduku (mee requirement: "post ki Rank Math 100 vachela score high kosam"):
     FAQ        → 3+ ప్రశ్నలు (article['faq'] nunchi)
     links      → 1 external (source url) + 1 internal (site hub) — kotha URL invent ledu
     transitions→ Telugu connectives (అలాగే/అందువల్ల/చివరగా) 25%+ sentences ki
-    paragraphs → 120+ word paragraphs ni sentence boundary lo split
+    paragraphs → 100+ word paragraphs ni sentence boundary lo split (~70-word chunks)
 
   Tarvata LLM refine (RM_REFINE_ROUNDS) migilinavi (words count, list items) fix
   chestundi; publish ki mundu **score malli compute** avutundi (state + Telegram +
@@ -345,6 +345,84 @@ def fix_density(article: dict, html: str) -> str:
     return html
 
 
+_TE_MONTHS = ("జనవరి|ఫిబ్రవరి|మార్చి|ఏప్రిల్|మే|జూన్|జులై|ఆగస్టు|"
+               "సెప్టెంబర్|అక్టోబర్|నవంబర్|డిసెంబర్")
+_EN_MONTHS = ("January|February|March|April|May|June|July|August|"
+              "September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|"
+              "Aug|Sep|Sept|Oct|Nov|Dec")
+_DATE = rf"(?:{_TE_MONTHS}|{_EN_MONTHS})\s+\d{{1,2}}(?:,?\s*\d{{4}})?|\d{{1,2}}[-/]\d{{1,2}}(?:[-/]\d{{2,4}})?"
+
+
+def extract_facts(html: str) -> dict:
+    """v78: content nunchi job-facts extract (Telugu+English regex).
+
+    Table/FAQ fallback kosam — LLM table marchipoina kuda job posts ki
+    summary table + FAQs GUARANTEE. Invent cheyyadu: content lo dorikina
+    phrases ne return (dorakkapothe key undadu — honest skip).
+    Keys: last_date · exam_date · vacancies · fee · age · qualification · salary.
+    """
+    plain = re.sub(r"\s+", " ", validator.strip_tags(html or ""))
+    facts: dict = {}
+
+    def _grab(pat: str):
+        m = re.search(pat, plain, flags=re.I)
+        return _text(m.group(1)) if m else ""
+
+    last = _grab(rf"(?:చివరి తేదీ|last\s*date|ఆఖరి\s*తేదీ)[^.:\n]{{0,30}}?[:\-–]?\s*({_DATE})")
+    if last:
+        facts["last_date"] = last
+    exam = _grab(rf"(?:పరీక్ష\s*తేదీ|exam\s*date)[^.:\n]{{0,30}}?[:\-–]?\s*({_DATE})")
+    if exam:
+        facts["exam_date"] = exam
+    vac = _grab(r"(?:మొత్తం\s+)?(\d[\d,]*)\s*(?:ఖాళీలు|ఖాళీ|పోస్టులు|పోస్టులు|vacanc(?:y|ies)|posts?)\b")
+    if not vac:
+        vac = _grab(r"(?:ఖాళీలు|ఖాళీ|vacanc(?:y|ies)|posts?)\s*[:\-–]?\s*(\d[\d,]*)")
+    if vac:
+        facts["vacancies"] = vac
+    fee = _grab(r"(?:ఫీజు|అప్లికేషన్\s*ఫీజు|application\s*fee|fee)[^.₹\d\n]{0,30}?((?:₹\s*)?\d[\d,]*\s*(?:రూపాయలు|రూ|rupees|rs\.?)?)")
+    if fee and re.search(r"\d", fee):
+        facts["fee"] = fee.strip()
+    age = _grab(r"(?:వయస్సు|వయోపరిమితి|age\s*limit|age)\D{0,20}?(\d{1,2}\s*(?:నుండి|to|-|–)\s*\d{1,2})")
+    if age:
+        facts["age"] = age
+    qual = _grab(r"(?:అర్హత|అర్హతలు|qualification|eligibility)[^.\n]{0,80}?"
+                 r"(డిగ్రీ|డిప్లొమా|ఇంటర్|ఇంటర్మీడియట్|టెన్త్|ఐటీఐ|degree|diploma|"
+                 r"inter(?:mediate)?|10th|12th|ITI|B\.?Tech|M\.?Tech|PG|post[\s-]?graduation|graduation)")
+    if not qual:
+        # reverse order: "డిగ్రీ ఉత్తీర్ణులై ఉండాలి" (అర్హత word lekunna)
+        qual = _grab(r"(డిగ్రీ|డిప్లొమా|ఇంటర్|ఇంటర్మీడియట్|టెన్త్|ఐటీఐ|degree|"
+                     r"diploma|inter(?:mediate)?|10th|12th|ITI|B\.?Tech|M\.?Tech|"
+                     r"PG|post[\s-]?graduation|graduation)\s*(?:ఉత్తీర్ణ|pass)")
+    if qual:
+        facts["qualification"] = qual
+    sal = _grab(r"(?:వేతనం|జీతం|salary|pay\s*scale)[^₹\d.\n]{0,20}?((?:₹\s*)?\d[\d,]*(?:\s*[-–]\s*(?:₹\s*)?\d[\d,]*)?)")
+    if sal and re.search(r"\d", sal):
+        facts["salary"] = sal.strip()
+    return facts
+
+
+_FACT_LABELS = (("last_date", "దరఖాస్తు చివరి తేదీ"),
+                ("exam_date", "పరీక్ష తేదీ"),
+                ("vacancies", "ఖాళీలు"),
+                ("fee", "ఫీజు"),
+                ("age", "వయోపరిమితి"),
+                ("qualification", "అర్హత"),
+                ("salary", "వేతనం"))
+
+_FAQ_TPL = (("last_date", "దరఖాస్తు చివరి తేదీ ఎప్పుడు?",
+             "చివరి తేదీ {v}. గడువు ముగిసేలోపు దరఖాస్తు చేయండి."),
+            ("vacancies", "ఎన్ని ఖాళీలు ఉన్నాయి?",
+             "మొత్తం {v} ఖాళీలు ఉన్నాయి."),
+            ("fee", "అప్లికేషన్ ఫీజు ఎంత?",
+             "ఫీజు {v}. కేటగిరీ ప్రకారం మారవచ్చు — నోటిఫికేషన్ చూడండి."),
+            ("age", "వయోపరిమితి ఎంత?",
+             "వయస్సు {v} మధ్య ఉండాలి. రిజర్వేషన్ ప్రకారం సడలింపు ఉంటుంది."),
+            ("qualification", "అర్హత ఏమిటి?",
+             "{v} ఉత్తీర్ణులై ఉండాలి. పూర్తి వివరాలు నోటిఫికేషన్‌లో చూడండి."),
+            ("exam_date", "పరీక్ష ఎప్పుడు?",
+             "పరీక్ష తేదీ {v}. హాల్ టికెట్ వివరాలు అధికారిక సైట్‌లో చూడండి."))
+
+
 def fix_table(article: dict, html: str) -> str:
     """'ముఖ్య వివరాలు' table — unna facts thone (invent cheyyadu)."""
     if "<table" in html:
@@ -367,6 +445,18 @@ def fix_table(article: dict, html: str) -> str:
     if src:
         rows.append(("అధికారిక మూలం", _host_of(src)))
     if len(rows) < 3:
+        # v78 fallback: content nunchi extract chesina facts (invent kaadu)
+        have = {r[0] for r in rows}
+        facts = extract_facts(html)
+        for key, label in _FACT_LABELS:
+            if label in have:
+                continue
+            val = _text(str(article.get(key) or "")) or facts.get(key, "")
+            if val:
+                rows.append((label, val))
+                if len(rows) >= 8:
+                    break
+    if len(rows) < 3:
         return html
     body = "".join(f"<tr><th>{_html.escape(k)}</th><td>{_html.escape(v)}</td></tr>"
                    for k, v in rows)
@@ -379,7 +469,8 @@ def fix_table(article: dict, html: str) -> str:
 
 
 def fix_faq(article: dict, html: str) -> str:
-    """FAQ section — article['faq'] nunchi (3+ ప్రశ్నలు).
+    """FAQ section — article['faq'] nunchi (3+ ప్రశ్నలు), v78: <3 aite
+    content facts nunchi Q/A build (dates/fee/vacancies — invent kaadu).
 
     v66 fix: puratana guard `html.count('<h3') >= 3` valla **eppudaina 3 H3
     unte** FAQ skip ayyēdi (FAQ section asalu raadēdi!). Ippudu: FAQ questions
@@ -398,13 +489,23 @@ def fix_faq(article: dict, html: str) -> str:
         if q and a:
             pairs.append((_text(q), _text(a)))
     if len(pairs) < 3:
+        # v78 fallback: extract chesina facts nunchi Q/A (invent kaadu —
+        # content lo unna dates/fee/vacancies ne prashnalu ga)
+        facts = extract_facts(html)
+        for key, q, tpl in _FAQ_TPL:
+            if len(pairs) >= 6:
+                break
+            if facts.get(key):
+                pairs.append((q, tpl.format(v=facts[key])))
+    if len(pairs) < 3:
         return html
     plain = validator.strip_tags(html).lower()
     first_q = re.sub(r"\s+", " ", pairs[0][0].lower())[:40]
     if first_q and first_q in plain:
         return html                     # FAQ already content lo undi
     body = "".join(f"<h3>{_html.escape(q)}</h3><p>{a}</p>" for q, a in pairs[:6])
-    return html + ('\n<h2>తరచుగా అడిగే ప్రశ్నలు (FAQ)</h2>\n' + body + "\n")
+    return html + ('\n<h2>తరచుగా అడిగే ప్రశ్నలు (FAQ)</h2>\n'
+                   '<div class="su-faq">\n' + body + "</div>\n")
 
 def fix_links(article: dict, html: str) -> str:
     """External (source) + internal (site hub) link — kotha URL invent cheyyadu."""
@@ -472,10 +573,14 @@ def fix_transitions(article: dict, html: str) -> str:
 
 
 def fix_paragraph_len(article: dict, html: str) -> str:
-    """Long paragraphs → chunks (≤ ~200 words) — readability + subheading distribution."""
+    """Long paragraphs → chunks (~60-75 words) — readability + neat look.
+
+    v78: threshold 120→100, chunk 90→70 — "text cha peddga" complaint ki
+    wall-of-text break (sentence boundary lo matrame split — meaning safe).
+    """
     def _split(m):
         body = m.group(2)
-        if len(body.split()) <= 120:
+        if len(body.split()) <= 100:
             return m.group(0)
         sents = re.split(r"(?<=[.!?\u0964])\s+", body)
         if len(sents) < 2:
@@ -483,7 +588,7 @@ def fix_paragraph_len(article: dict, html: str) -> str:
         chunks, cur = [], []
         for sn in sents:
             cur.append(sn)
-            if len(" ".join(cur).split()) >= 90:
+            if len(" ".join(cur).split()) >= 70:
                 chunks.append(" ".join(cur))
                 cur = []
         if cur:

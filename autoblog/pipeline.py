@@ -8,6 +8,7 @@ create_from_source(url): fetch source -> Gemini 100% original rewrite -> publish
 import hashlib
 import json
 import logging
+import re
 from datetime import date
 from pathlib import Path
 from typing import Dict, Optional
@@ -146,8 +147,32 @@ JUNK_TAGS = {"studentup", "studentup.in", "studentupin", "news", "latest",
              "trending", "2026", "2025", "students", "telugu news"}
 
 
+def suggest_tags(article: Dict) -> list:
+    """v78: keyword-derived auto-tags (5-8 guarantee ki base).
+
+    LLM tags marchipoina/2-3 iste: focus_keyword + secondary + category +
+    title acronyms (TSPSC/APPSC/SI...) nunchi build. Junk/dedupe/cap =
+    _hygiene tarvata handle (existing rules — no junk tags).
+    """
+    tags = [str(t).strip() for t in (article.get("tags") or []) if str(t).strip()]
+    cands = []
+    if article.get("focus_keyword"):
+        cands.append(str(article["focus_keyword"]).strip())
+    cands += [str(k).strip() for k in (article.get("secondary_keywords") or [])[:4]]
+    if article.get("category"):
+        cands.append(str(article["category"]).strip())
+    title = str(article.get("title") or "")
+    cands += re.findall(r"\b[A-Z]{2,}(?:\s*\d+)?\b", title)
+    cands += re.findall(r"\b(?:Group|Grade|Level)\s+\d+\b", title, flags=re.I)
+    for c in cands:
+        if c and c not in tags:
+            tags.append(c)
+    return tags
+
+
 def _hygiene(article: Dict) -> Dict:
     """Chinna chinna quality fixes publish mundhe."""
+    article["tags"] = suggest_tags(article)  # v78 auto-tags (hygiene dedupes)
     # title too long -> seo_title use cheyi (Rank Math 60-75 chars ideal)
     title = article.get("title", "")
     seo_title = article.get("seo_title", "")
@@ -406,6 +431,17 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
     qa = validator.validate_article(article, final_html)
     article["_qa"] = qa
     article["_rm"] = validator.rankmath_strict(article, final_html)
+    if not article.get("_source_texts") and article.get("_deep_sources"):
+        # v78: rewrite path (_deep_sources) nunchi kuda _orig score —
+        # live originality gate publish + rewrite rendu ki uniform (None kaadu).
+        _st = []
+        for _s in article["_deep_sources"]:
+            _t = getattr(_s, "text", None)
+            if _t is None and isinstance(_s, dict):
+                _t = _s.get("text", "")
+            if _t:
+                _st.append(_t)
+        article["_source_texts"] = _st
     if article.get("_source_texts"):
         article["_orig"] = validator.originality_score(
             final_html, article["_source_texts"])

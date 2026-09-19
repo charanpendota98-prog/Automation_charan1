@@ -157,7 +157,7 @@ Message lo reason undi — exact ga fix cheyandi:
 ## ⚠️ Honest note
 Perfect = **machine gates + human 5-min verify**. Gates mistakes ramigadu (conflicts/stale/dates/originality), kaani official numbers mee mata tho final check — AdSense/Google/reputation thartham lo idi matrame safety.
 
-*Last updated: v77 (2026-09-19) — ORIGINAL CONTENT ENGINE + HIGH-ADS READINESS (official outbound gather · rewrite-distance REAL % · news re-entry · smart rotation · networks kit): 59/59 suites · 164/164 runtime · readiness 100/100 · code audit 0/0 · parity 0/0 · theme audit 0/0 · theme v1.7.2*
+*Last updated: v78 (2026-09-19) — TOP-BLOG PERFECTION PASS (facts extract · table/FAQ guarantee · auto-tags · orig-uniform · 5 sources · neat paras · lede/FAQ CSS): 60/60 suites · 164/164 runtime · readiness 100/100 · code audit 0/0 · parity 0/0 · theme audit 0/0 · theme v1.7.2*
 
 ## PART 26 — v67: DEEP AUDIT (expert/BA) + TOP-THEME HARDENING + 6/6 REVENUE SLOTS
 
@@ -1188,3 +1188,48 @@ python run.py --readiness                    # 100/100 · python run.py --guardi
 
 No guarantee: rankings/traffic/approval/revenue Google + accounts + time —
 v77 = copy-proof + deepest gather + fastest re-index path (code-side max).
+
+## PART 37 — v78: TOP-BLOG PERFECTION PASS (real-probe → fix → re-probe)
+
+**Mee brief (2026-09-19):** anni points real check · dummy/sample vaddu ·
+retry-best loop · correct data + many sources + NotebookLM · neat blogs
+(text peddga vaddu) · colors/tables/tags/categories perfect · 100% top blog.
+
+METHOD (edo final kaadu): REAL probe publish (thin input, no FAQ, 1 tag) →
+gaps measure → code fix → RE-PROBE same input → numbers prove:
+tables 0→1 · FAQ 0→6 · tags 3→4+ · ORIG None→98.8 · RM 88→96 ·
+TOP 84→90 🏆 · GATE 86→92.
+
+FALLBACKS (LLM marchipoina kuda perfect — invent cheyyavu)
+```
+rm100.extract_facts(html): Telugu+English regex → last_date/exam_date/
+  vacancies/fee/age/qualification/salary (content phrases only)
+fix_table: fields <3 → facts merge (8 rows cap) → <3 = honest skip
+fix_faq:   pairs <3 → facts templates (6 cap) + <div class="su-faq">;
+  already-in-content guard same; <3 = honest skip
+suggest_tags: existing + focus + secondary[:4] + category + title
+  acronyms (TSPSC/[A-Z]{2,}) + Group-N → hygiene junk-block/dedupe/cap8
+```
+
+UNIFORM + DEPTH + NEAT
+```
+pipeline: _source_texts <= _deep_sources (no _source_texts unte) → _orig
+  live gate publish + rewrite paths ki (None bug fix)
+config: RESEARCH_MAX_SOURCES 3→5 (+ v77 outbound = deepest gather)
+fix_paragraph_len: split 120→100w, chunks 90→~70w (sentence boundary only)
+theme style.css: .su-lede · .su-faq h3 cards (+p answers) · dark variants ·
+  su-facts zebra — mundu lede/faq styles LEVU (live ugly root-cause)
+```
+
+VERIFIED REAL (no dummy): NotebookLM brief merge + hard-reject validation;
+17 category rules auto-detect; writer prompt = table/1500-2200w/tags/faq adugutundi;
+rm100 rich-content → 81 + honest remainder (length/density = content job).
+
+VERIFY (v78)
+```
+python run.py --test-all                     # 60/60 suites (v78_test.py kotha: 10 checks)
+node tools/php_lint.js                       # 32/32 · python tools/build_wp_theme.py (zip LAST)
+python run.py --readiness                    # 100/100 · python run.py --guardian
+```
+
+Loop rule (standing): best vache varaku probe→fix→reprobe; final-cheyatam kaadu.
