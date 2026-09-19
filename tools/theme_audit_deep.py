@@ -19,7 +19,7 @@ import struct
 import sys
 from pathlib import Path
 
-from theme_audit import THEME, WP_CORE, _php_files, _strip_php_comments, _tpl_raw  # noqa: F401
+from theme_audit import THEME, _php_files, _strip_php_comments
 
 # top themes ki kavalsina WordPress standard files
 REQUIRED_FILES = ("style.css", "index.php", "functions.php", "header.php", "footer.php",
@@ -173,7 +173,6 @@ def deep_checks(report: dict) -> dict:
 
     # ---------------------------------------------------------------- 5) A11Y
     header_raw = texts.get("header.php", ("", ""))[0]
-    footer_raw = texts.get("footer.php", ("", ""))[0]
     all_raw = "\n".join(r for r, _ in texts.values())
     if not re.search(r'class=["\'][^"\']*skip-link', all_raw):
         warnings.append("skip-link ledu (keyboard users ki main content ki jump)")
@@ -280,7 +279,6 @@ def deep_checks(report: dict) -> dict:
             errors.append(f"version mismatch: style.css '{ver_css.group(1)}' vs "
                           f"STUDENTUP_VERSION '{ver_php.group(1)}' — WP ki telisedi style.css, "
                           f"cache-busting + child themes + updates daridram")
-        kpi_ver = ver_php.group(1)
     else:
         errors.append("version constant leda style.css 'Version:' ledu")
 

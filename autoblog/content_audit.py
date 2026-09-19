@@ -7,7 +7,7 @@ manual editorial decisions must be visible first.
 from __future__ import annotations
 
 import re
-from typing import Dict, List, Optional
+from typing import Dict, List
 from urllib.parse import urlparse
 
 from . import config, validator
@@ -44,7 +44,6 @@ def audit_post(post: Dict) -> Dict:
     html = _text(post.get("content"))
     title = _text(post.get("title")).strip()
     link = post.get("link", "")
-    plain = validator.strip_tags(html)
     words = validator.word_count(html)
     h2_count = len(re.findall(r"<h2\b", html, re.I))
     table = bool(re.search(r"<table\b", html, re.I))

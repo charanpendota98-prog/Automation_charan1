@@ -430,7 +430,8 @@ def c_money_engine() -> List[dict]:
 
 
 def c_ad_safety() -> List[dict]:
-    from . import adsense_kit, ad_manager  # noqa: F401
+    from . import adsense_kit, ad_manager
+    _ = (adsense_kit, ad_manager)  # smoke: modules load avvali
 
     html = _read(PREVIEW / "index.html")
     # v72.1: ad CTAs internal (Partner page) or external — rendu case lo Google rule:

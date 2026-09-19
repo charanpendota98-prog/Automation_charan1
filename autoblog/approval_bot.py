@@ -69,13 +69,20 @@ class ApprovalBot:
             # first user to talk to the bot becomes the owner
             state.meta_set(config.STATE_PATH, CHAT_KEY, chat_id)
             registered = chat_id
-            log.info("Telegram owner registered: %s", chat_id)
+            # v82: first-claimer risk — loud warning (terminal/log)
+            log.warning("Telegram owner auto-registered: %s — .env lo "
+                        "TELEGRAM_CHAT_ID=%s set chesi lock cheyandi!",
+                        chat_id, chat_id)
         elif chat_id != registered:
             self.tg("sendMessage", {"chat_id": chat_id,
                                     "text": "⚠️ Ee bot already owner ni untundi. Access ledu."})
             return
 
         if text.startswith("/start"):
+            # v82: .env lock reminder (env lo CHAT_ID lekapote prathi /start lo)
+            lock_hint = ("" if config.TELEGRAM_CHAT_ID else
+                         "\n\n🔐 Security: .env lo TELEGRAM_CHAT_ID=" +
+                         chat_id + " set chesi owner lock cheyandi.")
             self.tg("sendMessage", {
                 "chat_id": chat_id,
                 "text": ("👋 Namaskaram! studentup.in Auto-Blogger lo ki welcome!\n\n"
@@ -87,7 +94,7 @@ class ApprovalBot:
                          "Commands:\n/pending – pending drafts\n"
                          "/stats – statistics\n"
                          "/update ID [url] – post ni kotha info tho improve\n"
-                         "/help – help"),
+                         "/help – help" + lock_hint),
             })
         elif text.startswith("/pending"):
             self.send_pending(chat_id)
@@ -164,7 +171,8 @@ class ApprovalBot:
         chat_id = str(cb.get("message", {}).get("chat", {}).get("id", ""))
         data = cb.get("data", "")
         registered = self.registered_chat()
-        if registered and chat_id and chat_id != registered:
+        # v82: fail-closed — owner lekapote callbacks anni deny
+        if not registered or (chat_id and chat_id != registered):
             self.tg("answerCallbackQuery", {"callback_query_id": cb_id,
                                             "text": "⚠️ Access ledu!"})
             return

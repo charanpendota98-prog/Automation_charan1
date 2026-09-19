@@ -2,7 +2,6 @@
 
 All REST calls are faked. Nothing here contacts WordPress or Google.
 """
-import re
 import sys
 import tempfile
 from pathlib import Path

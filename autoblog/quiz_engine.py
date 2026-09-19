@@ -20,7 +20,7 @@ import html
 import json
 import logging
 import re
-from datetime import date, timedelta
+from datetime import date
 from typing import Dict, List, Optional, Tuple
 
 log = logging.getLogger("autoblog.quiz")

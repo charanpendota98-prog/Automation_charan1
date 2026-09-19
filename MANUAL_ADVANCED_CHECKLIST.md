@@ -1363,3 +1363,32 @@ python run.py --orphans <sitemap.xml>        # orphan pages report
 node tools/php_lint.js                       # 34/34 · python tools/build_wp_theme.py (zip LAST)
 python run.py --readiness                    # 100/100 · python run.py --guardian
 ```
+
+## PART 41 — v82: SELF-AUDIT REGRESSIONS (proactive hunt)
+
+**Mee brief (2026-09-19):** "chala miss chesava" — v81 tarvata nenu mundhe
+deep self-audit (real runs: update_post · guardian · mock E2E · --doctor ·
+deps · idempotency · house chain · approval auth). Assumptions tho "gap"
+declare cheyakunda prathi doubt ni code-run tho verify.
+
+V82 FIXES (6 + cleanup)
+```
+rm100 chain reorder: h2/table/faq MUNDU → toc TARVATA (single-pass
+  structure complete; optimize() 3-pass converge, no-dupes verified)
+inc/ads.php: leaderboard → top_leaderboard slot mapping (AdSense unit
+  never loaded — REAL revenue bug) + house 'description' key accept
+crontab.example: mkdir -p log step + cron.log monthly rotation line
+approval_bot: callbacks fail-closed (owner lekapote deny) + auto-claim
+  loud warning + TELEGRAM_CHAT_ID lock reminder
+pyflakes: 57 dead imports/vars cleanup (32 code + 25 tests) · f-strings
+re-export REGRESSION: tools/ad_network_plan.NETWORKS (v56 pin)
+```
+
+VERIFY (v82)
+```
+python run.py --test-all                     # 64/64 suites (v82_test.py kotha: 8 checks)
+node tests/runtime/jsdom_runtime_test.js     # 164/164 browser checks
+python tools/build_wp_theme.py               # zip LAST (ads.php changes!)
+python run.py --readiness                    # 100/100
+python -m pyflakes autoblog tools tests      # 0 findings
+```

@@ -23,7 +23,6 @@ Run: python tests/v63_test.py   (also via python run.py --test-all)
 """
 from __future__ import annotations
 
-import io
 import re
 import subprocess
 import sys

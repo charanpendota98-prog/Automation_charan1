@@ -78,9 +78,12 @@ function studentup_house_ads() {
 		if ( '' === $title || '' === $link ) {
 			continue;
 		}
+		// v82: bot payload 'description' key kuda accept (house.json format).
+		$desc = isset( $ad['desc'] ) ? $ad['desc']
+			: ( isset( $ad['description'] ) ? $ad['description'] : '' );
 		$out[] = array(
 			'title' => $title,
-			'desc'  => isset( $ad['desc'] ) ? wp_strip_all_tags( (string) $ad['desc'] ) : '',
+			'desc'  => wp_strip_all_tags( (string) $desc ),
 			'link'  => $link,
 			'cta'   => isset( $ad['cta'] ) ? wp_strip_all_tags( (string) $ad['cta'] ) : 'Read →',
 		);
@@ -168,7 +171,10 @@ function studentup_ad( $place = 'mid' ) {
 		return; // density cap — AdSense safe + UX
 	}
 	$client = studentup_adsense_client();
-	$slot   = (string) get_option( 'studentup_adsense_slot_' . str_replace( '-', '_', $place ), '' );
+	// v82: place 'leaderboard' → option 'adsense_slot_top_leaderboard'
+	// (mundu key mismatch valla leaderboard AdSense unit eppudu load ayyedi kaadu).
+	$slot_key = ( 'leaderboard' === $place ) ? 'top_leaderboard' : str_replace( '-', '_', $place );
+	$slot     = (string) get_option( 'studentup_adsense_slot_' . $slot_key, '' );
 	$sizes  = array( 'leaderboard' => 110, 'in-feed' => 160, 'mid' => 250,
 		'sidebar' => 250, 'below-content' => 280, 'anchor' => 60 );
 	$height = isset( $sizes[ $place ] ) ? $sizes[ $place ] : 250;

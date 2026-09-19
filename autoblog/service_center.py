@@ -19,8 +19,8 @@ import secrets
 import sqlite3
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import Dict, Iterable, List, Optional
-from urllib.parse import quote, urlencode, urlparse
+from typing import Dict, Optional
+from urllib.parse import urlencode, urlparse
 
 from . import config
 

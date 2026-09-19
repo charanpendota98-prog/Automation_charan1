@@ -21,7 +21,7 @@ Checks (offline only):
   * health widget: dashboard + deadlines + redirects + require
   * JS search tracking + node --check
   * HSTS: option + is_ssl guard
-  * docs: README v81 + MANUAL PART 40 + 63/63
+  * docs: README v81 + MANUAL PART 40 + 64/64
 
 Run: python tests/v81_test.py   (also via python run.py --test-all)
 """
@@ -72,8 +72,6 @@ def test_rich_tags():
 
 
 def test_prompt_tags():
-    from autoblog import gemini_client  # noqa: F401
-
     src = read(ROOT / "autoblog" / "gemini_client.py")
     assert src.count("blockquote pre code") == 3, src.count("blockquote")
     print("  prompt: rich tags 3/3 spots ✔")
@@ -201,17 +199,17 @@ def test_hsts_option():
 
 def test_docs_v81():
     suites = len(list((ROOT / "tests").glob("*_test.py")))
-    assert suites == 63, f"suites {suites} (v81 tho 63 expect)"
+    assert suites == 64, f"suites {suites} (v82 tho 64 expect)"
     readme = read(ROOT / "README.md")
     manual = read(ROOT / "MANUAL_ADVANCED_CHECKLIST.md")
     go_live = read(ROOT / "GO_LIVE_CHECKLIST.md")
-    assert "### v81" in readme and "63/63" in readme
-    assert "PART 40" in manual and "v81" in manual and "63/63" in manual
-    assert "63/63" in go_live
+    assert "### v81" in readme and "64/64" in readme
+    assert "PART 40" in manual and "v81" in manual and "64/64" in manual
+    assert "64/64" in go_live
     for name, txt in (("README", readme), ("MANUAL", manual),
                       ("GO_LIVE", go_live)):
         assert "164/164" in txt, f"{name} lo jsdom claim poyindi"
-    print("  docs: README v81 + MANUAL PART 40 + 63/63 ✔")
+    print("  docs: README v81 + MANUAL PART 40 + 64/64 ✔")
 
 
 TESTS = [
@@ -224,7 +222,7 @@ TESTS = [
     ("health widget", test_health_widget),
     ("search tracking", test_search_tracking),
     ("HSTS option", test_hsts_option),
-    ("docs: v81 + PART 40 + 63/63", test_docs_v81),
+    ("docs: v81 + PART 40 + 64/64", test_docs_v81),
 ]
 
 

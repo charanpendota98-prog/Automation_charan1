@@ -25,7 +25,6 @@ Run: python tests/v61_test.py   (also via python run.py --test-all)
 """
 from __future__ import annotations
 
-import io
 import json
 import re
 import subprocess
@@ -36,7 +35,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from autoblog import config, wp_theme_sync  # noqa: E402
+from autoblog import wp_theme_sync  # noqa: E402
 
 SRC = ROOT / "wordpress-theme" / "studentup"
 ZIP = ROOT / "wordpress-theme" / "studentup-theme.zip"

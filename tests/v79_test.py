@@ -19,13 +19,12 @@ Checks (offline only):
     comments + related + tags + nav + TOC-opt + join (single surface complete)
   * options: join_cta_inline registered (default 1)
   * php lint: cta/author-box/single parse (node php parser unte; lekapothe SKIP-safe)
-  * docs: README v79 + MANUAL PART 38 + 63/63
+  * docs: README v79 + MANUAL PART 38 + 64/64
 
 Run: python tests/v79_test.py   (also via python run.py --test-all)
 """
 from __future__ import annotations
 
-import re
 import sys
 from pathlib import Path
 
@@ -132,7 +131,7 @@ def test_miss_audit_surface():
     assert not missing, f"single surface miss: {missing}"
     cta = read(THEME / "inc" / "cta.php")
     assert "studentup_cta_join()" in cta and "studentup_cta_join_inline()" in cta
-    print(f"  miss-audit: single surface 13/13 + join x2 ✔")
+    print("  miss-audit: single surface 13/13 + join x2 ✔")
 
 
 def test_options_registered():
@@ -161,17 +160,17 @@ def test_php_parse():
 
 def test_docs_v79():
     suites = len(list((ROOT / "tests").glob("*_test.py")))
-    assert suites == 63, f"suites {suites} (v81 tho 63 expect)"
+    assert suites == 64, f"suites {suites} (v82 tho 64 expect)"
     readme = read(ROOT / "README.md")
     manual = read(ROOT / "MANUAL_ADVANCED_CHECKLIST.md")
     go_live = read(ROOT / "GO_LIVE_CHECKLIST.md")
-    assert "### v79" in readme and "63/63" in readme
-    assert "PART 38" in manual and "v79" in manual and "63/63" in manual
-    assert "63/63" in go_live
+    assert "### v79" in readme and "64/64" in readme
+    assert "PART 38" in manual and "v79" in manual and "64/64" in manual
+    assert "64/64" in go_live
     for name, txt in (("README", readme), ("MANUAL", manual),
                       ("GO_LIVE", go_live)):
         assert "164/164" in txt, f"{name} lo jsdom claim poyindi"
-    print("  docs: README v79 + MANUAL PART 38 + 63/63 ✔")
+    print("  docs: README v79 + MANUAL PART 38 + 64/64 ✔")
 
 
 TESTS = [
@@ -184,7 +183,7 @@ TESTS = [
     ("miss-audit surface", test_miss_audit_surface),
     ("options registered", test_options_registered),
     ("php parse", test_php_parse),
-    ("docs: v79 + PART 38 + 63/63", test_docs_v79),
+    ("docs: v79 + PART 38 + 64/64", test_docs_v79),
 ]
 
 

@@ -35,7 +35,7 @@ from __future__ import annotations
 import html as _html
 import re
 from datetime import date
-from typing import Dict, List, Optional
+from typing import Dict, List
 from urllib.parse import urlencode
 
 from . import config, validator
@@ -701,10 +701,14 @@ def apply(article: dict, rounds: int = 1) -> Dict:
         if fix_slug(article):
             changed = True
         html = article.get("content_html") or ""
+        # v82: structure (h2/table/faq) MUNDU, toc TARVATA — single pass
+        # lone TOC anni headings chustundi (mundu 2nd pass varaku TOC
+        # skip ayyedi thin content lo; optimize() cover chesina waste).
         for name, fn in (("lede", fix_lede), ("takeaways", fix_takeaways),
-                         ("entities", fix_entities), ("toc", fix_toc),
+                         ("entities", fix_entities),
                          ("h2_keyword", fix_h2_keyword), ("table", fix_table),
-                         ("faq", fix_faq), ("links", fix_links),
+                         ("faq", fix_faq), ("toc", fix_toc),
+                         ("links", fix_links),
                          ("density", fix_density), ("transitions", fix_transitions),
                          ("paragraphs", fix_paragraph_len)):
             new = fn(article, html)

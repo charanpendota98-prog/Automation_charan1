@@ -503,6 +503,24 @@ python run.py --traffic-sessions         # advanced control
 python run.py --traffic-views            # advanced control
 ```
 
+### v82 — SELF-AUDIT REGRESSIONS (proactive hunt → 6 real fixes pin)
+
+**Mee brief:** v81 tarvata "chala miss chesava" — nenu mundhe deep self-audit
+run chesanu (real runs, no assumptions). Dhorikindi:
+
+**Real fixes:** rm100 single-pass structure (TOC/table/FAQ — mundu thin
+content lo 2nd pass varaku TOC skip) · leaderboard slot mismatch (option key
+`top_leaderboard` vs code `leaderboard` — AdSense unit never loaded!) · house
+ad `description` key accept (cards text lekunda vachayi) · crontab mkdir +
+cron.log rotation · approval callbacks fail-closed + auto-claim loud warning ·
+57 pyflakes cleanup (dead imports/vars).
+
+**My-own-bug caught:** cleanup lo `NETWORKS` re-export thesesanu → v56 fail →
+restore + regression pin (v82_test.py).
+
+**Proof:** `--test-all` **64/64** (v82_test.py kotha: 8 checks) · jsdom
+**164/164** · readiness **100/100** · theme-audit **0/0** · theme **1.7.2**.
+
 ### v81 — ULTIMATE SPEC GAP CLOSE (99 sections verify → 8 real gaps fix)
 
 **Mee brief:** 99-section Ultimate Spec — FIRST AUDIT → PLAN → IMPLEMENT →

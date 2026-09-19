@@ -23,15 +23,13 @@ Checks (offline only):
   * check_links: local server (live + dead + redirect → dead report, exit 1)
   * run.py --check-links wiring
   * php parse new files
-  * docs: README v80 + MANUAL PART 39 + 63/63
+  * docs: README v80 + MANUAL PART 39 + 64/64
 
 Run: python tests/v80_test.py   (also via python run.py --test-all)
 """
 from __future__ import annotations
 
-import functools
 import http.server
-import re
 import subprocess
 import sys
 import threading
@@ -233,17 +231,17 @@ def test_php_parse():
 
 def test_docs_v80():
     suites = len(list((ROOT / "tests").glob("*_test.py")))
-    assert suites == 63, f"suites {suites} (v81 tho 63 expect)"
+    assert suites == 64, f"suites {suites} (v82 tho 64 expect)"
     readme = read(ROOT / "README.md")
     manual = read(ROOT / "MANUAL_ADVANCED_CHECKLIST.md")
     go_live = read(ROOT / "GO_LIVE_CHECKLIST.md")
-    assert "### v80" in readme and "63/63" in readme
-    assert "PART 39" in manual and "v80" in manual and "63/63" in manual
-    assert "63/63" in go_live
+    assert "### v80" in readme and "64/64" in readme
+    assert "PART 39" in manual and "v80" in manual and "64/64" in manual
+    assert "64/64" in go_live
     for name, txt in (("README", readme), ("MANUAL", manual),
                       ("GO_LIVE", go_live)):
         assert "164/164" in txt, f"{name} lo jsdom claim poyindi"
-    print("  docs: README v80 + MANUAL PART 39 + 63/63 ✔")
+    print("  docs: README v80 + MANUAL PART 39 + 64/64 ✔")
 
 
 TESTS = [
@@ -258,7 +256,7 @@ TESTS = [
     ("check_links", test_check_links),
     ("run.py wiring", test_run_wiring),
     ("php parse", test_php_parse),
-    ("docs: v80 + PART 39 + 63/63", test_docs_v80),
+    ("docs: v80 + PART 39 + 64/64", test_docs_v80),
 ]
 
 

@@ -19,7 +19,7 @@ Checks (offline only):
   * ad automation: auto-head gated · in-article auto · density cap ·
     consent gate · AdSense refresh ledu (policy)
   * update freshness chain: modified + indexnow + badge + upd: handler
-  * docs: README v77 + MANUAL PART 36 + 63/63 + networks kit
+  * docs: README v77 + MANUAL PART 36 + 64/64 + networks kit
 
 Run: python tests/v77_test.py   (also via python run.py --test-all)
 """
@@ -27,8 +27,6 @@ from __future__ import annotations
 
 import functools
 import http.server
-import json
-import re
 import sys
 import tempfile
 import threading
@@ -275,13 +273,13 @@ def test_update_freshness_chain():
 
 def test_docs_v77():
     suites = len(list((ROOT / "tests").glob("*_test.py")))
-    assert suites == 63, f"suites {suites} (v81 tho 63 expect)"
+    assert suites == 64, f"suites {suites} (v82 tho 64 expect)"
     readme = read(ROOT / "README.md")
     manual = read(ROOT / "MANUAL_ADVANCED_CHECKLIST.md")
     go_live = read(ROOT / "GO_LIVE_CHECKLIST.md")
-    assert "### v77" in readme and "63/63" in readme
-    assert "PART 36" in manual and "v77" in manual and "63/63" in manual
-    assert "63/63" in go_live
+    assert "### v77" in readme and "64/64" in readme
+    assert "PART 36" in manual and "v77" in manual and "64/64" in manual
+    assert "64/64" in go_live
     kit = read(ROOT / "AD_NETWORKS_APPLICATION_KIT.md")
     for needle in ("Ezoic", "Mediavine", "Media.net", "AdSense",
                    "APPLY FIRST", "Honest note"):
@@ -289,7 +287,7 @@ def test_docs_v77():
     for name, txt in (("README", readme), ("MANUAL", manual),
                       ("GO_LIVE", go_live)):
         assert "164/164" in txt, f"{name} lo jsdom claim poyindi"
-    print("  docs: README v77 + MANUAL PART 36 + 63/63 + kit ✔")
+    print("  docs: README v77 + MANUAL PART 36 + 64/64 + kit ✔")
 
 
 TESTS = [
@@ -302,7 +300,7 @@ TESTS = [
     ("rotation smart", test_rotation_smart),
     ("ad automation proof", test_ad_automation_proof),
     ("update freshness chain", test_update_freshness_chain),
-    ("docs: v77 + PART 36 + 63/63 + kit", test_docs_v77),
+    ("docs: v77 + PART 36 + 64/64 + kit", test_docs_v77),
 ]
 
 

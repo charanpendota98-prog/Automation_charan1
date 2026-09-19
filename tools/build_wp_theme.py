@@ -14,7 +14,6 @@ Run: python tools/build_wp_theme.py   [--out wordpress-theme/studentup-theme.zip
 from __future__ import annotations
 
 import argparse
-import io
 import re
 import shutil
 import subprocess

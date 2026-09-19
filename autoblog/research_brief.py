@@ -16,7 +16,7 @@ import json
 import re
 from datetime import date
 from pathlib import Path
-from typing import Iterable, List, Sequence, Tuple
+from typing import List, Sequence, Tuple
 from urllib.parse import urlparse
 
 from . import config, research, sources

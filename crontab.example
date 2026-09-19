@@ -3,7 +3,11 @@
 #
 # Install:
 #   1. path ni mee project path tho marchandi (/opt/studentup leda /home/<user>/bot)
-#   2. crontab -e → kindha lines paste cheyandi
+#   2. mkdir -p /opt/studentup/log   (v82: folder lekapothe cron output pothundi!)
+#   3. crontab -e → kindha lines paste cheyandi
+#
+# Log rotation (v82: cron.log ki app rotation ledu — monthly truncate):
+#   0 3 1 * * tail -c 500000 /opt/studentup/log/cron.log > /tmp/cron.log && mv /tmp/cron.log /opt/studentup/log/cron.log
 #
 # Hourly bot run (drafts prepare chestundi — publish human approval tarvata):
 0 * * * * cd /opt/studentup && /opt/studentup/.venv/bin/python run.py >> /opt/studentup/log/cron.log 2>&1

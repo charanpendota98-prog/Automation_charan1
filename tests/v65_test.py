@@ -28,7 +28,6 @@ Run: python tests/v65_test.py   (also via python run.py --test-all)
 """
 from __future__ import annotations
 
-import io
 import json
 import re
 import sys
@@ -37,7 +36,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from autoblog import config, post_gate, readiness, rm100, seo, trends, validator  # noqa: E402
+from autoblog import config, post_gate, readiness, rm100, seo, trends  # noqa: E402
 
 FAKE_RSS = ("<rss xmlns:ht='https://trends.google.com/trending/rss'><channel>"
             "<item><title>TSPSC Group 2 notification 2026</title>"

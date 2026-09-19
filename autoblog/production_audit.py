@@ -7,7 +7,7 @@ WARN/INFO rather than pretending they are complete.
 from __future__ import annotations
 
 import re
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List
 from urllib.parse import urlparse
 
 from . import config

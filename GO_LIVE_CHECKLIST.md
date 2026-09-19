@@ -245,4 +245,4 @@ Detail: `python tools/revenue_estimate.py --views 10k`
 Clickbait titles · fake clicks · popups · "Google tricks" · ad ni content laaga dhaachadam ·
 job guarantee promises (advertisers kuda). Ivi AdSense ban + trust damage.
 
-*Last updated: v81 (2026-09-19) · 63/63 suites · 164/164 runtime · 11/11 production checks · theme v1.7.2 · ultimate-spec gap close*
+*Last updated: v82 (2026-09-19) · 64/64 suites · 164/164 runtime · 11/11 production checks · theme v1.7.2 · self-audit regressions*
