@@ -78,6 +78,7 @@ RELATED_HEADINGS = [
     "మరిన్ని ఉపయోగకరమైన ఆర్టికల్స్",
     "ఇవి కూడా చదవండి",
     "సంబంధిత ఆర్టికల్స్",
+    "వీటిని కూడా చదవండి",
 ]
 
 
@@ -105,8 +106,10 @@ def add_internal_links(html: str, links: List[Dict[str, str]], seed: str = "") -
     """Related articles section (internal links) — heading rotate avtundi."""
     if not links:
         return html
+    # v86: long titles truncate (mobile) — read-also `_short_title` merge
     items = "".join(
-        f'<li><a href="{l["link"]}">{l["title"]}</a></li>' for l in links
+        f'<li><a href="{l["link"]}">{_esc(_short_title(l["title"]))}</a></li>'
+        for l in links[:6]
     )
     heading = _pick(RELATED_HEADINGS, seed)
     section = ('<section class="su-related" aria-labelledby="related-articles">'
@@ -527,24 +530,18 @@ def enhance(
                                   date_modified or date_str) + html
     # v20: visible real byline (Google News/E-E-A-T)
     html = byline_block(slug, date_modified or date_str) + html
-    # v29: visible breadcrumb complements BreadcrumbList JSON-LD.
-    html = breadcrumb_block(category, title or focus_keyword) + html
+    # v86: visible breadcrumb REMOVED — theme single.php already renders
+    # `.crumbs` (studentup_breadcrumbs); content copy = DOUBLE breadcrumbs
+    # on every auto post. BreadcrumbList JSON-LD schema intact (untouched).
     # v19: deadline countdown (playbook — notification lo real date UNTE matrame)
     html = deadline_badge((recruitment or {}).get("apply_end", "")) + html
     # v29: structured facts card uses only model/source-backed values.
     html = key_facts_block(recruitment) + html
     html = add_table_of_contents(html)
+    # v86: ONE related block (su-related) — read-also duplicate delete
+    # (same links tho rendu sections = unprofessional; v86 probe finding)
     html = add_internal_links(html, internal_links, seed=slug)
     html = add_external_links(html, external_links)
-    # Read-also block: article end lo related posts (session time + crawl)
-    if internal_links:
-        items = "".join(
-            f'<li><a href="{l["link"]}" internal="true">'
-            f'{_esc(_short_title(l["title"]))}</a></li>'
-            for l in internal_links[:4]
-        )
-        html += ('<h2 id="read-also">వీటిని కూడా చదవండి</h2>'
-                 f'<ul>{items}</ul>')
     # v21: related-questions PAA block (own content, honest answers)
     html += related_questions_block(html, focus_keyword)
     html += trust_box(date_modified or date_str, source_domains)

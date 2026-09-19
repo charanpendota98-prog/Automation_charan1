@@ -163,7 +163,17 @@ class ApprovalBot:
         from . import pipeline
         try:
             mock = not config.GEMINI_API_KEY
-            pipeline.create_from_source(url, mock=mock)
+            result = pipeline.create_from_source(url, mock=mock)
+            # v86: pin-gate block = error DICT (exception kaadu!) — silent
+            # success kakunda user ki honest message (live-mode hole).
+            if isinstance(result, dict) and result.get("error"):
+                self.tg("sendMessage", {
+                    "chat_id": chat_id,
+                    "text": ("⛔ Post aapindi (quality gate):\n"
+                             f"{result.get('detail', result['error'])}\n"
+                             "Draft lo save chesi /update tho fix cheyochu."),
+                })
+                return
             # draft aite notify_new_post buttons tho message already pampestundi
         except ValueError as exc:
             self.tg("sendMessage", {"chat_id": chat_id,
@@ -284,6 +294,14 @@ class ApprovalBot:
             urls = [extra_url] if extra_url else None
             result = pipeline.update_post(post_id, new_source_urls=urls,
                                           mock=not config.GEMINI_API_KEY)
+            # v86: pin-gate error dict ayina "ayyindi ✔" cheppakudadu!
+            if isinstance(result, dict) and result.get("error"):
+                self.tg("sendMessage", {
+                    "chat_id": chat_id,
+                    "text": ("⛔ Update aapindi (quality gate):\n"
+                             f"{result.get('detail', result['error'])}"),
+                })
+                return
             self.tg("sendMessage", {
                 "chat_id": chat_id,
                 "text": (f"🔄 Post update ayyindi ✔\n{result.get('link', '')}"),

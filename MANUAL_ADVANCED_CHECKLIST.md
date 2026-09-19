@@ -1467,3 +1467,34 @@ node tests/runtime/jsdom_runtime_test.js     # 164/164 browser checks
 python run.py --readiness                    # 100/100
 python -m pyflakes autoblog tools tests run.py  # 0 findings
 ```
+
+## PART 44 — v86: PROFESSIONAL POST AUDIT (final post end-to-end)
+
+**Brief:** oka professional post avvali — full pipeline local source tho
+end-to-end run chesi FINAL WP payload audit (structure/tags/anchors/
+provenance/featured/excerpt/slug).
+
+**Fixes (6):**
+1. `seo.py` — read-also duplicate delete; `su-related` single block +
+   `_short_title` + "వీటిని కూడా చదవండి" rotation (4 headings)
+2. `pipeline._append_official_sources` — gov/edu matrame official-links;
+   news sources skip (su-source + trust-box cover); dedupe
+3. `sources.is_official_domain` — hosts + full URLs (pipeline gate)
+4. `rm100._anchor_id` — ASCII-only (pure-Telugu → section-N); seo side
+   already ASCII (probe: rm100 TOC ne live path)
+5. `seo.enhance` — visible breadcrumb remove (theme `.crumbs` duplicate);
+   BreadcrumbList JSON-LD intact
+6. `approval_bot` — pin-gate error dict → honest ⛔ (source + update paths;
+   "ayyindi ✔" false-success hole closed)
+
+**False alarms (verify chesi vadilesina):** post lo "raw CSS" — `<style>`
+intact (text-view artifact); in-content images — feature, not bug (skip).
+
+VERIFY (v86)
+```
+python tests/v86_test.py                     # 6/6 checks (e2e FakeWP/Src/TG)
+python run.py --test-all                     # 67/67 suites
+node tests/runtime/jsdom_runtime_test.js     # 164/164 browser checks
+python run.py --readiness                    # 100/100
+python -m pyflakes autoblog tools tests run.py  # 0 findings
+```

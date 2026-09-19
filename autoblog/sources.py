@@ -254,6 +254,14 @@ def _page_links(container, base_url: str) -> List[str]:
     return out[:60]
 
 
+def is_official_domain(netloc_or_url: str) -> bool:
+    """v86: gov/edu/nic ⇒ official (pipeline official-links gate)."""
+    host = (netloc_or_url or "").lower()
+    if "://" in host:
+        host = urlparse(host).netloc
+    return _official_score(host) > 0
+
+
 def _official_score(netloc: str) -> int:
     host = (netloc or "").lower().replace("www.", "")
     if host in OFFICIAL_HOSTS:

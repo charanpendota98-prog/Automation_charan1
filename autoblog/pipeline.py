@@ -708,6 +708,29 @@ def _after_publish_push(article: Dict, result: Dict) -> None:
         log.exception("Channel auto-post failed")
 
 
+def _append_official_sources(article: dict) -> None:
+    """Provenance → visible official links (v86 gated).
+
+    Article independently written; links let a student verify a date/fee
+    instead of trusting an AI summary. ONLY official domains → external
+    links ("అధికారిక లింక్స్"); news/blog sources stay out (su-source +
+    trust-box already give provenance, mislabel kakunda).
+    """
+    from .sources import is_official_domain
+    article.setdefault("external_links", [])
+    known_links = {str(item.get("url", "")).rstrip("/")
+                   for item in article["external_links"] if isinstance(item, dict)}
+    for source_url in (article.get("_source_urls") or [])[:6]:
+        host = urlparse(source_url).netloc
+        if source_url.rstrip("/") in known_links or not is_official_domain(host):
+            continue
+        known_links.add(source_url.rstrip("/"))
+        article["external_links"].append({
+            "text": f"Official Notice — {host.replace('www.', '')}",
+            "url": source_url,
+        })
+
+
 def create_from_source(url: str, mock: bool = False, category: str = "",
                        notebooklm_brief: str = "",
                        target_year: int | None = None) -> Dict:
@@ -873,18 +896,7 @@ def create_from_source(url: str, mock: bool = False, category: str = "",
         + [urlparse(e.url).netloc.replace("www.", "") for e in extras]
     ]
 
-    # Preserve provenance in visible official/reference links. The article is
-    # still independently written; these links let a student verify a date or
-    # fee instead of asking them to trust an AI summary.
-    article.setdefault("external_links", [])
-    known_links = {str(item.get("url", "")).rstrip("/")
-                   for item in article["external_links"] if isinstance(item, dict)}
-    for i, source_url in enumerate(article["_source_urls"][:6], 1):
-        if source_url.rstrip("/") not in known_links:
-            article["external_links"].append({
-                "text": f"Source {i} — {urlparse(source_url).netloc}",
-                "url": source_url,
-            })
+    _append_official_sources(article)
 
     # slug safe ga + Rank Math optimize (keyword tokens + stopwords)
     from .main import _safe_slug

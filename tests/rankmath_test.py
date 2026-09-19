@@ -89,8 +89,11 @@ def main():
     assert '"datePublished": "2026-01-10"' in html_out
     assert '"dateModified": "2026-09-07"' in html_out
     # read-also block at end
-    assert "వీటిని కూడా చదవండి" in html_out
+    assert 'id="related-articles"' in html_out
     assert 'href="https://studentup.in/a/"' in html_out
+    # v86: duplicate related sections vaddu (su-related okkate)
+    assert 'id="read-also"' not in html_out
+    assert html_out.count('id="related-articles"') == 1
     # E-E-A-T author
     assert '"@type": "Person"' in html_out and '"author"' in html_out
     assert '"editor"' not in html_out

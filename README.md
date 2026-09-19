@@ -503,6 +503,22 @@ python run.py --traffic-sessions         # advanced control
 python run.py --traffic-views            # advanced control
 ```
 
+### v86 — PROFESSIONAL POST AUDIT (final post e2e → 6 real fixes)
+
+**Mee brief:** "oka professional post avvali — inka emaina bugs unte
+advanced ga audit chesi fix cheyu". Full pipeline ni local source tho
+end-to-end run chesi FINAL post HTML line-by-line audit.
+
+**Real fixes (6):** duplicate related/read-also merge (same links tho rendu
+sections!) + short titles · news-source "అధికారిక లింక్స్" mislabel —
+gov/edu domains matrame (`is_official_domain` gate) · Telugu TOC anchors →
+ASCII (`section-N` fallback, link↔id match) · DOUBLE breadcrumbs (theme +
+content) — engine block remove, JSON-LD intact · pin-gate error-dict silent
+success — source + update paths rendu ki honest ⛔ message.
+
+**Proof:** `--test-all` **67/67** (v86_test.py kotha: 6 checks, e2e tho) ·
+jsdom **164/164** · readiness **100/100** · theme-audit **0/0** · theme **1.7.2**.
+
 ### v85 — AUTO-BLOG PREP DEEP AUDIT (any URL + any length → 9 real fixes)
 
 **Mee brief:** "inka audit cheyu — auto-blog prep lo chala bugs; prompt

@@ -82,8 +82,10 @@ def _count(text: str, needle: str) -> int:
 
 def _anchor_id(text: str, used: set) -> str:
     s = _text(validator.strip_tags(text)).lower()
-    s = re.sub(r"[^\w\u0c00-\u0c7f]+", "-", s).strip("-")
-    s = s[:60] or "section"
+    # v86: ASCII-only anchors (Telugu ids → copy-link/share ugly + parsers;
+    # pure-Telugu headings ki stable section-N fallback).
+    s = re.sub(r"[^a-z0-9]+", "-", s).strip("-")
+    s = s[:60] or f"section-{len(used) + 1}"
     base, i = s, 2
     while s in used:
         s = f"{base}-{i}"
