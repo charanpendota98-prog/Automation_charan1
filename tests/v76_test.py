@@ -159,13 +159,13 @@ def test_ui_sodi_clean():
 
 def test_docs_v76():
     suites = len(list((ROOT / "tests").glob("*_test.py")))
-    assert suites == 68, f"suites {suites} (v87 tho 68 expect)"
+    assert suites == 69, f"suites {suites} (v89 tho 69 expect)"
     readme = read(ROOT / "README.md")
     manual = read(ROOT / "MANUAL_ADVANCED_CHECKLIST.md")
     go_live = read(ROOT / "GO_LIVE_CHECKLIST.md")
-    assert "### v76" in readme and "68/68" in readme
-    assert "PART 35" in manual and "v76" in manual and "68/68" in manual
-    assert "68/68" in go_live
+    assert "### v76" in readme and "69/69" in readme
+    assert "PART 35" in manual and "v76" in manual and "69/69" in manual
+    assert "69/69" in go_live
     for name, txt in (("README", readme), ("MANUAL", manual),
                       ("GO_LIVE", go_live)):
         assert "164/164" in txt, f"{name} lo jsdom claim poyindi"
@@ -181,7 +181,7 @@ TESTS = [
     ("bot pins moved to qualsel", test_bot_pins_use_qualsel),
     ("live-exam remnants 0", test_no_live_exam_remnants),
     ("UI sodi clean", test_ui_sodi_clean),
-    ("docs: README v76 + MANUAL PART 35 + 68/68", test_docs_v76),
+    ("docs: README v76 + MANUAL PART 35 + 69/69", test_docs_v76),
 ]
 
 

@@ -46,7 +46,7 @@ def test_config_flags():
 
 def test_most_used_order():
     cats = breaking.most_used_cats()
-    assert cats == ["ts-jobs", "ap-jobs", "hallticket", "results", "walkin",
+    assert cats == ["ts-jobs", "ap-jobs", "central-jobs", "hallticket", "results", "walkin",
                     "software", "private", "current"], cats
     for m in breaking.most_used():
         assert m["cat"] and m["label"] and m["icon"] and m["hint"], m
@@ -218,7 +218,7 @@ def test_menu_order_perfect():
     assert mp.index(">Search<") < mp.index("Hall Tickets") < mp.index("Most searched by students")
     assert "బ్రేకింగ్" not in mp and "Breaking" not in mp
     mp_used = re.findall(r'data-goto-cat="([a-z-]+)"', mp)
-    assert mp_used[2:10] == breaking.most_used_cats(), mp_used[:12]
+    assert mp_used[2:11] == breaking.most_used_cats(), mp_used[:13]
 
 
 def test_grid_student_first_order():

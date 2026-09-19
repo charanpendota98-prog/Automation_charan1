@@ -95,14 +95,15 @@ def test_functions_setup():
 def test_most_used_order_matches_site():
     f = read("functions.php")
     slugs = re.findall(r"'slug' => '([a-z-]+)', 'label' => '([^']+)'", f)
-    assert len(slugs) == 8, slugs
-    assert [s for s, _ in slugs] == ["ts-jobs", "ap-jobs", "hall-tickets", "results",
-                                     "walkin-jobs", "software-jobs", "private-jobs",
+    assert len(slugs) == 9, slugs
+    assert [s for s, _ in slugs] == ["ts-jobs", "ap-jobs", "central-jobs", "hall-tickets",
+                                     "results", "walkin-jobs", "software-jobs", "private-jobs",
                                      "current-affairs"], slugs
     labels = [l for _, l in slugs]
     # v73: English UI — theme + bot labels English (order/slugs same)
     assert labels[0].startswith("TS") and labels[1].startswith("AP")
-    assert "Hall Tickets" in labels and "Results" in labels and "Walk-in" in labels[4]
+    assert labels[2].startswith("Central"), labels[:3]   # v89: Central top-3
+    assert "Hall Tickets" in labels and "Results" in labels and "Walk-in" in labels[5]
     # bot MOST_USED order same (breaking.py)
     from autoblog import breaking
 

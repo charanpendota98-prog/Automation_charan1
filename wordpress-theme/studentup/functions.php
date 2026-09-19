@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'STUDENTUP_VERSION', '1.7.2' );  // v74: exam portal + dead exam link teesesaam · shortcuts = Jobs/Qualification/Results/Quiz
+define( 'STUDENTUP_VERSION', '1.9.0' );  // v89: Central category + alias resolver + live search + latest-jobs ticker + brand icons
 
 require_once get_template_directory() . '/inc/options.php';
 require_once get_template_directory() . '/inc/qual-filter.php';  // v72: 10th/Inter/Degree/PG filter (auto tags)
@@ -43,6 +43,7 @@ function studentup_most_used() {
 	return array(
 		array( 'slug' => 'ts-jobs', 'label' => 'TS Government Jobs', 'icon' => '🏛', 'hint' => 'TSPSC · Police · Gurukul' ),
 		array( 'slug' => 'ap-jobs', 'label' => 'AP Government Jobs', 'icon' => '🏛', 'hint' => 'APPSC · Police · DSC · Secretariat' ),
+		array( 'slug' => 'central-jobs', 'label' => 'Central Govt Jobs', 'icon' => '🇮🇳', 'hint' => 'SSC · UPSC · Railways · Banks' ),
 		array( 'slug' => 'hall-tickets', 'label' => 'Hall Tickets', 'icon' => '🎫', 'hint' => 'Admit card · key instructions' ),
 		array( 'slug' => 'results', 'label' => 'Results', 'icon' => '📄', 'hint' => 'Board · competitive exams · keys' ),
 		array( 'slug' => 'walkin-jobs', 'label' => 'Walk-in Interviews', 'icon' => '🚶', 'hint' => 'This week\'s drives · venues' ),
@@ -50,6 +51,72 @@ function studentup_most_used() {
 		array( 'slug' => 'private-jobs', 'label' => 'Private Jobs', 'icon' => '🏢', 'hint' => 'TCS · Infosys · Off-campus' ),
 		array( 'slug' => 'current-affairs', 'label' => 'Current Affairs', 'icon' => '📰', 'hint' => 'Daily GK · for exams' ),
 	);
+}
+
+/**
+ * v89: Category alias map — theme slug → live-site slug candidates.
+ *
+ * Root cause of the "TS/AP Govt Jobs kanipinchaledu" bug: the bot creates live
+ * categories with names like "TS Govt Jobs" (slug `ts-govt-jobs`) while the
+ * theme list uses short slugs (`ts-jobs`). `get_category_by_slug()` then returns
+ * false and the card/menu/chip silently DISAPPEARS. This resolver tries every
+ * candidate and returns the first category that really exists on the site.
+ *
+ * @return array theme-slug => candidate live slugs (priority order)
+ */
+function studentup_cat_aliases() {
+	return array(
+		'ts-jobs'         => array( 'ts-govt-jobs', 'telangana-govt-jobs', 'ts-jobs' ),
+		'ap-jobs'         => array( 'ap-govt-jobs', 'ap-jobs' ),
+		'central-jobs'    => array( 'central-govt-jobs', 'central-jobs', 'central' ),
+		'hall-tickets'    => array( 'hall-tickets', 'hallticket', 'hall-ticket' ),
+		'results'         => array( 'results' ),
+		'walkin-jobs'     => array( 'walkin-jobs', 'walkin', 'walk-in-jobs' ),
+		'software-jobs'   => array( 'software-jobs', 'software' ),
+		'private-jobs'    => array( 'private-jobs', 'private' ),
+		'current-affairs' => array( 'current-affairs', 'current' ),
+	);
+}
+
+/**
+ * First real WP_Term for a theme slug (alias-aware) — else null.
+ *
+ * @param string $slug theme slug (studentup_most_used).
+ * @return WP_Term|null
+ */
+function studentup_used_term( $slug ) {
+	$map    = studentup_cat_aliases();
+	$tried  = array();
+	$cands  = isset( $map[ $slug ] ) ? $map[ $slug ] : array( $slug );
+	foreach ( $cands as $cand ) {
+		if ( isset( $tried[ $cand ] ) ) {
+			continue;
+		}
+		$tried[ $cand ] = true;
+		$term           = get_category_by_slug( $cand );
+		if ( $term && ! is_wp_error( $term ) ) {
+			return $term;
+		}
+	}
+	return null;
+}
+
+/**
+ * Reverse map — live category slug → theme chip slug.
+ * Card data-cat lu eppudu theme slug ne (ts-govt-jobs → ts-jobs), anduke
+ * chips live filter + preview order rendu break avvavu.
+ *
+ * @param string $live_slug real WP category slug.
+ * @return string theme slug (fallback: input as-is)
+ */
+function studentup_theme_cat( $live_slug ) {
+	$live_slug = (string) $live_slug;
+	foreach ( studentup_cat_aliases() as $theme_slug => $cands ) {
+		if ( in_array( $live_slug, $cands, true ) ) {
+			return $theme_slug;
+		}
+	}
+	return $live_slug;
 }
 
 /**
@@ -97,11 +164,16 @@ function studentup_assets() {
 		'STUDENTUP',
 		array(
 			'home'     => esc_url_raw( home_url( '/' ) ),
+			'rest'     => esc_url_raw( rest_url( 'wp/v2/' ) ),   // v89: live search endpoint
+			'aliases'  => studentup_cat_aliases(),               // v89: chip ↔ live-slug map
 			'chips'    => true,
 			'i18n'     => array(
-				'updates' => 'updates',
-				'soon'    => 'Soon',
-				'none'    => 'No posts in this section yet — coming soon.',
+				'updates'   => 'updates',
+				'soon'      => 'Soon',
+				'none'      => 'No posts in this section yet — coming soon.',
+				'searching' => 'Searching…',
+				'noresults' => 'No posts found — press Enter to see the full search page',
+				'viewall'   => 'See all results',
 			),
 		)
 	);

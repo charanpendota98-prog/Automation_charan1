@@ -2,9 +2,9 @@
 # This file is distributed under the GNU GPL v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: StudentUp 1.7.2\n"
+"Project-Id-Version: StudentUp 1.9.0\n"
 "Report-Msgid-Bugs-To: https://studentup.in/\n"
-"POT-Creation-Date: 2026-09-19 12:48+0000\n"
+"POT-Creation-Date: 2026-09-19 17:34+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -15,24 +15,20 @@ msgstr ""
 msgid "%s articles"
 msgstr ""
 
-#: inc/cta.php:71
+#: inc/cta.php:76
 msgid "100% free · no calls · 1–3 updates a day"
 msgstr ""
 
-#: inc/cta.php:30
-msgid "Apply for any job or scholarship from home. No need to visit any centre — one call is enough."
+#: inc/cta.php:38
+msgid "Application PDF"
 msgstr ""
 
 #: author.php:65
 msgid "Author website / profile"
 msgstr ""
 
-#: inc/cta.php:46
+#: inc/cta.php:51
 msgid "Call now"
-msgstr ""
-
-#: inc/cta.php:32
-msgid "Call us with the post you want to apply for."
 msgstr ""
 
 #: comments.php:67
@@ -47,19 +43,19 @@ msgstr ""
 msgid "Comments are closed."
 msgstr ""
 
-#: inc/cta.php:49
+#: inc/cta.php:54
 msgid "Email"
 msgstr ""
 
-#: inc/cta.php:64
+#: inc/cta.php:69
 msgid "Every job, exam date and result — first on your phone"
 msgstr ""
 
-#: inc/cta.php:65
+#: inc/cta.php:70
 msgid "Free daily updates for Telangana & Andhra Pradesh students. No spam calls, leave anytime."
 msgstr ""
 
-#: inc/cta.php:96
+#: inc/cta.php:101
 msgid "Free job alerts on your phone"
 msgstr ""
 
@@ -71,24 +67,28 @@ msgstr ""
 msgid "Hide social icons"
 msgstr ""
 
-#: inc/cta.php:66
+#: inc/cta.php:71
 msgid "Jobs · notifications · results — first on our WhatsApp / Telegram."
 msgstr ""
 
-#: inc/cta.php:97
+#: inc/cta.php:102
 msgid "Jobs · results · hall tickets — first on WhatsApp / Telegram."
 msgstr ""
 
-#: inc/cta.php:95
+#: inc/cta.php:100
 msgid "Join our channels"
 msgstr ""
 
-#: inc/cta.php:100
+#: inc/cta.php:105
 msgid "Join Telegram"
 msgstr ""
 
-#: inc/cta.php:99
+#: inc/cta.php:104
 msgid "Join WhatsApp"
+msgstr ""
+
+#: inc/breaking.php:250
+msgid "Latest Jobs"
 msgstr ""
 
 #: index.php:26
@@ -107,7 +107,7 @@ msgstr ""
 msgid "No results — try a different word."
 msgstr ""
 
-#: front-page.php:50
+#: front-page.php:52
 msgid "Official-source updates for TS & AP students. Always confirm a deadline once in the official notification."
 msgstr ""
 
@@ -123,8 +123,16 @@ msgstr ""
 msgid "Post comment"
 msgstr ""
 
+#: inc/cta.php:40
+msgid "Preparation Group"
+msgstr ""
+
 #: author.php:50
 msgid "Published articles: %d"
+msgstr ""
+
+#: inc/template.php:87
+msgid "Read more"
 msgstr ""
 
 #: author.php:71
@@ -151,15 +159,19 @@ msgstr ""
 msgid "Social media"
 msgstr ""
 
+#: inc/cta.php:30
+msgid "Students Internet Center · Telangana & Andhra Pradesh"
+msgstr ""
+
 #: inc/editor.php:49
 msgid "StudentUp blocks"
 msgstr ""
 
-#: inc/cta.php:42
-msgid "Tap to open our WhatsApp — we reply fast"
+#: inc/cta.php:47
+msgid "Tap చేస్తే మా WhatsApp open అవుతుంది — వెంటనే reply"
 msgstr ""
 
-#: inc/cta.php:70
+#: inc/cta.php:75
 msgid "Telegram channel"
 msgstr ""
 
@@ -171,24 +183,12 @@ msgstr ""
 msgid "TS & AP"
 msgstr ""
 
-#: inc/cta.php:34
-msgid "We apply and send the PDF — your filled application reaches you at the lowest service charge."
-msgstr ""
-
-#: inc/cta.php:36
-msgid "We fill the whole application — the PDF is sent to you."
-msgstr ""
-
-#: inc/cta.php:69
+#: inc/cta.php:74
 msgid "WhatsApp updates"
 msgstr ""
 
-#: inc/cta.php:41
-msgid "WhatsApp your documents"
-msgstr ""
-
-#: inc/cta.php:33
-msgid "WhatsApp your documents — photo, signature, certificates, resume."
+#: inc/cta.php:46
+msgid "WhatsApp లో documents పంపండి"
 msgstr ""
 
 #: comments.php:59
@@ -197,4 +197,28 @@ msgstr ""
 
 #: comments.php:64
 msgid "Your email will not be published. Share personal details only for official information."
+msgstr ""
+
+#: inc/cta.php:39
+msgid "పూర్తి Guidance"
+msgstr ""
+
+#: inc/cta.php:34
+msgid "మీ documents — photo, signature, certificates, resume — మా WhatsApp కి పంపండి."
+msgstr ""
+
+#: inc/cta.php:33
+msgid "మీకు apply చేయాలనుకున్న job / scholarship పేరు మాకు call లేదా WhatsApp లో చెప్పండి."
+msgstr ""
+
+#: inc/cta.php:31
+msgid "మీరు jobs apply చేయటం కోసం ఎక్కడికీ వెళ్లవలసిన అవసరం లేదు — కేవలం మా Center కి call చేసి, సంబంధించిన documents మా WhatsApp కి పంపిస్తే చాలు. అతి తక్కువ ధరలో apply చేసి, మీ filled application PDF మీకు పంపిస్తాం."
+msgstr ""
+
+#: inc/cta.php:35
+msgid "మేము మొత్తం application fill చేసి, PDF మీకు పంపిస్తాం — అతి తక్కువ service charge లోనే."
+msgstr ""
+
+#: inc/cta.php:27
+msgid "విద్యార్థుల ఇంటర్నెట్ సెంటర్"
 msgstr ""

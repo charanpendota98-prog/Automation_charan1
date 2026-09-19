@@ -26,7 +26,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<ul>
 					<?php
 					foreach ( array_slice( studentup_most_used(), 0, 5 ) as $m ) :
-						$term = get_category_by_slug( $m['slug'] );
+						$term = studentup_used_term( $m['slug'] );   // v89: alias-aware
 						if ( ! $term ) {
 							continue;
 						}
@@ -60,10 +60,10 @@ if ( ! defined( 'ABSPATH' ) ) {
      ✕ = hide now · ‹ tab = show again instantly. -->
 <nav class="su-social" id="surail" aria-label="<?php esc_attr_e( 'Social media', 'studentup' ); ?>">
 	<button type="button" class="su-close" id="suclose" aria-label="<?php esc_attr_e( 'Hide social icons', 'studentup' ); ?>">✕</button>
-	<a href="<?php echo esc_url( $su_soc['whatsapp'] ); ?>" target="_blank" rel="noopener" aria-label="WhatsApp">💬</a>
-	<a href="<?php echo esc_url( $su_soc['telegram'] ); ?>" target="_blank" rel="noopener" aria-label="Telegram">✈️</a>
-	<a href="<?php echo esc_url( $su_soc['instagram'] ); ?>" target="_blank" rel="noopener" aria-label="Instagram">📸</a>
-	<a href="<?php echo esc_url( $su_soc['youtube'] ); ?>" target="_blank" rel="noopener" aria-label="YouTube">▶️</a>
+	<a class="su-soc su-rail-wa" href="<?php echo esc_url( $su_soc['whatsapp'] ); ?>" target="_blank" rel="noopener" aria-label="WhatsApp"><?php echo studentup_social_icon( 'whatsapp', 19 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?></a>
+	<a class="su-soc su-rail-tg" href="<?php echo esc_url( $su_soc['telegram'] ); ?>" target="_blank" rel="noopener" aria-label="Telegram"><?php echo studentup_social_icon( 'telegram', 19 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?></a>
+	<a class="su-soc su-rail-ig" href="<?php echo esc_url( $su_soc['instagram'] ); ?>" target="_blank" rel="noopener" aria-label="Instagram"><?php echo studentup_social_icon( 'instagram', 19 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?></a>
+	<a class="su-soc su-rail-yt" href="<?php echo esc_url( $su_soc['youtube'] ); ?>" target="_blank" rel="noopener" aria-label="YouTube"><?php echo studentup_social_icon( 'youtube', 19 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?></a>
 </nav>
 <button type="button" class="su-tab" id="sutab" aria-label="<?php esc_attr_e( 'Show social icons', 'studentup' ); ?>">‹</button>
 

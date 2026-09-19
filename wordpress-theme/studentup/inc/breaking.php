@@ -180,6 +180,90 @@ function studentup_breaking_section() {
 }
 
 /**
+ * v89: Latest Jobs scrolling ticker — SITE content nunche (feed config avasaram ledu).
+ *
+ * Breaking ticker (radar feed) veru — adi OFF default. Idi eppudu OWN posts
+ * tho pani chestundi: latest 12 posts, prathi item click cheste aa post
+ * page open avutundi (same tab — internal link). Hover lo pause; reduced-motion
+ * users ki animation off (CSS). 10 min transient cache (post publish lo clear).
+ *
+ * @param int $max items.
+ * @return array each: title/link/time
+ */
+function studentup_latest_ticker_items( $max = 12 ) {
+	$max    = max( 1, (int) $max );
+	$cached = get_transient( 'su_latest_ticker' );
+	if ( is_array( $cached ) ) {
+		return array_slice( $cached, 0, $max );
+	}
+	$q     = new WP_Query(
+		array(
+			'post_type'           => 'post',
+			'post_status'         => 'publish',
+			'posts_per_page'      => $max,
+			'ignore_sticky_posts' => true,
+			'no_found_rows'       => true,
+		)
+	);
+	$items = array();
+	foreach ( (array) $q->posts as $p ) {
+		$link = get_permalink( $p );
+		if ( ! $link ) {
+			continue;
+		}
+		$items[] = array(
+			'title' => get_the_title( $p ),
+			'link'  => $link,
+			'time'  => get_post_time( DATE_W3C, false, $p ),
+		);
+	}
+	set_transient( 'su_latest_ticker', $items, 10 * MINUTE_IN_SECONDS );
+	return $items;
+}
+
+/**
+ * New/updated post → ticker cache clear (tappu cursor eppudu fresh latest).
+ *
+ * @param int $post_id post id.
+ */
+function studentup_latest_ticker_flush( $post_id ) {
+	$post = get_post( $post_id );
+	if ( $post && 'post' === $post->post_type ) {
+		delete_transient( 'su_latest_ticker' );
+	}
+}
+add_action( 'save_post', 'studentup_latest_ticker_flush', 30 );
+
+/**
+ * Render the marquee — home page mattrame (post pages lo reading ki distraction vaddu).
+ */
+function studentup_latest_ticker() {
+	if ( ! is_front_page() || '0' === (string) studentup_opt( 'latest_ticker', '1' ) ) {
+		return;
+	}
+	$items = studentup_latest_ticker_items( 12 );
+	if ( ! $items ) {
+		return;
+	}
+	echo '<div class="tickerwrap su-lticker" aria-label="Latest jobs — scrolling list">';
+	echo '<div class="wrap trow">';
+	echo '<span class="tlabel tlabel-blue"><i aria-hidden="true"></i>' . esc_html__( 'Latest Jobs', 'studentup' ) . '</span>';
+	echo '<div class="tclip"><div class="tmove">';
+	foreach ( array( 0, 1 ) as $dup ) {   // duplicate set — seamless 50% loop
+		foreach ( $items as $it ) {
+			printf(
+				'<a href="%s"%s>%s <span class="tsrc">%s</span></a>',
+				esc_url( $it['link'] ),
+				$dup ? ' aria-hidden="true" tabindex="-1"' : '',
+				esc_html( $it['title'] ),
+				esc_html( studentup_ago( $it['time'] ) )
+			);
+		}
+	}
+	echo '</div></div></div></div>';
+}
+
+/**
  * Bot/manual update ki: option set → transient clear.
  */
 function studentup_set_breaking_json( $json ) {

@@ -59,9 +59,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<div class="searchpanel" id="searchpanel" hidden>
 		<div class="wrap">
 			<span class="spanel-icon" aria-hidden="true">🔍</span>
-			<form class="spanel-form" role="search" method="get" action="<?php echo esc_url( home_url( '/' ) ); ?>">
-				<input id="qtop" type="search" name="s" autocomplete="off" value="<?php echo esc_attr( get_search_query() ); ?>"
-					placeholder="Search jobs, exams, results, scholarships…" aria-label="Search this site">
+			<form class="spanel-form" role="search" method="get" action="<?php echo esc_url( home_url( '/' ) ); ?>" autocomplete="off">
+				<div class="su-livesearch" role="combobox" aria-expanded="false" aria-haspopup="listbox" aria-owns="su-sres">
+					<input id="qtop" type="search" name="s" autocomplete="off" value="<?php echo esc_attr( get_search_query() ); ?>"
+						placeholder="Search jobs, exams, results, scholarships…" aria-label="Search this site"
+						aria-autocomplete="list" aria-controls="su-sres" spellcheck="false">
+					<div class="su-sres" id="su-sres" role="listbox" aria-label="Search results" hidden></div>
+				</div>
 				<button type="submit" class="bluebtn">Search</button>
 			</form>
 			<button type="button" class="iconbtn" id="searchclose" aria-label="Close">✕</button>
@@ -82,7 +86,7 @@ studentup_breaking_ticker();
 	<div class="mlabel">Most searched by students</div>
 	<?php foreach ( studentup_most_used() as $m ) : ?>
 		<?php
-		$term = get_category_by_slug( $m['slug'] );
+		$term = studentup_used_term( $m['slug'] );   // v89: alias-aware — TS/AP/Central eppudu kanipistayi
 		if ( ! $term ) {
 			continue;
 		}
@@ -103,8 +107,9 @@ studentup_breaking_ticker();
 	}
 	?>
 	<div class="mlabel">Social</div>
-	<a href="https://wa.me/919182739312" target="_blank" rel="noopener">WhatsApp</a>
-	<a href="https://t.me/studentup_in" target="_blank" rel="noopener">Telegram</a>
-	<a href="https://www.instagram.com/studentup.in" target="_blank" rel="noopener">Instagram</a>
-	<a href="https://www.youtube.com/@studentupin" target="_blank" rel="noopener">YouTube</a>
+	<?php $su_soc = studentup_social_links(); ?>
+	<a class="su-msoc su-msoc-wa" href="<?php echo esc_url( $su_soc['whatsapp'] ); ?>" target="_blank" rel="noopener"><?php echo studentup_social_icon( 'whatsapp', 16 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> WhatsApp</a>
+	<a class="su-msoc su-msoc-tg" href="<?php echo esc_url( $su_soc['telegram'] ); ?>" target="_blank" rel="noopener"><?php echo studentup_social_icon( 'telegram', 16 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Telegram</a>
+	<a class="su-msoc su-msoc-ig" href="<?php echo esc_url( $su_soc['instagram'] ); ?>" target="_blank" rel="noopener"><?php echo studentup_social_icon( 'instagram', 16 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Instagram</a>
+	<a class="su-msoc su-msoc-yt" href="<?php echo esc_url( $su_soc['youtube'] ); ?>" target="_blank" rel="noopener"><?php echo studentup_social_icon( 'youtube', 16 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> YouTube</a>
 </div>

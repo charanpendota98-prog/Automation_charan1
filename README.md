@@ -503,6 +503,36 @@ python run.py --traffic-sessions         # advanced control
 python run.py --traffic-views            # advanced control
 ```
 
+### v89 — PREMIUM HOMEPAGE (theme 1.9.0: Central fix + live search + ticker + brand icons)
+
+**Mee brief (screenshots pampincharu):** TS/AP Govt Jobs site lo asalu
+kanipinchaledu · Central jobs section ledu · WhatsApp/Telegram/Instagram/
+YouTube icons tappu ga vunnayi · "Read more" click pani cheyyatledu ·
+search type cheste results load kavatledu · qualification dropdown plain ·
+latest jobs scrolling ledu · Internet Center block Telugu lo neat ga kavali ·
+laptop layout messy.
+
+**Root cause:** live site categories `ts-govt-jobs` / `ap-govt-jobs` /
+`central-govt-jobs` — kaani theme `ts-jobs` / `ap-jobs` ni direct
+`get_category_by_slug()` tho vethikedi. Mismatch → **prathi section silent-ga
+mayam** (cards · menu · mobile panel · chips · footer).
+
+**Fixes (10):** alias resolver (`studentup_used_term()` + reverse
+`studentup_theme_cat()` — card `data-cat` eppudu theme slug, chips filter
+correct ga match) · **Central Govt Jobs** theme+bot+preview+guardian sync
+(TS · AP · Central top-3, hot) · **Latest Jobs scrolling ticker** (own posts,
+10-min cache, click → aa post open, hover pause) · **live search** (REST
+dropdown, debounce, ↑↓ Enter Esc) · **brand SVG icons** (emoji 💬✈️📸▶️
+poyayi — Simple-Icons paths, rail/mpanel/share/author) · card **"Read more"**
+real permalink link (dead `<b>` kadu) · **విద్యార్థుల ఇంటర్నెట్ సెంటర్**
+Telugu block + perks row (Application PDF · పూర్తి Guidance · Preparation
+Group) + brand WhatsApp button · **animated quadd dropdown** (native select
+no-JS safe) + **SSC · 10th** wording + SSC GD/MTS/CHSL keywords · laptop
+**3×3 strip + 3-col grid + menu scroll/no-wrap + current-page pill**.
+
+**Proof:** `--test-all` **69/69** (v89_test.py kotha: 10 checks) ·
+jsdom **164/164** · readiness **100/100** · theme-audit **0/0** · theme **1.9.0**.
+
 ### v87 — FIX-ALL ROUND (update e2e + quiz + banners → 7 real fixes)
 
 **Mee brief:** "fix all". Update flow e2e probe + quiz/banner visual audit

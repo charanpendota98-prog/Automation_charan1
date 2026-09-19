@@ -64,10 +64,10 @@ function studentup_author_box() {
 					<span>🔍 Reviewed: <?php echo esc_html( $rev ); ?></span>
 				<?php endif; ?>
 				<?php if ( ! empty( $soc['telegram'] ) ) : ?>
-					<span>✈️ <a href="<?php echo esc_url( $soc['telegram'] ); ?>" target="_blank" rel="noopener">Telegram</a></span>
+					<span class="su-a-soc tg"><?php echo studentup_social_icon( 'telegram', 14 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> <a href="<?php echo esc_url( $soc['telegram'] ); ?>" target="_blank" rel="noopener">Telegram</a></span>
 				<?php endif; ?>
 				<?php if ( ! empty( $soc['whatsapp'] ) ) : ?>
-					<span>💬 <a href="<?php echo esc_url( $soc['whatsapp'] ); ?>" target="_blank" rel="noopener">WhatsApp</a></span>
+					<span class="su-a-soc wa"><?php echo studentup_social_icon( 'whatsapp', 14 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> <a href="<?php echo esc_url( $soc['whatsapp'] ); ?>" target="_blank" rel="noopener">WhatsApp</a></span>
 				<?php endif; ?>
 				<?php if ( $email ) : ?>
 					<span>✉️ Report mistakes:

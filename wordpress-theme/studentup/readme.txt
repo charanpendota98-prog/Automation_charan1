@@ -2,9 +2,9 @@
 Contributors: studentup
 Requires at least: 6.0
 Tested up to: 6.7
-Stable tag: 1.7.2
+Stable tag: 1.9.0
 Requires PHP: 7.4
-Version: 1.7.2
+Version: 1.9.0
 License: GNU General Public License v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Tags: news, education, blog, custom-logo, custom-menu, featured-images, translation-ready, right-sidebar, block-styles, wide-blocks
@@ -47,6 +47,29 @@ The theme ships a REST bridge (`inc/seo-bridge.php`). Use an account with `manag
 user tho App Password ivvandi (Administrator role).
 
 == Changelog ==
+
+= 1.9.0 (2026-09-19, v89 premium homepage) =
+* TS · AP · Central category fix: alias resolver (`studentup_used_term()` +
+  `studentup_theme_cat()`) maps theme slugs to live site slugs
+  (`ts-jobs`→`ts-govt-jobs`, etc.) — cards, menu, mobile panel, chips and
+  footer categories can never silently disappear again; cards' `data-cat`
+  is always the theme slug so the live chip filter matches again
+* New "Central Govt Jobs" entry in Most searched (TS · AP · Central top-3,
+  hot highlighted) — bot `MOST_USED` + preview site synced (same source)
+* Latest Jobs scrolling ticker on the homepage (own posts, no feed needed,
+  10-min cache, click opens that exact post, hover=pause, reduced-motion off)
+* Live search: while you type, results drop down from the WP REST search API
+  (debounced, keyboard ↑↓ Enter Esc, click opens the exact post)
+* Brand SVG icons (WhatsApp/Telegram/Instagram/YouTube/X) replace platform
+  emojis — rail, mobile menu, share bar, join blocks, author box
+* Students Internet Center rebranded to its Telugu brand name (TS & AP) with a
+  perks row (Application PDF · full Guidance · Preparation Group) and a brand
+  WhatsApp button
+* Animated qualification dropdown (custom UI over the native select — no-JS
+  still works) + SSC/10th wording and SSC GD/MTS/CHSL keyword mapping
+* Card footer "Read more" is now a real permalink link (was dead bold text)
+* Menu polish: current-page pill, animated submenus, no-wrap laptop scroll;
+  3×3 used-strip and 3-column news grid on laptop
 
 = 1.7.2 (2026-09-19, v74 portal removal) =
  * Removed the live exam portal: `exam_url` + `api_base` options, header exam buttons,

@@ -23,7 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 function studentup_qual_terms() {
 	return array(
-		'10th'    => '10th',
+		'10th'    => 'SSC · 10th',
 		'inter'   => 'Inter (10+2)',
 		'iti'     => 'ITI',
 		'diploma' => 'Diploma',
@@ -34,14 +34,33 @@ function studentup_qual_terms() {
 }
 
 /**
+ * v89: dropdown icons — custom animated dropdown (JS) kosam emoji map.
+ *
+ * @return array slug => emoji
+ */
+function studentup_qual_icons() {
+	return array(
+		'all'     => '🎓',
+		'10th'    => '📘',
+		'inter'   => '📗',
+		'iti'     => '🔧',
+		'diploma' => '📐',
+		'degree'  => '🎯',
+		'pg'      => '🏅',
+		'btech'   => '💻',
+		'closing' => '⏳',
+	);
+}
+
+/**
  * Keyword map — Telugu + English (chinnabbi case tho match avutundi).
  *
  * @return array
  */
 function studentup_qual_keywords() {
 	return array(
-		'10th'    => array( '10వ తరగతి', '10వ', '10th', 'tenth', '10th class', '10th pass', 'పదవ తరగతి', 'sgl', 'group d' ),
-		'inter'   => array( 'ఇంటర్', 'inter', 'intermediate', '10+2', 'plus two', 'junior intermediate', 'డిగ్రీ లేదు', 'intermediate pass' ),
+		'10th'    => array( '10వ తరగతి', '10వ', '10th', 'tenth', '10th class', '10th pass', 'పదవ తరగతి', 'sgl', 'group d', 'ssc gd', 'ssc mts', 'ssc constable', 'multi-tasking', 'multi tasking', 'matriculation', 'cbse 10' ),
+		'inter'   => array( 'ఇంటర్', 'inter', 'intermediate', '10+2', 'plus two', 'junior intermediate', 'డిగ్రీ లేదు', 'intermediate pass', 'ssc chsl', '12th pass', 'puc' ),
 		'iti'     => array( 'ఐటీఐ', 'iti', 'nctvt', 'trade certificate', 'ఐ టీ ఐ' ),
 		'diploma' => array( 'డిప్లొమా', 'diploma', 'polytechnic', 'పాలిటెక్నిక్' ),
 		'degree'  => array( 'డిగ్రీ', 'degree', 'graduate', 'graduation', 'any degree', 'b.a', 'b.sc', 'b.com', 'బీఏ', 'బీఎస్సీ', 'బీకాం' ),
@@ -170,6 +189,26 @@ function studentup_qual_admin_backfill() {
 	studentup_qual_backfill( 20 );
 }
 add_action( 'admin_init', 'studentup_qual_admin_backfill' );
+
+/**
+ * v89 ONE-TIME: SSC/Inter kotha keywords kosam purge — kevalam '' (already-checked,
+ * emi dorakaledu) meta rows matrame delete avvutundi.
+ * Existing detected/manual values (degree, pg…) asalu touch avvavu — data safe.
+ * Tarvata regular backfill (painey, 20/page) kotha SSC keywords tho malli tag chestundi.
+ */
+function studentup_qual_ssc_rescan() {
+	if ( ! current_user_can( 'edit_posts' ) || get_transient( 'su_qual_ssc_done' ) ) {
+		return;
+	}
+	global $wpdb;
+	$purge  = $wpdb->delete( $wpdb->postmeta, array( 'meta_key' => 'studentup_qual', 'meta_value' => '' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+	set_transient( 'su_qual_ssc_done', '1' );   // one-time flag (idempotent — re-run oka row kuda thagaladu)
+	delete_transient( 'su_qual_counts' );
+	if ( $purge ) {
+		studentup_qual_backfill( 100 );           // ventane first batch tag chestundi
+	}
+}
+add_action( 'admin_init', 'studentup_qual_ssc_rescan', 19 );
 
 /**
  * WP-CLI: wp studentup-qual-backfill [--limit=500]
@@ -385,9 +424,10 @@ function studentup_qual_bar() {
 		return;
 	}
 	$terms   = studentup_qual_terms();
+	$icons   = studentup_qual_icons();
 	$current = studentup_qual_current();
-	echo '<form class="qrow qualform" method="get" action="' . esc_url( home_url( '/' ) ) . '" aria-label="Jobs by qualification">';
-	echo '<label class="catlabel qualabel" for="qualsel">Qualification:</label>';
+	echo '<form class="qrow qualform" method="get" action="' . esc_url( home_url( '/' ) ) . '" aria-label="Jobs by qualification" data-icons="' . esc_attr( wp_json_encode( $icons, JSON_UNESCAPED_UNICODE ) ) . '">';
+	echo '<label class="catlabel qualabel" for="qualsel">🎯 Your qualification:</label>';
 	echo '<select id="qualsel" class="qualsel" name="qual">';
 	echo '<option value="all"' . selected( $current, 'all', false ) . '>All qualifications</option>';
 	foreach ( $terms as $slug => $label ) {

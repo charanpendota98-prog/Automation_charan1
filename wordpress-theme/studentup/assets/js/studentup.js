@@ -152,7 +152,7 @@
     });
   })();
   /* ---------- v72.1: sections by qualification (grid nunchi automatic build) ---------- */
-  var QUAL_LABELS = { "10th": "10th", "inter": "Inter (10+2)", "iti": "ITI",
+  var QUAL_LABELS = { "10th": "SSC · 10th", "inter": "Inter (10+2)", "iti": "ITI",
                       "diploma": "Diploma", "degree": "Degree", "pg": "PG", "btech": "B.Tech" };
   function buildQualSections() {
     var host = document.getElementById("qsplit");
@@ -319,11 +319,231 @@
   }
 
 
-  /* ---------- v72: header search (menu pakkana 🔍) ---------- */
+  /* ---------- v72: header search (menu pakkana 🔍) — elements ---------- */
   var sbtn = document.getElementById("searchbtn");
   var spanel = document.getElementById("searchpanel");
   var sinput = document.getElementById("qtop");
   var sclose = document.getElementById("searchclose");
+
+  /* ---------- v89: animated custom qualification dropdown (quadd) ----------
+     Native <select> = source of truth (SEO/no-JS form form GET alage pani chestundi).
+     JS browser lo quadd UI: icon + label + count, animate-open panel, keyboard safe. */
+  (function () {
+    if (!qualsel) return;
+    var form = qualsel.closest ? qualsel.closest("form.qualform") : null;
+    if (!form) return;
+    var icons = {};
+    try { icons = JSON.parse(form.getAttribute("data-icons") || "{}"); } catch (e) { icons = {}; }
+    function parseCount(t) {
+      var m = t.match(/\((\d+)\)\s*$/);
+      return m ? m[1] : "";
+    }
+    function clean(t) { return t.replace(/\s*\(\d+\)\s*$/, "").trim(); }
+
+    var wrap = document.createElement("div");
+    wrap.className = "quadd";
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "quadd-btn";
+    btn.setAttribute("aria-haspopup", "listbox");
+    btn.setAttribute("aria-expanded", "false");
+    var panel = document.createElement("div");
+    panel.className = "quadd-panel";
+    panel.setAttribute("role", "listbox");
+    panel.setAttribute("aria-label", "Qualification");
+    panel.hidden = true;
+
+    var optData = [];
+    Array.prototype.forEach.call(qualsel.options, function (o, idx) {
+      var slug = o.value || "all";
+      var it = document.createElement("button");
+      it.type = "button";
+      it.className = "quadd-item";
+      it.setAttribute("role", "option");
+      it.setAttribute("data-slug", slug);
+      it.setAttribute("aria-selected", o.selected ? "true" : "false");
+      var ic = icons[slug] || "▸";
+      it.innerHTML = '<span class="qi" aria-hidden="true">' + ic + "</span>" +
+        '<span class="qt">' + clean(o.textContent) + "</span>" +
+        (parseCount(o.textContent) ? '<span class="qn">' + parseCount(o.textContent) + "</span>" : "");
+      it.addEventListener("click", function () {
+        setValue(slug);
+        closePanel();
+        btn.focus();
+      });
+      panel.appendChild(it);
+      optData.push({ slug: slug, el: it, index: idx });
+    });
+
+    function labelFor(slug) {
+      for (var i = 0; i < optData.length; i++) if (optData[i].slug === slug) return i;
+      return 0;
+    }
+    function renderBtn() {
+      var i = labelFor(qualsel.value || "all");
+      var o = qualsel.options[i];
+      var slug = o.value || "all";
+      btn.innerHTML = '<span class="qi" aria-hidden="true">' + (icons[slug] || "🎓") + "</span>" +
+        '<span class="qt">' + clean(o.textContent) + "</span>" +
+        '<span class="qchev" aria-hidden="true"></span>';
+      Array.prototype.forEach.call(optData, function (d) {
+        d.el.setAttribute("aria-selected", d.slug === slug ? "true" : "false");
+      });
+    }
+    function setValue(slug) {
+      if (qualsel.value !== slug) {
+        qualsel.value = slug;
+        var evt;
+        try { evt = new Event("change", { bubbles: true }); }
+        catch (e) { evt = document.createEvent("Event"); evt.initEvent("change", true, true); }
+        qualsel.dispatchEvent(evt);          /* existing change handler = filter + URL sync */
+      }
+      renderBtn();
+    }
+    function openPanel() {
+      panel.hidden = false;
+      requestAnimationFrame(function () { wrap.classList.add("open"); });
+      btn.setAttribute("aria-expanded", "true");
+      var cur = labelFor(qualsel.value || "all");
+      if (optData[cur]) optData[cur].el.classList.add("focus");
+    }
+    function closePanel() {
+      wrap.classList.remove("open");
+      btn.setAttribute("aria-expanded", "false");
+      setTimeout(function () { panel.hidden = true; }, 160);
+      Array.prototype.forEach.call(optData, function (d) { d.el.classList.remove("focus"); });
+    }
+    btn.addEventListener("click", function () {
+      if (wrap.classList.contains("open")) closePanel(); else openPanel();
+    });
+    document.addEventListener("click", function (e) {
+      if (!wrap.contains(e.target) && wrap.classList.contains("open")) closePanel();
+    });
+    wrap.addEventListener("keydown", function (e) {
+      if (!wrap.classList.contains("open")) {
+        if (e.key === "ArrowDown" || e.key === "Enter" || e.key === " ") {
+          e.preventDefault(); openPanel();
+        }
+        return;
+      }
+      var cur = labelFor(qualsel.value || "all");
+      if (e.key === "Escape") { e.preventDefault(); closePanel(); btn.focus(); }
+      else if (e.key === "ArrowDown") { e.preventDefault(); focus(Math.min(cur + 1, optData.length - 1)); }
+      else if (e.key === "ArrowUp") { e.preventDefault(); focus(Math.max(cur - 1, 0)); }
+      else if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setValue(optData[cur].slug); closePanel(); btn.focus(); }
+    });
+    function focus(i) {
+      Array.prototype.forEach.call(optData, function (d) { d.el.classList.remove("focus"); });
+      optData[i].el.classList.add("focus");
+      optData[i].el.scrollIntoView({ block: "nearest" });
+      /* visual-only cursor; selection Enter/click tho */
+      var slug = optData[i].slug;
+      Array.prototype.forEach.call(optData, function (d) {
+        d.el.setAttribute("aria-selected", d.slug === slug ? "true" : "false");
+      });
+    }
+    /* server ?qual= state tho sync — page load */
+    renderBtn();
+    qualsel.addEventListener("change", renderBtn);
+    qualsel.classList.add("quadd-src");
+    qualsel.setAttribute("aria-hidden", "true");
+    qualsel.tabIndex = -1;
+    wrap.appendChild(btn);
+    wrap.appendChild(panel);
+    qualsel.parentNode.insertBefore(wrap, qualsel);
+  })();
+
+  /* ---------- v89: LIVE search — type chestuntene results dropdown ----------
+     WP REST /wp/v2/search (public). Debounced fetch, abort on new key,
+     keyboard ↑↓ Enter Esc, click → aa post open avutundi. */
+  (function () {
+    var box = document.getElementById("su-sres");
+    if (!sinput || !box) return;
+    var rest = (S && S.rest) ? S.rest : "/wp-json/wp/v2/";
+    var tmr = null, ctrl = null, items = [], cursor = -1;
+    var combo = sinput.closest ? sinput.closest(".su-livesearch") : null;
+
+    function esc(t) { var d = document.createElement("div"); d.textContent = t; return d.innerHTML; }
+    function close() {
+      box.hidden = true; box.innerHTML = ""; items = []; cursor = -1;
+      if (combo) combo.setAttribute("aria-expanded", "false");
+      sinput.removeAttribute("aria-activedescendant");
+    }
+    function paint() {
+      Array.prototype.forEach.call(box.querySelectorAll(".su-srow"), function (row, i) {
+        row.classList.toggle("active", i === cursor);
+        row.setAttribute("aria-selected", i === cursor ? "true" : "false");
+      });
+      if (cursor >= 0 && items[cursor]) {
+        sinput.setAttribute("aria-activedescendant", "su-srow-" + cursor);
+        var el = document.getElementById("su-srow-" + cursor);
+        if (el && el.scrollIntoView) el.scrollIntoView({ block: "nearest" });
+      }
+    }
+    function render(list, q) {
+      items = list; cursor = -1;
+      var html = "";
+      if (!list.length) {
+        html = '<div class="su-sempty" role="option" aria-disabled="true">' +
+          esc((S.i18n && S.i18n.noresults) || "No posts found") + "</div>";
+      } else {
+        list.forEach(function (r, i) {
+          html += '<a class="su-srow" id="su-srow-' + i + '" role="option" aria-selected="false" href="' +
+            esc(r.url) + '"><span class="su-stitle">' + esc(r.title) + "</span>" +
+            '<span class="su-stype">' + esc(r.type === "post" ? "Post" : r.type) + "</span></a>";
+        });
+        html += '<a class="su-srow su-sall" role="option" aria-selected="false" href="' +
+          esc((S.home || "/") + "?s=" + encodeURIComponent(q)) + '">' +
+          esc((S.i18n && S.i18n.viewall) || "See all results") + " →</a>";
+      }
+      box.innerHTML = html;
+      box.hidden = false;
+      if (combo) combo.setAttribute("aria-expanded", "true");
+    }
+    function run(q) {
+      if (ctrl) ctrl.abort();
+      ctrl = ("AbortController" in window) ? new AbortController() : null;
+      box.innerHTML = '<div class="su-sloading">' + esc((S.i18n && S.i18n.searching) || "Searching…") + "</div>";
+      box.hidden = false;
+      var url = rest + "search?search=" + encodeURIComponent(q) + "&per_page=7&type=post&_fields=id,title,url,type";
+      fetch(url, ctrl ? { signal: ctrl.signal } : {})
+        .then(function (r) { return r.ok ? r.json() : []; })
+        .then(function (rows) {
+          if ((sinput.value || "").trim() !== q) return;   /* newer query already running */
+          var list = (rows || []).map(function (r) {
+            return { title: (r.title || "").replace(/<[^>]*>/g, ""), url: r.url || "#", type: r.type || "post" };
+          }).filter(function (r) { return r.title && r.url !== "#"; });
+          render(list, q);
+        })
+        .catch(function (e) {
+          if (e && e.name === "AbortError") return;
+          box.hidden = true;
+        });
+    }
+    sinput.addEventListener("input", function () {
+      var q = (sinput.value || "").trim();
+      clearTimeout(tmr);
+      if (q.length < 2) { if (ctrl) ctrl.abort(); close(); return; }
+      tmr = setTimeout(function () { run(q); }, 220);
+    });
+    sinput.addEventListener("keydown", function (e) {
+      if (box.hidden) return;
+      var rowsCount = box.querySelectorAll(".su-srow").length;
+      if (e.key === "Escape") { e.preventDefault(); close(); }
+      else if (e.key === "ArrowDown") { e.preventDefault(); cursor = Math.min(cursor + 1, rowsCount - 1); paint(); }
+      else if (e.key === "ArrowUp") { e.preventDefault(); cursor = Math.max(cursor - 1, -1); paint(); }
+      else if (e.key === "Enter" && cursor >= 0) {
+        e.preventDefault();
+        var row = box.querySelectorAll(".su-srow")[cursor];
+        if (row) window.location.href = row.getAttribute("href");
+      }
+    });
+    document.addEventListener("click", function (e) {
+      if (!box.hidden && !box.contains(e.target) && e.target !== sinput) close();
+    });
+  })();
+
+
   function searchOpen(on) {
     if (!spanel || !sbtn) return;
     spanel.hidden = !on;

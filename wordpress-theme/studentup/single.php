@@ -53,10 +53,10 @@ get_header();
 				<div class="article-content"><?php the_content(); ?></div>
 
 				<div class="share" aria-label="Share">
-					<a href="https://wa.me/?text=<?php echo rawurlencode( get_the_title() . ' — ' . get_permalink() ); ?>" target="_blank" rel="noopener">Share on WhatsApp</a>
-					<a href="https://t.me/share/url?url=<?php echo rawurlencode( get_permalink() ); ?>&text=<?php echo rawurlencode( get_the_title() ); ?>" target="_blank" rel="noopener">Share on Telegram</a>
-					<a href="<?php echo esc_url( 'https://twitter.com/intent/tweet?url=' . rawurlencode( get_permalink() ) ); ?>" target="_blank" rel="noopener">Share on X</a>
-					<button type="button" class="su-copy" data-url="<?php echo esc_url( get_permalink() ); ?>">🔗 Copy link</button>
+					<a class="su-share-btn su-share-wa" href="https://wa.me/?text=<?php echo rawurlencode( get_the_title() . ' — ' . get_permalink() ); ?>" target="_blank" rel="noopener"><?php echo studentup_social_icon( 'whatsapp', 15 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Share on WhatsApp</a>
+					<a class="su-share-btn su-share-tg" href="https://t.me/share/url?url=<?php echo rawurlencode( get_permalink() ); ?>&text=<?php echo rawurlencode( get_the_title() ); ?>" target="_blank" rel="noopener"><?php echo studentup_social_icon( 'telegram', 15 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Share on Telegram</a>
+					<a class="su-share-btn su-share-x" href="<?php echo esc_url( 'https://twitter.com/intent/tweet?url=' . rawurlencode( get_permalink() ) ); ?>" target="_blank" rel="noopener"><?php echo studentup_social_icon( 'x', 14 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Share on X</a>
+					<button type="button" class="su-copy su-share-copy" data-url="<?php echo esc_url( get_permalink() ); ?>"><?php echo studentup_social_icon( 'link', 14 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Copy link</button>
 				</div>
 
 				<?php studentup_trust_note(); ?>

@@ -218,9 +218,9 @@ def check_menu_wiring() -> tuple:
     if probs:
         return False, "menu links poyayi: " + ", ".join(probs), "nav/mpanel markup check cheyandi"
     used = re.findall(r'<a class="usedcard[^"]*" href="#jobs" data-goto-cat="([a-z-]+)"', html)
-    if len(used) != 8:
-        return False, f"most-used tiles {len(used)} (8 undali)", "v59 used-strip restore cheyandi"
-    return True, "menu + most-used 8 tiles intact", ""
+    if len(used) != 9:
+        return False, f"most-used tiles {len(used)} (9 undali — v89 Central tho)", "v59/v89 used-strip restore cheyandi"
+    return True, "menu + most-used 9 tiles intact (TS · AP · Central top)", ""
 
 
 def check_storage() -> tuple:

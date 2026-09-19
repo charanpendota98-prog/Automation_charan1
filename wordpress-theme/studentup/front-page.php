@@ -15,6 +15,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 get_header();
 ?>
 
+<?php studentup_latest_ticker(); // v89: latest jobs scrolling — click cheste aa post open avutundi. ?>
+
 <section class="usedwrap" aria-label="Most searched by students">
 	<div class="wrap">
 		<div class="usedhead">
@@ -24,12 +26,12 @@ get_header();
 		<div class="usedgrid">
 			<?php
 			foreach ( studentup_most_used() as $i => $m ) :
-				$term = get_category_by_slug( $m['slug'] );
+				$term = studentup_used_term( $m['slug'] );   // v89: alias-aware (live slugs differ)
 				if ( ! $term ) {
 					continue;
 				}
 				$count   = (int) $term->count;
-				$hot     = ( $i < 2 ) ? ' hot' : '';
+				$hot     = ( $i < 3 ) ? ' hot' : '';         // v89: TS · AP · Central top-3 highlight
 				$badge   = $count ? number_format_i18n( $count ) . ' updates' : 'Soon';
 				?>
 				<a class="usedcard<?php echo esc_attr( $hot ); ?>" href="<?php echo esc_url( get_category_link( $term ) ); ?>">
