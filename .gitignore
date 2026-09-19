@@ -23,6 +23,8 @@ sources_queue.txt
 state.db
 state.db-journal
 tests/runtime/node_modules/
+# root node_modules: php-parser for tools/php_lint.js (npm i php-parser --no-save)
+node_modules/
 venv/
 ads/rotation.json
 
