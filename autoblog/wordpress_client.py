@@ -408,8 +408,8 @@ class WordPressClient:
             resp = self._request("GET", f"{term_type}/{term_id}", params={"_fields": "link"})
             if resp.status_code == 200:
                 return resp.json().get("link")
-        except Exception:
-            pass
+        except Exception as exc:  # noqa: BLE001 — best-effort (silent kaadu)
+            log.debug("block skip: %s", exc)
         return None
 
     def get_post(self, post_id: int) -> Dict:
@@ -448,6 +448,24 @@ class WordPressClient:
         data = resp.json()
         return {"id": data.get("id"), "link": data.get("link"),
                 "status": data.get("status")}
+
+    def verify_meta(self, post_id: int, keys: List[str]) -> Dict[str, bool]:
+        """Post lo meta keys nijamainaa land ayyaya? (SEO silent-fail pattadaniki).
+
+        Returns {key: True/False}. Post read fail ayithe anni False.
+        """
+        try:
+            data = self.get_post(post_id)
+        except WordPressError:
+            return {k: False for k in keys}
+        meta = data.get("meta") or {}
+        out = {}
+        for k in keys:
+            val = meta.get(k)
+            if isinstance(val, list):
+                val = ", ".join(str(x) for x in val)
+            out[k] = bool(str(val or "").strip())
+        return out
 
     def create_post(
         self,

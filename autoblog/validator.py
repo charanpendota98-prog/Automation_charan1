@@ -149,8 +149,8 @@ def validate_article(article: Dict, final_html: str = "") -> Dict:
         from urllib.parse import urlparse as _up
         from . import config as _cfg
         site_host = _up(_cfg.WP_SITE).netloc
-    except Exception:
-        pass
+    except Exception as exc:  # noqa: BLE001 — best-effort (silent kaadu)
+        log.debug("validator.validate_article skip: %s", exc)
     links = re.findall(r'href="(http[^"]+)"', html)
     n_internal = sum(1 for l in links if site_host and site_host in l) if site_host else (1 if links else 0)
     score += add(n_internal >= 1, 4, "internal links ledu (Rank Math check)")
@@ -274,6 +274,7 @@ def rankmath_strict(article: Dict, final_html: str = "") -> Dict:
         "score": min(100, round(100 * earned / possible)),
         "issues": [r["item"] for r in fails],
         "fixes": [r["fix"] for r in fails if r["fix"]],
+        "checks": results,          # v64: per-test breakdown (proof + refine)
         "words": words,
     }
 

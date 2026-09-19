@@ -15,11 +15,13 @@ import argparse
 import json
 import logging
 import os
+import re
 import secrets
 import threading
+from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 from urllib.parse import parse_qs, unquote, urlparse
 
 from . import engine, notify, ui
@@ -349,12 +351,288 @@ class Api:
                                      auto=bool(payload.get("auto")),
                                      reason=payload.get("reason") or "")
 
+    # ------------------------------------------------------ v47: daily poll
+    @staticmethod
+    def _poll_day() -> str:
+        return datetime.now(timezone.utc).astimezone().strftime("%Y-%m-%d")
+
+    def _poll_question(self) -> Dict:
+        bank = self.store.bank_questions()
+        if not bank:
+            raise engine.ExamError(
+                "Prashna bank khali — admin console lo questions add cheyandi",
+                "no-bank", 404)
+        day = self._poll_day()
+        idx = datetime.strptime(day, "%Y-%m-%d").toordinal() % len(bank)
+        q = bank[idx]
+        return {"day": day, "q": q, "bank_size": len(bank)}
+
+    def today_poll(self) -> Dict:
+        """Public: roju kotha prashna (question bank rotate avutundi)."""
+        pick = self._poll_question()
+        q = pick["q"]
+        return {"ok": True, "day": pick["day"], "qid": q["id"], "text": q["text"],
+                "options": q["options"], "topic": q.get("topic", ""),
+                "bank_size": pick["bank_size"]}
+
+    def vote_poll(self, payload: Dict) -> Dict:
+        """Public: oka vote (IP ki oka vote per day)."""
+        pick = self._poll_question()
+        q = pick["q"]
+        try:
+            qid = int(payload.get("qid") or 0)
+            choice = int(payload.get("choice", -1))
+        except (TypeError, ValueError):
+            raise engine.ExamError("Vote format tappu", "bad-vote", 400)
+        if qid != q["id"]:
+            raise engine.ExamError("Ee poll marindi — page refresh chesi malli vote cheyandi",
+                                   "stale-poll", 409)
+        if not (0 <= choice < len(q["options"])):
+            raise engine.ExamError("Choice valid kaadu", "bad-choice", 400)
+        ip = str(payload.get("_ip") or payload.get("ip") or "")[:64]
+        already = self.store.has_poll_vote(pick["day"], qid, ip)
+        if not already:
+            self.store.record_poll_vote(pick["day"], qid, choice, ip)
+        counts = self.store.poll_vote_counts(pick["day"], qid)
+        size = len(q["options"])
+        counts = (counts + [0] * size)[:size]
+        return {"ok": True, "votes": counts, "total": sum(counts),
+                "correct_index": q["correct_index"], "already_voted": already,
+                "explanation": q.get("explanation", ""), "day": pick["day"]}
+
+    # ------------------------------------------------- v47: admin ad manager
+    @staticmethod
+    def _ads_path() -> Path:
+        p = (os.environ.get("ADS_INVENTORY_PATH") or "").strip()
+        if p:
+            return Path(p)
+        return Path(__file__).resolve().parent.parent / "ads" / "inventory.json"
+
+    @staticmethod
+    def _read_inventory(path: Path) -> Dict:
+        if not path.exists():
+            return {"version": 1, "policy": {}, "ads": []}
+        try:
+            raw = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, ValueError) as exc:
+            raise engine.ExamError(f"Ad inventory chadavaleka poyindi: {exc}",
+                                   "ads-read", 500)
+        if isinstance(raw, list):
+            return {"version": 1, "policy": {}, "ads": raw}
+        if not isinstance(raw, dict):
+            return {"version": 1, "policy": {}, "ads": []}
+        raw.setdefault("version", 1)
+        raw.setdefault("policy", {})
+        raw.setdefault("ads", [])
+        if not isinstance(raw["ads"], list):
+            raw["ads"] = []
+        return raw
+
+    def admin_ads(self, key: str) -> Dict:
+        self.require_admin(key)
+        path = self._ads_path()
+        inv = self._read_inventory(path)
+        return {"ok": True, "path": str(path), "version": inv.get("version", 1),
+                "policy": inv.get("policy", {}), "ads": inv.get("ads", [])}
+
+    def upsert_ad(self, key: str, payload: Dict) -> Dict:
+        """Create/update an ad in ads/inventory.json (bot next post lo vaadutundi)."""
+        self.require_admin(key)
+        ad = self._validate_ad(payload)
+        path = self._ads_path()
+        inv = self._read_inventory(path)
+        ads = [a for a in inv.get("ads", []) if not (isinstance(a, dict) and a.get("id") == ad["id"])]
+        ads.append(ad)
+        inv["ads"] = ads
+        try:
+            path.parent.mkdir(parents=True, exist_ok=True)
+            tmp = path.with_suffix(".json.tmp")
+            tmp.write_text(json.dumps(inv, ensure_ascii=False, indent=2) + "\n",
+                           encoding="utf-8")
+            os.replace(tmp, path)
+        except OSError as exc:
+            raise engine.ExamError(f"Ad save avvaledu: {exc}", "ads-write", 500)
+        return {"ok": True, "ad": ad, "count": len(ads)}
+
+    def delete_ad(self, key: str, ad_id: str) -> Dict:
+        self.require_admin(key)
+        path = self._ads_path()
+        inv = self._read_inventory(path)
+        before = len(inv.get("ads", []))
+        inv["ads"] = [a for a in inv.get("ads", [])
+                      if not (isinstance(a, dict) and a.get("id") == ad_id)]
+        if len(inv["ads"]) == before:
+            raise engine.ExamError("Ee id tho ad ledu", "ads-missing", 404)
+        try:
+            path.parent.mkdir(parents=True, exist_ok=True)
+            tmp = path.with_suffix(".json.tmp")
+            tmp.write_text(json.dumps(inv, ensure_ascii=False, indent=2) + "\n",
+                           encoding="utf-8")
+            os.replace(tmp, path)
+        except OSError as exc:
+            raise engine.ExamError(f"Ad delete avvaledu: {exc}", "ads-write", 500)
+        return {"ok": True, "count": len(inv["ads"])}
+
+    @staticmethod
+    def _validate_ad(payload: Dict) -> Dict:
+        def s(key: str, default: str = "", limit: int = 300) -> str:
+            return str(payload.get(key, default) or default).strip()[:limit]
+
+        ad_id = s("id", limit=52).lower()
+        if not re.fullmatch(r"[a-z0-9][a-z0-9\-_]{2,51}", ad_id):
+            raise engine.ExamError(
+                "Ad id: chinna aksharalu/sankhyalu/hyphen matrame (3-52)",
+                "bad-ad-id", 400)
+        title = s("title", limit=140)
+        if len(title) < 8:
+            raise engine.ExamError("Ad title kaneesam 8 aksharalu kavali", "bad-ad-title", 400)
+        atype = s("type", "college_banner", limit=30).lower()
+        if atype not in ("college_banner", "shop", "service", "coaching", "sponsorship"):
+            raise engine.ExamError(
+                "type: college_banner | shop | service | coaching | sponsorship",
+                "bad-ad-type", 400)
+        layout = s("layout", "banner", limit=12).lower()
+        if layout not in ("banner", "card", "auto"):
+            raise engine.ExamError("layout: banner | card | auto", "bad-ad-layout", 400)
+        link = s("link", limit=500)
+        if not re.fullmatch(r"https?://[^\s]+", link):
+            raise engine.ExamError(
+                "link http/https tho start avvali (javascript: vaddu — safety)",
+                "bad-ad-link", 400)
+        image = s("image", limit=500)
+        if image and not re.fullmatch(r"https?://[^\s]+", image):
+            raise engine.ExamError("image URL http/https matrame", "bad-ad-image", 400)
+        for dkey in ("start", "end"):
+            v = s(dkey, limit=10)
+            if v and not re.fullmatch(r"\d{4}-\d{2}-\d{2}", v):
+                raise engine.ExamError(f"{dkey}: YYYY-MM-DD format lo ivvandi",
+                                       f"bad-ad-{dkey}", 400)
+        raw_pl = payload.get("placements")
+        if isinstance(raw_pl, (list, tuple)):
+            placements = [str(x).strip() for x in raw_pl if str(x).strip()]
+        elif raw_pl:
+            placements = [p.strip() for p in str(raw_pl).split(",") if p.strip()]
+        else:
+            placements = ["top", "mid", "bottom"]
+        placements = placements[:6]
+
+        return {
+            "id": ad_id,
+            "name": s("name", limit=140) or title,
+            "type": atype,
+            "layout": layout,
+            "active": bool(payload.get("active", True)),
+            "demo": bool(payload.get("demo", False)),
+            "label": s("label", limit=40),
+            "title": title,
+            "description": s("description", limit=300),
+            "cta": s("cta", "Know More", limit=40) or "Know More",
+            "image": image,
+            "link": link,
+            "categories": s("categories", "", limit=200),
+            "placements": placements,
+            "start": s("start", limit=10),
+            "end": s("end", limit=10),
+        }
+
     def _require_session(self, payload: Dict) -> Dict:
         session = self.store.session_by_token(payload.get("token", ""))
         if not session:
             raise engine.ExamError("Session expire ayyindi — malli join avvandi",
                                    "not_found", 404)
         return session
+
+
+    # ------------------------------------------------------- leads (v54 money)
+    LEAD_INTERESTS = ("jobs", "scholarships", "college", "coaching", "exams", "other")
+
+    @staticmethod
+    def _clean_phone(raw: Any) -> str:
+        digits = re.sub(r"\D", "", str(raw or ""))
+        if digits.startswith("91") and len(digits) == 12:
+            digits = digits[2:]
+        elif digits.startswith("0") and len(digits) == 11:
+            digits = digits[1:]
+        return digits
+
+    def save_lead(self, payload: Dict) -> Dict:
+        """Public: ఉచిత సమాచారం అభ్యర్థన (job/college alerts). Ads la revenue line."""
+        name = re.sub(r"\s+", " ", str(payload.get("name") or "")).strip()
+        phone = self._clean_phone(payload.get("phone"))
+        interest = str(payload.get("interest") or "jobs").strip().lower()
+        city = re.sub(r"\s+", " ", str(payload.get("city") or "")).strip()
+        source = re.sub(r"[^a-z_]", "", str(payload.get("source") or "site").lower())[:20] or "site"
+        note = re.sub(r"\s+", " ", str(payload.get("note") or "")).strip()
+        ip = str(payload.get("ip") or payload.get("_ip") or "")[:64]
+        spammy = bool(str(payload.get("website") or payload.get("url") or "").strip())
+
+        if len(name) < 2:
+            raise engine.ExamError("పేరు రాయండి (కనీసం 2 అక్షరాలు)", "lead-name", 400)
+        if not re.fullmatch(r"[6-9]\d{9}", phone or ""):
+            raise engine.ExamError("10 అంకెల మొబైల్ నంబర్ ఇవ్వండి (ఉదా: 9876543210)",
+                                   "lead-phone", 400)
+        if interest not in self.LEAD_INTERESTS:
+            interest = "other"
+        if city and len(city) < 2:
+            city = ""
+        if not spammy and self.store.lead_ip_count(ip, hours=1) >= 5:
+            raise engine.ExamError("కొద్దిసేపటి తర్వాత మళ్లీ ప్రయత్నించండి",
+                                   "lead-throttle", 429)
+
+        if spammy:
+            row = self.store.save_lead(name, phone, interest, city, source, note, ip)
+            self.store.set_lead_status(row["id"], "spam")
+            return {"ok": True, "id": row["id"], "duplicate": False,
+                    "message": "ధన్యవాదాలు! మేము సంప్రదిస్తాము."}
+
+        if self.store.lead_phone_seen(phone, hours=24):
+            return {"ok": True, "duplicate": True,
+                    "message": "ఈ నంబర్ ఇప్పటికే నమోదైంది — మేము త్వరలో సంప్రదిస్తాము."}
+
+        row = self.store.save_lead(name, phone, interest, city, source, note, ip)
+        log.info("lead #%s (%s) %s", row["id"], interest, phone[-4:].rjust(4, "*"))
+        return {"ok": True, "id": row["id"], "duplicate": False,
+                "message": "ధన్యవాదాలు! ఉద్యోగ/పరీక్ష సమాచారం మీకు పంపుతాము."}
+
+    def admin_leads(self, key: str, limit: int = 200, status: str = "") -> Dict:
+        self.require_admin(key)
+        rows = self.store.list_leads(limit=limit, status=status)
+        masked = []
+        for r in rows:
+            d = dict(r)
+            d.pop("ip", None)
+            d["phone"] = d.get("phone", "")
+            masked.append(d)
+        return {"ok": True, "count": len(masked), "stats": self.store.lead_stats(),
+                "leads": masked}
+
+    def set_lead_status(self, key: str, lead_id: Any, status: str) -> Dict:
+        self.require_admin(key)
+        try:
+            lid = int(lead_id or 0)
+        except (TypeError, ValueError):
+            raise engine.ExamError("lead id number ga undali", "bad-lead-id", 400)
+        try:
+            changed = self.store.set_lead_status(lid, str(status or "").strip().lower())
+        except ValueError as exc:
+            raise engine.ExamError(str(exc), "bad-lead-status", 400)
+        if not changed:
+            raise engine.ExamError("Ee id tho lead ledu", "lead-missing", 404)
+        return {"ok": True, "id": lid, "status": status}
+
+    def export_leads(self, key: str) -> tuple:
+        self.require_admin(key)
+        rows = self.store.list_leads(limit=5000)
+        cols = ["id", "created_at", "name", "phone", "interest", "city", "source",
+                "status", "note"]
+        lines = [",".join(cols)]
+        for r in rows:
+            vals = []
+            for c in cols:
+                v = str(r.get(c, "")).replace('"', '""')
+                vals.append(f'"{v}"' if any(ch in v for ch in ',"\n') else v)
+            lines.append(",".join(vals))
+        return "\n".join(lines) + "\n", "studentup-leads.csv"
 
 
 # ------------------------------------------------------------------ HTTP layer
@@ -377,9 +655,14 @@ class Handler(BaseHTTPRequestHandler):
         if self.command != "HEAD":
             self.wfile.write(body)
 
-    def json_out(self, data: Any, status: int = 200) -> None:
+    def json_out(self, data: Any, status: int = 200, cors: bool = False) -> None:
+        extra = {"Cache-Control": "no-store"}
+        if cors:  # v47: public poll endpoints — website (different port/origin) fetch cheyyagaladu
+            extra["Access-Control-Allow-Origin"] = "*"
+            extra["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+            extra["Access-Control-Allow-Headers"] = "Content-Type"
         self._send(status, json.dumps(data, ensure_ascii=False).encode("utf-8"),
-                   JSON_HEADERS["Content-Type"], {"Cache-Control": "no-store"})
+                   JSON_HEADERS["Content-Type"], extra)
 
     def html_out(self, html: str, status: int = 200) -> None:
         self._send(status, html.encode("utf-8"), "text/html; charset=utf-8",
@@ -479,9 +762,32 @@ class Handler(BaseHTTPRequestHandler):
             self.json_out(self.api.session_state(q.get("token", "")))
             return
 
+        if path == "/poll/today":
+            self.json_out(self.api.today_poll(), cors=True)
+            return
+        if path == "/api/admin/leads":
+            self.json_out(self.api.admin_leads(q.get("key", ""),
+                                               int(q.get("limit", 200) or 200),
+                                               q.get("status", "")))
+            return
+        if path in ("/api/admin/leads/export.csv", "/api/admin/leads.csv"):
+            text, name = self.api.export_leads(q.get("key", ""))
+            self.csv_out(text, name)
+            return
+        if path == "/api/admin/ads":
+            self.json_out(self.api.admin_ads(self.query().get("key", "")))
+            return
+
         self.json_out({"error": "Page dorakaledu", "path": path}, 404)
 
     # --------------------------------------------------------------- POST
+    def do_OPTIONS(self) -> None:  # noqa: N802 — v47 CORS preflight (public poll)
+        self._send(204, b"", "text/plain", {
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+            "Access-Control-Allow-Headers": "Content-Type",
+        })
+
     def do_POST(self) -> None:  # noqa: N802
         try:
             self._route_post()
@@ -551,6 +857,25 @@ class Handler(BaseHTTPRequestHandler):
         }
         if path in student:
             self.json_out(student[path](body))
+            return
+
+        if path == "/lead":
+            self.json_out(self.api.save_lead(body), cors=True)
+            return
+        if path == "/api/admin/lead/status":
+            self.json_out(self.api.set_lead_status(body.get("key", ""),
+                                                   body.get("id"),
+                                                   body.get("status", "")))
+            return
+        if path == "/poll/vote":
+            body["_ip"] = self.client_ip()
+            self.json_out(self.api.vote_poll(body), cors=True)
+            return
+        if path == "/api/admin/ads":
+            self.json_out(self.api.upsert_ad(body.get("key", ""), body))
+            return
+        if path == "/api/admin/ads/delete":
+            self.json_out(self.api.delete_ad(body.get("key", ""), str(body.get("id") or "")))
             return
 
         self.json_out({"error": "Endpoint dorakaledu", "path": path}, 404)

@@ -129,6 +129,10 @@ def audit_url(url: str, include_pagespeed: bool = True) -> List[Dict]:
     try:
         response = requests.get(url, timeout=config.GOOGLE_AUDIT_TIMEOUT,
                                 headers={"User-Agent": "studentup-public-audit/1.0"})
+        # v47: honour declared charset (Telugu pages: plain text/html → ISO-8859-1
+        # fallback would turn every UTF-8 byte into a char and skew length checks).
+        if "charset" not in (response.headers.get("Content-Type") or "").lower():
+            response.encoding = response.apparent_encoding or "utf-8"
         rows = html_checks(url, response.text[:2_000_000], response.status_code)
     except Exception as exc:  # noqa: BLE001
         rows = [_row("FAIL", "Page fetch", str(exc)[:150])]

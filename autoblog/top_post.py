@@ -252,6 +252,22 @@ ENTITIES: List[tuple] = [
     ("Digital Marketing Course", "Part Time Jobs", 2, "studentup.in"),
     ("Data Entry Jobs", "Part Time Jobs", 3, "studentup.in"),
     ("Part Time Jobs for Students", "Part Time Jobs", 3, "studentup.in"),
+    # ---------------- v58: విదేశీ ఉద్యోగాలు (Gulf / abroad / visa / tests) ----
+    ("Gulf Jobs", "Abroad Jobs", 5, "emigrate.gov.in"),
+    ("eMigrate Registration", "Abroad Jobs", 4, "emigrate.gov.in"),
+    ("Dubai Jobs", "Abroad Jobs", 4, "studentup.in"),
+    ("Saudi Arabia Jobs", "Abroad Jobs", 4, "studentup.in"),
+    ("Qatar Jobs", "Abroad Jobs", 4, "studentup.in"),
+    ("Kuwait Oman Bahrain Jobs", "Abroad Jobs", 3, "studentup.in"),
+    ("IELTS", "Abroad Jobs", 5, "ielts.org"),
+    ("PTE Academic", "Abroad Jobs", 3, "pearsonpte.com"),
+    ("TOEFL", "Abroad Jobs", 3, "ets.org"),
+    ("Study in Canada", "Abroad Jobs", 4, "canada.ca"),
+    ("Study in Germany", "Abroad Jobs", 4, "daad.de"),
+    ("Study in Australia", "Abroad Jobs", 3, "studyinaustralia.gov.au"),
+    ("Study in UK", "Abroad Jobs", 3, "gov.uk"),
+    ("Passport Seva", "Abroad Jobs", 3, "passportindia.gov.in"),
+    ("NRI Guide", "Abroad Jobs", 3, "studentup.in"),
 ]
 
 # Keep only the live-site categories (pipeline.CATEGORY_RULES names)
@@ -259,6 +275,8 @@ LIVE_CATEGORIES = {
     "Scholarships", "Central Govt Jobs", "TS Govt Jobs", "AP Govt Jobs",
     "Private Jobs", "Software Jobs", "Part Time Jobs", "Walkin Jobs",
     "Hall Tickets", "Results", "Internships", "Online Education",
+    "Abroad Jobs",          # v58: విదేశీ ఉద్యోగాలు (Tier-1 + high-CPC)
+    "Outsourcing Jobs", "Current Affairs", "Exam Tips", "Upcoming Exams",
 }
 
 # ===========================================================================
@@ -447,6 +465,8 @@ SCHOLARSHIP_ONLY = {"scholarship-renewal", "income-certificate"}
 CATEGORY_INTENT_FILTER = {
     "Scholarships": (EXAM_MECHANICS - {"merit-list", "results"}) | {
         "correction-window", "exam-centre"},
+    # v58: abroad/visa content ki exam-mechanics (syllabus/hall ticket/answer key) vaddu
+    "Abroad Jobs": EXAM_MECHANICS | {"results", "cut-off", "merit-list"},
 }
 
 

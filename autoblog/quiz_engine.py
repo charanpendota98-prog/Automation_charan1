@@ -588,8 +588,8 @@ def _save_id(wid: str) -> None:
         f = _sidecar()
         f.parent.mkdir(parents=True, exist_ok=True)
         f.write_text(json.dumps({"widget_id": wid}), encoding="utf-8")
-    except Exception:
-        pass
+    except Exception as exc:  # noqa: BLE001 — best-effort (silent kaadu)
+        log.debug("quiz_engine._save_id skip: %s", exc)
 
 
 def _find_widget(wp) -> Tuple[Optional[str], List[Dict]]:

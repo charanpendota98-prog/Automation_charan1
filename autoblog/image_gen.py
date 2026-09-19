@@ -63,6 +63,8 @@ CAT_SHORT = {
     "Hall Tickets": "HALL TICKET", "Private Jobs": "PRIVATE JOBS",
     "Software Jobs": "SOFTWARE JOBS", "Scholarships": "SCHOLARSHIPS",
     "Results": "RESULTS", "Internships": "INTERNSHIPS",
+    "Outsourcing Jobs": "OUTSOURCING", "Current Affairs": "CURRENT AFFAIRS",
+    "Exam Tips": "EXAM TIPS", "Upcoming Exams": "UPCOMING EXAMS",
 }
 
 

@@ -68,6 +68,37 @@ AD_SHORTCODE = _get("AD_SHORTCODE", "")
 MAX_AD_SLOTS = int(_get("MAX_AD_SLOTS", "3"))
 # Ad space min-height tho reserve (CLS/layout-shift radu — CWV + viewability)
 AD_CLS_WRAPPER = _get("AD_CLS_WRAPPER", "1") not in ("0", "false", "no")
+# v43 AD MANAGER — owner ads (college banners, shop, services). Inventory:
+# ads/inventory.json (repo lo). Empty/missing inventory = no-op (safe).
+# ADSENSE_APPROVED=1 unte personal ad cap auto 1 ki drop avtundi (AdSense safe).
+AD_MANAGER_ENABLED = _get("AD_MANAGER_ENABLED", "1") not in ("0", "false", "no")
+# Post lo max personal ad slots (AdSense slots ki separate — ee varam matrame)
+MAX_PERSONAL_AD_SLOTS = int(_get("MAX_PERSONAL_AD_SLOTS", "2"))
+# v48: category match lekapoyina okka ad slot miss avvakunda fallback (round-robin).
+# AD_FALLBACK_ALWAYS=0 → peddaga strict: category match unte ne ad vestundi.
+AD_FALLBACK_ALWAYS = _get("AD_FALLBACK_ALWAYS", "1") not in ("0", "false", "no")
+# Inventory path override (default: repo ads/inventory.json)
+ADS_INVENTORY_PATH = _get("ADS_INVENTORY_PATH", "")
+# v52: house ads — StudentUp sonta promos. Sponsor ad lekapoyinappudu slot
+# khali ga undakunda ivi rotation lo vastayi (SPONSORED label veyyamu).
+HOUSE_AD_ENABLED = _get("HOUSE_AD_ENABLED", "1") not in ("0", "false", "no")
+HOUSE_ADS_PATH = _get("HOUSE_ADS_PATH", "")
+# --- v57: ad advisor (network eligibility ni automatic ga track + suggest) ---
+AD_ADVISOR_ENABLED = _get("AD_ADVISOR_ENABLED", "1") not in ("0", "false", "no")
+AD_ADVISOR_HOUR = int(_get("AD_ADVISOR_HOUR", "10") or 10)
+AD_TRAFFIC_PATH = _get("AD_TRAFFIC_PATH", str(BASE_DIR / "logs" / "traffic.json"))
+AD_ADVISOR_STATE = _get("AD_ADVISOR_STATE", str(BASE_DIR / "logs" / "ad_advisor_state.json"))
+AD_MONTHLY_VIEWS = int(_get("AD_MONTHLY_VIEWS", "0") or 0)
+AD_MONTHLY_SESSIONS = int(_get("AD_MONTHLY_SESSIONS", "0") or 0)
+AD_TIER1_SHARE = float(_get("AD_TIER1_SHARE", "0") or 0)
+HOUSE_ADS_PATH = _get("HOUSE_ADS_PATH", "")
+# v44 DEEP POST ENGINE — deep analyse + cross-source verification.
+# ≥ DEEP_MIN_SOURCES sources unna posts ki "In-Depth Analysis" section +
+# perfect gate (conflicts/stale dates live publish lo block; drafts lo flags).
+DEEP_POST_ENABLED = _get("DEEP_POST_ENABLED", "1") not in ("0", "false", "no")
+DEEP_MIN_SOURCES = int(_get("DEEP_MIN_SOURCES", "2"))
+# 0 = deep gate off (drafts + live rendu lo ledu)
+DEEP_GATE_STRICT = _get("DEEP_GATE_STRICT", "1") not in ("0", "false", "no")
 # E-E-A-T: Article schema publisher logo (rich results kosam; optional)
 SITE_LOGO_URL = _get("SITE_LOGO_URL", "")
 # Google Discover: per-post robots lo max-image-preview:large (RM meta)
@@ -94,6 +125,19 @@ RADAR_INTERVAL_HOURS = int(_get("RADAR_INTERVAL_HOURS", "6"))  # 4x/day scan
 RADAR_DISTRICTS_PER_RUN = int(_get("RADAR_DISTRICTS_PER_RUN", "10"))
 RADAR_SOURCES_PER_RUN = int(_get("RADAR_SOURCES_PER_RUN", "10"))
 RADAR_POSTS_PER_DAY = int(_get("RADAR_POSTS_PER_DAY", "2"))
+
+# v59: site బ్రేకింగ్ న్యూస్ feed (radar → preview/data/breaking.json → ticker)
+BREAKING_ENABLED = _get("BREAKING_ENABLED", "1") not in ("0", "false", "no")
+BREAKING_MAX = int(_get("BREAKING_MAX", "8"))
+BREAKING_KEEP_HOURS = float(_get("BREAKING_KEEP_HOURS", "18"))
+
+# v60: SITE GUARDIAN — roju okkasari system motham check + Telegram alert
+GUARDIAN_ENABLED = _get("GUARDIAN_ENABLED", "1") not in ("0", "false", "no")
+GUARDIAN_HOUR = int(_get("GUARDIAN_HOUR", "20"))          # IST — raatri report
+GUARDIAN_STATE = Path(_get("GUARDIAN_STATE", str(BASE_DIR / "logs" / "guardian.json")))
+GUARDIAN_FEED_MAX_AGE = float(_get("GUARDIAN_FEED_MAX_AGE", "26"))  # breaking feed staleness (h)
+BREAKING_FEED_PATH = Path(_get(
+    "BREAKING_FEED_PATH", str(BASE_DIR / "preview" / "data" / "breaking.json")))
 # comma-separated: https://t.me/s/yourchannel,https://site.com/feed
 WATCH_SOURCES = _get("WATCH_SOURCES", "")
 
@@ -107,6 +151,8 @@ KEYWORD_DAILY_QUEUE = int(_get("KEYWORD_DAILY_QUEUE", "4"))
 KEYWORD_SUGGEST_SEEDS = _get("KEYWORD_SUGGEST_SEEDS", "")
 
 # --- Gemini AI -----------------------------------------------------------
+GEMINI_API_BASE = _get("GEMINI_API_BASE",
+                       "https://generativelanguage.googleapis.com/v1beta")
 GEMINI_API_KEY = _get("GEMINI_API_KEY", "")
 GEMINI_MODEL = _get("GEMINI_MODEL", "gemini-2.5-flash")
 GEMINI_FALLBACK_MODELS = [
@@ -122,8 +168,8 @@ GEMINI_API_KEYS = [k.strip() for k in _get("GEMINI_API_KEYS", "").split(",")
                    if k.strip()]
 GEMINI_RPD_PER_KEY = int(_get("GEMINI_RPD_PER_KEY", "1400"))
 # v18: Rank Math STRICT gate (real panel checks) — target + refine rounds
-RM_TARGET = int(_get("RM_TARGET", "90"))
-RM_REFINE_ROUNDS = int(_get("RM_REFINE_ROUNDS", "1"))
+RM_TARGET = int(_get("RM_TARGET", "100"))   # v64: 100 target (Rank Math)
+RM_REFINE_ROUNDS = int(_get("RM_REFINE_ROUNDS", "2"))  # v64: 2 rounds
 # v18: AdSense-safe originality floor — ee % kindha post publish cheyyadu
 ORIG_HARD_FLOOR = float(_get("ORIG_HARD_FLOOR", "72"))
 # Mobile lo headings peddaga unte — responsive clamp CSS add (1=on)
@@ -181,7 +227,8 @@ CATEGORIES = [
         # bot duplicate categories create cheyadu, existing IDs reuse avtayi)
         "Scholarships,Central Govt Jobs,TS Govt Jobs,AP Govt Jobs,"
         "Private Jobs,Software Jobs,Part Time Jobs,Walkin Jobs,"
-        "Hall Tickets,Results,Internships,Online Education",
+        "Outsourcing Jobs,Hall Tickets,Results,Internships,Online Education,"
+        "Current Affairs,Exam Tips,Upcoming Exams,Abroad Jobs",
     ).split(",")
     if c.strip()
 ]
@@ -192,7 +239,12 @@ CATEGORIES = [
 CATEGORY_PRIORITY = {}
 for _pair in _get("CATEGORY_PRIORITY",
                   "Central Govt Jobs:4,TS Govt Jobs:4,AP Govt Jobs:3,"
-                  "Results:3,Software Jobs:2,Private Jobs:2").split(","):
+                  "Results:3,Software Jobs:2,Private Jobs:2,"
+                  "Upcoming Exams:4,Outsourcing Jobs:3,Current Affairs:3,"
+                  "Scholarships:3,Exam Tips:2,"
+                  # v58: విదేశీ ఉద్యోగాలు — Gulf/NRI audience + high-CPC
+                  # (IELTS, visa, education loan, consultancy)
+                  "Abroad Jobs:4").split(","):
     if ":" in _pair:
         _k, _v = _pair.split(":", 1)
         try:
@@ -222,6 +274,18 @@ ADSENSE_AUTO_ADS = _get("ADSENSE_AUTO_ADS", "1") not in ("0", "false", "no")
 # Auto Ads loader can be emitted even if a client id is accidentally present.
 ADSENSE_APPROVED = _get("ADSENSE_APPROVED", "0") not in ("0", "false", "no")
 ADSENSE_CLIENT_ID = _get("ADSENSE_CLIENT_ID", "").strip()
+# v64: website options (.env nunchi theme ki push avutayi — --push-theme-data)
+SOCIAL_WHATSAPP = _get("SOCIAL_WHATSAPP", "").strip()
+SOCIAL_TELEGRAM = _get("SOCIAL_TELEGRAM", "").strip()
+SOCIAL_INSTAGRAM = _get("SOCIAL_INSTAGRAM", "").strip()
+SOCIAL_YOUTUBE = _get("SOCIAL_YOUTUBE", "").strip()
+CONTACT_EMAIL = _get("CONTACT_EMAIL", "").strip()
+STICKY_AD = _get("STICKY_AD", "").strip()
+EXAM_PUBLIC_URL = _get("EXAM_PUBLIC_URL", "").strip()
+# v65: pin-to-pin gate + Google trends capture
+PIN_GATE_BLOCK = _get("PIN_GATE_BLOCK", "1") not in ("0", "false", "no")
+TRENDS_GEO = _get("TRENDS_GEO", "IN").strip() or "IN"
+TRENDS_ENABLED = _get("TRENDS_ENABLED", "1") not in ("0", "false", "no")
 # Consent is a deployment responsibility, not something the bot can fake.
 # Set a real Google-certified CMP/provider in production and verify its UI.
 ADSENSE_CONSENT_PROVIDER = _get("ADSENSE_CONSENT_PROVIDER", "").strip()

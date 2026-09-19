@@ -227,14 +227,14 @@ def apply_queue_boost(boost_words: list) -> int:
     paths = []
     try:
         paths.append(queue_file_path())
-    except Exception:
-        pass
+    except Exception as exc:  # noqa: BLE001 — best-effort (silent kaadu)
+        log.debug("sources.apply_queue_boost skip: %s", exc)
     try:
         from . import news_radar as _nr
 
         paths.append(_nr.topics_queue_path())
-    except Exception:
-        pass
+    except Exception as exc:  # noqa: BLE001 — best-effort (silent kaadu)
+        log.debug("sources.apply_queue_boost skip: %s", exc)
     moved = 0
     for path in paths:
         try:

@@ -20,6 +20,17 @@
   python run.py --top-post "TSPSC Group 2 2026 notification" --publish-top-post
   python run.py --top-post-plan --top-post-days 90      v38: domination calendar
   python run.py --keyword-universe                      v38: ANNI keywords (10k+)
+  python run.py --readiness                v62: TOP WEBSITE READINESS score (content ·
+                                            SEO · ads · automation · real site)
+  python run.py --push-theme-data         v61: bot data → WP theme (breaking · proof ·
+                                            house ads) — REST push
+                                          v73: countdown data push ledu (hero card poyindi)
+  python run.py --guardian                v60: SITE GUARDIAN — site/UI/SEO/ads/
+                                          feed/storage check (roju auto @ GUARDIAN_HOUR)
+  python run.py --guardian-notify         v60: guardian report → Telegram
+  python run.py --breaking-feed             v59: బ్రేకింగ్ న్యూస్ feed build (radar →
+                                                   preview/data/breaking.json → site)
+  python run.py --breaking-from F.json       v59: feed ni JSON nunchi (offline/test)
   python run.py --score-post file.html --score-keyword "ssc cgl 2026"
   python run.py --exam-portal              v39: college EXAM PORTAL (students +
                                            admin START/CLOSE, auto-close, results)
@@ -29,6 +40,14 @@
                                            wrong category, PII, tags, timezone)
   python run.py --site-audit-fix           v41: audit + safe fixes (dry-run)
   python run.py --site-audit-fix --site-audit-apply   v41: fixes ni apply chey
+  python run.py --ads                    v43: AD MANAGER — owner ads (college
+  python run.py --ads-demo                 banners/shop/services) inventory +
+                                           slot plan / visible placement preview
+  python run.py --deep-research "TOPIC"  v44: DEEP POST ENGINE — source tiering
+  python run.py --research-brief             + fact extraction + cross-verification
+    "TOPIC" --research-year 2027          + confidence report (--deep = NotebookLM
+  python run.py --deep ... --notebooklm-          passes 6-8; --notebooklm-brief FILE
+    brief FILE                              merges cited NotebookLM output)
   python run.py --deploy-check            v41: deploy readiness (deps/env/disk/port +
                                            exam portal boot + /healthz) — server SSH lo
   python run.py --test-all                v41: ANNI suites okate command tho

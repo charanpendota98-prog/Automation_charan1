@@ -1,26 +1,30 @@
-# secrets & local data
-.env
-state.db
-state.db-journal
-sources_queue.txt
-log/
-output/
-images/
 
 # python
-__pycache__/
+# secrets & local data
+# v39 exam portal (runtime data + auto-generated admin key)
 *.pyc
+.env
 .venv/
-venv/
-design_kit.json
-quiz_kit.json
+__pycache__/
 adsense_kit.json
+design_kit.json
+exam_portal.db
+exam_portal.db-shm
+exam_portal.db-wal
+exam_portal_admin_key.txt
+images/
+log/
+output/
+quiz_kit.json
 service_center.db
 service_center.db-journal
 service_center.json
+sources_queue.txt
+state.db
+state.db-journal
+tests/runtime/node_modules/
+venv/
+ads/rotation.json
 
-# v39 exam portal (runtime data + auto-generated admin key)
-exam_portal.db
-exam_portal.db-wal
-exam_portal.db-shm
-exam_portal_admin_key.txt
+# v57: ad advisor runtime state (traffic + milestones)
+logs/

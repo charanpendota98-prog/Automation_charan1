@@ -74,6 +74,13 @@ CATEGORY_SEEDS = {
         "Telangana ePASS / TS scholarships, AP Jnanabhumi / JVD schemes, "
         "NMMS, state minority & BC scholarships"
     ),
+    "Abroad Jobs": (
+        "Gulf jobs for Indians (UAE, Saudi, Qatar, Kuwait, Oman, Bahrain), eMigrate/MEA "
+        "protector of emigrants rules, overseas recruitment drives, IELTS/PTE/TOEFL test "
+        "dates and score requirements, study abroad + work visa updates (Canada express "
+        "entry, UK skilled worker, Germany opportunity card, Australia skilled migration, "
+        "Japan/Korea care work), passport & visa appointment process, NRI student guidance"
+    ),
     "Govt Jobs": (
         "SSC CGL/CHSL/MTS/GD, RRB NTPC & Group D, UPSC Civil Services, "
         "TSPSC & APPSC Group exams, TS/AP Police SI & Constable, "
@@ -149,6 +156,28 @@ CATEGORY_SEEDS = {
         "admit card download process for SSC/TSPSC/APPSC/RRB/exams, "
         "registration number recovery, exam day guidelines & reporting "
         "time, scribe rules, ID proof requirements"
+    ),
+    "Outsourcing Jobs": (
+        "TS/AP outsourcing & contract-basis recruitment, CRC (Commissionerate "
+        "of Rural Development) outsourcing, TSSPDCL/TGSPDCL outsourced posts, "
+        "guest faculty & honorarium roles, eligibility, pay scales, renewal "
+        "and document verification steps"
+    ),
+    "Current Affairs": (
+        "daily current affairs for competitive exams — national & Telugu-state "
+        "schemes, appointments, awards, sports, economy basics; every fact must "
+        "come from an official press release (PIB/state government) and stay "
+        "exam-relevant (no hype, no rumour)"
+    ),
+    "Upcoming Exams": (
+        "upcoming exam & recruitment calendar — TSPSC/APPSC/SSC/RRB/NTA "
+        "tentative schedules, application windows, fee dates, expected "
+        "vacancy counts, how to verify dates on the official calendar"
+    ),
+    "Exam Tips": (
+        "exam preparation plans for Telugu students — subject-wise strategy, "
+        "revision cycles, previous-paper practice, time management, "
+        "score-improvement habits, exam-day checklist (no false promises)"
     ),
     "Online Education": (
         "online MBA & degrees, IGNOU distance programs, upskilling "
@@ -653,8 +682,8 @@ def _bump_key(key: str) -> None:
     try:
         n = int(state.meta_get(config.STATE_PATH, f"gemkey:cnt:{kh}:{today}") or 0)
         state.meta_set(config.STATE_PATH, f"gemkey:cnt:{kh}:{today}", str(n + 1))
-    except Exception:
-        pass
+    except Exception as exc:  # noqa: BLE001 — best-effort (silent kaadu)
+        log.debug("gemini_client._bump_key skip: %s", exc)
 
 
 def _mark_key_dead(key: str, reason: str) -> None:
@@ -670,8 +699,8 @@ def _mark_key_dead(key: str, reason: str) -> None:
     try:
         state.meta_set(config.STATE_PATH, f"gemkey:dead:{kh}:{today}",
                        reason[:80])
-    except Exception:
-        pass
+    except Exception as exc:  # noqa: BLE001 — best-effort (silent kaadu)
+        log.debug("gemini_client._mark_key_dead skip: %s", exc)
     log.warning("Gemini key ..%s marked for cooldown today (%s)", kh, reason[:60])
 
 

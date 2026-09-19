@@ -388,7 +388,7 @@ the public research bundle.
 measurement. Kotha module: `autoblog/top_post.py` (offline, deterministic,
 no API key needed for planning).
 
-**1. ANNI KEYWORDS (10,682) — Keyword Universe**
+**1. ANNI KEYWORDS (11,192) — Keyword Universe**
 188 entities (SSC/UPSC/RRB/banks/defence, TSPSC/APPSC/DSC/Police, scholarships,
 entrances, universities, skills, internships) × **66 intents** (14 core +
 52 long-tail: last date, eligibility, age limit, fee, documents, district wise,
@@ -429,7 +429,7 @@ python run.py --top-post-plan --top-post-days 90 --top-post-per-day 2
 ```
 Pillar (exam hub post) + support (long-tail wins) mix, cluster + intent
 rotation, same-day lo veru clusters (footprint-safe). CSV/MD/JSON export.
-Repo lo ready sample: `preview/dominance-plan-90-days.md`.
+Repo lo ready sample: `docs/design-archive/dominance-plan-90-days.md`.
 
 **4. TOP POST SCORE — 30+ checks, 0-100, grade**
 
@@ -527,7 +527,364 @@ python tests/v39_exam_portal_test.py    # 14 sections: parse → validate → ST
                                         # scoring (shuffle-safe) → sweeper → notify →
                                         # HTTP end-to-end → demo → UI JS guards
 node tools/ui_smoke.mjs                 # optional: real DOM (jsdom) full-flow smoke
+python run.py --ad-advisor              # v57: eppudu e ad-network ki apply cheyyali
+python run.py --ad-advisor --traffic-csv ga4.csv   # GA4 export → advisor (logs/traffic.json)
+python run.py --breaking-feed           # v59: radar → site బ్రేకింగ్ న్యూస్ feed (ticker+section)
+python run.py --breaking-from file.json # v59: feed ni JSON nunchi (offline/approved list)
+python tools/parity_audit.py            # v69: PARITY AUDIT (CLI · modules · preview · docs · counts)
+python tools/code_audit.py              # v68: CODE AUDIT — bot + theme bugs (E1–E12 · W1–W7)
+python run.py --index-key-gen           # v68: IndexNow key (theme /<key>.key serve chestundi)
+python run.py --index-status            # v68: instant indexing status (key · SA · signing)
+python run.py --index-now URL           # v68: IndexNow + Google Indexing (JobPosting) submit
 ```
+
+```
+# v69: migilina advanced flags (anni docs lo — parity audit enforce chestundi)
+python run.py --ads-demo                 # advanced control
+python run.py --deep                     # advanced control
+python run.py --deep-research            # advanced control
+python run.py --deploy-port              # advanced control
+python run.py --exam-admin-key           # advanced control
+python run.py --exam-db                  # advanced control
+python run.py --exam-host                # advanced control
+python run.py --rebuild-hubs             # advanced control
+python run.py --research-limit           # advanced control
+python run.py --top-post-category        # advanced control
+python run.py --traffic-sessions         # advanced control
+python run.py --traffic-views            # advanced control
+```
+
+### v73 — ENGLISH UI PASS + HERO BLOCK REMOVAL ("idi avasram ledu")
+
+**Mee brief:** hero block (eyebrow · big Telugu h1 · lede · అవకాశాలు CTA · live-countdown card ·
+అర్హత/మూలం tiles) **teeseyali** · site antha English lo (menus · buttons · chips · notes · footer ·
+headings/labels) — Telugu mattrame job/article content lo.
+
+| # | What changed | Detail |
+|---|--------------|--------|
+| 1 | **Hero block poyindi** | Countdown card, tiles, CTA, eyebrow — motham teesesaam. Badulu chinna English hero: h1 + one honest line ("Official-source updates for TS & AP students. Always confirm a deadline once in the official notification."). |
+| 2 | **Countdown + deadline plumbing teesesaam** | Preview lo `#cd-live`/`#cd-none`/`data-deadline`/`data/deadline.json`, theme lo `studentup_deadline()`, bot lo `wp_theme_sync.write_preview_deadline()`, `.env` `POST_DEADLINE_*`, WP option `deadline_json` — anni poyayi (dead code ledu). Nijamaina deadlines ippudu post content + `studentup_last_date` badge lo. |
+| 3 | **UI antha English** | Menu (Home · Jobs · Hall Tickets · Results · Scholarships · Current Affairs · Exams · More), search panel, chips (All · TS Jobs · … · Degree · ⏳ Closing in 7 days), qualification sections, ads labels, poll/quiz chrome, install sheet, footer, sw.js offline page, manifest shortcuts. |
+| 4 | **6 policy pages English** | about · contact · advertise · privacy · disclaimer · editorial-policy — 0 Telugu chars, `lang="en"`, og:locale en_IN, ld+json inLanguage en-IN. |
+| 5 | **WP theme English** | 27 files lo 5,284 Telugu chars → 0 (detection keywords block `studentup_qual_keywords()` mattrame Telugu ga undi — posts Telugu headline nunchi tag cheyyadaniki avasaram). Bot `MOST_USED` labels/hints kuda English (site/bot parity). |
+| 6 | **Scope (mee choice)** | UI/labels/headings English; job/article content (post titles, summaries, quiz questions) Telugu — avi notifications nunchi vastayi. |
+| 7 | **Proof** | `--test-all` **57/57** · jsdom **162/162** · readiness **100/100 (28/28)** · guardian **14/15** · parity **0/0** · code audit **0/0** · php-lint **32/32** · theme **1.7.1** (copy/UI pass — version same) |
+
+**Language rule (ippudu):** website UI antha English; Telugu mattrame post/article content lo
+(job titles, summaries, quiz questions). Internal reports/docs Telugu-English mix lo unnayi (owner kosam).
+
+### v72.1 — అర్హత SECTIONS + ALWAYS-VISIBLE APP DOWNLOAD + CLEAN PUBLIC COPY
+
+| # | Feature | Enti (mee brief → implementation) |
+|---|---------|-----------------------------------|
+| 0 | **Public copy clean** | Coverage topbar (33/26 జిల్లాలు line), hero proof stats, "ప్రత్యక్ష పరీక్ష" wording, 7-విషయాల demo article (share buttons tho) — anni public surfaces nunchi teesesaam. |
+| 13 | **అర్హత ప్రకారం విభాగాలు** | "అర్హత ప్రకారం చూడండి": 10వ తరగతి · ఇంటర్ (10+2) · ఐటీఐ · డిప్లొమా · డిగ్రీ · పీజీ · బీటెక్ + "⏳ 7 రోజుల్లో ముగిసేవి". Groups grid cards nunchi **JS automatic** build avutayi (`buildQualSections`) — kotha post vasthe ade kshanam list lo vastundi, **manual tagging ledu**. |
+| 14 | **Chips + విభాగాలు kalisi** | Category chip + అర్హత chip rendu kalisi filter (page reload ledu) · `?qual=` URL sync · గడువు ముగిసినవి దాచి `#su-hidden-note` note. |
+| 15 | **App డౌన్‌లోడ్ (prathi visit)** | "⬇️ App డౌన్‌లోడ్ FREE" button prathi visit lo (mobile-first) · click tho device-wise sheet (Android Chrome prompt · iPhone Share · Computer icon) · `inc/pwa.php` manifest ki shortcuts (Jobs · అర్హత · ఆన్‌లైన్ పరీక్షలు). |
+| 16 | **Countdown data-driven** (v73 lo teesesaamu) | Hero countdown hardcoded date ledu — `preview/data/deadline.json` (bot `--push-theme-data` rasi pettedi). **v73:** hero block tho paatu ee countdown + plumbing motham poyindi (post-level `studentup_last_date` badges mattrame migilayi). |
+| 17 | **Ads nijamainaవి** | Demo advertisers (ABC academy/college/tuition/stationery) → house "స్లాట్ ఖాళీ · మీ ప్రకటన ఇక్కడ" creatives (SPONSORED + `rel=sponsored nofollow`), CTA → Partner page. |
+| 18 | **Admin widget** | WP dashboard: "StudentUp · విద్యార్హత ప్రకారం ఉద్యోగాలు" — qualification-wise counts + tag-leni posts count. |
+| 10 | **Theme v1.7.1** | `inc/qual-filter.php` (directory + notes + widget) · `assets/js/studentup.js` (combined filter + grouping) · `assets/js/studentup-pwa.js` (sheet) · version parity `style.css` ↔ `STUDENTUP_VERSION` ↔ `readme.txt` = **1.7.1**. |
+
+### v72 — QUALIFICATION FILTER + HEADER SEARCH + PWA INSTALL + CLEAN COPY
+
+**Mee brief:** బ్రేకింగ్ న్యూస్ అవసరం లేదు · internal metrics/radar/నమూనా maatalu public ga vaddu ·
+విద్యార్హత ప్రకారం ఉద్యోగాలు **automatic** ga filter avvali (10th · 10+2 · ITI · Diploma · Degree ·
+PG · B.Tech) — WordPress lo kuda, manual tagging lekunda · menu pakkana neat search · mobile lo
+app-laga install (PWA) · colorful premium look, text/background contrast eppudu break avvakoodadu.
+
+| # | What changed | Detail |
+|---|---|---|
+| 1 | **బ్రేకింగ్ న్యూస్ teesesaam** | Ticker + section + nav/mobile links + JS + CSS anni public sitenunchi poyayi. Bot radar feed (`autoblog/breaking.py`) intact — WP admin → *StudentUp → కంటెంట్ → బ్రేకింగ్ న్యూస్ సెక్షన్ ON* tho eppudaina tirigi on cheyyochu (**default OFF**). |
+| 2 | **Internal metrics public lo levu** | Homepage proof-stats row (11,192 keywords · 143 sources · 59 districts) mariyu topbar/footer district lines teesesaam. Ee numbers ippudu internal reports/README lo mattrame. |
+| 3 | **"నమూనా/DEMO" labels poyayi** | Public pages + theme copy nunchi demo/sample maatalu clean chesam (ads ki **SPONSORED** label intact — AdSense rule). |
+| 4 | **విద్యార్హత ఫిల్టర్ (flagship)** | Job cards ki `data-qual`; chips: అన్నీ · 10వ తరగతి · ఇంటర్ (10+2) · ఐటీఐ · డిప్లొమా · డిగ్రీ · పీజీ · బీటెక్ · ⏳ 7 రోజుల్లో ముగిసేవి. Filter + search kalisi pani chestayi, count ("12 అవకాశాలు") chupistundi. |
+| 5 | **Countdown + closing filter** | `data-last` unna cards ki "⏳ N రోజుల్లో ముగుస్తుంది" badge; గడువు ముగిసినవి default ga hide (`.expired`). |
+| 6 | **Menu pakkana search** | 🔍 button → neat search panel (Enter/`/` shortcut); mobile menu lo "వెతకండి" link. WordPress lo idi `?s=` search ki connect (server-side). |
+| 7 | **యాప్గా ఇన్స్టాల్ (PWA)** | `manifest.webmanifest` + `sw.js` (offline page, repeat visits fast) + "⬇️ యాప్గా ఇన్స్టాల్ చేయండి" button (Android `beforeinstallprompt`, iPhone Share hint). Theme lo `inc/pwa.php` + `assets/js/studentup-pwa.js` (`?studentup_sw=1` tho root-scope SW — kotha rewrite rules avasaram ledu). |
+| 8 | **WordPress: automatic tagging** | `inc/qual-filter.php` — post save lo title+content nunchi అర్హత detect → `studentup_qual` meta; bot `autoblog/qual.py` kuda same tags REST tho pampistundi; purana posts ki admin/`wp studentup-qual-backfill` backfill; front-end `?qual=degree` server-side `WP_Query` filter (JS lekunda kuda pani chestundi). |
+| 9 | **Contrast + neatness** | Brand gradient (text gradient safe-fallback tho), beige/blue chip tones, dark-mode overrides, `overflow-wrap` + flex-wrap rules — mobile lo text overlap ledu, contrast eppudu safe. |
+| 10 | **Theme v1.7.0** | New: `inc/qual-filter.php` · `assets/js/studentup-pwa.js` · header search. Version parity: `style.css` ↔ `STUDENTUP_VERSION` ↔ `readme.txt` Stable tag. |
+| 11 | **Slug parity (bot ↔ theme)** | Python `qual.QUALS` ↔ PHP `studentup_qual_terms()` — test ee rendu list ni compare chestundi, so filter chips eppudu match avutayi. |
+| 12 | **Proof** (v72.1 tarvata) | `--test-all` **57/57** · jsdom **162/162** · readiness **100/100 (28/28)** · guardian **14/15** (1 warn-only owner env) · code audit **0/0** · parity **0/0** · theme audit **0/0** · php-lint **32/32** · zip **41 files 642 KB** |
+
+**Language rule (v72.1 → v73 update):** v73 lo website UI **antha English** (menus · chips · buttons ·
+notes · footer · policy pages); Telugu mattrame job/article content lo (post titles, summaries, quiz
+questions). Internal metrics docs/reports lo mattrame.
+
+### v71 — STUDENTS INTERNET CENTER + CLEAN MONETISATION (no public rate card)
+
+**Your brief:** a premium, English-first site where needed; the application-help service explained
+properly (call → WhatsApp documents → PDF back); no public rate card or booking flow (dealt
+personally); WhatsApp/Telegram join instead of a newsletter form; smaller icons on mobile; and a
+floating rail that appears, hides, and returns every 2 minutes so it never covers the text.
+
+| # | What changed | Detail |
+|---|---|---|
+| 1 | **Students Internet Center (TS & AP)** | New card on the homepage + a section on every theme page: *call us → WhatsApp your documents → we apply and send the PDF*, lowest service charge. Wallet-friendly `wa.me` CTA box (opens your WhatsApp), `tel:` call button and email fallback. |
+| 2 | **Public rate card removed** | The ₹4,000/₹3,500/₹3,000/₹2,000/₹8,000 table, the 3-step booking flow and the sidebar "Advertise" card are gone. `pages/advertise.html` is now a clean **Partner with us** page: placements, policy, house-ads note, and "rates & availability are shared personally". |
+| 3 | **Rate card is internal now** | `autoblog/rate_card.py` is the single source of truth (5 slots + full package + 3 premium services). `tools/revenue_estimate.py` reads it; `--rate-card` prints the WhatsApp/Telegram-ready card for personal dealing. |
+| 4 | **Newsletter form → join block** | The "free updates" form was replaced on the homepage by a **WhatsApp + Telegram join block**. The lead form itself moved to `pages/contact.html` (same `/lead` API, honeypot and validation), so the lead engine keeps working. |
+| 5 | **Social rail with a 2-minute cycle** | Rail shows for 9 s, slides away, returns every 2 minutes. ✕ hides it instantly (returns after 2 min), ‹ pulls it back. Hover/focus keeps it, `Escape` closes it, reduced-motion respected. Same behaviour in the theme (`assets/js/studentup.js`). |
+| 6 | **Mobile polish** | Social chips 34 px (31 px under 400 px), mobile-nav icon row tighter, join CTA full-width on phones — text stays readable. |
+| 7 | **Theme v1.6.0** | New `inc/cta.php` (Internet Center + join blocks on every page) and `inc/editor.php` (block-editor parity with `assets/css/editor.css`). Version parity: `style.css` ↔ `STUDENTUP_VERSION` ↔ `readme.txt` Stable tag. |
+| 8 | **Proof** | `--test-all` **55/55** · jsdom **138/138** (now merges the v70 removal suite with 12 core-product assertions; every suite has ≥1 behavioural check) · readiness **100/100 (28/28)** · guardian **14/15** (1 warn-only owner env) · code audit **0/0** · parity **0/0** · theme audit **0/0** · php-lint **31/31** · zip **39 files 633 KB** |
+
+**Language rule (your call):** business/product copy is premium English; Telugu stays where it
+helps the student (content, trust notes, the service line under the English steps).
+
+### v70 — PUBLIC SURFACE CLEANUP (developer text/proof block remove) + 100% verification
+
+**Mee maatalu: "100% ధృవీకరించి, తర్వాతే ప్రచురణ … i dont want these all things no use so remove".**
+→ Site meeda kanipinche **verification-proof block** (stat tiles · ①–⑤ gates · honest note) mariyu
+**developer/pipeline text** anni public surfaces nunchi teesesaru. Checks ippudu **internal ga**
+(guardian + readiness + parity + tests) continue avutayi — kani **visitor ki kanipinchavu**.
+
+| # | Emi chesaru | Detail |
+|---|---|---|
+| 1 | **On-site proof block remove** | `preview/index.html` nunchi trust/qgate section (headline · 7 stat tiles · ①–⑤ gates · honest note) + CSS teesesaru → mobile lo aa 3 links ippudu policy pages (`pages/editorial-policy.html` · `pages/contact.html` · `pages/privacy.html`) ki veltayi |
+| 2 | **Theme proof remove** | front-page hero-proof tiles · `studentup_proof_tiles()` · theme option `proof_json` · `breaking.php` REST param `proof` · hero-proof CSS · README-THEME proof row — **anni gone** |
+| 3 | **Policy pages clean** | `tools/build_policy_pages.py` notes (disclaimer/advertise) nunchi developer text remove → pages regenerate |
+| 4 | **Dev archive** | `v38/v39/v41/legacy-concept/ads-preview/top-post-blueprint.html` + `dominance-plan-90-days.md` → **`docs/design-archive/`** (preview server ee folder ni serve cheyyadu — website meeda eppudu kanipinchadu · robots `Disallow: /_dev/` safety-net) |
+| 5 | **Regression lock** | Guardian check `counts_sync` (suites ↔ README + public surfaces lo developer text ledu) · readiness `c_counts_sync` · parity **P8** (docs claims + public-text ban) · jsdom 2 clean-checks |
+| 6 | **Nijamaina bug fix (v70 lo pattukunnadi)** | `wp_theme_sync.build_payload()` nunchi `options` + `deadline` blocks + `return out` accidentally poyayi → options/deadline/indexnow sync aagipoyedi. Ippudu restore (daily hook malli pani chestundi) |
+| 7 | **Proof** | `--test-all` **55/55** · jsdom **138/138** · readiness **100/100 (28/28)** · guardian **14/15** (1 warn-only owner env) · code audit **0/0** · parity **0/0** · theme audit **0/0** · php-lint **29/29** |
+
+**Rule ippati nunchi:** public page lo **developer/verification text undakoodadu** — proof antha
+`output/` (proof docs) + Telegram + guardian status lo. Visitor ki: content · trust note ·
+corrections email mattrame.
+
+### v69 — THEME STANDARDS PASS 3 + PARITY AUDIT (emi miss avvakoodadu)
+
+**Mee maatalu: "fix all bugs · advanced top-level website avvali · anni pin to pin · emi miss
+avvakoodadu · everything must check and implement/fix".** → theme ni WordPress top-theme
+standards ki mirror chesamu + kotha **parity audit** tho code ↔ docs ↔ preview ↔ counts
+surfaces ni kalipesamu (edi ekkadaina miss aithey adi **fail** avutundi).
+
+| # | Enti | Ela |
+|---|---|---|
+| 1 | **Nijamaina bug — version mismatch** | `style.css Version: 1.0.0` vs `STUDENTUP_VERSION 1.3.0` → WordPress ki telisedi **style.css** (theme screen · child themes · cache-busting) → ippudu **1.5.0** rendu chota + **build gate** lo check |
+| 2 | **Block editor parity** (advanced theme standard) | `add_theme_support('editor-styles')` + `wp-block-styles` + kotha `assets/css/editor.css` (front-end tokens/typography/quote/table/heading accent editor lo same) |
+| 3 | **WP standard markup + E-E-A-T author archive** | loops lo `post_class()` · nav lo `aria-current="page"` · kotha **`author.php`** (bio · prachurita vyasala count · profile link · editorial-policy link — Google ki "ee vyasam evaru rasinaru?" jawabu) |
+| 4 | **Perf (shared hosting)** | custom `WP_Query` calls ki `no_found_rows` — page load ki **2 extra SQL queries** taggayi (front-page grid + related posts) |
+| 5 | **Standards pass 3 audit** | version parity · editor styles · `post_class` · `no_found_rows` · admin nonce (`settings_fields`/`wp_nonce_field`) · `sanitize_callback` — anni permanent ga `tools/theme_audit_deep.py` lo (malli regress avvavu) |
+| 6 | **Parity audit** (`tools/parity_audit.py` NEW) | **P1** CLI ↔ docs (92 flags) · **P2** dead modules (43 → 0) · **P3** preview links · **P4** preview meta (deployed pages) · **P5** robots↔sitemap↔ads.txt · **P6** tools references · **P7** placeholder text (TODO/FIXME/lorem) · **P8** count sync |
+| 7 | **Dorikina misses → fix** | 7 CLI flags docs lo levu (ippudu 92/92 documented — README block) · 6 policy pages ki `robots` meta ledu (ippudu unnai) · parity audit itself reference avvaledu (ippudu README + readiness + guardian) |
+| 8 | **Automatic ga run** (v60 rule) | `python run.py --guardian` lo **code_audit + parity_audit** checks (ippudu **14/15** — 1 warn-only owner env) · readiness lo kotha check → **100/100 (28/28)** |
+| 9 | **Theme package** | version **1.5.0** · readme `Stable tag: 1.5.0` + changelog · zip **37 files 629 KB** (editor.css + **author.php**) |
+| 10 | **Proof** | `tests/v69_test.py` **18 checks** · `--test-all` **55/55** · jsdom **138/138** · code audit **0/0** · parity audit **0/0** · theme audit **0/0** · php-lint **29/29** · POT **21 strings** · readiness **100/100 (28/28)** |
+
+### v68 — CODE-LEVEL BUG HUNT (bot + theme) + INSTANT INDEXING (trending)
+
+**Mee maatalu: "chala bugs unnayi — anni aapthunnayi (top website avvakunda · posts trending
+avvakunda · ads rakunda · higher revenue apedvi)".** → kotha **code audit engine**
+(`tools/code_audit.py`, rules E1–E12 · W1–W7) rasi bot + theme ni line-by-line check chesamu,
+dorikina bugs **anni fix** chesamu — ippudu **0 errors · 0 warnings**.
+
+| # | Enti | Ela |
+|---|---|---|
+| 1 | **Audit engine** (`tools/code_audit.py`) | undefined config attr · module attr typo · bare `except:` · mutable default · **duplicate dict key** · `wp.<method>` existence · AdSense markup rules · PHP `printf` placeholder↔args · Python `%` arg count · bot push key ↔ theme option typo · `.env` drift · silent-fail · encoding · timeout |
+| 2 | **Nijamaina bug #1 — crash** | `config.GEMINI_API_BASE` config lo **ledu** → deep-research path lo **AttributeError** → ippudu defined (+ `.env` lo override) |
+| 3 | **Nijamaina bug #2 — silent failures** | **34 × `except Exception: pass`** (14 bot-critical) → edi fail aina teliyadu → ippudu prathi okkati **reason tho log** avutundi (`debug`/`warning`) |
+| 4 | **Nijamaina bug #3 — REVENUE** | in-article AdSense unit ki `data-ad-format="in-article"` (**invalid attribute**) velledi → Google generic display ga treat chesi **in-article RPM miss** → ippudu `data-ad-format="fluid" data-ad-layout="in-article"` (spec correct) + in-feed kuda |
+| 5 | **Nijamaina bug #4 — Google News** | news sitemap lo **`<lastmod>` ledu** → News sitemap reject avvachu → ippudu loc tarvata lastmod (modified time) |
+| 6 | **Nijamaina bug #5 — dalit data** | `exam_portal/server.py` lo **duplicate dict key** (`name` rendu sarlu) → okati silent ga poyedi → clean |
+| 7 | **Instant indexing (trending)** | `autoblog/indexing.py` (kotha): publish ayyaka **IndexNow** (Bing/Yandex) + **Google Indexing API** (JobPosting — Google support chese official use case; SA key + Search Console owner) · `--index-key-gen` · `--index-status` · `--index-now URL` · RS256 signing `cryptography` leda `openssl` |
+| 8 | **IndexNow key file** (mundu manual) | puratana setup lo key file ni cPanel lo **manual ga** pettali (lekapote submit fail) → ippudu **theme ne serve chestundi** `/<key>.key` (admin option · `--push-theme-data` tho sync) |
+| 9 | **Diagnosis + docs** | audit **build gate** lo (`build_wp_theme.py`) · readiness lo **2 kotha checks (27/27)** · `run.py --doctor` · GO_LIVE **PART B step 2f** (SA setup) · MANUAL PART 27 |
+| 10 | **Proof** | `tests/v68_test.py` **19 checks** (bug locks + audit detection fixtures + **10-command CLI smoke** + real RSA-2048 sign→verify) · `--test-all` **55/55** · jsdom **138/138** · code audit **0/0** · theme audit **0/0** · php-lint **28/28** · readiness **100/100 (27/27)** · zip **35 files 625 KB** |
+
+### v67 — DEEP AUDIT (expert/BA level) + TOP-THEME HARDENING + 6/6 REVENUE SLOTS
+
+**Mee maatalu: "inka chala mistakes unnayi · deep audit cheyyi · expert level · BA level ·
+anni fix cheyyi · theme top-most ga · highest revenue safe ga".** → guess kaadu — **audit
+tool** rasi, adi cheppina mistakes **anni fix** chesamu (0 errors · 0 warnings ippudu).
+
+| # | Enti | Ela |
+|---|---|---|
+| 1 | **Deep audit pass 2** (`tools/theme_audit_deep.py`) | templates · security/nonces · escaping · performance · a11y · SEO/noindex · ads/policy spacing · i18n · WordPress standards · **KPI row** (ad positions · css KB · php files) — anni **build gate + guardian + readiness** lo |
+| 2 | **Audit detection ability** (test tho prove) | dead module (require ledu) · `eval()` · dead admin field · screenshot 1000×800 (WRONG size) — anni pattukuntunda ani `tests/v67_test.py` prove chestundi |
+| 3 | **Audit tool bug kuda fix** | puratana comment-stripper `https://...` URLs ni comments la theeseyedi → **string-aware stripper** (URLs safe, comments cut) |
+| 4 | **Security hardening** (`inc/security.php` NEW) | security headers (nosniff · SAMEORIGIN · Referrer-Policy · Permissions-Policy) · XML-RPC off · `?author=N` enumeration block · attachment → parent redirect · comment link-flood guard · `DISALLOW_FILE_EDIT` · admin toggle |
+| 5 | **Top-most theme files** | `comments.php` (clean, Telugu labels, spam-safe) · `sidebar.php` (widgets + **sticky ad**) · `readme.txt` (WP standard + changelog) · `languages/studentup.pot` (**auto-generated** in build) · screenshot 1200×900 |
+| 6 | **6/6 ad slots** (highest revenue) | leaderboard · **in-article** · in-feed · **sidebar-sticky** · **below-content (NEW)** · anchor/sticky-bottom · spacing policy CSS · density cap · house fallback |
+| 7 | **Speed + a11y** | preconnect (adsense/doubleclick/GTM/GA) · LCP preload+fetchpriority · `content-visibility` toggle (`su-cv`) · `:focus-visible` · skip-link · button types · reduced-motion support |
+| 8 | **Thin pages policy** | `wp_robots` → search results + 404 **noindex** (crawl budget + AdSense quality) · search page lo form + empty state |
+| 9 | **BA artifacts** (business level) | `docs/BA_REQUIREMENTS_MATRIX.md` — requirement → implementation → test → evidence + **KPI dashboard** + **risk register** + owner-pending |
+| 10 | **Proof** | `--test-all` **55/55** · jsdom **138/138** · theme audit **0/0** · code audit **0/0** · php-lint **28/28** · zip **35 files 625 KB** · readiness **100/100 (27/27)** |
+
+### v66 — THEME AUDIT (mistake hunter) + ADS REVENUE ENGINE + WRITING-TIME SEMANTIC CHECKS
+
+**Mee maatalu: "blog rasthunnapudu inka chala check cheyali" + "highest ads ravataniki
+chala miss chesthunnam" + "theme lo kuda chala mistakes unnayi"** → moodintiki
+**measure-cheyyi-fix** approach (v65 pin gate + v66 audit + 54-check gate).
+
+| # | Enti | Ela |
+|---|---|---|
+| 1 | **Theme mistake hunter** | `tools/theme_audit.py` — static scanner: **undefined `studentup_*` calls** (WP core allowlist) · options read ayyi admin page lo declare avvakapovadam · **dead admin field** (declared kaani eppudu read avvadu — `--verbose`) · XSS patterns (`echo $var`, `$_GET` echo) · hooks (wp_head · wp_body_open · body_class · language_attributes · wp_footer · `<main id="main">`) · breadcrumbs/author box · ads readiness (in-article · sticky · max_ads) · ads.txt · consent · **exit 1 on errors** → **build gate + guardian + readiness** |
+| 2 | **Audit tho pattukunna nijamaina ads misses (anni fix)** | ① house ad **eppudu** render ayyedi (AdSense unna kuda) → AdSense-first render ② page-level gating ledu → 404/search/attachment/**policy pages** out ③ **density cap** ledu → `max_ads` (default 4) ④ **reserved height** ledu → CLS penalty → min-height ⑤ **lazy load** ledu → viewability low ⑥ **ads.txt** serve avvatledu → direct demand closed ⑦ **Consent Mode v2** ledu → EEA/UK ads block ⑧ **News sitemap** ledu → Discover/News eligibility miss ⑨ LCP preload ledu |
+| 2b | **In-article ad (kotha, highest-CTR)** | `inc/ads.php` → `the_content` filter: content **3rd paragraph tarvata** okka AdSense in-article unit (lekapote house ad). Density cap + lazy + gating + idempotency marker (`su-ad-anchor-mid`) — double render ledu, thin posts (<3 paras) ki vaddu |
+| 3 | **AdSense-first, house fallback** | `studentup_ad()` → client + slot unte **AdSense unit** (reserved `su-ad-reserved` + `su-ad-lazy`), lekapote house ad. Master switch `ads_enabled`, policy pages ki `ads_on_policy` (default OFF — AdSense safety) |
+| 4 | **Consent Mode v2** (`inc/consent.php`) | head lo priority 1 — `ad_storage`/`ad_user_data`/`ad_personalization`/`analytics_storage` default **denied** [EEA,GB,CH] + rest of world granted + `ads_data_redaction` + `wait_for_update`; regions sanitize (A-Z0-9); CMP snippet option (priority 2) → **Google-certified CMP** tho kalisi EEA/UK revenue open |
+| 5 | **ads.txt serving** (`inc/ads-txt.php`) | `/ads.txt` → `google.com, pub-XXXX, DIRECT, f08c47fec0942fa0` (AdSense client nunchi auto) + manual entries; `X-Robots-Tag: noindex` |
+| 6 | **News sitemap + perf** | `/news-sitemap.xml` (48h posts · `news:language te` · images) + robots.txt line · `inc/perf.php` (LCP `preload`+`fetchpriority=high` · `decoding=async` · lazy-ads `IntersectionObserver` rootMargin 300px) |
+| 7 | **Writing-time SEMANTIC + DEEPER checks** | **SEMANTIC group**: entity coverage 3+ · **ముఖ్యాంశాలు** box · **question-form headings** 2+ (PAA) · **సంబంధిత అంశాలు** cluster block · avg sentence ≤24 · current year · quick answer. **DEEPER batch**: heading hierarchy (H1 ledu/skip ledu) · markdown leftovers ledu · list ≤12 words · **table ≤5 cols (mobile)** · **job-guarantee/clickbait claims ledu** (trust+policy) · **keyword cannibalization ledu** · slug ≤60 · **meta lo CTA+number** · secondary keywords body lo · img width/height (CLS) · descriptive anchors · FAQ answers 12+ words → gate **67 checks** · fails → **LLM refine hints** (writing loop lo ne fix, publish block kaadu) |
+| 8 | **rm100 fixers + FAQ bug** | `fix_takeaways` + `fix_entities` (content nunchi mattrame — invent ledu) · **nijamaina bug**: puratana FAQ guard (`<h3` 3+ unte skip) valla **FAQ section asalu rakapovadam** → ippudu questions nijam ga content lo unnaya ani check (regression test) |
+| 9 | **+12 website options** | `ads_enabled` · `adsense_slot_mid` · `adsense_slot_in_feed` · `ads_txt` · `max_ads` · `lazy_ads` · `ads_on_policy` · `consent_mode` · `consent_regions` · `consent_cmp_id` · `news_sitemap` (anni WP Admin → StudentUp nunchi) · **v73:** `deadline_json` poyindi |
+| 10 | **Proof** | `python run.py --test-all` → **55/55 suites** · jsdom **138/138** · `--readiness` **100/100 (27/27)** · pin gate **67/67** · code audit **0/0** · theme audit **0/0** · PHP lint **28/28** · zip **35 files (625 KB)** |
+
+**v66 honest note:** Consent Mode v2 + ads.txt + gating + CLS + lazy = AdSense **policy-safe**
+revenue foundations. Kaani **revenue numbers Google + traffic + country RPM batti** — idi
+guarantee kaadu (v62 rule). Theme audit "0 errors" ante **static mistakes ledu**; ranking
+ledu revenue ledu ani guarantee kaadu — avi traffic + time tho vastayi.
+
+### v65 — PIN-TO-PIN GATE (47 checks + certificate) + GOOGLE VISIBILITY (Trends/Suggest)
+
+**"Pin to pin check chesi rasetappudu real time ga anni perfect ga undala?"** → publish
+ki mundu **47 checks** + prathi post ki **certificate file**; **trending/suggest** capture
+tho topic demand.
+
+| # | Enti | Ela |
+|---|---|---|
+| 1 | **Pin-to-pin gate** (`autoblog/post_gate.py`) | 47 checks · 8 groups: CONTENT · SEO · SCHEMA · MEDIA · LINKS · ADSENSE · FRESHNESS · GOOGLE READINESS. Score + certificate (`output/certificates/<date>-<slug>.md|.json`) |
+| 2 | **Critical block** | title/meta/kw ledu · dev/demo text · Article schema ledu · unverified facts · past deadline · near-duplicate → **publish aaputundi** + Telegram (off: `PIN_GATE_BLOCK=0`) |
+| 3 | **Real-time iterative** | `rm100.optimize()` — score → fix → score (2 passes) publish ki mundu; LLM refine tarvata malli |
+| 4 | **Google Trends + Suggest** (`autoblog/trends.py`) | Trends RSS (IN) + autocomplete → TS/AP niche filter → **topic queue** + demand score. `--trends --trends-queue`; radar lo 4x/day automatic |
+| 5 | **Brand/E-E-A-T graph** | Article JSON-LD lo `author.worksFor → #org`, `isPartOf → #website`, `publisher.@id` — theme Organization schema tho okate entity graph |
+| 6 | **CLI proof** | `python run.py --pin-check` → 100/100 · 47/47 · 0 critical (offline) |
+
+**v65 lo pattukunna bug:** `seo.jobposting_obj` — recruitment dict lo `salary_min`/`salary_max`
+lekapote `KeyError` → publish path **crash**. Ippudu safe int conversion + regression test.
+
+### v64 — RANK MATH 100 + THEME 100x (website options · TOC · schema · E-E-A-T · PWA)
+
+**Mee requirement: "post ki Rank Math 100 vachela score high"** → deterministic engine
+`autoblog/rm100.py` (LLM avasaram ledu) + theme 100x upgrades.
+
+| # | Enti | Ela |
+|---|---|---|
+| 1 | **Rank Math 100 engine** | `rm100.apply()` — title (kw modatlo + year + power word + 40-62 ch) · meta 110-156 · slug tokens · lede lo kw · **auto TOC + anchor ids** · 2+ H2s lo kw · density 7-15 · facts table · FAQ · external+internal links · Telugu connectives 30% · paragraph split |
+| 2 | **Proof command** | `python run.py --rm100` → imperfect draft **33/100 → 100/100** (21 on-page tests okkokaటి ✅) |
+| 3 | **Gate + score** | pipeline: rm100 → LLM refine (`RM_REFINE_ROUNDS=2`, `RM_TARGET=100`) → rm100 malli → final score **WP meta `rank_math_seo_score`** + Telegram lo chupistundi |
+| 4 | **Website options page** | WP Admin → **StudentUp** menu (tabs: Ads · Socials · Content · Advanced) + REST `/wp-json/studentup/v1/options` (bot sync) |
+| 5 | **Theme 100x** | auto **TOC** · **JSON-LD schema** (Organization/WebSite/SearchAction/Breadcrumb) · **E-E-A-T author box** + last-updated · **PWA** manifest + theme-color + preconnect · sticky bottom ad · copy-link · reading progress |
+| 6 | **PHP syntax gate** | `tools/php_lint.js` (**node php-parser · real PHP 8**) — build_wp_theme.py hard gate. Ee gate pettaka **site break chese 10 bugs** pattukunnamu (template files lo `?>` miss → white screen!) |
+
+**v64 lo pattukunna nijamaina bugs (fix chesamu):**
+1. 10 template files (single/front-page/header/footer/index/archive/search/404/page/searchform)
+   lo ABSPATH guard tarvata `?>` ledu → **PHP fatal parse error → site white screen**.
+2. TOC ids rendu sarlu generate ayyi `-2` suffix vachedi → **TOC links pani cheyyavu** (jump ledu).
+3. Paragraph split long paragraphs ni chunks ga marchi **text ni thosesthundi** (content loss).
+Ippudu moodintiki tests unnayi (white-screen regex guard · TOC link⊆ids · words before≥after).
+
+### v63 — MISTAKE-FREE SEO: Rank Math REST bridge + meta verification + post edit
+
+**Pattina nijamaina mistake:** WordPress REST default ga custom meta accept cheyyadu →
+bot `rank_math_*` fields pampiste 400 → bot **meta lekunda** post pettēdi → SEO fields khali.
+Ippudu moonu layers lo fix:
+
+| Layer | Enti |
+|---|---|
+| `wordpress-theme/studentup/inc/seo-bridge.php` | 10 Rank Math keys ni REST ki register (show_in_rest + `edit_post` auth) → bot meta writes land avutayi |
+| `WordPressClient.verify_meta()` | publish/update tarvata **verify** — field land avvaledu ante Telegram ⚠️ + log (silent fail ledu) |
+| `pipeline` create + update | rendu chotla verify + `seo_meta_missing` result lo + fix pointer (seo-bridge) |
+
+Post edit/refresh capability (mee "edit cheyyagalava?" prashna): `update_post()` REST edit
+(URL/slug same — SEO safe) · `python run.py --update <id>` (manual) · `auto_refresh`
+(roju purana posts ni fresh research tho update) · meta verify.
+
+GET `/wp-json/studentup/v1/theme-info` → theme version + seo_bridge + rankmath + adsense seal.
+
+### v62 — TOP WEBSITE READINESS (proof tho: enti ready, enti mee pani)
+
+```bash
+python run.py --readiness      # 18 system checks score/100 + 6 owner-pending items
+```
+
+**Ee command ee repo lo prastuta: 100/100 · 27/27 system checks · 10 owner-pending.**
+Artifacts: `logs/readiness.json` + `output/readiness-<date>.md` (markdown report).
+
+| Section | Enti verify avutundi (verifiable number) |
+|---|---|
+| CONTENT ENGINE | blueprint score 100/100 (TOP POST 🏆) · gates QA 80+ / originality 72%+ / deep-gate ON · 17 pillars · 203 entities · 11,192 kws · 143 sources · radar 4x/day · 59 districts |
+| SEO | schema (Article · ItemList · JobPosting · BreadcrumbList) · head 6/6 (title/meta/canonical/OG/JSON-LD/lang) · robots+sitemap · Rank Math LIVE fields |
+| ADS & MONEY | slots 3/3 high-CTR order · SPONSORED labels · rel=sponsored · ads.txt status · money engine 6/6 (rate card · house · calculator · network plan · advisor · leads) |
+| AUTOMATION | daily hooks 6/6 (radar · auto-refresh · breaking · advisor · guardian · quiz) · draft-first approval · test tiles sync |
+| REAL SITE | theme zip fresh · 14 PHP · REST bridge · first-look UX 4/4 |
+| OWNER PENDING ⏳ | domain/hosting · WP+theme · Gemini · Telegram · **GSC+GA4** · **AdSense CMP** · AdSense · Oracle VM — prathi daniki fix line |
+
+> ⚠️ Honest: ranking/traffic/AdSense approval/revenue — Google + mee accounts + time.
+> Readiness score aa vatiki guarantee ivvadu; adi "code side 100% ready" ani matrame cheptundi.
+
+### v61 — REAL WEBSITE: WordPress + StudentUp theme (design = preview design)
+
+```bash
+python tools/build_wp_theme.py      # wordpress-theme/studentup-theme.zip (~29 KB) — WP upload ready
+python run.py --push-theme-data     # breaking · proof · deadline · house ads → WP theme (REST)
+```
+
+**Mee site ela untundi:** WordPress (MilesWeb) + `wordpress-theme/studentup/` — `preview/index.html`
+lo unna **ade design**, kaani **dynamic**: bot post rasthe card + category count + breaking item
+automatic ga site lo padutayi.
+
+| Theme file | Enti (preview lo ekkado) |
+|---|---|
+| `front-page.php` | home order: used-strip → ప్రకటన → hero+countdown → బ్రేకింగ్ → grid+chips |
+| `header.php` | logo · menu (TS/AP/… dropdown) · టికర్ · mobile panel |
+| `single.php` | article + ads + WhatsApp/Telegram share + related + trust note |
+| `inc/breaking.php` | feed (option → 10-min transient file → honest empty) + REST push endpoint |
+| `inc/ads.php` | AdSense unit + house ads (SPONSORED · rel=sponsored · day rotation) |
+| `inc/template.php` | cards · proof tiles (WP live numbers) · countdown · breadcrumbs (Rank Math) |
+| `assets/js/studentup.js` | dark mode · mobile panel · chips filter · countdown (no library) |
+
+Install (5 min): zip upload → Activate → Menus assign → `--push-theme-data`.
+Options: `studentup_breaking_json` · `studentup_proof_json` ·
+`studentup_house_ads` · `studentup_adsense_client` · `studentup_exam_url`.
+Detail: `wordpress-theme/studentup/README-THEME.md`.
+
+### v60 — SITE GUARDIAN: eppatiki advanced ga (roju automatic)
+
+```bash
+python run.py --guardian            # 12 checks: site/UI/SEO/ads/feed/storage/theme
+python run.py --guardian-notify     # same + Telegram report (daily hook automatic @ 20 IST)
+```
+
+| Check | Enti chustundi | Fail ayithe fix |
+|---|---|---|
+| site_files | pages/robots/sitemap/ads.txt/feed | `python tools/build_policy_pages.py` |
+| first_look_ui | ticker → most-used → hero blocks + feed fetch | v59 blocks restore |
+| tiles_sync | site tiles ↔ tests/*.py count ↔ jsdom literal | tiles + jsdom okate change lo bump |
+| robots_sitemap | sitemap line · /admin disallow · internal artifacts | builder rerun |
+| ads_txt | live/placeholder status | builder + ADSENSE_CLIENT_ID |
+| breaking_feed | freshness (GUARDIAN_FEED_MAX_AGE=26h) | `--breaking-feed` / radar cron |
+| ads_inventory | ad link/title/id validity (inventory + house) | ads/*.json correct |
+| keyword_pillar_lock | 17 pillars · 203 entities · 11,192 kws · 143 sources | counts sync |
+| menu_wiring | TS/AP/hall/results/walkin/software links + 8 used tiles | nav/mpanel |
+| storage | disk free · state.db · output size | `tools/prune_media.py --apply` |
+| env_readiness ⚠️ | Gemini/WP/Telegram creds (owner pani) | `.env` (GO_LIVE PART A) |
+
+Severity: ❌ = system break · ⚠️ = owner-pending (creds) · status → `logs/guardian.json` (14-run history).
+Guardian read-only — fix chestundi kaadu, cheptundi; fixes tests + builder nunchi.
+
+### v59 — First Look: బ్రేకింగ్ న్యూస్ + "విద్యార్థులు ఎక్కువగా వెతికేవి" + పర్ఫెక్ట్ మెనూ
+
+Student site open cheyagane modati 3 sekundullo kanipinche order:
+
+| Position | Enti | Detail |
+|---|---|---|
+| 1 | 🔴 **బ్రేకింగ్ టికర్** | radar feed (Google News తెలుగు + 143 official sources) — verified items matrame; feed khali aithe ticker **hide** (fake news ledu) |
+| 2 | **విద్యార్థులు ఎక్కువగా వెతికేవి** | 8 tiles: టీఎస్ · ఏపీ ప్రభుత్వ ఉద్యోగాలు · హాల్ టికెట్లు · ఫలితాలు · వాక్-ఇన్ · సాఫ్ట్‌వేర్ · ప్రైవేట్ · ప్రస్తుతాంశాలు — prathi tile ki **live count** + one-tap filter |
+| 3 | ప్రకటన (leaderboard) | highest-visibility slot — content ki bhaadha lekunda |
+| 4 | Hero + ముఖ్య గడువు countdown | trust tiles (45/45 · 11/11 · 138/138 · 11,192 · 17 cats · 143 sources) |
+| 5 | బ్రేకింగ్ న్యూస్ section + తాజా అవకాశాలు grid | grid lo **TS/AP ప్రభుత్వ ఉద్యోగాలు modati cards** |
+
+Menu (desktop + mobile same order): హోమ్ · ఉద్యోగాలు▾ (టీఎస్ · ఏపీ · కేంద్ర · ప్రైవేట్ ·
+వాక్-ఇన్ · సాఫ్ట్‌వేర్ · అవుట్‌సోర్సింగ్ · పార్ట్-టైమ్ · విదేశీ) · **హాల్ టికెట్లు** ·
+**ఫలితాలు** · **బ్రేకింగ్ న్యూస్** (live dot) · స్కాలర్‌షిప్‌లు · ప్రస్తుతాంశాలు · పరీక్షలు▾ · మరికొన్ని▾
+
+Bot side: `autoblog/breaking.py` (feed build + tag classifier + honest empty note),
+radar run lo auto hook, `MOST_USED` order okate source (bot + site + tests sync).
+Evidence: tests/v59_test.py 12 checks · `run.py --test-all` 55/55 · jsdom 138/138.
 
 > ℹ️ Ee system exam conduct cheyyadaniki matrame — student data (roll, answers,
 > scores) mee server lo untundi, bayata pampabadadu. Public internet lo pettali
@@ -1023,7 +1380,7 @@ Prathi post lo automatic ga:
 
 ```bash
 # v38 TOP POST (blueprint → measure → publish)
-python run.py --keyword-universe                     # 10,682 keywords + CSV
+python run.py --keyword-universe                     # 11,192 keywords + CSV
 python run.py --top-post "TSPSC Group 2 2026 notification"
 python run.py --top-post-plan --top-post-days 90     # domination calendar
 python run.py --score-post file.html --score-keyword "ssc cgl 2026"
@@ -1136,6 +1493,7 @@ Marpali te: `.env` edit chesi scheduler ni restart cheyandi: `sudo systemctl res
 ## Project structure
 
 ```
+├── wsgi_dev.py             # v54 dev WSGI runner (:8090) for poll + lead forms
 ├── run.py                  # CLI entry point
 ├── setup_oracle.sh         # One-command Oracle Cloud installer
 ├── requirements.txt        # requests + pillow + beautifulsoup4
@@ -1167,17 +1525,39 @@ Marpali te: `.env` edit chesi scheduler ni restart cheyandi: `sudo systemctl res
 │                           #      scorer, harden, gate, dominance calendar
 ├── ci/github-actions-tests.yml  # v41 CI — 30 suites × 3 py versions (copy to .github/workflows/)
 ├── DEPLOY.md               # deployment guide — VPS(systemd+Caddy) / Docker / PaaS
+├── DEPLOY_MILESWEB.md      # v49 cPanel/MilesWeb guide (Python App, cron, storage)
+├── DEPLOY_ORACLE_CLOUD.md  # v51 Oracle Always Free vs MilesWeb split + crash-proofing
+├── CONTENT_PLAN_DAILY.md   # v58 daily plan: 17 pillars, rhythm, refresh, SEO gates
+├── breaking (autoblog/breaking.py)      # v59 site బ్రేకింగ్ feed + most-used order
+├── guardian (autoblog/guardian.py)      # v60 roju automatic system check + alert
+├── readiness (autoblog/readiness.py)    # v62 top-website readiness score (proof tho)
+├── wordpress-theme/studentup/           # v61 REAL site theme (preview design → WP)
+├── wp_theme_sync (autoblog/)            # v61 bot data → WP theme (REST push)
+├── GO_LIVE_CHECKLIST.md A0              # edi ekkada run avutundi (architecture + 3 combos)
+├── preview/data/breaking.json           # v59 ticker/section feed (radar writes)
+├── AD_REVENUE_PLAYBOOK.md  # v52 revenue lines, rate card, sponsor + house ad flows
+├── ad_advisor (autoblog/ad_advisor.py) # v57 network advisor + automatic alerts
+├── GO_LIVE_CHECKLIST.md    # v53 deploy order + owner actions + revenue table
+├── SALES_KIT_ADVERTISERS.md # v54 advertiser outreach templates + 90-day plan
+├── AD_NETWORKS_PLAN.md     # v56 network thresholds (2026), uplift reality, apply checklist
+├── SALES_KIT_ADVERTISERS.md # v54 advertiser outreach templates + 90-day plan
 ├── deploy/                 # systemd units · Caddyfile · nginx · Dockerfile · compose · backup.sh · install-vps.sh
 ├── autoblog/deploy_check.py # deploy readiness (deps/env/disk/port + real /healthz boot)
 ├── autoblog/site_audit.py  # v41 deep audit + safe autofix + live publish gate
-├── exam_portal/            # v39 college exam portal (stdlib only)
+├── exam_portal/            # v39/v47 college exam portal (stdlib only)
 │   ├── store.py            #      SQLite: exams/questions/roster/sessions/answers
+│   │                       #      + v47 poll_votes (daily poll bank + dedup)
 │   ├── engine.py           #      validate, START/CLOSE, scoring, sweeper, exports
 │   ├── notify.py           #      Telegram/webhook/in-app + copy-paste templates
 │   ├── ui.py               #      landing + admin console + manage + student app
+│   │                       #      + v47 "ప్రకటనలు" ads manager card
 │   ├── server.py           #      HTTP server + CLI (no framework)
+│   │                       #      + v47 /poll/today · /poll/vote (CORS) and
+│   │                       #      /api/admin/ads CRUD → ads/inventory.json
 │   └── demo.py             #      sample exam seed (--exam-portal-demo)
 ├── tools/
-│   └── ui_smoke.mjs        # v39 optional jsdom full-flow UI smoke test
+│   ├── ui_smoke.mjs        # v39 optional jsdom full-flow UI smoke test
+│   ├── revenue_estimate.py # v53 ad revenue calculator (--views 10k / 1l / --json)
+│   └── ad_network_plan.py  # v56 network eligibility + uplift (--views 50k --tier1 0.3)
 └── tests/                  # end-to-end tests (fake WP/Telegram/source servers)
 ```

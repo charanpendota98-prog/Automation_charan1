@@ -232,27 +232,33 @@ def main():
     cfg_key = config.GEMINI_API_KEY
     config.GEMINI_API_KEY = "gate-test"
     low = {"score": 55, "issues": ["x"], "fixes": ["f1", "f2"], "words": 900}
-    high = {"score": 93, "issues": [], "fixes": [], "words": 1700}
+    high = {"score": 100, "issues": [], "fixes": [], "words": 1700}
     rv, rr = validator.rankmath_strict, gc.refine_article
     try:
-        n = []
+        state = {"refined": False}
 
         def strict_once(a, h=""):
-            n.append(1)
-            return low if len(n) == 1 else high
+            # v65: refine jarigaka mattrame 'high' — call-count tho brittle kaadu
+            return high if state["refined"] else low
+
+        def fake_refine(a, fixes):
+            state["refined"] = True
+            return {**a, "title": "Better Title"}
 
         validator.rankmath_strict = strict_once
-        gc.refine_article = lambda a, f: {**a, "title": "Better Title"}
+        gc.refine_article = fake_refine
         art1 = {"content_html": "<p>draft</p>", "title": "Old", "category": "X",
                 "focus_keyword": "kw", "meta_description": "m", "slug": "s"}
         res = pipeline._rankmath_gate(dict(art1), "X")
-        assert res.get("refined") and res["title"] == "Better Title"
-        assert res["_rm_pre"] == 55 and res["_rm"]["score"] == 93
+        # v64: rm100 tarvata title deterministic ga normalize avutundi (kw+year+power)
+        assert res.get("refined") and "Better Title" in res["title"], res["title"]
+        assert res["_rm_pre"] == 55 and res["_rm"]["score"] == 100
+        assert "Kw" in res["title"] and "Complete Details" in res["title"]
 
         validator.rankmath_strict = lambda a, h="": low
         gc.refine_article = lambda a, f: {**a, "title": "Worse?"}
         res2 = pipeline._rankmath_gate(dict(art1), "X")
-        assert not res2.get("refined") and res2["title"] == "Old"
+        assert not res2.get("refined") and "Old" in res2["title"], res2["title"]
 
         res3 = pipeline._rankmath_gate({**art1, "_mock": True}, "X")
         assert not res3.get("refined")

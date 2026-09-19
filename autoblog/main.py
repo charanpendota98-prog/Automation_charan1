@@ -98,8 +98,8 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
     state.init(config.STATE_PATH)
     try:  # scheduler heartbeat (watchdog kosam)
         state.meta_set(config.STATE_PATH, "heartbeat", now.isoformat())
-    except Exception:
-        pass
+    except Exception as exc:  # noqa: BLE001 — best-effort (silent kaadu)
+        log.debug("run skip: %s", exc)
 
     # --- bulk queue mode: --process-queue N (N URLs ippude process) ---------
     if process_queue:
@@ -199,6 +199,58 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
                 state.meta_set(config.STATE_PATH, f"autorefresh:{today.isoformat()}", "1")
             except Exception:
                 log.exception("Daily auto-refresh failed")
+        # --- v59: బ్రేకింగ్ న్యూస్ feed — radar sweep tarvata site ticker fresh ---
+        if (getattr(config, "BREAKING_ENABLED", True)
+                and now_hour >= getattr(config, "RADAR_HOUR", 7)
+                and not state.meta_get(config.STATE_PATH, f"breaking:{today.isoformat()}")):
+            try:
+                from . import breaking, news_radar
+
+                _r = news_radar.run_radar()
+                _bres = breaking.publish(_r.get("items", []))
+                state.meta_set(config.STATE_PATH, f"breaking:{today.isoformat()}", "1")
+                log.info("BREAKING FEED ✔ %d items (site ticker)", _bres["count"])
+                try:  # v61: theme ki kuda push (WP theme active unte)
+                    from . import wp_theme_sync
+
+                    _tres = wp_theme_sync.push()
+                    log.info("WP THEME SYNC %s — %s", "✔" if _tres.get("ok") else "skip",
+                             _tres.get("reason") or _tres.get("updated"))
+                except Exception:
+                    log.exception("wp theme sync failed (non-fatal)")
+            except Exception:
+                log.exception("breaking feed failed (non-fatal)")
+        # --- v60: SITE GUARDIAN — roju okkasari system motham check + report ---
+        if (getattr(config, "GUARDIAN_ENABLED", True)
+                and now_hour >= getattr(config, "GUARDIAN_HOUR", 20)
+                and not state.meta_get(config.STATE_PATH, f"guardian:{today.isoformat()}")):
+            try:
+                from . import guardian
+
+                _g = guardian.guard(notify=True, print_out=False)
+                state.meta_set(config.STATE_PATH, f"guardian:{today.isoformat()}", "1")
+                log.info("SITE GUARDIAN ✔ %d/%d ok · %d owner-pending",
+                         _g["passed"], _g["checked"], _g.get("warned", 0))
+                for _r in _g["results"]:
+                    if not _r["ok"] and not _r.get("warn_only"):
+                        log.warning("GUARDIAN ❌ %s: %s (%s)", _r["id"], _r["detail"], _r["fix"])
+            except Exception:
+                log.exception("site guardian failed (non-fatal)")
+        # --- v57: AD ADVISOR — roju okkasari: e network ki eppudu apply cheyyali ---
+        if (getattr(config, "AD_ADVISOR_ENABLED", True)
+                and now_hour >= getattr(config, "AD_ADVISOR_HOUR", 10)
+                and not state.meta_get(config.STATE_PATH,
+                                       f"advisor:{today.isoformat()}")):
+            try:
+                from . import ad_advisor as _adv
+
+                _res = _adv.advice(notify=True)
+                state.meta_set(config.STATE_PATH, f"advisor:{today.isoformat()}", "1")
+                log.info("AD ADVISOR ✔ %s", _res["action"]["title"])
+                for _k in _res["new_milestones"]:
+                    log.info("AD ADVISOR milestone: %s — Telegram alert pampindi", _k)
+            except Exception:
+                log.exception("Ad advisor failed (non-fatal)")
         # --- v26: Daily Quiz slot — roju okati, QUIZ_HOUR tarvata ---
         if (config.QUIZ_ENABLED
                 and now_hour >= config.QUIZ_HOUR
@@ -586,7 +638,7 @@ def doctor() -> int:
         state.meta_set(config.STATE_PATH, "doctor:ping", "1")
         assert state.meta_get(config.STATE_PATH, "doctor:ping") == "1"
         config.OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-        (config.OUTPUT_DIR / ".ping").write_text("ok")
+        (config.OUTPUT_DIR / ".ping").write_text("ok", encoding="utf-8")
         (config.OUTPUT_DIR / ".ping").unlink()
         return f"{config.STATE_PATH} + {config.OUTPUT_DIR} writable"
     check("Storage", _db)
@@ -656,8 +708,153 @@ def trends_check() -> int:
     return 0
 
 
+def pin_check_run() -> int:
+    """v65/v66: pin-to-pin certificate proof (67 checks · deterministic fixture)."""
+    from . import post_gate
+
+    return post_gate.main()
+
+
+def trends_run(queue: bool = True) -> int:
+    """v65: Google Trends + Suggest capture (niche filter → topic queue)."""
+    from . import trends
+
+    if queue:
+        return trends.main()
+    res = trends.capture(queue=False)
+    print(f"trends: {res['trends']} · suggest: {res['suggest']}")
+    for t in res["top"]:
+        print("   -", str(t.get("title"))[:70])
+    return 0
+
+
+def rm100_run() -> int:
+    """v64: Rank Math 100 engine proof — imperfect draft → 100/100 breakdown."""
+    from . import rm100, validator
+
+    
+    art = rm100.sample_article()
+    res = rm100.apply(art)
+    checks = validator.rankmath_strict(art, art.get("content_html", "")).get("checks", [])
+    print("=" * 70)
+    print("  🎯 RANK MATH 100 ENGINE — proof (deterministic fixes, LLM ledu)")
+    print("=" * 70)
+    print(f"  score: {res['before']}/100  →  {res['after']}/100"
+          f"   ({len(checks)} on-page tests)")
+    print(f"  fixes: {', '.join(res['applied']) or '—'}")
+    print(f"  migilinavi: {res['remaining'] or 'emi ledu ✔'}")
+    print(f"  title: {art['title']} ({len(art['title'])} ch)")
+    print(f"  meta: {len(art['meta_description'])} ch · slug: {art['slug']}"
+          f" · words: {rm100._words(art['content_html'])}")
+    if checks:
+        print("-" * 70)
+        for c in checks:
+            print(f"    {'✅' if c['ok'] else '❌'} {c['item']:26s} {c['points']} pts")
+    print("=" * 70)
+    return 0 if res["after"] == 100 else 1
+
+
+def readiness_run() -> int:
+    """v62: TOP WEBSITE READINESS — okka command lo motham system proof."""
+    from . import readiness
+
+    rep = readiness.run_report()
+    arts = readiness.write_artifacts(rep)
+    readiness.print_report(rep, arts)
+    return 0 if rep.get("ok") else 1
+
+
+def push_theme_data(dry_run: bool = False) -> int:
+    """v61: bot data → WordPress theme (breaking · proof · house ads).
+
+    v73: countdown/deadline push teesesaamu (hero card user brief tho poyindi).
+    """
+    from . import wp_theme_sync
+
+    payload = wp_theme_sync.build_payload()
+    if not payload:
+        print("  ⚠️  push cheyyalsina data ledu (breaking feed/house ads/proof khali)")
+        return 0
+    res = wp_theme_sync.push(payload, dry_run=dry_run)
+    print("=" * 62)
+    print("  🎨 WP THEME SYNC — bot data → site theme")
+    print("=" * 62)
+    for k, v in res.get("sent", {}).items():
+        print(f"  • {k}: {v if not isinstance(v, list) else str(len(v)) + ' items'}")
+    if res.get("ok"):
+        extra = " (dry-run, network call ledu)" if res.get("dry_run") else ""
+        print(f"  ✅ push OK{extra} — updated: {res.get('updated', [])}")
+        return 0
+    print(f"  ❌ push fail: {res.get('reason')}")
+    print("     ↳ fix: .env lo WP_SITE/WP_USERNAME/WP_APP_PASSWORD + theme activate")
+    return 1
+
+
+def guardian_run(notify: bool = False, quiet: bool = False) -> int:
+    """v60: SITE GUARDIAN — system motham check (site/UI/SEO/ads/feed/storage)."""
+    from . import guardian
+
+    summary = guardian.guard(notify=notify, print_out=not quiet)
+    return 0 if summary.get("ok") else 1
+
+
+def breaking_feed_run(from_file: str = "") -> int:
+    """v59: బ్రేకింగ్ న్యూస్ feed build — site ticker + section ki.
+
+    Default: radar sweep (district + 143 official sources) → verified items
+    matrame → preview/data/breaking.json. `--breaking-from FILE` tho offline
+    (test/approved list) nunchi kuda generate cheyochu.
+    """
+    import json as _json
+
+    from . import breaking
+
+    print("=" * 62)
+    print("  🚨 BREAKING NEWS FEED — site ticker + బ్రేకింగ్ న్యూస్ section")
+    print("=" * 62)
+    raw = []
+    if from_file:
+        try:
+            data = _json.loads(Path(from_file).read_text(encoding="utf-8"))
+            raw = data.get("items", data) if isinstance(data, dict) else data
+            print(f"  source file: {from_file} ({len(raw)} raw items)")
+        except Exception as exc:  # noqa: BLE001
+            print(f"  ⛔ file chadavalekapoyindi: {exc}")
+            return 1
+    else:
+        from . import news_radar
+
+        summary = news_radar.run_radar()
+        raw = summary.get("items", [])
+        if not summary.get("enabled", True):
+            print("  RADAR_ENABLED=0 — feed khali ga untundi (fake news ledu)")
+    res = breaking.publish(raw, source="file" if from_file else "radar")
+    st = breaking.stats()
+    print(f"  feed: {res['count']} items → {res['path']}")
+    print(f"  updated: {res['updated']}")
+    if st["by_tag"]:
+        print("  tags: " + " · ".join(f"{k}:{v}" for k, v in st["by_tag"].items()))
+    if not res["count"]:
+        print("  ℹ️  ippudu verified breaking item ledu — site 'kotha update ledu' ani cheptundi")
+    print("  most-used order: " + " · ".join(breaking.most_used_cats()))
+    print("=" * 62)
+    return 0
+
+
 def radar_run(process_posts: bool = True) -> int:
     """v15/v16/v17: full radar sweep — districts + official grid + watch.
+    # v65: Google Trends/Suggest capture (network lekapote silent skip)
+    if getattr(config, "TRENDS_ENABLED", True):
+        try:
+            from . import trends as _tr
+
+            _cap = _tr.capture(queue=True)
+            if _cap.get("trends") or _cap.get("suggest"):
+                log.info("v65 trends: %d niche trends · %d suggest · queue +%s",
+                         _cap["trends"], _cap["suggest"],
+                         (_cap.get("queue") or {}).get("added", 0))
+        except Exception:  # noqa: BLE001 — trends bot ni aapakudadu
+            log.info("trends capture skip (safe)")
 
     Queue fresh edu news URLs + channel topics; optionally process up to
     RADAR_POSTS_PER_DAY articles (topics first, then source queue URLs).
@@ -678,6 +875,16 @@ def radar_run(process_posts: bool = True) -> int:
     w = summary.get("watch", 0)
     print(f"  New queue items: {d} district + {g} grid URLs | {w} channel topics")
 
+    # v59: same sweep → site బ్రేకింగ్ న్యూస్ feed (ticker + section)
+    try:
+        from . import breaking
+
+        if config.BREAKING_ENABLED:
+            bres = breaking.publish(summary.get("items", []))
+            print(f"  🚨 breaking feed: {bres['count']} items → preview/data/breaking.json")
+    except Exception as exc:  # noqa: BLE001
+        log.warning("breaking feed skip: %s", exc)
+
     # v21: GSC boost (state meta) → queue re-sort — real impressions decide
     # ee roju enti process avalo (radar sweep tarvata automatic).
     try:
@@ -691,8 +898,8 @@ def radar_run(process_posts: bool = True) -> int:
             _nb = _src.apply_queue_boost(_boost)
             if _nb:
                 print(f"  GSC boost: {_nb} queue line(s) prioritized")
-    except Exception:
-        pass
+    except Exception as exc:  # noqa: BLE001 — best-effort (silent kaadu)
+        log.debug("radar_run skip: %s", exc)
 
     # v17: keyword dominance — prathi roju 1 saari autocomplete + gap analyse
     kw_queued = 0
@@ -1181,8 +1388,8 @@ def ensure_adsense() -> int:
         else:
             print(f"[INFO]   {n} published posts — continue building useful, original content; "
                   "Google has no code-verifiable fixed post-count threshold")
-    except Exception:
-        pass
+    except Exception as exc:  # noqa: BLE001 — best-effort (silent kaadu)
+        log.debug("ensure_adsense skip: %s", exc)
     print("\n--- MANUAL CHECKS (bot cheyyaleru — mee browser/console lo) ---")
     for name, howto in [
         ("ads.txt", "https://studentup.in/ads.txt open chesi correct publisher ID verify (AdSense > Earn > Get code)"),
@@ -1225,6 +1432,15 @@ def main() -> int:
     parser.add_argument("--notify-test", action="store_true", help="send test notification")
     parser.add_argument("--revenue-check", action="store_true",
                         help="revenue setup audit — em missing o cheptundi")
+    parser.add_argument("--ad-advisor", action="store_true",
+                        help="v57: eppudu e ad-network ki apply cheyyali (auto suggest)")
+    parser.add_argument("--traffic-csv", default="", metavar="CSV",
+                        help="GA4 CSV export -> logs/traffic.json (advisor kosam)")
+    parser.add_argument("--traffic-views", default="", metavar="N",
+                        help="advisor ki pageviews (10k / 25000) — data save avutundi")
+    parser.add_argument("--traffic-sessions", default="", metavar="N", help="advisor ki sessions")
+    parser.add_argument("--tier1", default="", metavar="SHARE",
+                        help="Tier-1 traffic share 0-1 (0.5 = 50%%)")
     parser.add_argument("--gsc", default="", metavar="CSV",
                         help="Search Console queries CSV -> striking-distance opportunities")
     parser.add_argument("--doctor", action="store_true",
@@ -1251,6 +1467,15 @@ def main() -> int:
                         help="v37: target year for a source article, e.g. 2027")
     parser.add_argument("--notebooklm-brief", default="", metavar="FILE",
                         help="v36: use an editor-verified NotebookLM brief with --url")
+    parser.add_argument("--deep-research", default="", metavar="TOPIC_OR_URL",
+                        help="v44: DEEP POST ENGINE — source tiering + deep fact "
+                             "extraction + cross-verification + confidence report "
+                             "(--research-urls FILE / --research-limit N / "
+                             "--research-year Y / --notebooklm-brief FILE / "
+                             "--deep for NotebookLM passes 6-8)")
+    parser.add_argument("--deep", action="store_true",
+                        help="v44: emit extended NotebookLM prompt (passes 6-8: "
+                             "year-over-year, ELI-12, gap priority)")
     parser.add_argument("--top-post", default="", metavar="KEYWORD",
                         help="v38: TOP POST BLUEPRINT — title/meta/outline/keywords/"
                              "schema/E-E-A-T plan for an exact search phrase "
@@ -1294,6 +1519,15 @@ def main() -> int:
     parser.add_argument("--exam-base-url", default="",
                         help="v39: public URL for share links/notifications "
                              "(ex: https://exams.college.edu)")
+    parser.add_argument("--ads", action="store_true",
+                        help="v43: AD MANAGER — owner ads (college banners/shop/"
+                             "services) inventory status + per-category slot plan")
+    parser.add_argument("--rate-card", action="store_true",
+                        help="v71: rate card (internal) — prices site meeda public ga levu; "
+                             "ee card ni WhatsApp/Telegram lo personal ga deal cheyyadaniki vaadandi")
+    parser.add_argument("--ads-demo", action="store_true",
+                        help="v43: AD MANAGER — visible ad placement preview "
+                             "(output/ads-preview.html — browser lo open cheyandi)")
     parser.add_argument("--deploy-check", action="store_true",
                         help="v41: deploy readiness — deps/env/disk/port + exam portal "
                              "ni nijamga boot chesi /healthz hit (server SSH lo)")
@@ -1325,6 +1559,30 @@ def main() -> int:
                              "(tarvata offline/CI audit ki)")
     parser.add_argument("--trends", action="store_true",
                         help="Google Trends India education trends chupinchindi")
+    parser.add_argument("--pin-check", action="store_true",
+                        help="Pin-to-pin certificate proof (67 checks, offline)")
+    parser.add_argument("--index-now", default="", metavar="URL",
+                        help="v68: IndexNow + Google Indexing API (JobPosting) ki URL submit")
+    parser.add_argument("--index-status", action="store_true",
+                        help="v68: instant-indexing configuration status (SA key · openssl · key file)")
+    parser.add_argument("--index-key-gen", action="store_true",
+                        help="v68: kotha IndexNow key generate (hex) + .env lo pettalsina line")
+    parser.add_argument("--trends-queue", action="store_true",
+                        help="v65: --trends tho paatu Suggest capture + topic queue")
+    parser.add_argument("--rm100", action="store_true",
+                        help="Rank Math 100 engine proof (imperfect draft → 100 breakdown)")
+    parser.add_argument("--readiness", action="store_true",
+                        help="v62: TOP WEBSITE READINESS — content/SEO/ads/automation/site score")
+    parser.add_argument("--push-theme-data", action="store_true",
+                        help="v61: bot data (breaking/proof/deadline/house ads) → WP theme REST")
+    parser.add_argument("--guardian", action="store_true",
+                        help="v60: SITE GUARDIAN — site/UI/SEO/ads/feed/storage full check")
+    parser.add_argument("--guardian-notify", action="store_true",
+                        help="v60: guardian report ni Telegram ki kuda pampu")
+    parser.add_argument("--breaking-feed", action="store_true",
+                        help="v59: బ్రేకింగ్ న్యూస్ feed build (radar → preview/data/breaking.json)")
+    parser.add_argument("--breaking-from", default="", metavar="FILE",
+                        help="v59: breaking feed ni JSON file nunchi generate (offline/test)")
     parser.add_argument("--radar", action="store_true",
                         help="breaking-news radar: TS+AP districts + grid + watch (queue+post)")
     parser.add_argument("--sources", action="store_true",
@@ -1387,8 +1645,26 @@ def main() -> int:
         return service_center_setup(dry=args.dry_run, force=args.force)
     if args.content_audit:
         return content_audit_run(limit=max(1, min(args.content_limit, 5000)))
+    if args.rate_card:
+        from . import rate_card as rc
+
+        print(rc.as_markdown())
+        print("\n⚠️  Public site lo prices chupinchakandi (v71 rule) — personal ga deal cheyandi.")
+        return 0
+    if args.ads or args.ads_demo:
+        from . import ad_manager
+
+        return ad_manager.run_cli("demo" if args.ads_demo else "status")
     if args.google_audit:
         return google_audit_run(args.google_audit)
+    if args.deep_research:
+        from . import deep_research
+
+        return deep_research.run_cli(
+            args.deep_research, url_file=args.research_urls,
+            limit=max(1, args.research_limit), target_year=args.research_year,
+            notebooklm_brief=args.notebooklm_brief,
+            deep_prompt=args.deep)
     if args.research_brief:
         return research_brief_run(args.research_brief, args.research_urls,
                                   args.research_limit, args.research_year)
@@ -1422,8 +1698,51 @@ def main() -> int:
                               actions=args.site_audit_action,
                               snapshot=args.site_audit_snapshot,
                               save=args.site_audit_save)
+    if getattr(args, "index_key_gen", False):
+        import secrets
+
+        key = secrets.token_hex(16)
+        print("=" * 62)
+        print("  🔑 INDEXNOW KEY (kotha)")
+        print("=" * 62)
+        print(f"  {key}")
+        print("\n  .env lo ee line pettandi:")
+        print(f"  INDEXNOW_KEY={key}")
+        print("\n  Tarvata: python run.py --push-theme-data  (theme /" + key + ".key serve chestundi)")
+        print("           python run.py --index-status     (verify)")
+        print("=" * 62)
+        return 0
+    if getattr(args, "index_status", False):
+        from . import indexing
+
+        st = indexing.status()
+        print("=" * 62)
+        print("  🔎 INSTANT INDEXING (v68)")
+        print("=" * 62)
+        print(f"  IndexNow key      : {'set ✔' if st['indexnow_key'] else 'ledu (INDEXNOW_KEY set cheyandi)'}")
+        print(f"  Google SA         : {'configured ✔ ' + st['client_email'] if st['configured'] else 'ledu (GOOGLE_INDEXING_SA_JSON / GOOGLE_INDEXING_SA)'}")
+        print(f"  RS256 signing     : {st['signing']} (openssl: {st['openssl']})")
+        print("  IndexNow key file : theme /<key>.key serve chestundi (StudentUp → Advanced)")
+        print("=" * 62)
+        return 0
+    if getattr(args, "index_now", ""):
+        from . import indexnow, indexing
+
+        url = args.index_now
+        st = indexing.status()
+        ok_bing = indexnow.submit(url)
+        ok_google = indexing.publish_url(url, "URL_UPDATED") if st["configured"] else False
+        print("=" * 62)
+        print(f"  URL: {url}")
+        print(f"  IndexNow (Bing/Yandex): {'✔ submitted' if ok_bing else '✘ skip (key ledu leda fail)'}")
+        print(f"  Google Indexing API   : {'✔ submitted' if ok_google else '✘ skip (SA ledu leda JobPosting page kaadu)'}")
+        print("=" * 62)
+        return 0 if (ok_bing or ok_google) else 0
     if args.trends:
-        return trends_check()
+        rc = trends_check()
+        if getattr(args, "trends_queue", False):
+            trends_run(queue=True)
+        return rc
     if args.sources:
         return sources_view()
     if args.keywords:
@@ -1470,6 +1789,33 @@ def main() -> int:
             print(f"🎯 Quiz engine failed (harmless): {str(exc)[:100]}")
         return 0
 
+    if args.ad_advisor or args.traffic_csv or args.traffic_views:
+        from . import ad_advisor
+
+        if args.traffic_csv:
+            try:
+                info = ad_advisor.import_ga4_csv(args.traffic_csv)
+            except (OSError, ValueError) as exc:
+                print(f"❌ traffic CSV chadavaleka poyindi: {exc}")
+                return 6
+            print(f"📈 traffic import: {info['pageviews']:,} pageviews · "
+                  f"{info['sessions']:,} sessions · Tier-1 {int(info['tier1_share'] * 100)}% "
+                  f"({info['rows']} rows) → {info['path']}")
+        views = ad_advisor.parse_views(args.traffic_views) if args.traffic_views else 0
+        sessions = ad_advisor.parse_views(args.traffic_sessions) if args.traffic_sessions else 0
+        tier1 = None
+        if args.tier1:
+            try:
+                tier1 = float(args.tier1)
+                tier1 = tier1 / 100.0 if tier1 > 1 else tier1
+            except ValueError:
+                print("❌ --tier1 number ga undali (0.5 leda 50)")
+                return 6
+        result = ad_advisor.advice(pageviews=views or None,
+                                   sessions=sessions or None, tier1=tier1)
+        print(ad_advisor.render(result))
+        return 0
+
     if args.quiz_kit:
         from . import quiz_engine
         from .wordpress_client import WordPressClient
@@ -1493,6 +1839,20 @@ def main() -> int:
         for r in rows:
             print(f"  • {r['exam']:<22} {r.get('posts', '?')} posts -> {r.get('link', r['slug'])}")
         return 0
+    if getattr(args, "pin_check", False):
+        return pin_check_run()
+    if getattr(args, "trends", False):
+        return trends_run(queue=not getattr(args, "no_queue", False))
+    if getattr(args, "rm100", False):
+        return rm100_run()
+    if args.readiness:
+        return readiness_run()
+    if args.push_theme_data:
+        return push_theme_data(dry_run=args.dry_run)
+    if args.guardian or args.guardian_notify:
+        return guardian_run(notify=args.guardian_notify)
+    if args.breaking_feed or args.breaking_from:
+        return breaking_feed_run(from_file=args.breaking_from)
     if args.radar:
         return radar_run(process_posts=not args.dry_run)
     try:

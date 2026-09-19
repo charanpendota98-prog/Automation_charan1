@@ -1,4 +1,4 @@
-"""v16.1: Official Sources Grid — 100+ curated sources, ZERO misses.
+"""v58: Official Sources Grid — 143 curated sources, ZERO misses.
 
 Official first (SSC/UPSC/TSPSC/APPSC/NEET...), private+software+walkins next.
 Prathi source = Google News query. 17 daily hot-list sources prathi radar
@@ -133,6 +133,49 @@ _S = [
     ("AICTE Internship", "AICTE internship scheme 2026", "Internships", False),
     ("NATS Apprenticeship", "apprenticeship NATS India 2026", "Internships", False),
     ("Graduate Trainee Jobs", "graduate trainee recruitment 2026", "Central Govt Jobs", False),
+    # --- v50: outsourcing / contract recruitment (TS + AP) ---
+    ("TS Outsourcing Recruitment", "Telangana outsourcing recruitment 2026", "Outsourcing Jobs", True),
+    ("TGSPDCL TSSPDCL Outsourcing", "TSSPDCL TGSPDCL outsourcing jobs 2026", "Outsourcing Jobs", False),
+    ("TS GENCO Outsourcing", "TSGENCO TRANSCO outsourcing recruitment 2026", "Outsourcing Jobs", False),
+    ("TS Medical & Health Outsourcing", "Telangana health department outsourcing 2026", "Outsourcing Jobs", False),
+    ("AP Outsourcing Recruitment", "Andhra Pradesh outsourcing recruitment 2026", "Outsourcing Jobs", True),
+    ("APSPDCL Outsourcing", "APSPDCL outsourcing jobs 2026", "Outsourcing Jobs", False),
+    ("AP Village & Ward Secretariat", "AP ward secretariat contract recruitment 2026", "Outsourcing Jobs", False),
+    ("Guest Faculty Recruitment", "guest faculty recruitment Telangana Andhra 2026", "Outsourcing Jobs", False),
+    # --- v50: current affairs from official releases ---
+    ("PIB Press Releases", "PIB press release education scheme", "Current Affairs", True),
+    ("PIB Telugu Region", "PIB Telangana Andhra development scheme", "Current Affairs", False),
+    ("Ministry of Education", "Ministry of Education announcement 2026", "Current Affairs", False),
+    ("Telangana Govt Orders", "Telangana government order education 2026", "Current Affairs", False),
+    ("AP Govt Orders", "Andhra Pradesh government order education 2026", "Current Affairs", False),
+    ("NITI Aayog & Schemes", "central scheme students scholarship announcement", "Current Affairs", False),
+    # --- v50: exam calendar / upcoming exams ---
+    ("TSPSC Calendar", "TSPSC upcoming exams calendar 2026", "Upcoming Exams", True),
+    ("APPSC Calendar", "APPSC upcoming exams schedule 2026", "Upcoming Exams", True),
+    ("SSC Exam Calendar", "SSC exam calendar 2026 2027", "Upcoming Exams", False),
+    ("RRB Exam Calendar", "RRB exam calendar 2026", "Upcoming Exams", False),
+    ("NTA Exam Calendar", "NTA exam calendar 2026", "Upcoming Exams", False),
+    ("State Board Exam Schedule", "Telangana Andhra board exam schedule 2026", "Upcoming Exams", False),
+    # --- v50: exam preparation guidance ---
+    ("TSPSC Preparation", "TSPSC exam preparation plan syllabus", "Exam Tips", False),
+    ("APPSC Preparation", "APPSC group 2 preparation strategy syllabus", "Exam Tips", False),
+    ("SSC Preparation", "SSC exam preparation strategy previous papers", "Exam Tips", False),
+    ("Board Exam Prep", "10th inter board exam preparation tips 2026", "Exam Tips", False),
+    # --- v58: విదేశీ ఉద్యోగాలు (Abroad/Gulf/NRI) — Tier-1 + high-CPC pillar ---
+    ("eMigrate MEA", "eMigrate overseas job emigration India notification", "Abroad Jobs", True),
+    ("MEA Emigration", "Ministry of External Affairs emigration update Indians", "Abroad Jobs", False),
+    ("Gulf Jobs News", "Gulf jobs for Indians vacancy recruitment 2026", "Abroad Jobs", True),
+    ("UAE Jobs", "UAE Dubai Abu Dhabi jobs for Indians 2026", "Abroad Jobs", False),
+    ("Saudi Qatar Jobs", "Saudi Arabia Qatar jobs Indian workers recruitment", "Abroad Jobs", False),
+    ("Kuwait Oman Bahrain Jobs", "Kuwait Oman Bahrain jobs for Indians 2026", "Abroad Jobs", False),
+    ("IELTS Test Update", "IELTS PTE TOEFL test date fee change 2026", "Abroad Jobs", True),
+    ("Study Abroad", "study abroad for Indian students intake scholarship 2026", "Abroad Jobs", True),
+    ("Canada Visa", "Canada express entry study permit updates Indian students", "Abroad Jobs", False),
+    ("UK Australia Visa", "UK skilled worker Australia student visa update 2026", "Abroad Jobs", False),
+    ("Germany Japan Korea", "Germany opportunity card Japan Korea care work visa India", "Abroad Jobs", False),
+    ("Passport Visa Update", "passport visa appointment rules update India 2026", "Abroad Jobs", False),
+    ("NRI Guidance", "NRI students Telugu workers abroad guidance news", "Abroad Jobs", False),
+    ("Overseas Scholarship", "overseas scholarship fellowship for Indian students 2026", "Abroad Jobs", False),
 ]
 
 SOURCES_GRID = [
@@ -159,8 +202,8 @@ def radar_sources(per_run: int = None) -> list:
     batch = list(daily) + [rotating[(start + i) % len(rotating)] for i in range(take)]
     try:
         state.meta_set(config.STATE_PATH, "grid:last_idx", str((start + take - 1) % len(rotating)))
-    except Exception:
-        pass
+    except Exception as exc:  # noqa: BLE001 — best-effort (silent kaadu)
+        log.debug("sources_grid.radar_sources skip: %s", exc)
     new_items = []
     for s in batch:
         try:

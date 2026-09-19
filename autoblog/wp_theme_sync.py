@@ -1,0 +1,115 @@
+# -*- coding: utf-8 -*-
+"""v61: WordPress theme sync — bot data ni site theme ki push.
+
+Enti idi:
+  Mee website WordPress + StudentUp theme (v61) tho nadustundi. Theme ki data
+  (breaking items · trust numbers · house ads) bot nunchi
+  vellali — appudu site eppudu fresh ga untundi, manual copy-paste ledu.
+
+Endpoint (theme lo register ayyindi):
+  POST {WP_BASE}/wp-json/studentup/v1/theme-data
+  auth: WP_USERNAME + WP_APP_PASSWORD (Application Password), edit_posts chaalu.
+
+Nijam: WP creds lekapote skip (silent fail ledu — clear message).
+"""
+from __future__ import annotations
+
+import json
+import logging
+from pathlib import Path
+from typing import Dict, List, Optional
+
+import requests
+
+from . import config
+
+log = logging.getLogger("autoblog.wp_theme")
+
+REST_PATH = "/wp-json/studentup/v1/theme-data"
+
+
+# ---------------------------------------------------------------------------
+# payload builders (offline testable)
+# ---------------------------------------------------------------------------
+
+def build_payload(root: Optional[Path] = None,
+                  include: Optional[List[str]] = None) -> Dict[str, object]:
+    """Local files nunchi theme payload — breaking + house ads + options."""
+    root = Path(root or config.BASE_DIR)
+    include = include or ["breaking", "house_ads", "options"]
+    out: Dict[str, object] = {}
+
+    if "breaking" in include:
+        feed = root / "preview" / "data" / "breaking.json"
+        try:
+            data = json.loads(feed.read_text(encoding="utf-8"))
+            items = [x for x in data.get("items", []) if isinstance(x, dict)]
+            out["breaking"] = items[:8]
+        except Exception as exc:  # noqa: BLE001
+            log.debug("breaking feed read skip: %s", exc)
+
+    if "house_ads" in include:
+        house = root / "ads" / "house.json"
+        try:
+            data = json.loads(house.read_text(encoding="utf-8"))
+            rows = data if isinstance(data, list) else data.get("ads", [])
+            out["house_ads"] = [x for x in rows if isinstance(x, dict)][:6]
+        except Exception as exc:  # noqa: BLE001
+            log.debug("house ads read skip: %s", exc)
+
+    if "options" in include:
+        # v64: .env nunchi website options (unna vi mattrame pampistundi — invent ledu)
+        mapping = {
+            "social_whatsapp": getattr(config, "SOCIAL_WHATSAPP", ""),
+            "social_telegram": getattr(config, "SOCIAL_TELEGRAM", ""),
+            "social_instagram": getattr(config, "SOCIAL_INSTAGRAM", ""),
+            "social_youtube": getattr(config, "SOCIAL_YOUTUBE", ""),
+            "adsense_client": getattr(config, "ADSENSE_CLIENT_ID", ""),
+            "adsense_auto": "1" if getattr(config, "ADSENSE_AUTO_ADS", True) else "0",
+            "sticky_ad": getattr(config, "STICKY_AD", ""),
+            "contact_email": getattr(config, "CONTACT_EMAIL", ""),
+            "exam_url": getattr(config, "EXAM_PUBLIC_URL", ""),
+            "indexnow_key": config.INDEXNOW_KEY,
+        }
+        opts = {k: v for k, v in mapping.items() if isinstance(v, str) and v.strip()}
+        if opts:
+            out["options"] = opts
+
+    return out
+
+
+# ---------------------------------------------------------------------------
+# push
+# ---------------------------------------------------------------------------
+
+def push(payload: Optional[Dict[str, object]] = None, dry_run: bool = False,
+         timeout: int = 20) -> Dict[str, object]:
+    """Payload ni WP REST ki POST. Returns summary dict (never raises)."""
+    payload = payload if payload is not None else build_payload()
+    empty = {k: (len(v) if isinstance(v, list) else v) for k, v in payload.items()}
+    if not payload:
+        return {"ok": False, "sent": {}, "reason": "payload khali — push cheyyalsinadi ledu"}
+    if dry_run:
+        return {"ok": True, "dry_run": True, "sent": empty,
+                "reason": "dry-run — network call cheyyaledu"}
+
+    base = (getattr(config, "WP_SITE", "") or "").rstrip("/")
+    user = getattr(config, "WP_USERNAME", "")
+    app_pw = getattr(config, "WP_APP_PASSWORD", "")
+    if not (base and user and app_pw):
+        return {"ok": False, "sent": empty,
+                "reason": "WP creds ledu (.env: WP_SITE/WP_USERNAME/WP_APP_PASSWORD)"}
+    url = base + REST_PATH
+    try:
+        resp = requests.post(url, json=payload, auth=(user, app_pw), timeout=timeout)
+    except Exception as exc:  # noqa: BLE001
+        return {"ok": False, "sent": empty, "reason": f"{type(exc).__name__}: {exc}"}
+    if resp.status_code != 200:
+        return {"ok": False, "sent": empty,
+                "reason": f"HTTP {resp.status_code}: {resp.text[:180]}"}
+    try:
+        data = resp.json()
+    except ValueError:
+        data = {}
+    return {"ok": bool(data.get("ok", True)), "sent": empty,
+            "updated": data.get("updated", []), "url": url}

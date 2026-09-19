@@ -137,6 +137,9 @@ def notify_updated_post(article: dict, result: dict) -> None:
     if qa:
         lines.append(f"📊 QA: <b>{qa.get('score', '-')}/100</b> · "
                      f"📝 {qa.get('words', '-')} words · ⏱️ ~{qa.get('reading_min', '-')} min")
+    rm = article.get("_rm") or {}
+    if rm:
+        lines.append(f"🎯 RankMath: <b>{rm.get('score', '-')}/100</b> (refresh tarvata)")
     if result.get("link"):
         lines += ["", f"🔗 {esc(result['link'])}"]
     send_telegram("\n".join(lines))
@@ -179,7 +182,24 @@ def notify_new_post(article: dict, result: dict) -> None:
         qa_bits.append(f"📝 {qa.get('words', '-')} words · ⏱️ ~{qa.get('reading_min', '-')} min")
     rm = article.get("_rm") or {}
     if rm:
-        qa_bits.append("🎯 RankMath strict: <b>{}/100</b>".format(rm.get("score", "-")))
+        score = rm.get("score", "-")
+        d = article.get("_rm100") or {}
+        if d.get("score") == 100:
+            qa_bits.append("🎯 RankMath: <b>{}/100</b> 🏆 (rm100 fixes: {})".format(
+                score, ", ".join(d.get("applied", [])[:4]) or "—"))
+        elif d.get("before") is not None:
+            qa_bits.append("🎯 RankMath: <b>{}/100</b> (draft {}/100 · mīgilina: {})".format(
+                score, d.get("before"), ", ".join(rm.get("issues", [])[:3]) or "—"))
+        else:
+            qa_bits.append("🎯 RankMath strict: <b>{}/100</b>".format(score))
+    gate = article.get("_gate") or {}
+    if gate:
+        crit = gate.get("critical_fails") or []
+        qa_bits.append("🧾 Pin-to-pin: <b>{}/100</b> ({}/{} checks){}".format(
+            gate.get("score"), gate.get("passed"), gate.get("total"),
+            "" if not crit else " · ⛔ " + ", ".join(crit)))
+        if gate.get("_cert_path"):
+            pass
     rec = article.get("recruitment") or {}
     if rec.get("apply_end"):
         qa_bits.append("📌 Google Jobs schema + deadline countdown ON "

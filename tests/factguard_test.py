@@ -40,7 +40,9 @@ def main():
         seen_fixes = {}
 
         def refine(a, fixes):
-            seen_fixes["f"] = list(fixes)
+            # v66: RM_REFINE_ROUNDS >1 → refine multiple rounds avvachu, so anni calls
+            # collect chestamu (loop count tho test brittle avvakudadu)
+            seen_fixes.setdefault("f", []).append(list(fixes))
             return {**a, "title": "Fixed Title", "content_html": "<p>clean</p>"}
 
         gc.refine_article = refine
@@ -48,8 +50,11 @@ def main():
                "category": "X", "focus_keyword": "k", "meta_description": "m",
                "_source_texts": ["real source"]}
         res = pipeline._rankmath_gate(dict(art), "X")
-        assert res["refined"] and res["title"] == "Fixed Title"
-        assert any("SUSPECT data" in f for f in seen_fixes["f"]), seen_fixes
+        assert res["refined"] and "Fixed Title" in res["title"], res["title"]
+        all_fixes = [f for fl in seen_fixes["f"] for f in fl]
+        assert any("SUSPECT data" in f for f in all_fixes), seen_fixes
+        # v66: pin-gate (67 checks) fails kuda refine hints ga veltayi
+        assert any(f.startswith("GATE ") for f in all_fixes), all_fixes
         assert res["_fact"] == []
 
         # facts NOT fixed + score same → keep original, flags preserved
@@ -57,7 +62,7 @@ def main():
         validator.fact_guard = lambda h, s: ["fake1", "fake2"]
         gc.refine_article = lambda a, f: {**a, "title": "NotActuallyBetter"}
         res2 = pipeline._rankmath_gate(dict(art), "X")
-        assert not res2.get("refined") and res2["title"] == "Old"
+        assert not res2.get("refined") and "Old" in res2["title"], res2["title"]
         assert len(res2["_fact"]) == 2
         # FACT_STRICT=0 → guard completely off
         fs = config.FACT_STRICT

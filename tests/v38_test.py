@@ -26,7 +26,10 @@ from autoblog import config, gemini_client, pipeline, seo, state, top_post  # no
 
 LIVE_CATS = {"Scholarships", "Central Govt Jobs", "TS Govt Jobs", "AP Govt Jobs",
              "Private Jobs", "Software Jobs", "Part Time Jobs", "Walkin Jobs",
-             "Hall Tickets", "Results", "Internships", "Online Education"}
+             "Hall Tickets", "Results", "Internships", "Online Education",
+             # v58: 17వ pillar (Tier-1 revenue line)
+             "Abroad Jobs", "Outsourcing Jobs", "Current Affairs", "Exam Tips",
+             "Upcoming Exams"}
 
 
 def write(path: Path, text: str) -> None:

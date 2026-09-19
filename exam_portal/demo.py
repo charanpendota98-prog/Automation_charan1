@@ -14,45 +14,45 @@ from typing import Dict
 from . import engine, notify
 from .store import Store, DEFAULT_DB
 
-DEMO_QUESTIONS = """1. Capital of Telangana state emiti?
-A) Warangal
-B) Hyderabad
-C) Karimnagar
-D) Nizamabad
-Answer: B
-Explanation: Hyderabad Telangana rajadhani.
+DEMO_QUESTIONS = """1. తెలంగాణ రాష్ట్ర రాజధాని ఏది?
+A) వరంగల్
+B) హైదరాబాద్
+C) కరీంనగర్
+D) నిజామాబాద్
+సరైన జవాబు: B
+వివరణ: హైదరాబాద్ తెలంగాణ రాష్ట్ర రాజధాని.
 
-2. Indian Constitution lo Fundamental Rights enni Articles lo unnayi?
-A) Articles 12-35
-B) Articles 14-32
-C) Articles 5-11
-D) Articles 36-51
-Answer: A
-Explanation: Part III (Articles 12-35) lo Fundamental Rights unnayi.
+2. భారత రాజ్యాంగంలో ప్రాథమిక హక్కులు ఎన్ని అధికరణాలలో ఉన్నాయి?
+A) అధికరణాలు 12-35
+B) అధికరణాలు 14-32
+C) అధికరణాలు 5-11
+D) అధికరణాలు 36-51
+సరైన జవాబు: A
+వివరణ: పార్ట్ III (అధికరణాలు 12-35)లో ప్రాథమిక హక్కులు ఉన్నాయి.
 
-3. 'Jana Gana Mana' rachayita evaru?
-A) Bankim Chandra Chatterjee
-B) Rabindranath Tagore
-C) Sarojini Naidu
-D) Subhash Chandra Bose
-Answer: B
-Explanation: Rabindranath Tagore racharu — January 24, 1950 nunchi national anthem.
+3. 'జన గణ మన' రచయిత ఎవరు?
+A) బంకిం చంద్ర చటర్జీ
+B) రవీంద్రనాథ్ టాగూర్
+C) సరోజినీ నాయుడు
+D) సుభాష్ చంద్ర బోస్
+సరైన జవాబు: B
+వివరణ: రవీంద్రనాథ్ టాగూర్ రచించారు — జనవరి 24, 1950 నుండి జాతీయ గీతం.
 
-4. TSPSC full form emiti?
-A) Telangana State Public Service Commission
-B) Telangana State Police Service Commission
-C) Telangana Staff Selection Commission
-D) Telangana State Private Service Commission
-Answer: A
-Explanation: TSPSC = Telangana State Public Service Commission.
+4. TSPSC పూర్తి రూపం ఏమిటి?
+A) తెలంగాణ స్టేట్ పబ్లిక్ సర్వీస్ కమిషన్
+B) తెలంగాణ స్టేట్ పోలీస్ సర్వీస్ కమిషన్
+C) తెలంగాణ స్టాఫ్ సెలక్షన్ కమిషన్
+D) తెలంగాణ స్టేట్ ప్రైవేట్ సర్వీస్ కమిషన్
+సరైన జవాబు: A
+వివరణ: TSPSC = తెలంగాణ స్టేట్ పబ్లిక్ సర్వీస్ కమిషన్.
 
-5. NSP scholarship portal official website edi?
+5. NSP స్కాలర్‌షిప్ పోర్టల్ అధికారిక వెబ్‌సైట్ ఏది?
 A) scholarships.gov.in
 B) nsp.gov.in
 C) scholarshipindia.in
 D) education.gov.in
-Answer: A
-Explanation: National Scholarship Portal = scholarships.gov.in.
+సరైన జవాబు: A
+వివరణ: నేషనల్ స్కాలర్‌షిప్ పోర్టల్ = scholarships.gov.in.
 """
 
 DEMO_ROSTER = """21B01A0501, Ravi Kumar

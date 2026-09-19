@@ -125,14 +125,14 @@ def _queue_url(url: str) -> bool:
     try:
         if state.source_done(config.STATE_PATH, url):
             return False
-    except Exception:
-        pass
+    except Exception as exc:  # noqa: BLE001 — best-effort (silent kaadu)
+        log.debug("news_radar._queue_url skip: %s", exc)
     key = "radar:url:" + hashlib.md5(url.encode("utf-8")).hexdigest()[:16]
     try:
         if state.meta_get(config.STATE_PATH, key):
             return False
-    except Exception:
-        pass
+    except Exception as exc:  # noqa: BLE001 — best-effort (silent kaadu)
+        log.debug("news_radar._queue_url skip: %s", exc)
     path = config.SOURCES_QUEUE_PATH
     try:
         existing = path.read_text(encoding="utf-8") if path.exists() else ""
@@ -141,16 +141,16 @@ def _queue_url(url: str) -> bool:
     if url in existing:
         try:
             state.meta_set(config.STATE_PATH, key, "1")
-        except Exception:
-            pass
+        except Exception as exc:  # noqa: BLE001 — best-effort (silent kaadu)
+            log.debug("news_radar._queue_url skip: %s", exc)
         return False
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("a", encoding="utf-8") as fh:
         fh.write(url + "\n")
     try:
         state.meta_set(config.STATE_PATH, key, "1")
-    except Exception:
-        pass
+    except Exception as exc:  # noqa: BLE001 — best-effort (silent kaadu)
+        log.debug("news_radar._queue_url skip: %s", exc)
     return True
 
 
@@ -163,8 +163,8 @@ def _queue_topic(text: str) -> bool:
     try:
         if state.meta_get(config.STATE_PATH, key):
             return False
-    except Exception:
-        pass
+    except Exception as exc:  # noqa: BLE001 — best-effort (silent kaadu)
+        log.debug("news_radar._queue_topic skip: %s", exc)
     p = topics_queue_path()
     try:
         existing = p.read_text(encoding="utf-8") if p.exists() else ""
@@ -173,16 +173,16 @@ def _queue_topic(text: str) -> bool:
     if text in existing:
         try:
             state.meta_set(config.STATE_PATH, key, "1")
-        except Exception:
-            pass
+        except Exception as exc:  # noqa: BLE001 — best-effort (silent kaadu)
+            log.debug("news_radar._queue_topic skip: %s", exc)
         return False
     p.parent.mkdir(parents=True, exist_ok=True)
     with p.open("a", encoding="utf-8") as fh:
         fh.write(text + "\n")
     try:
         state.meta_set(config.STATE_PATH, key, "1")
-    except Exception:
-        pass
+    except Exception as exc:  # noqa: BLE001 — best-effort (silent kaadu)
+        log.debug("news_radar._queue_topic skip: %s", exc)
     return True
 
 

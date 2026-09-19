@@ -9,8 +9,9 @@ claims before any article is drafted.
 It deliberately stores public source URLs/text only. Do not put passwords,
 OTPs, private documents or bank/identity data into this bundle.
 """
-from __future__ import annotations
+import logging
 
+log = logging.getLogger("autoblog.research_brief")
 import json
 import re
 from datetime import date
@@ -122,8 +123,8 @@ def collect_sources(seed: str, url_file: str = "", limit: int = 6,
             urls.extend(r["url"] for r in results
                         if sources.is_valid_source_url(r.get("url", ""))
                         and r.get("url") not in urls)
-        except Exception:
-            pass
+        except Exception as exc:  # noqa: BLE001 — best-effort (silent kaadu)
+            log.debug("research_brief.collect_sources skip: %s", exc)
     if not urls:
         if not query:
             raise ValueError("topic or source URL kavali")

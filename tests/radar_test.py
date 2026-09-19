@@ -180,9 +180,13 @@ def main():
              "Private Jobs", "Software Jobs", "Walkin Jobs", "Internships",
              "Part Time Jobs", "Online Education", "Results",
              "Hall Tickets"} <= cats
+    # v50: the bot's wp.ensure_categories() creates any missing category on the
+    # live site (get_or_create_term), so the grid may use the new pillars too.
     LIVE = {"Scholarships", "Central Govt Jobs", "TS Govt Jobs", "AP Govt Jobs",
             "Private Jobs", "Software Jobs", "Part Time Jobs", "Walkin Jobs",
             "Hall Tickets", "Results", "Internships", "Online Education",
+            "Outsourcing Jobs", "Current Affairs", "Exam Tips", "Upcoming Exams",
+            "Abroad Jobs",
             "Uncategorized"}
     assert cats <= LIVE, cats - LIVE
     names = " ".join(e["name"] for e in grid)

@@ -417,6 +417,67 @@ def admin_html() -> str:
       <p class="tiny">Create ayyaka exam code + student link vasthundi. Tarvata questions
       paste chesi, publish chesi, START nokkandi.</p>
     </div>
+
+    <div class="card" id="adsCard">
+      <div class="flex-between">
+        <h1 style="margin:0">📢 ప్రకటనలు (Ad Inventory)</h1>
+        <div class="row">
+          <button class="btn ghost sm" onclick="loadAds()">రిఫ్రెష్</button>
+          <button class="btn orange sm" onclick="showAdForm()">+ కొత్త ప్రకటన</button>
+        </div>
+      </div>
+      <p class="tiny" id="adsPath"></p>
+      <div class="scroll" style="margin-top:10px"><table id="adsTable"></table></div>
+      <div class="card tight hide" id="adForm" style="margin-top:14px">
+        <h2 id="adFormTitle">కొత్త ప్రకటన</h2>
+        <div class="grid c2">
+          <div><label>Ad ID * (ఇంగ్లీషు చిన్న అక్షరాలు, 3+)</label><input id="a_id" placeholder="college-abc-2026"></div>
+          <div><label>రకం *</label><select id="a_type">
+            <option value="college_banner">కళాశాల బ్యానర్</option>
+            <option value="coaching">కోచింగ్</option>
+            <option value="shop">షాప్ / స్టేషనరీ</option>
+            <option value="service">సేవలు</option>
+            <option value="sponsorship">స్పాన్సర్‌షిప్</option>
+          </select></div>
+          <div><label>శైలి</label><select id="a_layout">
+            <option value="banner">బ్యానర్ (వెడల్పు)</option>
+            <option value="card">కార్డు (సైడ్‌బార్)</option>
+            <option value="auto">ఆటో</option>
+          </select></div>
+          <div><label>లేబుల్ (SPONSORED పక్కన)</label><input id="a_label" placeholder="College Sponsorship"></div>
+          <div style="grid-column:1/-1"><label>శీర్షిక * (కనీసం 8 అక్షరాలు)</label><input id="a_title" placeholder="ABC కళాశాల — 2026 ప్రవేశాలు ప్రారంభం"></div>
+          <div style="grid-column:1/-1"><label>వివరణ</label><textarea id="a_desc" placeholder="స్కాలర్‌షిప్‌లు, హాస్టల్, ప్లేస్‌మెంట్ వివరాలు…"></textarea></div>
+          <div><label>లింక్ * (https:// మాత్రమే — జావాస్క్రిప్ట్ నిషేధం)</label><input id="a_link" placeholder="https://college.example/admissions"></div>
+          <div><label>ఇమేజ్ URL (ఐచ్ఛికం)</label><input id="a_image" placeholder="https://…/banner.jpg"></div>
+          <div><label>బటన్ టెక్స్ట్</label><input id="a_cta" placeholder="మరింత తెలుసుకోండి"></div>
+          <div><label>వర్గాలు (కామాతో)</label><input id="a_cats" placeholder="Admissions, Exam Updates"></div>
+          <div><label>ప్రారంభం (YYYY-MM-DD)</label><input id="a_start" placeholder="2026-09-18"></div>
+          <div><label>ముగింపు (YYYY-MM-DD)</label><input id="a_end" placeholder="2026-12-31"></div>
+          <div><label>స్థానాలు (కామాతో)</label><input id="a_placements" value="top,mid,bottom"></div>
+          <div><label>సక్రియం</label><select id="a_active"><option value="1">అవును</option><option value="0">కాదు</option></select></div>
+        </div>
+        <div class="row" style="margin-top:12px">
+          <button class="btn orange" id="adSaveBtn" onclick="saveAd()">సేవ్ చేయండి</button>
+          <button class="btn ghost" onclick="hideAdForm()">రద్దు</button>
+        </div>
+        <p class="tiny">సేవ్ అయిన ప్రకటన <b>ads/inventory.json</b>లో నిల్వ ఉంటుంది — బాట్ తదుపరి పోస్ట్‌లో ఆటోమేటిక్‌గా వాడుతుంది
+        (SPONSORED లేబుల్ + rel=sponsored nofollow — విధాన-సురక్షితం).</p>
+      </div>
+    </div>
+
+    <div class="card" id="leadsCard">
+      <div class="flex-between">
+        <h1 style="margin:0">📞 లీడ్లు (విద్యార్థుల enquiries)</h1>
+        <div class="row">
+          <button class="btn ghost sm" onclick="loadLeads()">రిఫ్రెష్</button>
+          <a class="btn ghost sm" id="leadsCsv" href="#" target="_blank" rel="noopener">CSV డౌన్‌లోడ్</a>
+        </div>
+      </div>
+      <p class="tiny" id="leadsStats">ఇంకా లోడ్ కాలేదు.</p>
+      <div class="scroll" style="margin-top:10px"><table id="leadsTable"></table></div>
+      <p class="tiny">వెబ్‌సైట్ “ఉచిత సమాచారం” ఫారం నుంచి వచ్చినవి — కళాశాలలు / కోచింగ్‌లకు
+      ₹150–₹400/లీడ్‌కు ఇవ్వవచ్చు. స్పామ్ ఆటోమేటిక్‌గా వేరు చేయబడుతుంది (IP ఎప్పుడూ చూపించము).</p>
+    </div>
   </div>
 </div>"""
     script = """
@@ -437,11 +498,106 @@ async function login(){
     ADMIN_KEY = key; localStorage.setItem('su_admin_key', key); keyOK();
     document.getElementById('loginCard').classList.add('hide');
     document.getElementById('dash').classList.remove('hide');
-    loadExams();
+    loadExams(); loadAds(); loadLeads();
   }catch(e){ document.getElementById('loginMsg').textContent = e.message; toast(e.message); }
 }
 document.getElementById('loginBtn').addEventListener('click', login);
 document.getElementById('keyInput').addEventListener('keydown', e=>{ if(e.key==='Enter') login(); });
+
+/* ---------- v47: ప్రకటనల నిర్వహణ (ads/inventory.json) ---------- */
+let ADS_CACHE = [];
+function adsEsc(x){ return String(x==null?'':x).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+async function loadAds(){
+  const pc = document.getElementById('adsPath'), tb = document.getElementById('adsTable');
+  if(!pc || !tb) return;
+  try{
+    const d = await api('/api/admin/ads?key=' + encodeURIComponent(ADMIN_KEY));
+    ADS_CACHE = d.ads || [];
+    pc.textContent = 'ఫైల్: ' + (d.path || '') + ' · మొత్తం: ' + ADS_CACHE.length + ' ప్రకటనలు';
+    if(!ADS_CACHE.length){ tb.innerHTML = '<tr><td class="tiny">ఇంకా ప్రకటనలు లేవు — “+ కొత్త ప్రకటన” నొక్కండి.</td></tr>'; return; }
+    tb.innerHTML = '<tr><th>ప్రకటన</th><th>రకం</th><th>స్థితి</th><th>కాలం</th><th>లింక్</th><th></th></tr>' +
+      ADS_CACHE.map((a,i)=>`<tr>
+        <td><b>${adsEsc(a.id)}</b><div class="tiny">${adsEsc((a.title||'').slice(0,64))}</div>
+        <div class="tiny">${adsEsc(a.label||'')}${a.demo?' · DEMO':''}</div></td>
+        <td class="tiny">${adsEsc(a.type||'')}<div class="tiny">${adsEsc(a.layout||'')}</div></td>
+        <td>${a.active?'✅':'⏸'}</td>
+        <td class="tiny">${adsEsc(a.start||'—')}${a.end?(' → '+adsEsc(a.end)):''}</td>
+        <td class="tiny"><a href="${adsEsc(a.link||'#')}" target="_blank" rel="noopener">తెరవండి</a></td>
+        <td><button class="btn ghost sm" onclick="editAd(${i})">✏️</button>
+            <button class="btn ghost sm" onclick="delAd('${adsEsc(a.id)}')">🗑</button></td></tr>`).join('');
+  }catch(e){ pc.textContent = 'లోడ్ కాలేదు: ' + e.message; }
+}
+async function loadLeads(){
+  const tb = document.getElementById('leadsTable'), st = document.getElementById('leadsStats'),
+        csv = document.getElementById('leadsCsv');
+  if(!tb) return;
+  try{
+    const d = await api('/api/admin/leads?key=' + encodeURIComponent(ADMIN_KEY) + '&limit=200');
+    const s = d.stats || {}, bs = s.by_status || {};
+    st.textContent = 'మొత్తం: ' + (s.total||0) + ' · ఈరోజు: ' + (s.today||0) +
+      ' · కొత్త: ' + (bs.new||0) + ' · సంప్రదించినవి: ' + (bs.contacted||0) +
+      ' · అమ్మినవి: ' + (bs.sold||0) + ' · స్పామ్: ' + (bs.spam||0);
+    if(csv) csv.href = '/api/admin/leads/export.csv?key=' + encodeURIComponent(ADMIN_KEY);
+    const rows = d.leads || [];
+    if(!rows.length){ tb.innerHTML = '<tr><td class="tiny">ఇంకా లీడ్లు లేవు — వెబ్‌సైట్ ఫారం నింపగానే ఇక్కడ కనిపిస్తాయి.</td></tr>'; return; }
+    tb.innerHTML = '<tr><th>#</th><th>పేరు</th><th>మొబైల్</th><th>ఆసక్తి</th><th>పట్టణం</th><th>స్థితి</th><th></th></tr>' +
+      rows.map(l=>`<tr><td class="tiny">${l.id}</td><td>${adsEsc(l.name)}</td>
+        <td><a href="tel:${adsEsc(l.phone)}">${adsEsc(l.phone)}</a></td>
+        <td class="tiny">${adsEsc(l.interest)}</td><td class="tiny">${adsEsc(l.city||'—')}</td>
+        <td class="tiny"><span class="tag ${l.status==='sold'?'ok':(l.status==='spam'?'warn':'draft')}">${adsEsc(l.status)}</span></td>
+        <td><button class="btn ghost sm" onclick="setLeadStatus(${l.id},'contacted')">సంప్రదించాం</button>
+            <button class="btn ghost sm" onclick="setLeadStatus(${l.id},'sold')">అమ్మాం</button>
+            <button class="btn ghost sm" onclick="setLeadStatus(${l.id},'spam')">స్పామ్</button></td></tr>`).join('');
+  }catch(e){ st.textContent = 'లోడ్ కాలేదు: ' + e.message; }
+}
+async function setLeadStatus(id, status){
+  try{ await api('/api/admin/lead/status', {body:{key:ADMIN_KEY, id:id, status:status}});
+    toast('అప్‌డేట్ అయింది ✔'); loadLeads(); }
+  catch(e){ toast('కుదరలేదు: ' + e.message); }
+}
+function showAdForm(){ document.getElementById('adForm').classList.remove('hide');
+  document.getElementById('adForm').scrollIntoView({behavior:'smooth'}); }
+function hideAdForm(){ document.getElementById('adForm').classList.add('hide'); }
+function editAd(i){
+  const a = ADS_CACHE[i]; if(!a) return;
+  const set = (id,v)=>{ const el=document.getElementById(id); if(el) el.value = v==null?'':v; };
+  set('a_id',a.id); set('a_type',a.type); set('a_layout',a.layout); set('a_label',a.label);
+  set('a_title',a.title); set('a_desc',a.description); set('a_link',a.link); set('a_image',a.image);
+  set('a_cta',a.cta); set('a_cats',a.categories); set('a_start',a.start); set('a_end',a.end);
+  set('a_placements',a.placements); 
+  document.getElementById('a_active').value = a.active?'1':'0';
+  document.getElementById('adFormTitle').textContent = 'ప్రకటన మార్చండి — ' + a.id;
+  showAdForm();
+}
+function clearAdForm(){
+  ['a_id','a_title','a_desc','a_link','a_image','a_cta','a_cats','a_start','a_end'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.value='';
+  });
+  document.getElementById('a_label').value='College Sponsorship';
+  document.getElementById('adFormTitle').textContent='కొత్త ప్రకటన';
+}
+async function saveAd(){
+  const val = id => (document.getElementById(id).value || '').trim();
+  const payload = {
+    key: ADMIN_KEY, id: val('a_id'), type: document.getElementById('a_type').value,
+    layout: document.getElementById('a_layout').value, label: val('a_label'),
+    title: val('a_title'), description: val('a_desc'), link: val('a_link'),
+    image: val('a_image'), cta: val('a_cta'), categories: val('a_cats'),
+    start: val('a_start'), end: val('a_end'), placements: val('a_placements'),
+    active: document.getElementById('a_active').value === '1'
+  };
+  try{
+    await api('/api/admin/ads', {body: payload});
+    toast('ప్రకటన సేవ్ అయింది ✔'); hideAdForm(); clearAdForm(); loadAds();
+  }catch(e){ toast(e.message); }
+}
+async function delAd(id){
+  if(!confirm('ప్రకటన తొలగించాలా? — ' + id)) return;
+  try{ await api('/api/admin/ads/delete', {body:{key: ADMIN_KEY, id: id}});
+    toast('తొలగించబడింది ✔'); loadAds(); }
+  catch(e){ toast(e.message); }
+}
+
 async function loadExams(){
   const out = await api('/api/admin/exams?key=' + encodeURIComponent(ADMIN_KEY));
   const t = document.getElementById('examTable'); t.innerHTML = '';

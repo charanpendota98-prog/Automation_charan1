@@ -1,0 +1,13 @@
+# studentup.in — public preview build
+User-agent: *
+Allow: /
+Disallow: /admin
+# internal artifacts — strategy/keyword data + (safety-net) purana _dev/ drafts (v58/v70)
+Disallow: /_dev/
+Disallow: /keyword-universe-top200.csv
+
+# AdSense/verification crawlers
+User-agent: Mediapartners-Google
+Allow: /
+
+Sitemap: https://studentup.in/sitemap.xml

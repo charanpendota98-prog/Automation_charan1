@@ -13,7 +13,8 @@ from pathlib import Path
 from typing import Dict, Optional
 from urllib.parse import urlparse
 
-from . import config, gemini_client, image_gen, notifier, research, seo, sources, state, validator
+from . import (config, gemini_client, image_gen, notifier, post_gate, qual, research,
+               rm100, seo, sources, state, validator)
 from .notifier import esc, send_telegram
 from .wordpress_client import WordPressClient
 
@@ -50,6 +51,21 @@ def _save_provenance(article: Dict) -> None:
 
 CATEGORY_RULES = [
     # live-site categories (v14) — specific rules first (tie-break priority)
+    # v58: విదేశీ ఉద్యోగాలు — Gulf/abroad jobs, visa, IELTS/PTE, NRI.
+    # List MODATI rule (telugu "ఉద్యోగాలు" generic word Central ki vellakudadu;
+    # "గల్ఫ్ ఉద్యోగాలు" → Abroad Jobs). Phrases ki 2x weight, Telugu ki 2x.
+    ("Abroad Jobs", ["gulf job", "gulf jobs", "abroad job", "abroad jobs",
+                     "overseas job", "overseas jobs", "work visa", "visa slot",
+                     "visa appointment", "study abroad", "ielts exam", "ielts test",
+                     "pte exam", "toefl", "green card", "h1b", "h-1b", "e-migrate",
+                     "గల్ఫ్ ఉద్యోగాలు", "విదేశీ ఉద్యోగాలు", "విదేశీ ఉద్యోగ",
+                     "దుబాయ్", "సౌదీ", "కువైట్", "ఖతార్", "ఒమన్", "బహ్రెయిన్",
+                     "abroad", "overseas", "gulf", "dubai", "abu dhabi", "saudi",
+                     "qatar", "kuwait", "oman", "bahrain", "uae", "sharjah",
+                     "singapore", "malaysia", "japan", "south korea", "germany",
+                     "canada", "australia", "uk ", "usa ", "ielts", "pte",
+                     "emigrate", "nri", "passport", "oci", "visa",
+                     "విదేశీ", "గల్ఫ్", "వీసా", "ఐఎల్‌టీఎస్", "ప్రవాస"]),
     ("TS Govt Jobs", ["tspsc", "telangana", "ts police", "ts genco", "transco",
                       "తెలంగాణ", "gurukul", "tgpsc"]),
     ("AP Govt Jobs", ["appsc", "andhra", "ap police", "apsrtc", "ap genco",
@@ -66,6 +82,18 @@ CATEGORY_RULES = [
     ("Part Time Jobs", ["part time", "part-time", "work from home",
                         "freelance", "data entry", "tutor"]),
     ("Walkin Jobs", ["walkin", "walk-in", "walk in", "direct interview"]),
+    ("Outsourcing Jobs", ["outsourcing", "contract basis", "contractual",
+                          "కాంట్రాక్ట్", "అవుట్‌సోర్సింగ్", "crc", "outsourced",
+                          "guest faculty", "honorarium"]),
+    ("Current Affairs", ["current affairs", "జాతీయ", "ప్రస్తుతాంశాలు",
+                         "pib", "press release", "news today", "daily news",
+                         "కరెంట్ అఫైర్స్", "studytoday news"]),
+    ("Upcoming Exams", ["upcoming exam", "exam calendar", "notification coming",
+                        "రానున్న పరీక్షలు", "exam schedule", "tentative schedule",
+                        "recruitment calendar", "పరీక్షల క్యాలెండర్"]),
+    ("Exam Tips", ["exam tips", "preparation strategy", "study plan", "revision",
+                   "పరీక్షా చిట్కాలు", "సన్నద్ధత", "how to prepare", "time table",
+                   "model paper", "previous papers", "mock test"]),
     ("Hall Tickets", ["admit card", "hall ticket", "హాల్ టికెట్", "call letter"]),
     ("Scholarships", ["scholarship", "fellowship", "nsp", "fee reimbursement",
                       "స్కాలర్", "రుసుము", "pragati", "saksham", "yasasvi"]),
@@ -79,14 +107,36 @@ CATEGORY_RULES = [
 ]
 
 
+# Generic job words: ivatiki thakkuva weight — "job/vacancy" unna headline ni
+# "Outsourcing Jobs" / "Upcoming Exams" lanti specific category lu outrank cheyyali.
+_RULE_GENERIC = {"job", "jobs", "vacancy", "posts", "notification", "recruitment",
+                 "bharti", "hiring", "apply", "apply online"}
+
+
+def _rule_weight(word: str) -> float:
+    """Keyword specificity: phrase/Telugu 2.0 · normal word 1.0 · generic 0.5."""
+    w = word.strip().lower()
+    if w in _RULE_GENERIC:
+        return 0.5
+    if " " in w or "-" in w:
+        return 2.0          # "contract basis", "hall ticket", "exam tips"
+    if not w.isascii():
+        return 2.0          # Telugu keyword (తెలంగాణ, ప్రస్తుతాంశాలు)
+    return 1.0
+
+
 def classify_category(title: str, text: str = "") -> str:
-    """URL mode lo category auto-detect (Telugu + English keywords)."""
+    """URL mode lo category auto-detect (Telugu + English keywords).
+
+    v50: weighted scoring so the *specific* pillar wins over generic job words
+    (e.g. "TSSPDCL outsourcing jobs" → Outsourcing Jobs, not Central Govt Jobs).
+    """
     blob = f"{title} {title} {text[:600]}".lower()
-    best, best_hits = "Online Education", 0
+    best, best_score = "Online Education", 0.0
     for cat, words in CATEGORY_RULES:
-        hits = sum(1 for w in words if w in blob)
-        if hits > best_hits:
-            best, best_hits = cat, hits
+        score = sum(_rule_weight(w) for w in words if w in blob)
+        if score > best_score:
+            best, best_score = cat, score
     return best
 
 
@@ -126,60 +176,112 @@ def _hygiene(article: Dict) -> Dict:
     return article
 
 
-def _rankmath_gate(article: dict, category: str) -> dict:
-    """v18: strict Rank Math scoring → ONE automatic refine round if below RM_TARGET.
+_PG_PUBLISH_TIME_CHECKS = {
+    "media", "media_size", "media_alt", "img_host", "ad_present", "house_ratio",
+    "ad_after_para", "ads_txt", "internal_links", "external_auth", "sponsored_label",
+    "schema_article", "schema_breadcrumb", "schema_job", "schema_org_link",
+    "no_duplicate", "indexnow", "deadline_valid",
+}
 
-    Scorer mimics the actual Rank Math content checks (capped /100 — QA lo
-    inflation undadu). Refine preserves slug (internal links stay valid).
-    Mock/no-key flows skip silently.
+
+def _rankmath_gate(article: dict, category: str) -> dict:
+    """v64: Rank Math 100 gate — DETERMINISTIC rm100 fixes + LLM refine rounds.
+
+    Flow: rm100.apply (title/meta/slug/TOC/table/FAQ/links/density/transitions)
+       → score check → RM_REFINE_ROUNDS varaku LLM refine (content depth, list items)
+       → prathi refine tarvata rm100 malli (rewrite structure break cheyyakunda)
+       → final score article["_rm100"] lo (Telegram + WP meta lo chupistamu)
+
+    Mock/no-key flows skip (silently) — score inka compute avutundi.
     """
-    if article.get("_mock") or not getattr(config, "RM_REFINE_ROUNDS", 1):
+    if article.get("_mock"):
+        article["_rm100"] = rm100.apply(article) if not article.get("_no_rm100") else None
         return article
+    # v65: iterative deterministic passes (score → fix → score) — real-time check
+    opt = rm100.optimize(article, target=int(getattr(config, "RM_TARGET", 100) or 100),
+                         max_passes=2)
+    res = {"after": opt["score"], "before": opt["before"],
+           "applied": (opt["passes"][-1]["applied"] if opt["passes"] else [])}
+    article["_rm100"] = {"score": res["after"], "before": res["before"],
+                         "applied": res["applied"], "passes": len(opt["passes"])}
+    article["_rm_pre"] = res["before"]
+    target = int(getattr(config, "RM_TARGET", 100) or 100)
+    rounds = int(getattr(config, "RM_REFINE_ROUNDS", 2) or 0)
+    strict = analyze_rm(article)
     if not (config.GEMINI_API_KEY or getattr(config, "GEMINI_API_KEYS", [])):
+        # key ledu → LLM refine ledu; deterministic rm100 score mattrame
+        article["_rm"] = strict
         return article
-    strict = validator.rankmath_strict(article, article.get("content_html", ""))
-    article["_rm_pre"] = strict["score"]
-    # v21 FACT GUARD: dates/counts source lo verify-avgathi refine fixes lo
-    facts_before: list = []
-    if getattr(config, "FACT_STRICT", True) and article.get("_source_texts"):
-        facts_before = validator.fact_guard(
-            article.get("content_html", ""), article["_source_texts"])
-        if facts_before:
-            log.warning("FACT GUARD: %d unverified data item(s): %s",
-                        len(facts_before), "; ".join(facts_before[:3]))
-    article["_fact"] = facts_before
-    if (strict["score"] >= getattr(config, "RM_TARGET", 90)
-            and not strict["fixes"]) and not facts_before:
-        return article
-    fixes = list(strict["fixes"]) + [
-        f"SUSPECT data remove/verify cheyandi — {x}" for x in facts_before]
-    log.info("RankMath strict %d/100 (<%d) + facts — refine round (%d fixes)",
-             strict["score"], config.RM_TARGET, len(fixes))
-    try:
-        improved = gemini_client.refine_article(article, fixes[:12])
+    for rnd in range(1, rounds + 1):
+        if strict["score"] >= target and not strict["fixes"]:
+            break
+        facts_before: list = []
+        if getattr(config, "FACT_STRICT", True) and article.get("_source_texts"):
+            facts_before = validator.fact_guard(
+                article.get("content_html", ""), article["_source_texts"])
+            if facts_before:
+                log.warning("FACT GUARD: %d unverified data item(s): %s",
+                            len(facts_before), "; ".join(str(x) for x in facts_before[:3]))
+        # SUSPECT (data accuracy) fixes eppudu mundu — v66 gate hints venaka
+        fixes = [f"SUSPECT data remove/verify cheyandi — {x}" for x in facts_before] + \
+                list(strict["fixes"])
+        # v66: pin-gate (67 checks) failures ni kuda refine hint ga ivvadam —
+        # "blog rasthunnapudu inka chala check cheyali" → writing loop lo ne fix avvali.
+        try:
+            from . import post_gate as _pg
+
+            early = _pg.run(article)
+            hints: list = []
+            for row in early["rows"]:
+                if (row["ok"] or not row["fix"] or row["scored"] is False
+                        or row["id"] in _PG_PUBLISH_TIME_CHECKS):
+                    continue
+                if row["group"] in ("CONTENT", "SEMANTIC", "SEO"):
+                    hints.append(f"GATE {row['id']}: {row['fix']}")
+            fixes = fixes[:10] + hints[:4]
+        except Exception as exc:  # noqa: BLE001 — gate hint best-effort (publish aapadu)
+            log.debug("post_gate early hints skip: %s", exc)
+        if not fixes:
+            break
+        log.info("RankMath %d/100 (target %d) — refine round %d/%d (%d fixes)",
+                 strict["score"], target, rnd, rounds, len(fixes))
+        try:
+            improved = gemini_client.refine_article(article, fixes[:12])
+        except Exception as exc:  # noqa: BLE001 — refine best-effort, publish aapadu
+            log.warning("Refine round %d failed (%s)", rnd, exc)
+            break
         rm2 = validator.rankmath_strict(improved, improved.get("content_html", ""))
-        facts_after = (validator.fact_guard(
-            improved.get("content_html", ""), article["_source_texts"])
-            if facts_before else [])
-        if facts_after:
-            log.warning("FACT GUARD after refine: %d still unverified", len(facts_after))
-        improved["_fact"] = facts_after
-        facts_fixed = facts_before and not facts_after
-        if rm2["score"] > strict["score"] or facts_fixed:
-            log.info("Refine helped: %d -> %d/100", strict["score"], rm2["score"])
-            for k in ("title", "banner_text", "meta_description",
-                      "content_html", "tags", "focus_keyword"):
-                if improved.get(k):
-                    article[k] = improved[k]
-            article["_rm"] = rm2
-            article["_fact"] = improved.get("_fact", facts_after)
-            article["refined"] = True
-        else:
-            log.info("Refine did not help (%d/100) — keeping original draft",
-                     rm2["score"])
-    except Exception as exc:  # noqa: BLE001 — refine best-effantundi
-        log.warning("Refine round failed (%s) — continuing with original", exc)
+        facts_after = (validator.fact_guard(improved.get("content_html", ""),
+                                            article["_source_texts"])
+                       if facts_before else [])
+        facts_fixed = bool(facts_before) and not facts_after
+        if not (rm2["score"] > strict["score"] or facts_fixed):
+            log.info("Refine helped ledu (%s/100 vs %s/100) — original draft keep",
+                     rm2["score"], strict["score"])
+            article["_fact"] = facts_before
+            break
+        for k in ("title", "banner_text", "meta_description", "content_html",
+                  "tags", "focus_keyword", "seo_title"):
+            if improved.get(k):
+                article[k] = improved[k]
+        article["refined"] = True
+        article["_fact"] = facts_after
+        log.info("Refine helped: %s -> %s/100 (facts fixed: %s)",
+                 strict["score"], rm2["score"], facts_fixed)
+        # v64: rewrite tarvata structure malli — TOC/title/meta/links intact
+        res2 = rm100.optimize(article, target=target, max_passes=2)
+        strict = analyze_rm(article)
+        article["_rm100"] = {"score": strict["score"], "before": res["before"],
+                             "applied": (res2["passes"][-1]["applied"]
+                                         if res2.get("passes") else []),
+                             "rounds": rnd}
+        log.info("Round %d tarvata: %d/100", rnd, strict["score"])
+    article["_rm"] = strict
     return article
+
+
+def analyze_rm(article: dict) -> dict:
+    return validator.rankmath_strict(article, article.get("content_html", ""))
 
 
 def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
@@ -263,6 +365,42 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
 
     if not is_quiz:
         final_html = monetize.append_blocks(final_html, article)
+        # v43: AD MANAGER — owner ads (college banners, shop, services).
+        # Runs AFTER monetize blocks so the bottom slot + link-adjacency
+        # safety check see every real <a> that exists. No-op when inventory
+        # empty/missing or AD_MANAGER_ENABLED=0 (publishing never blocked).
+        try:
+            from . import ad_manager as _admgr
+            final_html, _ad_report = _admgr.inject(final_html, article)
+            article["_ads"] = _ad_report
+        except Exception:  # noqa: BLE001 — owner ads must never block publish
+            log.exception("Ad manager inject skipped (safe)")
+            article["_ads"] = []
+
+    # v44: DEEP POST ENGINE — cross-source verification + visible
+    # "In-Depth Analysis" section + perfect-post flags (drafts).
+    if not is_quiz and getattr(config, "DEEP_POST_ENABLED", True):
+        try:
+            from . import deep_research as _dr
+
+            deep_sources = article.get("_deep_sources") or []
+            if len(deep_sources) >= int(getattr(config, "DEEP_MIN_SOURCES", 2)):
+                _report = _dr.build_report(
+                    article.get("title", ""), deep_sources,
+                    notebooklm_brief=article.get("_notebooklm_brief", ""),
+                    target_year=article.get("_target_year"))
+                final_html = _dr.inject_deep(final_html, _report)
+                article["_deep"] = _report
+                _hard, _warn = _dr.gate_post(final_html, _report, live=False)
+                article["_deep_flags"] = ([f"DEEP: {h}" for h in _hard] +
+                                          [f"DEEP?: {w}" for w in _warn])
+                log.info("v44 deep: confidence %s/100 · conflicts=%d · gaps=%d",
+                         _report.get("confidence"),
+                         len(_report.get("conflicts", [])),
+                         len(_report.get("gaps", [])))
+        except Exception:  # noqa: BLE001 — deep layer must never block publish
+            log.exception("Deep post engine skipped (safe)")
+            article["_deep"] = None
 
     # --- QA step 2: validation score + originality proof ---
     qa = validator.validate_article(article, final_html)
@@ -326,6 +464,17 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
             raise RuntimeError(
                 f"LIVE-PUBLISH BLOCKED: {detail_site}")
         log.info("v41 site gate ✔ %s", detail_site)
+        # v44: DEEP GATE — source conflicts / date inconsistency / stale
+        # years block live publish (drafts carry the flags for review).
+        from . import deep_research as _dr
+
+        ok_deep, detail_deep = _dr.publish_gate(article, html=final_html,
+                                                live=True)
+        if not ok_deep:
+            raise RuntimeError(
+                f"LIVE-PUBLISH BLOCKED: {detail_deep}. Draft ga save chesi "
+                "official source tho fix cheyyandi (run.py --deep-research)")
+        log.info("v44 deep gate ✔ %s", detail_deep)
     try:
         _save_provenance(article)
     except OSError:
@@ -333,8 +482,8 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
     try:  # v19: dup-guard memory (scaled-content protection for FUTURE posts)
         state.save_fingerprint(config.STATE_PATH, article["slug"],
                                validator.fingerprint_tokens(final_html))
-    except Exception:
-        pass
+    except Exception as exc:  # noqa: BLE001 — best-effort (silent kaadu)
+        log.debug("publish_article skip: %s", exc)
 
     # --- featured image (alt text lo focus keyword) ---
     image_path = Path(config.OUTPUT_DIR / "images" / f"{article['slug']}.jpg")
@@ -366,6 +515,49 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
             secondary_keywords=article.get("secondary_keywords", []),
         )
 
+    if meta and (article.get("_rm100") or {}).get("score") is not None:
+        meta["rank_math_seo_score"] = str((article["_rm100"] or {}).get("score"))
+    # --- v72: qualification auto-tag (site filter: 10th · 10+2 · డిగ్రీ · పీజీ) ---
+    if meta is not None:
+        try:
+            qmeta = qual.post_meta(article)
+            if qmeta:
+                meta.update(qmeta)
+                log.info("v72 qual tag → %s", qual.describe(article))
+        except Exception:  # noqa: BLE001 — tag fail publish aapadu (theme kuda auto detects)
+            log.exception("v72 qual tag skip (publish safe)")
+    # --- v65 PIN-TO-PIN GATE: certificate + critical block (live publish mattrame) ---
+    is_live = (article.get("_live") is True or
+               str(getattr(config, "DEFAULT_POST_STATUS", "draft")).lower() == "publish")
+    gate = ({"score": 0, "passed": 0, "total": 0, "critical_fails": [], "block": False,
+             "cert_id": "mock", "rows": [], "words": 0, "rankmath": 0,
+             "title": article.get("title", ""), "slug": article.get("slug", ""),
+             "date": date.today().isoformat()}
+            if article.get("_mock") else
+            post_gate.run(article, final_html, media_id=media_id, image_path=image_path))
+    article["_gate"] = gate
+    try:
+        paths = post_gate.write_certificate(gate) if not article.get("_mock") else {}
+        article["_cert"] = paths.get("md", "")
+        log.info("PIN GATE %s/100 · %s/%s checks · critical: %s", gate["score"],
+                 gate["passed"], gate["total"], gate["critical_fails"] or "none")
+    except Exception:  # noqa: BLE001 — certificate fail publish aapadu
+        log.exception("certificate write skip (publish safe)")
+    try:
+        state.meta_set(config.STATE_PATH, "last_cert",
+                       f"{gate['cert_id']}:{gate['score']}")
+    except Exception as exc:  # noqa: BLE001 — best-effort (silent kaadu)
+        log.debug("publish_article skip: %s", exc)
+    if gate["critical_fails"] and gate["block"] and is_live and not article.get("_mock"):
+        msg = (f"⛔ PIN GATE BLOCK — {article.get('title', '')[:60]}\n"
+               f"critical: {', '.join(gate['critical_fails'])}\n"
+               "(fix chesi malli run cheyandi · PIN_GATE_BLOCK=0 tho off)")
+        log.error("PIN GATE BLOCK: %s", ", ".join(gate["critical_fails"]))
+        try:
+            send_telegram(msg)
+        except Exception as exc:  # noqa: BLE001 — best-effort (silent kaadu)
+            log.debug("publish_article skip: %s", exc)
+        return {"error": "pin_gate", "detail": msg, "gate": gate}
     result = wp.create_post(
         title=article["title"],
         content_html=final_html,
@@ -376,6 +568,30 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
         media_id=media_id,
         meta=meta,
     )
+    # v63: SEO fields nijamainaa land ayyaya? (silent-fail pattadam — "mistake lekunda")
+    if meta and result.get("id"):
+        try:
+            landed = wp.verify_meta(result["id"], ["rank_math_focus_keyword",
+                                                   "rank_math_title",
+                                                   "rank_math_description",
+                                                   "studentup_qual"])  # v72
+            missing = [k for k, ok in landed.items() if not ok]
+            if missing:
+                log.warning("Rank Math meta land avvaledu: %s (id=%s) — theme seo-bridge "
+                            "activate cheyandi (wordpress-theme/studentup/inc/seo-bridge.php)",
+                            ", ".join(missing), result["id"])
+                result["seo_meta_missing"] = missing
+                try:
+                    notifier.send_telegram(
+                        "⚠️ <b>SEO meta WAR</b> — post %s lo %s land avvaledu.\n"
+                        "Fix: WP theme (StudentUp) active undo chudandi (SEO bridge)."
+                        % (result["id"], ", ".join(missing)))
+                except Exception as exc:  # noqa: BLE001 — best-effort (silent kaadu)
+                    log.debug("publish_article skip: %s", exc)
+            else:
+                log.info("Rank Math meta verified ✔ (id=%s)", result["id"])
+        except Exception:
+            log.exception("meta verify skip (post safe)")
     state.record_post(config.STATE_PATH, article["title"], article["slug"],
                       article["category"], result["link"], result["status"],
                       qa_score=(article.get("_qa") or {}).get("score"),
@@ -385,8 +601,8 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
         state.mark_source_done(config.STATE_PATH, article["source_url"], result.get("id"))
     try:
         state.meta_cleanup(config.STATE_PATH)  # purana rojuvella keys tidy
-    except Exception:
-        pass
+    except Exception as exc:  # noqa: BLE001 — best-effort (silent kaadu)
+        log.debug("publish_article skip: %s", exc)
 
     log.info("POST CREATED ✔ id=%s status=%s link=%s",
              result.get("id"), result.get("status"), result.get("link"))
@@ -401,14 +617,17 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
 
 def _after_publish_push(article: Dict, result: Dict) -> None:
     """Publish ayyaka instant traffic/indexing push (best-effort)."""
-    # 1) IndexNow (Bing/Yandex instant indexing)
+    # 1) Instant indexing: IndexNow (Bing/Yandex) + Google Indexing API (JobPosting)
     try:
-        from . import indexnow
+        from . import indexing
 
-        if indexnow.submit(result.get("link", "")):
-            article["_indexnow"] = True
-    except Exception:
-        log.exception("IndexNow push failed")
+        idx = indexing.submit_published(article, result.get("link", ""))
+        article["_indexing"] = idx
+        article["_indexnow"] = bool(idx.get("indexnow"))
+        if idx.get("google"):
+            log.info("Google Indexing API ✔ (JobPosting) %s", result.get("link", ""))
+    except Exception as exc:  # noqa: BLE001 — indexing best-effort (publish aapadu)
+        log.warning("Indexing push fail: %s", exc)
     # 2) Telegram channel auto-post (instant traffic + social signal)
     try:
         if config.TELEGRAM_CHANNEL_CHAT_ID:
@@ -580,6 +799,9 @@ def create_from_source(url: str, mock: bool = False, category: str = "",
 
     # --- QA data (notification + trust box kosam) ---
     article["_source_texts"] = [src.text] + [e.text for e in extras]
+    article["_deep_sources"] = [src] + extras  # v44: full objects (tiering)
+    article["_target_year"] = target_year
+    article["_notebooklm_brief"] = notebooklm_brief
     article["_source_urls"] = [src.url] + [e.url for e in extras]
     article["_source_domains"] = [
         d for d in [urlparse(src.url).netloc.replace("www.", "")]
@@ -681,8 +903,8 @@ def update_post(post_id: int, new_source_urls=None, mock: bool = False) -> Dict:
         try:
             fk = (post.get("meta") or {}).get("rank_math_focus_keyword", "") or ""
             fk = fk.split(",")[0].strip()
-        except Exception:
-            pass
+        except Exception as exc:  # noqa: BLE001 — best-effort (silent kaadu)
+            log.debug("update_post skip: %s", exc)
         article = gemini_client.generate_update(
             title, existing_text, fk, extras, date.today().year,
         )
@@ -727,6 +949,16 @@ def update_post(post_id: int, new_source_urls=None, mock: bool = False) -> Dict:
             secondary_keywords=article.get("secondary_keywords", []),
         )
 
+    if meta and (article.get("_rm100") or {}).get("score") is not None:
+        meta["rank_math_seo_score"] = str((article["_rm100"] or {}).get("score"))
+    try:  # v65: update ki kuda certificate (evidence)
+        gate = post_gate.run(article, final_html)
+        article["_gate"] = gate
+        post_gate.write_certificate(gate)
+        log.info("PIN GATE (update) %s/100 · critical: %s", gate["score"],
+                 gate["critical_fails"] or "none")
+    except Exception:
+        log.exception("update gate skip (post safe)")
     result = wp.update_post(
         post_id,
         content_html=final_html,
@@ -735,17 +967,27 @@ def update_post(post_id: int, new_source_urls=None, mock: bool = False) -> Dict:
         meta=meta,
     )
     log.info("POST UPDATED ✔ id=%s link=%s", post_id, result.get("link"))
+    if meta:
+        try:
+            landed = wp.verify_meta(post_id, ["rank_math_focus_keyword",
+                                              "rank_math_title",
+                                              "rank_math_description"])
+            missing = [k for k, ok in landed.items() if not ok]
+            if missing:
+                log.warning("UPDATE %s: Rank Math meta missing %s", post_id, missing)
+        except Exception:
+            log.exception("update meta verify skip (safe)")
     article["source_url"] = None
     try:
         state.record_refresh(config.STATE_PATH, post_id)
-    except Exception:
-        pass
+    except Exception as exc:  # noqa: BLE001 — best-effort (silent kaadu)
+        log.debug("update_post skip: %s", exc)
     try:
         from . import indexnow
 
         indexnow.submit(result.get("link", ""))
-    except Exception:
-        pass
+    except Exception as exc:  # noqa: BLE001 — best-effort (silent kaadu)
+        log.debug("update_post skip: %s", exc)
     try:
         notifier.notify_updated_post(article, result)
     except Exception:

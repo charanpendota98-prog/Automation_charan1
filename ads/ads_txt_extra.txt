@@ -1,0 +1,15 @@
+# ads.txt — అదనపు partner lines (multi-network) — v56
+#
+# Ee file lo partner network isthunna lines ni paste cheyyandi (okati per line).
+# Ee file meeda unna '#' comment lines ni builder skip chestundi; migilina lines
+# preview/ads.txt ki automatic ga add avutayi.
+#
+# Examples (ive nijamaina formats — partner dashboard nunchi copy cheyandi):
+#   google.com, pub-0000000000000000, DIRECT, f08c47fec0942fa0
+#   ezoic.com, 12345, DIRECT
+#   media.net, 8CUxxxx, DIRECT
+#   mediavine.com, 12345, DIRECT
+#
+# Note: Raptive/Mediavine 'exclusive' networks — vaatitho unnapudu AdSense line
+# thiyyalsi vastundi (aa network guide chestundi). Direct sponsors ki ee file
+# avasaram ledu (avi mana own rate card tho ammutunnam).
