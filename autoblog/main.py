@@ -92,6 +92,11 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
         quiz: bool = False, quiz_topic: str = "", quiz_level: int = 0,
         quiz_questions: int = 0, notebooklm_brief_file: str = "",
         target_year: int = 0) -> int:
+    # SAFETY: mock stubs eppudu LIVE publish avvavu (thin test content
+    # WordPress ki vellakudadu) — --mock ante automatic dry-run.
+    if mock and not dry_run:
+        log.warning("--mock tho live publish block chesamu (auto dry-run ON)")
+        dry_run = True
     now = _now()
     today = now.date()
     now_hour = now.hour
@@ -1135,6 +1140,10 @@ def top_post_run(keyword: str, category: str = "", publish: bool = False,
     """v38: blueprint (plan) → optional article → draft/publish."""
     from . import top_post
 
+    # SAFETY: mock top-post eppudu WP ki velladu (auto dry-run).
+    if publish and mock and not dry_run:
+        log.warning("--publish-top-post --mock tho live block (auto dry-run ON)")
+        dry_run = True
     state.init(config.STATE_PATH)
     if publish:
         log.info("Top-post publish flow: keyword=%r mock=%s dry_run=%s",

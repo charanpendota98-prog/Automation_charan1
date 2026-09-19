@@ -136,14 +136,14 @@ def main():
     # ---- 7. --revenue-check smoke ----
     import subprocess
 
-    r = subprocess.run([str(Path(".venv/bin/python")), "run.py", "--revenue-check"],
+    r = subprocess.run([sys.executable, "run.py", "--revenue-check"],
                        capture_output=True, text=True, timeout=60)
     assert "REVENUE AUDIT" in r.stdout and "SITE-SIDE" in r.stdout
     assert "Bot-side score:" in r.stdout and "POLICY" in r.stdout
     print("  7. --revenue-check command ✔")
 
     # ---- 8. --doctor health check ----
-    r2 = subprocess.run([str(Path(".venv/bin/python")), "run.py", "--doctor"],
+    r2 = subprocess.run([sys.executable, "run.py", "--doctor"],
                         capture_output=True, text=True, timeout=120)
     assert "DOCTOR" in r2.stdout
     assert "Gemini API" in r2.stdout and "WordPress REST" in r2.stdout

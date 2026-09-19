@@ -25,6 +25,8 @@ import json
 import re
 import sys
 import tempfile
+from datetime import datetime, timedelta, timezone
+from email.utils import format_datetime
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -57,16 +59,23 @@ def test_most_used_order():
 
 
 def test_build_items_dedupe_and_guards():
+    # pub dates anni dynamic (fixed date = time-bomb; sort deterministic undali).
+    _now = datetime.now(timezone.utc).replace(microsecond=0)
+    _pub_new = format_datetime(_now, usegmt=True)
     raw = [
         {"title": "TSPSC Group 2 హాల్ టికెట్ విడుదల - Eenadu",
-         "link": "https://a.example.org/1", "pub": "Fri, 19 Sep 2026 06:30:00 GMT",
+         "link": "https://a.example.org/1", "pub": _pub_new,
          "source_name": "Google News · తెలుగు"},
         {"title": "TSPSC Group 2 హాల్ టికెట్ విడుదల - Eenadu",
          "link": "https://a.example.org/1?utm=2", "pub": ""},          # dup title+link
         {"title": "చిన్నది", "link": "https://a.example.org/2"},       # too short
         {"title": "లింక్ లేని వార్త — పరీక్షల అప్డేట్", "link": "javascript:bad"},
-        {"title": "a.example.org నుండి మూడో వార్త వివరాలు", "link": "https://a.example.org/3"},
-        {"title": "a.example.org నాలుగో వార్త వివరాలు", "link": "https://a.example.org/4"},
+        {"title": "a.example.org నుండి మూడో వార్త వివరాలు",
+         "link": "https://a.example.org/3",
+         "pub": format_datetime(_now - timedelta(hours=2), usegmt=True)},
+        {"title": "a.example.org నాలుగో వార్త వివరాలు",
+         "link": "https://a.example.org/4",
+         "pub": format_datetime(_now - timedelta(hours=3), usegmt=True)},
     ]
     items = breaking.build_items(raw)
     titles = [i["title"] for i in items]

@@ -180,7 +180,7 @@ def main():
     import subprocess
 
     r = subprocess.run(
-        [str(Path(".venv/bin/python")), "run.py", "--help"],
+        [sys.executable, "run.py", "--help"],
         capture_output=True, text=True, timeout=60,
     )
     assert "--update" in r.stdout and "--add-source" in r.stdout

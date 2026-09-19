@@ -231,8 +231,7 @@ def c_theme_v64() -> List[dict]:
         "PWA + head hints": ("inc/pwa.php", ("studentup_manifest", "preconnect",
                                              "adsense_auto")),
     }
-    fn = _read(THEME_PATH / "functions.php") if False else _read(
-        ROOT / "wordpress-theme" / "studentup" / "functions.php")
+    fn = _read(ROOT / "wordpress-theme" / "studentup" / "functions.php")
     missing, present = [], []
     for label, (rel, needles) in mods.items():
         path = ROOT / "wordpress-theme" / "studentup" / rel

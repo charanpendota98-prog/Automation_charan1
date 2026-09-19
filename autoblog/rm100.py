@@ -732,7 +732,6 @@ def main() -> int:
     print(f"  words: {_words(art['content_html'])} · title: {art['title']} "
           f"({len(art['title'])} ch)")
     print(f"  meta: {len(art['meta_description'])} ch · slug: {art['slug']}")
-    tests = analyze(art)
     print("-" * 70)
     for row in validator.rankmath_strict(art, art["content_html"]).get("checks", []):
         print(f"    {'✅' if row['ok'] else '❌'} {row['item']}")
