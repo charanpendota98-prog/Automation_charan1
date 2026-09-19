@@ -503,6 +503,22 @@ python run.py --traffic-sessions         # advanced control
 python run.py --traffic-views            # advanced control
 ```
 
+### v87 — FIX-ALL ROUND (update e2e + quiz + banners → 7 real fixes)
+
+**Mee brief:** "fix all". Update flow e2e probe + quiz/banner visual audit
+(real renders chusi!) — dorikina real bugs anni fix.
+
+**Real fixes (7):** update rm100 `KeyError: 'after'` (v84 feature DEAD —
+optimize returns `score`!) · update official-links gap (create parity) ·
+quiz `--quiz-level 9` crash → clamp + questions 500 → 30 + dup-guard
+pre-generate (LLM waste) · **Telugu banner tofu boxes** → transliteration
+(PIL shaping ledu — deterministic Latin) · long-token canvas overflow →
+hard-break · 3-line footer overlap → auto-shrink fit · empty focus_keyword
+→ title-derived fallback · auto-refresh owner summary (cron silent fix).
+
+**Proof:** `--test-all` **68/68** (v87_test.py kotha: 7 checks) ·
+jsdom **164/164** · readiness **100/100** · theme-audit **0/0** · theme **1.7.2**.
+
 ### v86 — PROFESSIONAL POST AUDIT (final post e2e → 6 real fixes)
 
 **Mee brief:** "oka professional post avvali — inka emaina bugs unte

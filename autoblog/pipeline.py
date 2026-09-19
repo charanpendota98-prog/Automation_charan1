@@ -191,6 +191,12 @@ def _hygiene(article: Dict) -> Dict:
     if not tags:
         tags = [article.get("category", "Students"), str(date.today().year)]
     article["tags"] = tags[:8]
+    # v87: focus_keyword empty (LLM omit) → title nunchi derive
+    # (lekapothe 41-score draft + rm100 kw-fixers anni skip!)
+    if not (article.get("focus_keyword") or "").strip():
+        toks = [t for t in re.sub(r"[^a-zA-Z0-9 ]", " ", title).split()
+                if len(t) > 2][:4]
+        article["focus_keyword"] = " ".join(toks) or title[:60]
     # meta description fallback: quick_answer or first para nunchi
     md = (article.get("meta_description") or "").strip()
     if len(md) < 120:
@@ -717,7 +723,8 @@ def _append_official_sources(article: dict) -> None:
     trust-box already give provenance, mislabel kakunda).
     """
     from .sources import is_official_domain
-    article.setdefault("external_links", [])
+    # v87: None-safe (update-path articles lo key missing/None untundi)
+    article["external_links"] = article.get("external_links") or []
     known_links = {str(item.get("url", "")).rstrip("/")
                    for item in article["external_links"] if isinstance(item, dict)}
     for source_url in (article.get("_source_urls") or [])[:6]:
@@ -993,6 +1000,10 @@ def update_post(post_id: int, new_source_urls=None, mock: bool = False) -> Dict:
     article = _hygiene(article)
     article.setdefault("update_notes", "")
     article["_deep_sources"] = list(extras)  # v77: update originality scoring
+    # v87: update kuda official-source links (create-path parity — kotha
+    # gov notice links updates lo poyevai!)
+    article["_source_urls"] = [e.url for e in extras if getattr(e, "url", "")]
+    _append_official_sources(article)
 
     # v84: update kuda rm100 re-run (LLM rewrite structure degrade kakunda +
     # rank_math_seo_score fresh). Fail ayina update aagadu (advisory).
@@ -1001,9 +1012,11 @@ def update_post(post_id: int, new_source_urls=None, mock: bool = False) -> Dict:
             _ures = rm100.optimize(
                 article, target=int(getattr(config, "RM_TARGET", 100) or 100),
                 max_passes=2)
-            article["_rm100"] = {"score": _ures["after"],
+            # v87: optimize returns "score" (not "after") — v84 key bug valla
+            # update rm100 ALWAYS skip ayyedi (KeyError → advisory catch)!
+            article["_rm100"] = {"score": _ures["score"],
                                  "before": _ures["before"]}
-            log.info("Update rm100 %s→%s", _ures["before"], _ures["after"])
+            log.info("Update rm100 %s→%s", _ures["before"], _ures["score"])
     except Exception:  # noqa: BLE001 — advisory (update safe)
         log.exception("update rm100 skip (post safe)")
 
@@ -1140,17 +1153,27 @@ def create_quiz(topic: str = "", level: int = 0, questions: int = 0,
         # manual topic (Telugu ok) — level default 2, questions default
         topic_en = topic.strip()
         topic_te = topic.strip()
-        lvl = level or 2
-        n = questions or config.QUIZ_QUESTIONS
+        # v87: manual level clamp (9 isthe LEVEL_NAMES KeyError crash!)
+        lvl = max(1, min(4, level)) if level else 2
+        # v87: questions clamp (500 adigithe LLM output truncate + cost!)
+        n = max(1, min(30, questions)) if questions else config.QUIZ_QUESTIONS
     else:
         topic_en, topic_te, lvl, n = quiz_engine.pick_daily_topic(now_day)
         if questions:
-            n = questions
+            n = max(1, min(30, questions))
         if level:
             lvl = max(1, min(4, level))
 
     log.info("Quiz mode: '%s' (%s) — L%d, %d questions%s",
              topic_en, topic_te, lvl, n, " [MOCK]" if mock else "")
+    # v87: duplicate guard GENERATE MUNDU (LLM call waste kakunda) —
+    # title ki quiz object avasaram ledu (topic/lvl matrame).
+    _dstr = now_day.strftime("%d %B %Y")
+    _qtitle = (f"Daily Quiz – {_dstr} | {topic_en} Telugu "
+               f"({quiz_engine.LEVEL_NAMES[lvl]})") if not topic else \
+        f"Quiz: {topic_en} Telugu ({quiz_engine.LEVEL_NAMES[lvl]})"
+    if state.title_exists(config.STATE_PATH, _qtitle):
+        raise ValueError(f"Quiz already generated today: {_qtitle}")
     if mock:
         quiz = quiz_engine.mock_quiz(topic_en, topic_te, lvl, n, now_day)
     else:
@@ -1163,13 +1186,7 @@ def create_quiz(topic: str = "", level: int = 0, questions: int = 0,
 
     content_html, uid = quiz_engine.build_quiz_html(quiz, topic_en, topic_te,
                                                     lvl, n, now_day)
-    dstr = now_day.strftime("%d %B %Y")
-    title = (f"Daily Quiz – {dstr} | {topic_en} Telugu "
-             f"({quiz_engine.LEVEL_NAMES[lvl]})") if not topic else \
-            f"Quiz: {topic_en} Telugu ({quiz_engine.LEVEL_NAMES[lvl]})"
-    # duplicate guard: same-day/same-topic quiz already unda?
-    if state.title_exists(config.STATE_PATH, title):
-        raise ValueError(f"Quiz already generated today: {title}")
+    dstr, title = _dstr, _qtitle  # v87: pre-computed (guard generate mundu)
     focus = "daily quiz telugu" if not topic else topic_en.lower()
     article = {
         "title": title,
@@ -1234,4 +1251,15 @@ def auto_refresh(limit: int = 1, older_days: int = None) -> list:
             results.append(update_post(t["wp_id"]))
         except Exception:
             log.exception("Auto-refresh fail: post %s", t["wp_id"])
+    # v87: owner summary (cron silent kakunda — updates jarigayo ledo teliyali)
+    try:
+        if results and config.TELEGRAM_BOT_TOKEN and config.TELEGRAM_CHAT_ID:
+            from .notifier import esc as _esc, send_telegram as _tg
+            lines = [f"🔄 <b>Auto-refresh: {len(results)} post(s)</b>"]
+            for r in results[:5]:
+                if isinstance(r, dict) and not r.get("error"):
+                    lines.append(f"✔ {_esc(r.get('link', ''))}")
+            _tg("\n".join(lines))
+    except Exception:  # noqa: BLE001 — notify never breaks cron
+        log.exception("auto-refresh summary skip (safe)")
     return results

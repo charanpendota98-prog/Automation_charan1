@@ -1498,3 +1498,37 @@ node tests/runtime/jsdom_runtime_test.js     # 164/164 browser checks
 python run.py --readiness                    # 100/100
 python -m pyflakes autoblog tools tests run.py  # 0 findings
 ```
+
+## PART 45 — v87: FIX-ALL ROUND (update e2e + quiz + banners)
+
+**Brief:** "fix all" — update flow e2e probe + quiz/banner visual audit.
+
+**Fixes (7):**
+1. `pipeline.update_post` — `_ures["after"]` → `["score"]` (×2: dict + log
+   line). `optimize()` returns "score"; v84 update-rm100 KeyError tho ALWAYS
+   skip ayyedi. (apply-vs-optimize key audit: migathavi anni correct)
+2. `update_post` — `_source_urls` + `_append_official_sources` (create parity);
+   helper None-safe (`article.get(...) or []`)
+3. `create_quiz` — manual level clamp 1-4 (KeyError crash fix), questions
+   clamp 1-30 (LLM truncate/cost), dup-guard generate MUNDU (title pre-compute)
+4. `image_gen.telugu_to_latin` — Telugu banner tofu boxes (□□□) fix. PIL ku
+   Indic shaping ledu (no raqm local + server) → deterministic Latin
+   (conjuncts/virama/matras/digits). Banner + pill label rendu.
+5. `image_gen` — `_split_word` hard-break (long-token canvas overflow) +
+   `_fit_banner` auto-shrink (bottom 3-line → footer overlap fix)
+6. `_hygiene` — empty focus_keyword → title-derived (41-score drafts + rm100
+   kw-skip fix). Validator empty-kw ni honest-41 ga handle chestundi (verified)
+7. `auto_refresh` — owner TG summary (cron silent fix; notify never breaks cron)
+
+**Visual proof:** /tmp/v87_img renders (before: tofu + overlap + overflow;
+after: clean Latin + fit). Probe artifacts noted: FakeWP routing
+(`?context=edit` endswith), dates/title/related anni real-run lo verify.
+
+VERIFY (v87)
+```
+python tests/v87_test.py                     # 7/7 checks
+python run.py --test-all                     # 68/68 suites
+node tests/runtime/jsdom_runtime_test.js     # 164/164 browser checks
+python run.py --readiness                    # 100/100
+python -m pyflakes autoblog tools tests run.py  # 0 findings
+```
