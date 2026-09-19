@@ -274,7 +274,8 @@ def render_ad(ad: Dict, slot: str, pol: Dict) -> str:
     rel = _esc("noopener") if is_house else _esc(pol["rel"])
     demo_note = ('<span class="su-ad-note">demo</span>'
                  if ad.get("demo") else "")
-    aria = "StudentUp ప్రచురణ" if is_house else "Sponsored content"
+    # v73: ad chrome English (UI text) — article body Telugu ga undochu
+    aria = "StudentUp · our service" if is_house else "Sponsored content"
     img = (ad.get("image") or "").strip()
     img_html = ""
     if img:
@@ -292,10 +293,10 @@ def render_ad(ad: Dict, slot: str, pol: Dict) -> str:
             f'<div class="su-ad-title">{title}</div>'
             + (f'<p class="su-ad-desc">{desc}</p>' if desc else "")
             + f'<a class="su-ad-cta" href="{url}" target="_blank" rel="{rel}">{cta} →</a>'
-            + ('<div class="su-ad-disc">StudentUp సొంత ప్రచురణ — పెయిడ్ ప్రకటన కాదు; '
-               'మా సేవల గురించి మాత్రమే.</div></aside>' if is_house else
-               '<div class="su-ad-disc">Advertisement — partner ki direct link; '
-               'mana content separate ga untundi.</div></aside>')
+            + ('<div class="su-ad-disc">StudentUp\'s own publication — not a paid '
+               'advertisement; about our services only.</div></aside>' if is_house else
+               '<div class="su-ad-disc">Advertisement — direct link to our partner; '
+               'our content stays separate.</div></aside>')
         )
     # banner (default)
     return (
@@ -307,11 +308,11 @@ def render_ad(ad: Dict, slot: str, pol: Dict) -> str:
         + f'<div class="su-ad-title">{title}</div>'
         + (f'<p class="su-ad-desc">{desc}</p>' if desc else "")
         + f'<a class="su-ad-cta" href="{url}" target="_blank" rel="{rel}">{cta} →</a>'
-        + ('<div class="su-ad-disc">StudentUp సొంత ప్రచురణ — పెయిడ్ ప్రకటన కాదు; '
-           'మా సేవల గురించి మాత్రమే.</div></section>' if is_house else
-           '<div class="su-ad-disc">Sponsored — ee advertisement mee search results lo '
-           'content kuda aa ani mishtapadu chesukovadu; official notification links '
-           'site main content lo matrame untayi.</div></section>')
+        + ('<div class="su-ad-disc">StudentUp\'s own publication — not a paid '
+           'advertisement; about our services only.</div></section>' if is_house else
+           '<div class="su-ad-disc">Sponsored — this advertisement does not change our '
+           'content; official notification links appear only in the site\'s main '
+           'content.</div></section>')
     )
 
 

@@ -76,7 +76,7 @@ add_action( 'wp_head', 'studentup_schema_head', 5 );
  */
 function studentup_breadcrumb_items() {
 	$items = array(
-		array( '@type' => 'ListItem', 'position' => 1, 'name' => 'హోమ్', 'item' => home_url( '/' ) ),
+		array( '@type' => 'ListItem', 'position' => 1, 'name' => 'Home', 'item' => home_url( '/' ) ),
 	);
 	if ( is_singular( 'post' ) ) {
 		$cats = get_the_category();

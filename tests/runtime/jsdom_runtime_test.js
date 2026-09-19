@@ -12,7 +12,7 @@ const html = fs.readFileSync(PAGE, "utf8");
 
 /* v71: total check count — docs (README/MANUAL/GO_LIVE) claim this number and
  * tools/parity_audit.py P8 reads it, so a silent drift cannot slip through. */
-const EXPECTED_CHECKS = 161;
+const EXPECTED_CHECKS = 162;
 
 const passed = [];
 const failed = [];
@@ -49,30 +49,27 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
   lds.forEach(s => { try { JSON.parse(s.textContent); } catch (e) { ldOk = false; } });
   ok("2+ JSON-LD blocks, all valid JSON", ldOk, "count=" + lds.length);
 
-  /* ---------- v72.1: dead-line data driven (fake countdown teesesaam) ---------- */
-  ok("v72.1 countdown: data ledu ante honest note (fake '--' timer chupinchadu)",
-     document.getElementById("cd-box").hasAttribute("hidden") &&
-     /తుది తేదీలు/.test(document.getElementById("cd-none").textContent));
-  ok("v72.1 countdown: feed vachhaka live ga tick chestundi (network-first, fake date ledu)",
-     /fetch\("data\/deadline\.json"/.test(html) && !/new Date\(2026,9,15/.test(html));
+  /* ---------- v73: slim hero + countdown/deadline teesesaam + English UI ---------- */
+  ok("v73 hero: slim hero English h1 (countdown card ledu)",
+     !!document.querySelector(".hero-slim") && !document.querySelector(".timer") &&
+     (document.querySelector(".hero-slim h1") || { textContent: "" }).textContent.length > 20);
+  ok("v73: countdown UI + data plumbing ledu (cd-box · data-deadline · deadline.json)",
+     !document.getElementById("cd-box") && !document.querySelector("[data-deadline]") &&
+     !/cd-none|deadline\.json|new Date\(2026,9,15/.test(html));
+  ok("v73: HTML head English (lang=en · og:locale en_IN · ld inLanguage en-IN)",
+     document.documentElement.getAttribute("lang") === "en" &&
+     /og:locale" content="en_IN"/.test(html) && /"inLanguage": "en-IN"/.test(html));
+  /* v73: UI chrome (header/footer/menu/rail/qualification/ads) lo Telugu undakoodadu —
+   * Telugu mattrame job/article content + daily quiz lo (scope: ui_english_body_telugu). */
   {
-    const domDl = new JSDOM(html, {
-      url: "http://localhost/", runScripts: "dangerously", pretendToBeVisual: true,
-      beforeParse(win) {
-        win.fetch = () => Promise.resolve({ ok: true, json: () => Promise.resolve(
-          { title: "TSPSC గ్రూప్ 2 — దరఖాస్తు చివరి తేదీ", date: "2027-01-05T17:00:00+05:30" }) });
-      },
-    });
-    await sleep(60);
-    const d = domDl.window.document;
-    const box = d.getElementById("cd-box");
-    const nums = ["cd-d", "cd-h", "cd-m", "cd-s"].map(id => d.getElementById(id).textContent).join(":");
-    ok("v72.1 countdown: deadline.json vachhaka timer live (numeric values)",
-       !box.hasAttribute("hidden") && d.getElementById("cd-none").hidden &&
-       /^\d{1,3}:\d{1,2}:\d{1,2}:\d{1,2}$/.test(nums),
-       nums);
-    domDl.window.close();
+    const chrome = ["header", "footer", ".mpanel", ".usedwrap", ".sectionhead", ".qsplit-head",
+                    ".su-ad", ".joinbox", ".chiprow", ".surail"]
+      .map(sel => document.querySelector(sel)).filter(Boolean)
+      .map(e => e.textContent).join(" ");
+    ok("v73: header/footer/menu/qualification chrome lo Telugu ledu", !/[\u0C00-\u0C7F]/.test(chrome));
   }
+  ok("v73: job/article content Telugu ga undi (scope = content only)",
+     /[\u0C00-\u0C7F]/.test((document.getElementById("grid") || { textContent: "" }).textContent || ""));
 
   /* ---------- state filters ---------- */
   const tabs = Array.from(document.querySelectorAll(".tab"));
@@ -239,7 +236,7 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
      "links=" + mpanel.querySelectorAll("a").length);
   ok("mobile panel has Partner + Exam CTA",
      Array.from(mpanel.querySelectorAll("a")).some(a => /Partner with us/.test(a.textContent)) &&
-     Array.from(mpanel.querySelectorAll("a")).some(a => a.textContent.indexOf("ఆన్‌లైన్ పరీక్ష") > -1));
+     Array.from(mpanel.querySelectorAll("a")).some(a => a.textContent.indexOf("Online Exams") > -1));
   mpanel.querySelector('a[href="#jobs"]').click();
   ok("panel link click closes menu", !mpanel.classList.contains("open") && !document.body.classList.contains("mlock"));
   menubtn.click();
@@ -272,10 +269,12 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
 
   /* ---------- v47: pure-Telugu content + trust + daily poll ---------- */
-  const heroText = document.querySelector(".hero h1").textContent;
-  ok("hero rendered in Telugu script (no Romanized mix)", /[\u0C00-\u0C7F]/.test(heroText) && !/\b(kosam|cheyandi|ledu|undi|avutundi)\b/i.test(heroText), heroText.slice(0, 48));
+  const heroText = document.querySelector(".hero-slim h1").textContent;
+  ok("v73 hero: English h1 (UI English — Telugu mattrame post content lo)",
+     /[A-Za-z]{4,}/.test(heroText) && !/[\u0C00-\u0C7F]/.test(heroText), heroText.slice(0, 48));
   const telCount = (document.body.textContent.match(/[\u0C00-\u0C7F]/g) || []).length;
-  ok("Telugu script dominant across page body (300+ chars)", telCount > 300, "telugu chars=" + telCount);
+  ok("v73 scope: post/article content Telugu ga undi (300+ chars, UI kaadu)",
+     telCount > 300, "telugu chars=" + telCount);
   const bodyTxt = document.body.textContent;
   ok("developer-facing demo text removed (no .env / Demo contact leaks)",
      !/\.env/.test(bodyTxt) && !/Demo contact/i.test(bodyTxt) && !/Call \(demo\)/i.test(bodyTxt) &&
@@ -292,9 +291,9 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
      !/href="#trust"/.test(document.body.innerHTML) &&
      /pages\/editorial-policy\.html/.test(document.body.innerHTML));
   const poll = document.getElementById("poll");
-  ok("daily poll section present (ఈరోజు పోల్)", !!poll && /ఈరోజు పోల్/.test(poll.textContent));
+  ok("daily poll section present (ఈరోజు పోల్)", !!poll && /Today's poll/.test(poll.textContent));
   ok("poll widget has fetch fallback (portal offline → graceful note)",
-     /పోల్ అందుబాటులో లేదు|poll-error/.test(poll.innerHTML + Array.from(document.querySelectorAll("style")).map(s=>s.textContent).join("")));
+     /poll-error|Loading poll/.test(poll.innerHTML + Array.from(document.querySelectorAll("style")).map(s=>s.textContent).join("")));
   ok("poll CSS: responsive + dark-mode rules", /\.poll\{/.test(styleText) && /body\.dark \.poll-opt/.test(styleText));
   ok("services card: working contact paths (no dev placeholders)",
      !!document.querySelector('#services a[href^="mailto:"]') &&
@@ -306,7 +305,7 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
   const needed = ["pages/about.html", "pages/contact.html", "pages/privacy.html", "pages/disclaimer.html", "pages/editorial-policy.html"];
   ok("all 5 real policy pages linked (no dead policy anchors)",
      needed.every(h => policyHrefs.indexOf(h) > -1) &&
-     !/href="#trust">(సంపాదకీయ|సవరణలు|గోప్యతా)/.test(document.documentElement.innerHTML),
+     !/href="#trust">(About|Editorial|Privacy)/.test(document.documentElement.innerHTML),
      "links=" + policyHrefs.length);
   const fav = document.querySelector('link[rel="icon"]');
   ok("favicon declared", !!fav && /favicon\.svg$/.test(fav.getAttribute("href")), fav ? fav.getAttribute("href") : "none");
@@ -345,7 +344,7 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
   const examCats = examDrop ? Array.from(examDrop.querySelectorAll("a[data-goto-cat]")).map(a => a.getAttribute("data-goto-cat")) : [];
   ok("v59 పరీక్షలు dropdown: upcoming + tips + portal (hall/results top-level ki vachhayi)",
      ["upcoming", "examtips"].every(c => examCats.indexOf(c) > -1) &&
-     /ఆన్‌లైన్ పరీక్షలు/.test(examDrop ? examDrop.textContent : ""),
+     /Online Exams/.test(examDrop ? examDrop.textContent : ""),
      "cats=" + examCats.join(","));
   ok("v59 హాల్ టికెట్లు + ఫలితాలు top-level menu lonaki vachhayi",
      !!document.querySelector('.nav > a[data-goto-cat="hallticket"]') &&
@@ -462,15 +461,12 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
   ok("v72.1: coverage topbar teesesaam (jillalu/update-count line public lo ledu)",
      !document.querySelector(".topbar") &&
      !/\(33 జిల్లాలు\)|\(26 జిల్లాలు\)|జిల్లాల పర్యవేక్షణ|ప్రతిరోజూ ధృవీకృత అప్డేట్/.test(html));
-  ok("v72.1: hero countdown fake date ledu — data/deadline.json + honest default",
-     !!document.getElementById("cd-none") && document.getElementById("cd-box").hasAttribute("hidden") &&
-     /data\/deadline\.json/.test(html) && !/new Date\(2026,9,15/.test(html));
-  ok("v72.1: ad slots fake advertiser/example.com lekunda — 'స్లాట్ ఖాళీ' house creative",
+  ok("v72.1: ad slots fake advertiser/example.com lekunda — 'slot available' house creative",
      /example\.com/.test(html) === false &&
      Array.from(document.querySelectorAll(".su-ad")).every(a => !/ABC |abc-college|tuition-demo|stationery-demo/.test(a.textContent)) &&
      /\.html$/.test(document.querySelector(".su-ad a").getAttribute("href")));
-  ok("v72.1: exam wording neat (ఆన్‌లైన్ పరీక్షలు)",
-     /ఆన్‌లైన్ పరీక్ష/.test(html));
+  ok("v73: exam wording English (Online Exams)",
+     /Online Exams/.test(html));
 
   /* ---------- v72: ఎక్కువగా వెతికేవి + పర్ఫెక్ట్ మెనూ ---------- */
   const usedTiles = Array.from(document.querySelectorAll(".usedgrid .usedcard"));
@@ -486,11 +482,11 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
      "count=" + (firstCount ? firstCount.textContent : "none"));
   const navCats = Array.from(document.querySelectorAll(".nav > a, .nav > .has-drop > a"))
     .map(a => a.textContent.replace(/▾/g, "").trim());
-  ok("v72 perfect menu order (హోమ్ · ఉద్యోగాలు · హాల్ టికెట్లు · ఫలితాలు · స్కాలర్ · ప్రస్తుతాంశాలు · పరీక్షలు · మరికొన్ని)",
-     /^హోమ్/.test(navCats[0]) && /ఉద్యోగాలు/.test(navCats[1]) && /హాల్ టికెట్లు/.test(navCats[2]) &&
-     /ఫలితాలు/.test(navCats[3]) && /స్కాలర్/.test(navCats[4]) &&
-     /ప్రస్తుతాంశాలు/.test(navCats[5]) && /పరీక్షలు/.test(navCats[6]) && /మరికొన్ని/.test(navCats[7]),
-     navCats.join(" | "));
+  ok("v72 perfect menu order (Home · Jobs · Hall Tickets · Results · Scholarships · Current Affairs · Exams · More)",
+     /^Home/.test(navCats[0]) && /Jobs/.test(navCats[1]) && /Hall Tickets/.test(navCats[2]) &&
+     /Results/.test(navCats[3]) && /Scholarships/.test(navCats[4]) &&
+     /Current Affairs/.test(navCats[5]) && /Exams/.test(navCats[6]) && /More/.test(navCats[7]),
+     /**/ navCats.join(" | "));
   const jobDrop = Array.from(document.querySelectorAll(".nav .drop a[data-goto-cat]"))
     .slice(0, 6).map(a => a.getAttribute("data-goto-cat"));
   ok("v59 jobs dropdown order: TS · AP · Central · Private · Walk-in · Software",
@@ -525,7 +521,7 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
   ok("v72 header search: 🔍 button + panel + input (menu pakkana)",
      !!sbtn && !!spanel && !!qtop && spanel.hasAttribute("hidden") &&
      sbtn.getAttribute("aria-controls") === "searchpanel" &&
-     /వెతకండి/.test(qtop.getAttribute("placeholder") || ""));
+     /Search jobs/.test(qtop.getAttribute("placeholder") || ""));
   sbtn.click();
   ok("v72 search panel opens on 🔍 click (aria-expanded true)",
      !spanel.hasAttribute("hidden") && sbtn.getAttribute("aria-expanded") === "true");
@@ -565,7 +561,7 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
   qDegChip.click();
   ok("v72 qualification filter: డిగ్రీ → degree cards + count label update",
      qVisible().length > 0 && qVisible().every(c => /degree/.test(c.getAttribute("data-qual"))) &&
-     /అవకాశాలు/.test(document.getElementById("qcount").textContent),
+     /opportunities/.test(document.getElementById("qcount").textContent),
      "visible=" + qVisible().length + " count=" + document.getElementById("qcount").textContent);
   /* ---------- v72.1: అర్హత ప్రకారం విభాగాలు (automatic grouping) ---------- */
   {
@@ -620,9 +616,9 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
   document.getElementById("grid").appendChild(expiredCard);
   q .value = ""; q.dispatchEvent(new window.Event("input", { bubbles: true }));
   qchips.find(c => c.getAttribute("data-qual") === "all").click();
-  ok("v72 expired job card: 'గడువు ముగిసింది' badge + default ga hide",
+  ok("v72 expired job card: 'Deadline passed' badge + default ga hide",
      expiredCard.classList.contains("expired") &&
-     /గడువు ముగిసింది/.test(expiredCard.textContent) &&
+     /Deadline passed/.test(expiredCard.textContent) &&
      expiredCard.classList.contains("hidden"));
   expiredCard.remove();
   qchips.find(c => c.getAttribute("data-qual") === "all").click();
@@ -647,9 +643,9 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
      !!document.querySelector('link[rel="manifest"][href="manifest.webmanifest"]') &&
      !!document.querySelector('meta[name="theme-color"]') &&
      !!document.querySelector('link[rel="apple-touch-icon"]'));
-  ok("v72.1 App డౌన్‌లోడ్: button prathi visit lo kanipistundi (hidden kaadu)",
+  ok("v72.1 Download App: button prathi visit lo kanipistundi (hidden kaadu)",
      !!installBtn && !installBtn.hasAttribute("hidden") &&
-     /డౌన్‌లోడ్/.test(installBtn.textContent) && !!installBtn.querySelector(".ibadge"));
+     /Download App/.test(installBtn.textContent) && !!installBtn.querySelector(".ibadge"));
   const isheet = document.getElementById("installhint");
   ok("v72.1 App డౌన్‌లోడ్: device-wise install sheet (Android/iPhone/Computer steps)",
      !!isheet && isheet.hasAttribute("hidden") &&

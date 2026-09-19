@@ -40,11 +40,11 @@ STATE_FILE = ROOT / "logs" / "guardian.json"
 
 # v72: modati screen blocks — ticker/బ్రేకింగ్ teesesaam, badulu search + అర్హత ఫిల్టర్ + install
 UI_BLOCKS = [
-    ('class="usedwrap"', "విద్యార్థులు ఎక్కువగా వెతికేవి"),
-    ('id="searchbtn"', "menu pakkana search button"),
+    ('class="usedwrap"', "Most-searched strip"),
+    ('id="searchbtn"', "search button next to menu"),
     ('id="searchpanel"', "search panel"),
-    ('data-qual="10th"', "అర్హత ఫిల్టర్ chip (10వ తరగతి)"),
-    ('id="installbtn"', "యాప్గా ఇన్స్టాల్ button"),
+    ('data-qual="10th"', "qualification filter chip (10th)"),
+    ('id="installbtn"', "Install as app button"),
 ]
 
 
@@ -85,14 +85,14 @@ def check_first_look_ui() -> tuple:
     gone = [label for needle, label in UI_BLOCKS if needle not in html]
     if gone:
         return False, "poyayi: " + ", ".join(gone), "v72 first-look blocks add cheyandi (used strip · search · qual filter · install)"
-    order_ok = html.index('class="usedwrap"') < html.index('class="hero"')
+    order_ok = html.index('class="usedwrap"') < html.index('class="hero')
     if not order_ok:
         return False, "order marindi (used → hero kaadu)", "v72 order restore cheyandi"
     # v72: public surface lo internal metrics/demo maatalu undakoodadu
     leaked = [t for t in ("11,192", "రాడార్", "నమూనా", "DEMO", "బ్రేకింగ్") if t in html]
     if leaked:
         return False, "public text leak: " + ", ".join(leaked), "v72 clean-copy rule (internal metrics teeseyandi)"
-    return True, "most-used → hero order + search/అర్హత/install intact, copy clean", ""
+    return True, "most-used → hero order + search/qualification/install intact, copy clean", ""
 
 
 def check_counts_sync() -> tuple:

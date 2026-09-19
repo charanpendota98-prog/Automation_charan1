@@ -23,13 +23,13 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 function studentup_qual_terms() {
 	return array(
-		'10th'    => '10వ తరగతి',
-		'inter'   => 'ఇంటర్ (10+2)',
-		'iti'     => 'ఐటీఐ',
-		'diploma' => 'డిప్లొమా',
-		'degree'  => 'డిగ్రీ',
-		'pg'      => 'పీజీ',
-		'btech'   => 'బీటెక్',
+		'10th'    => '10th',
+		'inter'   => 'Inter (10+2)',
+		'iti'     => 'ITI',
+		'diploma' => 'Diploma',
+		'degree'  => 'Degree',
+		'pg'      => 'PG',
+		'btech'   => 'B.Tech',
 	);
 }
 
@@ -215,7 +215,7 @@ function studentup_register_qual_meta() {
 add_action( 'init', 'studentup_register_qual_meta' );
 
 /**
- * Card lo chip kosam — 'degree pg' → ['డిగ్రీ','పీజీ'].
+ * Card lo chip kosam — 'degree pg' → ['Degree','PG'].
  *
  * @param int $post_id post id.
  * @param int $max     max chips.
@@ -251,10 +251,10 @@ function studentup_last_date_badge( $post_id = 0 ) {
 	}
 	$left = (int) floor( ( strtotime( $iso . ' 23:59:59' ) - current_time( 'timestamp' ) ) / DAY_IN_SECONDS ); // phpcs:ignore WordPress.DateTime.CurrentTimeTimestamp
 	if ( $left < 0 ) {
-		return '<span class="qbadge done">గడువు ముగిసింది</span>';
+		return '<span class="qbadge done">Deadline passed</span>';
 	}
 	if ( $left <= 7 ) {
-		$txt = ( 0 === $left ) ? 'ఈరోజే చివరి రోజు' : $left . ' రోజుల్లో ముగుస్తుంది';
+		$txt = ( 0 === $left ) ? 'Last day today' : $left . ' days left';
 		return '<span class="qbadge soon">⏳ ' . esc_html( $txt ) . '</span>';
 	}
 	return '';
@@ -356,9 +356,9 @@ function studentup_qual_bar() {
 	}
 	$terms   = studentup_qual_terms();
 	$current = studentup_qual_current();
-	echo '<nav class="qrow" aria-label="అర్హత ప్రకారం ఉద్యోగాలు">';
-	echo '<span class="catlabel" aria-hidden="true">అర్హత:</span>';
-	echo '<a class="chip qchip' . ( 'all' === $current ? ' active' : '' ) . '" data-qual="all" href="' . esc_url( home_url( '/' ) ) . '">అన్నీ</a>';
+	echo '<nav class="qrow" aria-label="Jobs by qualification">';
+	echo '<span class="catlabel" aria-hidden="true">Qualification:</span>';
+	echo '<a class="chip qchip' . ( 'all' === $current ? ' active' : '' ) . '" data-qual="all" href="' . esc_url( home_url( '/' ) ) . '">All</a>';
 	foreach ( $terms as $slug => $label ) {
 		$n   = studentup_qual_count( $slug );
 		$url = add_query_arg( 'qual', $slug, home_url( '/' ) );
@@ -408,7 +408,7 @@ function studentup_qual_query_args( $args = array() ) {
 }
 
 /**
- * Filter active unnappudu chinna note (count tho) — "అర్హత: డిగ్రీ · 6 ఉద్యోగాలు".
+ * Filter active unnappudu chinna note (count tho) — "Qualification: Degree · 6 jobs".
  *
  * @param int $count posts count.
  */
@@ -418,23 +418,23 @@ function studentup_qual_active_note( $count = 0 ) {
 		return;
 	}
 	$terms = studentup_qual_terms();
-	$label = ( 'closing' === $qual ) ? '⏳ 7 రోజుల్లో ముగిసేవి' : ( $terms[ $qual ] ?? $qual );
-	echo '<p class="qnote">అర్హత: <b>' . esc_html( $label ) . '</b>';
+	$label = ( 'closing' === $qual ) ? '⏳ Closing in 7 days' : ( $terms[ $qual ] ?? $qual );
+	echo '<p class="qnote">Qualification: <b>' . esc_html( $label ) . '</b>';
 	if ( $count ) {
-		echo ' · ' . (int) $count . ' ఉద్యోగాలు';
+		echo ' · ' . (int) $count . ' jobs';
 	}
-	echo ' · <a href="' . esc_url( home_url( '/' ) ) . '">అన్నీ చూడండి</a></p>';
+	echo ' · <a href="' . esc_url( home_url( '/' ) ) . '">See all</a></p>';
 }
 
 /**
- * JS tho దాచిన గడువు ముగిసిన ఉద్యోగాల note (element mattrame — JS nimpustundi).
+ * Note for expired posts hidden by JS (element only — JS fills it).
  */
 function studentup_hidden_note() {
 	echo '<p class="qnote qhidden" id="su-hidden-note" hidden></p>';
 }
 
 /**
- * Admin dashboard widget — ఏ అర్హతకు ఎన్ని ఉద్యోగాలు ఉన్నాయి (advanced view).
+ * Admin dashboard widget — how many jobs per qualification (advanced view).
  * Bot/owner ki okka chota clear picture; counts 15 min cache (page slow avvadu).
  */
 function studentup_qual_dashboard_widget() {
@@ -443,7 +443,7 @@ function studentup_qual_dashboard_widget() {
 	}
 	wp_add_dashboard_widget(
 		'studentup_qual_widget',
-		'StudentUp · విద్యార్హత ప్రకారం ఉద్యోగాలు',
+		'StudentUp · jobs by qualification',
 		function () {
 			$terms = studentup_qual_terms();
 			echo '<p style="margin:0 0 8px;color:#64748b">Post save ayinappudu tag automatic ga set avutundi. Purana posts ki backfill:</p>';
@@ -453,7 +453,7 @@ function studentup_qual_dashboard_widget() {
 				echo '<tr><td>' . esc_html( $label ) . '</td><td style="text-align:right"><b>' . (int) $n . '</b></td></tr>';
 			}
 			$missing = studentup_qual_missing_count();
-			echo '<tr><td>ట్యాగ్ లేని పోస్టులు</td><td style="text-align:right">' . (int) $missing . '</td></tr>';
+			echo '<tr><td>Posts without a tag</td><td style="text-align:right">' . (int) $missing . '</td></tr>';
 			echo '</tbody></table>';
 		}
 	);
@@ -486,7 +486,7 @@ function studentup_qual_missing_count() {
 }
 
 /**
- * v72.1: "అర్హత ప్రకారం చూడండి" విభాగాలు — grid cards nunchi JS automatic ga nimpustundi.
+ * v72.1: "Browse by qualification" sections — JS fills them from the grid cardsdi.
  *
  * Enduku JS: prathi qualification ki separate WP_Query chesthe page slow (7 extra queries).
  * JS okkasari ne already render ayina cards nunchi groups build chestundi — kotha post
@@ -498,10 +498,10 @@ function studentup_qual_directory() {
 	}
 	$groups = array_merge( array_keys( studentup_qual_terms() ), array( 'closing' ) );
 	?>
-	<section class="qualsplit" id="qualsplit" aria-label="అర్హత ప్రకారం ఉద్యోగాలు">
+	<section class="qualsplit" id="qualsplit" aria-label="Jobs by qualification">
 		<div class="qsplit-head">
-			<h2>అర్హత ప్రకారం చూడండి</h2>
-			<p>మీ చదువుకు సరిపోయే ఉద్యోగాలు — కొత్త పోస్ట్ వచ్చిన ప్రతిసారీ ఇవి ఆటోమేటిక్‌గా అప్డేట్ అవుతాయి.</p>
+			<h2>Browse by qualification</h2>
+			<p>Jobs that match your education — these update automatically every time a new post is published.</p>
 		</div>
 		<div class="qsplit-grid" id="qsplit">
 			<?php foreach ( $groups as $g ) : ?>

@@ -18,7 +18,7 @@ if ( ! $su_has_widgets && ! $su_has_ad ) {
 	return;
 }
 ?>
-<aside class="su-sidebar" aria-label="<?php esc_attr_e( 'సైడ్‌బార్', 'studentup' ); ?>">
+<aside class="su-sidebar" aria-label="<?php esc_attr_e( 'Sidebar', 'studentup' ); ?>">
 	<?php if ( $su_has_ad ) : ?>
 		<div class="su-sidebar-ad">
 			<?php studentup_ad( 'sidebar' ); ?>

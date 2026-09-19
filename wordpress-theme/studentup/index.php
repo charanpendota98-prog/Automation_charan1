@@ -21,13 +21,13 @@ get_header();
 					if ( is_home() && ! is_front_page() ) {
 						single_post_title();
 					} elseif ( is_search() ) {
-						printf( 'వెతుకుడు: %s', esc_html( get_search_query() ) );
+						printf( 'Search: %s', esc_html( get_search_query() ) );
 					} else {
-						esc_html_e( 'తాజా అప్డేట్‌లు', 'studentup' );
+						esc_html_e( 'Latest updates', 'studentup' );
 					}
 					?>
 				</h2>
-				<p>అధికారిక మూలాలతో ధృవీకరించిన మార్గదర్శకాలు</p>
+				<p>Guides verified from official sources</p>
 			</div>
 		</div>
 
@@ -44,11 +44,11 @@ get_header();
 				endwhile;
 			else :
 				?>
-				<p class="nores" style="display:block">ఏమీ దొరకలేదు — వేరే పదంతో వెతకండి.</p>
+				<p class="nores" style="display:block">Nothing found — try a different word.</p>
 			<?php endif; ?>
 		</div>
 
-		<nav class="sectionhead" aria-label="పేజీలు">
+		<nav class="sectionhead" aria-label="Pages">
 			<div><?php echo wp_kses_post( paginate_links() ); ?></div>
 		</nav>
 	</div>

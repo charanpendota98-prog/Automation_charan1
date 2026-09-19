@@ -298,26 +298,37 @@ def test_ads_are_house_creatives_not_fake_advertisers():
 
 
 def test_countdown_is_data_driven():
+    """v73: hero countdown card poyindi — kabatti data plumbing kuda undakoodadu.
+
+    Mundu (v72.1): hardcoded date → preview/data/deadline.json + theme option.
+    Ippudu (v73, user brief): hero block + countdown motham teesesaamu, so bot
+    writer/option/JS anni teesesaayi — page lo honest line mattrame.
+    """
     html = read(PREVIEW / "index.html")
     assert "new Date(2026,9,15" not in html, "hardcoded sample countdown inka undi"
-    assert 'fetch("data/deadline.json"' in html, "deadline.json fetch ledu"
-    assert 'id="cd-none"' in html and 'id="cd-box" hidden' in html, "honest default state ledu"
-    from autoblog import wp_theme_sync  # noqa: PLC0415
-    assert hasattr(wp_theme_sync, "write_preview_deadline"), "bot deadline writer ledu"
-    main = read(ROOT / "autoblog" / "main.py")
-    assert "write_preview_deadline" in main, "--push-theme-data preview deadline rasi undadu"
+    for gone in ('id="cd-none"', 'id="cd-box"', "data-deadline", 'fetch("data/deadline.json',
+                 'class="timer"', 'class="hcard-row"'):
+        assert gone not in html, gone + " — v73 lo hero countdown teeseyali"
+    assert "hero-slim" in html and "official notification" in html, "honest hero line ledu"
+    theme_js = read(THEME / "assets" / "js" / "studentup.js")
+    theme_fp = read(THEME / "front-page.php")
+    assert "data-deadline" not in theme_js and "data-cd=" not in theme_js + theme_fp
+    # bot + preview plumbing teesesaamu (dead code ledu)
+    assert "write_preview_deadline" not in read(ROOT / "autoblog" / "wp_theme_sync.py")
+    assert not (ROOT / "preview" / "data" / "deadline.json").exists()
 
 
 def test_app_download_is_always_visible():
     html = read(PREVIEW / "index.html")
     m = re.search(r'<button[^>]*id="installbtn"[^>]*>', html)
     assert m and "hidden" not in m.group(0), "download button inka hidden"
-    assert "App డౌన్‌లోడ్" in html and 'class="ibadge"' in html
+    # v73: English UI copy
+    assert "⬇️ Download App" in html and 'class="ibadge"' in html
     assert 'id="installhint"' in html and html.count('id="isteps"') == 1
     assert "openSheet" in html and "beforeinstallprompt" in html
     theme_footer = read(THEME / "footer.php")
     assert 'id="installbtn"' in theme_footer and 'id="installhint"' in theme_footer
-    assert 'id="installbtn">⬇️ App' in theme_footer, "theme button wording v72.1 kaadu"
+    assert 'id="installbtn">⬇️ Download App' in theme_footer, "theme button wording v73 kaadu"
     pwa_js = read(THEME / "assets" / "js" / "studentup-pwa.js")
     assert "openSheet" in pwa_js and "beforeinstallprompt" in pwa_js
 
@@ -366,8 +377,8 @@ TESTS = [
     ("v72.1: topbar/coverage lines poyayi", test_topbar_and_coverage_lines_gone),
     ("v72.1: demo 7-point article poyindi", test_demo_article_removed),
     ("v72.1: fake advertiser creatives → house partner slots", test_ads_are_house_creatives_not_fake_advertisers),
-    ("v72.1: countdown data-driven (fake date ledu)", test_countdown_is_data_driven),
-    ("v72.1: App డౌన్‌లోడ్ button prathi visit lo", test_app_download_is_always_visible),
+    ("v73: fake countdown + deadline plumbing ledu", test_countdown_is_data_driven),
+    ("v72.1: Download App button prathi visit lo (English copy)", test_app_download_is_always_visible),
     ("v72.1: అర్హత ప్రకారం విభాగాలు automatic (preview + theme)", test_qualification_directory_automatic),
     ("v72.1: theme version 1.7.1 parity", test_theme_version_1721),
 ]

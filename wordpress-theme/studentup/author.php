@@ -38,7 +38,7 @@ $su_count  = $su_id ? (int) count_user_posts( $su_id, 'post', true ) : 0;
 						<?php
 						printf(
 							/* translators: %s: author display name */
-							esc_html__( '%s వ్యాసాలు', 'studentup' ),
+							esc_html__( '%s articles', 'studentup' ),
 							esc_html( $su_name )
 						);
 						?>
@@ -47,7 +47,7 @@ $su_count  = $su_id ? (int) count_user_posts( $su_id, 'post', true ) : 0;
 						<?php
 						printf(
 							/* translators: %d: number of published posts */
-							esc_html__( 'ప్రచురిత వ్యాసాలు: %d', 'studentup' ),
+							esc_html__( 'Published articles: %d', 'studentup' ),
 							(int) $su_count
 						);
 						?>
@@ -56,19 +56,19 @@ $su_count  = $su_id ? (int) count_user_posts( $su_id, 'post', true ) : 0;
 						<div class="authorbio"><?php echo wp_kses_post( wpautop( $su_bio ) ); ?></div>
 					<?php else : ?>
 						<p class="authorbio">
-							<?php esc_html_e( 'StudentUp ఎడిటోరియల్ టీమ్ — అధికారిక మూలాల ఆధారంగా తెలంగాణ & ఆంధ్రప్రదేశ్ విద్యార్థుల కోసం నిజాయితీ వ్యాసాలు.', 'studentup' ); ?>
+							<?php esc_html_e( 'The StudentUp editorial team — honest articles for Telangana & Andhra Pradesh students, based on official sources.', 'studentup' ); ?>
 						</p>
 					<?php endif; ?>
 					<?php if ( $su_url ) : ?>
 						<p class="authormeta">
 							<a href="<?php echo esc_url( $su_url ); ?>" rel="me noopener" target="_blank">
-								<?php esc_html_e( 'రచయిత వెబ్‌సైట్ / ప్రొఫైల్', 'studentup' ); ?>
+								<?php esc_html_e( 'Author website / profile', 'studentup' ); ?>
 							</a>
 						</p>
 					<?php endif; ?>
 					<p class="authormeta">
 						<a href="<?php echo esc_url( home_url( '/editorial-policy/' ) ); ?>">
-							<?php esc_html_e( 'మా ఎడిటోరియల్ విధానం చదవండి', 'studentup' ); ?>
+							<?php esc_html_e( 'Read our editorial policy', 'studentup' ); ?>
 						</a>
 					</p>
 				</div>
@@ -76,7 +76,7 @@ $su_count  = $su_id ? (int) count_user_posts( $su_id, 'post', true ) : 0;
 		</section>
 
 		<div class="sectionhead">
-			<div><h2><?php esc_html_e( 'ఇటీవలి వ్యాసాలు', 'studentup' ); ?></h2></div>
+			<div><h2><?php esc_html_e( 'Recent articles', 'studentup' ); ?></h2></div>
 		</div>
 		<div class="newsgrid">
 			<?php
@@ -92,7 +92,7 @@ $su_count  = $su_id ? (int) count_user_posts( $su_id, 'post', true ) : 0;
 			?>
 		</div>
 		<?php studentup_ad( 'mid' ); ?>
-		<nav class="sectionhead" aria-label="<?php esc_attr_e( 'పేజీలు', 'studentup' ); ?>">
+		<nav class="sectionhead" aria-label="<?php esc_attr_e( 'Pages', 'studentup' ); ?>">
 			<div><?php echo wp_kses_post( paginate_links() ); ?></div>
 		</nav>
 	</div>

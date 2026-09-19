@@ -3,7 +3,7 @@ Theme Name: StudentUp Telugu News
 Theme URI: https://studentup.in/
 Author: StudentUp
 Author URI: https://studentup.in/
-Description: తెలంగాణ & ఆంధ్రప్రదేశ్ విద్యార్థుల కోసం StudentUp design — విద్యార్హత ఫిల్టర్ (10th/10+2/డిగ్రీ/పీజీ), menu పక్కన search, app-laga install (PWA), ఉద్యోగం/పరీక్ష కార్డులు, ad slots, dark mode. Mobile-first, Rank Math + AdSense friendly.
+Description: StudentUp design for Telangana & Andhra Pradesh students — qualification filter (10th/10+2/Degree/PG), search next to the menu, install as an app (PWA), job/exam cards, ad slots, dark mode. Mobile-first, Rank Math + AdSense friendly.
 Version: 1.7.1
 Requires at least: 6.0
 Tested up to: 6.7
@@ -90,30 +90,9 @@ display:flex;gap:11px;align-items:center;transition:transform .18s,box-shadow .1
 
 /* ---------- hero ---------- */
 .hero{padding:26px 0 8px}
-.hero-grid{display:grid;grid-template-columns:1.35fr .95fr;gap:26px;align-items:stretch}
-.eyebrow{display:inline-flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);
-border-radius:999px;padding:6px 13px;font-size:12px;color:var(--muted);font-weight:600}
-.eyebrow i{width:8px;height:8px;border-radius:50%;background:var(--green)}
-.hero h1{font-size:34px;line-height:1.32;margin:14px 0 10px;color:var(--navy)}
-.hero h1 em{font-style:normal;color:var(--orange)}
-.hero .lede{font-size:15px;color:var(--muted);max-width:640px}
-.hero-actions{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0 18px}
-.bluebtn{background:linear-gradient(135deg,var(--navy),var(--blue));color:#fff;padding:12px 18px;border-radius:12px;font-weight:700;font-size:14px}
-.ghostbtn{background:#fff;border:1px solid var(--line);color:var(--navy);padding:12px 18px;border-radius:12px;font-weight:700;font-size:14px}
-.hero-card{background:linear-gradient(160deg,#0f2e62,#12356b);border-radius:20px;padding:20px;color:#fff;box-shadow:var(--shadow)}
-.hero-card .hcard-title{font-size:12px;opacity:.85;font-weight:700}
-.hero-card .live{float:right;font-size:11px;color:#ffd9a8}
-.hero-card .deadline small{display:block;color:#ffd9a8;font-size:11px;margin-top:12px}
-.hero-card h3{margin:6px 0 12px;font-size:17px;line-height:1.4}
-.timer{display:flex;gap:8px}
-.timer .time{background:rgba(255,255,255,.12);border-radius:12px;padding:8px 10px;text-align:center;flex:1}
-.timer b{display:block;font-size:20px}
-.timer span{font-size:10px;opacity:.85}
-.hcard-note{font-size:11px;opacity:.8;margin:12px 0 0}
-.hcard-row{display:flex;gap:10px;align-items:center;background:rgba(255,255,255,.08);border-radius:12px;padding:10px;margin-top:10px}
-.hcard-row b{display:block;font-size:12.5px}
-.hcard-row span{font-size:11px;opacity:.85}
-.hcard-row .mini-icon{background:rgba(255,255,255,.16);border-radius:9px;height:30px;width:30px;display:grid;place-items:center}
+.hero-slim{text-align:center}
+.hero-slim h1{max-width:900px;margin:0 auto 10px}
+.hero-slim .lede{max-width:680px;margin:0 auto}
 
 /* ---------- chips + grid ---------- */
 .sectionhead{display:flex;justify-content:space-between;align-items:end;margin:26px 0 14px;gap:14px;flex-wrap:wrap}
@@ -290,7 +269,7 @@ body.dark p.su-kw,body.dark p.su-source,body.dark p.su-internal{color:#c3d3ea}
 .su-related-entities li a{display:inline-block;background:#fff;border:1px solid #cfe9d8;border-radius:999px;padding:4px 12px;text-decoration:none;color:#14663a;font-size:14px}
 /* Ad reserved space (CLS 0) + lazy placeholder */
 .su-ad-reserved{display:block;overflow:hidden}
-.su-ad-lazy::after{content:"ప్రకటన";display:block;height:100%;min-height:inherit;display:grid;place-items:center;color:#8fa3bf;font-size:12px;background:#f7f9fc;border-radius:8px}
+.su-ad-lazy::after{content:"Advertisement";display:block;height:100%;min-height:inherit;display:grid;place-items:center;color:#8fa3bf;font-size:12px;background:#f7f9fc;border-radius:8px}
 body.dark .su-takeaways{background:#2a2113;border-color:#5a4020;color:#f0dcb8}
 body.dark .su-takeaways-title{color:#f3c07a}
 body.dark .su-related-entities{background:#132318;border-color:#2a4a35}
@@ -495,13 +474,13 @@ body.dark .qhidden{background:#241c10;border-color:#4a3a22;color:#ffc88a}
 .news h3,.news p,.qchip,.qbadge,.installsheet h3,.installsheet li{overflow-wrap:anywhere}
 .news .newsfoot{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 
-/* v72: filter active note (అర్హత + count) */
+/* v72: filter active note (qualification + count) */
 .qnote{margin:2px 0 12px;font-size:12.5px;color:var(--muted)}
 .qnote b{color:var(--navy)}
 .qnote a{color:var(--blue);font-weight:700}
 body.dark .qnote b{color:#e7f0ff}
 
-/* ================= v72.1: అర్హత ప్రకారం విభాగాలు ================= */
+/* ================= v72.1: sections by qualification ================= */
 .qualsplit{margin:26px 0 6px}
 .qsplit-head{margin-bottom:12px}
 .qsplit-head h2{margin:0 0 4px;font-size:21px;color:var(--navy)}

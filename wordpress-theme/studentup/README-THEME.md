@@ -25,7 +25,6 @@ WP Admin → (bot nunchi) → python run.py --push-theme-data
 | Option | Enti | Example |
 |---|---|---|
 | `studentup_breaking_json` | బ్రేకింగ్ ఐటమ్స్ (radar feed) | `{"items":[{"title":"…","link":"…","tag":"results","time":"…"}]}` |
-| `studentup_deadline_json` | ముఖ్య గడువు countdown | `{"title":"TSPSC దరఖాస్తు","date":"2026-10-15T17:00:00+05:30"}` |
 | `studentup_house_ads` | house/sponsor ads (day rotation) | `[{"title":"…","desc":"…","link":"https://…","cta":"…"}]` |
 | `studentup_adsense_client` | AdSense client id | `ca-pub-1234567890123456` |
 | `studentup_exam_url` | పరీక్షల పోర్టల్ లింక్ | `https://exams.studentup.in` |
@@ -38,15 +37,15 @@ transient cache tho chadivi chupistundi).
 
 ```
 style.css            design tokens + anni components (Telugu fonts, dark mode, responsive)
-front-page.php       home order: used-strip → ప్రకటన → hero+countdown → బ్రేకింగ్ → grid+chips
+front-page.php       home order: used-strip → ad → slim hero → (breaking OFF) → grid+chips
 header.php           logo/menu/actions/mobile panel + టికర్
 footer.php           footer + కుడి వైపు నిలువుగా socials
 single.php           article + ads + share + related + trust note
 index/archive/search/page/404/searchform.php
 inc/breaking.php     feed (option → transient file → honest empty) + REST push
 inc/ads.php          AdSense unit + house ads (SPONSORED label, rel=sponsored)
-inc/template.php     cards, proof tiles, countdown, breadcrumbs (Rank Math compat), menu fallback
-assets/js/studentup.js  dark mode, mobile panel, chips filter, countdown
+inc/template.php     cards, breadcrumbs (Rank Math compat), menu fallback
+assets/js/studentup.js  dark mode, mobile panel, chips filter, qualification filter
 theme.json           block editor colors/Typography (navy/blue/orange)
 ```
 
@@ -65,7 +64,7 @@ theme.json           block editor colors/Typography (navy/blue/orange)
 | విద్యార్హత ఫిల్టర్ (10th · 10+2 · ITI · Diploma · Degree · PG · B.Tech) | `inc/qual-filter.php` — home/archive `?qual=degree` | ✅ post save lo title/content nunchi tag; bot `studentup_qual` meta pampistundi; purana posts admin/CLI backfill |
 | Menu pakkana search | `header.php` + `assets/js/studentup.js` | 🔍 button + `/` shortcut |
 | యాప్గా ఇన్స్టాల్ (PWA) | `inc/pwa.php` + `assets/js/studentup-pwa.js` | service worker (`?studentup_sw=1`) + install prompt; Android/iPhone rendu |
-| Closing-soon badge | `studentup_last_date` meta → "⏳ N రోజుల్లో ముగుస్తుంది" | ✅ bot `recruitment.apply_end` nunchi |
+| Closing-soon badge | `studentup_last_date` meta → "⏳ closing in N days" | ✅ bot `recruitment.apply_end` nunchi |
 | Breaking section | `inc/breaking.php` | ⚙️ default **OFF** (`StudentUp → కంటెంట్ → breaking_enabled`) |
 
 CLI: `wp studentup-qual-backfill --limit=500` (purana posts ki tags).

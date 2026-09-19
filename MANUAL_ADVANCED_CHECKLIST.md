@@ -157,7 +157,7 @@ Message lo reason undi — exact ga fix cheyandi:
 ## ⚠️ Honest note
 Perfect = **machine gates + human 5-min verify**. Gates mistakes ramigadu (conflicts/stale/dates/originality), kaani official numbers mee mata tho final check — AdSense/Google/reputation thartham lo idi matrame safety.
 
-*Last updated: v72.1 (2026-09-18) — QUALIFICATION FILTER + అర్హత SECTIONS + APP DOWNLOAD (10th · 10+2 · ITI · Diploma · Degree · PG · B.Tech auto-tags · per-qualification lists · always-visible App డౌన్‌లోడ్ · menu pakkana search · clean copy): 56/56 suites · 161/161 runtime · readiness 100/100 · code audit 0/0 · parity 0/0 · theme audit 0/0 · theme v1.7.1*
+*Last updated: v73 (2026-09-18) — ENGLISH UI PASS + HERO BLOCK REMOVAL (site UI antha English · Telugu mattrame job/article content lo · hero countdown card + deadline plumbing teesesaamu · 6 policy pages English · theme copy English): 57/57 suites · 162/162 runtime · readiness 100/100 · code audit 0/0 · parity 0/0 · theme audit 0/0 · theme v1.7.1 (copy pass — version same)*
 
 ## PART 26 — v67: DEEP AUDIT (expert/BA) + TOP-THEME HARDENING + 6/6 REVENUE SLOTS
 
@@ -893,8 +893,8 @@ HOW IT STAYS AUTOMATIC
 
 VERIFY
 ```
-python run.py --test-all                     # 56/56 suites
-node tests/runtime/jsdom_runtime_test.js     # 161/161 browser checks
+python run.py --test-all                     # 57/57 suites
+node tests/runtime/jsdom_runtime_test.js     # 162/162 browser checks
 python run.py --readiness                    # 100/100 · python run.py --guardian
 python tools/parity_audit.py                 # PIN-TO-PIN · python tools/code_audit.py
 node tools/php_lint.js                       # 32/32 PHP files · python tools/build_wp_theme.py
@@ -909,9 +909,9 @@ OWNER STEPS (v72)
 3. బ్రేకింగ్ న్యూస్ kavali ante — *StudentUp → కంటెంట్ → బ్రేకింగ్ న్యూస్ సెక్షన్ ON* (default OFF).
 4. Phones lo "యాప్గా ఇన్స్టాల్" button test cheyandi (Android Chrome + iPhone Safari).
 
-PROOF (v72.1): --test-all 56/56 · jsdom 161/161 · readiness 100/100 (28/28) · guardian 14/15
+PROOF (v72.1): --test-all 57/57 · jsdom 162/162 · readiness 100/100 (28/28) · guardian 14/15
   (1 warn-only owner env) · code audit 0/0 · parity 0/0 · theme audit 0/0 · php-lint 32/32 ·
-  zip 41 files 648 KB · theme v1.7.1 · proof doc: output/v72-proof-2026-09-18.md
+  zip 41 files 642 KB · theme v1.7.1 · proof doc: output/v73-proof-2026-09-18.md
 
 No guarantee: rankings, traffic, AdSense approval and revenue depend on Google + your accounts +
 time. Everything measured in this pass is code-level (tests · audits · readiness), nothing more.
@@ -949,22 +949,81 @@ WORDPRESS (theme v1.7.1)
   `assets/js/studentup.js`: combined category × అర్హత filter + expired hide + grouping builder.
   `assets/js/studentup-pwa.js`: always-visible button + device-wise sheet + SW register.
   `inc/template.php`     : card ki `data-last` (closing filter) — bot `studentup_last_date` nunchi.
-  `footer.php`           : App డౌన్‌లోడ్ button + install sheet (options tho on/off).
+  `footer.php`           : Download App button + install sheet (options tho on/off) — **v73: English copy**.
   Version parity: style.css ↔ STUDENTUP_VERSION ↔ readme.txt = **1.7.1**.
 
 BOT
-  `wp_theme_sync.write_preview_deadline()` — deadline.json rasi pettedi (lekapote stale file teesesi
-  honest line). `main.py --push-theme-data` ee step call chestundi.
+  `wp_theme_sync.write_preview_deadline()` — **v73 lo teesesaamu** (hero block poyindi, dead code vaddhu).
 
 VERIFY (v72.1)
 ```
-python run.py --test-all                     # 56/56 suites
-node tests/runtime/jsdom_runtime_test.js     # 161/161 browser checks
+python run.py --test-all                     # 57/57 suites
+node tests/runtime/jsdom_runtime_test.js     # 162/162 browser checks
 python tests/v72_test.py                     # 27 checks (v72 + v72.1)
 python run.py --readiness                    # 100/100 · python run.py --guardian
 python tools/parity_audit.py                 # PIN-TO-PIN · python tools/code_audit.py # 0/0
 node tools/php_lint.js                       # 32/32 · python tools/build_wp_theme.py
 ```
+
+No guarantee: rankings/traffic/AdSense/revenue Google + mee accounts + time batti — ee pass lo unna vi
+code-level measurements matrame.
+
+---
+
+## PART 33 — v73: ENGLISH UI PASS + HERO BLOCK REMOVAL
+
+**Mee brief (2026-09-18):** "antha ilaga telugu lo kkadu english lo cheyu" · hero block
+(eyebrow · h1 · lede · CTA · live countdown card · అర్హత/మూలం tiles) **idi avasram ledu** → remove.
+Scope (mee choice): UI/labels/headings English; Telugu mattrame job/article content lo.
+
+PREVIEW (`preview/`)
+```
+index.html   : hero → `.hero-slim` (English h1 + one honest line) · countdown card + JS teesesaam
+               (`#cd-live`/`#cd-none`/`#cd-box`/`data-deadline`/`data/deadline.json` = 0) · `lang="en"` ·
+               og:locale en_IN · ld inLanguage en-IN · UI text/attrs/JS strings antha English ·
+               Telugu migilindi = job/article cards + quiz bank (content — mee scope)
+pages/*.html : about · contact · advertise · privacy · disclaimer · editorial-policy → 0 Telugu
+               (English bodies, English footer, SPONSORED asides English)
+sw.js        : VERSION `su-v73-1` · offline page English
+manifest     : shortcuts English (Jobs · Jobs by qualification · Results · Daily Quiz)
+```
+
+THEME (`wordpress-theme/studentup/`, version 1.7.1 — copy/UI pass)
+```
+front-page.php        : hero card + countdown + deadline teesesaam → `.hero-slim` English
+inc/template.php      : studentup_deadline() / studentup_set_deadline() poyayi (dead code)
+functions.php         : menu labels · most-used tiles · i18n strings English · 'deadline' localize poyindi
+header.php / footer.php / index.php / single.php / 404.php / search.php / searchform.php / author.php /
+archive.php / comments.php / inc/*.php / assets/js/*.js : public copy antha English
+inc/qual-filter.php   : chips/labels/notes/subs English · `studentup_qual_keywords()` mattrame Telugu
+                        (posts Telugu headline nunchi auto-tag cheyyadaniki — REQUIRED)
+style.css             : `.hero-slim` CSS (old hero/hcard CSS poyindi) · header Description English
+Version parity        : style.css ↔ STUDENTUP_VERSION ↔ readme.txt = 1.7.1 (version bump ledu — UI pass)
+```
+
+BOT (`autoblog/`)
+```
+breaking.py          : MOST_USED labels/hints English (site/bot parity intact)
+wp_theme_sync.py     : write_preview_deadline() teesesaam · payload nunchi 'deadline' poyindi
+main.py              : --push-theme-data nunchi preview deadline step poyindi
+config.py / .env.example : POST_DEADLINE_TITLE / POST_DEADLINE_ISO poyayi
+```
+
+VERIFY (v73)
+```
+python run.py --test-all                     # 57/57 suites (v73_test.py kotha: 9 checks)
+node tests/runtime/jsdom_runtime_test.js     # 162/162 browser checks (English UI + countdown removal)
+python run.py --readiness                    # 100/100 · python run.py --guardian
+python tools/parity_audit.py                 # PIN-TO-PIN · python tools/code_audit.py # 0/0
+node tools/php_lint.js                       # 32/32 · python tools/build_wp_theme.py (zip rebuild LAST)
+```
+
+TESTS REBASE (v73 lo maree pins update chesam — UI ni tirigi pettaledu):
+`tests/v59_test.py` (menu/ticker wording) · `tests/v61_test.py` (labels + countdown JS) ·
+`tests/v67_test.py` (search empty state) · `tests/v72_test.py` (countdown → no-countdown check) ·
+`tests/runtime/jsdom_runtime_test.js` (English chrome + hero + 162 checks) ·
+`autoblog/readiness.py` (`lang="en"` + og:locale · first-look labels) · `autoblog/guardian.py`
+(first-look needles + hero order).
 
 No guarantee: rankings/traffic/AdSense/revenue Google + mee accounts + time batti — ee pass lo unna vi
 code-level measurements matrame.

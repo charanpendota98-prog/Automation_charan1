@@ -62,24 +62,25 @@ def test_policy_pages_exist_and_are_well_formed():
         chk = _Struct()
         chk.feed(html)
         assert not chk.stack and not chk.errs, (slug, chk.stack[:3], chk.errs[:3])
-        assert '<html lang="te">' in html
+        # v73: English UI — pages lang="en" + og:locale en_IN (+ ld inLanguage en-IN)
+        assert '<html lang="en">' in html, slug + " lang=en kaadu"
+        assert 'property="og:locale" content="en_IN"' in html, slug + " og:locale ledu"
+        assert '"inLanguage":"en-IN"' in html, slug + " ld inLanguage ledu"
         assert "<h1>" in html and "</h1>" in html
         assert 'rel="canonical"' in html and "studentup.in" in html
-    print("  policy pages: 5 exist, valid HTML, lang=te, canonical ✔")
+    print("  policy pages: 5 exist, valid HTML, lang=en + og:locale, canonical ✔")
 
 
-def test_policy_pages_are_telugu_and_link_back():
+def test_policy_pages_are_english_and_link_back():
+    """v73: mee brief — UI antha English (Telugu mattrame article content lo)."""
     for slug in POLICY_PAGES:
         html = _t(slug)
         telugu = len(re.findall(r"[\u0C00-\u0C7F]", html))
-        # v71: business pages (partner/contact) English-first — Telugu akkada kuda undali,
-        # kaani threshold takkuva (premium English copy + Telugu line).
-        limit = 250 if slug in ("advertise", "contact") else 800
-        assert telugu > limit, (slug, telugu)
+        assert telugu == 0, (slug, telugu)  # v73: pages antha English
         assert 'href="../index.html"' in html, slug + ": no back-home link"
         for other in POLICY_PAGES:
             assert (other + ".html") in html, "%s missing link to %s" % (slug, other)
-    print("  policy pages: pure Telugu (800+ chars each) + cross-linked ✔")
+    print("  policy pages: English (0 Telugu chars) + cross-linked ✔")
 
 
 def test_contact_page_has_real_channels():
@@ -92,17 +93,18 @@ def test_contact_page_has_real_channels():
 
 def test_privacy_and_disclaimer_cover_required_points():
     priv = _t("privacy")
-    for point in ["AdSense", "కుకీ", "పోల్", "డేటా"]:
+    for point in ["AdSense", "cookie", "poll", "data"]:
         assert point in priv, "privacy missing: " + point
     disc = _t("disclaimer")
-    for point in ["ప్రభుత్వ వెబ్", "హామీ", "SPONSORED", "sponsored nofollow", "మోస"]:
+    for point in ["government website", "never guaranteed", "SPONSORED",
+                  "sponsored nofollow", "fraud"]:
         assert point in disc, "disclaimer missing: " + point
     print("  privacy: cookies/poll/AdSense · disclaimer: no-guarantee/fraud/sponsored ✔")
 
 
 def test_editorial_policy_lists_five_gates():
     html = _t("editorial-policy")
-    for gate in ["మూల తనిఖీ", "క్రాస్-వెరిఫికేషన్", "72%", "మానవ సమీక్ష", "SPONSORED"]:
+    for gate in ["Source check", "cross-verification", "72%", "Human review", "SPONSORED"]:
         assert gate in html, "editorial policy missing gate: " + gate
     assert "24" in html, "correction turnaround missing"
     print("  editorial policy: 5 gates + correction window + ad independence ✔")
@@ -129,7 +131,7 @@ def test_index_links_real_pages_not_dead_anchors():
     html = (PREVIEW / "index.html").read_text(encoding="utf-8")
     for slug in POLICY_PAGES:
         assert ("pages/%s.html" % slug) in html, "index does not link " + slug
-    dead = re.findall(r'href="#trust">(?:సంపాదకీయ|సవరణలు|గోప్యతా)', html)
+    dead = re.findall(r'href="#trust">(?:Editorial|Corrections|Privacy)', html)
     assert not dead, "policy links still dead-end on #trust: %d" % len(dead)
     assert 'rel="icon"' in html and "favicon.svg" in html
     for slug in POLICY_PAGES:
@@ -264,7 +266,7 @@ def test_inject_end_to_end_with_fallback():
 
 def main() -> None:
     test_policy_pages_exist_and_are_well_formed()
-    test_policy_pages_are_telugu_and_link_back()
+    test_policy_pages_are_english_and_link_back()
     test_contact_page_has_real_channels()
     test_privacy_and_disclaimer_cover_required_points()
     test_editorial_policy_lists_five_gates()

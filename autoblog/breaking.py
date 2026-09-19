@@ -35,22 +35,22 @@ IST = timezone(timedelta(hours=5, minutes=30))
 # MOST_USED: site lo modati screen lo chupinchе category order (okate source)
 # ---------------------------------------------------------------------------
 MOST_USED: List[Dict[str, str]] = [
-    {"cat": "ts-jobs", "label": "టీఎస్ ప్రభుత్వ ఉద్యోగాలు", "icon": "🏛",
-     "hint": "TSPSC · పోలీస్ · గురుకుల్"},
-    {"cat": "ap-jobs", "label": "ఏపీ ప్రభుత్వ ఉద్యోగాలు", "icon": "🏛",
-     "hint": "APPSC · పోలీస్ · DSC · సచివాలయం"},
-    {"cat": "hallticket", "label": "హాల్ టికెట్లు", "icon": "🎫",
-     "hint": "అడ్మిట్ కార్డ్ · ముఖ్య సూచనలు"},
-    {"cat": "results", "label": "ఫలితాలు", "icon": "📄",
-     "hint": "బోర్డు · పోటీ పరీక్షలు · కీలు"},
-    {"cat": "walkin", "label": "వాక్-ఇన్ ఇంటర్వ్యూ", "icon": "🚶",
-     "hint": "ఈ వారం డ్రైవ్‌లు · వేదికలు"},
-    {"cat": "software", "label": "సాఫ్ట్‌వేర్ ఉద్యోగాలు", "icon": "💻",
-     "hint": "IT · డెవలపర్ · ఫ్రెషర్"},
-    {"cat": "private", "label": "ప్రైవేట్ ఉద్యోగాలు", "icon": "🏢",
-     "hint": "TCS · ఇన్ఫోసిస్ · ఆఫ్-క్యాంపస్"},
-    {"cat": "current", "label": "ప్రస్తుతాంశాలు", "icon": "📰",
-     "hint": "రోజు GK · పరీక్షలకు"},
+    {"cat": "ts-jobs", "label": "TS Government Jobs", "icon": "🏛",
+     "hint": "TSPSC · Police · Gurukul"},
+    {"cat": "ap-jobs", "label": "AP Government Jobs", "icon": "🏛",
+     "hint": "APPSC · Police · DSC · Secretariat"},
+    {"cat": "hallticket", "label": "Hall Tickets", "icon": "🎫",
+     "hint": "Admit card · key instructions"},
+    {"cat": "results", "label": "Results", "icon": "📄",
+     "hint": "Board · competitive exams · keys"},
+    {"cat": "walkin", "label": "Walk-in Interviews", "icon": "🚶",
+     "hint": "This week\u2019s drives · venues"},
+    {"cat": "software", "label": "Software Jobs", "icon": "💻",
+     "hint": "IT · developer · fresher"},
+    {"cat": "private", "label": "Private Jobs", "icon": "🏢",
+     "hint": "TCS · Infosys · Off-campus"},
+    {"cat": "current", "label": "Current Affairs", "icon": "📰",
+     "hint": "Daily GK · for exams"},
 ]
 
 # ఏ headline ki ఏ tag — site filters ki same names (సీనియర్→జూనియర్ order)

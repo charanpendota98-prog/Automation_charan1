@@ -49,7 +49,11 @@ def test_most_used_order():
                     "software", "private", "current"], cats
     for m in breaking.most_used():
         assert m["cat"] and m["label"] and m["icon"] and m["hint"], m
-        assert re.search(r"[\u0C00-\u0C7F]", m["label"]), m  # Telugu label
+        # v73: English UI — labels + hints English (site/bot parity)
+        assert not re.search(r"[\u0C00-\u0C7F]", m["label"] + m["hint"]), m
+    labels = [m["label"] for m in breaking.most_used()]
+    assert labels[0].startswith("TS") and labels[1].startswith("AP"), labels
+    assert "Hall Tickets" in labels and "Results" in labels, labels
 
 
 def test_build_items_dedupe_and_guards():
@@ -153,7 +157,7 @@ def test_site_first_look_wiring():
     assert 'id="searchbtn"' in html and 'id="searchpanel"' in html and 'id="qtop"' in html
     assert 'data-qual="10th"' in html and 'id="qcount"' in html
     assert 'id="installbtn"' in html and 'rel="manifest"' in html
-    assert html.index('class="usedwrap"') < html.index('data-slot="top-leaderboard"') < html.index('class="hero"')
+    assert html.index('class="usedwrap"') < html.index('data-slot="top-leaderboard"') < html.index('class="hero')
     assert "quickbar" not in html
 
 
@@ -189,11 +193,12 @@ def test_menu_order_perfect():
              for x in re.findall(r'<a[^>]*>(.*?)</a>', strip_drop(nav), re.S)]
     norm = lambda x: x.replace("\u200c", "").replace("▾", "").strip()  # noqa: E731
     order = [norm(h) for h in heads if norm(h)]
-    want = ["హోమ్", "ఉద్యోగాలు", "హాల్ టికెట్లు", "ఫలితాలు",
-            "స్కాలర్‌షిప్‌లు", "ప్రస్తుతాంశాలు", "పరీక్షలు", "మరికొన్ని"]
+    # v73: English UI
+    want = ["Home", "Jobs", "Hall Tickets", "Results",
+            "Scholarships", "Current Affairs", "Exams", "More"]
     assert [norm(x) for x in order[:8]] == [norm(x) for x in want], order[:12]
 
-    drop = re.search(r'<span class="drop" role="menu" aria-label="ఉద్యోగ విభాగాలు">(.*?)</span>\s*</span>',
+    drop = re.search(r'<span class="drop" role="menu" aria-label="Job categories">(.*?)</span>\s*</span>',
                      nav, re.S).group(1)
     cats = re.findall(r'data-goto-cat="([a-z-]+)"', drop)
     assert cats == ["ts-jobs", "ap-jobs", "central-jobs", "private", "walkin",
@@ -201,9 +206,9 @@ def test_menu_order_perfect():
 
     mp_start = html.index('<div class="mpanel"')
     mp = html[mp_start:html.index('<div id="top">', mp_start)]
-    # v72: mobile panel — search link mundu, బ్రేకింగ్ లేదు
-    assert mp.index("వెతకండి") < mp.index("హాల్ టికెట్లు") < mp.index("విద్యార్థులు ఎక్కువగా")
-    assert "బ్రేకింగ్" not in mp
+    # v72+v73: mobile panel — search link mundu, breaking ledu (English UI)
+    assert mp.index(">Search<") < mp.index("Hall Tickets") < mp.index("Most searched by students")
+    assert "బ్రేకింగ్" not in mp and "Breaking" not in mp
     mp_used = re.findall(r'data-goto-cat="([a-z-]+)"', mp)
     assert mp_used[2:10] == breaking.most_used_cats(), mp_used[:12]
 

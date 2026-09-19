@@ -40,17 +40,17 @@ function studentup_manifest() {
 		// v72.1: app icon long-press → nerugaa mukhyamaina sections (student-focus)
 		'shortcuts'        => array(
 			array(
-				'name'       => 'ఉద్యోగాలు',
+				'name'       => 'Jobs',
 				'short_name' => 'Jobs',
 				'url'        => home_url( '/#jobs' ),
 			),
 			array(
-				'name'       => 'అర్హత ప్రకారం ఉద్యోగాలు',
-				'short_name' => 'అర్హత',
+				'name'       => 'Jobs by qualification',
+				'short_name' => 'Qualification',
 				'url'        => home_url( '/#qualsplit' ),
 			),
 			array(
-				'name'       => 'ఆన్‌లైన్ పరీక్షలు',
+				'name'       => 'Online Exams',
 				'short_name' => 'Exams',
 				'url'        => home_url( '/?studentup_exam=1' ),
 			),
@@ -102,9 +102,9 @@ function studentup_sw_js() {
 	$offline = '<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
 		. '<title>Offline — ' . esc_html( get_bloginfo( 'name' ) ) . '</title>'
 		. '<body style="font-family:system-ui,sans-serif;margin:0;padding:28px;text-align:center;color:#0f2e62">'
-		. '<h1 style="font-size:20px">ఇంటర్నెట్ లేదు</h1>'
-		. '<p style="color:#5b6b85;font-size:14px;line-height:1.7">మీరు చూసిన పేజీలు మళ్లీ కనిపిస్తాయి — కనెక్షన్ వచ్చాక కొత్త ఉద్యోగాలు, ఫలితాలు అప్డేట్ అవుతాయి.</p>'
-		. '<p style="font-size:14px"><a href="' . esc_url( home_url( '/' ) ) . '" style="color:#2463b7">↻ మళ్లీ ప్రయత్నించండి</a></p>';
+		. '<h1 style="font-size:20px">You are offline</h1>'
+		. '<p style="color:#5b6b85;font-size:14px;line-height:1.7">Pages you already visited stay available — new jobs, results and updates load once you are back online.</p>'
+		. '<p style="font-size:14px"><a href="' . esc_url( home_url( '/' ) ) . '" style="color:#2463b7">↻ Try again</a></p>';
 
 	return 'var VERSION=' . wp_json_encode( 'su-' . $ver ) . ';' . "\n"
 		. 'var OFFLINE=' . wp_json_encode( $offline ) . ';' . "\n"
@@ -181,7 +181,7 @@ function studentup_pwa_data() {
 		array(
 			'sw'      => esc_url_raw( add_query_arg( 'studentup_sw', '1', home_url( '/' ) ) ),
 			'scope'   => '/',
-			'iosHint' => 'iPhone: Share → Add to Home Screen నొక్కితే యాప్‌లా ఇన్‌స్టాల్ అవుతుంది.',
+			'iosHint' => 'iPhone: tap Share → Add to Home Screen to install it like an app.',
 		)
 	);
 }

@@ -27,7 +27,7 @@ cPanel → File Manager → public_html/
 ```
 **v72.1 (App డౌన్‌లోడ్) note:** `manifest.webmanifest` + `sw.js` **root lo** undali (index.html
 pakkana). Munde install chesina phone lo kotha assets ravalante `sw.js` lo `VERSION` bump
-(`su-v72-2` ippudu undi) — browser purana cache vadadam aaputundi. `data/deadline.json` ledu
+(`su-v73-1` ippudu undi) — browser purana cache vadadam aaputundi. `data/deadline.json` ippudu ledu (v73 countdown removal)
 ante hero countdown honest line chupistundi (fake date eppudu vaddu) — bot
 `python run.py --push-theme-data` tho ee file rasi pettedi.
 

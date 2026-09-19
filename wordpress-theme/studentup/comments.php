@@ -23,7 +23,7 @@ if ( post_password_required() ) {
 			$su_count = (int) get_comments_number();
 			printf(
 				/* translators: %s: comment count */
-				esc_html( _n( '%s కామెంట్', '%s కామెంట్లు', $su_count, 'studentup' ) ),
+				esc_html( _n( '%s comment', '%s comments', $su_count, 'studentup' ) ),
 				esc_html( number_format_i18n( $su_count ) )
 			);
 			?>
@@ -42,29 +42,29 @@ if ( post_password_required() ) {
 		<?php
 		the_comments_pagination(
 			array(
-				'prev_text' => '← ' . esc_html__( 'పాత కామెంట్లు', 'studentup' ),
-				'next_text' => esc_html__( 'కొత్త కామెంట్లు', 'studentup' ) . ' →',
+				'prev_text' => '← ' . esc_html__( 'Older comments', 'studentup' ),
+				'next_text' => esc_html__( 'Newer comments', 'studentup' ) . ' →',
 			)
 		);
 		?>
 	<?php endif; ?>
 
 	<?php if ( ! comments_open() && get_comments_number() && post_type_supports( get_post_type(), 'comments' ) ) : ?>
-		<p class="su-comments-closed"><?php esc_html_e( 'కామెంట్లు మూసివేయబడ్డాయి.', 'studentup' ); ?></p>
+		<p class="su-comments-closed"><?php esc_html_e( 'Comments are closed.', 'studentup' ); ?></p>
 	<?php endif; ?>
 
 	<?php
 	comment_form(
 		array(
-			'title_reply'          => esc_html__( 'మీ అభిప్రాయం రాయండి', 'studentup' ),
-			'title_reply_to'       => esc_html__( '%s కి జవాబు రాయండి', 'studentup' ),
-			'label_submit'         => esc_html__( 'కామెంట్ పంపండి', 'studentup' ),
+			'title_reply'          => esc_html__( 'Write your comment', 'studentup' ),
+			'title_reply_to'       => esc_html__( 'Reply to %s', 'studentup' ),
+			'label_submit'         => esc_html__( 'Post comment', 'studentup' ),
 			'class_submit'         => 'su-btn',
 			'comment_notes_before' => '<p class="su-comment-note">'
-				. esc_html__( 'మీ ఇమెయిల్ ప్రచురించబడదు. అధికారిక సమాచారం కోసం మాత్రమే వ్యక్తిగత వివరాలు ఇవ్వండి.', 'studentup' )
+				. esc_html__( 'Your email will not be published. Share personal details only for official information.', 'studentup' )
 				. '</p>',
 			'comment_field'        => '<p class="comment-form-comment"><label for="comment">'
-				. esc_html__( 'కామెంట్', 'studentup' ) . '</label>'
+				. esc_html__( 'Comment', 'studentup' ) . '</label>'
 				. '<textarea id="comment" name="comment" cols="45" rows="5" required></textarea></p>',
 		)
 	);

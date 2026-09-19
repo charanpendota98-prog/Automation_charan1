@@ -23,7 +23,7 @@ get_header();
 		</div>
 		<?php
 		if ( function_exists( 'studentup_qual_bar' ) ) {
-			studentup_qual_bar();          // v72: archive/category lo kuda అర్హత filter
+			studentup_qual_bar();          // v72: qualification filter on archives/categories too
 			studentup_qual_active_note();
 			studentup_hidden_note();
 		}
@@ -42,7 +42,7 @@ get_header();
 			?>
 		</div>
 		<?php studentup_ad( 'mid' ); ?>
-		<nav class="sectionhead" aria-label="పేజీలు"><div><?php echo wp_kses_post( paginate_links() ); ?></div></nav>
+		<nav class="sectionhead" aria-label="Pages"><div><?php echo wp_kses_post( paginate_links() ); ?></div></nav>
 	</div>
 	<?php get_sidebar(); ?>
 </main>

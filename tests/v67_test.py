@@ -203,7 +203,8 @@ def test_perf_and_a11y():
 def test_search_page_form():
     search = tpl("search.php")
     assert "get_search_form()" in search
-    assert "su-empty" in search and "ఫలితాలు లేవు" in search
+    # v73: English empty state
+    assert "su-empty" in search and "No results" in search
 
 
 def test_zip_has_new_files():

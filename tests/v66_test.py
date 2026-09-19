@@ -148,7 +148,7 @@ def test_options_new_fields():
     for field in ("ads_enabled", "ads_txt", "max_ads", "lazy_ads", "ads_on_policy",
                   "in_article_ad",
                   "consent_mode", "consent_regions", "consent_cmp_id", "news_sitemap",
-                  "deadline_json", "adsense_slot_mid", "adsense_slot_in_feed"):
+                  "adsense_slot_mid", "adsense_slot_in_feed"):
         assert f"'{field}'" in opt, field
     # legacy duplicate slot key (adsense_slot_in_article) theesesa — confusion ledu
     assert "adsense_slot_in_article" not in opt

@@ -121,8 +121,8 @@ function studentup_comment_flood_guard( $comment_data ) {
 	if ( isset( $comment_data['comment_content'] ) ) {
 		$links = preg_match_all( '#https?://#i', (string) $comment_data['comment_content'] );
 		if ( $links > 3 ) {
-			wp_die( esc_html__( 'ఒక కామెంట్‌లో 3 కంటే ఎక్కువ లింక్‌లు అనుమతి లేదు.', 'studentup' ),
-				esc_html__( 'కామెంట్ నిరాకరించబడింది', 'studentup' ), 403 );
+			wp_die( esc_html__( 'No more than 3 links in one comment.', 'studentup' ),
+				esc_html__( 'Comment rejected', 'studentup' ), 403 );
 		}
 	}
 	return $comment_data;

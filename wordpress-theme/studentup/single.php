@@ -50,11 +50,11 @@ get_header();
 
 				<div class="article-content"><?php the_content(); ?></div>
 
-				<div class="share" aria-label="షేర్ చేయండి">
-					<a href="https://wa.me/?text=<?php echo rawurlencode( get_the_title() . ' — ' . get_permalink() ); ?>" target="_blank" rel="noopener">WhatsApp షేర్</a>
-					<a href="https://t.me/share/url?url=<?php echo rawurlencode( get_permalink() ); ?>&text=<?php echo rawurlencode( get_the_title() ); ?>" target="_blank" rel="noopener">Telegram షేర్</a>
-					<a href="<?php echo esc_url( 'https://twitter.com/intent/tweet?url=' . rawurlencode( get_permalink() ) ); ?>" target="_blank" rel="noopener">X షేర్</a>
-					<button type="button" class="su-copy" data-url="<?php echo esc_url( get_permalink() ); ?>">🔗 లింక్ కాపీ</button>
+				<div class="share" aria-label="Share">
+					<a href="https://wa.me/?text=<?php echo rawurlencode( get_the_title() . ' — ' . get_permalink() ); ?>" target="_blank" rel="noopener">Share on WhatsApp</a>
+					<a href="https://t.me/share/url?url=<?php echo rawurlencode( get_permalink() ); ?>&text=<?php echo rawurlencode( get_the_title() ); ?>" target="_blank" rel="noopener">Share on Telegram</a>
+					<a href="<?php echo esc_url( 'https://twitter.com/intent/tweet?url=' . rawurlencode( get_permalink() ) ); ?>" target="_blank" rel="noopener">Share on X</a>
+					<button type="button" class="su-copy" data-url="<?php echo esc_url( get_permalink() ); ?>">🔗 Copy link</button>
 				</div>
 
 				<?php studentup_trust_note(); ?>
@@ -81,7 +81,7 @@ get_header();
 					)
 				);
 				if ( $su_q->have_posts() ) {
-					echo '<div class="sectionhead"><div><h2>ఇది కూడా చదవండి</h2></div></div><div class="newsgrid">';
+					echo '<div class="sectionhead"><div><h2>Read this too</h2></div></div><div class="newsgrid">';
 					$su_i = 0;
 					while ( $su_q->have_posts() ) {
 						$su_q->the_post();

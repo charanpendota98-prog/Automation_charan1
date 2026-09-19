@@ -1,17 +1,17 @@
-/* studentup.in service worker (v72)
+/* studentup.in service worker (v73)
  * Goal: app-like speed on mobile — shell cached, HTML network-first (fresh news),
  * offline shows the last cached page instead of the browser error.
  */
-var VERSION = "su-v72-2";   // v72.1: App sheet + అర్హత sections
+var VERSION = "su-v73-1";   // v73: English UI + slim hero (countdown card teesesaamu)
 var SHELL = ["./", "./index.html", "./favicon.svg", "./manifest.webmanifest", "./robots.txt"];
 var OFFLINE_HTML =
   "<!doctype html><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'>" +
   "<title>studentup.in — offline</title>" +
   "<body style='font-family:system-ui,sans-serif;margin:0;padding:28px;text-align:center;color:#0f2e62'>" +
-  "<h1 style='font-size:20px'>ఇంటర్నెట్ లేదు</h1>" +
-  "<p style='color:#5b6b85;font-size:14px;line-height:1.7'>మీరు చూసిన పేజీలు మళ్లీ కనిపిస్తాయి — " +
-  "కనెక్షన్ వచ్చాక కొత్త ఉద్యోగాలు, ఫలితాలు automatic ga update avutayi.</p>" +
-  "<p style='font-size:14px'><a href='./index.html' style='color:#2463b7'>↻ మళ్లీ ప్రయత్నించండి</a></p>";
+  "<h1 style='font-size:20px'>You are offline</h1>" +
+  "<p style='color:#5b6b85;font-size:14px;line-height:1.7'>Pages you already visited stay available — " +
+  "new jobs, results and updates load once you are back online.</p>" +
+  "<p style='font-size:14px'><a href='./index.html' style='color:#2463b7'>↻ Try again</a></p>";
 
 self.addEventListener("install", function (e) {
   e.waitUntil(caches.open(VERSION).then(function (c) { return c.addAll(SHELL).catch(function () {}); })

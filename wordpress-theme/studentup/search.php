@@ -23,10 +23,10 @@ get_header();
 		</div>
 		<?php if ( ! have_posts() ) : ?>
 			<div class="su-empty">
-				<p><?php esc_html_e( 'ఫలితాలు లేవు — వేరే పదంతో మళ్లీ వెతకండి.', 'studentup' ); ?></p>
+				<p><?php esc_html_e( 'No results — try a different word.', 'studentup' ); ?></p>
 				<?php get_search_form(); ?>
 				<p><a class="su-btn" href="<?php echo esc_url( home_url( '/' ) ); ?>">
-					<?php esc_html_e( 'హోమ్‌కి వెళ్లండి', 'studentup' ); ?></a></p>
+					<?php esc_html_e( 'Go to home', 'studentup' ); ?></a></p>
 			</div>
 		<?php endif; ?>
 		<div class="newsgrid">
@@ -43,7 +43,7 @@ get_header();
 			?>
 		</div>
 		<?php studentup_ad( 'mid' ); ?>
-		<nav class="sectionhead" aria-label="పేజీలు"><div><?php echo wp_kses_post( paginate_links() ); ?></div></nav>
+		<nav class="sectionhead" aria-label="Pages"><div><?php echo wp_kses_post( paginate_links() ); ?></div></nav>
 	</div>
 	<?php get_sidebar(); ?>
 </main>

@@ -3,7 +3,7 @@
  * StudentUp Telugu News — theme setup (v61).
  *
  * Design: preview/index.html lo unna design ne WordPress lo ki teesukostundi —
- * బ్రేకింగ్ టికర్ · "విద్యార్థులు ఎక్కువగా వెతికేవి" · ఉద్యోగం కార్డులు · ad slots.
+ * Breaking ticker · "Most searched by students" · job cards · ad slots.
  *
  * @package studentup
  */
@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'STUDENTUP_VERSION', '1.7.1' );  // v72.1: App download sheet · combined అర్హత+category filter · clean copy
+define( 'STUDENTUP_VERSION', '1.7.1' );  // v72.1: App download sheet · combined qualification + category filter · clean copy
 
 require_once get_template_directory() . '/inc/options.php';
 require_once get_template_directory() . '/inc/qual-filter.php';  // v72: 10th/Inter/Degree/PG filter (auto tags)
@@ -34,19 +34,19 @@ require_once get_template_directory() . '/inc/cta.php';
 require_once get_template_directory() . '/inc/editor.php';
 
 /**
- * "విద్యార్థులు ఎక్కువగా వెతికేవి" — order okkate source (bot lo autoblog/breaking.py
+ * "Most searched by students" — order okkate source (bot lo autoblog/breaking.py
  * MOST_USED + preview site + tests anni ide order vaadutayi).
  */
 function studentup_most_used() {
 	return array(
-		array( 'slug' => 'ts-jobs', 'label' => 'టీఎస్ ప్రభుత్వ ఉద్యోగాలు', 'icon' => '🏛', 'hint' => 'TSPSC · పోలీస్ · గురుకుల్' ),
-		array( 'slug' => 'ap-jobs', 'label' => 'ఏపీ ప్రభుత్వ ఉద్యోగాలు', 'icon' => '🏛', 'hint' => 'APPSC · పోలీస్ · DSC · సచివాలయం' ),
-		array( 'slug' => 'hall-tickets', 'label' => 'హాల్ టికెట్లు', 'icon' => '🎫', 'hint' => 'అడ్మిట్ కార్డ్ · ముఖ్య సూచనలు' ),
-		array( 'slug' => 'results', 'label' => 'ఫలితాలు', 'icon' => '📄', 'hint' => 'బోర్డు · పోటీ పరీక్షలు · కీలు' ),
-		array( 'slug' => 'walkin-jobs', 'label' => 'వాక్-ఇన్ ఇంటర్వ్యూ', 'icon' => '🚶', 'hint' => 'ఈ వారం డ్రైవ్‌లు · వేదికలు' ),
-		array( 'slug' => 'software-jobs', 'label' => 'సాఫ్ట్‌వేర్ ఉద్యోగాలు', 'icon' => '💻', 'hint' => 'IT · డెవలపర్ · ఫ్రెషర్' ),
-		array( 'slug' => 'private-jobs', 'label' => 'ప్రైవేట్ ఉద్యోగాలు', 'icon' => '🏢', 'hint' => 'TCS · ఇన్ఫోసిస్ · ఆఫ్-క్యాంపస్' ),
-		array( 'slug' => 'current-affairs', 'label' => 'ప్రస్తుతాంశాలు', 'icon' => '📰', 'hint' => 'రోజు GK · పరీక్షలకు' ),
+		array( 'slug' => 'ts-jobs', 'label' => 'TS Government Jobs', 'icon' => '🏛', 'hint' => 'TSPSC · Police · Gurukul' ),
+		array( 'slug' => 'ap-jobs', 'label' => 'AP Government Jobs', 'icon' => '🏛', 'hint' => 'APPSC · Police · DSC · Secretariat' ),
+		array( 'slug' => 'hall-tickets', 'label' => 'Hall Tickets', 'icon' => '🎫', 'hint' => 'Admit card · key instructions' ),
+		array( 'slug' => 'results', 'label' => 'Results', 'icon' => '📄', 'hint' => 'Board · competitive exams · keys' ),
+		array( 'slug' => 'walkin-jobs', 'label' => 'Walk-in Interviews', 'icon' => '🚶', 'hint' => 'This week\'s drives · venues' ),
+		array( 'slug' => 'software-jobs', 'label' => 'Software Jobs', 'icon' => '💻', 'hint' => 'IT · developer · fresher' ),
+		array( 'slug' => 'private-jobs', 'label' => 'Private Jobs', 'icon' => '🏢', 'hint' => 'TCS · Infosys · Off-campus' ),
+		array( 'slug' => 'current-affairs', 'label' => 'Current Affairs', 'icon' => '📰', 'hint' => 'Daily GK · for exams' ),
 	);
 }
 
@@ -70,9 +70,9 @@ function studentup_setup() {
 
 	register_nav_menus(
 		array(
-			'primary' => 'ప్రధాన మెనూ (హెడర్)',
-			'mobile'  => 'మొబైల్ మెనూ',
-			'footer'  => 'ఫుటర్ మెనూ',
+			'primary' => 'Main menu (header)',
+			'mobile'  => 'Mobile menu',
+			'footer'  => 'Footer menu',
 		)
 	);
 
@@ -96,12 +96,11 @@ function studentup_assets() {
 		array(
 			'home'     => esc_url_raw( home_url( '/' ) ),
 			'apiBase'  => esc_url_raw( (string) get_option( 'studentup_api_base', '' ) ),
-			'deadline' => studentup_deadline(),
 			'chips'    => true,
 			'i18n'     => array(
-				'updates' => 'అప్డేట్‌లు',
-				'soon'    => 'త్వరలో',
-				'none'    => 'ఈ విభాగంలో ఇంకా పోస్టులు లేవు — త్వరలో వస్తాయి.',
+				'updates' => 'updates',
+				'soon'    => 'Soon',
+				'none'    => 'No posts in this section yet — coming soon.',
 			),
 		)
 	);
@@ -117,9 +116,9 @@ add_action( 'wp_enqueue_scripts', 'studentup_assets' );
 function studentup_widgets() {
 	register_sidebar(
 		array(
-			'name'          => 'సైడ్‌బార్',
+			'name'          => 'Sidebar',
 			'id'            => 'sidebar-1',
-			'description'   => 'పోస్ట్ పేజీ పక్కన (optional).',
+			'description'   => 'Beside post pages (optional).',
 			'before_widget' => '<section id="%1$s" class="sidecard widget %2$s">',
 			'after_widget'  => '</section>',
 			'before_title'  => '<h3>',
@@ -130,7 +129,7 @@ function studentup_widgets() {
 		register_sidebar(
 			array(
 				/* translators: %d: footer column number. */
-				'name'          => sprintf( 'ఫుటర్ కాలమ్ %d', $i ),
+				'name'          => sprintf( 'Footer column %d', $i ),
 				'id'            => 'footer-' . $i,
 				'before_widget' => '<div id="%1$s" class="widget %2$s">',
 				'after_widget'  => '</div>',
@@ -171,7 +170,7 @@ add_action( 'init', 'studentup_head_cleanup' );
  * pingback header pampadam WordPress default. Extra: oEmbed discovery off (privacy).
  */
 function studentup_disable_emoji_title() {
-	return 'StudentUp — తెలంగాణ & ఆంధ్రప్రదేశ్ విద్యార్థుల వేదిక';
+	return 'StudentUp — the platform for Telangana & Andhra Pradesh students';
 }
 
 

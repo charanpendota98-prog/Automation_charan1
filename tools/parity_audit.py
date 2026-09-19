@@ -57,7 +57,9 @@ def p2_module_parity(rep: dict) -> None:
     for p in list(BOT.glob("*.py")) + [ROOT / "run.py"] + list((ROOT / "tests").glob("*.py")) \
             + list((ROOT / "tools").glob("*.py")):
         haystack += _read(p)
-    dead = [m for m in mods if haystack.count(m) <= 1]
+    # v73: module own file + autoblog/__init__.py reference ni count cheyyakoodadu
+    pkg_init = _read(BOT / "__init__.py")
+    dead = [m for m in mods if m not in pkg_init and haystack.count(m) <= 1]
     rep["info"].append(f"P2 modules: {len(mods)} · dead {len(dead)}")
     for m in dead:
         rep["warnings"].append(f"P2 autoblog/{m}.py evaru import cheyyaledu (dead module — "

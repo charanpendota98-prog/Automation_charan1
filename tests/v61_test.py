@@ -101,8 +101,9 @@ def test_most_used_order_matches_site():
                                      "walkin-jobs", "software-jobs", "private-jobs",
                                      "current-affairs"], slugs
     labels = [l for _, l in slugs]
-    assert labels[0].startswith("టీఎస్") and labels[1].startswith("ఏపీ")
-    assert "హాల్ టికెట్లు" in labels and "ఫలితాలు" in labels and "వాక్-ఇన్" in labels[4]
+    # v73: English UI — theme + bot labels English (order/slugs same)
+    assert labels[0].startswith("TS") and labels[1].startswith("AP")
+    assert "Hall Tickets" in labels and "Results" in labels and "Walk-in" in labels[4]
     # bot MOST_USED order same (breaking.py)
     from autoblog import breaking
 
@@ -112,14 +113,16 @@ def test_most_used_order_matches_site():
 
 def test_front_page_order():
     fp = read("front-page.php")
+    # v73: hero = slim hero (countdown card teesesaam — user brief)
     order = [fp.index("studentup_most_used()"), fp.index("studentup_ad( 'leaderboard' )"),
-             fp.index('class="hero"'), fp.index("studentup_breaking_section()"),
+             fp.index('class="hero'), fp.index("studentup_breaking_section()"),
              fp.index('id="grid"')]
     assert order == sorted(order), order
-    for needle in ('id="chips"', 'data-cat="all"', "data-deadline", "studentup_ad( 'mid' )",
+    for needle in ('id="chips"', 'data-cat="all"', "studentup_ad( 'mid' )",
                    "studentup_card(", "next_posts_link"):
         assert needle in fp, needle
-    assert "విద్యార్థులు ఎక్కువగా వెతికేవి" in fp
+    assert "data-deadline" not in fp, "v73: countdown card poyindi (fake timer vaddhu)"
+    assert "hero-slim" in fp and "Most searched by students" in fp
     hdr = read("header.php")
     assert "studentup_breaking_ticker()" in hdr
     assert hdr.index("studentup_breaking_ticker()") < hdr.index('<div class="mpanel"')
@@ -139,7 +142,7 @@ def test_breaking_feed_contract():
     b = read("inc/breaking.php")
     assert "studentup_breaking_json" in b and "get_transient( 'studentup_breaking_feed' )" in b
     assert "/data/breaking.json" in b, "file fallback (bot radar rasi file)"
-    assert "ప్రస్తుతం కొత్త verified బ్రేకింగ్ అప్డేట్‌లు లేవు" in b, "honest empty message"
+    assert "No new verified breaking updates right now" in b, "honest empty message"
     assert "sanitize_key" in b and "esc_url_raw" in b and "wp_strip_all_tags" in b
     assert "studentup/v1" in b and "edit_posts" in b, "REST push endpoint + auth"
     assert "studentup_tag_label" in b and "studentup_ago" in b
@@ -148,7 +151,7 @@ def test_breaking_feed_contract():
 def test_single_and_templates():
     s = read("single.php")
     for needle in ("the_content()", "studentup_ad( 'mid' )", "studentup_trust_note()",
-                   "studentup_reading_time()", "షేర్", "studentup_breadcrumbs()", "related"):
+                   "studentup_reading_time()", "Share on WhatsApp", "studentup_breadcrumbs()", "related"):
         assert needle in s, needle
     foot = read("footer.php")
     assert "su-social" in foot and "wp_footer()" in foot and "Telegram" in foot
@@ -159,9 +162,11 @@ def test_single_and_templates():
 def test_js_no_lib_and_features():
     js = read("assets/js/studentup.js")
     assert not re.search(r"\bjQuery\s*\(|\$\(document", js), "library use vaddu"
+    # v73: countdown JS block poyindi (dead code) — data-deadline ledu
     for feat in ("su_theme", "mpanel", 'getElementById("grid")',
-                 "data-deadline", "data-cat", "addEventListener"):
+                 "data-cat", "addEventListener"):
         assert feat in js, feat
+    assert "data-deadline" not in js, "v73: countdown code teeseyali"
 
 
 def test_theme_json_palette():
@@ -200,8 +205,9 @@ def test_bot_bridge_payload_and_cli():
     assert "def push_theme_data(" in main and '"--push-theme-data"' in main
     assert "wp_theme_sync.push()" in main, "daily hook (breaking feed tarvata theme sync)"
     assert "/wp-json/studentup/v1/theme-data" in wp_theme_sync.REST_PATH
-    env = (ROOT / ".env.example").read_text(encoding="utf-8")
-    assert "POST_DEADLINE_TITLE" in env and "POST_DEADLINE_ISO" in env
+    # v73: countdown/deadline plumbing teesesaamu (hero card poyindi)
+    assert "POST_DEADLINE_TITLE" not in (ROOT / ".env.example").read_text(encoding="utf-8")
+    assert "studentup_deadline" not in (SRC / "inc" / "template.php").read_text(encoding="utf-8")
 
 
 def IS_SENT(res: dict) -> bool:

@@ -23,9 +23,8 @@
   python run.py --readiness                v62: TOP WEBSITE READINESS score (content ·
                                             SEO · ads · automation · real site)
   python run.py --push-theme-data         v61: bot data → WP theme (breaking · proof ·
-                                            deadline · house ads) — REST push
-                                          v72.1: preview/data/deadline.json kuda rasi pettedi
-                                            (site hero countdown ki nijamaina data)
+                                            house ads) — REST push
+                                          v73: countdown data push ledu (hero card poyindi)
   python run.py --guardian                v60: SITE GUARDIAN — site/UI/SEO/ads/
                                           feed/storage check (roju auto @ GUARDIAN_HOUR)
   python run.py --guardian-notify         v60: guardian report → Telegram

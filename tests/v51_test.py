@@ -38,22 +38,23 @@ def test_owner_category_menu_present():
     for cat in MENU_CATS + EXAM_CATS:
         assert 'data-goto-cat="%s"' % cat in html, "menu category missing: " + cat
     assert html.count('data-goto-cat="') >= 20, "menu links too few"
-    # Telugu labels for the exact list the owner asked for
-    for label in ["టీఎస్ ప్రభుత్వ ఉద్యోగాలు", "ఏపీ ప్రభుత్వ ఉద్యోగాలు",
-                  "కేంద్ర ప్రభుత్వ ఉద్యోగాలు", "వాక్-ఇన్", "సాఫ్ట్‌వేర్",
-                  "ప్రైవేట్ ఉద్యోగాలు", "హాల్ టికెట్లు", "ఫలితాలు"]:
-        assert label in html, "Telugu menu label missing: " + label
-    print("  menu: owner's 8 job categories + 4 exam categories in Telugu ✔")
+    # v73: English UI — same owner list, English labels
+    for label in ["TS Government Jobs", "AP Government Jobs", "Central Government Jobs",
+                  "Walk-in", "Software", "Private Jobs", "Hall Tickets", "Results"]:
+        assert label in html, "English menu label missing: " + label
+    print("  menu: owner's 8 job categories + 4 exam categories (English UI) ✔")
 
 
-def test_menu_has_three_dropdowns_and_stays_telugu():
+def test_menu_has_three_dropdowns_and_is_english():
+    """v73: menu UI antha English — Telugu mattrame article content lo."""
     html = _html()
     assert html.count('class="has-drop"') == 3, html.count('class="has-drop"')
     nav = re.search(r'<nav class="nav".*?</nav>', html, re.S).group(0)
-    for english in ["Jobs", "Results", "Hall Ticket", "Software", "Walk-in"]:
-        assert english not in re.sub(r"class=\"[^\"]*\"|aria-label=\"[^\"]*\"", "", nav), \
-            "English leaked into the menu: " + english
-    print("  menu: 3 dropdowns (ఉద్యోగాలు · పరీక్షలు · మరికొన్ని), pure Telugu labels ✔")
+    for english in ["Jobs", "Results", "Hall Tickets", "Software", "Walk-in"]:
+        assert english in nav, "menu label miss: " + english
+    telugu = re.findall(r"[\u0C00-\u0C7F]", re.sub(r"class=\"[^\"]*\"|aria-label=\"[^\"]*\"", "", nav))
+    assert not telugu, "menu lo Telugu undi (English UI kaavali): %d chars" % len(telugu)
+    print("  menu: 3 dropdowns (Jobs · Exams · More), English labels ✔")
 
 
 def test_mobile_panel_has_same_categories():
@@ -152,7 +153,7 @@ def test_money_claims_are_policy_safe_and_honest():
 
 def main() -> None:
     test_owner_category_menu_present()
-    test_menu_has_three_dropdowns_and_stays_telugu()
+    test_menu_has_three_dropdowns_and_is_english()
     test_mobile_panel_has_same_categories()
     test_filter_chips_and_content_cover_every_category()
     test_shareable_category_urls_documented_in_js()

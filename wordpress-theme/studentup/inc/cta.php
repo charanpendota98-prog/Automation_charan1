@@ -33,7 +33,7 @@ function studentup_cta_internet_center() {
 			<li><?php esc_html_e( 'WhatsApp your documents — photo, signature, certificates, resume.', 'studentup' ); ?></li>
 			<li><?php esc_html_e( 'We apply and send the PDF — your filled application reaches you at the lowest service charge.', 'studentup' ); ?></li>
 		</ol>
-		<p class="su-ic-te"><?php esc_html_e( 'దరఖాస్తు మొత్తం మేము చేస్తాము — PDF మీకు పంపుతాము.', 'studentup' ); ?></p>
+		<p class="su-ic-te"><?php esc_html_e( 'We fill the whole application — the PDF is sent to you.', 'studentup' ); ?></p>
 		<div class="su-ic-actions">
 			<a class="su-wa-box" href="<?php echo esc_url( $soc['whatsapp'] ); ?>" target="_blank" rel="noopener">
 				<span class="su-wa-ico" aria-hidden="true">💬</span>
@@ -63,7 +63,7 @@ function studentup_cta_join() {
 		<div class="su-join-copy">
 			<h2 id="su-join-title"><?php esc_html_e( 'Every job, exam date and result — first on your phone', 'studentup' ); ?></h2>
 			<p><?php esc_html_e( 'Free daily updates for Telangana & Andhra Pradesh students. No spam calls, leave anytime.', 'studentup' ); ?></p>
-			<p class="su-join-te"><?php esc_html_e( 'ఉద్యోగాలు · నోటిఫికేషన్లు · ఫలితాలు — మా WhatsApp / Telegram లో ముందుగా.', 'studentup' ); ?></p>
+			<p class="su-join-te"><?php esc_html_e( 'Jobs · notifications · results — first on our WhatsApp / Telegram.', 'studentup' ); ?></p>
 		</div>
 		<div class="su-join-cta">
 			<a class="su-join-wa" href="<?php echo esc_url( $soc['whatsapp'] ); ?>" target="_blank" rel="noopener"><?php esc_html_e( 'WhatsApp updates', 'studentup' ); ?></a>

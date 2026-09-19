@@ -1,7 +1,7 @@
 /* StudentUp PWA / App download (v72.1)
  * Enti chestundi:
  *   1) service worker register (query URL → root scope) — repeat visits fast + offline page
- *   2) "⬇️ App డౌన్‌లోడ్" button — prathi visit lo kanipistundi (standalone lo hide)
+ *   2) "⬇️ Download App" button — prathi visit lo kanipistundi (standalone lo hide)
  *      · Android/Chrome: beforeinstallprompt prompt
  *      · iPhone/desktop: device-wise steps sheet (Share → Add to Home Screen)
  *   3) install ayyaka button hide

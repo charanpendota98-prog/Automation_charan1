@@ -554,6 +554,25 @@ python run.py --traffic-sessions         # advanced control
 python run.py --traffic-views            # advanced control
 ```
 
+### v73 — ENGLISH UI PASS + HERO BLOCK REMOVAL ("idi avasram ledu")
+
+**Mee brief:** hero block (eyebrow · big Telugu h1 · lede · అవకాశాలు CTA · live-countdown card ·
+అర్హత/మూలం tiles) **teeseyali** · site antha English lo (menus · buttons · chips · notes · footer ·
+headings/labels) — Telugu mattrame job/article content lo.
+
+| # | What changed | Detail |
+|---|--------------|--------|
+| 1 | **Hero block poyindi** | Countdown card, tiles, CTA, eyebrow — motham teesesaam. Badulu chinna English hero: h1 + one honest line ("Official-source updates for TS & AP students. Always confirm a deadline once in the official notification."). |
+| 2 | **Countdown + deadline plumbing teesesaam** | Preview lo `#cd-live`/`#cd-none`/`data-deadline`/`data/deadline.json`, theme lo `studentup_deadline()`, bot lo `wp_theme_sync.write_preview_deadline()`, `.env` `POST_DEADLINE_*`, WP option `deadline_json` — anni poyayi (dead code ledu). Nijamaina deadlines ippudu post content + `studentup_last_date` badge lo. |
+| 3 | **UI antha English** | Menu (Home · Jobs · Hall Tickets · Results · Scholarships · Current Affairs · Exams · More), search panel, chips (All · TS Jobs · … · Degree · ⏳ Closing in 7 days), qualification sections, ads labels, poll/quiz chrome, install sheet, footer, sw.js offline page, manifest shortcuts. |
+| 4 | **6 policy pages English** | about · contact · advertise · privacy · disclaimer · editorial-policy — 0 Telugu chars, `lang="en"`, og:locale en_IN, ld+json inLanguage en-IN. |
+| 5 | **WP theme English** | 27 files lo 5,284 Telugu chars → 0 (detection keywords block `studentup_qual_keywords()` mattrame Telugu ga undi — posts Telugu headline nunchi tag cheyyadaniki avasaram). Bot `MOST_USED` labels/hints kuda English (site/bot parity). |
+| 6 | **Scope (mee choice)** | UI/labels/headings English; job/article content (post titles, summaries, quiz questions) Telugu — avi notifications nunchi vastayi. |
+| 7 | **Proof** | `--test-all` **57/57** · jsdom **162/162** · readiness **100/100 (28/28)** · guardian **14/15** · parity **0/0** · code audit **0/0** · php-lint **32/32** · theme **1.7.1** (copy/UI pass — version same) |
+
+**Language rule (ippudu):** website UI antha English; Telugu mattrame post/article content lo
+(job titles, summaries, quiz questions). Internal reports/docs Telugu-English mix lo unnayi (owner kosam).
+
 ### v72.1 — అర్హత SECTIONS + ALWAYS-VISIBLE APP DOWNLOAD + CLEAN PUBLIC COPY
 
 | # | Feature | Enti (mee brief → implementation) |
@@ -562,7 +581,7 @@ python run.py --traffic-views            # advanced control
 | 13 | **అర్హత ప్రకారం విభాగాలు** | "అర్హత ప్రకారం చూడండి": 10వ తరగతి · ఇంటర్ (10+2) · ఐటీఐ · డిప్లొమా · డిగ్రీ · పీజీ · బీటెక్ + "⏳ 7 రోజుల్లో ముగిసేవి". Groups grid cards nunchi **JS automatic** build avutayi (`buildQualSections`) — kotha post vasthe ade kshanam list lo vastundi, **manual tagging ledu**. |
 | 14 | **Chips + విభాగాలు kalisi** | Category chip + అర్హత chip rendu kalisi filter (page reload ledu) · `?qual=` URL sync · గడువు ముగిసినవి దాచి `#su-hidden-note` note. |
 | 15 | **App డౌన్‌లోడ్ (prathi visit)** | "⬇️ App డౌన్‌లోడ్ FREE" button prathi visit lo (mobile-first) · click tho device-wise sheet (Android Chrome prompt · iPhone Share · Computer icon) · `inc/pwa.php` manifest ki shortcuts (Jobs · అర్హత · ఆన్‌లైన్ పరీక్షలు). |
-| 16 | **Countdown data-driven** | Hero countdown hardcoded date ledu — `preview/data/deadline.json` (bot `--push-theme-data` `wp_theme_sync.write_preview_deadline()` rasi pettedi). File lekapote honest line chupistundi. |
+| 16 | **Countdown data-driven** (v73 lo teesesaamu) | Hero countdown hardcoded date ledu — `preview/data/deadline.json` (bot `--push-theme-data` rasi pettedi). **v73:** hero block tho paatu ee countdown + plumbing motham poyindi (post-level `studentup_last_date` badges mattrame migilayi). |
 | 17 | **Ads nijamainaవి** | Demo advertisers (ABC academy/college/tuition/stationery) → house "స్లాట్ ఖాళీ · మీ ప్రకటన ఇక్కడ" creatives (SPONSORED + `rel=sponsored nofollow`), CTA → Partner page. |
 | 18 | **Admin widget** | WP dashboard: "StudentUp · విద్యార్హత ప్రకారం ఉద్యోగాలు" — qualification-wise counts + tag-leni posts count. |
 | 10 | **Theme v1.7.1** | `inc/qual-filter.php` (directory + notes + widget) · `assets/js/studentup.js` (combined filter + grouping) · `assets/js/studentup-pwa.js` (sheet) · version parity `style.css` ↔ `STUDENTUP_VERSION` ↔ `readme.txt` = **1.7.1**. |
@@ -587,11 +606,11 @@ app-laga install (PWA) · colorful premium look, text/background contrast eppudu
 | 9 | **Contrast + neatness** | Brand gradient (text gradient safe-fallback tho), beige/blue chip tones, dark-mode overrides, `overflow-wrap` + flex-wrap rules — mobile lo text overlap ledu, contrast eppudu safe. |
 | 10 | **Theme v1.7.0** | New: `inc/qual-filter.php` · `assets/js/studentup-pwa.js` · header search. Version parity: `style.css` ↔ `STUDENTUP_VERSION` ↔ `readme.txt` Stable tag. |
 | 11 | **Slug parity (bot ↔ theme)** | Python `qual.QUALS` ↔ PHP `studentup_qual_terms()` — test ee rendu list ni compare chestundi, so filter chips eppudu match avutayi. |
-| 12 | **Proof** (v72.1 tarvata) | `--test-all` **56/56** · jsdom **161/161** · readiness **100/100 (28/28)** · guardian **14/15** (1 warn-only owner env) · code audit **0/0** · parity **0/0** · theme audit **0/0** · php-lint **32/32** · zip **41 files 648 KB** |
+| 12 | **Proof** (v72.1 tarvata) | `--test-all` **57/57** · jsdom **162/162** · readiness **100/100 (28/28)** · guardian **14/15** (1 warn-only owner env) · code audit **0/0** · parity **0/0** · theme audit **0/0** · php-lint **32/32** · zip **41 files 642 KB** |
 
-**Language rule (mee call):** broad headers/labels English/neat; student-facing lines Telugu lo
-(అర్హత chips, "గడువు ముగిసింది", service explanation). Internal metrics — bot report/README lo
-mattrame, website lo ledu.
+**Language rule (v72.1 → v73 update):** v73 lo website UI **antha English** (menus · chips · buttons ·
+notes · footer · policy pages); Telugu mattrame job/article content lo (post titles, summaries, quiz
+questions). Internal metrics docs/reports lo mattrame.
 
 ### v71 — STUDENTS INTERNET CENTER + CLEAN MONETISATION (no public rate card)
 
@@ -711,7 +730,7 @@ chala miss chesthunnam" + "theme lo kuda chala mistakes unnayi"** → moodintiki
 | 6 | **News sitemap + perf** | `/news-sitemap.xml` (48h posts · `news:language te` · images) + robots.txt line · `inc/perf.php` (LCP `preload`+`fetchpriority=high` · `decoding=async` · lazy-ads `IntersectionObserver` rootMargin 300px) |
 | 7 | **Writing-time SEMANTIC + DEEPER checks** | **SEMANTIC group**: entity coverage 3+ · **ముఖ్యాంశాలు** box · **question-form headings** 2+ (PAA) · **సంబంధిత అంశాలు** cluster block · avg sentence ≤24 · current year · quick answer. **DEEPER batch**: heading hierarchy (H1 ledu/skip ledu) · markdown leftovers ledu · list ≤12 words · **table ≤5 cols (mobile)** · **job-guarantee/clickbait claims ledu** (trust+policy) · **keyword cannibalization ledu** · slug ≤60 · **meta lo CTA+number** · secondary keywords body lo · img width/height (CLS) · descriptive anchors · FAQ answers 12+ words → gate **67 checks** · fails → **LLM refine hints** (writing loop lo ne fix, publish block kaadu) |
 | 8 | **rm100 fixers + FAQ bug** | `fix_takeaways` + `fix_entities` (content nunchi mattrame — invent ledu) · **nijamaina bug**: puratana FAQ guard (`<h3` 3+ unte skip) valla **FAQ section asalu rakapovadam** → ippudu questions nijam ga content lo unnaya ani check (regression test) |
-| 9 | **+12 website options** | `ads_enabled` · `adsense_slot_mid` · `adsense_slot_in_feed` · `ads_txt` · `max_ads` · `lazy_ads` · `ads_on_policy` · `consent_mode` · `consent_regions` · `consent_cmp_id` · `news_sitemap` · `deadline_json` (anni WP Admin → StudentUp nunchi) |
+| 9 | **+12 website options** | `ads_enabled` · `adsense_slot_mid` · `adsense_slot_in_feed` · `ads_txt` · `max_ads` · `lazy_ads` · `ads_on_policy` · `consent_mode` · `consent_regions` · `consent_cmp_id` · `news_sitemap` (anni WP Admin → StudentUp nunchi) · **v73:** `deadline_json` poyindi |
 | 10 | **Proof** | `python run.py --test-all` → **55/55 suites** · jsdom **138/138** · `--readiness` **100/100 (27/27)** · pin gate **67/67** · code audit **0/0** · theme audit **0/0** · PHP lint **28/28** · zip **35 files (625 KB)** |
 
 **v66 honest note:** Consent Mode v2 + ads.txt + gating + CLS + lazy = AdSense **policy-safe**
@@ -819,7 +838,7 @@ automatic ga site lo padutayi.
 | `assets/js/studentup.js` | dark mode · mobile panel · chips filter · countdown (no library) |
 
 Install (5 min): zip upload → Activate → Menus assign → `--push-theme-data`.
-Options: `studentup_breaking_json` · `studentup_proof_json` · `studentup_deadline_json` ·
+Options: `studentup_breaking_json` · `studentup_proof_json` ·
 `studentup_house_ads` · `studentup_adsense_client` · `studentup_exam_url`.
 Detail: `wordpress-theme/studentup/README-THEME.md`.
 

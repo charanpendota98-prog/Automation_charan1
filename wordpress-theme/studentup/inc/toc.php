@@ -1,6 +1,6 @@
 <?php
 /**
- * v64: Auto Table of Contents (విషయ సూచిక) — H2/H3 nunchi jump links.
+ * v64: Auto Table of Contents (Table of contents) — H2/H3 nunchi jump links.
  *
  * Bot rase posts lo TOC already untundi (autoblog/rm100.py). Idi manual ga
  * rayabadina posts ki + bot content lo TOC lekapote. Rank Math readability
@@ -60,8 +60,8 @@ function studentup_content_toc( $content ) {
 	if ( count( $items ) < 3 ) {
 		return $content;
 	}
-	$toc = '<div class="su-toc" role="navigation" aria-label="విషయ సూచిక">'
-		. '<div class="su-toc-title">విషయ సూచిక</div><ol>'
+	$toc = '<div class="su-toc" role="navigation" aria-label="Table of contents">'
+		. '<div class="su-toc-title">Table of contents</div><ol>'
 		. implode( '', array_slice( $items, 0, 12 ) )
 		. '</ol></div>';
 	// first paragraph tarvata pettali (ledu ante modatlo)

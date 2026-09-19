@@ -159,7 +159,8 @@ def c_index_files() -> List[dict]:
         "canonical": 'rel="canonical"' in html,
         "OG tags": html.count('property="og:') >= 3,
         "JSON-LD": html.count("application/ld+json") >= 2,
-        "hreflang/lang": 'lang="te"' in html,
+        # v73: UI English — <html lang="en"> + og:locale en_IN (Telugu now only inside post content)
+        "hreflang/lang": bool(re.search(r'<html[^>]+lang="en"', html)) and 'og:locale' in html,
     }
     bad = [k for k, v in checks.items() if not v]
     out.append(_ok("Public HTML head", f"{len(checks) - len(bad)}/{len(checks)} · "
@@ -489,16 +490,16 @@ def c_first_look() -> List[dict]:
     html = _read(PREVIEW / "index.html")
     theme = _read(ROOT / "wordpress-theme" / "studentup" / "inc" / "qual-filter.php")
     blocks = [b for b, ok in (
-        ("ఎక్కువగా వెతికేవి", 'class="usedwrap"' in html),
-        ("menu pakkana search", 'id="searchbtn"' in html and 'id="searchpanel"' in html),
-        ("అర్హత ఫిల్టర్", 'data-qual="10th"' in html and 'studentup_qual_bar' in theme),
-        ("యాప్గా ఇన్స్టాల్", 'id="installbtn"' in html and 'studentup-pwa' in _read(
+        ("Most-searched strip", 'class="usedwrap"' in html),
+        ("Search next to menu", 'id="searchbtn"' in html and 'id="searchpanel"' in html),
+        ("Qualification filter", 'data-qual="10th"' in html and 'studentup_qual_bar' in theme),
+        ("Install as app", 'id="installbtn"' in html and 'studentup-pwa' in _read(
             ROOT / "wordpress-theme" / "studentup" / "functions.php")),
     ) if ok]
     if len(blocks) == 4:
         return [_ok("First-look UX (student-first)", " · ".join(blocks), "REAL SITE (WordPress theme)")]
     return [_bad("First-look UX", f"{len(blocks)}/4 blocks", "REAL SITE (WordPress theme)",
-                 "v72 blocks (search/అర్హత/install/టైల్స్) restore cheyandi")]
+                 "v72 blocks (search/qualification/install/tiles) restore cheyandi")]
 
 
 def c_counts_sync() -> List[dict]:

@@ -11,9 +11,9 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 ?>
 <form role="search" method="get" class="chips" action="<?php echo esc_url( home_url( '/' ) ); ?>">
-	<label class="screen-reader-text" for="s">వెతకండి</label>
+	<label class="screen-reader-text" for="s">Search</label>
 	<input type="search" id="s" name="s" value="<?php echo esc_attr( get_search_query() ); ?>"
-		placeholder="ఉద్యోగం / పరీక్ష / ఫలితం వెతకండి…"
+		placeholder="Search job / exam / result…"
 		style="flex:1;min-width:220px;border:1px solid var(--line);border-radius:12px;padding:11px 14px;font-size:14px">
-	<button type="submit" class="chip active">వెతకండి</button>
+	<button type="submit" class="chip active">Search</button>
 </form>

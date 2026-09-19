@@ -82,7 +82,7 @@ function studentup_house_ads() {
 			'title' => $title,
 			'desc'  => isset( $ad['desc'] ) ? wp_strip_all_tags( (string) $ad['desc'] ) : '',
 			'link'  => $link,
-			'cta'   => isset( $ad['cta'] ) ? wp_strip_all_tags( (string) $ad['cta'] ) : 'చూడండి →',
+			'cta'   => isset( $ad['cta'] ) ? wp_strip_all_tags( (string) $ad['cta'] ) : 'Read →',
 		);
 	}
 	return $out;
@@ -184,7 +184,7 @@ function studentup_ad( $place = 'mid' ) {
 
 	echo '<div class="su-ad-reserved" style="min-height:' . (int) $height . 'px" data-su-height="' . (int) $height . '">';
 	echo '<aside class="' . esc_attr( $cls ) . '" aria-label="Sponsored content">';
-	echo '<div class="su-ad-kicker">SPONSORED · భాగస్వామి</div>';
+	echo '<div class="su-ad-kicker">SPONSORED · PARTNER</div>';
 	if ( 'leaderboard' === $place ) {
 		echo '<div class="su-ad-leader-body"><div>';
 		echo '<div class="su-ad-title">' . esc_html( $house['title'] ) . '</div>';
@@ -212,7 +212,7 @@ function studentup_ad( $place = 'mid' ) {
 			esc_html( $house['cta'] )
 		);
 	}
-	echo '<div class="su-ad-disc">ప్రకటన — భాగస్వామికి నేరు లింక్. అధికారిక నోటిఫికేషన్‌లు ప్రధాన కంటెంట్‌లో మాత్రమే ఉంటాయి.</div>';
+	echo '<div class="su-ad-disc">Advertisement — a direct link to our partner. Official notifications appear only in the main content.</div>';
 	echo '</aside></div>';
 }
 

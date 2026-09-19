@@ -37,10 +37,6 @@ WP_SITE = _get("WP_SITE", "https://studentup.in").rstrip("/")
 WP_USERNAME = _get("WP_USERNAME", "")
 WP_APP_PASSWORD = _get("WP_APP_PASSWORD", "")
 
-# v61: theme countdown (WordPress theme ki push avutundi) — optional
-POST_DEADLINE_TITLE = _get("POST_DEADLINE_TITLE", "")
-POST_DEADLINE_ISO = _get("POST_DEADLINE_ISO", "")
-
 # "draft" = review flow (Telegram lo approve cheyandi tarvata publish).
 # "publish" = posts direct ga live avtavvi.
 DEFAULT_POST_STATUS = _get("DEFAULT_POST_STATUS", "draft")

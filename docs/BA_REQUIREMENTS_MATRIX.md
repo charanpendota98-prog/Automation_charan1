@@ -114,5 +114,5 @@ python tools/build_wp_theme.py    # php-lint + audit + POT + zip (theme install 
 Diploma · Degree · PG · B.Tech) + per-qualification sections (auto built, no manual tagging) +
 always-visible App డౌన్‌లోడ్ + data-driven deadline + clean copy (topbar/7-point article/demo ads
 removed) + theme v1.7.1 ·
-56/56 suites · jsdom 161/161 · readiness 100/100 (28/28) · guardian 14/15 (1 warn-only owner env) ·
+57/57 suites · jsdom 162/162 · readiness 100/100 (28/28) · guardian 14/15 (1 warn-only owner env) ·
 theme audit 0/0 · code audit 0/0 · parity audit 0/0.*

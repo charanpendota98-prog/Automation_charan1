@@ -92,16 +92,16 @@ footer .fine{width:100%;font-size:12px;line-height:1.7;margin-top:6px}
 """.strip()
 
 NAV = [
-    ("about.html", "మా గురించి"),
+    ("about.html", "About us"),
     ("advertise.html", "Partner with us"),
-    ("contact.html", "సంప్రదించండి"),
-    ("privacy.html", "గోప్యతా విధానం"),
-    ("disclaimer.html", "నిరాకరణ"),
-    ("editorial-policy.html", "సంపాదకీయ విధానం"),
+    ("contact.html", "Contact"),
+    ("privacy.html", "Privacy policy"),
+    ("disclaimer.html", "Disclaimer"),
+    ("editorial-policy.html", "Editorial policy"),
 ]
 
 SHELL = """<!DOCTYPE html>
-<html lang="te">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -114,12 +114,12 @@ SHELL = """<!DOCTYPE html>
 <meta property="og:type" content="website">
 <meta property="og:title" content="{title} · studentup.in">
 <meta property="og:description" content="{desc}">
-<meta property="og:locale" content="te_IN">
+<meta property="og:locale" content="en_IN">
 <meta property="og:url" content="https://studentup.in/pages/{slug}.html">
 <meta property="og:image" content="https://studentup.in/logo.png">
 <meta name="twitter:card" content="summary_large_image">
 <script type="application/ld+json">
-{{"@context":"https://schema.org","@type":"WebPage","name":"{title}","inLanguage":"te-IN",
+{{"@context":"https://schema.org","@type":"WebPage","name":"{title}","inLanguage":"en-IN",
 "url":"https://studentup.in/pages/{slug}.html","isPartOf":{{"@type":"WebSite","name":"studentup.in",
 "url":"https://studentup.in/"}},"publisher":{{"@type":"Organization","name":"studentup.in",
 "email":"{email}"}},"dateModified":"{updated}"}}
@@ -131,7 +131,7 @@ SHELL = """<!DOCTYPE html>
 <body>
 <header class="top"><div class="wrap">
   <a class="brand" href="../index.html">studentup<span>.</span>in</a>
-  <a class="back" href="../index.html">← హోమ్‌కు తిరిగి వెళ్లండి</a>
+  <a class="back" href="../index.html">← Back to home</a>
 </div></header>
 <main>
   <h1>{h1}</h1>
@@ -141,9 +141,9 @@ SHELL = """<!DOCTYPE html>
 {script}
 <footer><div class="wrap">
   {nav}
-  <p class="fine">© 2026 studentup.in · తెలంగాణ (33 జిల్లాలు) + ఆంధ్రప్రదేశ్ (26 జిల్లాలు) విద్యార్థుల కోసం.
-  ప్రకటన ఆదాయం, ర్యాంకింగ్‌లు, ఉద్యోగ ఫలితాలు ఎప్పుడూ హామీ ఇవ్వబడవు — నిజమైన సమాచారం అధికారిక నోటిఫికేషన్‌లలో మాత్రమే నిర్ధారించుకోవాలి.
-  సవరణలు: <a href="mailto:{email}">{email}</a> · ఈ పేజీ చివరి నవీకరణ: {updated}</p>
+  <p class="fine">© 2026 studentup.in · For Telangana &amp; Andhra Pradesh students.
+  Ad revenue, rankings and job results are never guaranteed — always confirm the real information in the official notification.
+  Corrections: <a href="mailto:{email}">{email}</a> · This page last updated: {updated}</p>
 </div></footer>
 </body>
 </html>
@@ -151,10 +151,10 @@ SHELL = """<!DOCTYPE html>
 
 
 AD_SLOT = """  <aside class="su-ad" aria-label="Sponsored content" data-slot="policy-inline">
-    <div class="su-ad-kicker">SPONSORED · భాగస్వామి ప్రకటన స్థలం</div>
-    <div class="su-ad-title">మీ కళాశాల / షాప్ / కోచింగ్ ఇక్కడ కనిపించగలదు</div>
-    <p class="su-ad-desc">విద్యార్థులు ఎక్కువగా చూసే పేజీలలో శుభ్రమైన, లేబుల్ చేసిన ప్రకటన స్థలం —
-      తప్పుడు క్లిక్‌లు లేవు, క్లిక్‌బైట్ లేదు.</p>
+    <div class="su-ad-kicker">SPONSORED · PARTNER PLACEMENT</div>
+    <div class="su-ad-title">Your college / shop / coaching can appear here</div>
+    <p class="su-ad-desc">A clean, clearly labelled placement on the pages students read most —
+      no fake clicks, no clickbait.</p>
     <a class="go" href="advertise.html" rel="sponsored">Partner with us</a>
   </aside>
 
@@ -178,37 +178,36 @@ def build(slug: str, title: str, desc: str, h1: str, sub: str, body: str,
 
 
 ABOUT = """
-  <h2>studentup.in అంటే ఏమిటి?</h2>
-  <p>తెలంగాణ మరియు ఆంధ్రప్రదేశ్ విద్యార్థుల కోసం ఉద్యోగాలు, స్కాలర్‌షిప్‌లు, ఫలితాలు,
-  పరీక్షలు, కెరీర్ మార్గదర్శనం — అన్నీ ఒకే వేదికపై, సులభమైన తెలుగులో ఇచ్చే ప్రయత్నం ఇది.
-  మూలం ఎప్పుడూ అధికారిక పోర్టల్‌లు మాత్రమే; వదంతులు, ఊహలు, కాపీ కంటెంట్ ఉండవు.</p>
+  <h2>What is studentup.in?</h2>
+  <p>studentup.in is an attempt to put jobs, scholarships, results, exams and career guidance for
+  Telangana and Andhra Pradesh students in one place, in simple language. Sources are always official
+  portals only; there are no rumours, guesses or copied content.</p>
 
-  <h2>ఎలా పని చేస్తుంది?</h2>
+  <h2>How it works</h2>
   <div class="grid">
-    <div class="tile"><b>1 · మూల పర్యవేక్షణ</b><span>105 అధికారిక మూలాల గ్రిడ్ — TSPSC, APPSC, SSC, NSP,
-      రాష్ట్ర బోర్డులు, DSC, DISCOMలు. రోజుకు 4 సార్లు పరిశీలన.</span></div>
-    <div class="tile"><b>2 · ధృవీకరణ గేట్లు</b><span>మూల తనిఖీ, లోతైన క్రాస్-వెరిఫికేషన్ (2+ మూలాలు),
-      అసలుతనం 72% కనీసం — ఇవి పాస్ అయిన తర్వాతే డ్రాఫ్ట్.</span></div>
-    <div class="tile"><b>3 · మానవ సమీక్ష</b><span>ప్రతి పోస్ట్ డ్రాఫ్ట్‌గా వస్తుంది; నాణ్యతా స్కోరు 80/100
-      దాటిన తర్వాతే ప్రచురణ. సందేహం ఉంటే ప్రచురణ ఆపేస్తాము.</span></div>
-    <div class="tile"><b>4 · నిరంతర నవీకరణ</b><span>తేదీలు మారినప్పుడు, నోటిఫికేషన్ వచ్చినప్పుడు
-      పాత వ్యాసాలు సవరించబడతాయి — చివరి నవీకరణ తేదీ ప్రతి వ్యాసంపై ఉంటుంది.</span></div>
+    <div class="tile"><b>1 · Source monitoring</b><span>A grid of official sources — TSPSC, APPSC, SSC, NSP,
+      state boards, DSC, DISCOMs. Checked several times a day.</span></div>
+    <div class="tile"><b>2 · Verification gates</b><span>Source check and deep cross-verification
+      (2+ sources), minimum originality — a draft is created only after these pass.</span></div>
+    <div class="tile"><b>3 · Human review</b><span>Every post arrives as a draft; it goes live only after
+      the quality bar is crossed. If anything is doubtful, publishing stops.</span></div>
+    <div class="tile"><b>4 · Continuous updates</b><span>When dates change or a notification is
+      re-released, older articles are corrected — the last-updated date sits on every article.</span></div>
   </div>
 
-  <h2>మేము ఏమి చేయము</h2>
+  <h2>What we never do</h2>
   <ul>
-    <li>ప్రభుత్వ సంస్థలం కాదు — TSPSC, APPSC, SSC, NSP లాంటి అధికారిక సంస్థలతో మాకు ఎలాంటి సంబంధం లేదు.</li>
-    <li>ఉద్యోగం, స్కాలర్‌షిప్, ప్రవేశం, ర్యాంకింగ్ లేదా ఆదాయానికి హామీ ఇవ్వము.</li>
-    <li>విద్యార్థుల నుంచి ఎలాంటి రుసుము తీసుకోము; "ఖాతా నంబర్" లేదా OTP ఎప్పుడూ అడగము.</li>
-    <li>వ్యక్తిగత డేటా అమ్మకం చేయము — వివరాలకు <a href="privacy.html">గోప్యతా విధానం</a> చూడండి.</li>
+    <li>We are not a government body — we have no connection with TSPSC, APPSC, SSC, NSP or any department.</li>
+    <li>We never guarantee a job, a scholarship, admission, a ranking or income.</li>
+    <li>We never charge students; we never ask for an "account number" or OTP.</li>
+    <li>We never sell personal data — see the <a href="privacy.html">privacy policy</a>.</li>
   </ul>
 
-  <div class="note">నిజాయితీ గమనిక: తుది తేదీలు, ఖాళీల సంఖ్య, ఫలితాలు — అన్నీ
-  అధికారిక నోటిఫికేషన్‌లోనే ఒకసారి నిర్ధారించుకోండి. తప్పు కనిపిస్తే మెయిల్ చేయండి —
-  వెంటనే సరిచేస్తాము.</div>
+  <div class="note"><b>Honest note:</b> deadlines, vacancy counts and results — always confirm them once
+  in the official notification. If you spot a mistake, email us and we correct it fast.</div>
 
-  <p><a class="cta" href="../index.html">ఈరోజు అప్‌డేట్‌లు చూడండి</a>
-     <a class="cta alt" href="contact.html">సంప్రదించండి</a></p>
+  <p><a class="cta" href="../index.html">See today's updates</a>
+     <a class="cta alt" href="contact.html">Contact us</a></p>
 """
 
 CONTACT = """
@@ -224,7 +223,7 @@ CONTACT = """
     <li><b>WhatsApp your documents</b> — photo, signature, certificates, resume (clear photos are enough).</li>
     <li><b>We apply &amp; send the PDF</b> — the filled application PDF reaches you on WhatsApp; corrections free.</li>
   </ol>
-  <p class="sub">దరఖాస్తు మొత్తం మేము చేస్తాము — PDF మీకు WhatsApp లో పంపుతాము.</p>
+  <p class="sub">We fill the whole application — the PDF comes to you on WhatsApp.</p>
   <p><a class="wa-box" href="{wa}" target="_blank" rel="noopener"><b>WhatsApp your documents</b><br>
      <small>Tap to open our WhatsApp chat</small></a>
      <a class="cta alt" href="tel:{phone}">Call {phone}</a>
@@ -318,116 +317,115 @@ CONTACT_SCRIPT = """<script>
 </script>"""
 
 PRIVACY = """
-  <p>ఈ విధానం studentup.in వెబ్‌సైట్, పరీక్షల పోర్టల్ మరియు పోల్‌కు వర్తిస్తుంది.
-  సులభంగా చెప్పాలంటే: మేము మీ పేరు, ఫోన్ నంబర్, Aadhaar లాంటివి సేకరించము.</p>
+  <p>This policy covers the studentup.in website, the exam portal and the daily poll.
+  In one line: we do not collect your name, phone number or Aadhaar details.</p>
 
-  <h2>మేము ఏమి సేకరించము</h2>
+  <h2>What we do not collect</h2>
   <ul>
-    <li>ఖాతాలు (login) అవసరం లేదు — పేరు, ఇమెయిల్, ఫోన్ నంబర్ అడగము.</li>
-    <li>మీ దస్త్రాలు (documents), బ్యాంకు వివరాలు, OTP — ఏవీ తీసుకోము.</li>
-    <li>వ్యక్తిగత డేటా ఎవరికీ అమ్మము, అద్దెకు ఇవ్వము.</li>
+    <li>No accounts or login — we do not ask for name, email or phone number.</li>
+    <li>No documents, bank details or OTP — none of it.</li>
+    <li>Personal data is never sold or rented to anyone.</li>
   </ul>
 
-  <h2>మీ బ్రౌజర్‌లో నిల్వ ఉండేవి</h2>
+  <h2>What stays in your browser</h2>
   <table>
-    <tr><th>అంశం</th><th>ఎందుకు</th><th>ఎక్కడ</th></tr>
-    <tr><td>థీమ్ ఎంపిక (డార్క్ / లైట్)</td><td>మళ్లీ తెరిచినప్పుడు అదే రూపం రావడానికి</td><td>మీ బ్రౌజర్ మాత్రమే</td></tr>
-    <tr><td>క్విజ్ ఉత్తమ స్కోరు</td><td>మీ ప్రగతి మీకే కనిపించడానికి</td><td>మీ బ్రౌజర్ మాత్రమే</td></tr>
-    <tr><td>పోల్ ఓటు నిర్ధారణ</td><td>ఒకరు రోజుకు ఒక ఓటు మాత్రమే వేయడానికి</td><td>IP చిరునామా (వ్యక్తిగత గుర్తింపుతో కలపము)</td></tr>
+    <tr><th>Item</th><th>Why</th><th>Where</th></tr>
+    <tr><td>Theme choice (dark / light)</td><td>So the site opens the way you left it</td><td>Your browser only</td></tr>
+    <tr><td>Quiz best score</td><td>So you can see your own progress</td><td>Your browser only</td></tr>
+    <tr><td>Poll vote confirmation</td><td>So one person votes once a day</td><td>IP address (never linked to a personal identity)</td></tr>
   </table>
 
-  <h2>ప్రకటనలు, కొలతలు</h2>
+  <h2>Ads and measurement</h2>
   <ul>
-    <li>ప్రకటనలు మరియు కొలతల కోసం Google AdSense / Analytics వాడవచ్చు — అవి కుకీలను
-      ఉపయోగించవచ్చు. అవి <b>యజమాని ఆమోదం తర్వాత మాత్రమే</b> ప్రారంభమవుతాయి.</li>
-    <li>AdSense ఆమోదం లేని సమయంలో ప్రదర్శించే ప్రకటనలు మా స్వంత భాగస్వాముల ప్రకటనలు
-      (SPONSORED లేబుల్‌తో స్పష్టంగా గుర్తించబడతాయి).</li>
-    <li>ప్రకటనదారులకు మేము అందించేది ప్రదర్శన స్థలం మాత్రమే — మీ వ్యక్తిగత డేటా కాదు.</li>
+    <li>Google AdSense / Analytics may be used for ads and measurement — they can use cookies.
+      They start <b>only after the owner's approval</b>.</li>
+    <li>Until AdSense approval, the ads shown are our own partners' creatives, clearly marked with a
+      SPONSORED label.</li>
+    <li>What we give advertisers is display space only — never your personal data.</li>
   </ul>
 
-  <h2>ఇమెయిల్ ద్వారా వచ్చే సమాచారం</h2>
-  <p>మీరు పంపిన ఇమెయిల్, అందులోని వివరాలు సవరణ చేయడానికి మాత్రమే ఉపయోగించబడతాయి.
-  సవరణ పూర్తయిన తర్వాత దానిని శాశ్వతంగా ఉంచాల్సిన అవసరం లేదు.</p>
+  <h2>Information you email us</h2>
+  <p>Any email you send is used only to make the correction. Once the correction is done there is no need
+  to keep it.</p>
 
-  <h2>మీ హక్కులు</h2>
-  <p>మీ గురించిన ఏదైనా సమాచారం మా దగ్గర ఉందని భావిస్తే తొలగించమని అడగవచ్చు —
-  <a href="mailto:{email}">ఇమెయిల్</a> చేయండి. ఈ విధానంలో మార్పులు ఉంటే ఈ పేజీలో
-  నవీకరణ తేదీ మారుతుంది.</p>
+  <h2>Your rights</h2>
+  <p>If you believe we hold anything about you, ask us to delete it —
+  <a href="mailto:{email}">email us</a>. If this policy changes, the updated date on this page changes
+  with it.</p>
 """
 
 DISCLAIMER = """
-  <div class="note warn"><b>ముఖ్య గమనిక:</b> studentup.in ఒక ప్రైవేట్ సమాచార వేదిక.
-  ఇది ప్రభుత్వ వెబ్‌సైట్ కాదు; TSPSC, APPSC, SSC, NSP, రాష్ట్ర బోర్డులు లేదా ఏ ప్రభుత్వ
-  సంస్థతోనూ మాకు అధికారిక సంబంధం లేదు.</div>
+  <div class="note warn"><b>Important note:</b> studentup.in is a private information platform.
+  It is not a government website; we have no official connection with TSPSC, APPSC, SSC, NSP,
+  state boards or any government body.</div>
 
-  <h2>సమాచారం ఎంత నమ్మదగినది?</h2>
+  <h2>How reliable is the information?</h2>
   <ul>
-    <li>ప్రతి వ్యాసం అధికారిక మూలాల (ప్రధానంగా .gov.in పోర్టల్‌లు) నుండి మాత్రమే తయారవుతుంది
-      మరియు 2+ మూలాలతో క్రాస్-వెరిఫికేషన్ చేయబడుతుంది.</li>
-    <li>అయినా తేదీలు, ఖాళీల సంఖ్య, ఫీజులు, నియమాలు ప్రభుత్వం మార్చవచ్చు. అందుకే
-      <b>తుది నిర్ణయం ఎప్పుడూ అధికారిక నోటిఫికేషన్ మాత్రమే</b> — దరఖాస్తు చేసే ముందు
-      అధికారిక పోర్టల్‌లో ఒకసారి నిర్ధారించుకోండి.</li>
-    <li>ఏ ఉద్యోగం, స్కాలర్‌షిప్, ప్రవేశం, ఫలితం, ర్యాంకింగ్ లేదా ఆదాయానికి హామీ ఇవ్వబడదు.</li>
+    <li>Every article is prepared only from official sources (mainly .gov.in portals) and
+      cross-verified with 2+ sources.</li>
+    <li>Even so, government can change dates, vacancy counts, fees and rules. That is why the
+      <b>final decision is always the official notification</b> — confirm once on the official portal
+      before you apply.</li>
+    <li>No job, scholarship, admission, result, ranking or income is ever guaranteed.</li>
   </ul>
 
-  <h2>ఆర్థిక మోసాల గురించి</h2>
-  <p>మా పేరు చెప్పి ఎవరైనా "ఉద్యోగం ఖాయం", "సీటు ఖాయం" అని డబ్బు అడిగితే అది మోసం.
-  మేము ఎలాంటి రుసుము తీసుకోము, OTP/బ్యాంకు వివరాలు అడగము. అలాంటి ఫోన్ కాల్ లేదా
-  సందేశం వస్తే వెంటనే <a href="mailto:{email}">మాకు తెలియజేయండి</a>.</p>
+  <h2>About financial frauds</h2>
+  <p>If anyone asks for money in our name saying "job guaranteed" or "seat guaranteed", it is a fraud.
+  We never charge a fee and never ask for OTP or bank details. If you get such a call or message,
+  <a href="mailto:{email}">tell us immediately</a>.</p>
 
-  <h2>ప్రకటనల గురించి</h2>
+  <h2>About advertisements</h2>
   <ul>
-    <li>ప్రకటనలు <b>SPONSORED</b> లేబుల్‌తో స్పష్టంగా గుర్తించబడతాయి; లింకులపై
-      <code>rel="sponsored nofollow"</code> ఉంటుంది.</li>
-    <li>ప్రకటనదారుల వెబ్‌సైట్లలోని సమాచారానికి, వారి సేవల నాణ్యతకు మేము బాధ్యులు కాము.
-      డబ్బు చెల్లించే ముందు వారి వివరాలు నిర్ధారించుకోండి.</li>
-    <li>సంపాదకీయ కంటెంట్ మీద ప్రకటనదారులకు ఎలాంటి నియంత్రణ ఉండదు.</li>
+    <li>Advertisements are clearly marked with a <b>SPONSORED</b> label; links carry
+      <code>rel="sponsored nofollow"</code>.</li>
+    <li>We are not responsible for the information on advertisers' websites or the quality of their
+      services. Verify their details before paying.</li>
+    <li>Advertisers have no control over editorial content.</li>
   </ul>
 
-  <h2>బాహ్య లింకులు</h2>
-  <p>అధికారిక పోర్టల్‌లకు మేము లింకులు ఇస్తాము. ఆ సైట్ల కంటెంట్, లభ్యత, భద్రత వారి
-  బాధ్యత — మా నియంత్రణలో లేదు.</p>
+  <h2>External links</h2>
+  <p>We link to official portals. Their content, availability and security are their responsibility —
+  they are not under our control.</p>
 """
 
 EDITORIAL = """
-  <p>ప్రతి పోస్ట్ ప్రచురణకు ముందు ఈ 5 గేట్లు దాటాలి. గేట్ విఫలమైతే పోస్ట్ ఆగిపోతుంది —
-  "సరిపోతుంది" అని వదిలేయము.</p>
+  <p>Every post has to clear these 5 gates before publishing. If a gate fails, the post stops —
+  we do not let it through saying "good enough".</p>
 
   <div class="grid">
-    <div class="tile"><b>① మూల తనిఖీ (ఫాక్ట్ గార్డ్)</b><span>ప్రతి తేదీ, సంఖ్య మూల పత్రంతో సరిపోలాలి —
-      సరిపోలకపోతే ఆటో-ఫ్లాగ్.</span></div>
-    <div class="tile"><b>② లోతైన క్రాస్-వెరిఫికేషన్</b><span>2+ మూలాలు; అధికారిక మూలాలకు ప్రాధాన్యం;
-      విరుద్ధ తేదీలు లేదా పాత సంవత్సరాల డేటా ఉంటే ప్రచురణ నిరోధం. విశ్వాస స్కోరు 0–100.</span></div>
-    <div class="tile"><b>③ అసలుతనం 72% కనీసం</b><span>ఇతర సైట్ల కాపీ కాదు; దగ్గరి నకిలీ (≥62% పోలిక)
-      ప్రచురణ కాదు.</span></div>
-    <div class="tile"><b>④ మానవ సమీక్ష</b><span>డ్రాఫ్ట్ ముందుగా వస్తుంది; నాణ్యతా స్కోరు 80/100
-      దాటిన తర్వాతే ప్రచురణ.</span></div>
-    <div class="tile"><b>⑤ ప్రకటనల విధానం</b><span>SPONSORED లేబుల్ తప్పనిసరి; లింకుల పక్కన ప్రకటనలు
-      ఉండవు; క్లిక్‌బైట్, నకిలీ క్లిక్కులు పూర్తిగా నిషేధం.</span></div>
+    <div class="tile"><b>① Source check (fact guard)</b><span>Every date and number must match the source
+      document — if it does not match, it is auto-flagged.</span></div>
+    <div class="tile"><b>② Deep cross-verification</b><span>2+ sources, official ones preferred;
+      conflicting dates or stale-year data block publishing. Confidence score 0–100.</span></div>
+    <div class="tile"><b>③ Originality, minimum 72%</b><span>Never a copy of other sites; a close match
+      (≥62% similarity) is not published.</span></div>
+    <div class="tile"><b>④ Human review</b><span>The draft comes first; publishing happens only after the
+      quality score crosses 80/100.</span></div>
+    <div class="tile"><b>⑤ Advertising policy</b><span>SPONSORED label is compulsory; no ads beside
+      links; clickbait and fake clicks are completely banned.</span></div>
   </div>
 
-  <h2>మూల విధానం</h2>
+  <h2>Source policy</h2>
   <ul>
-    <li>మూలాలు: ప్రభుత్వ పోర్టల్‌లు (.gov.in), అధికారిక ప్రకటనలు, విశ్వసనీయ వార్తా సంస్థలు —
-      సోషల్ మీడియా వదంతులు మూలంగా తీసుకోబడవు.</li>
-    <li>ఒక అంశానికి కనీసం రెండు మూలాలు; అధికారిక మూలం లేకపోతే పోస్ట్ ఆగుతుంది.</li>
-    <li>ఉల్లేఖనలు (citations) ప్రతి వ్యాసంలో కనిపిస్తాయి; ఏజెన్సీ కాపీ ఉండదు.</li>
+    <li>Sources: government portals (.gov.in), official notifications, reliable news agencies —
+      social media rumours are never accepted as a source.</li>
+    <li>At least two sources for a topic; if there is no official source, the post stops.</li>
+    <li>Citations appear inside every article; there is no agency copy.</li>
   </ul>
 
-  <h2>సవరణల విధానం</h2>
+  <h2>Correction policy</h2>
   <ul>
-    <li>తప్పు గుర్తిస్తే సాధారణంగా 24 గంటల్లో సవరించి, సవరణ గమనిక చేరుస్తాము.</li>
-    <li>సవరణ కోరడానికి: <a href="mailto:{email}?subject=Correction">{email}</a> —
-      లింకు, తప్పు, సరైన అధికారిక మూలం పంపండి.</li>
-    <li>పెద్ద తప్పు జరిగితే వ్యాసాన్ని తాత్కాలికంగా ఆపేసి, నిర్ధారణ తర్వాత మళ్లీ ప్రచురిస్తాము.</li>
+    <li>If a mistake is found, we usually correct it within 24 hours and add a correction note.</li>
+    <li>To request a correction: <a href="mailto:{email}?subject=Correction">{email}</a> —
+      send the link, the mistake and the correct official source.</li>
+    <li>If the mistake is serious, the article is paused temporarily and republished only after
+      verification.</li>
   </ul>
 
-  <h2>ప్రకటనలు మరియు సంపాదకీయ స్వాతంత్ర్యం</h2>
-  <p>ప్రకటనలు సంపాదకీయ నిర్ణయాలను ప్రభావితం చేయవు. స్పాన్సర్ చేయబడిన కంటెంట్
-  ఎప్పుడూ <b>SPONSORED</b> లేబుల్‌తో వేరుగా కనిపిస్తుంది. ప్రకటన లింకులు
-  <code>rel="sponsored nofollow"</code> తో ఉంటాయి. AdSense ఆమోదం తర్వాత ప్రకటనల సంఖ్య
-  విధాన పరిమితులకు లోబడి ఉంటుంది.</p>
-
+  <h2>Advertising and editorial independence</h2>
+  <p>Advertisements never influence editorial decisions. Sponsored content always appears separately with
+  a <b>SPONSORED</b> label. Ad links carry <code>rel="sponsored nofollow"</code>. After AdSense approval,
+  the number of ads follows policy limits.</p>
 """
 
 ADVERTISE = '''
@@ -484,21 +482,21 @@ PAGE_DEFS = [
     ("advertise", "Partner with us",
      "Advertise on studentup.in — labelled SPONSORED placements read by Telangana & Andhra Pradesh students. Availability and pricing shared personally on WhatsApp.",
      "Partner with us", "Clean, clearly labelled placements for colleges, coaching, shops and services", ADVERTISE),
-    ("about", "మా గురించి",
-     "studentup.in ఎవరు, ఎలా పని చేస్తాము, ఏమి చేయము — తెలంగాణ మరియు ఆంధ్రప్రదేశ్ విద్యార్థుల కోసం అధికారిక మూలాలతో నడిచే నిజాయితీ విద్యా వేదిక.",
-     "మా గురించి", "తెలంగాణ &amp; ఆంధ్రప్రదేశ్ విద్యార్థుల కోసం ఒక నిజాయితీ వేదిక", ABOUT),
-    ("contact", "సంప్రదించండి",
-     "సవరణలు, ప్రకటనలు, విద్యార్థి సహాయం — studentup.in సంప్రదింపు మార్గాలు, స్పందన సమయాలు మరియు మోసాల హెచ్చరిక పూర్తి వివరాలు.",
-     "సంప్రదించండి", "సవరణలు · ప్రకటనలు · విద్యార్థి సహాయం", CONTACT),
-    ("privacy", "గోప్యతా విధానం",
-     "studentup.in ఏ డేటా సేకరిస్తుంది, ఏది సేకరించదు, పోల్ ఓట్లు ఎలా నిల్వ ఉంటాయి, ప్రకటనల కుకీల వివరాలు — సులభమైన తెలుగులో.",
-     "గోప్యతా విధానం", "మీ డేటా మీదే హక్కు — మేము ఏమి సేకరిస్తాము, ఏమి సేకరించము", PRIVACY),
-    ("disclaimer", "నిరాకరణ",
-     "studentup.in ప్రభుత్వ వెబ్‌సైట్ కాదు — సమాచార పరిమితులు, హామీలు లేకపోవడం, ఆర్థిక మోసాల హెచ్చరిక మరియు ప్రకటనల నియమాలు.",
-     "నిరాకరణ (గమనిక)", "ముఖ్యమైన పరిమితులు — చదవడం తప్పనిసరి", DISCLAIMER),
-    ("editorial-policy", "సంపాదకీయ విధానం",
-     "5 ధృవీకరణ గేట్లు, అధికారిక మూల విధానం, సవరణల గడువు, ప్రకటనల నియమాలు — studentup.in ప్రతి పోస్ట్ ఎలా తయారవుతుంది.",
-     "సంపాదకీయ విధానం", "ప్రతి పోస్ట్ ఈ 5 గేట్లు దాటిన తర్వాతే ప్రచురణ", EDITORIAL),
+    ("about", "About us",
+     "Who studentup.in is, how we work and what we never do — an honest student platform for Telangana & Andhra Pradesh, built only on official sources.",
+     "About us", "An honest platform for Telangana &amp; Andhra Pradesh students", ABOUT),
+    ("contact", "Contact",
+     "Reach studentup.in on WhatsApp or email for corrections, partnerships and student application help — reply times, fraud warnings and direct links.",
+     "Contact us", "Corrections · advertising · student help", CONTACT),
+    ("privacy", "Privacy policy",
+     "What data studentup.in collects, what it never collects, how poll votes are stored and how ad cookies work — in simple words.",
+     "Privacy policy", "Your data is yours — what we collect and what we never collect", PRIVACY),
+    ("disclaimer", "Disclaimer",
+     "studentup.in is not a government website — limits of the information, no guarantees, financial fraud warnings and advertising rules.",
+     "Disclaimer (note)", "Important limits — a must read", DISCLAIMER),
+    ("editorial-policy", "Editorial policy",
+     "The 5 verification gates, official-source policy, correction deadline and advertising rules — how every studentup.in post is made.",
+     "Editorial policy", "Every post is published only after clearing these 5 gates", EDITORIAL),
 ]
 
 FAVICON = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">

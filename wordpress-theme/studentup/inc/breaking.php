@@ -1,11 +1,11 @@
 <?php
 /**
- * బ్రేకింగ్ న్యూస్ — radar feed WordPress lo. **v72: default OFF** (admin lo on/off).
+ * Breaking news — radar feed inside WordPress. **v72: default OFF** (admin lo on/off).
  *
  * Data path (okka chota, honest):
  *   1) WP option 'studentup_breaking_json' (bot REST/CLI tho push cheyyochu) — fastest
  *   2) site root lo /data/breaking.json (bot radar rasi file) — 10 min transient cache
- *   3) khali → section "కొత్త verified అప్డేట్‌లు లేవు" ani chupistundi (fake news ledu)
+ *   3) khali → section shows "no new verified updates" (no fake news)
  *
  * @package studentup
  */
@@ -62,7 +62,7 @@ function studentup_breaking_items( $max = 6 ) {
 			'title'  => $title,
 			'link'   => $link,
 			'tag'    => isset( $it['tag'] ) ? sanitize_key( (string) $it['tag'] ) : 'current',
-			'source' => isset( $it['source'] ) ? wp_strip_all_tags( (string) $it['source'] ) : 'రాడార్',
+			'source' => isset( $it['source'] ) ? wp_strip_all_tags( (string) $it['source'] ) : 'Radar',
 			'time'   => isset( $it['time'] ) ? sanitize_text_field( (string) $it['time'] ) : '',
 		);
 		if ( count( $out ) >= $max ) {
@@ -80,23 +80,23 @@ function studentup_breaking_items( $max = 6 ) {
  */
 function studentup_tag_label( $tag ) {
 	$map = array(
-		'ts-jobs'      => 'తెలంగాణ',
-		'ap-jobs'      => 'ఆంధ్రప్రదేశ్',
-		'central-jobs' => 'కేంద్రం',
-		'hallticket'   => 'హాల్ టికెట్',
-		'results'      => 'ఫలితాలు',
-		'walkin'       => 'వాక్-ఇన్',
-		'software'     => 'సాఫ్ట్‌వేర్',
-		'private'      => 'ప్రైవేట్',
-		'abroad'       => 'విదేశీ',
-		'scholarship'  => 'స్కాలర్‌షిప్',
-		'current'      => 'కరెంట్',
+		'ts-jobs'      => 'Telangana',
+		'ap-jobs'      => 'Andhra Pradesh',
+		'central-jobs' => 'Central',
+		'hallticket'   => 'Hall ticket',
+		'results'      => 'Results',
+		'walkin'       => 'Walk-in',
+		'software'     => 'Software',
+		'private'      => 'Private',
+		'abroad'       => 'Abroad',
+		'scholarship'  => 'Scholarship',
+		'current'      => 'Current affairs',
 	);
-	return isset( $map[ $tag ] ) ? $map[ $tag ] : 'అప్డేట్';
+	return isset( $map[ $tag ] ) ? $map[ $tag ] : 'Update';
 }
 
 /**
- * "ఎంత సేపటి క్రితం" — Telugu.
+ * "time ago" — Telugu.
  *
  * @param string $iso ISO time.
  * @return string
@@ -108,28 +108,28 @@ function studentup_ago( $iso ) {
 	}
 	$diff = time() - $t;
 	if ( $diff < 3600 ) {
-		return max( 1, (int) ( $diff / 60 ) ) . ' నిమిషాల క్రితం';
+		return max( 1, (int) ( $diff / 60 ) ) . ' min ago';
 	}
 	if ( $diff < 86400 ) {
-		return (int) ( $diff / 3600 ) . ' గంటల క్రితం';
+		return (int) ( $diff / 3600 ) . ' h ago';
 	}
 	$days = (int) ( $diff / 86400 );
-	return 1 === $days ? 'నిన్న' : $days . ' రోజుల క్రితం';
+	return 1 === $days ? 'yesterday' : $days . ' days ago';
 }
 
 /**
- * టికర్ (feed unte matrame render — khali aithe hide).
+ * Ticker (renders only when there is a feed — hidden when empty).
  */
 function studentup_breaking_ticker() {
 	if ( ! studentup_breaking_enabled() ) {
-		return;   // v72: default OFF (WP admin → StudentUp → కంటెంట్ లో ON cheyyochu)
+		return;   // v72: default OFF (turn it on in WP admin → StudentUp → Content)
 	}
 	$items = studentup_breaking_items( 5 );
 	if ( ! $items ) {
 		return;
 	}
 	echo '<div class="tickerwrap"><div class="wrap trow">';
-	echo '<span class="tlabel"><i aria-hidden="true"></i>బ్రేకింగ్</span><div class="tclip"><div class="tmove">';
+	echo '<span class="tlabel"><i aria-hidden="true"></i>Breaking</span><div class="tclip"><div class="tmove">';
 	foreach ( $items as $it ) {
 		printf(
 			'<a href="%s" target="_blank" rel="noopener">%s <span class="tsrc">%s</span></a>',
@@ -146,22 +146,22 @@ function studentup_breaking_ticker() {
 			esc_html( studentup_ago( $it['time'] ) )
 		);
 	}
-	echo '</div></div><a class="tall" href="#breaking">అన్నీ →</a></div></div>';
+	echo '</div></div><a class="tall" href="#breaking">All →</a></div></div>';
 }
 
 /**
- * బ్రేకింగ్ న్యూస్ section (h2 + list; honest empty message).
+ * Breaking news section (h2 + list; honest empty message).
  */
 function studentup_breaking_section() {
 	if ( ! studentup_breaking_enabled() ) {
 		return;   // v72: default OFF
 	}
 	$items = studentup_breaking_items( 6 );
-	echo '<section class="breaking" id="breaking" aria-label="బ్రేకింగ్ న్యూస్">';
-	echo '<div class="brkhead"><span class="brkdot" aria-hidden="true"></span><h2>బ్రేకింగ్ న్యూస్</h2>';
-	echo '<span class="brklive">రాడార్ · Google News తెలుగు + అధికారిక మూలాలు · 6 గంటలకు ఒకసారి</span></div>';
+	echo '<section class="breaking" id="breaking" aria-label="Breaking news">';
+	echo '<div class="brkhead"><span class="brkdot" aria-hidden="true"></span><h2>Breaking news</h2>';
+	echo '<span class="brklive">Radar · Google News Telugu + official sources · checked every 6 hours</span></div>';
 	if ( ! $items ) {
-		echo '<p class="brkempty">ప్రస్తుతం కొత్త verified బ్రేకింగ్ అప్డేట్‌లు లేవు — రాడార్ ప్రతి 6 గంటలకు చెక్ చేస్తుంది.</p>';
+		echo '<p class="brkempty">No new verified breaking updates right now — the radar checks every 6 hours.</p>';
 	} else {
 		echo '<ol class="brklist">';
 		foreach ( $items as $it ) {
@@ -209,14 +209,6 @@ function studentup_register_rest() {
 				if ( is_array( $breaking ) ) {
 					studentup_set_breaking_json( wp_json_encode( array( 'items' => $breaking ) ) );
 					$done[] = 'breaking';
-				}
-				$deadline = $req->get_param( 'deadline' );
-				if ( is_array( $deadline ) && ! empty( $deadline['date'] ) ) {
-					studentup_set_deadline(
-						isset( $deadline['title'] ) ? $deadline['title'] : '',
-						$deadline['date']
-					);
-					$done[] = 'deadline';
 				}
 				$house = $req->get_param( 'house_ads' );
 				if ( is_array( $house ) ) {

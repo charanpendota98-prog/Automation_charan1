@@ -55,7 +55,7 @@
     });
   }
 
-  /* ---------- chips filter (front page grid) + v72.1 అర్హత filter ---------- */
+  /* ---------- chips filter (front page grid) + v72.1 qualification filter ---------- */
   var grid = document.getElementById("grid");
   var chips = document.querySelectorAll(".chip[data-cat]");
   var qchips = document.querySelectorAll(".qchip");
@@ -81,8 +81,8 @@
     var old = foot.querySelector(".qbadge");
     if (old) old.remove();
     var b = document.createElement("span");
-    if (left < 0) { b.className = "qbadge done"; b.textContent = "గడువు ముగిసింది"; }
-    else if (left <= 7) { b.className = "qbadge soon"; b.textContent = (left === 0 ? "ఈరోజే చివరి రోజు" : left + " రోజుల్లో ముగుస్తుంది"); }
+    if (left < 0) { b.className = "qbadge done"; b.textContent = "Deadline passed"; }
+    else if (left <= 7) { b.className = "qbadge soon"; b.textContent = (left === 0 ? "Last day today" : left + " days left"); }
     else { return; }
     foot.appendChild(b);
   }
@@ -109,7 +109,7 @@
     if (note) {
       if (hiddenExpired) {
         note.hidden = false;
-        note.textContent = "గడువు ముగిసిన " + hiddenExpired + " ఉద్యోగాలు దాచబడ్డాయి.";
+        note.textContent = hiddenExpired + " expired post" + (hiddenExpired > 1 ? "s" : "") + " hidden.";
       } else { note.hidden = true; }
     }
   }
@@ -125,7 +125,7 @@
       applyFilter();
     });
   });
-  /* v72.1: అర్హత chips — JS unte page reload lekunda category tho kalisi filter avutundi
+  /* v72.1: qualification chips — with JS the filter combines with category without reloading
    * (href server-side/SEO kosam alage untundi; JS unna browser lo URL history update). */
   Array.prototype.forEach.call(qchips, function (chip) {
     chip.addEventListener("click", function (e) {
@@ -156,9 +156,9 @@
       if (c.getAttribute("data-cat") === m[1]) c.click();
     });
   })();
-  /* ---------- v72.1: అర్హత ప్రకారం విభాగాలు (grid nunchi automatic build) ---------- */
-  var QUAL_LABELS = { "10th": "10వ తరగతి", "inter": "ఇంటర్ (10+2)", "iti": "ఐటీఐ",
-                      "diploma": "డిప్లొమా", "degree": "డిగ్రీ", "pg": "పీజీ", "btech": "బీటెక్" };
+  /* ---------- v72.1: sections by qualification (grid nunchi automatic build) ---------- */
+  var QUAL_LABELS = { "10th": "10th", "inter": "Inter (10+2)", "iti": "ITI",
+                      "diploma": "Diploma", "degree": "Degree", "pg": "PG", "btech": "B.Tech" };
   function buildQualSections() {
     var host = document.getElementById("qsplit");
     if (!host || !grid) return;
@@ -177,18 +177,18 @@
       });
       if (!items.length) { g.hidden = true; g.innerHTML = ""; return; }
       var h = document.createElement("h3");
-      h.innerHTML = (key === "closing" ? "⏳ 7 రోజుల్లో ముగిసేవి" : (QUAL_LABELS[key] || key)) +
+      h.innerHTML = (key === "closing" ? "⏳ Closing in 7 days" : (QUAL_LABELS[key] || key)) +
         ' <span class="qgnum">' + items.length + "</span>";
       var sub = document.createElement("p");
       sub.className = "qgsub";
-      sub.textContent = key === "closing" ? "గడువు దగ్గరపడుతోంది — ఇప్పుడే చూడండి" : "ఈ అర్హత ఉన్నవారు దరఖాస్తు చేసుకోవచ్చు";
+      sub.textContent = key === "closing" ? "Deadline is close — check now" : "Anyone with this qualification can apply";
       var ul = document.createElement("ul");
       items.slice(0, 6).forEach(function (card) {
         var a = card.querySelector("h3 a") || card.querySelector("a");
         if (!a) return;
         var left = daysLeft(card);
         var meta = (left !== null && left >= 0 && left <= 7)
-          ? (left === 0 ? "ఈరోజే చివరి రోజు" : left + " రోజుల్లో ముగుస్తుంది") : "";
+          ? (left === 0 ? "Last day today" : left + " days left") : "";
         var li = document.createElement("li");
         var link = document.createElement("a");
         link.href = a.getAttribute("href") || a.href;
@@ -213,25 +213,6 @@
   applyFilter();                              /* modati load lo expired hide + badges */
 
   /* ---------- deadline countdown ---------- */
-  var timer = document.querySelector(".timer[data-deadline]");
-  if (timer) {
-    var target = Date.parse(timer.getAttribute("data-deadline"));
-    var pad = function (n) { return (n < 10 ? "0" : "") + n; };
-    var tick = function () {
-      var left = Math.max(0, target - Date.now());
-      var d = Math.floor(left / 86400000);
-      var h = Math.floor((left % 86400000) / 3600000);
-      var m = Math.floor((left % 3600000) / 60000);
-      var s = Math.floor((left % 60000) / 1000);
-      var set = function (k, v) {
-        var el = timer.querySelector('[data-cd="' + k + '"]');
-        if (el) el.textContent = pad(v);
-      };
-      set("d", d); set("h", h); set("m", m); set("s", s);
-    };
-    tick();
-    setInterval(tick, 1000);
-  }
 
   /* ---------- v64: reading progress bar ---------- */
   var bar = document.getElementById("su-progress-bar");
@@ -254,7 +235,7 @@
       var url = btn.getAttribute("data-url") || window.location.href;
       var done = function () {
         var t = btn.textContent;
-        btn.textContent = "✅ కాపీ అయింది";
+        btn.textContent = "✅ Copied";
         setTimeout(function () { btn.textContent = t; }, 1600);
       };
       if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -297,7 +278,7 @@
 
   /* ---------- most-used live counts (site side, WP-print chesina numbers ki fallback) ---------- */
   Array.prototype.forEach.call(document.querySelectorAll(".ucount"), function (el) {
-    if (el.textContent.indexOf("అప్డేట్") === -1 && el.textContent.indexOf("త్వరలో") === -1) {
+    if (el.textContent.indexOf("update") === -1 && el.textContent.indexOf("Soon") === -1) {
       el.textContent = S.i18n && S.i18n.updates ? "—" : el.textContent;
     }
   });

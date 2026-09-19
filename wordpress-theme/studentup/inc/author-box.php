@@ -13,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * "చివరిగా అప్డేట్" line (published != modified unte mattrame).
+ * "Last updated" line (only when published != modified).
  */
 function studentup_last_updated() {
 	$modified = get_the_modified_time( 'U' );
@@ -22,7 +22,7 @@ function studentup_last_updated() {
 		return '';
 	}
 	return sprintf(
-		'<span class="su-updated">♻️ చివరిగా అప్డేట్: %s</span>',
+		'<span class="su-updated">♻️ Last updated: %s</span>',
 		esc_html( get_the_modified_date() )
 	);
 }
@@ -31,8 +31,8 @@ function studentup_last_updated() {
  * Editorial team box (E-E-A-T + corrections email + editorial policy).
  */
 function studentup_author_box() {
-	$name  = (string) studentup_opt( 'author_name', 'StudentUp ఎడిటోరియల్ టీమ్' );
-	$bio   = (string) studentup_opt( 'author_bio', 'అధికారిక నోటిఫికేషన్లు, ప్రభుత్వ వెబ్‌సైట్ల నుంచి ధృవీకరించి తెలుగులో రాస్తాము.' );
+	$name  = (string) studentup_opt( 'author_name', 'StudentUp Editorial Team' );
+	$bio   = (string) studentup_opt( 'author_bio', 'Verified from official notifications and government websites, and written in simple language.' );
 	$email = studentup_contact_email();
 	$pol   = get_page_by_path( 'editorial-policy' );
 	?>
@@ -42,13 +42,13 @@ function studentup_author_box() {
 			<strong itemprop="name"><?php echo esc_html( $name ); ?></strong>
 			<p itemprop="description"><?php echo esc_html( $bio ); ?></p>
 			<p class="su-author-links">
-				<span>✅ అధికారిక మూలాలతో ధృవీకరణ</span>
+				<span>✅ Verified against official sources</span>
 				<?php if ( $email ) : ?>
-					<span>✉️ తప్పులు తెలియజేయండి:
+					<span>✉️ Report mistakes:
 						<a href="mailto:<?php echo esc_attr( $email ); ?>"><?php echo esc_html( $email ); ?></a></span>
 				<?php endif; ?>
 				<?php if ( $pol ) : ?>
-					<span>📘 <a href="<?php echo esc_url( get_permalink( $pol ) ); ?>">ఎడిటోరియల్ పాలసీ</a></span>
+					<span>📘 <a href="<?php echo esc_url( get_permalink( $pol ) ); ?>">Editorial policy</a></span>
 				<?php endif; ?>
 			</p>
 		</div>

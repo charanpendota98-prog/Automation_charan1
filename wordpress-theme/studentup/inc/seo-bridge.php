@@ -1,6 +1,6 @@
 <?php
 /**
- * v63: SEO bridge — Rank Math meta ni REST API tho rాయడానికి allow cheyyadam.
+ * v63: SEO bridge — allow Rank Math meta to be written through the REST API.
  *
  * Enduku idi (nijamaina problem):
  *   WordPress default ga custom post meta ni REST lo accept cheyyadu. Bot

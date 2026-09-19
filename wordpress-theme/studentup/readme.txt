@@ -23,7 +23,7 @@ Features (top-theme level):
   sticky · below-content · anchor/sticky-bottom), house-ad fallback, density cap,
   CLS-safe reserved height, viewability lazy load, ads.txt serving, Consent Mode v2
 * Reader UX: dark mode, reading progress, TOC, copy-link, share bar, most-read tiles
-  (TS/AP), breaking ticker, exam countdown, related posts, author box (E-E-A-T)
+  (TS/AP), breaking section (off by default), related posts, author box (E-E-A-T)
 * Admin: StudentUp settings page (Ads · Socials · Content · Advanced) + REST options
 * Security: security headers, XML-RPC off, author enumeration block, emoji cleanup,
   attachment redirect, comment link-flood guard, DISALLOW_FILE_EDIT
@@ -40,33 +40,36 @@ Features (top-theme level):
 
 = Ads render avvatledu? =
 StudentUp → Ads → "Ads ON (site)" check cheyandi + AdSense Client ID + slot IDs pettandi.
-Client/slot lekapote house ads (Bot nimpinaవి) render avutayi.
+Without a client/slot, house ads (filled by the bot) render.
 
 = Rank Math fields land avvatledu? =
-Theme lo REST bridge (`inc/seo-bridge.php`) undi. Mee koరaku `manage_options` unna
+The theme ships a REST bridge (`inc/seo-bridge.php`). Use an account with `manage_options`
 user tho App Password ivvandi (Administrator role).
 
 == Changelog ==
 
-= 1.7.1 (2026-09-18, v72.1) =
-* "⬇️ App డౌన్‌లోడ్" button prathi visit lo kanipistundi (mobile first) + device-wise install sheet
+= 1.7.1 (2026-09-18, v72.1 + v73 copy pass) =
+ * v73: English UI pass — chrome/labels/notes/footer English, Telugu only inside post content;
+  slim hero replaces the old hero + countdown card (deadline plumbing removed)
+ * "⬇️ Download App" button on every visit (mobile first) + device-wise install sheet
   (Android Chrome prompt · iPhone Share · Computer icon)
-* అర్హత chips JS tho category tho kalisi filter (page reload ledu) + URL `?qual=` sync
-* గడువు ముగిసిన ఉద్యోగాలు grid lo దాచి, note chupistundi (`#su-hidden-note`)
-* Admin dashboard widget: అర్హత ప్రకారం post counts + tag-leni posts
+ * Qualification chips combine with the category filter in JS (no page reload) + `?qual=` URL sync
+ * Expired jobs are hidden from the grid with a note (`#su-hidden-note`)
+ * Admin dashboard widget: qualification-wise post counts + posts missing tags
 * Public copy clean: coverage line/topbar, demo ads → our partner slot creatives,
-  hero countdown ippudu `data/deadline.json` nunchi mattrame (fake date ledu)
+  v73: hero is a slim English header — the hero countdown card was removed (no fake timer);
+  real deadlines live in post content + the closing-soon badge
 
 = 1.7.0 (2026-09-18, v72) =
 * Qualification-wise filter: 10th · 10+2 · ITI · Diploma · Degree · PG · B.Tech chips
   (server-side `?qual=` WP_Query filter) + automatic `studentup_qual` tagging
   (save_post detect · bot REST meta · admin/CLI backfill)
 * Header search next to the menu (🔍 panel + `/` shortcut), mobile panel search link
-* PWA: service worker (offline page + repeat-visit speed) + "యాప్గా ఇన్స్టాల్ చేయండి" prompt
+ * PWA: service worker (offline page + repeat-visit speed) + "Install as app" prompt
   (Android/Chrome `beforeinstallprompt`, iPhone Share hint)
-* Closing-soon badges (⏳ 7 రోజుల్లో ముగుస్తుంది) from `studentup_last_date`
+ * Closing-soon badges (⏳ closing in 7 days) from `studentup_last_date`
 * Breaking-news section default OFF (`breaking_enabled` option) — copy clean-up:
-  internal metrics, radar/6-hour notes, "నమూనా/DEMO" labels teesesaam
+   internal metrics, radar/6-hour notes and "sample/DEMO" labels removed
 * New options: breaking_enabled · qual_filter · install_prompt
 
 = 1.6.0 =

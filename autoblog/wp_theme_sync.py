@@ -3,7 +3,7 @@
 
 Enti idi:
   Mee website WordPress + StudentUp theme (v61) tho nadustundi. Theme ki data
-  (బ్రేకింగ్ items · trust numbers · deadline countdown · house ads) bot nunchi
+  (breaking items · trust numbers · house ads) bot nunchi
   vellali — appudu site eppudu fresh ga untundi, manual copy-paste ledu.
 
 Endpoint (theme lo register ayyindi):
@@ -32,35 +32,11 @@ REST_PATH = "/wp-json/studentup/v1/theme-data"
 # payload builders (offline testable)
 # ---------------------------------------------------------------------------
 
-def write_preview_deadline(root: Optional[Path] = None,
-                           payload: Optional[Dict[str, object]] = None) -> Optional[Path]:
-    """v72.1: preview/data/deadline.json — static site hero countdown ki.
-
-    Entuku: mundu preview lo HARDCODED sample date undedi (fake content!). Ippudu
-    bot .env nunchi (POST_DEADLINE_TITLE/ISO) ee file rasi, site adi chaduvutundi.
-    Emi ledu ante file rasamu — site honest line chupistundi (fake date ledu).
-    """
-    root = Path(root or config.BASE_DIR)
-    payload = payload if payload is not None else build_payload(root)
-    dl = payload.get("deadline") if isinstance(payload, dict) else None
-    out = root / "preview" / "data" / "deadline.json"
-    try:
-        if isinstance(dl, dict) and dl.get("date"):
-            out.parent.mkdir(parents=True, exist_ok=True)
-            out.write_text(json.dumps(dl, ensure_ascii=False, indent=2), encoding="utf-8")
-            return out
-        out.unlink(missing_ok=True)   # deadline lekapote purana file teeseyali (stale date)
-        return None
-    except OSError as exc:            # noqa: BLE001 — best-effort (site deploy aapadu)
-        log.debug("preview deadline write skip: %s", exc)
-        return None
-
-
 def build_payload(root: Optional[Path] = None,
                   include: Optional[List[str]] = None) -> Dict[str, object]:
-    """Local files nunchi theme payload — breaking + house ads + deadline + options."""
+    """Local files nunchi theme payload — breaking + house ads + options."""
     root = Path(root or config.BASE_DIR)
-    include = include or ["breaking", "house_ads", "deadline", "options"]
+    include = include or ["breaking", "house_ads", "options"]
     out: Dict[str, object] = {}
 
     if "breaking" in include:
@@ -98,13 +74,6 @@ def build_payload(root: Optional[Path] = None,
         opts = {k: v for k, v in mapping.items() if isinstance(v, str) and v.strip()}
         if opts:
             out["options"] = opts
-
-    if "deadline" in include:
-        # .env / option driven: POST_DEADLINE_TITLE + POST_DEADLINE_ISO
-        title = (getattr(config, "POST_DEADLINE_TITLE", "") or "").strip()
-        iso = (getattr(config, "POST_DEADLINE_ISO", "") or "").strip()
-        if title and iso:
-            out["deadline"] = {"title": title, "date": iso}
 
     return out
 

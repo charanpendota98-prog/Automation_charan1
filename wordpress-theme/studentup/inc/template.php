@@ -1,41 +1,12 @@
 <?php
 /**
- * Template helpers — deadline countdown, post cards, breadcrumbs, trust note.
+ * Template helpers — post cards, breadcrumbs, trust note, share/qualification bits.
  *
  * @package studentup
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
-}
-
-/**
- * Live countdown target (bot option 'studentup_deadline_json' = {"title":…,"date":"2026-10-15T17:00:00+05:30"}).
- *
- * @return array
- */
-function studentup_deadline() {
-	$out   = array( 'title' => '', 'date' => '' );
-	$raw   = json_decode( (string) get_option( 'studentup_deadline_json', '' ), true );
-	if ( is_array( $raw ) && ! empty( $raw['date'] ) ) {
-		$out['title'] = isset( $raw['title'] ) ? wp_strip_all_tags( (string) $raw['title'] ) : '';
-		$out['date']  = sanitize_text_field( (string) $raw['date'] );
-	}
-	return $out;
-}
-
-/**
- * Kotha deadline option (bot nunchi).
- *
- * @param string $title title.
- * @param string $iso   ISO date.
- */
-function studentup_set_deadline( $title, $iso ) {
-	update_option(
-		'studentup_deadline_json',
-		wp_json_encode( array( 'title' => (string) $title, 'date' => (string) $iso ) ),
-		false
-	);
 }
 
 /**
@@ -72,7 +43,7 @@ function studentup_card_cat( $post_id = 0 ) {
 function studentup_card( $idx = 0 ) {
 	$cat   = studentup_card_cat();
 	$terms = get_the_category();
-	$label = $terms ? $terms[0]->name : 'అప్డేట్';
+$label = $terms ? $terms[0]->name : 'Update';
 	$tones = array( '', 't2', 't3' );
 	$tone  = $tones[ $idx % 3 ];
 	?>
@@ -106,7 +77,7 @@ function studentup_card( $idx = 0 ) {
 					echo wp_kses_post( studentup_last_date_badge() );
 				}
 				?>
-				<b><?php echo esc_html( 'మార్గదర్శి చదవండి →' ); ?></b>
+				<b><?php echo esc_html( 'Read guide →' ); ?></b>
 			</div>
 		</div>
 	</article>
@@ -124,7 +95,7 @@ function studentup_reading_time( $post_id = 0 ) {
 	$words   = str_word_count( wp_strip_all_tags( (string) get_post_field( 'post_content', $post_id ) ) );
 	$words   = max( $words, mb_strlen( wp_strip_all_tags( (string) get_post_field( 'post_content', $post_id ) ) ) / 6 );
 	$minutes = max( 2, (int) ceil( $words / 220 ) );
-	return $minutes . ' నిమిషాల పఠనం';
+	return $minutes . ' min read';
 }
 
 /**
@@ -132,9 +103,9 @@ function studentup_reading_time( $post_id = 0 ) {
  */
 function studentup_trust_note() {
 	$email = (string) get_option( 'admin_email', '' );
-	echo '<div class="trustnote">✅ ఈ కథనం అధికారిక మూలాలతో పరిశీలించి, సులభ తెలుగులో రాసింది. '
-		. 'తప్పు కనిపిస్తే ' . esc_html( $email ) . ' కు తెలియజేయండి — 24 గంటల్లో సవరిస్తాము. '
-		. 'తుది తేదీలు/సంఖ్యలు అధికారిక నోటిఫికేషన్‌లో నిర్ధారించుకోండి.</div>';
+	echo '<div class="trustnote">✅ This article was checked against official sources and written in simple language. '
+		. 'If you spot a mistake, ' . esc_html( $email ) . ' — we correct it within 24 hours. '
+		. 'Always confirm deadlines and numbers in the official notification.</div>';
 }
 
 /**
@@ -142,7 +113,7 @@ function studentup_trust_note() {
  */
 function studentup_menu_fallback() {
 	$items = array(
-		array( 'label' => 'హోమ్', 'url' => home_url( '/' ) ),
+		array( 'label' => 'Home', 'url' => home_url( '/' ) ),
 	);
 	foreach ( studentup_most_used() as $m ) {
 		$term = get_category_by_slug( $m['slug'] );
@@ -175,7 +146,7 @@ function studentup_breadcrumbs() {
 		rank_math_the_breadcrumbs();
 		return (string) ob_get_clean();
 	}
-	$out = '<a href="' . esc_url( home_url( '/' ) ) . '">హోమ్</a>';
+	$out = '<a href="' . esc_url( home_url( '/' ) ) . '">Home</a>';
 	if ( is_singular() ) {
 		$cats = get_the_category();
 		if ( $cats ) {
@@ -189,7 +160,7 @@ function studentup_breadcrumbs() {
 }
 
 /**
- * v67: కామెంట్లు OFF (admin option) → comment form + list render avvadu.
+ * v67: comments OFF (admin option) → comment form + list are not rendered.
  *
  * @param bool $open Comments open state.
  * @return bool

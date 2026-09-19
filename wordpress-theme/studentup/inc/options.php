@@ -27,7 +27,7 @@ function studentup_opt( $key, $default = '' ) {
 function studentup_option_fields() {
 	return array(
 		'ads' => array(
-			'title'  => 'ప్రకటనలు (Ads)',
+			'title'  => 'Ads & monetisation',
 			'fields' => array(
 				'ads_enabled'    => array( 'Ads ON (site) — master switch', 'check', '1', 'OFF chesthe e pages lo ads render avvavu' ),
 				'adsense_client' => array( 'AdSense Client ID', 'text', '', 'ca-pub-XXXXXXXXXXXXXXXX (AdSense approve ayyaka)' ),
@@ -36,56 +36,55 @@ function studentup_option_fields() {
 				'adsense_slot_sidebar'         => array( 'Slot: sidebar', 'text', '', '' ),
 				'adsense_slot_anchor'          => array( 'Slot: anchor/sticky (mobile)', 'text', '', '' ),
 				'adsense_slot_mid'      => array( 'Slot: mid (in-article, ₹ highest)', 'text', '', 'Article madhya lo — highest RPM slot' ),
-				'adsense_slot_in_feed'  => array( 'Slot: in-feed (grid madhya)', 'text', '', 'హోమ్ grid lo cards madhya' ),
-				'adsense_slot_below_content' => array( 'Slot: below-content (article tarvata)', 'text', '', 'Article chivarana — 2వ highest RPM slot' ),
+				'adsense_slot_in_feed'  => array( 'Slot: in-feed (grid madhya)', 'text', '', 'Between the cards in the home grid' ),
+				'adsense_slot_below_content' => array( 'Slot: below-content (article tarvata)', 'text', '', 'After the article — the 2nd highest RPM slot' ),
 				'ads_txt'        => array( 'ads.txt content', 'textarea', '', 'Site root /ads.txt ga serve avutundi (AdSense approval tarvata publisher id line)' ),
 				'in_article_ad'  => array( 'In-article ad (content 3rd para tarvata)', 'check', '1', 'Highest-CTR placement — AdSense/ house ad (density cap + lazy tho)' ),
 				'max_ads'        => array( 'Page ki max ads (density cap)', 'text', '4', '4-5 safe (AdSense + UX). Ekkuva = policy risk' ),
 				'lazy_ads'       => array( 'Lazy ads (below-fold) ON', 'check', '1', 'Viewability + CLS — AdSense RPM ki manchi' ),
 				'ads_on_policy'  => array( 'Legal pages lo ads (privacy/about)', 'check', '0', 'Default OFF (AdSense policy safe)' ),
 				'sticky_ad'      => array( 'Sticky bottom ad ON', 'check', '0', 'Mobile lo kindha fixed ad (house/AdSense anchor)' ),
-				'house_ads'      => array( 'House ads (JSON)', 'textarea', '', 'Bot nimpustundi (ads/house.json → ఇక్కడికి). Format: [{"title":"..","text":"..","url":".."}]' ),
+				'house_ads'      => array( 'House ads (JSON)', 'textarea', '', 'Filled by the bot (ads/house.json → here). Format: [{"title":"..","text":"..","url":".."}]' ),
 			),
 		),
 		'socials' => array(
-			'title'  => 'సోషల్ మీడియా',
+			'title'  => 'Social media',
 			'fields' => array(
-				'social_whatsapp'  => array( 'WhatsApp నంబర్', 'text', '919999999999', 'Country code tho, + లేకుండా (ఉదా: 919876543210)' ),
+				'social_whatsapp'  => array( 'WhatsApp number', 'text', '919999999999', 'With country code, without + (example: 919876543210)' ),
 				'social_telegram'  => array( 'Telegram', 'text', 'studentup_in', 't.me/<idi> — channel username' ),
 				'social_instagram' => array( 'Instagram', 'text', 'studentup.in', 'instagram.com/<idi>' ),
 				'social_youtube'   => array( 'YouTube', 'text', '@studentupin', 'youtube.com/<idi>' ),
 			),
 		),
 		'content' => array(
-			'title'  => 'కంటెంట్ + సైట్',
+			'title'  => 'Content & site',
 			'fields' => array(
-				'exam_url'      => array( 'పరీక్ష పోర్టల్ URL', 'text', '', '🎓 ఆన్‌లైన్ పరీక్షల బటన్ ఎక్కడికి వెళ్లాలి' ),
-				'contact_email' => array( 'సంప్రదింపు ఇమెయిల్', 'text', '', 'తప్పులు/సూచనలు — ఖాళీగా ఉంటే admin email వాడుతుంది' ),
-				'author_name'   => array( 'ఎడిటోరియల్ టీమ్ పేరు', 'text', 'StudentUp ఎడిటోరియల్ టీమ్', 'పోస్ట్ కింద E-E-A-T box లో కనిపిస్తుంది' ),
-				'author_bio'    => array( 'ఎడిటోరియల్ టీమ్ వివరణ', 'textarea', 'అధికారిక నోటిఫికేషన్లు, ప్రభుత్వ వెబ్‌సైట్ల నుంచి ధృవీకరించి తెలుగులో రాస్తాము. తప్పు కనిపిస్తే మెయిల్ చేయండి — వెంటనే సరిచేస్తాము.', '' ),
-				'breaking_json' => array( 'బ్రేకింగ్ ఫీడ్ (JSON)', 'textarea', '', 'Bot nimpustundi (--push-theme-data). Format: {"items":[{"title":"..","link":"..","time":"..","tag":".."}]}' ),
-				'breaking_enabled' => array( 'బ్రేకింగ్ న్యూస్ సెక్షన్ ON (v72 default OFF)', 'check', '0', 'OFF lo site lo ticker/section render avvadu (feed data intact unthundi)' ),
-				'qual_filter' => array( 'విద్యార్హత ఫిల్టర్ (10th · 10+2 · డిగ్రీ · పీజీ)', 'check', '1', 'Home/archive lo chips — post save ayyaka tag automatic ga set avutundi' ),
-				'deadline_json' => array( 'పరీక్ష కౌంట్‌డౌన్ (JSON)', 'textarea', '', '{"title":"..","date":"ISO"} — hero countdown (bot kuda nimpistundi)' ),
+				'exam_url'      => array( 'Exam portal URL', 'text', '', '🎓 Where the Online Exams button should point' ),
+				'contact_email' => array( 'Contact email', 'text', '', 'Errors/suggestions — falls back to the admin email if empty' ),
+				'author_name'   => array( 'Editorial team name', 'text', 'StudentUp Editorial Team', 'Shown in the E-E-A-T box under the post' ),
+				'author_bio'    => array( 'Editorial team description', 'textarea', 'We verify from official notifications and government websites, then write it in simple language. If you spot a mistake, email us — we fix it fast.', '' ),
+				'breaking_json' => array( 'Breaking feed (JSON)', 'textarea', '', 'Bot nimpustundi (--push-theme-data). Format: {"items":[{"title":"..","link":"..","time":"..","tag":".."}]}' ),
+				'breaking_enabled' => array( 'Breaking news section ON (v72 default OFF)', 'check', '0', 'OFF lo site lo ticker/section render avvadu (feed data intact unthundi)' ),
+				'qual_filter' => array( 'Qualification filter (10th · 10+2 · Degree · PG)', 'check', '1', 'Chips on home/archive — the tag is set automatically when a post is saved' ),
 			),
 		),
 		'advanced' => array(
-			'title'  => 'అడ్వాన్స్‌డ్',
+			'title'  => 'Advanced',
 			'fields' => array(
-				'progress_bar' => array( 'Reading progress bar', 'check', '1', 'పోస్ట్ చదువుతుంటే పైన progress' ),
-				'toc'          => array( 'విషయ సూచిక (auto TOC)', 'check', '1', 'H2/H3 నుంచి ఆటోమేటిక్ jump links' ),
-				'pwa'          => array( 'PWA (mobile install + app icon)', 'check', '1', 'ఫోన్‌లో "Add to Home screen"' ),
-				'install_prompt' => array( 'యాప్గా ఇన్స్టాల్ చేయండి బటన్ (Android/iPhone)', 'check', '1', 'Android/Chrome lo install prompt, iPhone lo Share hint' ),
+				'progress_bar' => array( 'Reading progress bar', 'check', '1', 'Reading progress bar at the top' ),
+				'toc'          => array( 'Table of contents (auto TOC)', 'check', '1', 'Automatic jump links from H2/H3' ),
+				'pwa'          => array( 'PWA (mobile install + app icon)', 'check', '1', 'On phones "Add to Home screen"' ),
+				'install_prompt' => array( 'Download App button (Android/iPhone)', 'check', '1', 'Install prompt on Android/Chrome, Share hint on iPhone' ),
 				'schema'       => array( 'JSON-LD schema (Organization/WebSite)', 'check', '1', 'Google ki site identity' ),
 				'consent_mode'    => array( 'Google Consent Mode v2', 'check', '1', 'EEA/UK/CH ki consent varaku ads hold (Google rule) — India ki impact ledu' ),
 				'consent_regions' => array( 'Consent regions', 'text', 'EEA,GB,CH', 'AdSense CMP lo mee regions (default EEA+UK+Switzerland)' ),
 				'consent_cmp_id'  => array( 'CMP script / snippet', 'text', '', 'AdSense → Privacy & messaging → CMP snippet ikkada paste cheyandi' ),
 				'news_sitemap'    => array( 'Google News sitemap (/news-sitemap.xml)', 'check', '1', 'Discover/News ki 48h posts + images' ),
-				'comments_on'  => array( 'కామెంట్లు ON (engagement + freshness signal)', 'check', '1', 'OFF chesthe post lo comment form render avvadu' ),
+				'comments_on'  => array( 'Comments ON (engagement + freshness signal)', 'check', '1', 'OFF chesthe post lo comment form render avvadu' ),
 				'security_hardening' => array( 'Security hardening (headers · XML-RPC off · enumeration block)', 'check', '1', 'Default ON — adi 100% safe (REST bot ki impact ledu)' ),
 				'content_visibility' => array( 'content-visibility (below-fold render skip → fast)', 'check', '1', 'LCP/INP improvement — modern browsers lo mattrame' ),
 				'indexnow_key' => array( 'IndexNow key (hex, 8+ chars)', 'text', '', 'Bot nimpustundi — /<key>.key file automatic ga serve avutundi (Bing/Yandex instant indexing)' ),
-				'api_base'     => array( 'Bot API base URL', 'text', '', 'పరీక్ష పోర్టల్/ఇతర internal API (optional)' ),
+				'api_base'     => array( 'Bot API base URL', 'text', '', 'Exam portal / other internal API (optional)' ),
 			),
 		),
 	);
@@ -201,7 +200,7 @@ function studentup_settings_page() {
 				</tr>
 			<?php endforeach; ?>
 			</table>
-			<?php submit_button( 'సేవ్ చేయండి' ); ?>
+			<?php submit_button( 'Save changes' ); ?>
 		</form>
 		<hr>
 		<p><strong>Bot commands:</strong>

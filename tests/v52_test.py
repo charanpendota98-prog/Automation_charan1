@@ -92,8 +92,8 @@ def test_house_ad_is_not_labelled_sponsored():
     assert 'rel="sponsored' not in out, "house links must not be rel=sponsored"
     assert "utm_medium=house" in out, "house ad analytics must be separated"
     assert "aria-label=\"StudentUp" in out or "StudentUp ·" in out
-    assert "పెయిడ్ ప్రకటన కాదు" in out, "house disclosure missing"
-    print("  house ads: honest label (SPONSORED kaadu) + utm_medium=house ✔")
+    assert "not a paid" in out.lower() or "our service" in out.lower(), "house disclosure missing"
+    print("  house ads: honest label (never SPONSORED) + utm_medium=house ✔")
 
 
 def test_paid_ad_always_beats_house_ad():
@@ -137,7 +137,8 @@ def test_partner_page_exists_and_is_indexable():
     """v71: advertise page = 'Partner with us' (English-first, indexable, canonical)."""
     assert ADV.exists(), "pages/advertise.html missing"
     html = ADV.read_text(encoding="utf-8")
-    assert '<html lang="te">' in html
+    # v73: English UI
+    assert '<html lang="en">' in html and 'property="og:locale" content="en_IN"' in html
     assert "canonical" in html and "studentup.in/pages/advertise.html" in html
     assert "Partner with us" in html
     assert "SPONSORED" in html and "house ads" in html.lower()

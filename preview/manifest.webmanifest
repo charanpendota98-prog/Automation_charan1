@@ -16,9 +16,9 @@
     { "src": "favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
   ],
   "shortcuts": [
-    { "name": "ఉద్యోగాలు", "short_name": "Jobs", "url": "./index.html#jobs" },
-    { "name": "అర్హత ప్రకారం ఉద్యోగాలు", "short_name": "అర్హత", "url": "./index.html#qualsplit" },
-    { "name": "ఫలితాలు", "short_name": "Results", "url": "./index.html#results" },
-    { "name": "క్విజ్", "short_name": "Quiz", "url": "./index.html#quiz" }
+    { "name": "Jobs", "short_name": "Jobs", "url": "./index.html#jobs" },
+    { "name": "Jobs by qualification", "short_name": "Qualification", "url": "./index.html#qualsplit" },
+    { "name": "Results", "short_name": "Results", "url": "./index.html#results" },
+    { "name": "Daily Quiz", "short_name": "Quiz", "url": "./index.html#quiz" }
   ]
 }

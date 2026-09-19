@@ -765,14 +765,13 @@ def readiness_run() -> int:
 
 
 def push_theme_data(dry_run: bool = False) -> int:
-    """v61: bot data → WordPress theme (breaking · proof · deadline · house ads)."""
+    """v61: bot data → WordPress theme (breaking · proof · house ads).
+
+    v73: countdown/deadline push teesesaamu (hero card user brief tho poyindi).
+    """
     from . import wp_theme_sync
 
     payload = wp_theme_sync.build_payload()
-    # v72.1: static preview hero countdown file (fake date undakoodadu)
-    dl_path = wp_theme_sync.write_preview_deadline(payload=payload)
-    if dl_path:
-        print(f"  📅 preview deadline: {dl_path.relative_to(config.BASE_DIR)}")
     if not payload:
         print("  ⚠️  push cheyyalsina data ledu (breaking feed/house ads/proof khali)")
         return 0
