@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @return int
  */
 function studentup_cat_count( $slug ) {
-	$term = get_category_by_slug( $slug );
+	$term = studentup_used_term( $slug );   // v89: alias-aware (live slugs differ)
 	return $term ? (int) $term->count : 0;
 }
 
