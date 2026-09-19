@@ -1,294 +1,151 @@
-"""v47 self-test — daily poll (rotation + voting) & admin-controlled ads.
+# -*- coding: utf-8 -*-
+"""v47 self-test — static daily poll/question & bot ads-inventory contract.
+
+v74 rewrite: exam portal teesesam → poll ippudu **server lekunda** (7-question
+bank, date rotation, localStorage vote, correct-answer reveal). Portal poll API
++ portal admin-ads tests poyayi; bot-side inventory contract matram migilindi
+(ad_manager ni bot direct ga vadutundi).
 
 Run:  python tests/v47_test.py        (also picked up by: python run.py --test-all)
-Offline-only: temp DB + temp inventory file, no network, no server process.
+Offline-only: no network, no server process.
 """
 
 from __future__ import annotations
 
 import json
-import os
+import re
 import sys
 import tempfile
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT))
 
-from exam_portal import engine                     # noqa: E402
-from exam_portal.server import Api                 # noqa: E402
-from exam_portal.store import Store                # noqa: E402
+from autoblog import ad_manager  # noqa: E402
 
-ADMIN = "test-admin-key"
-
-
-def _store(with_questions: bool = True) -> Store:
-    tmp = Path(tempfile.mkdtemp(prefix="v47-db-"))
-    st = Store(str(tmp / "test.db"))
-    st.init()
-    if with_questions:
-        eid = st.create_exam(code="V47AAA", admin_token="tok", title="v47 bank",
-                             duration_min=15, created_by="test")["id"]
-        st.add_questions(eid, [
-            {"text": "తెలంగాణ రాజధాని ఏది?", "options": ["వరంగల్", "హైదరాబాద్"],
-             "correct_index": 1, "explanation": "హైదరాబాద్.", "topic": "జీకే"},
-            {"text": "NSP పోర్టల్ ఏది?", "options": ["scholarships.gov.in", "nsp.in"],
-             "correct_index": 0, "explanation": "scholarships.gov.in.", "topic": "జీకే"},
-            {"text": "TSPSC పూర్తి రూపం?", "options": ["ఎ", "బి", "సి"],
-             "correct_index": 2, "explanation": "సి.", "topic": "జీకే"},
-        ])
-    return st
+INDEX = ROOT / "preview" / "index.html"
+CONTACT = ROOT / "preview" / "pages" / "contact.html"
+PRIVACY = ROOT / "preview" / "pages" / "privacy.html"
+TE = re.compile(r"[\u0c00-\u0c7f]")
 
 
-def _api(st: Store) -> Api:
-    return Api(st, ADMIN)
+def _html() -> str:
+    return INDEX.read_text(encoding="utf-8")
 
 
-def _tmp_inventory(ads=None) -> str:
+def test_poll_bank_shape_and_rotation():
+    html = _html()
+    m = re.search(r"var POLL_BANK=\[(.*?)\];", html, re.S)
+    assert m, "POLL_BANK ledu"
+    bank = m.group(1)
+    items = re.findall(r"\{t:\"(.*?)\",o:\[(.*?)\],a:(\d+),w:\"(.*?)\"\}", bank)
+    assert len(items) == 7, f"poll bank 7 undali, unnayi: {len(items)}"
+    for t, opts, a, w in items:
+        assert len(t) > 10 and len(w) > 10, "question/explanation chinnadi"
+        assert not TE.search(t + opts + w), "poll bank English-only (v73 scope)"
+        options = re.findall(r"\"(.*?)\"", opts)
+        assert len(options) == 4, f"4 options undali: {t[:30]}"
+        assert 0 <= int(a) < 4, f"answer index tappu: {t[:30]}"
+    assert "dayNum%POLL_BANK.length" in html, "date rotation ledu"
+    assert "330+new Date().getTimezoneOffset()" in html, "IST day logic ledu"
+    print("  poll: 7-question bank · 4 options each · valid answers · IST rotation ✔")
+
+
+def test_poll_has_no_server():
+    html = _html()
+    for needle in ('/poll/today', '/poll/vote', '"/poll', "'/poll", "base()+",
+                   "localhost:8080", "8080-", "exam portal is offline",
+                   "exam portal is online"):
+        assert needle not in html, f"server vestige inka undi: {needle}"
+    assert "studentup-poll-v1-" in html, "localStorage vote key ledu"
+    assert '" correct"' in html and '" wrong"' in html, "correct/wrong reveal ledu"
+    assert "poll-result-note" in html, "explanation note ledu"
+    assert "no fake numbers" in html, "honesty comment ledu"
+    print("  poll: fetch/base/portal URLs levu · localStorage vote · instant reveal ✔")
+
+
+def test_poll_markup_and_css_intact():
+    html = _html()
+    for needle in ('id="poll"', 'id="pollbox"', 'id="pollday"', "Today's question"):
+        assert needle in html, f"poll markup poyindi: {needle}"
+    css = " ".join(re.findall(r"<style>(.*?)</style>", html, re.S))
+    assert ".poll{" in css and "body.dark .poll-opt" in css, "poll CSS poyindi"
+    assert ".poll-opt" in css and ".poll-result-note" in css
+    print("  poll: section markup + responsive/dark CSS intact ✔")
+
+
+def test_privacy_tells_browser_only_truth():
+    priv = PRIVACY.read_text(encoding="utf-8")
+    assert "exam portal" not in priv.lower(), "privacy lo portal vestige"
+    assert "IP address" not in priv, "IP voting claim inka undi"
+    assert "Your browser only" in priv and "poll" in priv
+    print("  privacy: portal/IP claims poyayi · browser-only truth ✔")
+
+
+def test_contact_form_whatsapp_compose():
+    html = CONTACT.read_text(encoding="utf-8")
+    for needle in ('id="leadform"', 'id="ld-phone"', 'id="ld-interest"',
+                   'class="lead-hp"', "wa.me", "WA_NUMBER", "w.opener=null",
+                   "nothing is stored", "privacy.html"):
+        assert needle in html, f"contact form lo ledu: {needle}"
+    assert 'api()+"/lead"' not in html and "/lead" not in html, "/lead vestige undi"
+    assert "/^[6-9]\\d{9}$/" in html, "client-side phone check undali"
+    assert "spam trap" in html, "honeypot logic ledu"
+    index = _html()
+    assert 'id="leadform"' not in index, "homepage lo form undakoodadu (v71)"
+    print("  contact: WhatsApp-compose form · honeypot · phone check · no /lead ✔")
+
+
+def test_inventory_bot_contract():
     d = Path(tempfile.mkdtemp(prefix="v47-ads-"))
     p = d / "inventory.json"
-    p.write_text(json.dumps({"version": 3,
-                             "policy": {"label": "SPONSORED", "max_personal_ads_per_post": 2},
-                             "ads": ads if ads is not None else [
-                                 {"id": "college-banner-demo", "type": "college_banner",
-                                  "title": "Demo College", "link": "https://example.com/c",
-                                  "layout": "banner", "active": True}]},
-                            ensure_ascii=False), encoding="utf-8")
-    os.environ["ADS_INVENTORY_PATH"] = str(p)
-    return str(p)
-
-
-# --------------------------------------------------------------------- store
-
-def test_store_poll_schema_and_bank():
-    st = _store()
-    bank = st.bank_questions()
-    assert len(bank) == 3, bank
-    assert bank[0]["options"][1] == "హైదరాబాద్"
-    assert bank[0]["correct_index"] == 1
-    assert bank[2]["correct_index"] == 2
-    print("  store: poll table + question bank (3 questions, Telugu intact) ✔")
-
-
-def test_store_poll_vote_dedup_and_counts():
-    st = _store()
-    day = "2026-09-18"
-    assert st.has_poll_vote(day, 1, "10.0.0.9") is False
-    st.record_poll_vote(day, 1, 0, "10.0.0.9")
-    assert st.has_poll_vote(day, 1, "10.0.0.9") is True
-    assert st.poll_vote_counts(day, 1) == [1]
-    st.record_poll_vote(day, 1, 0, "10.0.0.10")
-    st.record_poll_vote(day, 1, 1, "10.0.0.11")
-    assert st.poll_vote_counts(day, 1) == [2, 1]
-    assert st.poll_vote_counts("2026-09-19", 1) == []
-    assert st.poll_vote_counts(day, 2) == []
-    print("  store: poll votes stored per (day, qid, ip) + dedup flag ✔")
-
-
-# ----------------------------------------------------------------------- api
-
-def test_poll_today_shape_and_rotation():
-    st = _store()
-    api = _api(st)
-    p = api.today_poll()
-    assert p["ok"] and p["day"] and p["bank_size"] == 3
-    assert p["qid"] and p["text"] and len(p["options"]) >= 2
-    assert isinstance(p["qid"], int) and p["qid"] > 0
-    assert "correct_index" not in p, "leak-proof: answer must never be sent before voting"
-    # rotation: index = day.toordinal() % bank
-    import datetime as _dt
-    d = _dt.date.fromisoformat(p["day"])
-    assert st.bank_questions()[d.toordinal() % 3]["id"] == p["qid"]
-    print("  api: /poll/today shape + date-rotation index + no answer leak ✔")
-
-
-def test_poll_vote_flow_and_idempotency():
-    st = _store()
-    api = _api(st)
-    p = api.today_poll()
-    qid = p["qid"]
-    r = api.vote_poll({"qid": qid, "choice": 0, "_ip": "1.1.1.1"})
-    assert r["ok"] and r["total"] == 1 and r["already_voted"] is False
-    assert len(r["votes"]) == len(p["options"])
-    assert isinstance(r["correct_index"], int) and r["explanation"]
-    again = api.vote_poll({"qid": qid, "choice": 1, "_ip": "1.1.1.1"})
-    assert again["already_voted"] is True and again["total"] == 1
-    other = api.vote_poll({"qid": qid, "choice": 1, "_ip": "2.2.2.2"})
-    assert other["total"] == 2 and other["already_voted"] is False
-    print("  api: /poll/vote counts + one vote per IP (idempotent) ✔")
-
-
-def test_poll_vote_guards():
-    api = _api(_store())
-    p = api.today_poll()
-    bad = [
-        ({"qid": p["qid"] + 99, "choice": 0, "_ip": "3.3.3.3"}, "stale-poll"),
-        ({"qid": p["qid"], "choice": 99, "_ip": "3.3.3.3"}, "bad-choice"),
-        ({"qid": p["qid"], "choice": -1, "_ip": "3.3.3.3"}, "bad-choice"),
-    ]
-    for payload, code in bad:
-        try:
-            api.vote_poll(payload)
-            raise AssertionError("expected block: %r" % payload)
-        except engine.ExamError as exc:
-            assert exc.code == code, (exc.code, code)
-    # stale poll by date: qid belongs to a 1-question bank (rotated out)
-    try:
-        api.vote_poll({"qid": 123456, "choice": 0, "_ip": "9.9.9.9"})
-        raise AssertionError("stale qid must be blocked")
-    except engine.ExamError as exc:
-        assert exc.code == "stale-poll"
-    print("  api: stale poll / bad choice / junk qid all blocked ✔")
-
-
-def test_poll_cors_headers():
-    src = (Path(__file__).resolve().parent.parent / "exam_portal" / "server.py").read_text(encoding="utf-8")
-    assert '"/poll/today"' in src and '"/poll/vote"' in src
-    assert "Access-Control-Allow-Origin" in src and "do_OPTIONS" in src
-    assert 'cors=True' in src
-    print("  api: public poll routes + CORS/OPTIONS preflight wired ✔")
-
-
-# ------------------------------------------------------------------ ads admin
-
-def test_admin_ads_read_and_auth():
-    _tmp_inventory()
-    api = _api(_store(False))
-    try:
-        api.admin_ads("wrong")
-        raise AssertionError("bad key allowed!")
-    except engine.ExamError as exc:
-        assert exc.code == "unauthorized"
-    d = api.admin_ads(ADMIN)
-    assert d["ok"] and d["version"] == 3 and len(d["ads"]) == 1
-    assert d["path"].endswith("inventory.json")
-    print("  ads: admin read + key guard (version/policy exposed) ✔")
-
-
-def test_admin_ads_upsert_create_and_update():
-    path = _tmp_inventory()
-    api = _api(_store(False))
-    ad = {"id": "shop-new-1", "type": "shop", "layout": "card",
-          "title": "విద్యార్థి స్టేషనరీ షాప్ — పరీక్ష కిట్", "desc": "పెన్ను, నోట్‌బుక్.",
-          "link": "https://example.com/shop", "cta": "చూడండి", "categories": "Careers",
-          "start": "2026-09-01", "end": "2026-12-31", "placements": "top,mid", "active": True}
-    r = api.upsert_ad(ADMIN, ad)
-    assert r["ok"] and r["count"] == 2
-    data = json.loads(Path(path).read_text(encoding="utf-8"))
-    assert data["version"] == 3, "version must be preserved"
-    assert data["policy"]["label"] == "SPONSORED"
-    new_ad = [a for a in data["ads"] if a["id"] == "shop-new-1"][0]
-    assert new_ad["title"].startswith("విద్యార్థి")
-    assert new_ad["placements"] == ["top", "mid"] and new_ad["name"], new_ad["placements"]
-    # update in place
-    ad2 = dict(ad, title="కొత్త శీర్షిక — పరీక్ష కిట్ ఆఫర్", active=False)
-    r2 = api.upsert_ad(ADMIN, ad2)
-    assert r2["count"] == 2, "update must not duplicate"
-    data2 = json.loads(Path(path).read_text(encoding="utf-8"))
-    row = [a for a in data2["ads"] if a["id"] == "shop-new-1"][0]
-    assert row["title"].startswith("కొత్త") and row["active"] is False
-    print("  ads: upsert (create + update in place) preserves version/policy ✔")
-
-
-def test_admin_ads_delete():
-    path = _tmp_inventory()
-    api = _api(_store(False))
-    r = api.delete_ad(ADMIN, "college-banner-demo")
-    assert r["ok"] and r["count"] == 0
-    data = json.loads(Path(path).read_text(encoding="utf-8"))
-    assert data["ads"] == []
-    try:
-        api.delete_ad(ADMIN, "nope-1")
-        raise AssertionError("deleting missing ad must fail")
-    except engine.ExamError as exc:
-        assert exc.code == "ads-missing"
-    print("  ads: delete + missing-id guard ✔")
-
-
-def test_admin_ads_validation():
-    _tmp_inventory()
-    api = _api(_store(False))
-    cases = [
-        ({"id": "AB", "title": "valid title", "link": "https://a.co"}, "bad-ad-id"),
-        ({"id": "good-id", "title": "x", "link": "https://a.co"}, "bad-ad-title"),
-        ({"id": "good-id", "title": "valid title", "link": "javascript:alert(1)"}, "bad-ad-link"),
-        ({"id": "good-id", "title": "valid title", "link": "http://a.co",
-          "image": "data:text/html;base64,xx"}, "bad-ad-image"),
-        ({"id": "good-id", "title": "valid title", "link": "https://a.co",
-          "type": "evil"}, "bad-ad-type"),
-        ({"id": "good-id", "title": "valid title", "link": "https://a.co",
-          "layout": "popup"}, "bad-ad-layout"),
-        ({"id": "good-id", "title": "valid title", "link": "https://a.co",
-          "start": "31-12-2026"}, "bad-ad-start"),
-    ]
-    for payload, code in cases:
-        try:
-            api.upsert_ad(ADMIN, payload)
-            raise AssertionError("unsafe ad accepted: %r" % payload)
-        except engine.ExamError as exc:
-            assert exc.code == code, (exc.code, code, payload)
-    print("  ads: 7 validation rules block unsafe input (XSS/js links/data URIs) ✔")
-
-
-def test_admin_ads_autocreate_and_writer_reads_stored_ads():
-    d = Path(tempfile.mkdtemp(prefix="v47-ads-"))
-    os.environ["ADS_INVENTORY_PATH"] = str(d / "nested" / "inventory.json")
-    st = _store(False)
-    api = _api(st)
-    assert api.admin_ads(ADMIN)["ads"] == []
-    r = api.upsert_ad(ADMIN, {"id": "first-ad", "title": "మొదటి ప్రకటన ఇక్కడ",
-                              "link": "https://example.com/f"})
-    assert r["ok"] and r["count"] == 1
-    saved = json.loads((d / "nested" / "inventory.json").read_text(encoding="utf-8"))
-    assert saved["ads"][0]["id"] == "first-ad"
-    assert "policy" in saved and "version" in saved
-    print("  ads: inventory auto-created with policy/version on first save ✔")
-
-
-def test_admin_ads_ui_card_present():
-    ui = (Path(__file__).resolve().parent.parent / "exam_portal" / "ui.py").read_text(encoding="utf-8")
-    assert "ప్రకటనలు" in ui and "loadAds" in ui and "upsert_ad" not in ui, "UI must call the API, not internals"
-    for field in ["a_id", "a_type", "a_layout", "a_title", "a_desc", "a_link",
-                  "a_image", "a_cta", "a_cats", "a_start", "a_end", "a_placements", "a_active"]:
-        assert 'id="%s"' % field in ui, "missing admin field: " + field
-    assert "/api/admin/ads" in ui and "/api/admin/ads/delete" in ui
-    assert "loadAds()" in ui, "ads must load right after admin login"
-    print("  ui: admin 'ప్రకటనలు' card — 13 fields + load/edit/delete wired ✔")
-
-
-def test_ad_bot_handoff_contract():
-    """The bot's ad_manager must consume exactly what the admin UI writes."""
-    path = _tmp_inventory()
-    api = _api(_store(False))
-    api.upsert_ad(ADMIN, {"id": "coaching-hyd-1", "type": "coaching", "layout": "banner",
-                          "title": "హైదరాబాద్ కోచింగ్ — TSPSC బ్యాచ్", "desc": "టెస్ట్ సిరీస్.",
-                          "link": "https://example.com/coaching", "cta": "జాయిన్",
-                          "placements": ["top"], "active": True})
-    from autoblog import ad_manager
-    inv = ad_manager.load_inventory(path=Path(path))
-    ids = [a.get("id") for a in inv.get("ads", [])]
-    assert "coaching-hyd-1" in ids and "college-banner-demo" in ids, ids
+    p.write_text(json.dumps({
+        "version": 3,
+        "policy": {"label": "SPONSORED", "max_personal_ads_per_post": 2},
+        "ads": [
+            {"id": "college-banner-demo", "type": "college_banner",
+             "title": "Demo College", "link": "https://example.com/c",
+             "layout": "banner", "active": True},
+            {"id": "coaching-hyd-1", "type": "coaching", "layout": "banner",
+             "title": "Hyderabad coaching — TSPSC batch", "desc": "Test series.",
+             "link": "https://example.com/coaching", "cta": "Join",
+             "placements": ["top"], "active": True},
+            {"id": "old-shop", "type": "shop", "layout": "card",
+             "title": "Old shop", "link": "https://example.com/s", "active": False},
+        ]}, ensure_ascii=False), encoding="utf-8")
+    inv = ad_manager.load_inventory(path=p)
     assert inv.get("policy", {}).get("label") == "SPONSORED"
-    active = ad_manager.active_ads(inv)
-    picked = [a["id"] for a in active]
+    picked = [a["id"] for a in ad_manager.active_ads(inv)]
     assert "coaching-hyd-1" in picked and "college-banner-demo" in picked, picked
-    print("  handoff: bot ad_manager loads admin-saved inventory (policy intact) ✔")
+    assert "old-shop" not in picked, "inactive ad active ayyindi!"
+    print("  inventory: bot load + policy + active-filter (inactive out) ✔")
+
+
+def test_inventory_render_safety():
+    d = Path(tempfile.mkdtemp(prefix="v47-render-"))
+    p = d / "inventory.json"
+    p.write_text(json.dumps({
+        "version": 3, "policy": {"label": "SPONSORED"},
+        "ads": [{"id": "xss-try", "type": "shop", "layout": "card",
+                 "title": "<img src=x>", "link": "https://example.com/x",
+                 "active": True}]}, ensure_ascii=False), encoding="utf-8")
+    inv = ad_manager.load_inventory(path=p)
+    out = ad_manager.render_ad(inv["ads"][0], "mid", ad_manager.policy_of(inv))
+    assert "SPONSORED" in out, "label ledu"
+    assert "<img src=x>" not in out, "XSS escape avvaledu!"
+    assert "sponsored" in out and "nofollow" in out, "rel=sponsored nofollow ledu"
+    print("  inventory: SPONSORED label + rel + XSS escape ✔")
 
 
 def main() -> None:
-    test_store_poll_schema_and_bank()
-    test_store_poll_vote_dedup_and_counts()
-    test_poll_today_shape_and_rotation()
-    test_poll_vote_flow_and_idempotency()
-    test_poll_vote_guards()
-    test_poll_cors_headers()
-    test_admin_ads_read_and_auth()
-    test_admin_ads_upsert_create_and_update()
-    test_admin_ads_delete()
-    test_admin_ads_validation()
-    test_admin_ads_autocreate_and_writer_reads_stored_ads()
-    test_admin_ads_ui_card_present()
-    test_ad_bot_handoff_contract()
-    print("ALL v47 POLL + ADS-ADMIN TESTS PASSED ✔")
+    test_poll_bank_shape_and_rotation()
+    test_poll_has_no_server()
+    test_poll_markup_and_css_intact()
+    test_privacy_tells_browser_only_truth()
+    test_contact_form_whatsapp_compose()
+    test_inventory_bot_contract()
+    test_inventory_render_safety()
+    print("ALL v47 STATIC-POLL + ADS-CONTRACT TESTS PASSED ✔")
 
 
 if __name__ == "__main__":

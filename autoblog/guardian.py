@@ -224,7 +224,9 @@ def check_menu_wiring() -> tuple:
 def check_storage() -> tuple:
     total, used, free = shutil.disk_usage(str(ROOT))
     free_gb = free / 1024 ** 3
-    db = ROOT / "state.db"
+    from . import config as _cfg  # v74: STATE_PATH env (Docker /data) respect
+
+    db = Path(getattr(_cfg, "STATE_PATH", ROOT / "state.db"))
     db_kb = db.stat().st_size / 1024 if db.exists() else 0
     out = ROOT / "output"
     out_mb = sum(f.stat().st_size for f in out.rglob("*") if f.is_file()) / 1024 ** 2 if out.exists() else 0

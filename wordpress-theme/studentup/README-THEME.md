@@ -27,7 +27,6 @@ WP Admin → (bot nunchi) → python run.py --push-theme-data
 | `studentup_breaking_json` | బ్రేకింగ్ ఐటమ్స్ (radar feed) | `{"items":[{"title":"…","link":"…","tag":"results","time":"…"}]}` |
 | `studentup_house_ads` | house/sponsor ads (day rotation) | `[{"title":"…","desc":"…","link":"https://…","cta":"…"}]` |
 | `studentup_adsense_client` | AdSense client id | `ca-pub-1234567890123456` |
-| `studentup_exam_url` | పరీక్షల పోర్టల్ లింక్ | `https://exams.studentup.in` |
 
 **Bot push (REST):** `POST /wp-json/studentup/v1/theme-data` — Application Password tho auth
 (edit_posts). Idi lekapote: WP root lo `/data/breaking.json` file pettandi (theme 10 నిమిషాల

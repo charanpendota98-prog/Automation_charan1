@@ -230,6 +230,6 @@ A: Le — posts/content theme-independent. Bot `--polish` widget theme-agnostic 
 A: **Le.** Quiz widget + design kit JS break avvakapovaddi. Auto Minify kuda OFF (already minified).
 
 **Q: Ranking guarantee?**
-A: **Le** (honest). EE: content quality + 11,192-keyword universe (17 pillars) + GSC loop + hubs + exam portal + CWV green — anni ee setup tho ready. Google ranking content + time tho matrame vasthundi — code tho guarantee cheyagalanu.
+A: **Le** (honest). EE: content quality + 11,192-keyword universe (17 pillars) + GSC loop + hubs + quiz/question + CWV green — anni ee setup tho ready. Google ranking content + time tho matrame vasthundi — code tho guarantee cheyagalanu.
 
 *Last updated: v42 (2026-09-16) — Full verify + full audit: 30/30 suites · 39/39 runtime checks · 4/4 audit gates · report: `output/audit/full-verification-20260916.md`*

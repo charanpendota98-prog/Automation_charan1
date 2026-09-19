@@ -35,7 +35,7 @@ python tools/build_wp_theme.py    # php-lint + audit + POT + zip (theme install 
 | Discovery surfaces | sitemap + news sitemap + RSS | `/sitemap.xml` · `/news-sitemap.xml` (48h · te) · feed | curl + GSC |
 | Posting cadence | ≥ 20 posts/day (IST) | 3–5 manual slots + radar 4×/day + breaking + auto-refresh | `python run.py --status` |
 | Manual approval | 100% drafts | draft → Telegram ✅/🗑️ (no auto-publish without approval) | bot logs |
-| Revenue engines | all wired | 6/6 (rate card · house ads · calculator · network plan · advisor · leads) | `--readiness` |
+| Revenue engines | all wired | 6/6 (rate card · house ads · calculator · network plan · advisor · leads via WhatsApp) | `--readiness` |
 
 > **Honest note (v62 rule):** ee KPIs anni **code-side verifiable**. Google ranking, traffic,
 > AdSense approval, actual revenue = Google + mee accounts + time — **guarantee ledu**, idi
@@ -48,9 +48,9 @@ python tools/build_wp_theme.py    # php-lint + audit + POT + zip (theme install 
 | # | Requirement (mee maata) | Ver | Implementation | Automated test | Evidence |
 |---|---|---|---|---|---|
 | R1 | Pure-Telugu website content (English mix ok) | v47 | theme templates + prompts (`autoblog/prompts.py`) | `v47_test`, jsdom Telugu-dominance | `--test-all` |
-| R2 | Exam portal (polls/quiz daily update) | v46-v47 | `exam_portal/`, `quiz_engine.py` | `quiz_test` | `python -m exam_portal.server` + `/healthz` |
+| R2 | Exam portal (polls/quiz daily update) | v46-v47 → **v74 retired** | ~~`exam_portal/`~~ → `quiz_engine.py` + static question bank (JS, server ledu) + `--approval-poll` | `quiz_test`, `v74_test` | `--test-all` 56/56 |
 | R3 | Posts perfect + **manufactured proof** | v48/v65 | `validator.py`, `post_gate.py` (67 checks) | `validator_test`, `v65_test`, `v66_test` | `--pin-check` certificate |
-| R4 | Highest-revenue ads, safe (no clickbait) | v49/v52/v66 | `ad_manager.py`, theme `inc/ads.php` (6/6 slots) | `v49_test`, `v52_test`, `v66_test`, `v67_test` | audit KPI `ad_positions 6/6` |
+| R4 | Highest-revenue ads, safe (no clickbait) | v49/v52/v66 | `ad_manager.py`, theme `inc/ads.php` (6/6 slots) | `v52_test`, `v66_test`, `v67_test` | audit KPI `ad_positions 6/6` |
 | R5 | House/private ads placeable from admin | v52/v64 | theme options `house_ads` + REST + `tools/build_wp_theme.py` | `v52_test`, `v64_test` | StudentUp → Ads |
 | R6 | Low revenue → real engines (never guarantee) | v53-v55 | `monetize.py`, `workbook` rate card, `tools/revenue_estimate.py` | `v53/v54/v55_test` | `python tools/revenue_estimate.py` |
 | R7 | Menu = your category list, Telugu labels | v51/v59 | `inc/template.php` + WP menus + `menu_wiring` guardian check | `v51_test`, `v59_test`, guardian | `--guardian` |
@@ -110,9 +110,7 @@ python tools/build_wp_theme.py    # php-lint + audit + POT + zip (theme install 
 | R72 | **విద్యార్హత ఫిల్టర్ automatic (10th → PG) · menu pakkana search · app-laga install · clean copy (బ్రేకింగ్/internal metrics teeseyadam)** | v72 | `preview/index.html` (chips + search panel + PWA) · `wordpress-theme/studentup/inc/qual-filter.php` (auto-tag + `?qual=` server filter + WP-CLI backfill) · `inc/pwa.php` + `assets/js/studentup-pwa.js` · `autoblog/qual.py` (bot meta) | `v72_test` (20 checks), `v59_test`, `v60_test`, jsdom 150 checks | `--test-all` · `node tests/runtime/jsdom_runtime_test.js` |
 ---
 
-*Last updated: v72.1 (2026-09-18) — qualification-wise job filter (auto tags; 10th · 10+2 · ITI ·
-Diploma · Degree · PG · B.Tech) + per-qualification sections (auto built, no manual tagging) +
-always-visible App డౌన్‌లోడ్ + data-driven deadline + clean copy (topbar/7-point article/demo ads
-removed) + theme v1.7.1 ·
-57/57 suites · jsdom 162/162 · readiness 100/100 (28/28) · guardian 14/15 (1 warn-only owner env) ·
+*Last updated: v74 (2026-09-19) — live exam portal retired (cron-only bot · static question/quiz ·
+WhatsApp leads · `--approval-poll` approvals) + theme v1.7.2 ·
+56/56 suites · jsdom 164/164 · readiness 100/100 (28/28) · guardian 14/15 (1 warn-only owner env) ·
 theme audit 0/0 · code audit 0/0 · parity audit 0/0.*

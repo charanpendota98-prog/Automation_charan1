@@ -403,5 +403,36 @@ def main() -> int:
     return 0
 
 
+def main_once(timeout: int = 25) -> int:
+    """v74: okka poll pass — shared-hosting cron kosam (MilesWeb: 24×7 daemon ledu).
+
+    Cron:  */5 * * * *  .../python run.py --approval-poll
+    Prathi 5 nimishalaki Telegram getUpdates check → ✅ Publish / 🗑️ Delete
+    buttons anni cron mode lo kuda pani chestayi (max ~5 min late).
+    """
+    config.LOG_DIR.mkdir(parents=True, exist_ok=True)
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s %(levelname)-7s %(name)s: %(message)s",
+        stream=sys.stdout,
+    )
+    if not config.TELEGRAM_BOT_TOKEN:
+        print("TELEGRAM_BOT_TOKEN ledu — .env lo petti malli run cheyandi.")
+        return 2
+    state.init(config.STATE_PATH)
+    bot = ApprovalBot()
+    try:
+        n = bot.poll_once(timeout=timeout)
+    except requests.RequestException as exc:
+        log.warning("Network error (cron pass skip): %s", exc)
+        return 0
+    try:
+        bot.check_watchdog()
+    except Exception:  # noqa: BLE001
+        log.exception("Watchdog check skip (cron pass ok)")
+    print(f"approval-poll: {n} update(s) processed ✔")
+    return 0
+
+
 if __name__ == "__main__":
     raise SystemExit(main())

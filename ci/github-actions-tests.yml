@@ -45,10 +45,20 @@ jobs:
           pip install -r requirements.txt
           pip install pyflakes
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: tests/runtime/package.json
+
+      - name: Install JS deps (jsdom + php-parser for php-lint gate)
+        run: |
+          cd tests/runtime && npm install --no-audit --no-fund
+
       - name: Syntax / lint (blocking only on real errors)
         run: |
-          python -m compileall -q autoblog exam_portal tests run.py
-          python -m pyflakes autoblog/site_audit.py exam_portal/*.py run.py
+          python -m compileall -q autoblog tests run.py
+          python -m pyflakes autoblog/site_audit.py run.py
 
       - name: All suites (standalone assert scripts)
         env:

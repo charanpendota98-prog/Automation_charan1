@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# su-watchdog.sh — v51 auto-heal for the StudentUp stack (VPS / Oracle Cloud).
+# su-watchdog.sh — v74 auto-heal for the StudentUp stack (VPS / Oracle Cloud).
 #
-# Eni chestundi:
-#   1. Portal /healthz + website page ni check chestundi (curl, timeout tho)
-#   2. 3 consecutive failures ayyaka service ni restart chestundi (systemd)
-#   3. Disk / memory / TLS certificate expiry check (+ alerts)
+# Eni chestundi (v74: portal ledu — bot + website matrame):
+#   1. Website page ni check chestundi (curl, timeout tho) → down ayite Telegram alert
+#   2. Bot freshness: state.db 26 gantallo update avvakapote alert (cron/timer aagindi?)
+#   3. Disk / memory / load / TLS certificate expiry check (+ alerts)
 #   4. Telegram alert (throttled — 30 min lo okkate, spam ledu)
 #   5. State file tho crash history maintain chestundi (diagnosis kosam)
 #
@@ -14,17 +14,15 @@
 #   sudo systemctl daemon-reload && sudo systemctl enable --now su-watchdog.timer
 #
 # Manual run / test:
-#   sudo WATCHDOG_DRY=1 bash deploy/su-watchdog.sh     # nothing is restarted
+#   sudo WATCHDOG_DRY=1 bash deploy/su-watchdog.sh     # alerts matrame, no writes
 #
 set -uo pipefail
 
 APP_DIR="${APP_DIR:-/opt/studentup}"
 STATE_DIR="${STATE_DIR:-/var/lib/studentup}"
 LOG_FILE="${LOG_FILE:-/var/log/studentup/watchdog.log}"
-PORTAL_URL="${PORTAL_URL:-http://127.0.0.1:8080/healthz}"
 SITE_URL="${SITE_URL:-}"
-SERVICES="${SERVICES:-exam-portal}"
-FAIL_THRESHOLD="${FAIL_THRESHOLD:-3}"
+BOT_STALE_HOURS="${BOT_STALE_HOURS:-26}"
 ALERT_THROTTLE="${ALERT_THROTTLE:-1800}"     # seconds between identical alerts
 DISK_MIN_MB="${DISK_MIN_MB:-512}"
 MEM_MIN_MB="${MEM_MIN_MB:-96}"
@@ -36,8 +34,8 @@ STATE_FILE="$STATE_DIR/watchdog.state"
 
 # .env nunchi Telegram details (unna)
 if [ -z "${TELEGRAM_BOT_TOKEN:-}" ] && [ -f "$APP_DIR/.env" ]; then
-  TELEGRAM_BOT_TOKEN="$(grep -E '^TELEGRAM_BOT_TOKEN=' "$APP_DIR/.env" 2>/dev/null | head -1 | cut -d= -f2- | tr -d '"'"'"' ' || true)"
-  TELEGRAM_CHAT_ID="$(grep -E '^TELEGRAM_CHAT_ID=' "$APP_DIR/.env" 2>/dev/null | head -1 | cut -d= -f2- | tr -d '"'"'"' ' || true)"
+  TELEGRAM_BOT_TOKEN="$(grep -E '^TELEGRAM_BOT_TOKEN=' "$APP_DIR/.env" 2>/dev/null | head -1 | cut -d= -f2- | tr -d "\"'" || true)"
+  TELEGRAM_CHAT_ID="$(grep -E '^TELEGRAM_CHAT_ID=' "$APP_DIR/.env" 2>/dev/null | head -1 | cut -d= -f2- | tr -d "\"'" || true)"
 fi
 TELEGRAM_BOT_TOKEN="${TELEGRAM_BOT_TOKEN:-}"
 TELEGRAM_CHAT_ID="${TELEGRAM_CHAT_ID:-}"
@@ -79,49 +77,29 @@ check_url() { # check_url <url> → 0 ok, 1 fail
   curl -fsS --max-time 8 -o /dev/null "$1" 2>/dev/null
 }
 
-restart_service() { # restart_service <name>
-  if [ "$DRY" = "1" ]; then
-    log "DRY-RUN: would restart $1"
-    return 0
-  fi
-  if command -v systemctl >/dev/null 2>&1; then
-    systemctl restart "$1" 2>/dev/null && log "restarted $1" || log "restart FAILED for $1"
-  else
-    log "systemctl ledu — restart skip ($1)"
-  fi
-}
-
-fail_file="$STATE_DIR/watchdog.fails"
-
-# ---------------------------------------------------------------- 1) portal
-if check_url "$PORTAL_URL"; then
-  if [ "$(cat "$fail_file" 2>/dev/null || echo 0)" != "0" ]; then
-    log "portal healthy again ($PORTAL_URL)"
-  fi
-  echo 0 >"$fail_file" 2>/dev/null || true
-else
-  fails=$(( $(cat "$fail_file" 2>/dev/null || echo 0) + 1 ))
-  echo "$fails" >"$fail_file" 2>/dev/null || true
-  log "portal check FAILED ($fails/$FAIL_THRESHOLD) — $PORTAL_URL"
-  if [ "$fails" -ge "$FAIL_THRESHOLD" ]; then
-    alert portal_down "portal $FAIL_THRESHOLD checks fail — auto-restarting ($PORTAL_URL)"
-    for svc in $SERVICES; do restart_service "$svc"; done
-    echo 0 >"$fail_file" 2>/dev/null || true
-    sleep 5
-    if check_url "$PORTAL_URL"; then
-      log "portal recovered after restart ✔"
-      alert portal_recovered "portal restarted and healthy again ✔"
-    else
-      alert portal_still_down "portal STILL down after restart — manual check kavali"
-    fi
-  fi
-fi
-
-# ---------------------------------------------------------------- 2) website
+# ---------------------------------------------------------------- 1) website
 if [ -n "$SITE_URL" ]; then
   if ! check_url "$SITE_URL"; then
     alert site_down "website page fail: $SITE_URL"
+  else
+    log "website ok ($SITE_URL)"
   fi
+else
+  log "SITE_URL ledu — website check skip (su-watchdog.service lo pettandi)"
+fi
+
+# ---------------------------------------------------------- 2) bot freshness
+STATEDB="$APP_DIR/state.db"
+if [ -f "$STATEDB" ]; then
+  mtime="$(stat -c %Y "$STATEDB" 2>/dev/null || stat -f %m "$STATEDB" 2>/dev/null || echo 0)"
+  age_h=$(( ( $(date +%s) - mtime ) / 3600 ))
+  if [ "$age_h" -ge "$BOT_STALE_HOURS" ]; then
+    alert bot_stale "bot ${age_h}h ga run avvaledu (state.db stale) — timer/cron check cheyandi"
+  else
+    log "bot fresh (state.db ${age_h}h old)"
+  fi
+else
+  log "state.db ledu inka — bot first run kosam wait (studentup-bot.timer)"
 fi
 
 # ------------------------------------------------------------- 3) resources

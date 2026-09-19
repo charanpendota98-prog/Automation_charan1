@@ -68,7 +68,6 @@ def build_payload(root: Optional[Path] = None,
             "adsense_auto": "1" if getattr(config, "ADSENSE_AUTO_ADS", True) else "0",
             "sticky_ad": getattr(config, "STICKY_AD", ""),
             "contact_email": getattr(config, "CONTACT_EMAIL", ""),
-            "exam_url": getattr(config, "EXAM_PUBLIC_URL", ""),
             "indexnow_key": config.INDEXNOW_KEY,
         }
         opts = {k: v for k, v in mapping.items() if isinstance(v, str) and v.strip()}

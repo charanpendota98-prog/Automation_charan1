@@ -8,10 +8,6 @@
 __pycache__/
 adsense_kit.json
 design_kit.json
-exam_portal.db
-exam_portal.db-shm
-exam_portal.db-wal
-exam_portal_admin_key.txt
 images/
 log/
 output/

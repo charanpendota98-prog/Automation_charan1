@@ -1,10 +1,11 @@
-# v51 watchdog — auto-heal check (systemd timer: every 2 minutes)
+# v51 watchdog — website + bot + disk/TLS check (systemd timer: every 2 minutes)
+# v74: exam portal ledu → portal health env poyindi; SITE_URL + bot freshness vachayi
 # Install:
 #   sudo cp deploy/su-watchdog.sh /opt/studentup/deploy/ && sudo chmod +x /opt/studentup/deploy/su-watchdog.sh
 #   sudo cp deploy/systemd/su-watchdog.service deploy/systemd/su-watchdog.timer /etc/systemd/system/
 #   sudo systemctl daemon-reload && sudo systemctl enable --now su-watchdog.timer
 [Unit]
-Description=StudentUp watchdog (health check + auto-restart)
+Description=StudentUp watchdog (website + bot + disk/TLS check)
 After=network-online.target
 Wants=network-online.target
 
@@ -16,9 +17,8 @@ EnvironmentFile=-/opt/studentup/.env
 Environment=APP_DIR=/opt/studentup
 Environment=STATE_DIR=/var/lib/studentup
 Environment=LOG_FILE=/var/log/studentup/watchdog.log
-Environment=PORTAL_URL=http://127.0.0.1:8080/healthz
-# website check pettali ante: Environment=SITE_URL=https://studentup.in/
-# TLS expiry alert:                Environment=DOMAIN=studentup.in
+Environment=SITE_URL=https://studentup.in/
+# TLS expiry alert: Environment=DOMAIN=studentup.in
 ExecStart=/opt/studentup/deploy/su-watchdog.sh
 TimeoutStartSec=120
 Nice=10

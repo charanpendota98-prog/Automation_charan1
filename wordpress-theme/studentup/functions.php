@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'STUDENTUP_VERSION', '1.7.1' );  // v72.1: App download sheet · combined qualification + category filter · clean copy
+define( 'STUDENTUP_VERSION', '1.7.2' );  // v74: exam portal + dead exam link teesesaam · shortcuts = Jobs/Qualification/Results/Quiz
 
 require_once get_template_directory() . '/inc/options.php';
 require_once get_template_directory() . '/inc/qual-filter.php';  // v72: 10th/Inter/Degree/PG filter (auto tags)
@@ -95,7 +95,6 @@ function studentup_assets() {
 		'STUDENTUP',
 		array(
 			'home'     => esc_url_raw( home_url( '/' ) ),
-			'apiBase'  => esc_url_raw( (string) get_option( 'studentup_api_base', '' ) ),
 			'chips'    => true,
 			'i18n'     => array(
 				'updates' => 'updates',

@@ -12,7 +12,7 @@ const html = fs.readFileSync(PAGE, "utf8");
 
 /* v71: total check count — docs (README/MANUAL/GO_LIVE) claim this number and
  * tools/parity_audit.py P8 reads it, so a silent drift cannot slip through. */
-const EXPECTED_CHECKS = 162;
+const EXPECTED_CHECKS = 164;
 
 const passed = [];
 const failed = [];
@@ -166,10 +166,13 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
      document.getElementById("qscore").textContent);
   document.getElementById("qretry").click();
 
-  /* ---------- exam + share + theme + totop ---------- */
-  const examHref = document.getElementById("examlink").getAttribute("href");
-  ok("exam link resolves to live demo exam (env-aware URL)",
-     /\/exam\/KBHA5W$/.test(examHref), examHref);
+  /* ---------- quiz promo + share + theme + totop ---------- */
+  const quizHref = document.getElementById("quizlink").getAttribute("href");
+  ok("v74: sidebar quiz card links to #quiz (no portal)",
+     quizHref === "#quiz", quizHref);
+  ok("v74: no portal links anywhere (no /exam/, no examlink)",
+     !document.getElementById("examlink") &&
+     !/\/exam\//.test(document.documentElement.innerHTML));
   ok("v72.1: 7-point article + దాని share buttons teesesaam (demo content ledu)",
      !document.getElementById("wa") && !document.getElementById("copylink") &&
      !/7 విషయాలు|QUICK ANSWER|ఎడిటర్ ఎంపిక/.test(html));
@@ -234,9 +237,9 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
   ok("mobile panel: 11 links + CTA + 4 socials",
      mpanel.querySelectorAll("a").length >= 15,
      "links=" + mpanel.querySelectorAll("a").length);
-  ok("mobile panel has Partner + Exam CTA",
+  ok("mobile panel has Partner + Quiz CTA",
      Array.from(mpanel.querySelectorAll("a")).some(a => /Partner with us/.test(a.textContent)) &&
-     Array.from(mpanel.querySelectorAll("a")).some(a => a.textContent.indexOf("Online Exams") > -1));
+     Array.from(mpanel.querySelectorAll("a")).some(a => a.textContent.indexOf("Daily Quiz") > -1));
   mpanel.querySelector('a[href="#jobs"]').click();
   ok("panel link click closes menu", !mpanel.classList.contains("open") && !document.body.classList.contains("mlock"));
   menubtn.click();
@@ -291,9 +294,18 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
      !/href="#trust"/.test(document.body.innerHTML) &&
      /pages\/editorial-policy\.html/.test(document.body.innerHTML));
   const poll = document.getElementById("poll");
-  ok("daily poll section present (ఈరోజు పోల్)", !!poll && /Today's poll/.test(poll.textContent));
-  ok("poll widget has fetch fallback (portal offline → graceful note)",
-     /poll-error|Loading poll/.test(poll.innerHTML + Array.from(document.querySelectorAll("style")).map(s=>s.textContent).join("")));
+  ok("daily question section present (Today's question)",
+     !!poll && /Today's question/.test(poll.textContent));
+  ok("v74: static poll bank (7 questions, no fetch, no server)",
+     Array.isArray(window.POLL_BANK) && window.POLL_BANK.length === 7 &&
+     window.POLL_BANK.every(q => q.o && q.o.length === 4 && q.a >= 0 && q.a < 4) &&
+     !/\/poll\//.test(html));
+  document.querySelector("#pollbox .poll-opt").click();
+  await sleep(50);
+  ok("v74: poll vote reveals correct answer + explanation (localStorage)",
+     !!document.querySelector("#pollbox .poll-opt.correct") &&
+     /correct one has|Correct!/.test(document.getElementById("pollbox").textContent) &&
+     !!document.querySelector("#pollbox .poll-result-note"));
   ok("poll CSS: responsive + dark-mode rules", /\.poll\{/.test(styleText) && /body\.dark \.poll-opt/.test(styleText));
   ok("services card: working contact paths (no dev placeholders)",
      !!document.querySelector('#services a[href^="mailto:"]') &&
@@ -342,9 +354,10 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
   }
   const examDrop = document.querySelectorAll(".has-drop .drop")[1];
   const examCats = examDrop ? Array.from(examDrop.querySelectorAll("a[data-goto-cat]")).map(a => a.getAttribute("data-goto-cat")) : [];
-  ok("v59 పరీక్షలు dropdown: upcoming + tips + portal (hall/results top-level ki vachhayi)",
+  ok("v74 exams dropdown: upcoming + tips + quiz (portal poyindi)",
      ["upcoming", "examtips"].every(c => examCats.indexOf(c) > -1) &&
-     /Online Exams/.test(examDrop ? examDrop.textContent : ""),
+     /Daily Quiz/.test(examDrop ? examDrop.textContent : "") &&
+     !/Online Exams/.test(examDrop ? examDrop.textContent : ""),
      "cats=" + examCats.join(","));
   ok("v59 హాల్ టికెట్లు + ఫలితాలు top-level menu lonaki vachhayi",
      !!document.querySelector('.nav > a[data-goto-cat="hallticket"]') &&
@@ -465,8 +478,8 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
      /example\.com/.test(html) === false &&
      Array.from(document.querySelectorAll(".su-ad")).every(a => !/ABC |abc-college|tuition-demo|stationery-demo/.test(a.textContent)) &&
      /\.html$/.test(document.querySelector(".su-ad a").getAttribute("href")));
-  ok("v73: exam wording English (Online Exams)",
-     /Online Exams/.test(html));
+  ok("v74: quiz wording English, portal wording gone (no Online Exams)",
+     /Daily Quiz/.test(html) && !/Online Exams/.test(html));
 
   /* ---------- v72: ఎక్కువగా వెతికేవి + పర్ఫెక్ట్ మెనూ ---------- */
   const usedTiles = Array.from(document.querySelectorAll(".usedgrid .usedcard"));

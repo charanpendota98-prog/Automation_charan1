@@ -2,24 +2,23 @@
 
 Ee module production lo deploy cheyyadaniki mundu ANNI avasaralu check chestundi
 — server SSH lo okka command tho. Checks nijamga pani cheyyali (claims kaadu):
-exam portal ni temp DB tho **boot chesi** HTTP hit chestundi, deps import
-chestundi, disk/permissions chustundi.
+autoblog modules anni **nijamga import** chestundi, deps/disk/permissions/env
+chustundi.
 
-CLI:  python run.py --deploy-check [--deploy-port 8080]
+v74: exam portal teesesam → bot ippudu cron-only (ports/servers levu), anduke
+portal boot + port checks poyayi; baduluga import smoke test + cron hint vachayi.
+
+CLI:  python run.py --deploy-check
 """
 
 from __future__ import annotations
 
 import importlib
-import json
 import os
 import shutil
-import socket
 import sys
 import tempfile
-import threading
 import time
-import urllib.request
 from pathlib import Path
 from typing import Dict, List
 
@@ -54,7 +53,10 @@ def check_deps() -> Dict:
 
 
 def check_files() -> Dict:
-    need = ["run.py", "requirements.txt", "autoblog/main.py", "exam_portal/server.py"]
+    need = ["run.py", "requirements.txt", "autoblog/main.py",
+            "autoblog/approval_bot.py", "tools/build_wp_theme.py",
+            "wordpress-theme/studentup/style.css", "preview/index.html",
+            "crontab.example"]
     missing = [f for f in need if not (ROOT / f).exists()]
     if missing:
         return _res(FAIL, "Repo files", f"missing: {', '.join(missing)}",
@@ -98,57 +100,41 @@ def check_env() -> List[Dict]:
     return out
 
 
-def check_port(port: int) -> Dict:
-    with socket.socket() as s:
-        s.settimeout(1.0)
-        busy = s.connect_ex(("127.0.0.1", port)) == 0
-    if busy:
-        return _res(WARN, f"Port {port}", "already in use",
-                    f"--exam-port {port + 1} vadandi leda a port vaduthunna service aapeyandi")
-    return _res(OK, f"Port {port}", "free (exam portal ki)")
-
-
-def check_exam_portal(port: int = 0) -> Dict:
-    """Exam portal ni temp DB tho boot chesi /healthz hit — nijamga click avutunda."""
-    try:
+def check_imports() -> Dict:
+    """v74: bot modules nijamga import avutunaya — syntax/name error unte ikkade."""
+    if str(ROOT) not in sys.path:
         sys.path.insert(0, str(ROOT))
-        from exam_portal.server import make_server, sweeper_loop  # type: ignore
+    mods = ["autoblog.config", "autoblog.main", "autoblog.pipeline",
+            "autoblog.approval_bot", "autoblog.guardian", "autoblog.readiness",
+            "autoblog.wordpress_client", "autoblog.quiz_engine"]
+    bad = []
+    for mod in mods:
+        try:
+            importlib.import_module(mod)
+        except Exception as exc:  # noqa: BLE001
+            bad.append(f"{mod}: {type(exc).__name__}")
+    if bad:
+        return _res(FAIL, "Bot imports", f"broken: {'; '.join(bad)}",
+                    "python run.py --test-all run chesi error chudandi")
+    return _res(OK, "Bot imports", f"{len(mods)} modules import ok (smoke)")
 
-        with tempfile.TemporaryDirectory() as td:
-            db = Path(td) / "deploy-check.db"
-            httpd, api = make_server("127.0.0.1", port, str(db),
-                                     admin_key="deploy-check-key")
-            actual_port = httpd.server_address[1]
-            stop = threading.Event()
-            threading.Thread(target=httpd.serve_forever, daemon=True).start()
-            threading.Thread(target=sweeper_loop, args=(api.store, stop),
-                             daemon=True).start()
-            try:
-                with urllib.request.urlopen(
-                        f"http://127.0.0.1:{actual_port}/healthz", timeout=5) as resp:
-                    body = json.loads(resp.read().decode("utf-8"))
-                ok = resp.status == 200 and body.get("ok") is True
-            finally:
-                stop.set()
-                httpd.shutdown()
-                httpd.server_close()
-        if ok:
-            return _res(OK, "Exam portal boot", f"booted on :{actual_port} · /healthz ok")
-        return _res(FAIL, "Exam portal boot", f"/healthz → {body}")
-    except Exception as exc:  # noqa: BLE001
-        return _res(FAIL, "Exam portal boot", f"{type(exc).__name__}: {str(exc)[:120]}",
-                    "python tests/v39_exam_portal_test.py run chesi error chudandi")
+
+def check_cron_hint() -> Dict:
+    """v74: cron ki kavalsina absolute python path chupistundi (copy-paste ready)."""
+    return _res(OK, "Cron command",
+                f"{sys.executable} {ROOT / 'run.py'} --run")
 
 
 def check_deploy_artifacts() -> Dict:
-    arts = ["deploy/exam-portal.service", "deploy/studentup-bot.service",
-            "deploy/studentup-bot.timer", "deploy/Caddyfile", "deploy/backup.sh",
-            "deploy/Dockerfile", "deploy/docker-compose.yml", "DEPLOY.md"]
+    arts = ["deploy/studentup-bot.service",
+            "deploy/studentup-bot.timer", "deploy/backup.sh",
+            "deploy/Dockerfile", "deploy/docker-compose.yml", "DEPLOY.md",
+            "crontab.example"]
     missing = [a for a in arts if not (ROOT / a).exists()]
     if missing:
         return _res(WARN, "Deploy artifacts", f"missing: {', '.join(missing)}",
                     "repo nunchi pull cheyandi (deploy/ + DEPLOY.md)")
-    return _res(OK, "Deploy artifacts", f"{len(arts)} files (systemd/Caddy/Docker/backup)")
+    return _res(OK, "Deploy artifacts", f"{len(arts)} files (systemd/Docker/backup/cron)")
 
 
 def check_git() -> Dict:
@@ -157,11 +143,11 @@ def check_git() -> Dict:
     return _res(WARN, "Git repo", ".git ledu", "git clone chesi deploy cheste updates easy")
 
 
-def run_deploy_check(port: int = 8080) -> int:
+def run_deploy_check() -> int:
     t0 = time.time()
     checks: List[Dict] = [check_python(), check_deps(), check_files(), check_writable(),
                           check_disk(), check_deploy_artifacts(), check_git(),
-                          check_port(port), check_exam_portal(0)]
+                          check_imports(), check_cron_hint()]
     checks += check_env()
     icon = {OK: "✅", WARN: "⚠️ ", FAIL: "❌"}
     fails = [c for c in checks if c["status"] == FAIL]
@@ -179,5 +165,5 @@ def run_deploy_check(port: int = 8080) -> int:
     if fails:
         print("  ❌ FAIL items fix chesi malli run cheyandi: python run.py --deploy-check")
         return 1
-    print("  ✅ Ready. Next: DEPLOY.md lo mee path (VPS / Docker / PaaS) follow cheyandi.")
+    print("  ✅ Ready. Next: DEPLOY.md lo mee path (VPS / Docker / shared-cron) follow cheyandi.")
     return 0

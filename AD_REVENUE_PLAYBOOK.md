@@ -9,11 +9,11 @@ Ee doc = "adi best?" + "highest revenue ads" + "mana valu kuda post pettelaga" +
 
 | Priority | Setup | Enduku best |
 |---|---|---|
-| ⭐ **Recommended** | **MilesWeb** (website + WordPress) **+ Oracle Cloud Always Free VM** (portal + bot + watchdog) | Website fast & cheap; portal/bot 24×7 + auto-heal + mee data mee control. Rendu kalipi ~₹0–500/నెల |
-| Budget-only | MilesWeb lone anni (portal WSGI + cron) | Okka bill, okka panel — bot heavy runs lo slow avvochu |
-| Scale (100+ concurrent exam students) | Oracle PAYG (4 OCPU/24 GB free allowance) leda ₹500/నెల VPS | SQLite → Postgres ki move cheyyali |
+| ⭐ **Recommended** | **MilesWeb** (website + WordPress) **+ Oracle Cloud Always Free VM** (bot + watchdog + guardian) | Website fast & cheap; bot 24×7 + auto-heal + mee data mee control. Rendu kalipi ~₹0–500/నెల |
+| Budget-only | MilesWeb lone anni (WP + bot cron + approval cron) | Okka bill, okka panel — bot heavy runs lo slow avvochu |
+| Scale (traffic spike) | Cloudflare free CDN + MilesWeb cache | Bot cron schedules ki move cheyyali (heavy runs off-peak) |
 
-Reason: website = static/WP (MilesWeb perfect) · bot + portal = long-running processes + cron
+Reason: website = static/WP (MilesWeb perfect) · bot = timers + cron
 + watchdog (VM perfect). Rendu dochulu: **motham deploy = website MilesWeb, engine Oracle**.
 
 ## 0.1) Live calculator — "10k views vasthe entha?"
@@ -61,7 +61,7 @@ Per-view value (RPM) penche levers — anni ippude siddham:
 | Auto Ads loader (anchor/in-feed formats) | ✅ `ADSENSE_AUTO_ADS=1` |
 | Viewability (sticky sidebar + in-feed + leaderboard) | ✅ |
 | Page speed (fast load = ekkuva viewable impressions) | ✅ static site |
-| Session depth (ఒక్క విజిట్‌లో ఎక్కువ పేజీలు: hubs, quiz, poll, related) | ✅ |
+| Session depth (ఒక్క విజిట్‌లో ఎక్కువ పేజీలు: hubs, quiz, daily question, related) | ✅ |
 | High-CPC pillars (Govt jobs, Results, Current affairs, Scholarships) | ✅ 17 pillars |
 | Tier-1 / NRI-దేశీ ట్రాఫిక్ (విదేశీ ఉద్యోగాలు, IELTS, visa) | ✅ v58 pillar LIVE (roju 1–2 posts) |
 | Topa ki 2 ads cap (policy + UX protect) | ✅ |
@@ -139,7 +139,7 @@ start/end dates → kaalapramanam ayyaka auto ga aagutundi
 ## 3) House ads (mana valu kuda post pettelaga) — idi kotha feature
 
 ```
-ads/house.json → StudentUp sonta promos (services · daily quiz · live exam)
+ads/house.json → StudentUp sonta promos (services · daily quiz · daily question)
 Kaani: SPONSORED label VEYYAMU — "StudentUp · మా సేవ" ani verega label
 Paid sponsor unte → sponsor FIRST (rotation + demo/real priority)
 House ads kuda rotation lo turn teesukuntayi (ads/rotation.json)
@@ -155,7 +155,7 @@ SPONSORED, mana ad ki "StudentUp సేవ".
 | 17 content pillars · 143 sources · 11,192 keywords (incl. విదేశీ/గల్ఫ్ = Tier-1 line) | ✅ |
 | Rank Math fields + canonical + JSON-LD + IndexNow | ✅ |
 | Manual gate (draft → Telegram ✅) + QA 80 + originality 72% | ✅ |
-| Daily poll + exam portal + admin ads console | ✅ |
+| Daily question + quiz (server lekunda) + admin ads (WP) | ✅ |
 | Category menu (TS/AP/Central/Walk-in/Software/Private/Hall tickets/Results…) | ✅ |
 | Policy pages (About/Contact/Privacy/Disclaimer/Editorial) + robots/sitemap/favicon | ✅ |
 | **Advertise page + rate card + booking flow** | ✅ (v52) |
@@ -169,10 +169,10 @@ SPONSORED, mana ad ki "StudentUp సేవ".
 1. **Sponsor sales** (highest ₹ per slot) — advertise page + local outreach (colleges, coaching,
    stationery, hostels, hospitals, banks, mobile shops). 1 full package = ₹8,000/నెల.
 2. **AdSense** — approve ayyaka auto; jobs/scholarships pages ki CPC ekkuva.
-3. **Repeat traffic** — daily poll, daily current affairs, auto-refresh → sessions per user ↑ → ad
+3. **Repeat traffic** — daily question, daily current affairs, auto-refresh → sessions per user ↑ → ad
    impressions ↑.
 4. **Refresh + IndexNow** — purana posts malli crawl → impressions ↑.
-5. **House ads** — traffic ni quiz/services/exam ki pampistundi (mana own funnel).
+5. **House ads** — traffic ni quiz/services/question ki pampistundi (mana own funnel).
 
 ⛔ **Cheyyakudadu (once and for all):** clickbait titles, fake clicks, popup/interstitial,
 "Google tricks", ad ni content laaga dhaachadam, incentive clicks. Ivi AdSense ban + reputation damage.

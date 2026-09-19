@@ -81,7 +81,7 @@ def _module_defs(path: Path) -> set:
 def _py_files() -> list:
     files = sorted(BOT.glob("*.py")) + [ROOT / "run.py"]
     files += sorted((ROOT / "tools").glob("*.py"))
-    files += sorted((ROOT / "exam_portal").glob("*.py"))
+    # v74: live-exam package teesesam (cron-only bot) — adi lene file list.
     return [f for f in files if f.exists()]
 
 

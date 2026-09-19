@@ -1,12 +1,15 @@
-# 🚀 DEPLOY — StudentUp bot + College Exam Portal (honest, step-by-step)
+# 🚀 DEPLOY — StudentUp bot (honest, step-by-step)
 
 Ee file lo **3 deployment paths** unnayi. Mee situation chusi okati select cheyandi:
 
 | Path | Evariki | Time | Enti deploy avutundi |
 |---|---|---|---|
-| **A. VPS + systemd + Caddy** (recommended) | Server unna college / mee own VPS (₹300–600/నెల) | ~10 min | Exam portal (**HTTPS** tho) + hourly bot + backups |
-| **B. Docker compose** | Docker telisinavallu / kotha VM | ~5 min | Exam portal (okka command), volume lo data |
-| **C. PaaS (Render/Railway/Fly)** | Server maintenance vaddu anukunevallu | ~10 min | Exam portal (managed HTTPS), free/cheap tier ok |
+| **A. VPS + systemd timers** (recommended) | Mee own VPS / Oracle Cloud VM (₹300–600/నెల leda free tier) | ~10 min | Hourly bot + watchdog + backups |
+| **B. Docker compose** | Docker telisinavallu / kotha VM | ~5 min | Bot loop container (okka command), volume lo data |
+| **C. Shared-hosting cron** (MilesWeb) | Server maintenance vaddu anukunevallu | ~15 min | Bot + approvals anni cron tho (details: `DEPLOY_MILESWEB.md`) |
+
+v74 nunchi bot **cron-only** (live-exam server teesesam) — ports/servers levu,
+24×7 daemon kuda optional (approvals cron tho vastayi).
 
 **Modata (anni paths ki):** ee command run cheyandi — enti miss undo cheptundi.
 
@@ -20,42 +23,33 @@ Output lo `❌ fail` unte adi fix cheyandi; `⚠️ warn` unnavi optional/manual
 
 ## Path A — VPS (Ubuntu 22.04/24.04) ⭐ recommended
 
-Kolukovalsina server: 1 vCPU / 1 GB RAM chalu (exam portal stdlib + sqlite; 200–500 students
-ki comfortable). Domain okati (ex: `exams.college.edu`) + DNS A record server IP ki.
+Kolukovalsina server: 1 vCPU / 1 GB RAM chalu (bot + sqlite; hourly runs ki
+comfortable). Public website = WordPress (vere host) leda Caddy static (kindha).
 
 ```bash
 # 1) Server SSH lo (root/sudo)
 sudo apt update && sudo apt install -y git
 git clone https://github.com/charanpendota98-prog/Automation_charan1.git /opt/studentup-src
 
-# 2) One-command install (python+deps+user+systemd+Caddy+check)
-sudo DOMAIN=exams.college.edu REPO_URL=https://github.com/charanpendota98-prog/Automation_charan1.git \
+# 2) One-command install (python+venv+deps+user+systemd timers+check)
+sudo DOMAIN=studentup.in REPO_URL=https://github.com/charanpendota98-prog/Automation_charan1.git \
      bash /opt/studentup-src/deploy/install-vps.sh
 
-# 3) Verify
-sudo systemctl status exam-portal --no-pager
-curl -s localhost:8080/healthz          # {"ok": true, ...}
-sudo cat /opt/studentup/exam_portal_admin_key.txt     # admin key (save cheyandi!)
-```
-
-Browser lo: `https://exams.college.edu/admin` → admin key → **+ New exam** → questions paste →
-roster → **START**. Students ki `https://exams.college.edu/exam/<CODE>` link pampandi
-(roll number tho join avutaru — password ledu).
-
-**Firewall:** `sudo ufw allow 80,443/tcp` — **8080 ni bayata open cheyyakandi** (Caddy
-localhost nunchi proxy chestundi).
-
-**Caddy badulu nginx** vadali ante: `sudo cp deploy/nginx-exam.conf /etc/nginx/sites-available/exam-portal`
-(then `certbot --nginx -d exams.college.edu`).
-
-**Automation (bot) 24/7:** installer `studentup-bot.timer` ni enable chestundi (hourly).
-WordPress creds `.env` lo pettandi:
-
-```bash
-sudo -u studentup nano /opt/studentup/.env     # WP_SITE / WP_USERNAME / WP_APP_PASSWORD / TELEGRAM_*
+# 3) Secrets pettandi + verify
+sudo -u studentup nano /opt/studentup/.env     # WP_* / GEMINI_* / TELEGRAM_*
 sudo systemctl start studentup-bot             # okka manual test run
 sudo journalctl -u studentup-bot -n 80         # result chudandi
+sudo systemctl status studentup-bot.timer su-watchdog.timer --no-pager
 ```
+
+**Automation 24/7:** installer `studentup-bot.timer` (hourly) + `su-watchdog.timer`
+(2 min: website + bot freshness + disk/TLS) enable chestundi.
+Telegram approvals kosam: VPS daemon (`python -m autoblog.approval_bot` systemd lo)
+**leda** cron line `*/5 * * * * ... run.py --approval-poll` (simple — ade chalu).
+
+**Static site (optional):** `preview/` ni Caddy tho serve cheyali ante
+`deploy/Caddyfile` ni `/etc/caddy/Caddyfile` ki copy chesi domain marchandi
+(HTTPS automatic). WordPress vadithe ee step avasaram ledu.
 
 **Backups (must):**
 
@@ -64,14 +58,13 @@ sudo crontab -e
 # 15 2 * * * /opt/studentup/deploy/backup.sh >> /var/log/studentup/backup.log 2>&1
 ```
 
-Restore: `systemctl stop exam-portal && cp /var/backups/studentup/exam_portal-<stamp>.db /opt/studentup/exam_portal.db && systemctl start exam-portal`.
+Restore: bot timer aapi → `cp /var/backups/studentup/state-<stamp>.db /opt/studentup/state.db` → timer malli start.
 
 **Update (kotha version):**
 
 ```bash
 cd /opt/studentup && sudo -u studentup git pull
 sudo -u studentup .venv/bin/pip install -q -r requirements.txt
-sudo systemctl restart exam-portal
 ```
 
 ---
@@ -80,28 +73,24 @@ sudo systemctl restart exam-portal
 
 ```bash
 git clone https://github.com/charanpendota98-prog/Automation_charan1.git && cd Automation_charan1
-echo "EXAM_PORTAL_ADMIN_KEY=$(openssl rand -hex 16)" > .env
-echo "EXAM_PUBLIC_URL=https://exams.college.edu" >> .env
+cp .env.example .env   # WP_* / GEMINI_* / TELEGRAM_* pettandi
 
 docker compose -f deploy/docker-compose.yml up -d --build
 docker compose -f deploy/docker-compose.yml logs -f
-curl -s localhost:8080/healthz
 ```
 
-Data `studentup-data` volume lo untundi (exam DB). Update: `git pull && docker compose -f deploy/docker-compose.yml up -d --build`.
-HTTPS ki mundu Caddy/nginx/Cloudflare Tunnel pettandi (compose 127.0.0.1:8080 ki matrame bind avutundi).
+Container lo hourly `run.py` + prathi 5 min `--approval-poll` loop nadustundi.
+Data `studentup-data` volume lo untundi (`/data/state.db`).
+Update: `git pull && docker compose -f deploy/docker-compose.yml up -d --build`.
+Health: container `state.db` freshness chustundi (3h kanna stale ayite unhealthy).
 
 ---
 
-## Path C — PaaS (Render / Railway / Fly.io)
+## Path C — Shared-hosting cron (MilesWeb)
 
-1. GitHub repo ni PaaS lo connect cheyandi (repo already GitHub lo undi).
-2. **Start command:** `python run.py --exam-portal --exam-host 0.0.0.0 --exam-port $PORT --exam-db /data/exam_portal.db`
-3. **Environment:** `EXAM_PORTAL_ADMIN_KEY=<random>`, `EXAM_PUBLIC_URL=https://<app-url>`, optional Telegram/webhook.
-4. **Persistent disk** attach cheyandi (`/data` ki) — leda exam DB restart ki poyidi (SQLite file).
-5. Health check path: `/healthz`.
-6. Free tier lo service idle aithe sleep avutundi — **exam day ki paid instance** leda VPS
-   recommend (students mid-exam lo request fail avvakoodadu).
+Server maintenance vaddu ante: bot + approvals anni cPanel cron jobs ga —
+**`DEPLOY_MILESWEB.md` follow cheyandi** (step-by-step: venv setup + 5 cron lines).
+Tradeoff okkate: approval taps ~5 min late (cron rhythm).
 
 ---
 
@@ -114,50 +103,54 @@ Site already hosted kada — bot ni server lo run cheyyali:
 python run.py --status          # plan/stats
 python run.py --force           # okka post ippude (draft lo vastundi by default)
 python run.py --site-audit      # site health audit (read-only)
-python run.py --test-all        # anni suites (30/30)
+python run.py --test-all        # anni suites
 ```
 
 Review flow (safe default): `DEFAULT_POST_STATUS=draft` → Telegram lo ✅ Publish / 🗑️ Delete
-buttons (`python -m autoblog.approval_bot`, systemd lo 24/7 pettandi).
+buttons (VPS daemon `python -m autoblog.approval_bot` leda cron `run.py --approval-poll`).
 Live publish ki `EDITORIAL_REVIEWER` + QA/originality/top-post/v41 gates pass avvali.
 
 ---
 
-## Security checklist (exam data)
+## Security checklist (bot secrets)
 
-- [ ] Admin key share cheyyaledu (per-exam **manage link** matrame share cheyandi: `/manage/<CODE>?key=...`)
-- [ ] HTTPS mandatory (Caddy auto) — plain HTTP lo roll numbers/answers velaku
-- [ ] Portal port (8080) bayata open ledu (ufw/firewall)
-- [ ] `.env` + `exam_portal_admin_key.txt` **chmod 600**, git lo commit avvavu (`.gitignore` lo unnayi)
+- [ ] `.env` **chmod 600**, git lo commit avvadu (`.gitignore` lo undi)
+- [ ] WordPress **Application Password** (main password eppudu vaddu) + admin 2FA on
+- [ ] Telegram bot token / Gemini keys ni screenshots/logs lo share cheyyaledu
 - [ ] Backups daily + **restore okka sari test** chesaru
 - [ ] Server lo `sudo apt upgrade` (security patches) — monthly
-- [ ] Exam ayyaka: results/CSV export + purge decide (student data retention policy mee college di)
+- [ ] Old WP users/plugins audit (`run.py --site-audit`) — quarterly
 
 ## Monitoring
 
 ```bash
-curl -s https://exams.college.edu/healthz        # uptime monitor (UptimeRobot free) ki
-sudo journalctl -u exam-portal -f                # live logs
-tail -f /var/log/studentup/exam-portal.log       # service log
-python run.py --exam-portal-test-channels        # Telegram/webhook test ping
+sudo systemctl status studentup-bot.timer su-watchdog.timer --no-pager
+sudo journalctl -u studentup-bot -n 80        # bot runs
+tail -f /var/log/studentup/watchdog.log       # watchdog alerts
+python run.py --guardian                      # site/UI/SEO/ads/feed/storage check
+python run.py --readiness                     # TOP WEBSITE readiness score
 ```
+
+UptimeRobot (free) → `https://studentup.in/` 5-min ping — watchdog ki rendo kannu.
 
 ## Troubleshooting
 
 | Problem | Fix |
 |---|---|
-| Portal start avvatledu | `journalctl -u exam-portal -n 60` → port busy aithe `--exam-port 8081` |
-| HTTPS vastaledu | DNS A record correct-a? `sudo systemctl status caddy` (80/443 open-a?) |
-| Students join avvatledu | `EXAM_PUBLIC_URL` set chesara? Firewall? Server time correct-a (`timedatectl`) |
-| Exam DB lock/permission | `chown -R studentup:studentup /opt/studentup` + `systemctl restart exam-portal` |
-| Bot post cheyyaledu | `journalctl -u studentup-bot -n 80` → WP creds/QA gate messages chudandi |
+| Bot run avvatledu | `journalctl -u studentup-bot -n 60` → venv/deps? `run.py --deploy-check` |
+| Timer fire avvatledu | `systemctl status studentup-bot.timer` + `timedatectl` (server time) |
+| WP publish fail | `--check-wp` → Application Password correct-a? RankMath REST on-a? |
+| Telegram approval ravatledu | Bot token/chat id? cron `approval.log` chudandi; VPS aithe daemon status |
+| Disk full | `tools/prune_media.py --days 30 --apply` + output/ cleanup |
+| state.db lock/permission | `chown -R studentup:studentup /opt/studentup` + timer restart |
 
 ## Honest notes (repo policy)
 
 - Google ranking / AdSense approval / RPM **guarantee ledu** — ee system quality, speed,
   uptime, zero-mistake flow ni **measure** chestundi, adi mee advantage.
-- Exam results/deadlines ni publish cheyyadaniki **mundu meeru verify** cheyandi.
-- Free tiers exam day ki risky; paid VPS/PaaS + backups + HTTPS = minimum professional setup.
+- Job results/deadlines ni publish cheyyadaniki **mundu meeru verify** cheyandi
+  (Telegram approval gate anduke undi).
+- Free tiers heavy traffic ki risky; paid VPS/shared + backups + HTTPS = minimum professional setup.
 
 ## v72 — PWA files (preview site)
 

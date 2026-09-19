@@ -2,9 +2,9 @@
 Contributors: studentup
 Requires at least: 6.0
 Tested up to: 6.7
-Stable tag: 1.7.1
+Stable tag: 1.7.2
 Requires PHP: 7.4
-Version: 1.3.0
+Version: 1.7.2
 License: GNU General Public License v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Tags: news, education, blog, custom-logo, custom-menu, featured-images, translation-ready, right-sidebar, block-styles, wide-blocks
@@ -47,6 +47,11 @@ The theme ships a REST bridge (`inc/seo-bridge.php`). Use an account with `manag
 user tho App Password ivvandi (Administrator role).
 
 == Changelog ==
+
+= 1.7.2 (2026-09-19, v74 portal removal) =
+ * Removed the live exam portal: `exam_url` + `api_base` options, header exam buttons,
+  and the dead `?studentup_exam=1` PWA shortcut (it never had a handler)
+ * PWA shortcuts now mirror the site: Jobs · Jobs by qualification · Results · Daily Quiz
 
 = 1.7.1 (2026-09-18, v72.1 + v73 copy pass) =
  * v73: English UI pass — chrome/labels/notes/footer English, Telugu only inside post content;

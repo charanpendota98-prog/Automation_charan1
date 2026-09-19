@@ -2,7 +2,7 @@
 /**
  * v64: StudentUp Settings — anni website options okka chota (admin page + REST).
  *
- * Enduku: ads, socials, exam link, author info, house ads — ivi WordPress
+ * Enduku: ads, socials, author info, house ads — ivi WordPress
  * option ga already untunnayi kaani admin lo edit cheyyadaniki page ledu.
  * Ippudu: WP Admin → "StudentUp" menu → tabs (Ads · Socials · Content · Advanced).
  * Bot kuda idi REST tho chaduvutundi/rasutundi (/wp-json/studentup/v1/options).
@@ -59,7 +59,6 @@ function studentup_option_fields() {
 		'content' => array(
 			'title'  => 'Content & site',
 			'fields' => array(
-				'exam_url'      => array( 'Exam portal URL', 'text', '', '🎓 Where the Online Exams button should point' ),
 				'contact_email' => array( 'Contact email', 'text', '', 'Errors/suggestions — falls back to the admin email if empty' ),
 				'author_name'   => array( 'Editorial team name', 'text', 'StudentUp Editorial Team', 'Shown in the E-E-A-T box under the post' ),
 				'author_bio'    => array( 'Editorial team description', 'textarea', 'We verify from official notifications and government websites, then write it in simple language. If you spot a mistake, email us — we fix it fast.', '' ),
@@ -84,7 +83,6 @@ function studentup_option_fields() {
 				'security_hardening' => array( 'Security hardening (headers · XML-RPC off · enumeration block)', 'check', '1', 'Default ON — adi 100% safe (REST bot ki impact ledu)' ),
 				'content_visibility' => array( 'content-visibility (below-fold render skip → fast)', 'check', '1', 'LCP/INP improvement — modern browsers lo mattrame' ),
 				'indexnow_key' => array( 'IndexNow key (hex, 8+ chars)', 'text', '', 'Bot nimpustundi — /<key>.key file automatic ga serve avutundi (Bing/Yandex instant indexing)' ),
-				'api_base'     => array( 'Bot API base URL', 'text', '', 'Exam portal / other internal API (optional)' ),
 			),
 		),
 	);
