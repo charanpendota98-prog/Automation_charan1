@@ -493,7 +493,8 @@ def c_first_look() -> List[dict]:
     blocks = [b for b, ok in (
         ("Most-searched strip", 'class="usedwrap"' in html),
         ("Search next to menu", 'id="searchbtn"' in html and 'id="searchpanel"' in html),
-        ("Qualification filter", 'data-qual="10th"' in html and 'studentup_qual_bar' in theme),
+        ("Qualification filter", 'id="qualsel"' in html and 'value="10th"' in html
+         and 'studentup_qual_bar' in theme and 'id="qualsel"' in theme),
         ("Install as app", 'id="installbtn"' in html and 'studentup-pwa' in _read(
             ROOT / "wordpress-theme" / "studentup" / "functions.php")),
     ) if ok]

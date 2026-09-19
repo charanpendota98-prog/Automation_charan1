@@ -511,8 +511,8 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
   ok("v59 grid: TS/AP govt cards mundu (student-first order)",
      /ts-jobs/.test(firstCards[0]) && /ts-jobs|ap-jobs/.test(firstCards[1]) && /ap-jobs/.test(firstCards[2]),
      firstCards.join(" | "));
-  ok("v72 CSS: search panel + qual chips + install button + used grid shipped (ticker CSS gone)",
-     /\.searchpanel\{/.test(styleText) && /\.qchip\{/.test(styleText) &&
+  ok("v76 CSS: search panel + qual dropdown + install button + used grid shipped (ticker CSS gone)",
+     /\.searchpanel\{/.test(styleText) && /\.qualsel\{/.test(styleText) &&
      /\.installbtn\{/.test(styleText) && /\.usedgrid\{/.test(styleText) &&
      !/\.tickerwrap\{/.test(styleText) && !/\.breaking\{/.test(styleText));
   const mpUsed = Array.from(document.querySelectorAll(".mpanel a[data-goto-cat]"))
@@ -550,10 +550,15 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
   q.value = ""; q.dispatchEvent(new window.Event("input", { bubbles: true }));
   click('.tab[data-state="all"]');
 
-  /* ---------- v72: విద్యార్హత ఫిల్టర్ (10th · 10+2 · డిగ్రీ · పీజీ …) ---------- */
-  const qchips = Array.from(document.querySelectorAll(".qchip"));
-  const qslugs = qchips.map(c => c.getAttribute("data-qual"));
-  ok("v72 qualification chips: 9 (అన్నీ + 7 అర్హతలు + ⏳ 7 రోజుల్లో ముగిసేవి)",
+  /* ---------- v76: విద్యార్హత dropdown (10th · 10+2 · డిగ్రీ · పీజీ …) ---------- */
+  const qualSel = document.getElementById("qualsel");
+  const qslugs = Array.from(qualSel.options).map(o => o.value);
+  function setQual(v) {
+    qualSel.value = v;
+    qualSel.dispatchEvent(new window.Event("change", { bubbles: true }));
+  }
+  ok("v76 qualification dropdown: 9 options (అన్నీ + 7 అర్హతలు + ⏳ 7 రోజుల్లో ముగిసేవి)",
+     !!qualSel && !!document.querySelector('label[for="qualsel"]') &&
      JSON.stringify(qslugs) === JSON.stringify(
        ["all","10th","inter","iti","diploma","degree","pg","btech","closing"]),
      qslugs.join(","));
@@ -564,15 +569,14 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
     return Array.from(document.querySelectorAll("#grid .news"))
       .filter(c => !c.classList.contains("hidden"));
   }
-  const q10Chip = qchips.find(c => c.getAttribute("data-qual") === "10th");
-  q10Chip.click();
-  ok("v72 qualification filter: 10వ తరగతి → only 10th eligible cards",
+  setQual("10th");
+  ok("v76 qualification filter: 10వ తరగతి → only 10th eligible cards + live count",
      qVisible().length > 0 && qVisible().every(c => /10th/.test(c.getAttribute("data-qual"))) &&
-     !qVisible().some(c => /btech/.test(c.getAttribute("data-qual"))),
+     !qVisible().some(c => /btech/.test(c.getAttribute("data-qual"))) &&
+     /10th Pass \(\d+\)/.test(qualSel.options[1].textContent),
      "visible=" + qVisible().length);
-  const qDegChip = qchips.find(c => c.getAttribute("data-qual") === "degree");
-  qDegChip.click();
-  ok("v72 qualification filter: డిగ్రీ → degree cards + count label update",
+  setQual("degree");
+  ok("v76 qualification filter: డిగ్రీ → degree cards + count label update",
      qVisible().length > 0 && qVisible().every(c => /degree/.test(c.getAttribute("data-qual"))) &&
      /opportunities/.test(document.getElementById("qcount").textContent),
      "visible=" + qVisible().length + " count=" + document.getElementById("qcount").textContent);
@@ -612,14 +616,13 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
        /^\d+$/.test(counter.querySelector(".qgnum").textContent), counter.querySelector(".qgnum").textContent);
   }
 
-  const qCloseChip = qchips.find(c => c.getAttribute("data-qual") === "closing");
-  qCloseChip.click();
+  setQual("closing");
   const soonExpected = Array.from(document.querySelectorAll("#grid .news")).filter(c => {
     const v = c.getAttribute("data-last"); if (!v) return false;
     const left = Math.round((new Date(v + "T23:59:59") - new Date(new Date().setHours(0, 0, 0, 0))) / 86400000);
     return left >= 0 && left <= 7;
   }).length;
-  ok("v72 qualification filter: ⏳ 7 రోజుల్లో ముగిసేవి → closing-soon cards mattrame",
+  ok("v76 qualification filter: ⏳ 7 రోజుల్లో ముగిసేవి → closing-soon cards mattrame",
      qVisible().length === soonExpected && qVisible().every(c => !!c.getAttribute("data-last")),
      "visible=" + qVisible().length + " expected=" + soonExpected);
   /* expiring card: past date → expired badge + default ga hide */
@@ -628,17 +631,16 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
   expiredCard.setAttribute("data-qual", "degree");
   document.getElementById("grid").appendChild(expiredCard);
   q .value = ""; q.dispatchEvent(new window.Event("input", { bubbles: true }));
-  qchips.find(c => c.getAttribute("data-qual") === "all").click();
+  setQual("all");
   ok("v72 expired job card: 'Deadline passed' badge + default ga hide",
      expiredCard.classList.contains("expired") &&
      /Deadline passed/.test(expiredCard.textContent) &&
      expiredCard.classList.contains("hidden"));
   expiredCard.remove();
-  qchips.find(c => c.getAttribute("data-qual") === "all").click();
+  setQual("all");
 
   /* ---------- v72.1: category + అర్హత kalisi filter (preview) ---------- */
-  const degChip = qchips.find(c => c.getAttribute("data-qual") === "degree");
-  degChip.click();
+  setQual("degree");
   const catChipTs = Array.from(document.querySelectorAll(".chip[data-cat]"))
     .find(c => c.getAttribute("data-cat") === "ts-jobs");
   if (catChipTs) catChipTs.click();
@@ -648,7 +650,7 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
        (" " + (c.getAttribute("data-cat") || "") + " ").indexOf(" ts-jobs ") > -1),
      "visible=" + combo.length);
   click('.chip[data-cat="all"]');
-  qchips.find(c => c.getAttribute("data-qual") === "all").click();
+  setQual("all");
 
   /* ---------- v72: PWA — app-laga install ---------- */
   const installBtn = document.getElementById("installbtn");

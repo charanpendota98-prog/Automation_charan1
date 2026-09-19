@@ -92,14 +92,18 @@ def test_header_search_theme():
 # ---------------------------------------------------------------- 3. qualification filter
 def test_qualification_filter_preview():
     html = read(PREVIEW / "index.html")
-    slugs = re.findall(r'data-qual="([a-z0-9]+)"', html)
-    assert slugs[:9] == ["all", "10th", "inter", "iti", "diploma", "degree", "pg", "btech",
-                         "closing"], f"chips order tappu: {slugs[:9]}"
+    # v76: chips → dropdown (option order same, control = select + label)
+    sel = re.search(r'<select[^>]*id="qualsel"[^>]*>(.*?)</select>', html, re.S)
+    assert sel, "qualsel dropdown ledu"
+    opts = re.findall(r'<option value="([a-z0-9]+)"', sel.group(1))
+    assert opts == ["all", "10th", "inter", "iti", "diploma", "degree", "pg", "btech",
+                    "closing"], f"dropdown order tappu: {opts}"
+    assert '<label class="quallabel" for="qualsel">' in html, "dropdown label ledu"
     cards = re.findall(r'<article class="news"[^>]*>', html)
     assert cards, "job cards dorakaledu"
     missing = [c[:60] for c in cards if "data-qual=" not in c]
     assert not missing, f"data-qual lekunda cards: {missing}"
-    assert "data-qual=\"all\"" in html and 'id="qcount"' in html
+    assert 'id="qcount"' in html
     assert "activeQual" in html and "okQual" in html, "applyFilter lo qualification logic ledu"
     assert "expired" in html and "qbadge" in html, "closing/expired logic ledu"
 
@@ -359,7 +363,7 @@ TESTS = [
     ("internal metrics + 'నమూనా/DEMO' public lo levu", test_no_internal_metrics_or_sample_text_public),
     ("menu pakkana search (preview)", test_header_search_preview),
     ("menu pakkana search (WordPress theme)", test_header_search_theme),
-    ("విద్యార్హత ఫిల్టర్ chips + cards + logic (preview)", test_qualification_filter_preview),
+    ("విద్యార్హత ఫిల్టర్ dropdown + cards + logic (preview)", test_qualification_filter_preview),
     ("విద్యార్హత ఫిల్టర్ module (theme · auto-tag · CLI)", test_qualification_filter_theme),
     ("bot ↔ theme slug/keyword parity", test_qual_slug_and_keyword_parity_bot_vs_theme),
     ("qualification detect + last date (bot)", test_qual_detection_python),

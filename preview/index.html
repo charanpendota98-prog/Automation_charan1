@@ -128,14 +128,13 @@
       font:inherit;font-size:13.5px;background:var(--bg);color:var(--ink)}
     .searchpanel input:focus{outline:2px solid var(--blue);outline-offset:1px}
     .spanel-icon{font-size:15px;opacity:.7}
-    /* v72: qualification-wise job filter */
+    /* v76: qualification dropdown (chips → select: mobile-best + accessible + counts) */
     .qrow{margin-top:2px}
-    .qchip{background:#fff7ee;border-color:#f6d9b8;color:#8a4d00}
-    .qchip.active{background:linear-gradient(135deg,#ed8a32,#d9741f);border-color:#d9741f;color:#fff}
-    .soonchip{background:#eef6ff;border-color:#cfe0f7;color:#1d4f9c}
-    .soonchip.active{background:linear-gradient(135deg,#2463b7,#0f2e62);border-color:#0f2e62;color:#fff}
-    body.dark .qchip{background:#2a2013;border-color:#4a3a22;color:#ffc88a}
-    body.dark .soonchip{background:#132743;border-color:#24456f;color:#9dc2ff}
+    .qualwrap{display:inline-flex;align-items:center;gap:10px;flex-wrap:wrap}
+    .quallabel{font-size:12px;font-weight:800;color:var(--navy);white-space:nowrap}
+    .qualsel{appearance:none;-webkit-appearance:none;border:1px solid #f6d9b8;background-color:#fff7ee;color:#8a4d00;font:inherit;font-size:13px;font-weight:700;border-radius:12px;padding:10px 36px 10px 14px;cursor:pointer;max-width:min(100%,320px);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%238a4d00' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center}
+    .qualsel:focus{outline:2px solid var(--blue);outline-offset:1px}
+    body.dark .qualsel{background-color:#2a2013;border-color:#4a3a22;color:#ffc88a}
     .qcount{margin-left:auto;font-size:11.5px;font-weight:700;color:var(--muted)}
     .qbadge{display:inline-block;border-radius:999px;padding:2px 9px;font-size:10px;font-weight:800}
     .qbadge.soon{background:#fff3e2;color:#9a5b00;border:1px solid #f3d6ae}
@@ -753,24 +752,28 @@
         <button class="chip" data-cat="examtips">Exam Tips</button>
         <button class="chip" data-cat="parttime">Part-time</button>
       </div>
-      <div class="catrow qrow" role="tablist" aria-label="Jobs by qualification">
-        <span class="catlabel" aria-hidden="true">Qualification:</span>
-        <button class="chip qchip active" data-qual="all">All</button>
-        <button class="chip qchip" data-qual="10th">10th</button>
-        <button class="chip qchip" data-qual="inter">Inter (10+2)</button>
-        <button class="chip qchip" data-qual="iti">ITI</button>
-        <button class="chip qchip" data-qual="diploma">Diploma</button>
-        <button class="chip qchip" data-qual="degree">Degree</button>
-        <button class="chip qchip" data-qual="pg">PG</button>
-        <button class="chip qchip" data-qual="btech">B.Tech</button>
-        <button class="chip qchip soonchip" data-qual="closing">⏳ Closing in 7 days</button>
+      <div class="catrow qrow">
+        <span class="qualwrap">
+          <label class="quallabel" for="qualsel">🎓 Qualification:</label>
+          <select id="qualsel" class="qualsel" aria-label="Filter jobs by qualification">
+            <option value="all">All qualifications</option>
+            <option value="10th">10th Pass</option>
+            <option value="inter">Inter (10+2)</option>
+            <option value="iti">ITI</option>
+            <option value="diploma">Diploma</option>
+            <option value="degree">Degree</option>
+            <option value="pg">PG</option>
+            <option value="btech">B.Tech</option>
+            <option value="closing">⏳ Closing in 7 days</option>
+          </select>
+        </span>
         <span class="qcount" id="qcount" aria-live="polite"></span>
       </div>
       <div class="newsgrid" id="grid">
         <!-- v46: IN-FEED native ad (blends with grid — high CTR; not .news so filters never hide ads) -->
         <aside class="su-ad su-ad-feed" aria-label="Sponsored content" data-ad="tuition-feed-demo" data-slot="in-feed">
           <div class="su-ad-kicker">SPONSORED · SLOT AVAILABLE</div>
-          <div class="fthumb" aria-hidden="true">Your brand<br>right here<br>Your brand here</div>
+          <div class="fthumb" aria-hidden="true">Your brand<br>right here</div>
           <h3>Your ad in this slot — straight to students searching for jobs</h3>
           <p>Colleges · coaching · stationery · hostels — for local partners.</p>
           <a class="fcta" href="pages/advertise.html" rel="sponsored nofollow">Partner with us →</a>
@@ -1207,12 +1210,36 @@
     buildQualSections();
 
     Array.prototype.forEach.call(cards,decorate);
-    Array.prototype.forEach.call(document.querySelectorAll(".qchip"),function(ch){
-      ch.addEventListener("click",function(){
-        Array.prototype.forEach.call(document.querySelectorAll(".qchip"),function(x){x.classList.remove("active");});
-        ch.classList.add("active"); activeQual=ch.getAttribute("data-qual")||"all"; applyFilter();
+    /* v76: qualification dropdown — live counts + shareable ?qual= URL */
+    var qualSel=document.getElementById("qualsel");
+    if(qualSel){
+      Array.prototype.forEach.call(qualSel.options,function(o){
+        if(o.value==="all"||o.value==="closing") return;
+        var n=0;
+        Array.prototype.forEach.call(document.querySelectorAll("#grid .news"),function(c){
+          var left=daysLeft(c); if(left!==null&&left<0) return;
+          if((c.getAttribute("data-qual")||"").toLowerCase().indexOf(o.value)>-1) n++;
+        });
+        if(n) o.textContent=o.textContent+" ("+n+")";
       });
-    });
+      try{
+        var _qm=(location.search||"").match(/[?&]qual=([a-z0-9]+)/);
+        if(_qm&&qualSel.querySelector('option[value="'+_qm[1]+'"]')){
+          qualSel.value=_qm[1]; activeQual=_qm[1];
+        }
+      }catch(e){}
+      qualSel.addEventListener("change",function(){
+        activeQual=qualSel.value||"all";
+        try{
+          var url=new URL(location.href);
+          if(activeQual==="all") url.searchParams.delete("qual");
+          else url.searchParams.set("qual",activeQual);
+          history.replaceState({},"",url.toString());
+        }catch(e){}
+        applyFilter();
+      });
+      if(activeQual!=="all") applyFilter();
+    }
     Array.prototype.forEach.call(document.querySelectorAll(".tab"),function(t){
       t.addEventListener("click",function(){
         Array.prototype.forEach.call(document.querySelectorAll(".tab"),function(x){x.classList.remove("active");});

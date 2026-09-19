@@ -164,7 +164,7 @@ def test_site_first_look_wiring():
     assert html.count('data-ucount=') == len(breaking.most_used())
     # v72 first-look blocks
     assert 'id="searchbtn"' in html and 'id="searchpanel"' in html and 'id="qtop"' in html
-    assert 'data-qual="10th"' in html and 'id="qcount"' in html
+    assert 'id="qualsel"' in html and 'value="10th"' in html and 'id="qcount"' in html
     assert 'id="installbtn"' in html and 'rel="manifest"' in html
     assert html.index('class="usedwrap"') < html.index('data-slot="top-leaderboard"') < html.index('class="hero')
     assert "quickbar" not in html

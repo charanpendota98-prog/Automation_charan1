@@ -348,7 +348,9 @@ function studentup_qual_count( $slug ) {
 }
 
 /**
- * Filter bar — home/archive lo chips (server-side links; JS ledu = SEO safe).
+ * Filter bar — home/archive lo qualification dropdown (v76: chips → select).
+ * Form GET (?qual=) — JS lekunda kuda pani chestundi (SEO safe + no-JS safe);
+ * JS unna browser lo reload lekunda filter + shareable URL (studentup.js).
  */
 function studentup_qual_bar() {
 	if ( ! studentup_opt( 'qual_filter', '1' ) ) {
@@ -356,17 +358,19 @@ function studentup_qual_bar() {
 	}
 	$terms   = studentup_qual_terms();
 	$current = studentup_qual_current();
-	echo '<nav class="qrow" aria-label="Jobs by qualification">';
-	echo '<span class="catlabel" aria-hidden="true">Qualification:</span>';
-	echo '<a class="chip qchip' . ( 'all' === $current ? ' active' : '' ) . '" data-qual="all" href="' . esc_url( home_url( '/' ) ) . '">All</a>';
+	echo '<form class="qrow qualform" method="get" action="' . esc_url( home_url( '/' ) ) . '" aria-label="Jobs by qualification">';
+	echo '<label class="catlabel qualabel" for="qualsel">Qualification:</label>';
+	echo '<select id="qualsel" class="qualsel" name="qual">';
+	echo '<option value="all"' . selected( $current, 'all', false ) . '>All qualifications</option>';
 	foreach ( $terms as $slug => $label ) {
-		$n   = studentup_qual_count( $slug );
-		$url = add_query_arg( 'qual', $slug, home_url( '/' ) );
-		echo '<a class="chip qchip' . ( $current === $slug ? ' active' : '' ) . '" data-qual="' . esc_attr( $slug ) . '"'
-			. ' href="' . esc_url( $url ) . '" rel="nofollow">' . esc_html( $label )
-			. ( $n ? ' <span class="qnum">' . (int) $n . '</span>' : '' ) . '</a>';
+		$n = studentup_qual_count( $slug );
+		echo '<option value="' . esc_attr( $slug ) . '"' . selected( $current, $slug, false ) . '>'
+			. esc_html( $label ) . ( $n ? ' (' . (int) $n . ')' : '' ) . '</option>';
 	}
-	echo '</nav>';
+	echo '<option value="closing"' . selected( $current, 'closing', false ) . '>⏳ Closing in 7 days</option>';
+	echo '</select>';
+	echo '<noscript><button type="submit" class="chip">Filter</button></noscript>';
+	echo '</form>';
 }
 
 /**
@@ -523,7 +527,7 @@ function studentup_qual_chip( $post_id = 0 ) {
 	if ( ! $labels ) {
 		return;
 	}
-	echo '<span class="qchips">';
+	echo '<span class="qualtags">';
 	foreach ( $labels as $slug => $label ) {
 		echo '<span class="tag qual" data-qual="' . esc_attr( $slug ) . '">' . esc_html( $label ) . '</span>';
 	}

@@ -503,6 +503,21 @@ python run.py --traffic-sessions         # advanced control
 python run.py --traffic-views            # advanced control
 ```
 
+### v76 — QUALIFICATION DROPDOWN (chips → select) + UI DE-JUNK
+
+**Mee brief:** "10th jobs ilaga filters best ga undali dropdown lo" · live
+exam avasaram ledu · UI inkbest + sodi lekunda · more easy + advanced.
+Chips row (9 buttons clutter) → **single dropdown**: native mobile
+control · **live counts** (`10th Pass (3)`) · **shareable `?qual=` links**.
+Preview + WP theme rendu (parity) — filtering engine same (v72 intact).
+
+| # | What changed | Detail |
+| 1 | **Preview dropdown** | `select#qualsel` + label + `qcount`; JS counts grid nunchi auto; `?qual=` deep-link + history sync; no-JS kuda options kanipistayi |
+| 2 | **Theme parity** | `qual_bar()` → form GET + select + noscript button; counts server-side; `closing` option kotha (server-side support mundhe undi); JS reload-lekunda filter + ?qual= state sync bug fix |
+| 3 | **Live-exam final proof** | Product surfaces lo `live-exam` 0 (v74 removal hold — automated test); quiz = practice matrame (6 questions, exam conduct kaadu) |
+| 4 | **UI sodi clean** | In-feed ad dup text fix ("Your brand" okasari); tel: 10-digit intact; poll/quiz distinct blocks |
+| 5 | **Proof** | `--test-all` **58/58** (v76_test.py kotha: 10 checks) · jsdom **164/164** (same count, dropdown mechanics) · readiness **100/100** · php-lint **32/32** · theme **1.7.2** |
+
 ### v75 — CONTACT FINAL (+91 ledu) + PUBLISH SAFETY + DUMMY PURGE
 
 **Mee brief:** "+91 avasaram ledu" · website fully final · more advanced ·

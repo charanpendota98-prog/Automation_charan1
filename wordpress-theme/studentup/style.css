@@ -407,20 +407,21 @@ body.dark .spanel-form input{background:#0f1c30;border-color:#243a5c;color:#e8ee
 /* ================= v72: qualification filter + badges ================= */
 .qrow{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin:12px 0 4px}
 .catlabel,.qrow .catlabel{font-size:11.5px;font-weight:800;color:var(--muted);letter-spacing:.04em}
-.qchip{background:#fff7ee;border-color:#f6d9b8;color:#8a4d00;text-decoration:none}
-.qchip.active{background:linear-gradient(135deg,#ed8a32,#d9741f);border-color:#d9741f;color:#fff}
+.qualsel{appearance:none;-webkit-appearance:none;border:1px solid #f6d9b8;background-color:#fff7ee;color:#8a4d00;font:inherit;font-size:13px;font-weight:700;border-radius:12px;padding:10px 36px 10px 14px;cursor:pointer;max-width:min(100%,320px);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%238a4d00' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center}
+.qualsel:focus{outline:2px solid var(--blue);outline-offset:1px}
+.qualabel{cursor:pointer}
 .qnum{font-weight:800;opacity:.85}
 .tag.qual{background:#eef6ff;color:#1d4f9c;border:1px solid #cfe0f7}
 .qbadge{display:inline-block;border-radius:999px;padding:2px 9px;font-size:10.5px;font-weight:800;margin-left:auto}
 .qbadge.soon{background:#fff3e2;color:#9a5b00;border:1px solid #f3d6ae}
 .qbadge.done{background:#f3f5f8;color:#7a8798;border:1px solid #e2e7ee}
-body.dark .qchip{background:#2a2013;border-color:#4a3a22;color:#ffc88a}
+body.dark .qualsel{background-color:#2a2013;border-color:#4a3a22;color:#ffc88a}
 body.dark .tag.qual{background:#132743;color:#9dc2ff;border-color:#24456f}
 body.dark .qbadge.soon{background:#2a2013;color:#ffc88a;border-color:#4a3a22}
 body.dark .qbadge.done{background:#182338;color:#9fb0c6;border-color:#243a5c}
 @media(max-width:600px){
   .qrow{gap:6px}
-  .qchip{padding:7px 11px;font-size:12px}
+  .qualsel{font-size:12.5px;max-width:100%}
   .qcount,.qnum{font-size:11px}
 }
 
@@ -466,12 +467,12 @@ body.dark .qhidden{background:#241c10;border-color:#4a3a22;color:#ffc88a}
   .su-social{gap:5px;right:8px;bottom:8px}
   .su-social a{height:31px;width:31px;font-size:13px}
   .installbtn{font-size:12px;padding:10px 12px}
-  .qchip{padding:6px 10px;font-size:11.5px}
+  .qualsel{padding:9px 32px 9px 12px;font-size:12px}
   .installsheet{padding:16px 14px calc(16px + env(safe-area-inset-bottom))}
 }
 /* v72.1: text eppudu clear ga — background tho clash/overlap ledu */
-.installbtn,.installsheet,.qchip,.qbadge,.qnote{text-shadow:none}
-.news h3,.news p,.qchip,.qbadge,.installsheet h3,.installsheet li{overflow-wrap:anywhere}
+.installbtn,.installsheet,.qualsel,.qbadge,.qnote{text-shadow:none}
+.news h3,.news p,.qualsel,.qbadge,.installsheet h3,.installsheet li{overflow-wrap:anywhere}
 .news .newsfoot{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 
 /* v72: filter active note (qualification + count) */

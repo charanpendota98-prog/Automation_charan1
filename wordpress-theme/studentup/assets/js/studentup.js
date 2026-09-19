@@ -55,13 +55,15 @@
     });
   }
 
-  /* ---------- chips filter (front page grid) + v72.1 qualification filter ---------- */
+  /* ---------- chips filter (front page grid) + v76 qualification dropdown ---------- */
   var grid = document.getElementById("grid");
   var chips = document.querySelectorAll(".chip[data-cat]");
-  var qchips = document.querySelectorAll(".qchip");
+  var qualsel = document.getElementById("qualsel");
   var nores = document.getElementById("nores");
   var activeCat = "all";
   var activeQual = "all";
+  /* v76: server-rendered ?qual= state tho JS sync (select value = truth) */
+  if (qualsel && qualsel.value && qualsel.value !== "all") activeQual = qualsel.value;
   var today = new Date();
   today.setHours(0, 0, 0, 0);
 
@@ -125,18 +127,11 @@
       applyFilter();
     });
   });
-  /* v72.1: qualification chips — with JS the filter combines with category without reloading
-   * (href server-side/SEO kosam alage untundi; JS unna browser lo URL history update). */
-  Array.prototype.forEach.call(qchips, function (chip) {
-    chip.addEventListener("click", function (e) {
-      var slug = chip.getAttribute("data-qual") || "all";
-      e.preventDefault();
-      Array.prototype.forEach.call(qchips, function (c) {
-        c.classList.remove("active");
-        c.setAttribute("aria-current", "false");
-      });
-      chip.classList.add("active");
-      chip.setAttribute("aria-current", "true");
+  /* v76: qualification dropdown — with JS the filter combines with category without reloading
+   * (form GET server-side/SEO + no-JS kosam alage untundi; JS unna browser lo URL history update). */
+  if (qualsel) {
+    qualsel.addEventListener("change", function () {
+      var slug = qualsel.value || "all";
       activeQual = slug;
       try {                                   /* shareable URL — server-side tho same */
         var url = new URL(location.href);
@@ -145,9 +140,9 @@
         history.replaceState({}, "", url.toString());
       } catch (err) {}
       applyFilter();
-      if (grid.scrollIntoView) grid.scrollIntoView({ behavior: "smooth", block: "start" });
+      if (grid && grid.scrollIntoView) grid.scrollIntoView({ behavior: "smooth", block: "start" });
     });
-  });
+  }
   /* hash deep-link (#cat-ts-jobs) */
   (function () {
     var m = (location.hash || "").match(/^#cat-([a-z0-9-]+)$/);

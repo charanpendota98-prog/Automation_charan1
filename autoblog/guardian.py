@@ -43,7 +43,7 @@ UI_BLOCKS = [
     ('class="usedwrap"', "Most-searched strip"),
     ('id="searchbtn"', "search button next to menu"),
     ('id="searchpanel"', "search panel"),
-    ('data-qual="10th"', "qualification filter chip (10th)"),
+    ('id="qualsel"', "qualification dropdown"),
     ('id="installbtn"', "Install as app button"),
 ]
 

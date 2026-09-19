@@ -157,7 +157,7 @@ Message lo reason undi — exact ga fix cheyandi:
 ## ⚠️ Honest note
 Perfect = **machine gates + human 5-min verify**. Gates mistakes ramigadu (conflicts/stale/dates/originality), kaani official numbers mee mata tho final check — AdSense/Google/reputation thartham lo idi matrame safety.
 
-*Last updated: v75 (2026-09-19) — CONTACT FINAL (+91 ledu) + PUBLISH SAFETY + DUMMY PURGE (10-digit tel/display · wa.me intact · mock auto dry-run · demo ads off · dead #exam → #jobs): 57/57 suites · 164/164 runtime · readiness 100/100 · code audit 0/0 · parity 0/0 · theme audit 0/0 · theme v1.7.2*
+*Last updated: v76 (2026-09-19) — QUALIFICATION DROPDOWN + UI DE-JUNK (chips → select · live counts · ?qual= links · theme parity · live-exam 0 · sodi clean): 58/58 suites · 164/164 runtime · readiness 100/100 · code audit 0/0 · parity 0/0 · theme audit 0/0 · theme v1.7.2*
 
 ## PART 26 — v67: DEEP AUDIT (expert/BA) + TOP-THEME HARDENING + 6/6 REVENUE SLOTS
 
@@ -1074,6 +1074,61 @@ node tests/runtime/jsdom_runtime_test.js     # 164/164 browser checks
 python run.py --readiness                    # 100/100 · python run.py --guardian # 14/15 (creds pending)
 node tools/php_lint.js                       # 32/32 · python tools/build_wp_theme.py (zip rebuild LAST)
 python run.py --mock --force                 # auto dry-run ON + DRY-RUN saved (publish ledu)
+```
+
+No guarantee: rankings/traffic/AdSense/revenue Google + mee accounts + time batti — ee pass lo unna vi
+code-level measurements matrame.
+
+## PART 35 — v76: QUALIFICATION DROPDOWN (chips → select) + UI DE-JUNK
+
+**Mee brief (2026-09-19):** "10th jobs ilaga filters best ga undali dropdown lo" ·
+"live exam avasaram ledu" · "UI inkbest + sodi lekunda" · "more easy + advanced".
+
+PREVIEW (`preview/index.html`)
+```
+qrow chips (9 buttons) → select#qualsel + label.quallabel + span#qcount (same ids)
+options : all · 10th (label "10th Pass") · inter · iti · diploma · degree · pg · btech · closing
+JS      : change → activeQual + history ?qual= sync + applyFilter (v72 engine same)
+counts  : option labels ki grid nunchi live counts ("10th Pass (3)") — values same
+deep-link: ?qual=degree tho page open → pre-filtered (shareable links)
+CSS     : .qualsel + .quallabel (native arrow · dark mode) · .qchip/.soonchip teesesam
+sodi    : in-feed ad "Your brand" duplication fix (okasari)
+```
+
+THEME (`wordpress-theme/studentup/` — parity)
+```
+qual_bar()  : chips → <form GET> + select#qualsel + noscript Filter button
+              (no-JS kuda pani chestundi; counts server-side; closing option KOTHA)
+studentup.js: qchip clicks → qualsel change (reload-lekunda filter + history sync same)
+bug fix     : ?qual= tho page load ayithe JS activeQual select value nunchi init
+              (mundu category click qual filter ni reset chesedi — server/JS sync)
+style.css   : .qualsel rules (preview tho same look) · .qchip rules teesesam
+qualtags    : card qual tags wrapper rename (qchips → qualtags, confusion ledu)
+```
+
+PINS MOVED (chips → dropdown, logic same)
+```
+v72_test  : option order + label + JS needles (TESTS REBASE pattern)
+v59_test  : qualsel + value="10th" + qcount
+readiness : c_first_look qualsel needles (preview + theme)
+guardian  : UI_BLOCKS qualsel needle
+jsdom     : qual block select mechanics (setQual helper) — ok() count SAME (164/164)
+v75_test  : suites 57 → 58
+```
+
+LIVE-EXAM (user doubt — verified + locked)
+```
+grep live[ _-]*exam (preview · theme · ads · manifest) = 0 · #exam = 0
+quiz = practice questions matrame (6 Q · instant answers · browser score) — exam conduct kaadu
+manifest shortcuts = Jobs · Qualification · Results · Quiz (exam ledu)
+```
+
+VERIFY (v76)
+```
+python run.py --test-all                     # 58/58 suites (v76_test.py kotha: 10 checks)
+node tests/runtime/jsdom_runtime_test.js     # 164/164 browser checks (dropdown mechanics)
+node tools/php_lint.js                       # 32/32 · python tools/build_wp_theme.py (zip rebuild LAST)
+python run.py --readiness                    # 100/100 · python run.py --guardian
 ```
 
 No guarantee: rankings/traffic/AdSense/revenue Google + mee accounts + time batti — ee pass lo unna vi
