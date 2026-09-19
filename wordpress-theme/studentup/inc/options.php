@@ -65,6 +65,7 @@ function studentup_option_fields() {
 				'breaking_json' => array( 'Breaking feed (JSON)', 'textarea', '', 'Bot nimpustundi (--push-theme-data). Format: {"items":[{"title":"..","link":"..","time":"..","tag":".."}]}' ),
 				'breaking_enabled' => array( 'Breaking news section ON (v72 default OFF)', 'check', '0', 'OFF lo site lo ticker/section render avvadu (feed data intact unthundi)' ),
 				'qual_filter' => array( 'Qualification filter (10th · 10+2 · Degree · PG)', 'check', '1', 'Chips on home/archive — the tag is set automatically when a post is saved' ),
+				'join_cta_inline' => array( 'Mid-article join strip (WhatsApp/Telegram)', 'check', '1', '2nd para tarvata compact join box — same social options (owner number/username)' ),
 			),
 		),
 		'advanced' => array(

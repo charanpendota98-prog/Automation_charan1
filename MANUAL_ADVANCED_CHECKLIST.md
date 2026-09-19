@@ -157,7 +157,7 @@ Message lo reason undi — exact ga fix cheyandi:
 ## ⚠️ Honest note
 Perfect = **machine gates + human 5-min verify**. Gates mistakes ramigadu (conflicts/stale/dates/originality), kaani official numbers mee mata tho final check — AdSense/Google/reputation thartham lo idi matrame safety.
 
-*Last updated: v78 (2026-09-19) — TOP-BLOG PERFECTION PASS (facts extract · table/FAQ guarantee · auto-tags · orig-uniform · 5 sources · neat paras · lede/FAQ CSS): 60/60 suites · 164/164 runtime · readiness 100/100 · code audit 0/0 · parity 0/0 · theme audit 0/0 · theme v1.7.2*
+*Last updated: v79 (2026-09-19) — AUTHOR + MID-ARTICLE JOIN + MISS-AUDIT CLOSE (logo avatar · Person schema · join strip 2nd-para · tags + prev/next · 13/13 surface): 61/61 suites · 164/164 runtime · readiness 100/100 · code audit 0/0 · parity 0/0 · theme audit 0/0 · theme v1.7.2*
 
 ## PART 26 — v67: DEEP AUDIT (expert/BA) + TOP-THEME HARDENING + 6/6 REVENUE SLOTS
 
@@ -1233,3 +1233,42 @@ python run.py --readiness                    # 100/100 · python run.py --guardi
 ```
 
 Loop rule (standing): best vache varaku probe→fix→reprobe; final-cheyatam kaadu.
+
+## PART 38 — v79: AUTHOR + MID-ARTICLE JOIN + MISS-AUDIT CLOSE
+
+**Mee brief (2026-09-19):** author unte best kada? mid-blog TG/WA join?
+inka em miss? — audit → fix → verify.
+
+AUTHOR (E-E-A-T upgrade, v64 pins hold)
+```
+inc/author-box.php: avatar custom_logo(64) → site-icon → 📝 fallback;
+  Person schema (name + jobTitle Education Editor) inside Organization;
+  🔍 Reviewed: <modified-date>; TG/WA follow (studentup_social_links);
+  corrections email + editorial policy same
+```
+
+MID-ARTICLE JOIN (reuse — duplicate kaadu)
+```
+inc/cta.php: studentup_cta_join_inline() — compact strip, div/span/a ONLY
+  (no <p> → ad explode-after-3rd-para intact; no <h2> → TOC clean);
+  same social options (owner changes once).
+  studentup_inject_join_cta @ the_content prio 12 (ad = 20): singular+
+  loop+main+!feed guards · join_cta_inline opt (default 1) · once-guard ·
+  2nd </p> tarvata. option: content section lo 'join_cta_inline' check.
+```
+
+MISS-AUDIT CLOSE (single.php)
+```
+the_tags (🏷 su-tags div, has_tag guard) + post-nav (prev/next) — rendu
+mundhu LEVU. Surface 13/13: progress·crumbs·read-time·mid-ad·share·
+trust·author·tags·prev/next·comments·related·last-date·qual.
+FAQPage schema = deliberate skip (Google retired 2026 — seo.py note).
+CSS: .su-join-inline(+dark) · .su-author-avatar img · .su-tags · .post-nav(+dark).
+```
+
+VERIFY (v79)
+```
+python run.py --test-all                     # 61/61 suites (v79_test.py kotha: 10 checks)
+node tools/php_lint.js                       # 32/32 · python tools/build_wp_theme.py (zip LAST)
+python run.py --readiness                    # 100/100 · python run.py --guardian
+```

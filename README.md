@@ -503,6 +503,25 @@ python run.py --traffic-sessions         # advanced control
 python run.py --traffic-views            # advanced control
 ```
 
+### v79 — AUTHOR + MID-ARTICLE JOIN + MISS-AUDIT CLOSE
+
+**Mee brief:** author kuda unte best kada? Blogs madhyalo Telegram/WhatsApp
+join isthava? Inka em miss avuthunnama? — audit chesamu, anni close chesamu:
+
+| # | Audit finding | Fix |
+| 1 | Author box basic (📝 emoji, Person schema ledu, reviewed-date ledu) | **Logo avatar** (custom_logo→site-icon→emoji) + **Person schema** (jobTitle Education Editor) + **Reviewed date** + TG/WA follow links |
+| 2 | Join block footer lo matrame (mid-article LEDU) | **`su-join-inline` strip after 2nd para** — existing social options reuse (duplicate kaadu); div-only (ad position + TOC safe); priority 12 (ad 20 kanna mundhu); feed/off-guard |
+| 3 | single.php lo **tags + prev/next LEVU** | `the_tags` + post-nav (miss-audit close) |
+| 4 | CSS gaps | Join strip + author img + tags + nav styles + dark mode |
+| 5 | FAQ schema? | Deliberate skip — Google FAQ rich-results 2026 lo retired (seo.py doc honest note) |
+
+Single-post surface ippudu 13/13: progress · crumbs · read-time · mid-ad ·
+share · trust · author · tags · prev/next · comments · related · last-date
+badge · qual labels. Join links 100% option-driven (hardcode ledu — no dummy).
+
+**Proof:** `--test-all` **61/61** (v79_test.py kotha: 10 checks) · jsdom
+**164/164** · readiness **100/100** · php-lint **32/32** · theme **1.7.2**.
+
 ### v78 — TOP-BLOG PERFECTION PASS ("edo final kaadu — best vache varaku")
 
 **Mee brief:** prathi point real check · dummy/sample vaddu · retry chesthu
