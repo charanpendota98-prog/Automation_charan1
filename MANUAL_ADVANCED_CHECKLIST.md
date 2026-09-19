@@ -1386,7 +1386,7 @@ re-export REGRESSION: tools/ad_network_plan.NETWORKS (v56 pin)
 
 VERIFY (v82)
 ```
-python run.py --test-all                     # 64/64 suites (v82_test.py kotha: 8 checks)
+python run.py --test-all                     # 64/64 suites (v82_test.py kotha: 9 checks)
 node tests/runtime/jsdom_runtime_test.js     # 164/164 browser checks
 python tools/build_wp_theme.py               # zip LAST (ads.php changes!)
 python run.py --readiness                    # 100/100

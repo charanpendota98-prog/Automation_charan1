@@ -242,9 +242,15 @@ def rankmath_strict(article: Dict, final_html: str = "") -> Dict:
               sum(1 for h in h2s if kw_l in strip_tags(h).lower()) >= 2, 5,
               "2+ H2 headings lo focus keyword undali")
     check("content-length", words >= 1500, 8,
-          f"content {words} words — 1600+ rayandi")
+          f"content {words} words — 1500+ rayandi")
+    # v83: engine-generated boxes (takeaways/TOC) <li> ni skip — check
+    # content STEPS kosam (takeaway summary = step kaadu; self-fail fix).
+    li_html = re.sub(r'<div class="su-takeaways".*?</ul>\s*</div>', "",
+                     html, flags=re.S)
+    li_html = re.sub(r'<div class="su-toc".*?</ol>\s*</div>', "",
+                     li_html, flags=re.S)
     lis = [strip_tags(x).split()
-           for x in re.findall(r"<li[^>]*>(.*?)</li>", html, flags=re.S)]
+           for x in re.findall(r"<li[^>]*>(.*?)</li>", li_html, flags=re.S)]
     bad_li = sum(1 for w in lis if len(w) > 12)
     check("list-items-short", bad_li == 0, 6,
           f"{bad_li} list items 12+ wordsunnayi — prathi step 10 words ki menta short cheyandi")

@@ -518,7 +518,7 @@ cron.log rotation · approval callbacks fail-closed + auto-claim loud warning ·
 **My-own-bug caught:** cleanup lo `NETWORKS` re-export thesesanu → v56 fail →
 restore + regression pin (v82_test.py).
 
-**Proof:** `--test-all` **64/64** (v82_test.py kotha: 8 checks) · jsdom
+**Proof:** `--test-all` **64/64** (v82_test.py kotha: 9 checks) · jsdom
 **164/164** · readiness **100/100** · theme-audit **0/0** · theme **1.7.2**.
 
 ### v81 — ULTIMATE SPEC GAP CLOSE (99 sections verify → 8 real gaps fix)

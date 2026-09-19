@@ -136,6 +136,29 @@ def test_approval_fail_closed() -> None:
         config.STATE_PATH = old_state
 
 
+def test_rm100_reaches_100() -> None:
+    # v83: engine-generated boxes (takeaways/TOC) self-fail fix —
+    # well-structured article TRUE 100 reach avvali.
+    para = ("AP DSC TRT 2026 notification vachindi. Teacher posts kosam lakshala "
+            "mandi aspirants wait chestunnaru. Eligibility criteria age limit fee "
+            "details anni official notification lo check cheyandi. Kakinada, apply online "
+            "process simple ga undi. Syllabus prakaram preparation start cheyandi. "
+            "Previous papers practice cheste manchi score vastundi. Hall tickets exam "
+            "ki mundu release avutayi. Merit list district-wise cut off base meedha "
+            "prepare chestaru. Malli, daily current affairs kuda chadavandi. ")
+    html = ""
+    for h2 in ["Overview", "Vacancies", "Eligibility", "Fee Details",
+               "Age Limit", "How to Apply", "Important Dates"]:
+        html += f"<h2>{h2} AP DSC TRT 2026</h2><p>" + para * 3 + "</p>"
+    a = _thin_article()
+    a.update({"title": "AP DSC TRT 2026 Notification — 6,100 Teacher Posts",
+              "focus_keyword": "AP DSC TRT 2026", "content_html": html})
+    r = rm100.optimize(a, target=100)
+    assert r["reached"] and r["score"] == 100, \
+        f"100 reach avvaledu: {r['score']}"
+    print(f"  rm100 TRUE 100: {r['before']}→{r['score']} ✔")
+
+
 def test_docs_v82() -> None:
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
     manual = (ROOT / "MANUAL_ADVANCED_CHECKLIST.md").read_text(encoding="utf-8")
@@ -156,6 +179,7 @@ TESTS = [
     ("house desc fallback", test_house_desc_fallback),
     ("crontab deploy lines", test_crontab_deploy_lines),
     ("approval fail-closed", test_approval_fail_closed),
+    ("rm100 reaches TRUE 100", test_rm100_reaches_100),
     ("docs: v82 + PART 41 + 64/64", test_docs_v82),
 ]
 
