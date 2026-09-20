@@ -496,12 +496,48 @@ python run.py --ads-demo                 # advanced control
 python run.py --deep                     # advanced control
 python run.py --deep-research            # advanced control
 python run.py --approval-poll            # v74: Telegram approvals cron mode (*/5 min)
+python run.py --tg-test                  # v91: Telegram connectivity ping
+python run.py --tg-broadcast "MESSAGE"   # v91: channel announcement (auto-split)
+python run.py --tg-alert "code|MESSAGE"  # v91: site notify queue push (v90 banner)
+python run.py --tg-severity critical     # v91: --tg-alert severity level
 python run.py --rebuild-hubs             # advanced control
 python run.py --research-limit           # advanced control
 python run.py --top-post-category        # advanced control
 python run.py --traffic-sessions         # advanced control
 python run.py --traffic-views            # advanced control
 ```
+
+### v91 — TELEGRAM TOOLS (theme 1.9.2) + v90 — NOTIFICATIONS (theme 1.9.1)
+
+**Mee brief:** alerts ki standard surface ledu (logs lo matrame) · owner ki
+manual Telegram toolbox kavali (connectivity test · PRIVATE channel
+announcements · site alert push) · readers ki channel reach (private invite
+support + join chip).
+
+**v90 — Notifications (theme 1.9.1):** theme `inc/notify.php` — alert queue
+(option-backed · code-wise dedupe · cap 20 · severities `info · warn ·
+critical` whitelist) → **admin notices** (per-user dismiss, AJAX nonce) +
+**CRITICAL public banner** (option gate `notify_banner`, localStorage
+dismiss) + REST `/wp-json/studentup/v1/notify` (GET/POST/DELETE,
+`manage_options` only). Prathi callback try/catch — PART-45 rule: notify
+eppudu page/cron break cheyyadu.
+
+**v91 — Telegram tools (theme 1.9.2):** bot `autoblog/telegram_tools.py` +
+theme `inc/telegram.php`:
+* `python run.py --tg-test` — bot ↔ owner chat ping + `getMe` identity
+* `python run.py --tg-broadcast "MESSAGE"` — channel announcement; long text
+  paragraph-wise **auto-split** (truncate kaadu — full text `(i/n)` parts);
+  private `-100…` channel ids supported
+* `python run.py --tg-alert "code|MESSAGE" [--tg-severity info|warn|critical]`
+  — v90 notify queue ki REST push (critical → public banner)
+* Theme: `studentup_tg_channel_url()` (private invite override option
+  `telegram_channel_url`) + footer **join chip** (Telugu CTA) +
+  `t.me/share/url` share helper. creds lekapote clear message + exit 0
+  (cron-safe).
+
+**Proof:** `--test-all` **71/71** (v90_test.py kotha: 8 checks ·
+v91_test.py kotha: 10 checks) · jsdom **164/164** · readiness **100/100** ·
+php-lint **36/36** · theme **1.9.2**.
 
 ### v89 — PREMIUM HOMEPAGE (theme 1.9.0: Central fix + live search + ticker + brand icons)
 

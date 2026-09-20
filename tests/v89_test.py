@@ -21,7 +21,8 @@ Checks (offline source audits + bot imports):
   * Read more real permalink link
   * Telugu Internet-center block + perks + WhatsApp icon
   * animated custom qual dropdown (quadd) + SSC wording/keywords
-  * 1.9.0 parity + readme 1.9.0 + suites 69 pins + v89 suite itself
+  * 1.9.2 parity + readme 1.9.0/1.9.1/1.9.2 changelog + suites 71 pins
+    (v91 update: theme 1.9.0 → 1.9.2 bump · 69 → 71 suites)
 
 Run: python tests/v89_test.py   (also via python run.py --test-all)
 """
@@ -198,18 +199,21 @@ def test_layout_premium_css() -> None:
 
 
 def test_version_and_pins() -> None:
+    # v91: theme 1.9.2 (notify 1.9.1 + telegram tools 1.9.2) · suites 71
     php = re.search(r"STUDENTUP_VERSION',\s*'([^']+)'", read(THEME / "functions.php")).group(1)
     css = re.search(r"Version:\s*([0-9.]+)", read(THEME / "style.css")).group(1)
     stable = re.search(r"Stable tag:\s*([0-9.]+)", read(THEME / "readme.txt")).group(1)
-    assert php == css == stable == "1.9.0", f"parity tappu: {php}·{css}·{stable}"
-    assert "= 1.9.0" in read(THEME / "readme.txt"), "readme changelog 1.9.0 ledu"
-    assert "Central Govt Jobs" in read(THEME / "readme.txt")
+    assert php == css == stable == "1.9.2", f"parity tappu: {php}·{css}·{stable}"
+    readme = read(THEME / "readme.txt")
+    for entry in ("= 1.9.0", "= 1.9.1", "= 1.9.2"):
+        assert entry in readme, f"readme changelog {entry} ledu"
+    assert "Central Govt Jobs" in readme
     for f in ("v75_test.py", "v76_test.py", "v77_test.py", "v78_test.py",
               "v79_test.py", "v80_test.py", "v81_test.py"):
-        assert "suites == 69" in read(ROOT / "tests" / f), f + " (68→69 pin)"
+        assert "suites == 71" in read(ROOT / "tests" / f), f + " (69→71 pin)"
     suites = len(list((ROOT / "tests").glob("*_test.py")))
-    assert suites == 69, f"suites {suites} (v89 tho 69)"
-    print("  version parity 1.9.0 + suites pins 69 ✔")
+    assert suites == 71, f"suites {suites} (v91 tho 71)"
+    print("  version parity 1.9.2 + suites pins 71 ✔")
 
 
 TESTS = [

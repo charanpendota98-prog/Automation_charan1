@@ -2,9 +2,9 @@
 Contributors: studentup
 Requires at least: 6.0
 Tested up to: 6.7
-Stable tag: 1.9.0
+Stable tag: 1.9.2
 Requires PHP: 7.4
-Version: 1.9.0
+Version: 1.9.2
 License: GNU General Public License v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Tags: news, education, blog, custom-logo, custom-menu, featured-images, translation-ready, right-sidebar, block-styles, wide-blocks
@@ -47,6 +47,23 @@ The theme ships a REST bridge (`inc/seo-bridge.php`). Use an account with `manag
 user tho App Password ivvandi (Administrator role).
 
 == Changelog ==
+
+= 1.9.2 (2026-09-20, v91 Telegram tools) =
+* inc/telegram.php — Telegram channel URL resolver with private-channel invite
+  override (`telegram_channel_url` option), footer join chip (Telugu CTA), and
+  post share URL helper (t.me/share/url).
+* New option: StudentUp → Socials → Telegram channel URL override (supports
+  https://t.me/+… private invite links; empty = username t.me link).
+* Footer: Telegram join chip in the footer-bottom row.
+
+= 1.9.1 (2026-09-20, v90 notifications) =
+* inc/notify.php — site-wide alert queue (option-backed, code-wise dedupe,
+  cap 20): admin notices (per-user dismiss) + CRITICAL public banner
+  (localStorage dismiss) + REST /studentup/v1/notify (GET/POST/DELETE,
+  manage_options only). Severities: info · warn · critical.
+* New option: StudentUp → Content → Critical alerts public banner (default ON).
+* Header renders critical banners right after wp_body_open; studentup.js
+  handles reader dismiss via localStorage.
 
 = 1.9.0 (2026-09-19, v89 premium homepage) =
 * TS · AP · Central category fix: alias resolver (`studentup_used_term()` +

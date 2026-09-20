@@ -4,7 +4,7 @@ Theme URI: https://studentup.in/
 Author: StudentUp
 Author URI: https://studentup.in/
 Description: StudentUp design for Telangana & Andhra Pradesh students — TS/AP/Central govt jobs, qualification filter (SSC/10th · Inter · Degree · PG), live search, latest-jobs scrolling ticker, brand social icons, install as an app (PWA), job/exam cards, AdSense-ready ad slots, dark mode. Mobile-first, Rank Math + AdSense friendly.
-Version: 1.9.0
+Version: 1.9.2
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 7.4
@@ -751,3 +751,23 @@ body.dark .hero-slim h1{background:linear-gradient(120deg,#cfe1ff,#7fb0ff 55%,#f
 .chip{transition:background .16s,color .16s,border-color .16s,transform .14s}
 .chip:hover{transform:translateY(-1px);border-color:#b9cdec}
 @media(max-width:1180px){.headrow{gap:12px}.brand{font-size:18px}}
+
+/* --- v90: critical public notify banner (site-wide, dismissible) --- */
+.su-notify{display:flex;align-items:center;justify-content:space-between;gap:12px;
+ padding:10px 16px;font-size:14px;line-height:1.5;border-bottom:1px solid rgba(0,0,0,.08)}
+.su-notify-critical{background:linear-gradient(135deg,#b3261e,#8f1d18);color:#fff}
+.su-notify-msg{flex:1;min-width:0}
+.su-notify-close{flex:none;width:28px;height:28px;border:0;border-radius:50%;cursor:pointer;
+ background:rgba(255,255,255,.16);color:inherit;font-size:14px;line-height:1}
+.su-notify-close:hover{background:rgba(255,255,255,.3)}
+.su-notify[hidden]{display:none}
+/* admin notice code chip spacing (inline style fallback) */
+.su-notice code{font-size:11px;opacity:.7}
+
+/* --- v91: Telegram join chip (footer + join surfaces) --- */
+.su-tgjoin{display:inline-flex;align-items:center;gap:8px;padding:7px 14px;border-radius:999px;
+ background:linear-gradient(135deg,#37aee2,#229ed9);color:#fff!important;font-weight:600;
+ font-size:14px;text-decoration:none;transition:transform .14s,box-shadow .14s}
+.su-tgjoin:hover{transform:translateY(-1px);box-shadow:0 8px 18px rgba(34,158,217,.3)}
+.su-tgjoin svg{flex:none}
+.footer-bottom .su-tgjoin{margin-top:8px}

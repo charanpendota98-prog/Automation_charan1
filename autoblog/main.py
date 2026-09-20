@@ -1424,6 +1424,16 @@ def main() -> int:
     parser.add_argument("--status", action="store_true", help="show stats & today's plan")
     parser.add_argument("--check-wp", action="store_true", help="verify WP credentials")
     parser.add_argument("--notify-test", action="store_true", help="send test notification")
+    parser.add_argument("--tg-test", action="store_true",
+                        help="v91: Telegram connectivity ping (bot ↔ owner chat + getMe identity)")
+    parser.add_argument("--tg-broadcast", default=None, metavar="MESSAGE",
+                        help="v91: manual channel announcement — long text auto-split "
+                             "(private -100… channels supported; bot channel lo admin)")
+    parser.add_argument("--tg-alert", default=None, metavar="CODE|MESSAGE",
+                        help="v91: site notify queue ki push (WP REST studentup/v1/notify; "
+                             "critical aithe public banner)")
+    parser.add_argument("--tg-severity", default="info", metavar="LEVEL",
+                        help="v91: --tg-alert severity (info|warn|critical; default info)")
     parser.add_argument("--approval-poll", action="store_true",
                         help="v74: Telegram approvals — okka poll pass (cron mode; "
                              "shared hosting lo */5 min cron; VPS lo daemon ki badulu)")
@@ -1614,6 +1624,11 @@ def main() -> int:
         return check_wp()
     if args.notify_test:
         return notify_test()
+    if getattr(args, "tg_test", False) or getattr(args, "tg_broadcast", None) \
+            or getattr(args, "tg_alert", None):
+        from . import telegram_tools
+
+        return telegram_tools.run_cli(args)
     if args.approval_poll:
         from . import approval_bot
 

@@ -23,6 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 </head>
 <body <?php body_class(); ?>>
 <?php wp_body_open(); ?>
+<?php studentup_notify_public_banner(); // v90: critical alerts site-wide banner (option gate + localStorage dismiss) ?>
 <a class="skip-link screen-reader-text" href="#main">Skip to content</a>
 
 <header class="header">
