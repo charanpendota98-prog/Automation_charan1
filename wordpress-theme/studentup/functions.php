@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'STUDENTUP_VERSION', '1.9.0' );  // v89: Central category + alias resolver + live search + latest-jobs ticker + brand icons
+define( 'STUDENTUP_VERSION', '1.9.2' );  // v91: notify queue (1.9.1) + Telegram tools theme side (1.9.2)
 
 require_once get_template_directory() . '/inc/options.php';
 require_once get_template_directory() . '/inc/qual-filter.php';  // v72: 10th/Inter/Degree/PG filter (auto tags)
@@ -34,6 +34,8 @@ require_once get_template_directory() . '/inc/cta.php';
 require_once get_template_directory() . '/inc/editor.php';
 require_once get_template_directory() . '/inc/redirects.php';  // v80: 301 redirect manager
 require_once get_template_directory() . '/inc/health.php';     // v81: admin SEO-health widget
+require_once get_template_directory() . '/inc/notify.php';    // v90: alert queue (admin notices + critical public banner + REST)
+require_once get_template_directory() . '/inc/telegram.php';  // v91: Telegram channel join/share (private channel support)
 
 /**
  * "Most searched by students" — order okkate source (bot lo autoblog/breaking.py

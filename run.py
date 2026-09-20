@@ -53,6 +53,10 @@
   python run.py --test-all                v41: ANNI suites okate command tho
   python run.py --test-all --test-only v41  v41: okka suite matrame
   python run.py --notify-test test Telegram/WhatsApp notifications
+  python run.py --tg-test                v91: Telegram connectivity ping (bot ↔ chat)
+  python run.py --tg-broadcast "MESSAGE" v91: manual channel announcement (auto-split)
+  python run.py --tg-alert "code|MESSAGE" --tg-severity critical
+                                         v91: site notify queue push (v90 banner)
   python run.py --url LINK    source URL -> 100% original SEO rewrite post
 
 Review flow (recommended): DEFAULT_POST_STATUS=draft in .env

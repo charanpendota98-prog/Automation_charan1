@@ -1583,3 +1583,98 @@ python -m pyflakes autoblog tools tests run.py  # 0 findings
   unchanged).
 * Deploy: theme zip rebuild (`python tools/build_wp_theme.py`) → WP Admin →
   Appearance → Themes → Add New → Upload → **Replace current** (1.9.0).
+
+## PART 47 — v90: NOTIFICATIONS (theme 1.9.1)
+
+**Brief:** bot/site alerts ki okka STANDARD surface ledu — guardian "feed
+stale" antundi log lo matrame; owner dashboard chudakapote alert reach kaadu;
+readers ki critical info (result released / site maintenance) banner ga
+chupinchadaniki mechanism ledu.
+
+**Root cause:** theme lo alert plumbing ledu; notifier.py = Telegram-only
+(owner chat), site-side surface kaadu.
+
+**Fixes (inc/notify.php — theme 1.9.1):**
+1. Alert queue = WP option `studentup_notify_queue` — code-wise DEDUPE (same
+   code push chesthe update, duplicates ledu) · FIFO cap 20 · messages
+   300-char strip + sanitize.
+2. Severities whitelist `info · warn · critical` — vere emi ichina `info` ki
+   fallback (safe default).
+3. Admin notices — severity classes (error/warning/info) + dismiss **per-user**
+   meta (`studentup_notify_dismissed`, cap 50) — okari dismiss inkariki
+   apply kaadu. AJAX `su_notify_dismiss` nonce-gated.
+4. Public banner — **CRITICAL matrame** + option gate (`notify_banner`,
+   default ON) · `wp_body_open()` tarvata render · reader ✕ = localStorage
+   (`suNotifyHidden_<code>`) — server round-trip ledu. info/warn = admin-only.
+5. REST `/wp-json/studentup/v1/notify` — GET (list) · POST (push) · DELETE
+   (clear; `__all__` supported) — anni `manage_options` permission (bot
+   application password). Body: `{code, message, severity}`.
+6. Crash-proofing (PART-45 "notify never breaks cron" extension): prathi
+   callback try/catch · corrupt option ayina khali queue return · banner
+   fail ayina page render continue.
+
+VERIFY (v90)
+```
+python tests/v90_test.py                     # 8/8 checks
+python run.py --test-all                     # 71/71 suites
+node tests/runtime/jsdom_runtime_test.js     # 164/164 browser checks
+node tools/php_lint.js                       # 36/36 files OK
+python run.py --readiness                    # 100/100
+```
+
+* AdSense-safe: banner chrome lo render — ad slots (`su-ad`/sticky/rail)
+  block kaadu; banner OFF aithe markup eh ledu.
+* Bot bridge: `python run.py --tg-alert "code|msg" --tg-severity critical`
+  (v91 tools) → REST push → critical aithe public banner.
+* Deploy: theme zip rebuild (`python tools/build_wp_theme.py`) → WP Admin →
+  Appearance → Themes → Add New → Upload → **Replace current** (1.9.1).
+
+## PART 48 — v91: TELEGRAM TOOLS (theme 1.9.2)
+
+**Brief:** owner ki manual Telegram toolbox kavali — bot connectivity test,
+PRIVATE channel ki announcement, site alert push. Readers ki channel reach:
+private invite link support + footer join chip.
+
+**Fixes (bot: autoblog/telegram_tools.py · theme: inc/telegram.php):**
+1. CLI (main.py wiring):
+   * `python run.py --tg-test` — bot ↔ owner chat ping + `getMe` identity.
+   * `python run.py --tg-broadcast "MESSAGE"` — channel ki manual
+     announcement. Long text **paragraph boundaries lo auto-SPLIT**
+     (truncate kaadu — v84 truncate reports ki matrame; broadcasts ki full
+     text `(i/n)` parts ga vellutundi). Private `-100…` channel ids supported
+     (bot channel lo admin ga undali).
+   * `python run.py --tg-alert "code|MESSAGE" [--tg-severity critical]` —
+     v90 notify queue ki REST push (bridge).
+2. Cron-safe: creds lekapote clear message + **exit 0** (PART-45 rule —
+   notify/tools valla cron break kaadu) · network errors handled.
+3. Theme `inc/telegram.php` (1.9.2):
+   * `studentup_tg_channel_url()` — option override `telegram_channel_url`
+     (PRIVATE invite `https://t.me/+…` regex-validated) → lekapote
+     `social_telegram` username → `t.me/<user>`.
+   * `studentup_tg_join_block($context)` — footer join chip (Telugu CTA
+     "Telegram లో జాయిన్ అవ్వండి" + brand SVG icon).
+   * `studentup_tg_share_url()` — `t.me/share/url?url=…&text=…` helper
+     (single.php share row pattern).
+4. Options: StudentUp → Socials → **Telegram channel URL override** (khali
+   unte username link). `.env.example` lo `-1001234567890` private id hint.
+5. Version bump 1.9.0 → **1.9.2** (functions.php · style.css · readme.txt
+   Stable tag · changelog 1.9.1 + 1.9.2 entries) · suites 69 → **71**
+   (v75–v81 pins updated).
+
+VERIFY (v91)
+```
+python tests/v91_test.py                     # 10/10 checks
+python tests/v90_test.py                     # 8/8 checks (bridge intact)
+python run.py --test-all                     # 71/71 suites
+node tests/runtime/jsdom_runtime_test.js     # 164/164 browser checks
+node tools/php_lint.js                       # 36/36 files OK
+python run.py --readiness                    # 100/100
+python -m pyflakes autoblog tools tests run.py  # 0 findings
+python tools/parity_audit.py                 # 0 errors
+```
+
+* Channel setup: `.env` lo `TELEGRAM_CHANNEL_CHAT_ID=-100…` (private) leda
+  public channel id · bot ni channel lo **admin** ga add cheyandi ·
+  `TELEGRAM_CHANNEL_URL` = invite link (auto-post footer lo kanipistundi).
+* Deploy: theme zip rebuild (`python tools/build_wp_theme.py`) → WP Admin →
+  Appearance → Themes → Add New → Upload → **Replace current** (1.9.2).

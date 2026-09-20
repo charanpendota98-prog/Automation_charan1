@@ -19,7 +19,7 @@ Checks (offline only):
     comments + related + tags + nav + TOC-opt + join (single surface complete)
   * options: join_cta_inline registered (default 1)
   * php lint: cta/author-box/single parse (node php parser unte; lekapothe SKIP-safe)
-  * docs: README v79 + MANUAL PART 38 + 69/69
+  * docs: README v79 + MANUAL PART 38 + 71/71
 
 Run: python tests/v79_test.py   (also via python run.py --test-all)
 """
@@ -160,17 +160,17 @@ def test_php_parse():
 
 def test_docs_v79():
     suites = len(list((ROOT / "tests").glob("*_test.py")))
-    assert suites == 69, f"suites {suites} (v89 tho 69 expect)"
+    assert suites == 71, f"suites {suites} (v91 tho 71 expect)"
     readme = read(ROOT / "README.md")
     manual = read(ROOT / "MANUAL_ADVANCED_CHECKLIST.md")
     go_live = read(ROOT / "GO_LIVE_CHECKLIST.md")
-    assert "### v79" in readme and "69/69" in readme
-    assert "PART 38" in manual and "v79" in manual and "69/69" in manual
-    assert "69/69" in go_live
+    assert "### v79" in readme and "71/71" in readme
+    assert "PART 38" in manual and "v79" in manual and "71/71" in manual
+    assert "71/71" in go_live
     for name, txt in (("README", readme), ("MANUAL", manual),
                       ("GO_LIVE", go_live)):
         assert "164/164" in txt, f"{name} lo jsdom claim poyindi"
-    print("  docs: README v79 + MANUAL PART 38 + 69/69 ✔")
+    print("  docs: README v79 + MANUAL PART 38 + 71/71 ✔")
 
 
 TESTS = [
@@ -183,7 +183,7 @@ TESTS = [
     ("miss-audit surface", test_miss_audit_surface),
     ("options registered", test_options_registered),
     ("php parse", test_php_parse),
-    ("docs: v79 + PART 38 + 69/69", test_docs_v79),
+    ("docs: v79 + PART 38 + 71/71", test_docs_v79),
 ]
 
 

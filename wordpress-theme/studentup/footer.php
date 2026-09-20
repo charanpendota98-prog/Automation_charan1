@@ -51,6 +51,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<div class="footer-bottom">
 			<span>© <?php echo esc_html( gmdate( 'Y' ) ); ?> <?php bloginfo( 'name' ); ?> — All rights reserved.</span>
 			<span>Always confirm job/exam details once in the official notification.</span>
+			<?php studentup_tg_join_block( 'footer' ); // v91: Telegram join chip (private channel override supported) ?>
 		</div>
 	</div>
 </footer>

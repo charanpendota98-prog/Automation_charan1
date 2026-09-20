@@ -593,3 +593,27 @@
     });
   });
 })();
+
+/* ---------- v90: critical notify banner — localStorage dismiss ----------
+ * Prathi banner ki data-code undi; reader ✕ kottaka aa code localStorage lo
+ * save → reload ayina hide ga untundi (server round-trip ledu). Admin alert
+ * fix ayyaka queue nunchi clear chestundi — dismiss state automatic ga reset.
+ */
+(function () {
+  "use strict";
+  function key(code) { return "suNotifyHidden_" + code; }
+  var banners = document.querySelectorAll(".su-notify[data-code]");
+  Array.prototype.forEach.call(banners, function (el) {
+    var code = el.getAttribute("data-code") || "";
+    var hiddenAt = null;
+    try { hiddenAt = localStorage.getItem(key(code)); } catch (e) { hiddenAt = null; }
+    if (hiddenAt) { el.setAttribute("hidden", ""); return; }
+    var btn = el.querySelector(".su-notify-close");
+    if (btn) {
+      btn.addEventListener("click", function () {
+        el.setAttribute("hidden", "");
+        try { localStorage.setItem(key(code), String(Date.now())); } catch (e) { /* private mode */ }
+      });
+    }
+  });
+})();

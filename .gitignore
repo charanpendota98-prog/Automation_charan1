@@ -24,3 +24,6 @@ ads/rotation.json
 
 # v57: ad advisor runtime state (traffic + milestones)
 logs/
+
+# v91: root-level npm install (jsdom/php-parser for tests) — runtime only
+/node_modules/
