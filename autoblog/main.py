@@ -1476,6 +1476,8 @@ def main() -> int:
                         help="Tier-1 traffic share 0-1 (0.5 = 50%%)")
     parser.add_argument("--gsc", default="", metavar="CSV",
                         help="Search Console queries CSV -> striking-distance opportunities")
+    parser.add_argument("--gsc-refresh", default="", metavar="CSV",
+                        help="Search Console Pages CSV -> evidence-based old-post refresh priority")
     parser.add_argument("--doctor", action="store_true",
                         help="deployment health check — anni dependencies verify")
     parser.add_argument("--production-audit", action="store_true",
@@ -1692,6 +1694,10 @@ def main() -> int:
         from . import freshness as _fr
 
         return _fr.run_cli()
+    if args.gsc_refresh:
+        from . import gsc_refresh as _gr
+
+        return _gr.run_cli(args.gsc_refresh)
     if args.gsc:
         return gsc_opportunities(args.gsc)
     if args.doctor:

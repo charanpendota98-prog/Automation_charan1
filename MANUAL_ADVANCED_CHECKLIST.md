@@ -2282,3 +2282,54 @@ fake ga pretend cheyyadam correct kaadu. First freshness risk close chesam;
 next evidence-based step is real GSC export ingestion + page/query experiments,
 then a documented NotebookLM source workflow.
 
+## PART 59 — v102: GSC-EVIDENCE REFRESH PRIORITY
+
+### WHY OLDEST-FIRST IS NOT EXPERT STRATEGY
+
+Old posts anni equal value kaavu. Search Console lo already impressions unna,
+position 4–20 edge lo unna, CTR low unna page ni improve chesthe immediate
+learning + traffic opportunity untundi. Zero-impression old page ni first
+refresh cheyyadam guesswork.
+
+### SETUP
+
+```
+Search Console → Performance → Pages → Export CSV
+python run.py --gsc-refresh search-console-pages.csv
+```
+
+Required columns: `Page` or `Top pages`, `Clicks`, `Impressions`, `CTR`,
+`Position`. System URL-to-local-post matching chestundi. Query-only export
+intentional ga reject — query ki page URL teliyadu, kabatti wrong article ni
+update cheyyadam kanna priority create cheyyakapovadam safe.
+
+### PRIORITY LOGIC
+
+```
+GSC page match?
+  no  → legacy safe order: never refreshed / oldest
+  yes → high impressions + position 4..20 + CTR gap = high priority
+
+selected post → freshness guard → originality → QA → post gate → update
+```
+
+Scores SQLite meta lo persist avutayi. URL query strings, fragments and
+trailing slash normalise avutayi. GSC data lekapothe system break avvadu.
+Score ranking prediction kaadu; **which page to inspect/update first** ane
+measurable priority only. Every update ki existing safety gates continue.
+
+### VERIFY
+
+```
+python run.py --gsc-refresh pages.csv
+python tests/v102_test.py
+python run.py --test-all       # 82/82
+```
+
+### IMPORTANT OWNER RULE
+
+GSC CSV export monthly/weekly fresh ga ingest cheyyandi; old CSV permanent
+truth kaadu. Update ayyaka 28-day comparison lo impressions, CTR, position
+measure cheyyandi. Winner pattern ni matrame scale cheyyandi. Blind mass
+refresh, CTR manipulation, fake dateModified, or keyword stuffing cheyyakandi.
+

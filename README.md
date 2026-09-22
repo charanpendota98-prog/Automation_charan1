@@ -551,6 +551,33 @@ ni ready cheyyagaladu — approval ni guarantee cheyyaledu. "Google lo suggest a
 ante autocomplete/Discover placement — adi **Google algorithm**, daaniki code tho force
 cheyyaleamu; cheyyagaligedi eligibility + quality signals mattrame.
 
+### v102 — GSC-EVIDENCE REFRESH PRIORITY (advanced growth engine)
+
+Oldest-first refresh kaadu. Ippudu real Search Console **Pages export** batti
+high-value old posts first select avutayi:
+
+- impressions unnayi, position 4–20 lo unnayi, CTR weak ga undi → high priority;
+- URL matching exact ga jarugutundi (host/path normalise, query/fragment remove);
+- query-only CSV ni reject chestundi — URL teliyakunda wrong post ni guess cheyyamu;
+- scores SQLite state lo save avutayi, daily auto-refresh next matching post ni
+  pick chestundi;
+- GSC data lekapothe old safe priority (never-refreshed/oldest) continue;
+- final update mundu freshness, originality, QA and post gates unchanged.
+
+Run:
+
+```text
+python run.py --gsc-refresh search-console-pages.csv
+```
+
+Search Console: Performance → Pages → Export CSV. `--gsc` query export
+opportunities kosam separate ga continue avutundi. GSC score ranking
+**prediction kaadu**; content/title experiment priority matrame. Wrong URL
+mapping or missing evidence unte automation guess cheyyadu.
+
+**Proof:** `--test-all` **82/82**; v102 tests URL matching, score ordering,
+query-export rejection, SQLite persistence, unmatched-page safety and CLI wiring.
+
 ### v101 — DECEPTIVE-FRESHNESS GUARD (highest-risk Google protection)
 
 **Nenu top-expert level lo decide chesina next step:** NotebookLM integration
