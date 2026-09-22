@@ -569,8 +569,8 @@ inka ekkuva.
 numbers/dates/facts audit add chesanu:
 
 - identical / almost-identical refresh → **WP write kuda skip**;
-- content improve ayindi kaani kotha facts levu → publish avvochu, **dateModified
-  bump kaadu**;
+- 2%–8% cosmetic/text-only change → **full WP write skip** (WordPress internal
+  `modified` timestamp kuda marchakudadu);
 - real change or new vacancy/date/fee facts → publish + `dateModified` bump
   allowed;
 - defaults: 2% kanna takkuva change = skip; 8% kanna ekkuva change = genuine

@@ -2255,7 +2255,7 @@ nightly scheduled pattern ayithe spam signal risk.
 - old/new HTML ni shingle-level Jaccard distance tho compare;
 - kotha vacancy counts, dates, fees and other numeric facts audit;
 - **<2% change:** WordPress write motham skip (revision/crawl noise vaddu);
-- **2%–8% change:** content update allow, kaani `dateModified` bump cheyyamu;
+- **2%–8% cosmetic change:** full update skip — WordPress internal `modified` timestamp kuda marchakudadu;
 - **>=8% change OR kotha facts:** genuine update, dateModified bump allow;
 - defaults `.env` lo `FRESHNESS_MIN_CHANGE_PCT=8`,
   `FRESHNESS_MIN_PUBLISH_PCT=2`;

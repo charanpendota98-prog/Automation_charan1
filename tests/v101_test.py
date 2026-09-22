@@ -48,21 +48,22 @@ def test_real_new_fact_allows_bump() -> None:
     print("      new vacancy/date facts: publish + dateModified bump allowed ✔")
 
 
-def test_real_text_change_without_new_number_publishes_no_bump() -> None:
+def test_real_text_change_without_new_number_is_skipped() -> None:
     old = "<p>Read the official eligibility and selection process carefully before applying.</p>"
     new = "<p>Check the official eligibility, syllabus, and selection process carefully before applying online.</p> " \
           "<p>Use the department notice for the final instructions.</p>"
     got = freshness.decide(old, new, min_publish=0.1, min_bump=91)
-    assert got["publish"] is True
+    assert got["publish"] is False
     assert got["bump_date"] is False
-    print("      textual improvement without new facts: publish, no fake freshness ✔")
+    assert "modified timestamp" in got["reason"]
+    print("      text-only cosmetic change: full write skipped ✔")
 
 
 def test_thresholds_are_configurable() -> None:
     old = "<p>Alpha beta gamma delta epsilon zeta eta theta iota kappa lambda.</p>"
     new = old + " <p>New official eligibility explanation for applicants.</p>"
     got = freshness.decide(old, new, min_bump=90, min_publish=1)
-    assert got["publish"] is True and got["bump_date"] is False
+    assert got["publish"] is False and got["bump_date"] is False
     assert config.FRESHNESS_MIN_CHANGE_PCT >= 0
     assert config.FRESHNESS_MIN_PUBLISH_PCT >= 0
     print("      freshness floors configurable via environment ✔")
@@ -114,7 +115,7 @@ TESTS = [
     ("identical skip", test_identical_skips_write),
     ("cosmetic no bump", test_cosmetic_rewrite_does_not_bump_date),
     ("new fact bump", test_real_new_fact_allows_bump),
-    ("text change no bump", test_real_text_change_without_new_number_publishes_no_bump),
+    ("text-only skip", test_real_text_change_without_new_number_is_skipped),
     ("configurable floors", test_thresholds_are_configurable),
     ("fact audit", test_compare_reports_removed_and_new_facts),
     ("pipeline wiring", test_pipeline_uses_guard_and_conditional_modified_date),

@@ -141,10 +141,13 @@ def decide(old_html: str, new_html: str,
         rep.update(publish=True, bump_date=True,
                    reason=f"nijamaina update ({why}) — dateModified bump OK")
         return rep
-    rep.update(publish=True, bump_date=False,
+    # WordPress itself may advance post_modified on ANY successful PUT. So a
+    # cosmetic 2–8% rewrite cannot be made safe merely by preserving JSON-LD's
+    # old date — avoid the write altogether.
+    rep.update(publish=False, bump_date=False,
                reason=(f"change {pct:.1f}% < {min_bump:.1f}% mariyu kotha facts "
-                       "ledu — content update chestam kaani dateModified "
-                       "bump CHEYYAMU (deceptive freshness guard)"))
+                       "levu — cosmetic refresh skip; WP modified timestamp "
+                       "kuda marchakudadu"))
     return rep
 
 
