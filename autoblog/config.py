@@ -201,6 +201,10 @@ HUB_EXAMS = [x.strip() for x in _get(
     "SSC CGL,SSC CHSL,SSC MTS,RRB Group D,RRB ALP,TET,TS DSC,"
     "TSPSC Group 2,APPSC Group 2,ICET,TS Police Constable,SBI PO,"
     "IBPS Clerk,Scholarships").split(",") if x.strip()]
+# v96: district job hubs (TS 33 + AP 26) — thin-page guard threshold.
+# Ee count kanna takkuva posts unna district ki page create AVVADU
+# (Google scaled-content / AdSense low-value rules — khali shelves vaddu).
+DISTRICT_HUB_MIN_POSTS = int(_get("DISTRICT_HUB_MIN_POSTS", "3") or "3")
 # Sponsored/featured listing CTA (AdSense disclosure REQUIRED with it)
 FEATURED_CTA_HTML = _get("FEATURED_CTA_HTML", "")
 JOB_SCHEMA_ENABLED = _get("JOB_SCHEMA_ENABLED", "1") not in ("0", "false", "no")

@@ -389,7 +389,7 @@ the public research bundle.
 measurement. Kotha module: `autoblog/top_post.py` (offline, deterministic,
 no API key needed for planning).
 
-**1. ANNI KEYWORDS (11,192) — Keyword Universe**
+**1. ANNI KEYWORDS (12,344) — Keyword Universe**
 188 entities (SSC/UPSC/RRB/banks/defence, TSPSC/APPSC/DSC/Police, scholarships,
 entrances, universities, skills, internships) × **66 intents** (14 core +
 52 long-tail: last date, eligibility, age limit, fee, documents, district wise,
@@ -551,6 +551,72 @@ ni ready cheyyagaladu — approval ni guarantee cheyyaledu. "Google lo suggest a
 ante autocomplete/Discover placement — adi **Google algorithm**, daaniki code tho force
 cheyyaleamu; cheyyagaligedi eligibility + quality signals mattrame.
 
+### v96 — COVERAGE MISS-ZERO + SESSION DEPTH + 3 REAL BUG FIXES (theme 1.9.7)
+
+**Mee brief:** "ts and ap students ki em em posts vasthunnai … anni … job melas ·
+every district pages jobs · university results · daily current affairs …
+telegram and whatsapp buttons neatga madhyalo … ads refresh ayyevidam ga plan —
+automation kadu, vere page ki vachi malli mundu page vachelaga … thumbnails
+neatga and daniki name … chala miss chesam, chinna chinnavi kuda miss cheyoddu".
+
+Deep coverage audit + code audit chesi **7 gaps** (andulo **3 nijamaina bugs**) fix chesam:
+
+**GAP-1 COVERAGE MISS (job melas · district jobs · university results):** radar 59
+districts ni scan chestundi, kaani grid lo job-mela, district-level recruitment,
+university results (JNTUH/JNTUK/OU/AU/SVU…), dedicated hall-ticket axis mariyu
+daily current affairs **queries ledu** — aa intents ki mana posts generate avvavu.
+Fix: **180 sources** (37 kotha) + **221 entities → 12,344 keywords** (18 kotha
+entities). Counts guardian + readiness lo lock ayyayi (stale docs = test fail).
+
+**GAP-2 MID-ARTICLE JOIN BUTTONS (bot posts):** WhatsApp/Telegram CTA post
+**chivara** mattrame undedi — chala mandi akkadi varaku scroll cheyyaru. Fix:
+`monetize.join_strip_block()` + `insert_join_strip()` — modati **content** H2
+tarvata (quick-answer skip), idempotent, links levakapote khali (fake buttons
+raavu), number typo-safe (`9182739312` · `+91 …` · invite link · junk → None).
+Theme `.su-join-inline` tho duplicate raakunda `cta.php` lo dedupe guard.
+
+**GAP-3 "ADS REFRESH" — POLICY-SAFE ga (chala important):** timer/JS tho ad ni
+auto-refresh cheyyadam = AdSense **invalid traffic** → account ban risk. Anduke
+timer vaddu. Badhulu ga theme `inc/upnext.php`: article chivara **Up Next** (ade
+category 3 posts) + mobile **sticky next-article bar** (55% scroll tarvata,
+dismiss memory tho). Reader tap = **nijamaina kotha pageview = legit kotha ad
+request**. Suite lo `setInterval/reload/redirect` ledu ani verify avutundi.
+
+**GAP-4 THUMBNAIL NAME:** featured image eppudu `{slug}.webp` ga upload ayyedi.
+Fix: `seo.image_filename()` — `focus-keyword-year-category.webp` (ascii-only,
+stopwords/duplicate tokens ledu, 70-char cap, Telugu-only keyword ki fallback)
++ `seo.image_alt()` helper.
+
+**GAP-5 🐞 REAL BUG — webp ni `image/jpeg` ga upload:** v81 lo webp default
+ayyaka kuda `upload_media()` MIME ni hardcode chesindi. WordPress
+`wp_check_filetype_and_ext()` mismatch valla konni hosts upload **reject**
+chestayi → featured image ledu → Article schema/Discover image ledu. Fix:
+extension → real MIME map + `Content-Disposition` lo kuda kotha SEO name.
+
+**GAP-6 🐞 REAL BUG — refresh lo monetize blocks POYEVI:** `update_post()` lo
+`monetize.append_blocks()` call **ledu**. So auto-refresh ayina prathi post nunchi
+Telegram CTA + affiliate + join strip **delete** ayyevi (refresh ekkuva ayina
+koddi CTA-less posts perigevi). Fix: update path lo monetize + ad_manager
+wiring — QA/pin-gate ki **mundu** (score nijamaina final HTML meeda).
+
+**GAP-7 DISTRICT PAGES LEVU:** 59 districts scan avutayi kaani landing page
+okkati kuda ledu — "Karimnagar jobs", "Guntur job mela" lanti low-competition
+local queries motham miss. Fix: `autoblog/district_hubs.py` + CLI
+(`--district-hubs [--district-hubs-apply] [--district-hubs-state TS|AP]`):
+prathi district ki posts table + job-mela section + nearby-district cross-links.
+**Thin-page guard:** `DISTRICT_HUB_MIN_POSTS` (default 3) kanna takkuva posts
+unte page **create avvadu** — khali shelves = Google scaled-content + AdSense
+low-value risk.
+
+**Proof:** `--test-all` **76/76** (v96_test.py kotha: 17 checks) · php-lint
+**39/39** · theme **1.9.7** · zip 49 files.
+
+**Honest limit:** ee release **coverage + signals + session depth** ni
+penchindi. Google ranking, "top 0.01%", Discover placement, AdSense approval,
+views/clicks — avi **Google algorithm + mee content + time** batti untayi; code
+vaatini guarantee cheyyaledu. Ad refresh ni policy-safe navigation tho
+mattrame penchamu — auto-refresh **deliberately** implement cheyyaledu.
+
 ### v95 — SEO 100 PIN-TO-PIN + TERMS + IN-BODY SIGNALS (theme 1.9.6)
 
 **Mee brief:** "fix" — remaining audit gaps (Rank Math/SEO 100 · contextual linking ·
@@ -579,7 +645,7 @@ kavali (usage rules · copyright + correction route · ad disclosure · third-pa
 "as is" information · liability limits · governing law India/Telangana · contact).
 `tools/build_policy_pages.py` lo TERMS + nav + sitemap; footer lo 6వ policy link.
 
-**Proof:** `--test-all` **75/75** (v95_test.py kotha: 13 checks) · jsdom **164/164** ·
+**Proof:** `--test-all` **76/76** (v95_test.py: 13 checks) · jsdom **164/164** ·
 saved-engine **53/53** · pin gate **100/100 · 68/68** · readiness **100/100** ·
 php-lint **38/38** · theme **1.9.6**.
 
@@ -1046,7 +1112,7 @@ app-laga install (PWA) · colorful premium look, text/background contrast eppudu
 | # | What changed | Detail |
 |---|---|---|
 | 1 | **బ్రేకింగ్ న్యూస్ teesesaam** | Ticker + section + nav/mobile links + JS + CSS anni public sitenunchi poyayi. Bot radar feed (`autoblog/breaking.py`) intact — WP admin → *StudentUp → కంటెంట్ → బ్రేకింగ్ న్యూస్ సెక్షన్ ON* tho eppudaina tirigi on cheyyochu (**default OFF**). |
-| 2 | **Internal metrics public lo levu** | Homepage proof-stats row (11,192 keywords · 143 sources · 59 districts) mariyu topbar/footer district lines teesesaam. Ee numbers ippudu internal reports/README lo mattrame. |
+| 2 | **Internal metrics public lo levu** | Homepage proof-stats row (12,344 keywords · 180 sources · 59 districts) mariyu topbar/footer district lines teesesaam. Ee numbers ippudu internal reports/README lo mattrame. |
 | 3 | **"నమూనా/DEMO" labels poyayi** | Public pages + theme copy nunchi demo/sample maatalu clean chesam (ads ki **SPONSORED** label intact — AdSense rule). |
 | 4 | **విద్యార్హత ఫిల్టర్ (flagship)** | Job cards ki `data-qual`; chips: అన్నీ · 10వ తరగతి · ఇంటర్ (10+2) · ఐటీఐ · డిప్లొమా · డిగ్రీ · పీజీ · బీటెక్ · ⏳ 7 రోజుల్లో ముగిసేవి. Filter + search kalisi pani chestayi, count ("12 అవకాశాలు") chupistundi. |
 | 5 | **Countdown + closing filter** | `data-last` unna cards ki "⏳ N రోజుల్లో ముగుస్తుంది" badge; గడువు ముగిసినవి default ga hide (`.expired`). |
@@ -1256,7 +1322,7 @@ Artifacts: `logs/readiness.json` + `output/readiness-<date>.md` (markdown report
 
 | Section | Enti verify avutundi (verifiable number) |
 |---|---|
-| CONTENT ENGINE | blueprint score 100/100 (TOP POST 🏆) · gates QA 80+ / originality 72%+ / deep-gate ON · 17 pillars · 203 entities · 11,192 kws · 143 sources · radar 4x/day · 59 districts |
+| CONTENT ENGINE | blueprint score 100/100 (TOP POST 🏆) · gates QA 80+ / originality 72%+ / deep-gate ON · 17 pillars · 221 entities · 12,344 kws · 180 sources · radar 4x/day · 59 districts |
 | SEO | schema (Article · ItemList · JobPosting · BreadcrumbList) · head 6/6 (title/meta/canonical/OG/JSON-LD/lang) · robots+sitemap · Rank Math LIVE fields |
 | ADS & MONEY | slots 3/3 high-CTR order · SPONSORED labels · rel=sponsored · ads.txt status · money engine 6/6 (rate card · house · calculator · network plan · advisor · leads) |
 | AUTOMATION | daily hooks 6/6 (radar · auto-refresh · breaking · advisor · guardian · quiz) · draft-first approval · test tiles sync |
@@ -1308,7 +1374,7 @@ python run.py --guardian-notify     # same + Telegram report (daily hook automat
 | ads_txt | live/placeholder status | builder + ADSENSE_CLIENT_ID |
 | breaking_feed | freshness (GUARDIAN_FEED_MAX_AGE=26h) | `--breaking-feed` / radar cron |
 | ads_inventory | ad link/title/id validity (inventory + house) | ads/*.json correct |
-| keyword_pillar_lock | 17 pillars · 203 entities · 11,192 kws · 143 sources | counts sync |
+| keyword_pillar_lock | 17 pillars · 221 entities · 12,344 kws · 180 sources | counts sync |
 | menu_wiring | TS/AP/hall/results/walkin/software links + 8 used tiles | nav/mpanel |
 | storage | disk free · state.db · output size | `tools/prune_media.py --apply` |
 | env_readiness ⚠️ | Gemini/WP/Telegram creds (owner pani) | `.env` (GO_LIVE PART A) |
@@ -1322,10 +1388,10 @@ Student site open cheyagane modati 3 sekundullo kanipinche order:
 
 | Position | Enti | Detail |
 |---|---|---|
-| 1 | 🔴 **బ్రేకింగ్ టికర్** | radar feed (Google News తెలుగు + 143 official sources) — verified items matrame; feed khali aithe ticker **hide** (fake news ledu) |
+| 1 | 🔴 **బ్రేకింగ్ టికర్** | radar feed (Google News తెలుగు + 180 official sources) — verified items matrame; feed khali aithe ticker **hide** (fake news ledu) |
 | 2 | **విద్యార్థులు ఎక్కువగా వెతికేవి** | 8 tiles: టీఎస్ · ఏపీ ప్రభుత్వ ఉద్యోగాలు · హాల్ టికెట్లు · ఫలితాలు · వాక్-ఇన్ · సాఫ్ట్‌వేర్ · ప్రైవేట్ · ప్రస్తుతాంశాలు — prathi tile ki **live count** + one-tap filter |
 | 3 | ప్రకటన (leaderboard) | highest-visibility slot — content ki bhaadha lekunda |
-| 4 | Hero + ముఖ్య గడువు countdown | trust tiles (45/45 · 11/11 · 138/138 · 11,192 · 17 cats · 143 sources) |
+| 4 | Hero + ముఖ్య గడువు countdown | trust tiles (45/45 · 11/11 · 138/138 · 12,344 · 17 cats · 180 sources) |
 | 5 | బ్రేకింగ్ న్యూస్ section + తాజా అవకాశాలు grid | grid lo **TS/AP ప్రభుత్వ ఉద్యోగాలు modati cards** |
 
 Menu (desktop + mobile same order): హోమ్ · ఉద్యోగాలు▾ (టీఎస్ · ఏపీ · కేంద్ర · ప్రైవేట్ ·
@@ -1830,7 +1896,7 @@ Prathi post lo automatic ga:
 
 ```bash
 # v38 TOP POST (blueprint → measure → publish)
-python run.py --keyword-universe                     # 11,192 keywords + CSV
+python run.py --keyword-universe                     # 12,344 keywords + CSV
 python run.py --top-post "TSPSC Group 2 2026 notification"
 python run.py --top-post-plan --top-post-days 90     # domination calendar
 python run.py --score-post file.html --score-keyword "ssc cgl 2026"

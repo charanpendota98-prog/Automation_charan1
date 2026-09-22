@@ -268,6 +268,28 @@ ENTITIES: List[tuple] = [
     ("Study in UK", "Abroad Jobs", 3, "gov.uk"),
     ("Passport Seva", "Abroad Jobs", 3, "passportindia.gov.in"),
     ("NRI Guide", "Abroad Jobs", 3, "studentup.in"),
+    # ---------------- v96: university results · job melas · local jobs -----
+    # Brief: "university results ts and ap … job melas … every district
+    # jobs … daily current affairs" — ee entities ippati varaku universe lo
+    # LEVU, anduke aa queries ki mana post generate avvadam ledu.
+    ("JNTUH Results", "Results", 5, "jntuh.ac.in"),
+    ("JNTUK Results", "Results", 5, "jntuk.edu.in"),
+    ("JNTUA Results", "Results", 4, "jntua.ac.in"),
+    ("Osmania University Results", "Results", 4, "osmania.ac.in"),
+    ("Kakatiya University Results", "Results", 3, "kakatiya.ac.in"),
+    ("Andhra University Results", "Results", 4, "andhrauniversity.edu.in"),
+    ("SV University Results", "Results", 3, "svuniversity.edu.in"),
+    ("Acharya Nagarjuna University", "Results", 3, "nagarjunauniversity.ac.in"),
+    ("Krishna University", "Results", 2, "krishnauniversity.ac.in"),
+    ("Palamuru University", "Results", 2, "palamuruuniversity.ac.in"),
+    ("Satavahana University", "Results", 2, "satavahana.ac.in"),
+    ("Ambedkar Open University", "Online Education", 3, "braou.ac.in"),
+    ("Job Mela Telangana", "Walkin Jobs", 4, "studentup.in"),
+    ("Job Mela Andhra Pradesh", "Walkin Jobs", 4, "studentup.in"),
+    ("Anganwadi Recruitment", "Outsourcing Jobs", 4, "wdcw.tg.nic.in"),
+    ("ASHA Worker Recruitment", "Outsourcing Jobs", 3, "nhm.gov.in"),
+    ("District Court Jobs", "Outsourcing Jobs", 3, "districts.ecourts.gov.in"),
+    ("Daily Current Affairs", "Current Affairs", 5, "pib.gov.in"),
 ]
 
 # Keep only the live-site categories (pipeline.CATEGORY_RULES names)

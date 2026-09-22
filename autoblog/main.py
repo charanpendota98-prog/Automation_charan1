@@ -814,7 +814,7 @@ def guardian_run(notify: bool = False, quiet: bool = False) -> int:
 def breaking_feed_run(from_file: str = "") -> int:
     """v59: బ్రేకింగ్ న్యూస్ feed build — site ticker + section ki.
 
-    Default: radar sweep (district + 143 official sources) → verified items
+    Default: radar sweep (district + 180 official sources) → verified items
     matrame → preview/data/breaking.json. `--breaking-from FILE` tho offline
     (test/approved list) nunchi kuda generate cheyochu.
     """
@@ -1532,6 +1532,14 @@ def main() -> int:
     parser.add_argument("--orphans", nargs="*", default=None, metavar="SITEMAP-URL",
                         help="v81 (§32): sitemap crawl → inbound-0 ORPHAN pages "
                              "report (ex: --orphans https://site/sitemap.xml)")
+    parser.add_argument("--district-hubs", action="store_true",
+                        help="v96: TS 33 + AP 26 district job hub pages "
+                             "(local jobs + job melas) — default dry-run plan")
+    parser.add_argument("--district-hubs-apply", action="store_true",
+                        help="v96: district hubs ni WordPress lo nijamga "
+                             "publish/update chey (thin-page guard active)")
+    parser.add_argument("--district-hubs-state", default="",
+                        help="v96: okka state matrame (TS leda AP)")
     parser.add_argument("--site-audit", action="store_true",
                         help="v41: full site audit (21 problem classes — thin/junk "
                              "content, wrong category, PII, tags, timezone) + report")
@@ -1703,6 +1711,11 @@ def main() -> int:
         # v84: URL ivvakapote WP sitemap default (cron-friendly — usage kaadu)
         urls = args.orphans or [config.WP_SITE.rstrip("/") + "/wp-sitemap.xml"]
         return _cl.main(["check_links", "--orphans"] + urls)
+    if getattr(args, "district_hubs", False):
+        from . import district_hubs as _dh
+
+        return _dh.run_cli(state=args.district_hubs_state,
+                           apply=args.district_hubs_apply)
     if args.site_audit or args.site_audit_fix:
         return site_audit_run(fix=args.site_audit_fix, apply=args.site_audit_apply,
                               allow_trash=args.site_audit_trash,

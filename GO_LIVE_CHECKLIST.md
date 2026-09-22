@@ -81,7 +81,7 @@ Detail docs: `DEPLOY_MILESWEB.md` (cPanel steps) · `DEPLOY_ORACLE_CLOUD.md` (VM
 | Item | Proof |
 |---|---|
 | Test suites | **71/71** pass (`python run.py --test-all`) |
-| Test suites (v95) | **75/75** pass (`python run.py --test-all`) · saved-engine **53/53** |
+| Test suites (v96) | **76/76** pass (`python run.py --test-all`) · saved-engine **53/53** |
 | AdSense readiness (v94) | **97%** — `python run.py --adsense-ready` (8 groups · 29 checks · fix lines; 1 blocker = posts volume) |
 | Site guardian | **`python run.py --guardian`** — site/UI/SEO/ads/feed/storage/theme 12 checks (11 ok · 1 owner-pending) |
 | Readiness score | **`python run.py --readiness`** — **100/100** · 27/27 system checks · 10 owner-pending |
@@ -98,7 +98,7 @@ Detail docs: `DEPLOY_MILESWEB.md` (cPanel steps) · `DEPLOY_ORACLE_CLOUD.md` (VM
 | Install as an app | `preview/manifest.webmanifest` + `preview/sw.js` · theme `?studentup_sw=1` (root-scope SW, server config avasaram ledu) + install prompt |
 | Site copy clean | బ్రేకింగ్/internal metrics/demo maatalu public lo levu — `python run.py --guardian` → `first_look_ui` |
 | Deploy check | 9 ok · 3 warn · 0 fail (`python run.py --deploy-check`) |
-| Website | 17 categories · 143 sources · 11,192 keywords · menu + chips |
+| Website | 17 categories · 180 sources · 12,344 keywords · menu + chips |
 | Ads | AdSense gate · sponsor inventory · rate card · house ads |
 | Safety | QA 80 · originality 72% · manual approval · corrections email |
 | Crash-proof | systemd timers · 2-min watchdog (site+bot+TLS) · backups · homepage ping |
@@ -114,8 +114,8 @@ Detail docs: `DEPLOY_MILESWEB.md` (cPanel steps) · `DEPLOY_ORACLE_CLOUD.md` (VM
       → WordPress install + SSL (Let's Encrypt) ON.
 - [ ] **2. WordPress setup** — Rank Math; theme install (**v74**: theme **1.7.2** —
       `python tools/build_wp_theme.py` → zip → Appearance → Themes → Upload → Activate);
-      **v95 zip:** 48 files · 686 KB · theme **1.9.6** · sha256
-      `10ca6b3fc2e656571accab980d90b0db84a5dcbec46ee1ce87440b01d7279a95`
+      **v96 zip:** 49 files · 690 KB · theme **1.9.7** · sha256
+      `b23ed2c37d2915cd44d87da38e38a4daabb152929d0ff348dce8c17f1a576b47`
       (`sha256sum wordpress-theme/studentup-theme.zip` — upload chesina zip ide ani verify cheyandi;
       build ippudu **reproducible** — same content ⇒ same sha)
       `wp-admin → Users → Application Passwords` → app password create cheyyandi.
@@ -258,4 +258,4 @@ job guarantee promises (advertisers kuda). Ivi AdSense ban + trust damage.
 *Last updated: v91 (2026-09-20) · 71/71 suites · 164/164 runtime · 11/11 production checks · theme v1.9.2 · v90 notifications + v91 Telegram tools*
 *Last updated: v92 (2026-09-22) · 72/72 suites · 53/53 saved-engine · 164/164 runtime · 11/11 production checks · theme v1.9.3 · v92 saved / reader retention*
 *Last updated: v93 (2026-09-22) · 73/73 suites · 53/53 saved-engine · 164/164 runtime · 11/11 production checks · theme v1.9.4 · v93 top-website UI pass (menu · icons · collisions)*
-*Last updated: v95 (2026-09-22) · 75/75 suites · pin gate 100/100 · AdSense readiness 97% · 53/53 saved-engine · 164/164 runtime · theme v1.9.6 · v95 in-body signals + terms*
+*Last updated: v96 (2026-09-22) · 76/76 suites · pin gate 100/100 · AdSense readiness 97% · 53/53 saved-engine · 164/164 runtime · theme v1.9.7 · v96 coverage miss-zero + session depth*

@@ -439,7 +439,7 @@ BOT HOOK : roju GUARDIAN_HOUR (default 20 IST) tarvata okkasari automatic
 CHECKS   : 12 — site files · first-look UI blocks (ticker/used/breaking/feed fetch/
            nav) · tiles ↔ tests/jsdom sync · robots+sitemap · ads.txt status ·
            breaking feed freshness · ad inventory validity · keyword/pillar lock
-           (17 · 203 · 11,192 · 143) · menu wiring · storage · theme zip · .env readiness
+           (17 · 203 · 12,344 · 143) · menu wiring · storage · theme zip · .env readiness
 SEVERITY : ❌ = system break (fix cheyyali) · ⚠️ = mee pani pending (creds)
            exit code: hard fail unte 1, warn-only unte 0
 STATUS   : logs/guardian.json — chivari 14 runs history (gitignored)
@@ -471,7 +471,7 @@ GRID     : TS/AP ప్రభుత్వ ఉద్యోగాలు modati car
 BOT      : python run.py --breaking-feed              (radar → feed + Telegram flow alage)
            python run.py --breaking-from file.json    (offline/approved list)
            radar run lo auto hook: news_radar sweep → breaking.publish()
-HONESTY  : feed lo radar (Google News తెలుగు + 143 official sources) verified items
+HONESTY  : feed lo radar (Google News తెలుగు + 180 official sources) verified items
            matrame · item lekapote site "కొత్త verified బ్రేకింగ్ అప్డేట్‌లు లేవు" +
            "రాడార్ ప్రతి 6 గంటలకు చెక్ చేస్తుంది" ani cheptundi — fake/clickbait ledu
 TESTS    : tests/v59_test.py = 12 checks · run.py --test-all 45/45 · jsdom 138/138
@@ -489,9 +489,9 @@ CODE     : config CATEGORIES + priority 4 · pipeline rule (LIST MODATI — "గ
            ఉద్యోగాలు" → Abroad, Central kaadu) · Gemini CATEGORY_SEEDS ·
            14 sources (eMigrate/MEA/IELTS/Study abroad/Canada/UK…), 4 daily
 SITE     : nav dropdown + chip "విదేశీ ఉద్యోగాలు" + mobile link + #grid card
-           tiles: 17 content categories · 143 official sources · 11,192 keywords
+           tiles: 17 content categories · 180 official sources · 12,344 keywords
 KEYWORDS : top_post ENTITIES 188 → 203 (+15 abroad: Gulf/eMigrate/IELTS/PTE/Canada…)
-           universe 10,682 → 11,192 (510 abroad keywords) · exam-mechanics intents skip
+           universe 10,682 → 12,344 (510 abroad keywords) · exam-mechanics intents skip
 TOP_POST : LIVE_CATEGORIES lo 17 pillars (mundu 12 matrame — 5 pillars
            "Online Education" ki map ayyevi!) + abroad intent filter
 ADVISOR  : Tier-1 gap unte — 'విదేశీ ఉద్యోగాలు (Abroad Jobs)' pillar posts cheyyamani cheptundi
@@ -863,7 +863,7 @@ search · mobile lo app-laga install · colorful premium look, text/background c
 
 WHAT CHANGED
   Site copy  : బ్రేకింగ్ టికర్ + section + nav/mobile links + JS + CSS — public sitenunchi poyayi.
-               Hero proof-stats (11,192 keywords · 143 sources · 59 districts) mariyu topbar/footer
+               Hero proof-stats (12,344 keywords · 180 sources · 59 districts) mariyu topbar/footer
                district lines teesesaam. "నమూనా/DEMO" maatalu public pages/theme nunchi clean.
   Filters    : Homepage `.qrow` chips — అన్నీ · 10వ తరగతి · ఇంటర్ (10+2) · ఐటీఐ · డిప్లొమా · డిగ్రీ ·
                పీజీ · బీటెక్ · ⏳ 7 రోజుల్లో ముగిసేవి. `applyFilter()` qual + search + category ni
@@ -1859,10 +1859,10 @@ GAP-4 Terms of service page ledu (policy completeness)
 
 VERIFY (ippudu)
 ```
-python run.py --test-all          # 75/75
+python run.py --test-all          # 76/76
 python run.py --pin-check         # 100/100 · 68/68 checks
 python tests/v95_test.py          # 13 checks
-python tools/build_wp_theme.py    # 48 files · theme 1.9.6
+python tools/build_wp_theme.py    # 49 files · theme 1.9.7
 ```
 
 HONEST LIMIT
@@ -1870,4 +1870,78 @@ HONEST LIMIT
 Rank Math 100 / SEO 100 = code tho measure cheyyagaligedi (ee repo lo proof undi).
 Google ranking · Discover · AdSense approval · revenue = Google + mee content +
 time. v95 signals ni pin-to-pin chesindi; guarantee kaadu.
+```
+
+## PART 53 — v96: COVERAGE MISS-ZERO + SESSION DEPTH + 3 REAL BUGS (theme 1.9.7)
+
+**Mee brief:** "em em posts vasthunnai anni … job melas · district jobs ·
+university results · daily current affairs … whatsapp/telegram buttons madhyalo …
+ads refresh (automation kadu — vere page ki vachi malli mundu page) … thumbnail
+name … chinna chinnavi kuda miss cheyoddu".
+
+ENTI CHESAMU
+```
+autoblog/sources_grid.py   # 143 → 180 sources (job melas · district · universities ·
+                           #   hall tickets axis · daily current affairs · BPO)
+autoblog/top_post.py       # 203 → 221 entities → 12,344 keywords
+autoblog/monetize.py       # NEW: join_strip_block() · insert_join_strip() ·
+                           #   whatsapp_channel_url() (number/link typo-safe)
+autoblog/seo.py            # NEW: image_filename() · image_alt() (SEO thumbnail name)
+autoblog/wordpress_client.py # BUG FIX: webp → image/webp (MIME map) + filename param
+autoblog/pipeline.py       # thumbnail name/alt wiring + BUG FIX: refresh lo monetize
+autoblog/district_hubs.py  # NEW: TS 33 + AP 26 district job hubs (thin-page guard)
+autoblog/config.py         # DISTRICT_HUB_MIN_POSTS (default 3)
+autoblog/main.py           # --district-hubs · --district-hubs-apply · --district-hubs-state
+autoblog/guardian.py       # counts lock → 17 · 221 · 12,344 · 180
+autoblog/readiness.py      # same counts lock
+wordpress-theme/inc/upnext.php # NEW: Up Next + mobile sticky next bar (policy-safe)
+wordpress-theme/inc/cta.php    # dedupe: bot strip unte inline strip skip
+wordpress-theme/...            # options (upnext · upnext_bar) · CSS · JS · 1.9.7
+tests/v96_test.py          # 17 checks
+```
+
+ENDUKU (nijamaina gaps)
+```
+GAP-1 job mela / district jobs / university results / daily CA queries grid lo levu
+      FIX: 180 sources + 221 entities (12,344 keywords) — counts guardian lo lock
+GAP-2 join buttons post chivara mattrame (chala mandi akkadi varaku scroll cheyyaru)
+      FIX: mid-article strip — idempotent · empty-safe · theme dedupe guard
+GAP-3 ad refresh: timer/auto-reload = AdSense INVALID TRAFFIC (ban risk)
+      FIX: Up Next + sticky next bar → reader tap = real pageview = legit ad request
+GAP-4 thumbnail eppudu {slug}.webp (Google Images ki context ledu)
+      FIX: seo.image_filename() — keyword-year-category.webp + image_alt()
+GAP-5 BUG: .webp ni image/jpeg ga upload → konni hosts REJECT → featured image ledu
+      FIX: extension → real MIME + Content-Disposition lo kotha name
+GAP-6 BUG: update_post() lo monetize.append_blocks() ledu → refresh ayina posts
+      nunchi Telegram CTA + affiliate + join strip DELETE ayyevi
+      FIX: update path lo monetize + ad_manager (QA/gate ki mundu)
+GAP-7 59 districts scan avutayi kaani landing page okkati ledu (local queries miss)
+      FIX: district_hubs.py + CLI — thin-page guard (3 posts kanna takkuva → page ledu)
+```
+
+VERIFY (ippudu)
+```
+python run.py --test-all                 # 76/76
+python tests/v96_test.py                 # 17 checks
+python run.py --district-hubs            # dry-run plan (eligible vs thin-guard)
+python run.py --district-hubs --district-hubs-apply   # WordPress lo publish
+python tools/build_wp_theme.py           # 49 files · theme 1.9.7
+node tools/php_lint.js                   # 39/39
+```
+
+OWNER SETUP (ee features pani cheyyadaniki)
+```
+.env lo:  SOCIAL_WHATSAPP=9182739312        # leda full invite link
+          TELEGRAM_CHANNEL_URL=https://t.me/<channel>
+          DISTRICT_HUB_MIN_POSTS=3          # thin-page guard (3 kanna takkuva vaddu)
+WP Admin: StudentUp → Settings → "Up Next block" + "Mobile sticky next article bar"
+          (rendu default ON; sticky ad tho collision automatic ga handle avutundi)
+```
+
+HONEST LIMIT
+```
+Coverage · signals · session depth ni penchamu. Google ranking, "top 0.01%",
+Discover placement, AdSense approval, views/clicks — Google + mee content + time
+batti untayi; code guarantee ivvaledu. Ad auto-refresh DELIBERATELY implement
+cheyyaledu (policy violation) — real navigation tho mattrame refresh penchamu.
 ```

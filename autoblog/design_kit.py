@@ -85,6 +85,13 @@ ADVANCED_CSS = """
 .su-fact dd{margin:3px 0 0;color:var(--su-ink);font-weight:600;overflow-wrap:anywhere}
 .su-trust-box{border:1px solid #DCE5F0;background:#FBFCFE;border-radius:14px;padding:14px 16px;margin-top:28px;font-size:14px}
 .su-related,.su-official-links{background:#FAFBFD;border-radius:14px;padding:4px 16px 12px;margin-top:22px}
+.su-join-strip{border:1px solid #CFE6D6;border-left:5px solid #25D366;background:linear-gradient(135deg,#F3FBF6,#FFFDF6);border-radius:0 14px 14px 0;padding:14px 16px;margin:22px 0}
+.su-join-strip-t{margin:0 0 10px;font-size:15px;line-height:1.7}
+.su-join-strip-b{display:flex;flex-wrap:wrap;gap:10px;margin:0}
+.su-join-btn{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:9px 16px;font-weight:700;font-size:14px;text-decoration:none!important;color:#fff!important;border:0}
+.su-join-wa{background:#25D366}.su-join-tg{background:#229ED9}
+.su-join-btn:hover{filter:brightness(.93)}
+@media (max-width:480px){.su-join-strip-b{flex-direction:column}.su-join-btn{justify-content:center}}
 .su-table-scroll{overflow-x:auto;max-width:100%;margin:18px 0;border-radius:10px}
 .su-service-hero{background:linear-gradient(135deg,#12356B 0%,#1D4D91 62%,#E8842B 160%);color:#fff;border-radius:20px;padding:26px 24px;margin:10px 0 28px;box-shadow:0 12px 34px rgba(18,53,107,.18)}
 .su-service-hero h1,.su-service-hero p{color:#fff}.su-service-kicker{font-size:12px;letter-spacing:.12em;font-weight:700;opacity:.86}.su-service-lead{font-size:18px;line-height:1.7;max-width:800px}
@@ -103,6 +110,7 @@ body.su-dark .entry-content p,body.su-dark .entry-content li,body.su-dark .entry
 body.su-dark .entry-content th{background:#294E88}
 body.su-dark .entry-content tr:nth-child(even) td{background:#202F46}
 body.su-dark .su-reading-badge{background:#202F46;border-color:#33445E}
+body.su-dark .su-join-strip{background:#17261F;border-color:#2F5943}
 @media (max-width:640px){.su-site-tools{padding:5px 10px}.su-tool-btn,.su-share-btn{padding:6px 9px;font-size:12px}.su-article-shell{width:100%}.su-quick-answer-card{padding:13px 14px}.su-table-scroll{margin-inline:-2px}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important}}
 """

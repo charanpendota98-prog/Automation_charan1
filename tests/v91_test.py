@@ -129,7 +129,7 @@ def test_version_parity_192() -> None:
     php = re.search(r"STUDENTUP_VERSION',\s*'([^']+)'", read(THEME / "functions.php")).group(1)
     css = re.search(r"Version:\s*([0-9.]+)", read(THEME / "style.css")).group(1)
     stable = re.search(r"Stable tag:\s*([0-9.]+)", read(THEME / "readme.txt")).group(1)
-    assert php == css == stable == "1.9.6", f"parity tappu: {php}·{css}·{stable}"
+    assert php == css == stable == "1.9.7", f"parity tappu: {php}·{css}·{stable}"
     readme = read(THEME / "readme.txt")
     assert "= 1.9.1" in readme and "= 1.9.2" in readme, "changelog entries ledu"
     assert "Telegram" in readme
@@ -138,9 +138,9 @@ def test_version_parity_192() -> None:
 def test_suite_pins_and_docs() -> None:
     for f in ("v75_test.py", "v76_test.py", "v77_test.py", "v78_test.py",
               "v79_test.py", "v80_test.py", "v81_test.py"):
-        assert "suites == 75" in read(ROOT / "tests" / f), f + " (74 pin ledu)"
+        assert "suites == 76" in read(ROOT / "tests" / f), f + " (74 pin ledu)"
     suites = len(list((ROOT / "tests").glob("*_test.py")))
-    assert suites == 75, f"suites {suites} (v94 tho 74 expect)"
+    assert suites == 76, f"suites {suites} (v96 tho 76 expect)"
     assert "71/71" in read(ROOT / "README.md"), "README 71/71 claim ledu"
     assert "71/71" in read(ROOT / "MANUAL_ADVANCED_CHECKLIST.md"), "MANUAL 71/71 ledu"
 
