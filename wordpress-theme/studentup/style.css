@@ -4,7 +4,7 @@ Theme URI: https://studentup.in/
 Author: StudentUp
 Author URI: https://studentup.in/
 Description: StudentUp design for Telangana & Andhra Pradesh students — TS/AP/Central govt jobs, qualification filter (SSC/10th · Inter · Degree · PG), live search, latest-jobs scrolling ticker, brand social icons, install as an app (PWA), job/exam cards, AdSense-ready ad slots, dark mode. Mobile-first, Rank Math + AdSense friendly.
-Version: 1.9.6
+Version: 1.9.8
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 7.4
@@ -271,6 +271,16 @@ body.dark p.su-kw,body.dark p.su-source,body.dark p.su-internal{color:#c3d3ea}
 .entry-content a.su-ctx{text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px;font-weight:600;color:var(--navy)}
 .su-dark .entry-content a.su-ctx{color:#8fb8ff}
 @media(max-width:600px){.entry-content .su-figure img{border-radius:10px}}
+/* v96: mid-article WhatsApp/Telegram join strip (bot monetize.join_strip_block) */
+.entry-content .su-join-strip{border:1px solid #cfe6d6;border-left:5px solid #25d366;background:linear-gradient(135deg,#f3fbf6,#fffdf6);border-radius:0 14px 14px 0;padding:14px 16px;margin:22px 0}
+.entry-content .su-join-strip-t{margin:0 0 10px;font-size:15px;line-height:1.7}
+.entry-content .su-join-strip-b{display:flex;flex-wrap:wrap;gap:10px;margin:0}
+.entry-content a.su-join-btn{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:9px 16px;font-weight:700;font-size:14px;text-decoration:none;color:#fff;border:0}
+.entry-content a.su-join-wa{background:#25d366}
+.entry-content a.su-join-tg{background:#229ed9}
+.entry-content a.su-join-btn:hover{filter:brightness(.93)}
+body.dark .entry-content .su-join-strip{background:#17261f;border-color:#2f5943}
+@media(max-width:480px){.entry-content .su-join-strip-b{flex-direction:column}.entry-content a.su-join-btn{justify-content:center}}
 .su-related-entities{background:#f4faf6;border:1px solid #cfe9d8;border-radius:10px;padding:12px 16px;margin:16px 0}
 .su-related-title{font-weight:700;color:#14663a;margin-bottom:6px}
 .su-related-entities ul{margin:0;padding-left:18px;display:flex;flex-wrap:wrap;gap:8px;list-style:none}
@@ -936,3 +946,63 @@ body.su-has-stickyad .su-saved-toast{bottom:168px}
 .news{transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}
 .news:hover{transform:translateY(-3px);box-shadow:0 20px 44px rgba(15,46,98,.13);border-color:#d7e3f5}
 @media(prefers-reduced-motion:reduce){.news,.news:hover{transition:none;transform:none}}
+
+/* ==================== v96: UP NEXT (session depth → policy-safe ad refresh) ====
+ * Timer/auto-reload eppudu vaddu (AdSense invalid-traffic). Badhulu ga reader
+ * ki next article ni pedda ga chupistam — tap = nijamaina kotha pageview.
+ */
+.su-upnext{background:#f7faff;border:1px solid #dbe6f7;border-radius:16px;padding:16px 18px;margin:26px 0}
+.su-upnext-title{font-size:18px;margin:0 0 12px;color:var(--navy)}
+.su-upnext-list{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.su-upnext-item a{display:flex;gap:12px;align-items:center;background:#fff;border:1px solid #e6edf8;border-radius:12px;padding:10px;text-decoration:none;color:inherit;transition:border-color .18s ease,transform .18s ease}
+.su-upnext-item a:hover{border-color:#b9cdee;transform:translateY(-2px)}
+.su-upnext-thumb img{width:96px;height:54px;object-fit:cover;border-radius:8px;display:block}
+.su-upnext-copy{display:flex;flex-direction:column;gap:3px;min-width:0}
+.su-upnext-head{font-weight:700;font-size:15px;line-height:1.4;color:var(--navy)}
+.su-upnext-meta{font-size:12.5px;color:#5b6b7f}
+body.dark .su-upnext{background:#121c30;border-color:#25406b}
+body.dark .su-upnext-item a{background:#16213a;border-color:#25406b}
+body.dark .su-upnext-head{color:#e7f0ff}
+body.dark .su-upnext-meta{color:#a9bcd8}
+@media(max-width:480px){.su-upnext-thumb img{width:76px;height:44px}.su-upnext-head{font-size:14px}}
+
+/* mobile sticky "next article" bar — sticky AD tho collide avvakunda */
+.su-nextbar{position:fixed;left:8px;right:8px;bottom:10px;z-index:90;display:flex;align-items:center;gap:8px;background:#0f2e62;color:#fff;border-radius:14px;padding:10px 12px;box-shadow:0 12px 30px rgba(15,46,98,.28)}
+.su-nextbar[hidden]{display:none}
+.su-nextbar-link{flex:1;min-width:0;color:#fff!important;text-decoration:none;display:flex;flex-direction:column;gap:2px}
+.su-nextbar-kicker{font-size:11px;letter-spacing:.06em;text-transform:uppercase;opacity:.82}
+.su-nextbar-title{font-weight:700;font-size:14px;line-height:1.35;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.su-nextbar-close{border:0;background:rgba(255,255,255,.16);color:#fff;border-radius:50%;width:26px;height:26px;line-height:1;cursor:pointer;flex:0 0 auto}
+body.su-has-stickyad .su-nextbar{bottom:78px}
+@media(min-width:900px){.su-nextbar{display:none}}
+@media(prefers-reduced-motion:reduce){.su-upnext-item a:hover{transform:none}}
+
+/* ==================== v98: IN-CONTENT SHARE BAR (viral reach) ==============
+ * Enduku: share buttons post chivara matrame unnayi — mobile lo chala mandi
+ * akkadi varaku scroll cheyyaru. Modati H2 tarvata compact row pedithe
+ * prathi reader ki share option kanipistundi (free reach lever).
+ * CLS-safe: fixed height ledu, normal flow lo untundi (layout shift raadu).
+ */
+.su-sharebar{margin:22px 0;padding:13px 15px;border:1px solid #e3ebf7;border-radius:14px;
+  background:linear-gradient(135deg,#f7faff,#eef4ff);display:flex;flex-wrap:wrap;
+  align-items:center;gap:10px 12px}
+.su-sharebar-t{font-weight:800;font-size:13.5px;color:#0f2e62;letter-spacing:-.01em}
+.su-sharebar-btns{display:flex;flex-wrap:wrap;gap:8px;margin-left:auto}
+.su-sb{display:inline-flex;align-items:center;gap:7px;padding:8px 13px;border-radius:999px;
+  font-size:13px;font-weight:800;text-decoration:none;border:0;cursor:pointer;line-height:1;
+  transition:transform .16s ease,box-shadow .16s ease;touch-action:manipulation}
+.su-sb:hover{transform:translateY(-2px);box-shadow:0 8px 18px rgba(15,46,98,.16)}
+a.su-sb-wa{background:linear-gradient(135deg,#2bd46b,#128c7e);color:#fff!important}
+a.su-sb-tg{background:linear-gradient(135deg,#37aee2,#229ed9);color:#fff!important}
+.su-sb-native,.su-sb-copy{background:#fff;color:#0f2e62;border:1px solid #d7e3f5}
+.su-sb-native[hidden]{display:none!important}   /* navigator.share lekapothe */
+@media(max-width:600px){
+  .su-sharebar{flex-direction:column;align-items:stretch;gap:9px}
+  .su-sharebar-btns{margin-left:0}
+  .su-sb{flex:1 1 auto;justify-content:center}
+}
+@media(prefers-reduced-motion:reduce){.su-sb,.su-sb:hover{transition:none;transform:none}}
+body.dark .su-sharebar{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.1)}
+body.dark .su-sharebar-t{color:#e8f0ff}
+body.dark .su-sb-native,body.dark .su-sb-copy{background:transparent;color:#e8f0ff;
+  border-color:rgba(255,255,255,.18)}

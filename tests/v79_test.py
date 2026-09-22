@@ -160,7 +160,7 @@ def test_php_parse():
 
 def test_docs_v79():
     suites = len(list((ROOT / "tests").glob("*_test.py")))
-    assert suites == 75, f"suites {suites} (v94 tho 74 expect)"
+    assert suites == 78, f"suites {suites} (v98 tho 78 expect)"
     readme = read(ROOT / "README.md")
     manual = read(ROOT / "MANUAL_ADVANCED_CHECKLIST.md")
     go_live = read(ROOT / "GO_LIVE_CHECKLIST.md")

@@ -89,7 +89,7 @@ def check_first_look_ui() -> tuple:
     if not order_ok:
         return False, "order marindi (used → hero kaadu)", "v72 order restore cheyandi"
     # v72: public surface lo internal metrics/demo maatalu undakoodadu
-    leaked = [t for t in ("11,192", "రాడార్", "నమూనా", "DEMO", "బ్రేకింగ్") if t in html]
+    leaked = [t for t in ("12,344", "రాడార్", "నమూనా", "DEMO", "బ్రేకింగ్") if t in html]
     if leaked:
         return False, "public text leak: " + ", ".join(leaked), "v72 clean-copy rule (internal metrics teeseyandi)"
     return True, "most-used → hero order + search/qualification/install intact, copy clean", ""
@@ -193,7 +193,7 @@ def check_ads_inventory() -> tuple:
 
 
 def check_keyword_pillar_lock() -> tuple:
-    """Counts lock: 17 pillars · 203 entities · 11,192 kws · 143 sources."""
+    """Counts lock: 17 pillars · 221 entities · 12,344 kws · 180 sources."""
     try:
         from . import sources_grid, top_post
 
@@ -204,7 +204,7 @@ def check_keyword_pillar_lock() -> tuple:
         daily = len([s for s in sources_grid.SOURCES_GRID if s.get("daily")])
     except Exception as exc:  # noqa: BLE001
         return False, f"engine check fail: {exc}", "autoblog modules import check"
-    want = (17, 203, 11_192, 143)
+    want = (17, 221, 12_344, 180)
     got = (cats, ents, uni, src)
     if got != want:
         return False, f"counts marayi: {got} (expected {want})", "pillar/keyword counts sync cheyandi (v58/v59 docs)"

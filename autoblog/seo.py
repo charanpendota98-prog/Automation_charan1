@@ -832,6 +832,51 @@ SLUG_STOPWORDS = {
 }
 
 
+IMAGE_NAME_MAX = 70
+
+
+def image_filename(focus_keyword: str, slug: str = "", category: str = "",
+                   year: int = 0, ext: str = "webp") -> str:
+    """v96: SEO-friendly THUMBNAIL FILE NAME (Google Images + Discover signal).
+
+    Ippati varaku featured image `{slug}.webp` ga upload ayyedi. Slug lo
+    keyword unna, Google Images ki category/year context povutundi mariyu
+    WordPress lo `tspsc-group-2-1.webp` lanti duplicate-suffix names vastayi.
+
+    Ee helper: `focus-keyword-category-year.webp` — ascii-only, stopwords
+    ledu, duplicate tokens ledu, `IMAGE_NAME_MAX` chars limit, hyphen-clean.
+    Keyword khali aithe slug fallback (file name epudu khali kaadu).
+    """
+    ext = re.sub(r"[^a-z0-9]+", "", (ext or "webp").lower()) or "webp"
+    parts: List[str] = []
+    seen = set()
+    for chunk in (focus_keyword, slug, category, str(year or "")):
+        for token in re.findall(r"[a-zA-Z0-9]+", chunk or ""):
+            token = token.lower()
+            if not token or token in SLUG_STOPWORDS or token in seen:
+                continue
+            seen.add(token)
+            parts.append(token)
+            if len("-".join(parts)) >= IMAGE_NAME_MAX:
+                break
+        if len("-".join(parts)) >= IMAGE_NAME_MAX:
+            break
+    base = "-".join(parts)[:IMAGE_NAME_MAX].strip("-")
+    base = re.sub(r"-+", "-", base)
+    return f"{base or 'studentup-post'}.{ext}"
+
+
+def image_alt(focus_keyword: str, category: str = "", year: int = 0,
+              brand: str = "studentup.in") -> str:
+    """Featured/inline image alt — keyword modata, brand chivara (Rank Math
+    'Focus Keyword in Image Alt' + accessibility). Duplicate words ledu."""
+    bits = [b for b in (focus_keyword.strip(), category.strip(),
+                        str(year) if year else "") if b]
+    line = " ".join(bits)
+    line = re.sub(r"\s+", " ", line).strip(" -–|")
+    return f"{line} | {brand}" if line else brand
+
+
 def optimize_slug(slug: str, focus_keyword: str = "", max_len: int = 60) -> str:
     """Rank Math-friendly slug: stopwords strip + keyword tokens include.
 

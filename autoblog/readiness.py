@@ -113,7 +113,7 @@ def c_pillars_and_keywords() -> List[dict]:
     uni = len(top_post.keyword_universe())
     src = len(sources_grid.SOURCES_GRID)
     daily = len([s for s in sources_grid.SOURCES_GRID if s.get("daily")])
-    ok = (cats, ents, uni, src) == (17, 203, 11_192, 143)
+    ok = (cats, ents, uni, src) == (17, 221, 12_344, 180)
     line = f"{cats} pillars · {ents} entities · {uni:,} keywords · {src} sources ({daily} daily)"
     return [_ok("Coverage (pillars/keywords/sources)", line, "CONTENT ENGINE")
             if ok else _bad("Coverage (pillars/keywords/sources)", line, "CONTENT ENGINE",
@@ -127,7 +127,7 @@ def c_latest_news_engine() -> List[dict]:
     districts = 33 + 26
     posts_day = getattr(config, "RADAR_POSTS_PER_DAY", 2)
     plan = getattr(config, "POSTS_PER_DAY", "")
-    line = (f"radar {sweeps}x/day · {districts} districts · Google News తెలుగు + 143 sources · "
+    line = (f"radar {sweeps}x/day · {districts} districts · Google News తెలుగు + 180 sources · "
             f"radar posts {posts_day}/day")
     if plan:
         line += f" · plan {plan}"
