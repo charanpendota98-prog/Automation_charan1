@@ -551,6 +551,32 @@ ni ready cheyyagaladu — approval ni guarantee cheyyaledu. "Google lo suggest a
 ante autocomplete/Discover placement — adi **Google algorithm**, daaniki code tho force
 cheyyaleamu; cheyyagaligedi eligibility + quality signals mattrame.
 
+### v103 — REAL-TIME MULTI-SOURCE ORIGINALITY CHECK (no-copy safety)
+
+Local source comparison strong ga undi, kaani manam fetch cheyyani unknown web
+page nunchi phrase copy ayithe local donors detect cheyyaleru. Ippudu final
+article ki extra live layer add chesanu:
+
+- article nunchi distinctive 9–24 word sentences select;
+- exact quoted phrase ni live search chestundi;
+- returned external pages fetch chesi phrase nijamga unda verify chestundi;
+- exact match dorikithe **publish block** — `SKIP-LIVE-EXACT-OVERLAP`;
+- own site URLs exclude chestundi;
+- Google Custom Search API key + CX unte actual Google CSE result engine;
+- credentials lekunte fallback engine honest ga report avutundi — fake “Google
+  checked” claim ledu;
+- `ORIG_LIVE_REQUIRED=1` tho live search unavailable ayithe kuda publish block
+  cheyyachu; default 0 keeps infrastructure outages from stopping drafts.
+
+Configuration: `ORIG_LIVE_CHECK=1`, `ORIG_LIVE_PHRASES=3`, optional
+`GOOGLE_CSE_API_KEY` and `GOOGLE_CSE_ID`. Idi AI detector kaadu, legal copyright
+verdict kaadu; exact web evidence checker. Local donor overlap, source rewrite
+distance, near-duplicate, hard originality floor and now live phrase evidence
+— five-layer protection.
+
+**Proof:** `--test-all` **83/83**; v103 tests live match blocking, own-domain
+exclusion, engine transparency, pipeline wiring and configuration.
+
 ### v102 — GSC-EVIDENCE REFRESH PRIORITY (advanced growth engine)
 
 Oldest-first refresh kaadu. Ippudu real Search Console **Pages export** batti

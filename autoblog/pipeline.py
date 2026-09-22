@@ -913,6 +913,35 @@ def create_from_source(url: str, mock: bool = False, category: str = "",
                 f"{floor}% — ee source ni skip chestunnam (AdSense risk). "
                 f"Inko deep-rewrite source try cheyandi: {src.url}")
 
+        # v103: local donors tho match avvakapoyina, internet lo unknown copied
+        # phrase undochu. Distinctive sentences ni live exact-search chesi
+        # returned pages fetch chesi verify chestam. Match = publish BLOCK.
+        if getattr(config, "ORIG_LIVE_CHECK", True):
+            try:
+                from . import originality_live as _live
+
+                _live_rep = _live.check(
+                    article["content_html"],
+                    own_domain=urlparse(config.WP_SITE).netloc,
+                    max_phrases=getattr(config, "ORIG_LIVE_PHRASES", 3),
+                )
+                article["_live_originality"] = _live_rep
+                log.info("%s", _live.format_report(_live_rep))
+                if _live_rep.get("matches"):
+                    raise RuntimeError(
+                        "SKIP-LIVE-EXACT-OVERLAP: live web search found copied "
+                        f"phrase(s) on {len(_live_rep['matches'])} page(s); "
+                        "human rewrite/source attribution required")
+                if (_live_rep.get("status") in ("partial", "error")
+                        and getattr(config, "ORIG_LIVE_REQUIRED", False)):
+                    raise RuntimeError(
+                        "SKIP-LIVE-CHECK-UNAVAILABLE: required real-time "
+                        "originality check did not complete")
+            except RuntimeError:
+                raise
+            except Exception:  # noqa: BLE001 — report, never fake PASS
+                log.exception("live originality check failed (local gates remain)")
+
     # v19: near-duplicate guard — Google "scaled content abuse" policy:
     # swapped-name/only-date-changed pages site-wide signal ni charchestayi.
     # Mana published posts tho ee level dup ante SKIP (AdSense + ranking both).

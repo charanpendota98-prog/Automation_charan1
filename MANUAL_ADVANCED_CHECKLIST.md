@@ -2333,3 +2333,57 @@ truth kaadu. Update ayyaka 28-day comparison lo impressions, CTR, position
 measure cheyyandi. Winner pattern ni matrame scale cheyyandi. Blind mass
 refresh, CTR manipulation, fake dateModified, or keyword stuffing cheyyakandi.
 
+## PART 60 — v103: REAL-TIME MULTI-SOURCE ORIGINALITY CHECK
+
+### WHY LOCAL CHECK ALONE IS NOT ENOUGH
+
+Known research sources tho compare chesina, article lo fetched source list lo
+leni website nunchi exact sentence copy ayithe local check miss avvachu.
+Anduke final generated article ki live phrase evidence layer add chesam.
+
+### FLOW
+
+```
+article generated
+  -> local donor 5-gram + exact 12-word overlap
+  -> originality score + hard floor
+  -> near-duplicate site-wide check
+  -> select distinctive 9-24 word phrases
+  -> quoted live search
+  -> external result page fetch
+  -> exact phrase found? BLOCK : no evidence? continue
+  -> QA + post gate + human approval
+```
+
+### REAL GOOGLE CONFIGURATION
+
+Actual Google result engine kosam Google Custom Search JSON API credentials
+set cheyyali:
+
+```
+ORIG_LIVE_CHECK=1
+ORIG_LIVE_PHRASES=3
+ORIG_LIVE_REQUIRED=1
+GOOGLE_CSE_API_KEY=...
+GOOGLE_CSE_ID=...
+```
+
+Credentials lekunte fallback search engine use avutundi and report lo
+`engine=fallback` ani honest ga chupistundi. “Google lo verify ayyindi” ani
+fake claim cheyyadu. Search unavailable ayithe default `ORIG_LIVE_REQUIRED=0`
+lo local gates continue; strict no-copy workflow kosam `1` use cheyyandi.
+
+### IMPORTANT LIMIT
+
+Idi AI detector kaadu, 100% legal copyright certificate kaadu. Search engines
+all web pages return cheyyavu, paraphrase copy ni exact phrase check miss cheyyachu.
+Kabatti five layers + human review maintain chestam. Exact copied phrase dorikithe
+automation **publish cheyyadu** — source attribution or fresh rewrite required.
+
+### VERIFY
+
+```
+python tests/v103_test.py
+python run.py --test-all       # 83/83
+```
+

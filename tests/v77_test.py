@@ -275,7 +275,7 @@ def test_update_freshness_chain():
 
 def test_docs_v77():
     suites = len(list((ROOT / "tests").glob("*_test.py")))
-    assert suites == 82, f"suites {suites} (v102 tho 82 expect)"
+    assert suites == 83, f"suites {suites} (v103 tho 83 expect)"
     readme = read(ROOT / "README.md")
     manual = read(ROOT / "MANUAL_ADVANCED_CHECKLIST.md")
     go_live = read(ROOT / "GO_LIVE_CHECKLIST.md")

@@ -377,7 +377,14 @@ SEARCH_ENDPOINT = _get("SEARCH_ENDPOINT", "https://html.duckduckgo.com/html/")
 SEARCH_FALLBACK_ENDPOINT = _get(
     "SEARCH_FALLBACK_ENDPOINT", "https://lite.duckduckgo.com/lite/"
 )
-# Rank Math meta REST dwara set cheyadam (plugin active unte automatic)
+# v103: live originality. Google CSE credentials unte actual Google result
+# pages; lekapothe configured fallback engine tho transparent best-effort.
+ORIG_LIVE_CHECK = _get("ORIG_LIVE_CHECK", "1") not in ("0", "false", "no")
+ORIG_LIVE_PHRASES = int(_get("ORIG_LIVE_PHRASES", "3"))
+ORIG_LIVE_REQUIRED = _get("ORIG_LIVE_REQUIRED", "0") not in ("0", "false", "no")
+GOOGLE_CSE_API_KEY = _get("GOOGLE_CSE_API_KEY", "")
+GOOGLE_CSE_ID = _get("GOOGLE_CSE_ID", "")
+# Rank Math meta dwara set cheyadam (plugin active unte automatic)
 RANK_MATH_META_ENABLED = _get("RANK_MATH_META_ENABLED", "1") not in ("0", "false", "no")
 # A low score may still be saved as a draft for human editing, but direct live
 # publishing is blocked. This is a local quality gate, not a Google score.
