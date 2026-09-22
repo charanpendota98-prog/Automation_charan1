@@ -1842,7 +1842,7 @@ autoblog/pipeline.py       # featured upload tarvata inline figure attach + gate
 autoblog/config.py         # CONTEXTUAL_LINKS_MAX (default 3)
 tools/build_policy_pages.py# NEW page: terms.html (10 sections) + nav + sitemap
 wordpress-theme/...        # footer terms link · .su-figure/.su-ctx CSS · 1.9.6
-tests/v95_test.py          # 12 checks
+tests/v95_test.py          # 13 checks
 ```
 
 ENDuku (nijamaina gaps — audit lo kanipinchina vi)
@@ -1861,7 +1861,7 @@ VERIFY (ippudu)
 ```
 python run.py --test-all          # 75/75
 python run.py --pin-check         # 100/100 · 68/68 checks
-python tests/v95_test.py          # 12 checks
+python tests/v95_test.py          # 13 checks
 python tools/build_wp_theme.py    # 48 files · theme 1.9.6
 ```
 

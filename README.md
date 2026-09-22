@@ -579,7 +579,7 @@ kavali (usage rules · copyright + correction route · ad disclosure · third-pa
 "as is" information · liability limits · governing law India/Telangana · contact).
 `tools/build_policy_pages.py` lo TERMS + nav + sitemap; footer lo 6వ policy link.
 
-**Proof:** `--test-all` **75/75** (v95_test.py kotha: 12 checks) · jsdom **164/164** ·
+**Proof:** `--test-all` **75/75** (v95_test.py kotha: 13 checks) · jsdom **164/164** ·
 saved-engine **53/53** · pin gate **100/100 · 68/68** · readiness **100/100** ·
 php-lint **38/38** · theme **1.9.6**.
 

@@ -115,8 +115,9 @@ Detail docs: `DEPLOY_MILESWEB.md` (cPanel steps) · `DEPLOY_ORACLE_CLOUD.md` (VM
 - [ ] **2. WordPress setup** — Rank Math; theme install (**v74**: theme **1.7.2** —
       `python tools/build_wp_theme.py` → zip → Appearance → Themes → Upload → Activate);
       **v95 zip:** 48 files · 686 KB · theme **1.9.6** · sha256
-      `5202d59d4284c669fdea74ce28a8ccaa886416cf741bd5c5208610cbcd15a288`
-      (`sha256sum wordpress-theme/studentup-theme.zip` — upload chesina zip ide ani verify cheyandi)
+      `10ca6b3fc2e656571accab980d90b0db84a5dcbec46ee1ce87440b01d7279a95`
+      (`sha256sum wordpress-theme/studentup-theme.zip` — upload chesina zip ide ani verify cheyandi;
+      build ippudu **reproducible** — same content ⇒ same sha)
       `wp-admin → Users → Application Passwords` → app password create cheyyandi.
       **v68**: IndexNow key file ni **theme ne serve chestundi** (`/<key>.key`) — cPanel lo
       upload cheyyalsina pani ledu. Key: `python run.py --index-key-gen` → `.env` →

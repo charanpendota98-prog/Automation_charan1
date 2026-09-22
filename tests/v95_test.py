@@ -28,7 +28,7 @@ Ee suite v95 lo fix ayyina **nijamaina gaps** ni regression ga kāpādutundi:
         law). Fix: `tools/build_policy_pages.py` TERMS + nav + sitemap + footer
         link (theme).
 
-Checks: contextual_links API/safety · attach_inline_image API/safety · enhance()
+Checks (13): contextual_links API/safety · attach_inline_image API/safety · enhance()
 wiring · config knob · validator parity checks · rm100 slug trim · post_gate
 `content_image` (68/68 certificate) · pipeline wiring · terms page (builder ·
 nav · sitemap · footer) · version parity 1.9.6 · suite pins 75 · zip packaged.
@@ -282,6 +282,23 @@ def test_suite_pins_and_docs() -> None:
     print(f"      suites {SUITES_EXPECTED} · README v95 · MANUAL PART 52 ✔")
 
 
+def test_zip_sha_recorded() -> None:
+    """GO_LIVE lo unna zip sha256 ↔ nijamaina zip sha256 (upload verify pin).
+
+    v95 lo build ni reproducible chesam (fixed zip timestamps) — anduke ee pin
+    stable: prathi `--test-all` lo zip rebuild ayyina sha same untundi.
+    """
+    import hashlib
+
+    zip_path = ROOT / "wordpress-theme" / "studentup-theme.zip"
+    actual = hashlib.sha256(zip_path.read_bytes()).hexdigest()
+    go_live = read(ROOT / "GO_LIVE_CHECKLIST.md")
+    assert actual in go_live, f"GO_LIVE lo zip sha stale — ippudu {actual}"
+    src = read(ROOT / "tools" / "build_wp_theme.py")
+    assert "date_time=fixed" in src or "ZipInfo(" in src, "build reproducible kaadu"
+    print(f"      zip sha256 recorded + reproducible · {actual[:16]}… ✔")
+
+
 def test_zip_packaged() -> None:
     zpath = ROOT / "wordpress-theme" / "studentup-theme.zip"
     assert zpath.exists(), "zip ledu"
@@ -309,6 +326,7 @@ TESTS = [
     ("footer terms link", test_footer_has_terms_link),
     ("theme assets + 1.9.6", test_theme_assets_and_version),
     ("suite pins + docs", test_suite_pins_and_docs),
+    ("zip sha recorded", test_zip_sha_recorded),
     ("zip packaged", test_zip_packaged),
 ]
 

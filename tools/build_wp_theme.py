@@ -104,13 +104,25 @@ def php_lint() -> tuple[int, str]:
 
 
 def package(out: Path) -> tuple[int, int]:
+    """v95: REPRODUCIBLE zip — entry timestamps fix (sha256 build-to-build same).
+
+    Enduku: GO_LIVE checklist lo zip sha256 record chestamu (upload ayyina zip
+    ide ani verify cheyyadam kosam). `zf.write()` mtime ni store chestundi →
+    prathi build ki sha maripoyedi, aa record waste ayyedi. Fixed date_time +
+    stable attrs tho same content ⇒ byte-identical zip ⇒ same sha256.
+    """
     files = 0
+    fixed = (2026, 1, 1, 0, 0, 0)   # deterministic (reproducible artifact)
     out.parent.mkdir(parents=True, exist_ok=True)
     with zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED) as zf:
         for path in sorted(SRC.rglob("*")):
             if path.is_dir() or any(part in SKIP_DIRS for part in path.parts):
                 continue
-            zf.write(path, Path("studentup") / path.relative_to(SRC))
+            info = zipfile.ZipInfo(
+                str(Path("studentup") / path.relative_to(SRC)), date_time=fixed)
+            info.compress_type = zipfile.ZIP_DEFLATED
+            info.external_attr = 0o644 << 16
+            zf.writestr(info, path.read_bytes())
             files += 1
     return files, out.stat().st_size
 
