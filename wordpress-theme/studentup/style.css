@@ -4,7 +4,7 @@ Theme URI: https://studentup.in/
 Author: StudentUp
 Author URI: https://studentup.in/
 Description: StudentUp design for Telangana & Andhra Pradesh students — TS/AP/Central govt jobs, qualification filter (SSC/10th · Inter · Degree · PG), live search, latest-jobs scrolling ticker, brand social icons, install as an app (PWA), job/exam cards, AdSense-ready ad slots, dark mode. Mobile-first, Rank Math + AdSense friendly.
-Version: 1.9.2
+Version: 1.9.5
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 7.4
@@ -280,7 +280,7 @@ table.su-facts tr:nth-child(even) td{background:#f6f9ff}
 body.dark table.su-facts tr:nth-child(even) td{background:#101a30}
 /* Ad reserved space (CLS 0) + lazy placeholder */
 .su-ad-reserved{display:block;overflow:hidden}
-.su-ad-lazy::after{content:"Advertisement";display:block;height:100%;min-height:inherit;display:grid;place-items:center;color:#8fa3bf;font-size:12px;background:#f7f9fc;border-radius:8px}
+.su-ad-lazy::after{content:"Advertisement";display:grid;place-items:center;height:100%;min-height:inherit;color:#8fa3bf;font-size:12px;background:#f7f9fc;border-radius:8px}
 body.dark .su-takeaways{background:#2a2113;border-color:#5a4020;color:#f0dcb8}
 body.dark .su-takeaways-title{color:#f3c07a}
 body.dark .su-related-entities{background:#132318;border-color:#2a4a35}
@@ -771,3 +771,160 @@ body.dark .hero-slim h1{background:linear-gradient(120deg,#cfe1ff,#7fb0ff 55%,#f
 .su-tgjoin:hover{transform:translateY(-1px);box-shadow:0 8px 18px rgba(34,158,217,.3)}
 .su-tgjoin svg{flex:none}
 .footer-bottom .su-tgjoin{margin-top:8px}
+
+/* --- v92: SAVED / reader bookmarks (🔖 save-for-later + panel + /saved/ page) --- */
+.su-save-btn{display:inline-flex;align-items:center;gap:5px;border:1px solid rgba(15,46,98,.18);
+ background:none;color:var(--navy);font:inherit;font-size:12px;font-weight:600;cursor:pointer;
+ padding:5px 10px;border-radius:999px;transition:background .14s,border-color .14s,color .14s}
+.su-save-btn:hover{background:rgba(15,46,98,.06);border-color:rgba(15,46,98,.3)}
+.su-save-btn.on{background:var(--orange);border-color:var(--orange);color:#fff}
+.su-save-btn .su-save-ico{font-size:13px;line-height:1}
+.su-save-btn:focus-visible{outline:2px solid var(--blue,#1560d8);outline-offset:2px}
+.su-save-card{margin-left:auto;padding:3px 8px}
+.su-save-single{margin:10px 0 4px}
+/* header 🔖 (count badge) */
+.su-hdr-saved{position:relative}
+.su-hdr-saved .su-saved-count{position:absolute;top:-5px;right:-5px;min-width:16px;height:16px;
+ padding:0 4px;border-radius:999px;background:var(--orange);color:#fff;font-size:10px;font-weight:700;
+ line-height:16px;text-align:center}
+/* rail + drawer */
+.su-saved-rail{position:fixed;right:14px;bottom:88px;z-index:60}
+.su-saved-tab{width:44px;height:44px;border-radius:999px;border:none;cursor:pointer;
+ background:var(--navy);color:#fff;font-size:19px;display:grid;place-items:center;
+ box-shadow:0 8px 20px rgba(15,46,98,.28);position:relative;transition:transform .14s}
+.su-saved-tab:hover{transform:translateY(-2px)}
+.su-saved-tab .su-saved-count{position:absolute;top:-4px;right:-4px;min-width:17px;height:17px;
+ border-radius:999px;background:var(--orange);color:#fff;font-size:10px;font-weight:700;line-height:17px}
+.su-saved-panel{position:fixed;right:14px;bottom:142px;z-index:61;width:min(340px,calc(100vw - 28px));
+ max-height:min(70vh,520px);overflow:auto;background:#fff;border-radius:16px;padding:12px;
+ box-shadow:0 18px 46px rgba(8,24,52,.28);border:1px solid rgba(15,46,98,.1)}
+.su-saved-panel[hidden]{display:none}
+.su-saved-head{display:flex;align-items:center;gap:8px;padding:2px 4px 10px;font-size:15px}
+.su-saved-n{margin-left:auto;background:rgba(15,46,98,.08);border-radius:999px;padding:1px 9px;font-size:12px;font-weight:700}
+.su-saved-close,.su-saved-del{border:none;background:none;cursor:pointer;color:inherit;opacity:.55;
+ font-size:14px;padding:4px 6px;border-radius:8px}
+.su-saved-close:hover,.su-saved-del:hover{opacity:1;background:rgba(15,46,98,.08)}
+.su-saved-row{display:flex;align-items:flex-start;gap:6px;padding:8px 4px;border-top:1px solid rgba(15,46,98,.08)}
+.su-saved-item{display:flex;flex-direction:column;gap:3px;flex:1;min-width:0;text-decoration:none;color:inherit}
+.su-saved-title{font-size:13px;font-weight:600;line-height:1.35}
+.su-saved-meta{font-size:11px;opacity:.6}
+.su-saved-sub{margin:12px 4px 2px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;opacity:.55}
+.su-saved-empty{margin:8px 4px;font-size:13px;opacity:.65;line-height:1.5}
+.su-saved-foot{display:flex;align-items:center;gap:10px;padding:10px 4px 2px;border-top:1px solid rgba(15,46,98,.08);margin-top:6px}
+.su-saved-all{font-size:12px;font-weight:600;color:var(--blue,#1560d8);text-decoration:none}
+.su-saved-clear{margin-left:auto;border:none;background:none;cursor:pointer;font:inherit;font-size:12px;
+ opacity:.6;text-decoration:underline}
+.su-saved-clear:hover{opacity:1}
+/* /saved/ page grid */
+.su-saved-page .su-saved-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px}
+.su-saved-page .su-saved-row{border:1px solid rgba(15,46,98,.1);border-radius:12px;padding:12px;border-top:1px solid rgba(15,46,98,.1)}
+/* toast */
+.su-saved-toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,18px);z-index:70;
+ background:var(--navy);color:#fff;padding:10px 16px;border-radius:999px;font-size:13px;font-weight:600;
+ opacity:0;pointer-events:none;transition:opacity .22s,transform .22s;max-width:min(92vw,420px);text-align:center}
+.su-saved-toast.on{opacity:1;transform:translate(-50%,0)}
+/* dark mode */
+body.dark .su-save-btn{color:#dce6ff;border-color:rgba(255,255,255,.22)}
+body.dark .su-save-btn:hover{background:rgba(255,255,255,.09)}
+body.dark .su-save-btn.on{background:var(--orange);color:#fff;border-color:var(--orange)}
+body.dark .su-saved-panel{background:#141d33;border-color:rgba(255,255,255,.14);color:#e8eeff}
+body.dark .su-saved-row,body.dark .su-saved-foot{border-color:rgba(255,255,255,.12)}
+body.dark .su-saved-n,body.dark .su-saved-close:hover,body.dark .su-saved-del:hover{background:rgba(255,255,255,.12)}
+body.dark .su-saved-all{color:#8fb6ff}
+/* print + reduced motion */
+@media print{.su-saved-rail,.su-save-btn,.su-saved-toast{display:none!important}}
+@media (prefers-reduced-motion:reduce){
+ .su-save-btn,.su-saved-tab,.su-saved-toast{transition:none}
+}
+
+/* === v93: MENU + HEADER UI POLISH (approved preview design parity) ===
+ * Problem (user report): fallback menu Home + 9 flat categories ga render ayyi,
+ * prathi item ki description line tho — header cluttered + overflow.
+ * v93 lo fallback grouped dropdowns (Jobs ▾ / More ▾) istundi; ee block aa
+ * structure ki top-website polish + preview design laage nav underline effect.
+ */
+
+/* top-level items: single line, tighter, calm */
+.nav .menu-primary>li>a{padding:10px 14px;line-height:1}
+.nav .menu-primary>li>a>small{display:none}          /* top-level lo description vaddhu */
+.nav .menu-primary>li{position:relative}
+
+/* active/hover underline (preview design: orange bar) */
+.nav .menu-primary>li>a::before{content:"";position:absolute;left:14px;right:14px;bottom:4px;height:2px;
+  border-radius:2px;background:var(--orange);transform:scaleX(0);transform-origin:left;
+  transition:transform .22s ease}
+.nav .menu-primary>li>a:hover::before,
+.nav .menu-primary>li.current-menu-item>a::before,
+.nav .menu-primary>li.current-menu-ancestor>a::before{transform:scaleX(1)}
+.nav .menu-primary>li>a:hover{background:transparent}
+
+/* caret — only for parents, subtle rotate on open */
+.menu-primary .menu-item-has-children>a::after{margin-left:7px;opacity:.55}
+.menu-primary .menu-item-has-children:hover>a::after,
+.menu-primary .menu-item-has-children:focus-within>a::after{opacity:1}
+
+/* dropdown panel: top-website feel */
+.nav .menu-primary .sub-menu{min-width:290px;padding:8px;border-radius:16px;
+  box-shadow:0 22px 52px rgba(9,28,60,.16);border:1px solid var(--line);
+  backdrop-filter:saturate(140%) blur(0)}
+.nav .sub-menu .menu-item>a{display:block;padding:9px 12px;border-radius:11px;font-weight:700;
+  font-size:13px;color:#33415c;transition:background .15s,color .15s,transform .15s}
+.nav .sub-menu .menu-item>a:hover{background:var(--soft);color:var(--navy);transform:translateX(2px)}
+.nav .sub-menu .menu-item>a>small{display:block;margin-top:2px;font-weight:500;font-size:11.5px;
+  color:var(--muted);line-height:1.45}
+.nav .sub-menu .menu-item+.menu-item{border-top:1px solid rgba(15,46,98,.06)}
+
+/* last dropdown ("More") screen nunchi bayataki vellakoodadu */
+.nav .menu-primary>li:last-child .sub-menu{left:auto;right:0}
+@media(max-width:1180px){.nav .menu-primary>li:last-child .sub-menu{right:-40px}}
+
+/* keyboard focus — clear ring (a11y) */
+.nav .menu-primary>li>a:focus-visible{outline:2px solid var(--blue);outline-offset:2px;border-radius:10px}
+.nav .sub-menu .menu-item>a:focus-visible{outline:2px solid var(--blue);outline-offset:-2px}
+
+/* dark mode */
+body.dark .nav .sub-menu .menu-item>a{color:#c9d6ee}
+body.dark .nav .sub-menu .menu-item>a:hover{background:rgba(255,255,255,.07);color:#fff}
+body.dark .nav .sub-menu .menu-item+.menu-item{border-top-color:rgba(255,255,255,.08)}
+
+/* === v93: FIXED-BOTTOM COLLISION + DESIGN PARITY (top-website UI pass) ===
+ * Kanukkunna nijamaina bugs:
+ *   1) `.su-stickyad` (bottom:0, z95) `.su-social` mobile row (bottom:10px, z45) ni
+ *      full ga cover chestundi → sticky ad ON unte social icons kanipinchavu.
+ *   2) footer bottom padding 24px matrame — fixed `.installbtn` (bottom:18px, left)
+ *      mariyu social row footer text ni cover chestayi (design lo 86px reserve undi).
+ *   3) `.su-saved-rail` (v92) bottom:88px — sticky ad ON aithe adi kuda todukkuntundi.
+ * Fix: sticky ad render ayyinappudu body ki `su-has-stickyad` class (PHP) →
+ * aa class unte fixed elements anni paiki shift avutayi.
+ */
+
+/* 1) footer ki fixed buttons kosam safe space (design parity) */
+.footer{padding-bottom:92px}
+.footer-bottom{padding-bottom:6px}
+
+/* 2) sticky ad unte — fixed elements paiki (collision ledu) */
+body.su-has-stickyad .su-social{bottom:78px}
+body.su-has-stickyad .su-saved-rail{bottom:150px}
+body.su-has-stickyad .su-saved-panel{bottom:204px}
+body.su-has-stickyad .installbtn{bottom:84px}
+body.su-has-stickyad .su-tab{top:42%}
+
+/* 3) toast ni fixed buttons kindha nunchi paiki (overlap ledu) */
+.su-saved-toast{bottom:104px}
+body.su-has-stickyad .su-saved-toast{bottom:168px}
+
+/* 4) header/menu rhythm — approved design ki daggaraga (62–64px row) */
+.headrow{height:64px;gap:18px}
+.logo .brand{font-size:20px}
+.logo small{font-size:10.5px}
+.hero h1{font-size:30px}
+@media(max-width:960px){.hero h1{font-size:26px}}
+
+/* 5) hero + section headings: tighter top-website rhythm */
+.sectionhead{margin:22px 0 12px}
+.sectionhead h2{font-size:19px;letter-spacing:-.01em}
+
+/* 6) cards: subtle lift (premium feel, CLS-safe — transform mattrame) */
+.news{transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}
+.news:hover{transform:translateY(-3px);box-shadow:0 20px 44px rgba(15,46,98,.13);border-color:#d7e3f5}
+@media(prefers-reduced-motion:reduce){.news,.news:hover{transition:none;transform:none}}

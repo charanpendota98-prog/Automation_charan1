@@ -1590,6 +1590,10 @@ def main() -> int:
                              "(add --dry-run to preview)")
     parser.add_argument("--theme-audit", action="store_true",
                         help="v28: read-only active-theme audit; never switches themes")
+    parser.add_argument("--adsense-ready", action="store_true",
+                        help="v94: AdSense approval READINESS (pre-application gate — "
+                             "policy pages · content depth · navigation · technical · "
+                             "prohibited scan · Discover) + JSON report")
     parser.add_argument("--adsense-kit", action="store_true",
                         help="v28: validate ADSENSE_CLIENT_ID and install/update "
                              "the site-wide Auto Ads loader widget")
@@ -1768,6 +1772,11 @@ def main() -> int:
         from . import site_setup
 
         return site_setup.run_theme_audit()
+    if args.adsense_ready:
+        from . import adsense_ready
+
+        return adsense_ready.run()
+
     if args.adsense_kit:
         from . import site_setup
 

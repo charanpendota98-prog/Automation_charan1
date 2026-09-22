@@ -10,6 +10,7 @@ Verifies:
 import json
 import sys
 import threading
+from datetime import datetime, timedelta
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
 
@@ -131,14 +132,21 @@ def main():
     db2.unlink(missing_ok=True)
     state.init(db2)
     conn = sqlite3.connect(str(db2))
-    old = "2026-08-01 10:00:00"
-    fresh = "2026-09-06 10:00:00"
+    # v92 fix: ee dates ippativaraku hardcode ayyayi vunnayi (2026-08-01/2026-09-06) —
+    # adi oka TIME BOMB: `posts_to_refresh` "created_at <= now - older_days" tho
+    # compare chestundi, so calendar munduku poinappudu "TooFresh" kuda eligible
+    # ayyi test ni random ga fail chesindi (2026-09-22 ki nijamga jarigindi).
+    # Ippudu anni dates **ippati nunchi relative** — test eppudu run chesina same.
+    _now = datetime.now()
+    old = (_now - timedelta(days=45)).strftime("%Y-%m-%d %H:%M:%S")
+    fresh = (_now - timedelta(days=3)).strftime("%Y-%m-%d %H:%M:%S")
+    refreshed_b = (_now - timedelta(days=21)).strftime("%Y-%m-%d %H:%M:%S")
     conn.executemany(
         "INSERT INTO posts (title, title_norm, status, wp_id, created_at, refreshed_at) "
         "VALUES (?,?,?,?,?,?)",
         [
             ("Old A", "old a", "publish", 101, old, None),
-            ("Old B", "old b", "publish", 102, old, "2026-09-01 10:00:00"),
+            ("Old B", "old b", "publish", 102, old, refreshed_b),
             ("TooFresh", "too fresh", "publish", 103, fresh, None),
             ("DraftOnly", "draft only", "draft", 104, old, None),
         ],

@@ -45,6 +45,27 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<ul>
 					<li><a href="<?php echo esc_url( studentup_social_links()['telegram'] ); ?>" target="_blank" rel="noopener">Telegram channel</a></li>
 					<li><a href="<?php echo esc_url( home_url( '/#qualsplit' ) ); ?>">Jobs by qualification</a></li>
+					<?php
+					/*
+					 * v94: policy pages footer lo link avvali — readers + Google
+					 * (AdSense reviewers kuda) prathi page nunchi reach avvali.
+					 * Page publish kaakapote link render avvadu (404 ledu).
+					 */
+					$su_policy = array(
+						'privacy'          => 'Privacy policy',
+						'about'            => 'About us',
+						'contact'          => 'Contact',
+						'disclaimer'       => 'Disclaimer',
+						'editorial-policy' => 'Editorial policy',
+					);
+					foreach ( $su_policy as $su_slug => $su_label ) :
+						$su_page = get_page_by_path( $su_slug );
+						if ( ! $su_page || 'publish' !== get_post_status( $su_page ) ) {
+							continue;
+						}
+						?>
+						<li><a href="<?php echo esc_url( get_permalink( $su_page ) ); ?>"><?php echo esc_html( $su_label ); ?></a></li>
+					<?php endforeach; ?>
 				</ul>
 			</div>
 		</div>
@@ -72,6 +93,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 // v64: sticky bottom ad (option: StudentUp → Ads → Sticky bottom ad ON)
 if ( studentup_opt( 'sticky_ad', '0' ) ) :
 	?>
+	<script>document.body.classList.add('su-has-stickyad');</script>
 	<div class="su-stickyad" id="su-stickyad">
 		<button type="button" class="su-sticky-close" aria-label="Close">✕</button>
 		<?php studentup_ad( 'anchor' ); ?>
@@ -98,6 +120,11 @@ if ( studentup_opt( 'pwa', '1' ) && studentup_opt( 'install_prompt', '1' ) ) :
 		</div>
 	</div>
 <?php endif; ?>
+
+<?php
+// v92: Saved rail + drawer (reader bookmarks). localStorage mattrame — server load ledu.
+studentup_saved_panel();
+?>
 
 <?php wp_footer(); ?>
 </body>

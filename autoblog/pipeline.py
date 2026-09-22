@@ -554,6 +554,16 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
             # v38: Top Post Score image-alt check ee alt text ni verify chestundi
             if media_id:
                 article["_media_alt"] = alt_text
+            # v94: Article JSON-LD ki `image` (REQUIRED for Google Article rich
+            # results + Discover large card). Schema upload ki MUNDU generate
+            # ayyindi, anduke ippudu patch chestunnamu (idempotent + safe).
+            if media_id and getattr(wp, "last_media_url", ""):
+                try:
+                    final_html = seo.attach_schema_image(
+                        final_html, wp.last_media_url, 1200, 675)
+                    log.info("v94 schema image attach: %s", wp.last_media_url)
+                except Exception:  # noqa: BLE001 — schema patch fail publish aapadu
+                    log.exception("v94 schema image attach skip (publish safe)")
             # disk full avvakunda — upload ayyaka local file delete
             if media_id and not config.KEEP_IMAGES:
                 image_path.unlink(missing_ok=True)

@@ -1678,3 +1678,153 @@ python tools/parity_audit.py                 # 0 errors
   `TELEGRAM_CHANNEL_URL` = invite link (auto-post footer lo kanipistundi).
 * Deploy: theme zip rebuild (`python tools/build_wp_theme.py`) → WP Admin →
   Appearance → Themes → Add New → Upload → **Replace current** (1.9.2).
+
+## PART 49 — v92: SAVED / READER RETENTION (theme 1.9.3)
+
+**Mee brief:** "fully advanced best ga build cheyyu more and more advanced fully deep gaa".
+Deep audit chesi (bookmark grep = 0 hits) okka **nijamaina** reader-facing gap fix chesam.
+
+ENTI CHESAMU (v92)
+```
+wordpress-theme/studentup/inc/saved.php              # module (gates · button · panel · shortcode)
+wordpress-theme/studentup/assets/js/studentup-saved.js  # engine (localStorage · toggle · render)
+tests/runtime/saved_runtime_test.js                  # REAL behaviour test (jsdom · 53 checks)
+tests/v92_test.py                                    # 11 checks (source + wiring + parity + zip)
+```
+
+* 🔖 **Save/un-save** — prathi card + single post lo. `aria-pressed` sync ·
+  keyboard + screen-reader ready · label "Save" ↔ "Saved".
+* **Saved rail + drawer** — count badge tho; saved list + Recently-read block;
+  Escape / outside-click close.
+* **`[studentup_saved]` shortcode** → /saved/ page (menu lo link pettachu).
+* **localStorage mattrame** — DB ledu · cookie ledu · server round-trip ledu
+  (privacy + AdSense clean · server load zero).
+* **Private mode safe** — storage block aithe soft note + saving OFF; page break ledu.
+* Options: Content tab → "Saved / bookmarks" (default ON) · "Saved posts limit"
+  (5–200, default 60, FIFO drop).
+
+VERIFY (v92)
+```
+python tests/v92_test.py                     # 11/11 checks
+node tests/runtime/saved_runtime_test.js     # 53/53 real behaviour checks
+python run.py --test-all                     # 72/72 suites
+node tests/runtime/jsdom_runtime_test.js     # 164/164 browser checks
+node tools/php_lint.js                       # 37/37 files OK
+python run.py --readiness                    # 100/100
+python tools/theme_audit.py                  # 0 errors
+python tools/theme_audit_deep.py             # 0 errors · 0 warnings
+```
+
+* Deploy: theme zip rebuild (`python tools/build_wp_theme.py`, 47 files) →
+  WP Admin → Appearance → Themes → Add New → Upload → **Replace current** (1.9.3).
+
+## PART 50 — v93: TOP-WEBSITE UI PASS (theme 1.9.4)
+
+**Mee brief:** "top website ui avvali · menu clear and neatga cheyu · icons
+correctga vundali (whatsapp instagram telegram youtube) · chala mistakes unnayi".
+
+ENTI ANUKUNNAMU (deep audit method)
+```
+1. icons ni grep cheyyaledu — SVG path data nunchi **render chesi** chusanu
+   (svgpathtools + matplotlib) → 8/8 correct ani confirm ayyindi
+2. icon <-> link mismatch audit (255 anchors)        → 0 mismatch
+3. duplicate ID / broken link audit (preview)        → 0
+4. CSS duplicate-property audit (theme + preview)    → 1 mistake dorikindi
+5. theme vs preview CSS drift (131 shared selectors) → menu structure drift dorikindi
+6. fixed-bar collision audit (mobile)                → 3 overlap dorikindi
+7. heading order · button type · target=_blank rel   → 0 issue
+```
+
+FIX AYYINA 4 BUGS
+```
+BUG-1 menu: flat 10-item row → grouped dropdowns (Jobs ▾ / More ▾) + polish
+BUG-2 telegram link: private-channel override rail/panel/footer ki apply avvatledu
+BUG-3 fixed bars: sticky ad social icons ni cover · installbtn footer ni cover
+BUG-4 css: .su-ad-lazy::after lo duplicate `display`
+```
+
+MENU STRUCTURE (ippudu — approved design parity)
+```
+Home · Jobs ▾ · Hall Tickets · Results · Current Affairs · More ▾
+Jobs ▾ : TS · AP · Central · Private · Walk-in · Software   (unna vi mattrame)
+More ▾ : Saved posts · Contact · About · Daily Quiz (publish ayyithe) ·
+         Jobs by qualification · Telegram channel · All categories
+```
+
+VERIFY (v93)
+```
+python tests/v93_test.py                     # 12/12 checks (menu · icons · collisions)
+python run.py --test-all                     # 73/73 suites
+node tests/runtime/jsdom_runtime_test.js     # 164/164 browser checks
+node tests/runtime/saved_runtime_test.js     # 53/53 saved engine
+node tools/php_lint.js                       # 37/37 files OK
+python run.py --readiness                    # 100/100
+python tools/theme_audit.py                  # 0 errors
+python tools/theme_audit_deep.py             # 0 errors · 0 warnings
+```
+
+* Deploy: `python tools/build_wp_theme.py` → WP Admin → Appearance → Themes →
+  Add New → Upload → **Replace current** (1.9.4).
+
+## PART 51 — v94: ADSENSE READINESS + DISCOVER + CWV (theme 1.9.5)
+
+**Mee brief:** "posts publish cheste ads approval ki problem leda? google suggest
+avvali ante em miss avutunnam? anni fix cheyu".
+
+ENTI CHESAMU
+```
+autoblog/adsense_ready.py             # NEW: pre-application audit (8 groups · 29 checks)
+wordpress-theme/studentup/inc/discover.php  # NEW: 1200px Discover image + og dims + CLS/INP
+autoblog/seo.py                       # schema_jsonld(image) + attach_schema_image()
+autoblog/wordpress_client.py          # upload ayna media source_url capture
+autoblog/pipeline.py                  # upload tarvata schema image attach
+tools/build_policy_pages.py           # privacy: third-party vendors + opt-out disclosure
+wordpress-theme/studentup/footer.php  # 5 policy links (404-safe)
+tests/v94_test.py                     # 13 checks
+```
+
+NEW COMMAND (meeru adigina prashnaki jawabu)
+```
+python run.py --adsense-ready
+# Score: 97% (28/29 mandatory) · 1 blocker = posts volume (0 posts)
+# blocker/warning prathi daniki fix line + JSON artifact output/adsense-ready.json
+```
+
+FIX AYYINA 6 GAPS
+```
+GAP-1 Article schema lo `image` ledu (Google ki REQUIRED) → ippudu ImageObject 1200×675
+GAP-2 Discover large-card 1200px image size ledu → studentup-discover register
+GAP-3 Privacy lo third-party vendors + opt-out disclosure ledu → add
+GAP-4 Policy pages footer nunchi reach ledu → 5 links (publish ayyithe)
+GAP-5 Pre-application audit ledu → --adsense-ready
+GAP-6 CLS (img dims) + INP (touch-action) → add
+```
+
+GOOGLE KI NIJAMGA EM CHEYYALEM (honest)
+```
+· "Google suggest" (autocomplete) = Google algorithm — code tho adi force cheyyaleamu.
+  Cheyyagaligedi: eligibility + quality signals (schema · Discover image · CWV · content).
+· AdSense approval · ranking · traffic · viral · revenue — Google + account + time batti.
+  Ee repo aa requirements ni ready cheyyagaladu, result ni guarantee cheyyaledu.
+```
+
+VERIFY (v94)
+```
+python tests/v94_test.py                     # 13/13 checks
+python run.py --adsense-ready                # 97% · blockers chudu
+python run.py --test-all                     # 74/74 suites
+node tests/runtime/jsdom_runtime_test.js     # 164/164
+node tools/php_lint.js                       # 38/38 files OK
+python run.py --readiness                    # 100/100
+```
+
+* Deploy: `python tools/build_wp_theme.py` → **Replace current** (1.9.5).
+**Apply cheyyakamundu:** 20+ substantive posts publish chesi, tarvata `--adsense-ready`
+ni green ga chusaka AdSense ki apply cheyandi.
+
+* Menu: Appearance → Menus lo mee sonta menu assign cheyyakapote ee kotha grouped
+  fallback automatic ga kanipistundi (assign chesthe mee menu ne vadutundi).
+
+* /saved/ page: Pages → Add New → shorcode `[studentup_saved]` paste → publish →
+  Appearance → Menus lo add cheyandi.
+

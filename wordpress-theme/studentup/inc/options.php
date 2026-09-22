@@ -71,6 +71,8 @@ function studentup_option_fields() {
 				'notify_banner' => array( 'Critical alerts public banner (v90 notify)', 'check', '1', 'CRITICAL severity alerts site-wide banner ga chupistundi (readers dismiss cheste localStorage lo; admin notices ki impact ledu)' ),
 				'notify_queue' => array( 'Notify alert queue (JSON)', 'textarea', '', 'v90: bot/--tg-alert nimpustundi (REST studentup/v1/notify). Format: [{"code":"..","message":"..","severity":"info|warn|critical","ts":123}] — manual ga clear cheyyadaniki edit cheyyochu' ),
 				'join_cta_inline' => array( 'Mid-article join strip (WhatsApp/Telegram)', 'check', '1', '2nd para tarvata compact join box — same social options (owner number/username)' ),
+				'saved_enabled' => array( 'Saved / bookmarks (🔖 reader save-for-later)', 'check', '1', 'v92: readers cards/posts meeda 🔖 save cheyyagalaru (localStorage — DB/cookie ledu, privacy-safe). OFF chesthe button + panel render avvavu' ),
+				'saved_max' => array( 'Saved posts limit (per browser)', 'text', '60', 'v92: localStorage cap (5–200). Limit dhatithe purani vi FIFO ga drop avutayi — browser storage bloat avvadu' ),
 			),
 		),
 		'advanced' => array(
@@ -331,13 +333,28 @@ function studentup_call_number( $raw = '' ) {
  */
 function studentup_social_links() {
 	$wa  = studentup_wa_number( studentup_opt( 'social_whatsapp', '9182739312' ) );
-	$tg  = ltrim( (string) studentup_opt( 'social_telegram', 'studentup_in' ), '@' );
 	$ig  = ltrim( (string) studentup_opt( 'social_instagram', 'studentup.in' ), '@' );
 	$yt  = (string) studentup_opt( 'social_youtube', '@studentupin' );
 	$ytu = 0 === strpos( $yt, 'http' ) ? $yt : 'https://www.youtube.com/' . ( 0 === strpos( $yt, '@' ) ? $yt : '@' . $yt );
+
+	/*
+	 * v93 FIX (nijamaina bug): ippati varaku idi `https://t.me/<username>` ne
+	 * hardcode cheyyadam valla v91 lo add chesina **private channel invite
+	 * override** (`telegram_channel_url`) footer rail icon · mobile panel ·
+	 * footer "Telegram channel" link ki **apply avvatledu**. Private channel
+	 * unte aa muggintiki link tappu (public username) velledi → join fail.
+	 * Ippudu resolver okkate source (function unte adi — lekapote fallback).
+	 */
+	if ( function_exists( 'studentup_tg_channel_url' ) && studentup_tg_channel_url() ) {
+		$tg_url = studentup_tg_channel_url();
+	} else {
+		$tg_user = ltrim( (string) studentup_opt( 'social_telegram', 'studentup_in' ), '@' );
+		$tg_url  = 'https://t.me/' . $tg_user;
+	}
+
 	return array(
 		'whatsapp'  => 'https://wa.me/' . $wa,
-		'telegram'  => 'https://t.me/' . $tg,
+		'telegram'  => $tg_url,
 		'instagram' => 'https://www.instagram.com/' . $ig . '/',
 		'youtube'   => $ytu,
 	);

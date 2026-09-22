@@ -1,0 +1,208 @@
+<?php
+/**
+ * v92: SAVED — reader bookmark layer (theme 1.9.3).
+ *
+ * Enduku (retention + engagement):
+ *   StudentUp readers job notification chusi "tarvata apply cheddam" anukuntaru —
+ *   kaani ippati varaku aa post ni **save cheyyadaniki daari ledu**. Browser
+ *   bookmark vaadadam kastam (phone lo), anduku reader tirigi ravatam thaggutundi.
+ *   Idi oka reader-facing retention feature: post ni save chesi, tarvata
+ *   "Saved" panel lo chusi tirigi vastaru.
+ *
+ * Design rules (v89 PART-45 principle — "feature never breaks page"):
+ *   1) Backend ledu, DB ledu, cookie ledu — antha **localStorage** lo (privacy-safe,
+ *      AdSense/privacy-policy ki clean, server load zero). Server round-trip ledu.
+ *   2) Save button = real button element (keyboard + screen-reader OK) with
+ *      `aria-pressed`; JS lekapoyina page baaguntundi (progress-enhancement only).
+ *   3) Panel markup server-side render (a11y/SEO clean) — list ni JS nimpustundi.
+ *      JS off / localStorage blocked (private mode) aithe panel "empty" note
+ *      chupistundi, error ledu.
+ *   4) Option gate `saved_enabled` (default ON) — OFF chesthe button/panel render
+ *      avvavu, ee file eppudu fatal avvadu.
+ *   5) Prathi callback ABSPATH-guarded + escaped (XSS zero).
+ *
+ * Shortcode: `[studentup_saved]` — /saved/ page create chesi idi paste cheyandi
+ * (home menu lo link pettachu). Page template avasaram ledu.
+ *
+ * @package studentup
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+/** localStorage keys — JS tho share avutayi (single source of truth). */
+define( 'STUDENTUP_SAVED_STORE', 'studentup_saved_v1' );
+define( 'STUDENTUP_SAVED_RECENT', 'studentup_recent_v1' );
+
+/**
+ * Feature ON aa? (default ON — admin → StudentUp → Content lo OFF cheyyochu)
+ *
+ * @return bool
+ */
+function studentup_saved_on() {
+	return '0' !== (string) studentup_opt( 'saved_enabled', '1' );
+}
+
+/**
+ * localStorage lo max enta store cheyyali (pagination ledu — cap tho FIFO).
+ *
+ * @return int
+ */
+function studentup_saved_max() {
+	$max = (int) studentup_opt( 'saved_max', '60' );
+	if ( $max < 5 ) {
+		$max = 5;
+	}
+	if ( $max > 200 ) {
+		$max = 200;
+	}
+	return $max;
+}
+
+/**
+ * Save/un-save button — card lo + single lo vadutunnamu.
+ *
+ * Markup ni JS chaduvutundi (`data-su-save`) and localStorage nunchi state
+ * restore chestundi. Ee function eppudu HTML ni query cheyyadu (N+1 ledu) —
+ * kevalam static markup + data attributes.
+ *
+ * @param int    $post_id Post ID (0 = current post in the loop).
+ * @param string $class   Extra CSS class (card lo compact variant).
+ * @return string HTML (escaped) — empty string if feature OFF.
+ */
+function studentup_save_button( $post_id = 0, $class = '' ) {
+	if ( ! studentup_saved_on() ) {
+		return '';
+	}
+	$post_id = $post_id ? (int) $post_id : (int) get_the_ID();
+	if ( ! $post_id ) {
+		return '';
+	}
+	$title = wp_strip_all_tags( get_the_title( $post_id ) );
+	$cats  = get_the_category( $post_id );
+	$cat   = $cats ? $cats[0]->name : '';
+
+	$classes = 'su-save-btn';
+	if ( $class ) {
+		$classes .= ' ' . sanitize_html_class( $class );
+	}
+
+	return sprintf(
+		'<button type="button" class="%1$s" data-su-save data-id="%2$d" data-title="%3$s" data-url="%4$s" data-cat="%5$s" aria-pressed="false" aria-label="%6$s"><span class="su-save-ico" aria-hidden="true">🔖</span><span class="su-save-txt">%7$s</span></button>',
+		esc_attr( $classes ),
+		$post_id,
+		esc_attr( $title ),
+		esc_url( get_permalink( $post_id ) ),
+		esc_attr( $cat ),
+		esc_attr__( 'Save this post for later', 'studentup' ),
+		esc_html__( 'Save', 'studentup' )
+	);
+}
+
+/**
+ * Saved panel — footer lo okkasari render (slide-out drawer, mobile + desktop).
+ *
+ * List ni JS nimpustundi (localStorage). Server-side empty-state chupistundi —
+ * anduke JS lekunda kuda page meeda "no saved posts" note kanipistundi, error kaadu.
+ */
+function studentup_saved_panel() {
+	if ( ! studentup_saved_on() ) {
+		return;
+	}
+	?>
+	<div class="su-saved-rail" id="su-saved-rail">
+		<button type="button" class="su-saved-tab" id="su-saved-tab" data-su-saved-open aria-expanded="false" aria-controls="su-saved-panel" aria-label="<?php echo esc_attr__( 'Saved posts', 'studentup' ); ?>">
+			<span class="su-saved-ico" aria-hidden="true">🔖</span>
+			<span class="su-saved-count" data-su-saved-count hidden>0</span>
+		</button>
+		<div class="su-saved-panel" id="su-saved-panel" role="dialog" aria-label="<?php echo esc_attr__( 'Saved posts', 'studentup' ); ?>" hidden>
+			<div class="su-saved-head">
+				<strong><?php echo esc_html__( 'Saved', 'studentup' ); ?></strong>
+				<span class="su-saved-n" data-su-saved-count aria-live="polite">0</span>
+				<button type="button" class="su-saved-close" id="su-saved-close" aria-label="<?php echo esc_attr__( 'Close', 'studentup' ); ?>">✕</button>
+			</div>
+			<div class="su-saved-body" id="su-saved-body" data-su-saved-body>
+				<p class="su-saved-empty"><?php echo esc_html__( 'No saved posts yet. Tap 🔖 on any card to save it for later.', 'studentup' ); ?></p>
+			</div>
+			<div class="su-saved-foot">
+				<a class="su-saved-all" href="<?php echo esc_url( home_url( '/saved/' ) ); ?>"><?php echo esc_html__( 'Open the saved page', 'studentup' ); ?></a>
+				<button type="button" class="su-saved-clear" id="su-saved-clear"><?php echo esc_html__( 'Clear all', 'studentup' ); ?></button>
+			</div>
+		</div>
+	</div>
+	<?php
+}
+
+/**
+ * `[studentup_saved]` — /saved/ page content (grid + empty-state).
+ *
+ * Idi JS render target (`#su-saved-page`). LocalStorage empty aithe JS
+ * empty-state chupistundi; server-side fallback note kuda undi.
+ *
+ * @return string HTML.
+ */
+function studentup_saved_shortcode() {
+	if ( ! studentup_saved_on() ) {
+		return '';
+	}
+	return '<div class="su-saved-page" id="su-saved-page" data-su-saved-page>'
+		. '<p class="su-saved-empty" data-su-saved-page-empty>'
+		. esc_html__( 'No saved posts yet. Open any post and tap 🔖 Save.', 'studentup' )
+		. '</p></div>';
+}
+add_shortcode( 'studentup_saved', 'studentup_saved_shortcode' );
+
+/**
+ * Body class — CSS hooks (feature ON unte mattrame).
+ *
+ * @param array $classes Body classes.
+ * @return array
+ */
+function studentup_saved_body_class( $classes ) {
+	if ( studentup_saved_on() ) {
+		$classes[] = 'su-has-saved';
+	}
+	return $classes;
+}
+add_filter( 'body_class', 'studentup_saved_body_class' );
+
+/**
+ * JS asset — defer (site speed; feature progressive enhancement).
+ *
+ * `STUDENTUP_SAVED` localize: storage keys + limits + i18n strings.
+ * JS lo strings hardcode cheyyaledu (i18n + test parity).
+ */
+function studentup_saved_assets() {
+	if ( is_admin() || ! studentup_saved_on() ) {
+		return;
+	}
+	wp_enqueue_script(
+		'studentup-saved',
+		get_template_directory_uri() . '/assets/js/studentup-saved.js',
+		array(),
+		STUDENTUP_VERSION,
+		true
+	);
+	wp_localize_script(
+		'studentup-saved',
+		'STUDENTUP_SAVED',
+		array(
+			'store'  => STUDENTUP_SAVED_STORE,
+			'recent' => STUDENTUP_SAVED_RECENT,
+			'max'    => studentup_saved_max(),
+			'i18n'   => array(
+				'save'    => __( 'Save', 'studentup' ),
+				'saved'   => __( 'Saved', 'studentup' ),
+				'removed' => __( 'Removed from saved', 'studentup' ),
+				'savedmsg' => __( 'Post saved — open 🔖 any time to read it later.', 'studentup' ),
+				'nomore'  => __( 'Storage is not available in this browser (private mode?) — saving is off.', 'studentup' ),
+				'empty'   => __( 'No saved posts yet. Open any post and tap 🔖 Save.', 'studentup' ),
+				'confirm' => __( 'Remove all saved posts?', 'studentup' ),
+				'cleared' => __( 'All saved posts removed.', 'studentup' ),
+				'recent'  => __( 'Recently read', 'studentup' ),
+			),
+		)
+	);
+}
+add_action( 'wp_enqueue_scripts', 'studentup_saved_assets' );

@@ -358,9 +358,17 @@ def schema_jsonld(
     category: str = "",
     list_items: Optional[List[str]] = None,
     recruitment: Optional[Dict] = None,
+    image_url: str = "",
+    image_width: int = 0,
+    image_height: int = 0,
 ) -> str:
     """Structured data: Article + BreadcrumbList (+ItemList and eligible
     JobPosting). Visible FAQs are deliberately not represented as FAQPage.
+
+    v94: `image` property add ayyindi — Google Article structured data ki idi
+    **required** property (adi ippati varaku ledu = real gap). Discover/Top
+    Stories kuda 1200px+ wide image ni expect chestayi; bot ade size
+    (1200×675) lo featured image generate chestundi.
     """
     import json as _json
 
@@ -400,6 +408,12 @@ def schema_jsonld(
                          if config.SITE_LOGO_URL else {})},
         "mainEntityOfPage": f"{config.WP_SITE}/{slug}/",
         "inLanguage": "te",
+        # v94: REQUIRED for Google Article rich results + Discover large card.
+        **(dict(image=[dict(
+            {"@type": "ImageObject", "url": image_url},
+            **({"width": int(image_width)} if image_width else {}),
+            **({"height": int(image_height)} if image_height else {}),
+        )]) if image_url else {}),
     })
     if list_items:
         scripts.append({
@@ -553,6 +567,56 @@ def enhance(
     if words < 1200:
         log.warning("Word count takkuva (%d) — Rank Math full score kosari 1500+ kavali", words)
     return html
+
+
+def attach_schema_image(html: str, image_url: str,
+                        width: int = 0, height: int = 0) -> str:
+    """Article JSON-LD ki `image` ni tarvata attach cheyyadam.
+
+    Enduku tarvata: `enhance()` (schema generate) featured image upload ki
+    **mundu** run avutundi — appudu image URL teleedu. Upload ayyaka ee helper
+    ni pilichi Article schema lo `image` (ImageObject + dimensions) add chestamu.
+
+    Safety:
+      · `image_url` khali aithe html as-is (eppudu broken schema vaddhu).
+      · schema lo `image` already unte touch cheyyadu (idempotent).
+      · JSON parse fail aithe html as-is return (page eppudu break avvadu).
+    """
+    import json as _json
+
+    if not image_url or "@type" not in html:
+        return html
+
+    def _patch(block: str) -> str:
+        try:
+            data = _json.loads(block)
+        except Exception:  # noqa: BLE001
+            return block
+        target = None
+        if isinstance(data, dict) and data.get("@type") == "Article":
+            target = data
+        elif isinstance(data, list):
+            for item in data:
+                if isinstance(item, dict) and item.get("@type") == "Article":
+                    target = item
+                    break
+        if target is None or target.get("image"):
+            return block
+        img = {"@type": "ImageObject", "url": image_url}
+        if width:
+            img["width"] = int(width)
+        if height:
+            img["height"] = int(height)
+        target["image"] = [img]
+        return _json.dumps(data, ensure_ascii=False)
+
+    pattern = re.compile(r'(<script type="application/ld\+json">)(.*?)(</script>)',
+                         re.S)
+
+    def _sub(m: "re.Match") -> str:
+        return m.group(1) + _patch(m.group(2).strip()) + m.group(3)
+
+    return pattern.sub(_sub, html)
 
 
 def rankmath_meta(
