@@ -474,6 +474,21 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
     if article.get("_source_texts"):
         article["_orig"] = validator.originality_score(
             final_html, article["_source_texts"])
+    # v104: claim provenance + original practical value ledger. This does not
+    # reward word count; it records source support and user-helpful signals.
+    try:
+        from . import editorial_value as _ev
+
+        _ledger = _ev.build_ledger(article, final_html,
+                                   article.get("_deep_sources") or [])
+        article["_editorial_value"] = _ledger
+        article["_editorial_flags"] = _ev.gate(
+            _ledger, minimum=int(getattr(config, "EDITORIAL_VALUE_MIN", 55)))
+        log.info("Editorial value %s/100 (%s) · flags=%s",
+                 _ledger["score"], _ledger["grade"],
+                 article["_editorial_flags"] or "none")
+    except Exception:  # noqa: BLE001 — ledger advisory; other gates remain
+        log.exception("editorial value ledger skipped (safe)")
     # v38: TOP POST SCORE — measurable on-page quality (30+ weighted checks).
     # Quiz posts ki skip (interactive format different rules tho untundi).
     if not is_quiz:
@@ -508,6 +523,13 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
                 raise RuntimeError(
                     f"LIVE-PUBLISH BLOCKED: originality {article['_orig']}% < "
                     f"{min_orig:g}% — source-backed rewrite needs editorial work")
+        # v104: a source summary with unsupported claims or no practical value
+        # is not enough for live publishing. Draft review still receives flags.
+        if (getattr(config, "EDITORIAL_VALUE_BLOCK", True)
+                and article.get("_editorial_flags")):
+            raise RuntimeError(
+                "LIVE-PUBLISH BLOCKED: editorial provenance/value review — "
+                + "; ".join(article["_editorial_flags"][:4]))
         # v38: Top Post gate — on-page quality measured, not claimed.
         if article.get("_top") is not None:
             from . import top_post as _tp

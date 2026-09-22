@@ -2387,3 +2387,49 @@ python tests/v103_test.py
 python run.py --test-all       # 83/83
 ```
 
+## PART 61 — v104: EDITORIAL VALUE + CLAIM PROVENANCE LEDGER
+
+### ORIGINALITY ≠ ONLY WORDING
+
+Competitor article ni words marchi rayadam technically duplicate kaakapoyina,
+user-value takkuva aithe scaled low-value risk untundi. v104 source-backed
+claims + practical original value ni separate ga record chestundi.
+
+### LEDGER
+
+```
+claim: 783 vacancies
+support: source-1 (official TSPSC)
+source tier: 1
+checked: YYYY-MM-DD
+status: supported
+```
+
+Prathi date/number context ki support source IDs record avutayi. Source lo
+support leni vacancy/date/fee claims `UNVERIFIED-CLAIMS` ga flag avutayi.
+No-source article ki fake authority score ivvadu.
+
+### ORIGINAL VALUE SIGNALS
+
+- actionable verbs: apply, download, verify, upload, contact;
+- local Telangana/AP/district/Telugu context;
+- headings and useful tables/lists;
+- visible official links;
+- multiple independent source domains;
+- source tier and verification date.
+
+Word count పెంచితే score పెరగదు. Practical usefulness + evidence matrame
+score ni improve chestayi. `EDITORIAL_VALUE_MIN=55` and
+`EDITORIAL_VALUE_BLOCK=1` default ga live quality gate active.
+
+### VERIFY
+
+```
+python tests/v104_test.py
+python run.py --test-all       # 84/84
+```
+
+Drafts ki flags preserve chestam; live publish lo provenance/value failures
+block avutayi. Human editor unsupported claim ni official source tho verify chesi
+matrame publish cheyyali.
+

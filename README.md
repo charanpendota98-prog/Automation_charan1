@@ -551,6 +551,27 @@ ni ready cheyyagaladu — approval ni guarantee cheyyaledu. "Google lo suggest a
 ante autocomplete/Discover placement — adi **Google algorithm**, daaniki code tho force
 cheyyaleamu; cheyyagaligedi eligibility + quality signals mattrame.
 
+### v104 — EDITORIAL VALUE + CLAIM PROVENANCE (expert quality layer)
+
+No-copy wording alone saripodu. Source article ni paraphrase chesi low-value
+page publish cheyyakoodadu. v104 prathi article ki internal evidence ledger
+create chestundi:
+
+- source URL, domain, tier and checked date;
+- factual number/date claim context;
+- claim ki support chestunna source IDs;
+- unsupported claims human review flags;
+- official links, action steps, local context, headings and table/list signals;
+- practical editorial value score (word count ni reward cheyyadu).
+
+Live publish lo provenance/value flags unte block; draft workflow lo flags human
+review kosam preserve. Idi fake E-E-A-T badge kaadu — actual evidence ledger.
+Source facts + independent explanation + Telangana/AP student usefulness add ayithe
+matrame strong article candidate.
+
+**Proof:** `--test-all` **84/84**; unsupported vacancy/date claims, no-source
+authority, source tiers, practical signals and live gate tested.
+
 ### v103 — REAL-TIME MULTI-SOURCE ORIGINALITY CHECK (no-copy safety)
 
 Local source comparison strong ga undi, kaani manam fetch cheyyani unknown web

@@ -382,6 +382,9 @@ SEARCH_FALLBACK_ENDPOINT = _get(
 ORIG_LIVE_CHECK = _get("ORIG_LIVE_CHECK", "1") not in ("0", "false", "no")
 ORIG_LIVE_PHRASES = int(_get("ORIG_LIVE_PHRASES", "3"))
 ORIG_LIVE_REQUIRED = _get("ORIG_LIVE_REQUIRED", "0") not in ("0", "false", "no")
+# v104: original practical value + claim provenance ledger.
+EDITORIAL_VALUE_MIN = int(_get("EDITORIAL_VALUE_MIN", "55"))
+EDITORIAL_VALUE_BLOCK = _get("EDITORIAL_VALUE_BLOCK", "1") not in ("0", "false", "no")
 GOOGLE_CSE_API_KEY = _get("GOOGLE_CSE_API_KEY", "")
 GOOGLE_CSE_ID = _get("GOOGLE_CSE_ID", "")
 # Rank Math meta dwara set cheyadam (plugin active unte automatic)
