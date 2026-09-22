@@ -1532,6 +1532,12 @@ def main() -> int:
     parser.add_argument("--orphans", nargs="*", default=None, metavar="SITEMAP-URL",
                         help="v81 (§32): sitemap crawl → inbound-0 ORPHAN pages "
                              "report (ex: --orphans https://site/sitemap.xml)")
+    parser.add_argument("--verify-keyword", default="",
+                        help="v97: oka focus keyword ki LIVE demand verify "
+                             "(Google Autocomplete — dummy list kaadu)")
+    parser.add_argument("--keyword-audit", action="store_true",
+                        help="v97: live WP posts focus keywords ni bulk verify "
+                             "(verified/weak/dead + fluff report)")
     parser.add_argument("--district-hubs", action="store_true",
                         help="v96: TS 33 + AP 26 district job hub pages "
                              "(local jobs + job melas) — default dry-run plan")
@@ -1711,6 +1717,11 @@ def main() -> int:
         # v84: URL ivvakapote WP sitemap default (cron-friendly — usage kaadu)
         urls = args.orphans or [config.WP_SITE.rstrip("/") + "/wp-sitemap.xml"]
         return _cl.main(["check_links", "--orphans"] + urls)
+    if getattr(args, "verify_keyword", "") or getattr(args, "keyword_audit", False):
+        from . import keyword_verify as _kv
+
+        return _kv.run_cli(keyword=args.verify_keyword,
+                           audit_live=args.keyword_audit)
     if getattr(args, "district_hubs", False):
         from . import district_hubs as _dh
 

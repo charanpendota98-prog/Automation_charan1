@@ -551,6 +551,52 @@ ni ready cheyyagaladu — approval ni guarantee cheyyaledu. "Google lo suggest a
 ante autocomplete/Discover placement — adi **Google algorithm**, daaniki code tho force
 cheyyaleamu; cheyyagaligedi eligibility + quality signals mattrame.
 
+### v97 — REAL-TIME KEYWORD VERIFICATION (dummy keyword list kaadu)
+
+**Mee brief:** "real time lo keyword verify cheyali — dummy/static keyword list vaddu".
+
+**NIJAMAINA PROBLEM:** ippati varaku `focus_keyword` ni **LLM invent** chesedi
+(leda title nunchi derive avutundi). Adi nijamga **evaraina search chese phrase
+aa** ani check chese code **ekkada ledu**. Result: *"TSPSC Group 2 Notification
+Complete Details Telugu"* lanti keyword — chudadaniki bagunnadi, kaani daaniki
+**search demand ZERO**. Aa post ki Rank Math 100 vachina Google lo traffic
+raadu, endukante **aa phrase ni evaru type cheyyaru**. Idi silent ga prathi
+post ni debba tinipistundi.
+
+**FIX — Google Autocomplete = LIVE demand proof.** Suggest lo oka phrase
+kanipistundi ante, aa phrase ni users **nijamga type chestunnaru** (Google aa
+list ni real queries nunchi build chestundi). Kabatti prathi post publish
+avvadaniki mundu:
+
+1. **VERIFY** — keyword prefix (modati 3 words) ni Suggest ki pampi, mana
+   keyword (leda close variant) return avutunda ani chustam. Suggest lo
+   **position = demand proxy** (#1 = highest).
+2. **DETECT** — "complete details / full guide / everything you need" lanti
+   **invented fluff** ni catch chestam (humans ila search cheyyaru).
+3. **REPLACE** — verify fail ayithe, ade topic ki **Suggest lo nijamga unna**
+   best phrase tho focus keyword ni replace chestam. **Topic drift guard:**
+   "ts police" post ki eppudu "ap police" keyword raadu; fluff unna
+   suggestions + 8-words kanna podugu phrases reject avutayi.
+
+**Fail-open (important):** network ledu ⇒ verdict **`unknown`** — post
+**block avvadu**, keyword **marchadu**, mariyu fake "verified" stamp
+**eppudu veyyadu**. Cache (TTL 3600s) + 2 Google endpoints fallback.
+
+```
+python run.py --verify-keyword "tspsc group 2 notification"   # single check
+python run.py --keyword-audit                                 # live posts bulk audit
+```
+
+**Proof:** `--test-all` **77/77** (v97_test.py kotha: 12 checks, anni
+offline-safe — fetcher inject chestam).
+
+**Honest limit (idi telusukondi):** Autocomplete **exact monthly search
+volume ivvadu**. Nijamaina volume numbers kavali ante paid API (DataForSEO /
+Keywords Everywhere / Ahrefs) kavali — adi kavalante cheppandi, adapter
+raastanu. Idi *demand undi / ledu* ane **binary + ordinal** signal mattrame.
+Aina, invent chesina keyword kanna idi **chala better**. Suggest lo undadam
+ante "rank avutam" ani kaadu — demand undi ani mattrame.
+
 ### v96 — COVERAGE MISS-ZERO + SESSION DEPTH + 3 REAL BUG FIXES (theme 1.9.7)
 
 **Mee brief:** "ts and ap students ki em em posts vasthunnai … anni … job melas ·
@@ -608,7 +654,7 @@ prathi district ki posts table + job-mela section + nearby-district cross-links.
 unte page **create avvadu** — khali shelves = Google scaled-content + AdSense
 low-value risk.
 
-**Proof:** `--test-all` **76/76** (v96_test.py kotha: 17 checks) · php-lint
+**Proof:** `--test-all` **77/77** (v96_test.py: 17 checks) · php-lint
 **39/39** · theme **1.9.7** · zip 49 files.
 
 **Honest limit:** ee release **coverage + signals + session depth** ni

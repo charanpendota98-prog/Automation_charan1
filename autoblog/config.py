@@ -290,6 +290,10 @@ STICKY_AD = _get("STICKY_AD", "").strip()
 # v65: pin-to-pin gate + Google trends capture
 PIN_GATE_BLOCK = _get("PIN_GATE_BLOCK", "1") not in ("0", "false", "no")
 TRENDS_GEO = _get("TRENDS_GEO", "IN").strip() or "IN"
+# v97: real-time keyword verification (Google Autocomplete = live demand).
+# KW_VERIFY=0 → off (offline/CI). TTL = same prefix ni malli fetch cheyyakunda.
+KW_VERIFY = _get("KW_VERIFY", "1") not in ("0", "false", "no")
+KW_VERIFY_TTL = int(_get("KW_VERIFY_TTL", "3600") or 3600)
 TRENDS_ENABLED = _get("TRENDS_ENABLED", "1") not in ("0", "false", "no")
 # Consent is a deployment responsibility, not something the bot can fake.
 # Set a real Google-certified CMP/provider in production and verify its UI.

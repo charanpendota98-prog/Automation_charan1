@@ -1859,7 +1859,7 @@ GAP-4 Terms of service page ledu (policy completeness)
 
 VERIFY (ippudu)
 ```
-python run.py --test-all          # 76/76
+python run.py --test-all          # 77/77
 python run.py --pin-check         # 100/100 · 68/68 checks
 python tests/v95_test.py          # 13 checks
 python tools/build_wp_theme.py    # 49 files · theme 1.9.7
@@ -1921,7 +1921,7 @@ GAP-7 59 districts scan avutayi kaani landing page okkati ledu (local queries mi
 
 VERIFY (ippudu)
 ```
-python run.py --test-all                 # 76/76
+python run.py --test-all                 # 77/77
 python tests/v96_test.py                 # 17 checks
 python run.py --district-hubs            # dry-run plan (eligible vs thin-guard)
 python run.py --district-hubs --district-hubs-apply   # WordPress lo publish
@@ -1944,4 +1944,72 @@ Coverage · signals · session depth ni penchamu. Google ranking, "top 0.01%",
 Discover placement, AdSense approval, views/clicks — Google + mee content + time
 batti untayi; code guarantee ivvaledu. Ad auto-refresh DELIBERATELY implement
 cheyyaledu (policy violation) — real navigation tho mattrame refresh penchamu.
+```
+
+## PART 54 — v97: REAL-TIME KEYWORD VERIFICATION (dummy list kaadu)
+
+**Mee brief:** "real time lo keyword verify cheyali, dummy vaddu".
+
+NIJAMAINA PROBLEM
+```
+focus_keyword ni LLM INVENT chesedi. "TSPSC Group 2 Notification Complete
+Details Telugu" — chudadaniki bagundi, search demand ZERO. Aa phrase ni
+evaru type cheyyaru => Rank Math 100 vachina traffic raadu.
+Verify chese code repo lo EKKADA LEDU (v96 varaku).
+```
+
+ENTI CHESAMU
+```
+autoblog/keyword_verify.py # NEW: verify() · best_alternative() · verify_and_fix()
+                           #      audit() · suggestions() (cache + 2 endpoints)
+autoblog/pipeline.py       # _hygiene lo: focus kw derive TARVATA live verify
+autoblog/config.py         # KW_VERIFY (default 1) · KW_VERIFY_TTL (3600s)
+autoblog/main.py           # --verify-keyword "..." · --keyword-audit
+tests/v97_test.py          # 12 checks (anni offline-safe)
+```
+
+ELA PANI CHESTUNDI
+```
+1 VERIFY  keyword prefix (modati 3 words) → Google Autocomplete
+          Suggest lo mana phrase unte => verified + rank (#1 = best demand)
+2 DETECT  "complete details / full guide / everything you need" = fluff
+          (humans ila search cheyyaru => invented keyword)
+3 REPLACE fail ayithe Suggest lo NIJAMGA unna best phrase tho replace
+          drift guard: "ts police" post ki "ap police" kw RAADU
+          fluff suggestions + 8 words kanna podugu phrases REJECT
+```
+
+VERIFY (ippudu)
+```
+python run.py --verify-keyword "tspsc group 2 notification"
+python run.py --verify-keyword "tspsc group 2 complete details telugu"
+       # ee rendo dani ki: WEAK + fluff + better phrase suggest avutundi
+python run.py --keyword-audit      # live WP posts focus kws bulk audit
+python tests/v97_test.py           # 12 checks
+python run.py --test-all           # 77/77
+```
+
+OWNER SETUP
+```
+.env lo:  KW_VERIFY=1         # 0 pedithe off (offline/CI)
+          KW_VERIFY_TTL=3600  # same prefix cache — Google ni hammer cheyyoddu
+API key AVASARAM LEDU (Autocomplete free).
+```
+
+FAIL-OPEN (muఖ్యam)
+```
+Network ledu / Google block ⇒ verdict "unknown":
+  · post BLOCK avvadu
+  · keyword MARCHADU
+  · fake "verified" stamp EPPUDU veyyadu
+Prathi post meta lo _kw_verify report untundi (verdict · rank · replaced).
+```
+
+HONEST LIMIT
+```
+Autocomplete EXACT MONTHLY SEARCH VOLUME ivvadu. Nijamaina volume numbers
+kavali ante paid API (DataForSEO / Keywords Everywhere / Ahrefs) kavali.
+Idi "demand undi / ledu" ane binary + ordinal signal mattrame — aina LLM
+invent chesina keyword kanna infinitely better. Suggest lo undadam ante
+"rank avutam" ani KAADU; demand undi ani mattrame.
 ```

@@ -197,6 +197,17 @@ def _hygiene(article: Dict) -> Dict:
         toks = [t for t in re.sub(r"[^a-zA-Z0-9 ]", " ", title).split()
                 if len(t) > 2][:4]
         article["focus_keyword"] = " ".join(toks) or title[:60]
+    # v97: REAL-TIME keyword verification. LLM invent chesina keyword ki
+    # (e.g. "... complete details telugu") search demand undakapovachu —
+    # Google Autocomplete tho live verify chesi, demand unna phrase tho
+    # replace chestam. Network ledu ⇒ verdict "unknown", post block avvadu.
+    if getattr(config, "KW_VERIFY", False):
+        try:
+            from . import keyword_verify
+
+            keyword_verify.verify_and_fix(article)
+        except Exception as exc:  # noqa: BLE001 — advisory, never blocks
+            log.debug("kw verify skip: %s", exc)
     # meta description fallback: quick_answer or first para nunchi
     md = (article.get("meta_description") or "").strip()
     if len(md) < 120:

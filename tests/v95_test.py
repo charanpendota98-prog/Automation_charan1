@@ -47,7 +47,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 THEME = ROOT / "wordpress-theme" / "studentup"
-SUITES_EXPECTED = 76  # v95 tho
+SUITES_EXPECTED = 77  # v95 tho
 
 
 def read(rel: Path | str) -> str:
