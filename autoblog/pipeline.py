@@ -197,6 +197,17 @@ def _hygiene(article: Dict) -> Dict:
         toks = [t for t in re.sub(r"[^a-zA-Z0-9 ]", " ", title).split()
                 if len(t) > 2][:4]
         article["focus_keyword"] = " ".join(toks) or title[:60]
+    # v97: REAL-TIME keyword verification. LLM invent chesina keyword ki
+    # (e.g. "... complete details telugu") search demand undakapovachu —
+    # Google Autocomplete tho live verify chesi, demand unna phrase tho
+    # replace chestam. Network ledu ⇒ verdict "unknown", post block avvadu.
+    if getattr(config, "KW_VERIFY", False):
+        try:
+            from . import keyword_verify
+
+            keyword_verify.verify_and_fix(article)
+        except Exception as exc:  # noqa: BLE001 — advisory, never blocks
+            log.debug("kw verify skip: %s", exc)
     # meta description fallback: quick_answer or first para nunchi
     md = (article.get("meta_description") or "").strip()
     if len(md) < 120:
@@ -546,11 +557,18 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
         fk = article.get("focus_keyword") or article["banner_text"]
         year = article.get("year", date.today().year)
         if image_gen.generate_featured_image(article["banner_text"], article["category"], image_path):
-            alt_text = f"{fk} – {article['category']} {year} | studentup.in"
+            alt_text = seo.image_alt(fk, article.get("category", ""), year)
+            # v96: SEO thumbnail FILE NAME (keyword-category-year.webp) —
+            # slug-only name kanna Google Images/Discover ki better context.
+            img_name = seo.image_filename(fk, article.get("slug", ""),
+                                          article.get("category", ""), year,
+                                          ext=image_path.suffix.lstrip(".") or "webp")
+            article["_media_filename"] = img_name
             media_id = wp.upload_media(
                 image_path,
                 title=article["title"],
                 alt_text=alt_text,
+                filename=img_name,
             )
             # v38: Top Post Score image-alt check ee alt text ni verify chestundi
             if media_id:
@@ -1063,6 +1081,25 @@ def update_post(post_id: int, new_source_urls=None, mock: bool = False) -> Dict:
         source_domains=[e.site_name for e in extras],
         recruitment=article.get("recruitment"),
     )
+    # v96 BUG FIX: refresh flow lo monetize blocks MISS ayyevi. `publish_article`
+    # lo `monetize.append_blocks()` untundi, kaani update path lo ledu — so
+    # auto-refresh (roju purana posts) ayina prathi post nunchi Telegram CTA,
+    # affiliate section mariyu v96 join strip **poyevi**. Refresh ekkuva
+    # ayina kొద్దీ site lo CTA-less posts perigevi (channel growth + RPM loss).
+    try:
+        from . import monetize as _mz_upd
+
+        final_html = _mz_upd.append_blocks(final_html, article)
+        try:
+            from . import ad_manager as _admgr_upd
+
+            final_html, _ad_report = _admgr_upd.inject(final_html, article)
+            article["_ads"] = _ad_report
+        except Exception:  # noqa: BLE001 — owner ads must never block a refresh
+            log.exception("Update ad manager inject skipped (safe)")
+    except Exception:  # noqa: BLE001 — CTA fail update aapadu
+        log.exception("update monetize blocks skip (post safe)")
+
     qa = validator.validate_article(article, final_html)
     article["_qa"] = qa
     log.info("Update QA %s/100 words=%d", qa["score"], qa["words"])

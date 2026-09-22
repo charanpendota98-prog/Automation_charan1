@@ -61,7 +61,7 @@ def test_breaking_backend_still_available_opt_in():
 
 def test_no_internal_metrics_or_sample_text_public():
     html = read(PREVIEW / "index.html")
-    for needle in ("11,192", "143 మూలాల", "59 జిల్లాల", "రాడార్", "కీవర్డ్లు",
+    for needle in ("12,344", "180 మూలాల", "59 జిల్లాల", "రాడార్", "కీవర్డ్లు",
                    "జిల్లాల పర్యవేక్షణ", "నమూనా", "DEMO", "hero-proof"):
         assert needle not in html, f"public homepage lo '{needle}' undi (v72: andariki chudakoodadu)"
     for page in (PREVIEW / "pages").glob("*.html"):
@@ -206,8 +206,8 @@ def test_theme_version_parity_v72():
     css = re.search(r"^Version:\s*(\S+)", read(THEME / "style.css"), re.M).group(1)
     php = re.search(r"STUDENTUP_VERSION',\s*'([^']+)'", read(THEME / "functions.php")).group(1)
     stable = re.search(r"^Stable tag:\s*(\S+)", read(THEME / "readme.txt"), re.M).group(1)
-    assert css == php == stable == "1.9.6", f"version parity tappu: {css} · {php} · {stable}"
-    for entry in ("= 1.9.0", "= 1.9.1", "= 1.9.2", "= 1.9.3", "= 1.9.4", "= 1.9.5", "= 1.9.6"):
+    assert css == php == stable == "1.9.8", f"version parity tappu: {css} · {php} · {stable}"
+    for entry in ("= 1.9.0", "= 1.9.1", "= 1.9.2", "= 1.9.3", "= 1.9.4", "= 1.9.5", "= 1.9.6", "= 1.9.7", "= 1.9.8"):
         assert entry in read(THEME / "readme.txt")
     assert "v72" in read(THEME / "README-THEME.md")
 
@@ -355,8 +355,8 @@ def test_theme_version_1721():
     css = re.search(r"^Version:\s*(\S+)", read(THEME / "style.css"), re.M).group(1)
     php = re.search(r"STUDENTUP_VERSION',\s*'([^']+)'", read(THEME / "functions.php")).group(1)
     stable = re.search(r"^Stable tag:\s*(\S+)", read(THEME / "readme.txt"), re.M).group(1)
-    assert css == php == stable == "1.9.6", f"version parity tappu: {css} · {php} · {stable}"
-    for entry in ("= 1.9.0", "= 1.9.1", "= 1.9.2", "= 1.9.3", "= 1.9.4", "= 1.9.5", "= 1.9.6"):
+    assert css == php == stable == "1.9.8", f"version parity tappu: {css} · {php} · {stable}"
+    for entry in ("= 1.9.0", "= 1.9.1", "= 1.9.2", "= 1.9.3", "= 1.9.4", "= 1.9.5", "= 1.9.6", "= 1.9.7", "= 1.9.8"):
         assert entry in read(THEME / "readme.txt")
 
 TESTS = [

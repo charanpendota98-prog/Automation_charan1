@@ -47,7 +47,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 THEME = ROOT / "wordpress-theme" / "studentup"
-SUITES_EXPECTED = 75  # v95 tho
+SUITES_EXPECTED = 80  # v95 tho
 
 
 def read(rel: Path | str) -> str:
@@ -257,7 +257,7 @@ def test_theme_assets_and_version() -> None:
     php = re.search(r"STUDENTUP_VERSION',\s*'([^']+)'", read(THEME / "functions.php")).group(1)
     stable = re.search(r"Stable tag:\s*([\d.]+)", read(THEME / "readme.txt")).group(1)
     vcss = re.search(r"Version:\s*([\d.]+)", css).group(1)
-    assert vcss == php == stable == "1.9.6", f"parity tappu: {vcss}·{php}·{stable}"
+    assert vcss == php == stable == "1.9.8", f"parity tappu: {vcss}·{php}·{stable}"
     for entry in ("= 1.9.4", "= 1.9.5", "= 1.9.6"):
         assert entry in read(THEME / "readme.txt"), f"changelog {entry} ledu"
     assert ".su-figure" in css and "su-figure figcaption" in css, "figure CSS ledu"
@@ -308,8 +308,8 @@ def test_zip_packaged() -> None:
         assert "studentup/footer.php" in names, "footer.php zip lo ledu"
         css = z.read("studentup/style.css").decode("utf-8")
         php = z.read("studentup/functions.php").decode("utf-8")
-    assert re.search(r"Version:\s*1\.9\.6", css), "zip lo css version 1.9.6 kaadu"
-    assert re.search(r"STUDENTUP_VERSION',\s*'1\.9\.6'", php), "zip lo php version 1.9.6 kaadu"
+    assert re.search(r"Version:\s*1\.9\.8", css), "zip lo css version 1.9.8 kaadu"
+    assert re.search(r"STUDENTUP_VERSION',\s*'1\.9\.8'", php), "zip lo php version 1.9.8 kaadu"
     assert ".su-figure" in css, "zip css lo su-figure ledu"
     print(f"      zip: {len(names)} files · theme 1.9.6 · su-figure inside ✔")
 

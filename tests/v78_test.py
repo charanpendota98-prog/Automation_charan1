@@ -123,7 +123,7 @@ class _FakeWP:
     def get_term_link(self, term_id, taxonomy):
         return "https://studentup.in/c/"
 
-    def upload_media(self, path, title="", alt_text=""):
+    def upload_media(self, path, title="", alt_text="", filename="", **kw):
         return 88
 
     def create_post(self, **kwargs):
@@ -240,7 +240,7 @@ def test_end_to_end_perfection():
 
 def test_docs_v78():
     suites = len(list((ROOT / "tests").glob("*_test.py")))
-    assert suites == 75, f"suites {suites} (v94 tho 74 expect)"
+    assert suites == 80, f"suites {suites} (v100 tho 80 expect)"
     readme = read(ROOT / "README.md")
     manual = read(ROOT / "MANUAL_ADVANCED_CHECKLIST.md")
     go_live = read(ROOT / "GO_LIVE_CHECKLIST.md")

@@ -201,6 +201,10 @@ HUB_EXAMS = [x.strip() for x in _get(
     "SSC CGL,SSC CHSL,SSC MTS,RRB Group D,RRB ALP,TET,TS DSC,"
     "TSPSC Group 2,APPSC Group 2,ICET,TS Police Constable,SBI PO,"
     "IBPS Clerk,Scholarships").split(",") if x.strip()]
+# v96: district job hubs (TS 33 + AP 26) — thin-page guard threshold.
+# Ee count kanna takkuva posts unna district ki page create AVVADU
+# (Google scaled-content / AdSense low-value rules — khali shelves vaddu).
+DISTRICT_HUB_MIN_POSTS = int(_get("DISTRICT_HUB_MIN_POSTS", "3") or "3")
 # Sponsored/featured listing CTA (AdSense disclosure REQUIRED with it)
 FEATURED_CTA_HTML = _get("FEATURED_CTA_HTML", "")
 JOB_SCHEMA_ENABLED = _get("JOB_SCHEMA_ENABLED", "1") not in ("0", "false", "no")
@@ -286,6 +290,10 @@ STICKY_AD = _get("STICKY_AD", "").strip()
 # v65: pin-to-pin gate + Google trends capture
 PIN_GATE_BLOCK = _get("PIN_GATE_BLOCK", "1") not in ("0", "false", "no")
 TRENDS_GEO = _get("TRENDS_GEO", "IN").strip() or "IN"
+# v97: real-time keyword verification (Google Autocomplete = live demand).
+# KW_VERIFY=0 → off (offline/CI). TTL = same prefix ni malli fetch cheyyakunda.
+KW_VERIFY = _get("KW_VERIFY", "1") not in ("0", "false", "no")
+KW_VERIFY_TTL = int(_get("KW_VERIFY_TTL", "3600") or 3600)
 TRENDS_ENABLED = _get("TRENDS_ENABLED", "1") not in ("0", "false", "no")
 # Consent is a deployment responsibility, not something the bot can fake.
 # Set a real Google-certified CMP/provider in production and verify its UI.
@@ -369,6 +377,14 @@ RANK_MATH_META_ENABLED = _get("RANK_MATH_META_ENABLED", "1") not in ("0", "false
 # publishing is blocked. This is a local quality gate, not a Google score.
 PUBLISH_QA_MIN_SCORE = int(_get("PUBLISH_QA_MIN_SCORE", "80"))
 PUBLISH_ORIGINALITY_MIN = float(_get("PUBLISH_ORIGINALITY_MIN", "72"))
-# Article/visible FAQ is useful for readers; FAQPage rich-result markup is not
-# emitted because Google retired that search feature in 2026.
 SEO_SCHEMA_ENABLED = _get("SEO_SCHEMA_ENABLED", "1") not in ("0", "false", "no")
+# v99: FAQPage schema. Google 7-May-2026 nunchi FAQ RICH RESULT teesesindi,
+# kaani Bing/Copilot/Perplexity lanti AI retrieval systems inka parse
+# chestayi (+ Google content understanding). Nijamaina visible Q&A
+# unnappudu MATRAME emit avutundi (2+ questions). 0 pedithe off.
+FAQ_SCHEMA_ENABLED = _get("FAQ_SCHEMA_ENABLED", "1") not in ("0", "false", "no")
+# v100: weekly maintenance automation (cron flow lopala — CLI gurtu pettukovalsina
+# avasaram ledu). Hub rebuild jarige weekly slot lo ne ivi kuda run avutayi.
+DISTRICT_HUBS_AUTO = _get("DISTRICT_HUBS_AUTO", "1") not in ("0", "false", "no")
+LINK_GRAPH_AUTO = _get("LINK_GRAPH_AUTO", "1") not in ("0", "false", "no")
+LINK_GRAPH_LIMIT = int(_get("LINK_GRAPH_LIMIT", "100") or 100)

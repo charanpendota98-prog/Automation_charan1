@@ -2,7 +2,7 @@
 Contributors: studentup
 Requires at least: 6.0
 Tested up to: 6.7
-Stable tag: 1.9.6
+Stable tag: 1.9.8
 Requires PHP: 7.4
 Version: 1.9.6
 License: GNU General Public License v2 or later
@@ -47,6 +47,21 @@ The theme ships a REST bridge (`inc/seo-bridge.php`). Use an account with `manag
 user tho App Password ivvandi (Administrator role).
 
 == Changelog ==
+
+= 1.9.8 (2026-09-22, v98 viral share engine: in-content share bar + native share sheet) =
+* In-content share bar after the first H2 paragraph (WhatsApp/Telegram/copy).
+* Rich share text with the real last date; no fake urgency when it has passed.
+* Native share sheet on supported mobile browsers (feature-detected, no tracking).
+* New option: In-content share bar (default ON).
+
+= 1.9.7 (2026-09-22, v96 Up Next session depth + join-strip dedupe) =
+* NEW: `inc/upnext.php` — article chivara "Up Next" (ade category 3 posts) +
+  mobile sticky "next article" bar. Reader tap = NIJAMAINA kotha pageview →
+  kotha ad request (AdSense policy-safe). Timer/auto-reload eppudu vaddu.
+* NEW: `upnext` / `upnext_bar` theme options (rendu default ON).
+* FIX: bot madhya-article join strip (`.su-join-strip`) content lo unte theme
+  `.su-join-inline` ni render cheyyadu — okate page lo duplicate join box ledu.
+* Sticky-ad collision handled (`body.su-has-stickyad .su-nextbar{bottom:78px}`).
 
 = 1.9.6 (2026-09-22, v95 in-content image + contextual links + terms) =
 * NEW: content lopala image (`.su-figure`) — rounded, caption styled, width/height

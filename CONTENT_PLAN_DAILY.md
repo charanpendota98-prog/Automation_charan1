@@ -27,7 +27,7 @@ verify chestundi).
 | 15 | **Internships** | internships, training programs | 0 | 4 |
 | 16 | **Online Education** | admissions, counselling, online degrees | 0 | 15 |
 
-**Total: 143 official-source queries · 11,192 keywords (203 అంశాలు)**, 4×/day check (daily hot-list + rotation).
+**Total: 143 official-source queries · 12,344 keywords (221 అంశాలు)**, 4×/day check (daily hot-list + rotation).
 Kotha pillar ki source ledu anukunte: `autoblog/sources_grid.py` lo add cheyandi —
 `tests/v50_test.py::test_official_source_grid_covers_every_pillar` ventane fail avutundi.
 
@@ -37,7 +37,7 @@ Gulf/abroad jobs, visa, IELTS/PTE, study abroad, NRI guidance · roju 1–2 post
 ## 2) ROJU PLAN (daily rhythm)
 
 ```
-06:00  RADAR run      → 143 sources check → edu-relevant items → topic queue
+06:00  RADAR run      → 180 sources check → edu-relevant items → topic queue
 07:00  DEEP run       → top queued topic: multi-source facts + cross-verify
        (NotebookLM brief optional — unte inka strong)
 08:00  DRAFTS         → 3-5 drafts (pillars rotate: jobs → scholarships →
