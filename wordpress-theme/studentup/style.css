@@ -1006,3 +1006,11 @@ body.dark .su-sharebar{background:rgba(255,255,255,.04);border-color:rgba(255,25
 body.dark .su-sharebar-t{color:#e8f0ff}
 body.dark .su-sb-native,body.dark .su-sb-copy{background:transparent;color:#e8f0ff;
   border-color:rgba(255,255,255,.18)}
+
+/* v99: in-paragraph related link (link-graph optimizer insert chesedi).
+ * Orphan posts ki inbound links ivvadaniki bot ee span ni content lopala
+ * pedutundi. Design: subtle, reading flow ni break cheyyakudadu. */
+.su-rel{display:inline;font-size:.97em;font-weight:700}
+.su-rel a{color:#0f5bd7;text-decoration:underline;text-underline-offset:2px}
+.su-rel a:hover{color:#0a3f96}
+body.dark .su-rel a{color:#8fc0ff}

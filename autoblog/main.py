@@ -1532,6 +1532,12 @@ def main() -> int:
     parser.add_argument("--orphans", nargs="*", default=None, metavar="SITEMAP-URL",
                         help="v81 (§32): sitemap crawl → inbound-0 ORPHAN pages "
                              "report (ex: --orphans https://site/sitemap.xml)")
+    parser.add_argument("--link-graph", action="store_true",
+                        help="v99: internal link graph audit — orphan posts "
+                             "(inbound link ZERO) kanukkoni fix plan")
+    parser.add_argument("--link-graph-apply", action="store_true",
+                        help="v99: link fixes ni live posts lo nijamga apply "
+                             "(idi lekapothe dry-run — edi marchadu)")
     parser.add_argument("--verify-keyword", default="",
                         help="v97: oka focus keyword ki LIVE demand verify "
                              "(Google Autocomplete — dummy list kaadu)")
@@ -1717,6 +1723,10 @@ def main() -> int:
         # v84: URL ivvakapote WP sitemap default (cron-friendly — usage kaadu)
         urls = args.orphans or [config.WP_SITE.rstrip("/") + "/wp-sitemap.xml"]
         return _cl.main(["check_links", "--orphans"] + urls)
+    if getattr(args, "link_graph", False):
+        from . import link_graph as _lg
+
+        return _lg.run_cli(apply=args.link_graph_apply)
     if getattr(args, "verify_keyword", "") or getattr(args, "keyword_audit", False):
         from . import keyword_verify as _kv
 

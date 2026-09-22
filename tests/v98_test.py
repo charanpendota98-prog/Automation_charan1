@@ -28,7 +28,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-SUITES_EXPECTED = 78
+SUITES_EXPECTED = 79
 THEME = ROOT / "wordpress-theme" / "studentup"
 
 
@@ -202,11 +202,12 @@ def test_docs_and_suites() -> None:
     assert suites == SUITES_EXPECTED, f"suites {suites} (v98 tho 78)"
     readme = read(ROOT / "README.md")
     manual = read(ROOT / "MANUAL_ADVANCED_CHECKLIST.md")
-    assert "### v98" in readme and "78/78" in readme
-    assert "PART 55" in manual and "78/78" in manual
+    cur = f"{SUITES_EXPECTED}/{SUITES_EXPECTED}"
+    assert "### v98" in readme and cur in readme
+    assert "PART 55" in manual and cur in manual
     for name, txt in (("README", readme), ("MANUAL", manual)):
         assert "share" in txt.lower(), f"{name} lo share ledu"
-    print("      docs: README v98 · PART 55 · 78/78 ✔")
+    print(f"      docs: README v98 · PART 55 · {cur} ✔")
 
 
 TESTS = [

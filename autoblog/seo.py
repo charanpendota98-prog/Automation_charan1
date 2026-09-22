@@ -8,6 +8,7 @@ Checks (Rank Math):
   - image alt text lo keyword
 """
 
+import html as _html_mod
 import logging
 import re
 from typing import Dict, List, Optional
@@ -417,6 +418,42 @@ def jobposting_obj(recruitment, title: str, description: str,
     return obj
 
 
+def _faq_schema_items(faq: List[Dict[str, str]]) -> List[Dict]:
+    """FAQ list → schema Question/Answer nodes (visible answers matrame).
+
+    Strict ga undali — Google policy: structured data **visible content tho
+    match avvali**. Anduke:
+      · question + answer rendu undali (khali vi drop),
+      · answer lo HTML strip (plain text),
+      · chala chinna answer (<20 chars) = thin → drop,
+      · duplicate questions drop,
+      · max 10 (spam-looking giant FAQ blocks vaddu).
+    """
+    out: List[Dict] = []
+    seen = set()
+    for item in faq or []:
+        if not isinstance(item, dict):
+            continue
+        q = re.sub(r"<[^>]+>", " ", str(item.get("q") or item.get("question") or ""))
+        a = re.sub(r"<[^>]+>", " ", str(item.get("a") or item.get("answer") or ""))
+        q = _html_mod.unescape(" ".join(q.split())).strip()
+        a = _html_mod.unescape(" ".join(a.split())).strip()
+        if not q or len(a) < 20:
+            continue
+        key = q.lower()
+        if key in seen:
+            continue
+        seen.add(key)
+        out.append({
+            "@type": "Question",
+            "name": q[:300],
+            "acceptedAnswer": {"@type": "Answer", "text": a[:1200]},
+        })
+        if len(out) >= 10:
+            break
+    return out
+
+
 def schema_jsonld(
     title: str,
     description: str,
@@ -431,8 +468,8 @@ def schema_jsonld(
     image_width: int = 0,
     image_height: int = 0,
 ) -> str:
-    """Structured data: Article + BreadcrumbList (+ItemList and eligible
-    JobPosting). Visible FAQs are deliberately not represented as FAQPage.
+    """Structured data: Article + BreadcrumbList (+ItemList, eligible
+    JobPosting, and FAQPage when the post has real visible Q&A).
 
     v94: `image` property add ayyindi — Google Article structured data ki idi
     **required** property (adi ippati varaku ledu = real gap). Discover/Top
@@ -444,8 +481,25 @@ def schema_jsonld(
     if not config.SEO_SCHEMA_ENABLED:
         return ""
     scripts = []
-    # FAQ remains visible HTML for readers, but FAQPage rich-result markup is
-    # intentionally not emitted: Google retired that Search feature in 2026.
+    # v99 — FAQPage: Google 7 May 2026 nunchi FAQ **rich result** ni motham
+    # teesesindi (2023 restriction tarvata final step). Ante SERP lo accordion
+    # kanipinchadu. KAANI Google adi content ni **understand** cheyyadaniki
+    # inka parse chestundi, mariyu Bing/Copilot/Perplexity lanti **AI retrieval**
+    # systems daanni actively vadutunnayi (AI Overviews/AI search = kotha
+    # traffic surface). Kabatti:
+    #   · rich result kosam FAQPage add cheyyadam ledu (adi poyindi),
+    #   · **nijamaina, visible** Q&A unnappudu MATRAME emit chestam
+    #     (thin/fake FAQ spam = manual action risk — adi eppudu cheyyamu),
+    #   · config tho off cheyyochu.
+    # Google: "unused structured data does not cause problems for Search".
+    if faq and getattr(config, "FAQ_SCHEMA_ENABLED", True):
+        qa = _faq_schema_items(faq)
+        if len(qa) >= 2:          # 1 question ki FAQPage worth ledu
+            scripts.append({
+                "@context": "https://schema.org",
+                "@type": "FAQPage",
+                "mainEntity": qa,
+            })
     scripts.append({
         "@context": "https://schema.org",
         "@type": "Article",

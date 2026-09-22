@@ -1859,7 +1859,7 @@ GAP-4 Terms of service page ledu (policy completeness)
 
 VERIFY (ippudu)
 ```
-python run.py --test-all          # 78/78
+python run.py --test-all          # 79/79
 python run.py --pin-check         # 100/100 · 68/68 checks
 python tests/v95_test.py          # 13 checks
 python tools/build_wp_theme.py    # 50 files · theme 1.9.8
@@ -1986,7 +1986,7 @@ python run.py --verify-keyword "tspsc group 2 complete details telugu"
        # ee rendo dani ki: WEAK + fluff + better phrase suggest avutundi
 python run.py --keyword-audit      # live WP posts focus kws bulk audit
 python tests/v97_test.py           # 12 checks
-python run.py --test-all           # 78/78
+python run.py --test-all           # 79/79
 ```
 
 OWNER SETUP
@@ -2053,7 +2053,7 @@ ELA PANI CHESTUNDI
 VERIFY (ippudu)
 ```
 python tests/v98_test.py           # 10 checks
-python run.py --test-all           # 78/78
+python run.py --test-all           # 79/79
 node tools/php_lint.js             # 40/40
 python tools/build_wp_theme.py     # 50 files · theme 1.9.8
 ```
@@ -2071,4 +2071,91 @@ Idi organic sharing ni SULABHAM chestundi. Share avutunda ledha ante mee
 CONTENT QUALITY batti untundi. Fake/auto sharing, bot clicks EPPUDU cheyyamu
 (AdSense invalid traffic + platform ban risk). "Fully viral" ni code
 guarantee cheyyaledu - reach ki unna friction ni maatrame teesesamu.
+```
+
+## PART 56 — v99: INTERNAL LINK GRAPH + FAQ/AI SCHEMA (orphan posts)
+
+**Mee brief:** "anni build cheyu" (Web Stories · link graph · FAQ schema).
+Research tarvata: **rendu build chesanu, Web Stories deliberately VADDU**
+(karanam kinda).
+
+NIJAMAINA GAP-1: ORPHAN POSTS
+```
+seo.enhance() kotha post nunchi purana posts ki link pedutundi - OKKA
+DIRECTION. Purana post ni evaru link cheyyaru (adi publish ayinappudu
+tarvata posts inka lev).
+=> inbound internal link ZERO unna posts = ORPHANS
+=> Googlebot sitemap meeda matrame depend, crawl priority takkuva,
+   ranking weak, konnisarlu index kuda kaavu
+Rank Math lo IDI KANIPINCHADU (adi single page matrame chustundi).
+Idi site-level GRAPH problem - anduke ippati varaku miss ayindi.
+```
+
+ENTI CHESAMU
+```
+autoblog/link_graph.py   # NEW: build_graph() · plan_fixes() · insert_link()
+                         #      run() · run_cli() - real <a href> parse
+autoblog/seo.py          # FAQPage tirigi (real visible Q&A 2+ unte matrame)
+                         # + _faq_schema_items() thin/dupe/empty filter
+autoblog/config.py       # FAQ_SCHEMA_ENABLED (default 1)
+autoblog/main.py         # --link-graph · --link-graph-apply
+wordpress-theme/style.css# .su-rel (in-paragraph related link)
+tests/v99_test.py        # 14 checks
+```
+
+VERIFY (ippudu)
+```
+python run.py --link-graph                     # REPORT matrame - edi marchadu
+python run.py --link-graph --link-graph-apply  # live posts lo apply
+python tests/v99_test.py                       # 14 checks
+python run.py --test-all                       # 79/79
+```
+
+SAFETY (idi LIVE content ni touch chestundi - anduke strict)
+```
+--apply lekapothe EDI MARCHADU (dry-run default)
+donor ki max 1 kotha link per run (spam kaadu)
+already link unte skip (duplicate links raavu)
+nested <a> create cheyyadu (invalid HTML)
+headings / quick-answer / CTA / ad blocks lopala insert cheyyadu
+self-link eppudu cheyyadu
+donor ki already 12 links unte skip (over-linking = spam signal)
+anchor natural title nunchi (exact-match keyword stuffing KAADU)
+IDEMPOTENT - malli run cheste duplicate links raavu
+```
+
+GAP-2: FAQ SCHEMA - repo lo TAPPU assumption undedi
+```
+Code lo "Google retired FAQPage in 2026" ani schema motham skip chesaru.
+Research chesi cross-check chesanu - SAGAM nijam:
+  · Google FAQ RICH RESULT (SERP accordion) 7-May-2026 nunchi POYINDI - nijam
+  · KAANI Google schema ni content understanding ki inka parse chestundi
+  · Bing Copilot / Perplexity / AI Overviews = AI retrieval systems daanni
+    ACTIVELY vadutunnayi -> adi KOTHA traffic surface
+  · Google ye: "unused structured data does not cause problems for Search"
+FIX: FAQPage tirigi emit - kaani NIJAMAINA visible Q&A 2+ unte MATRAME.
+     thin answers / duplicate questions / khali questions automatic drop.
+     FAQ_SCHEMA_ENABLED=0 tho off cheyyochu.
+```
+
+WEB STORIES - DELIBERATELY BUILD CHEYYALEDU (mee time save chesanu)
+```
+Meeru adigaru, kaani research chesaka build cheyyakoodadu ani telisindi:
+  · Google 2024 lo Web Stories ni Google IMAGES nunchi TEESESINDI
+  · Discover CAROUSEL ni kuda TEESESINDI
+  · Ippudu Discover lo SINGLE CARD matrame, adi kuda
+    "most likely US, India, Brazil" ane weak language tho
+  · Industry experts 2024 lo ne "the demise of Web Stories" ani cheppparu
+Ante: AMP-based separate format + separate templates + separate maintenance,
+adi DECLINING surface kosam. Ade effort link graph (durable crawl equity) +
+AI schema (GROWING surface) meeda pedithe chala better ROI.
+Meeru "still kavali" ante cheppandi - build chestanu. Honest rec: VADDU.
+```
+
+HONEST LIMIT
+```
+Internal links CRAWL + EQUITY ni improve chestayi - ranking GUARANTEE
+cheyyavu. Orphan fix ante "rank avutundi" ani KAADU; "Google ki ee page
+kanipistundi, daaniki site lopala context undi" ani matrame.
+FAQ schema AI retrieval ki help avutundi - adi kuda guarantee kaadu.
 ```

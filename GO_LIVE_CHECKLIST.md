@@ -81,7 +81,7 @@ Detail docs: `DEPLOY_MILESWEB.md` (cPanel steps) · `DEPLOY_ORACLE_CLOUD.md` (VM
 | Item | Proof |
 |---|---|
 | Test suites | **71/71** pass (`python run.py --test-all`) |
-| Test suites (v98) | **78/78** pass (`python run.py --test-all`) · saved-engine **53/53** |
+| Test suites (v99) | **79/79** pass (`python run.py --test-all`) · saved-engine **53/53** |
 | AdSense readiness (v94) | **97%** — `python run.py --adsense-ready` (8 groups · 29 checks · fix lines; 1 blocker = posts volume) |
 | Site guardian | **`python run.py --guardian`** — site/UI/SEO/ads/feed/storage/theme 12 checks (11 ok · 1 owner-pending) |
 | Readiness score | **`python run.py --readiness`** — **100/100** · 27/27 system checks · 10 owner-pending |
@@ -115,7 +115,7 @@ Detail docs: `DEPLOY_MILESWEB.md` (cPanel steps) · `DEPLOY_ORACLE_CLOUD.md` (VM
 - [ ] **2. WordPress setup** — Rank Math; theme install (**v74**: theme **1.7.2** —
       `python tools/build_wp_theme.py` → zip → Appearance → Themes → Upload → Activate);
       **v98 zip:** 50 files · 694 KB · theme **1.9.8** · sha256
-      `3a898e3cd8973deab357a1049f2812736c84950ac39a7066d0f26dd6a3fba486`
+      `5660b2b77a008ec99b2d4896f2abddee8cc6732b97c2875489dfe0f1f3a2eb76`
       (`sha256sum wordpress-theme/studentup-theme.zip` — upload chesina zip ide ani verify cheyandi;
       build ippudu **reproducible** — same content ⇒ same sha)
       `wp-admin → Users → Application Passwords` → app password create cheyyandi.
@@ -258,4 +258,4 @@ job guarantee promises (advertisers kuda). Ivi AdSense ban + trust damage.
 *Last updated: v91 (2026-09-20) · 71/71 suites · 164/164 runtime · 11/11 production checks · theme v1.9.2 · v90 notifications + v91 Telegram tools*
 *Last updated: v92 (2026-09-22) · 72/72 suites · 53/53 saved-engine · 164/164 runtime · 11/11 production checks · theme v1.9.3 · v92 saved / reader retention*
 *Last updated: v93 (2026-09-22) · 73/73 suites · 53/53 saved-engine · 164/164 runtime · 11/11 production checks · theme v1.9.4 · v93 top-website UI pass (menu · icons · collisions)*
-*Last updated: v98 (2026-09-22) · 78/78 suites · pin gate 100/100 · AdSense readiness 97% · 53/53 saved-engine · 164/164 runtime · theme v1.9.8 · v98 viral share engine*
+*Last updated: v99 (2026-09-22) · 79/79 suites · pin gate 100/100 · AdSense readiness 97% · 53/53 saved-engine · 164/164 runtime · theme v1.9.8 · v99 link graph + AI schema*

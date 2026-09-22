@@ -143,7 +143,7 @@ def c_schema() -> List[dict]:
     have = [n for n in need if n in seo]
     if len(have) == len(need):
         return [_ok("Structured data (schema)", " · ".join(need), "SEO",
-                    "FAQPage omit (2026 policy)")]
+                    "FAQPage: real Q&A unte (AI retrieval)")]
     return [_bad("Structured data (schema)", f"{len(have)}/{len(need)}", "SEO",
                  "missing: " + ", ".join(set(need) - set(have)))]
 

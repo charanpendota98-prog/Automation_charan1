@@ -9,7 +9,7 @@ Enduku idi:
   GA4/GSC wiring ledu (P24/25) · expired notice ledu (P26) ·
   RankMath-absent fallback ledu (P5) · link-liveness tool ledu (P47).
   Already-covered (no code): search noindex ✓ (perf.php) · expired badge ✓ ·
-  FAQPage deliberate skip ✓ (Google retired) · quiz = practice+answer-key ✓.
+  FAQPage real-Q&A only ✓ (v99: AI retrieval) · quiz = practice+answer-key ✓.
 
 Checks (offline only):
   * redirects: manager + guards (404-only · loop/chain-safe · no open-redirect)
@@ -231,7 +231,7 @@ def test_php_parse():
 
 def test_docs_v80():
     suites = len(list((ROOT / "tests").glob("*_test.py")))
-    assert suites == 78, f"suites {suites} (v98 tho 78 expect)"
+    assert suites == 79, f"suites {suites} (v99 tho 79 expect)"
     readme = read(ROOT / "README.md")
     manual = read(ROOT / "MANUAL_ADVANCED_CHECKLIST.md")
     go_live = read(ROOT / "GO_LIVE_CHECKLIST.md")

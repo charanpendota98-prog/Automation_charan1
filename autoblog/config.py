@@ -377,6 +377,9 @@ RANK_MATH_META_ENABLED = _get("RANK_MATH_META_ENABLED", "1") not in ("0", "false
 # publishing is blocked. This is a local quality gate, not a Google score.
 PUBLISH_QA_MIN_SCORE = int(_get("PUBLISH_QA_MIN_SCORE", "80"))
 PUBLISH_ORIGINALITY_MIN = float(_get("PUBLISH_ORIGINALITY_MIN", "72"))
-# Article/visible FAQ is useful for readers; FAQPage rich-result markup is not
-# emitted because Google retired that search feature in 2026.
 SEO_SCHEMA_ENABLED = _get("SEO_SCHEMA_ENABLED", "1") not in ("0", "false", "no")
+# v99: FAQPage schema. Google 7-May-2026 nunchi FAQ RICH RESULT teesesindi,
+# kaani Bing/Copilot/Perplexity lanti AI retrieval systems inka parse
+# chestayi (+ Google content understanding). Nijamaina visible Q&A
+# unnappudu MATRAME emit avutundi (2+ questions). 0 pedithe off.
+FAQ_SCHEMA_ENABLED = _get("FAQ_SCHEMA_ENABLED", "1") not in ("0", "false", "no")

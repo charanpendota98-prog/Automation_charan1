@@ -551,6 +551,75 @@ ni ready cheyyagaladu — approval ni guarantee cheyyaledu. "Google lo suggest a
 ante autocomplete/Discover placement — adi **Google algorithm**, daaniki code tho force
 cheyyaleamu; cheyyagaligedi eligibility + quality signals mattrame.
 
+### v99 — INTERNAL LINK GRAPH + FAQ/AI SCHEMA (orphan posts fix)
+
+**Mee brief:** "anni build cheyu — Web Stories, link graph, FAQ schema".
+
+Moodu adiganu. Research chesi cross-check chesaka **rendu build chesanu,
+okati deliberately build cheyyaledu** — enduko kinda nijam ga cheptunna.
+
+**GAP-1 🚨 ORPHAN POSTS (idi pedda, silent gap):** `seo.enhance()` prathi
+**kotha** post lo internal links pedutundi — kaani adi **okka direction**:
+kotha → purana. **Purana post ni evaru link cheyyaru** (adi publish
+ayinappudu daani tarvata vachhe posts inka lev). Result: site lo
+**inbound internal link ZERO** unna posts — Googlebot vaatini sitemap meeda
+matrame depend ayyi crawl chestundi → crawl priority takkuva, ranking weak,
+konnisarlu index kuda kaavu. **Idi Rank Math lo kanipinchadu** (adi single
+page ni matrame chustundi) — idi **site-level graph** problem, anduke ippati
+varaku miss ayindi.
+
+**FIX — `autoblog/link_graph.py`:** live posts content nunchi **nijamaina**
+link graph build chestundi (guess kaadu — actual `<a href>` parse), orphans /
+weak / dead-ends diagnose chesi, prathi orphan ki **relevant** donor posts
+(shared keywords + same category) kanukkoni vaati paragraph lopala
+**contextual link** insert chestundi.
+
+```
+python run.py --link-graph                      # report matrame (edi marchadu)
+python run.py --link-graph --link-graph-apply   # live posts lo apply
+```
+
+**Safety (idi LIVE content ni touch chestundi — anduke strict):** `--apply`
+lekapothe **edi marchadu** · donor ki **max 1** kotha link per run · already
+link unte skip (duplicate raadu) · nested `<a>` create cheyyadu · headings /
+quick-answer / CTA / ad blocks lopala insert cheyyadu · self-link eppudu
+cheyyadu · donor ki already 12 links unte skip (over-linking = spam signal) ·
+anchor **natural title** nunchi (exact-match keyword stuffing kaadu) ·
+**idempotent** (malli run cheste duplicate links raavu).
+
+**GAP-2 FAQ SCHEMA — repo lo tappu assumption undedi.** Code lo
+*"Google retired FAQPage in 2026"* ani FAQ schema motham skip chesaru.
+Research chesi cross-check chesanu — **sagam nijam**: Google FAQ **rich
+result** (SERP accordion) ni **7 May 2026** nunchi teesesindi, adi nijam.
+**KAANI** Google schema ni content understanding ki inka parse chestundi,
+mariyu **Bing Copilot · Perplexity · AI Overviews** lanti **AI retrieval**
+systems daanni **actively** vadutunnayi — adi kotha traffic surface.
+Google ye cheppindi: *"unused structured data does not cause problems for
+Search"*. Kabatti FAQPage ni **tirigi** emit chestunnam — kaani **nijamaina,
+visible Q&A 2+ unnappudu MATRAME** (thin/fake FAQ = manual action risk,
+adi eppudu cheyyamu). Thin answers, duplicate questions, khali questions
+automatic ga drop avutayi; `FAQ_SCHEMA_ENABLED=0` tho off cheyyochu.
+
+**WEB STORIES — deliberately BUILD CHEYYALEDU (idi mee kosam save chesina
+time).** Meeru adigaru, kaani research chesaka build cheyyakoodadu ani
+తేలింది: Google **2024 lo** Web Stories ni Google Images nunchi **teesesindi**,
+Discover **carousel** ni kuda **teesesindi**. Ippudu avi Discover lo **single
+card** ga matrame kanipistayi, adi kuda "most likely US, India, Brazil"
+ane weak language tho. Industry experts idi **"the demise of Web Stories"**
+ani 2024 lo ne cheppparu. Ante: AMP-based separate content format, separate
+templates, separate maintenance — **declining surface** kosam. Ade effort ni
+link graph (durable crawl equity) + AI schema (growing surface) meeda pettadam
+**chala better ROI**. Meeru "still kavali" ante cheppandi, build chestanu —
+kaani honest recommendation **vaddu**.
+
+**Proof:** `--test-all` **79/79** (v99_test.py kotha: 14 checks) · orphan
+detection, dry-run safety, idempotency, blocked-zone protection, FAQ thin/dupe
+rejection — anni asserted.
+
+**Honest limit:** internal links **crawl + equity** ni improve chestayi —
+ranking ni **guarantee cheyyavu**. Orphan fix ante "rank avutundi" ani kaadu;
+"Google ki ee page kanipistundi, daaniki site lopala context undi" ani.
+
 ### v98 — VIRAL SHARE ENGINE (free reach lever · theme 1.9.8)
 
 **Mee brief:** "fully viral avvali · neatga undali · free ga inka best ga em
@@ -583,7 +652,7 @@ WA/TG links panichestayi). **Tracking/pixel LEDU** — privacy-safe.
 
 Owner toggle: **StudentUp → Settings → "In-content share bar"** (default ON).
 
-**Proof:** `--test-all` **78/78** (v98_test.py kotha: 10 checks) · php-lint
+**Proof:** `--test-all` **79/79** (v98_test.py: 10 checks) · php-lint
 **40/40** · theme **1.9.8** · zip 50 files · escaping + noopener/nofollow
 asserted · no unescaped echo.
 

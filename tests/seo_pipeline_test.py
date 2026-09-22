@@ -194,7 +194,10 @@ def test_full_pipeline(url, wp_base):
     content = payload["content"]
     assert "విషయ సూచిక" in content
     assert "quick-answer" in content          # featured snippet block
-    assert "FAQPage" not in content           # retired rich-result markup
+    # v99: FAQPage tirigi emit avutundi (real visible Q&A 2+ unte matrame).
+    # Google RICH RESULT poyindi (7-May-2026) kaani AI retrieval
+    # (Bing Copilot / Perplexity / AI Overviews) schema ni vadutundi.
+    assert "FAQPage" in content, "real FAQ unte FAQPage emit avvali (AI retrieval)"
     assert "https://studentup.in/prev-post/" in content  # internal link added
     assert "https://www.gov.in" in content                # external link added
     assert payload["featured_media"] == 88
