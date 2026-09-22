@@ -206,8 +206,8 @@ def test_theme_version_parity_v72():
     css = re.search(r"^Version:\s*(\S+)", read(THEME / "style.css"), re.M).group(1)
     php = re.search(r"STUDENTUP_VERSION',\s*'([^']+)'", read(THEME / "functions.php")).group(1)
     stable = re.search(r"^Stable tag:\s*(\S+)", read(THEME / "readme.txt"), re.M).group(1)
-    assert css == php == stable == "1.9.5", f"version parity tappu: {css} · {php} · {stable}"
-    for entry in ("= 1.9.0", "= 1.9.1", "= 1.9.2", "= 1.9.3", "= 1.9.4", "= 1.9.5"):
+    assert css == php == stable == "1.9.6", f"version parity tappu: {css} · {php} · {stable}"
+    for entry in ("= 1.9.0", "= 1.9.1", "= 1.9.2", "= 1.9.3", "= 1.9.4", "= 1.9.5", "= 1.9.6"):
         assert entry in read(THEME / "readme.txt")
     assert "v72" in read(THEME / "README-THEME.md")
 
@@ -355,8 +355,8 @@ def test_theme_version_1721():
     css = re.search(r"^Version:\s*(\S+)", read(THEME / "style.css"), re.M).group(1)
     php = re.search(r"STUDENTUP_VERSION',\s*'([^']+)'", read(THEME / "functions.php")).group(1)
     stable = re.search(r"^Stable tag:\s*(\S+)", read(THEME / "readme.txt"), re.M).group(1)
-    assert css == php == stable == "1.9.5", f"version parity tappu: {css} · {php} · {stable}"
-    for entry in ("= 1.9.0", "= 1.9.1", "= 1.9.2", "= 1.9.3", "= 1.9.4", "= 1.9.5"):
+    assert css == php == stable == "1.9.6", f"version parity tappu: {css} · {php} · {stable}"
+    for entry in ("= 1.9.0", "= 1.9.1", "= 1.9.2", "= 1.9.3", "= 1.9.4", "= 1.9.5", "= 1.9.6"):
         assert entry in read(THEME / "readme.txt")
 
 TESTS = [

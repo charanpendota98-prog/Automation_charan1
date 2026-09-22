@@ -56,6 +56,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						'about'            => 'About us',
 						'contact'          => 'Contact',
 						'disclaimer'       => 'Disclaimer',
+						'terms'            => 'Terms',
 						'editorial-policy' => 'Editorial policy',
 					);
 					foreach ( $su_policy as $su_slug => $su_label ) :

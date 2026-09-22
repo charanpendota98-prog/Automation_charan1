@@ -551,6 +551,43 @@ ni ready cheyyagaladu — approval ni guarantee cheyyaledu. "Google lo suggest a
 ante autocomplete/Discover placement — adi **Google algorithm**, daaniki code tho force
 cheyyaleamu; cheyyagaligedi eligibility + quality signals mattrame.
 
+### v95 — SEO 100 PIN-TO-PIN + TERMS + IN-BODY SIGNALS (theme 1.9.6)
+
+**Mee brief:** "fix" — remaining audit gaps (Rank Math/SEO 100 · contextual linking ·
+policy completeness) okati okati ga close cheyyadam.
+
+**GAP-1 CONTENT LOPALA IMAGE LEDU (pedda fix):** featured image mattrame undi,
+article HTML lo `<img>` **ledu** → Rank Math "Focus Keyword in Image Alt" test fail,
+Discover/rich-result ki in-article image support takkuva, engagement takkuva.
+Ippudu `seo.attach_inline_image()` (featured image ni content lopala reuse):
+`width/height` tho **CLS 0** · `loading="lazy"` + `decoding="async"` (LCP ni touch
+cheyyadu) · figcaption · 2nd H2 tarvata (Discover top-of-article) · **idempotent**
+(`<img>` unte no-op).
+
+**GAP-2 IN-BODY CONTEXTUAL LINKS:** `su-related` section links mattrame unnayi
+(footer-style, weak internal-link signal). Ippudu `seo.contextual_links()` —
+paragraph **lopala** natural anchor: modati occurrence mattrame · `<a>` unna paragraph
+skip (nested link ledu) · headings/tag attributes touch cheyyadu · idempotent ·
+`CONTEXTUAL_LINKS_MAX` (default 3). CSS: `.su-ctx`.
+
+**GAP-3 RANK MATH PARITY:** `slug-length` (URL ≤75 chars — `rm100._trim_slug`
+guarantee) + `kw-in-img-alt` (image unte **mattrame** add avutundi → gate fair,
+image lekunda score padipodu). Pin gate: **68/68 checks** (kotha `content_image`).
+
+**GAP-4 TERMS PAGE:** AdSense/Google policy completeness ki **Terms of service** page
+kavali (usage rules · copyright + correction route · ad disclosure · third-party links ·
+"as is" information · liability limits · governing law India/Telangana · contact).
+`tools/build_policy_pages.py` lo TERMS + nav + sitemap; footer lo 6వ policy link.
+
+**Proof:** `--test-all` **75/75** (v95_test.py kotha: 12 checks) · jsdom **164/164** ·
+saved-engine **53/53** · pin gate **100/100 · 68/68** · readiness **100/100** ·
+php-lint **38/38** · theme **1.9.6**.
+
+**Honest limit:** "Google lo suggest avvali" anedi Google **algorithm** — code tho force
+cheyyaleamu. Ee v95 chesindi: Rank Math/SEO checks pin-to-pin, in-body images, real
+contextual internal links, policy completeness, terms page — ivanni Google ki *signals*
+mattrame; ranking/traffic/approval/revenue Google + mee content + time batti untayi.
+
 ### v93 — TOP-WEBSITE UI PASS (theme 1.9.4: menu · icons · collisions)
 
 **Mee brief:** "top website ui avvali and menu clear and neatga cheyu, icons

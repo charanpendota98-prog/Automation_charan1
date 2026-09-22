@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'STUDENTUP_VERSION', '1.9.5' );  // v94: Discover + CWV hardening (large image · og dims · CLS · INP)
+define( 'STUDENTUP_VERSION', '1.9.6' );  // v95: in-content image + contextual links (.su-figure/.su-ctx)
 
 require_once get_template_directory() . '/inc/options.php';
 require_once get_template_directory() . '/inc/qual-filter.php';  // v72: 10th/Inter/Degree/PG filter (auto tags)

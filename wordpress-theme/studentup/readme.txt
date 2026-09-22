@@ -2,9 +2,9 @@
 Contributors: studentup
 Requires at least: 6.0
 Tested up to: 6.7
-Stable tag: 1.9.5
+Stable tag: 1.9.6
 Requires PHP: 7.4
-Version: 1.9.5
+Version: 1.9.6
 License: GNU General Public License v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Tags: news, education, blog, custom-logo, custom-menu, featured-images, translation-ready, right-sidebar, block-styles, wide-blocks
@@ -47,6 +47,12 @@ The theme ships a REST bridge (`inc/seo-bridge.php`). Use an account with `manag
 user tho App Password ivvandi (Administrator role).
 
 == Changelog ==
+
+= 1.9.6 (2026-09-22, v95 in-content image + contextual links + terms) =
+* NEW: content lopala image (`.su-figure`) — rounded, caption styled, width/height
+  tho CLS-safe, lazy + async decode (LCP ni touch cheyyadu).
+* NEW: in-body contextual internal links (`.su-ctx`) — paragraph lopala, subtle.
+* Footer policy row lo Terms of service link add (page publish aithe render).
 
 = 1.9.5 (2026-09-22, v94 Discover + Core Web Vitals) =
 * Google Discover large-card image: the theme now registers a 1200x675 size

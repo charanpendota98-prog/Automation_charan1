@@ -40,7 +40,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 THEME = ROOT / "wordpress-theme" / "studentup"
-SUITES_EXPECTED = 74  # v94 tho
+SUITES_EXPECTED = 75  # v95 tho
 
 
 def read(rel: Path | str) -> str:
@@ -169,9 +169,9 @@ def test_version_parity_194() -> None:
     php = re.search(r"STUDENTUP_VERSION',\s*'([^']+)'", read(THEME / "functions.php")).group(1)
     cs = re.search(r"Version:\s*([0-9.]+)", css()).group(1)
     stable = re.search(r"Stable tag:\s*([0-9.]+)", read(THEME / "readme.txt")).group(1)
-    assert php == cs == stable == "1.9.5", f"parity tappu: {php}·{cs}·{stable}"
+    assert php == cs == stable == "1.9.6", f"parity tappu: {php}·{cs}·{stable}"
     rd = read(THEME / "readme.txt")
-    for entry in ("= 1.9.0", "= 1.9.1", "= 1.9.2", "= 1.9.3", "= 1.9.4", "= 1.9.5"):
+    for entry in ("= 1.9.0", "= 1.9.1", "= 1.9.2", "= 1.9.3", "= 1.9.4", "= 1.9.5", "= 1.9.6"):
         assert entry in rd, f"changelog {entry} ledu"
     print("      version parity 1.9.4 + changelog ✔")
 
@@ -204,7 +204,7 @@ def test_zip_packaged() -> None:
     names = z.namelist()
     assert all(n.startswith("studentup/") for n in names), "zip root tappu"
     cs = z.read("studentup/style.css").decode("utf-8")
-    assert re.search(r"Version:\s*1\.9\.5", cs), "zip css version 1.9.5 kaadu"
+    assert re.search(r"Version:\s*1\.9\.6", cs), "zip css version 1.9.6 kaadu"
     assert "body.su-has-stickyad .su-social" in cs, "zip lo v93 collision fix ledu"
     print("      zip: 1.9.4 + v93 fixes packed ✔")
 

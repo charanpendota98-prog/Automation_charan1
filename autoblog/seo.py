@@ -134,6 +134,75 @@ def add_external_links(html: str, links: List[Dict[str, str]]) -> str:
     return html + section
 
 
+def contextual_links(html: str, links: List[Dict[str, str]],
+                     max_links: int = 3, seed: str = "") -> str:
+    """v95: IN-BODY contextual internal links (paragraph text nunchi).
+
+    Enduku: `su-related` section links = footer-style (weak signal). Google +
+    Rank Math ki *content lopala* unna contextual link strong. Idi safe ga:
+
+      * paragraph lo MODATI (anchor bayata) occurrence mattrame
+      * `<a>` lopala unna text ni malli link cheyyadu → **nested link eppudu ledu**
+        (v95 bug fix: stale segment meeda replace chesthe link maripoyedi)
+      * headings/tables/tag attributes touch cheyyadu (tag segments skip)
+      * already-unna URL + `max_links` limit → idempotent (double run safe)
+    """
+    if not links or max_links <= 0 or "<p" not in html:
+        return html
+
+    state = {"added": 0, "used": set(re.findall(r'href="([^"]+)"', html))}
+
+    def _cands(link: Dict[str, str]) -> List[str]:
+        title = re.sub(r"\s+", " ", validator.strip_tags(link.get("title") or "")).strip()
+        title = re.sub(r"\s*[|\u2013\u2014-]\s*studentup.*$", "", title, flags=re.I)
+        # trailing "(2026)" / " - 2026" / " 2026" → anchor natural ga (year ledu)
+        base = re.sub(r"\s*[\(\u2013\u2014-]?\s*(?:19|20)\d{2}\)?\s*$", "",
+                      title).strip(" -|\u00b7")
+        out: List[str] = []
+        for cand in (base, title):
+            cand = cand.strip(" -|\u00b7")
+            if len(cand) >= 10 and cand not in out:
+                out.append(cand)
+        return out
+
+    def _anchor_spans(text: str) -> List[tuple]:
+        return [(m.start(1), m.end(1))
+                for m in re.finditer(r"<a\b[^>]*>(.*?)</a>", text, re.S | re.I)]
+
+    def _inside(pos: int, spans: List[tuple]) -> bool:
+        return any(a <= pos < b for a, b in spans)
+
+    def _para(m: "re.Match") -> str:
+        block = m.group(0)
+        if state["added"] >= max_links:
+            return block
+        for link in links:
+            if state["added"] >= max_links:
+                break
+            url = (link.get("link") or link.get("url") or "").strip()
+            if not url.startswith("http") or url in state["used"]:
+                continue
+            for cand in _cands(link):
+                # `>` boundary ledu — tag/anchor masks ee pani chestayi
+                pat = re.compile(r"(?<![\w])" + re.escape(cand) + r"(?![\w])", re.I)
+                # tag attributes + `<a>` lopala unna text — rendu touch cheyyadu
+                tags = [mm.span() for mm in re.finditer(r"<[^>]+>", block)]
+                anchors = _anchor_spans(block)
+                hit = next((mm for mm in pat.finditer(block)
+                            if not _inside(mm.start(), tags)
+                            and not _inside(mm.start(), anchors)), None)
+                if hit is None:
+                    continue
+                new = '<a href="%s" class="su-ctx">%s</a>' % (_esc(url), hit.group(0))
+                block = block[:hit.start()] + new + block[hit.end():]
+                state["used"].add(url)
+                state["added"] += 1
+                break
+        return block
+
+    return re.sub(r"<p\b[^>]*>.*?</p>", _para, html, flags=re.S)
+
+
 def word_count(html: str) -> int:
     text = re.sub(r"<[^>]+>", " ", html)
     return len([w for w in text.split() if w])
@@ -552,6 +621,10 @@ def enhance(
     # v29: structured facts card uses only model/source-backed values.
     html = key_facts_block(recruitment) + html
     html = add_table_of_contents(html)
+    # v95: in-body contextual links (paragraph lopala) — section links ki ADD
+    html = contextual_links(html, internal_links,
+                            max_links=int(getattr(config, "CONTEXTUAL_LINKS_MAX", 3) or 0),
+                            seed=slug)
     # v86: ONE related block (su-related) — read-also duplicate delete
     # (same links tho rendu sections = unprofessional; v86 probe finding)
     html = add_internal_links(html, internal_links, seed=slug)
@@ -617,6 +690,40 @@ def attach_schema_image(html: str, image_url: str,
         return m.group(1) + _patch(m.group(2).strip()) + m.group(3)
 
     return pattern.sub(_sub, html)
+
+
+def attach_inline_image(html: str, image_url: str, alt: str,
+                        caption: str = "", width: int = 1200,
+                        height: int = 675) -> str:
+    """v95: content LOPALA image (focus-keyword alt tho) — publish tarvata.
+
+    Enduku: featured image mattrame unte content lo `<img>` ledu → Rank Math
+    "Focus Keyword in Image Alt" test fail, Google Discover/rich-result ki
+    in-article image support takkuva, reader engagement takkuva.
+
+    Safety:
+      · `image_url` khali / html lo `<img>` already unte → as-is (idempotent).
+      · Width/height pettamu → CLS 0 (CWV safe).
+      · Lazy + async decode — LCP image ni slow cheyyadu (adi featured image).
+      · Position: 2nd H2 tarvata (Discover ki top-of-article), lekapote 1st </p>.
+    """
+    if not image_url or "<img" in html:
+        return html
+    fig = (
+        '<figure class="su-figure">'
+        f'<img src="{_esc(image_url)}" alt="{_esc(alt)}" width="{int(width)}" '
+        f'height="{int(height)}" loading="lazy" decoding="async" />'
+        + (f'<figcaption>{_esc(caption)}</figcaption>' if caption else "")
+        + "</figure>"
+    )
+    h2s = [m.end() for m in re.finditer(r"</h2>", html, flags=re.I)]
+    if len(h2s) >= 2:
+        pos = h2s[1]
+        return html[:pos] + "\n" + fig + html[pos:]
+    para = re.search(r"</p>", html, flags=re.I)
+    if para:
+        return html[:para.end()] + "\n" + fig + html[para.end():]
+    return fig + html
 
 
 def rankmath_meta(

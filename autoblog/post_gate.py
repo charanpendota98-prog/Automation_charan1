@@ -337,6 +337,12 @@ def run(article: dict, html: str = "", media_id: Optional[int] = None,
     alt = article.get("_media_alt") or ""
     add("media_alt", "MEDIA", "Image alt lo keyword", kw_l in alt.lower() if alt else False,
         alt[:60] or "alt ledu", "alt text lo focus keyword", 2)
+    fig = re.search(r'<figure class="su-figure">.*?</figure>', html, flags=re.S)
+    fig_alt = (re.search(r'alt="([^"]*)"', fig.group(0)).group(1) if fig else "")
+    add("content_image", "MEDIA", "Content lopala image (keyword alt)",
+        bool(fig) and kw_l in fig_alt.lower(),
+        fig_alt[:50] if fig else "ledu",
+        "seo.attach_inline_image (publish time · featured image reuse)", 2)
     ext_img = [u for u in re.findall(r'<img[^>]+src="(http[^"]+)"', html)
                if _host() and _host() not in u]
     add("img_host", "MEDIA", "Images hotlink ledu (mana host)", not ext_img,
@@ -598,6 +604,12 @@ def self_test() -> Dict:
         "location": "Hyderabad, Telangana",
     }
     art["_media_alt"] = f"{art['focus_keyword']} – Government Jobs 2026 | studentup.in"
+    # v95: pipeline laage — featured image upload tarvata content lopala figure
+    # (real function pilustunnam, hand-written HTML kaadu) → certificate realistic
+    art["content_html"] = seo.attach_inline_image(
+        art["content_html"],
+        f"{config.WP_SITE.rstrip('/')}/wp-content/uploads/demo-featured.webp",
+        art["_media_alt"], caption=art["title"][:120])
     art["_rm"] = {"score": 100}
     art["_fact"] = []
     rm100.apply(art)

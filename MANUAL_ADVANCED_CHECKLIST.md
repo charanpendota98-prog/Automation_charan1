@@ -1828,3 +1828,46 @@ ni green ga chusaka AdSense ki apply cheyandi.
 * /saved/ page: Pages → Add New → shorcode `[studentup_saved]` paste → publish →
   Appearance → Menus lo add cheyandi.
 
+## PART 52 — v95: SEO 100 PIN-TO-PIN + TERMS + IN-BODY SIGNALS (theme 1.9.6)
+
+**Mee brief:** "fix".
+
+ENTI CHESAMU
+```
+autoblog/seo.py            # NEW: attach_inline_image() + contextual_links()
+autoblog/validator.py      # NEW checks: slug-length · kw-in-img-alt (image unte mattrame)
+autoblog/rm100.py          # _trim_slug() — URL eppudu ≤75 chars
+autoblog/post_gate.py      # NEW check: content_image (68/68) + fixture realistic
+autoblog/pipeline.py       # featured upload tarvata inline figure attach + gate list
+autoblog/config.py         # CONTEXTUAL_LINKS_MAX (default 3)
+tools/build_policy_pages.py# NEW page: terms.html (10 sections) + nav + sitemap
+wordpress-theme/...        # footer terms link · .su-figure/.su-ctx CSS · 1.9.6
+tests/v95_test.py          # 12 checks
+```
+
+ENDuku (nijamaina gaps — audit lo kanipinchina vi)
+```
+GAP-1 content lopala image ledu → Rank Math img-alt test fail + Discover weak
+      FIX: seo.attach_inline_image() — CLS-safe dims · lazy/async · idempotent
+GAP-2 in-body contextual links ledu (section links mattrame)
+      FIX: seo.contextual_links() — 1 occurrence · nested-link safe · idempotent
+GAP-3 Rank Math parity: URL length + image-alt checks ledu
+      FIX: slug-length (rm100 _trim_slug ≤75) + kw-in-img-alt (conditional, fair)
+GAP-4 Terms of service page ledu (policy completeness)
+      FIX: terms.html (usage · copyright · ads · liability · governing law)
+```
+
+VERIFY (ippudu)
+```
+python run.py --test-all          # 75/75
+python run.py --pin-check         # 100/100 · 68/68 checks
+python tests/v95_test.py          # 12 checks
+python tools/build_wp_theme.py    # 48 files · theme 1.9.6
+```
+
+HONEST LIMIT
+```
+Rank Math 100 / SEO 100 = code tho measure cheyyagaligedi (ee repo lo proof undi).
+Google ranking · Discover · AdSense approval · revenue = Google + mee content +
+time. v95 signals ni pin-to-pin chesindi; guarantee kaadu.
+```

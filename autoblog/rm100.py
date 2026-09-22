@@ -209,6 +209,21 @@ def fix_meta(article: dict) -> bool:
     return True
 
 
+def _trim_slug(slug: str, limit: int = 75) -> str:
+    """v95: slug ni 75 chars lopala (hyphen boundary) — Rank Math URL test.
+
+    Google SERP lo URL cut avvadam + Rank Math "URL length" fail — rendu
+    ee helper tho fix (keyword tokens pakkana pettakunda, 20 chars minimum).
+    """
+    slug = re.sub(r"-{2,}", "-", (slug or "").strip("-"))
+    if len(slug) <= limit:
+        return slug
+    cut = slug[:limit]
+    if "-" in cut[20:]:
+        cut = cut[:cut.rfind("-")]
+    return cut.strip("-")
+
+
 def fix_slug(article: dict) -> bool:
     kw = _kw(article)
     if not kw:
@@ -220,12 +235,17 @@ def fix_slug(article: dict) -> bool:
     need = min(2, len(toks)) if toks else 1
     have = sum(1 for t in toks if t in slug)
     if slug and have >= need:
-        return False
+        # v95: keyword tokens unna kuda URL pedda unte trim (Rank Math URL test)
+        if len(slug) <= 75:
+            return False
+        article["slug"] = _trim_slug(slug)
+        return True
     prefix = "-".join(toks) or re.sub(r"[^a-z0-9]+", "-", kw.lower()).strip("-")
     if not prefix:
         return False  # pure-Telugu keyword — existing slug ne keep (corrupt vaddu)
     slug_ascii = re.sub(r"[^a-z0-9-]+", "-", slug).strip("-")
-    article["slug"] = re.sub(r"-{2,}", "-", f"{prefix}-{slug_ascii}").strip("-")[:70]
+    article["slug"] = _trim_slug(
+        re.sub(r"-{2,}", "-", f"{prefix}-{slug_ascii}").strip("-"), 70)
     return True
 
 

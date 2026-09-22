@@ -208,7 +208,8 @@ def _hygiene(article: Dict) -> Dict:
 
 
 _PG_PUBLISH_TIME_CHECKS = {
-    "media", "media_size", "media_alt", "img_host", "ad_present", "house_ratio",
+    "media", "media_size", "media_alt", "content_image", "img_host",
+    "ad_present", "house_ratio",
     "ad_after_para", "ads_txt", "internal_links", "external_auth", "sponsored_label",
     "schema_article", "schema_breadcrumb", "schema_job", "schema_org_link",
     "no_duplicate", "indexnow", "deadline_valid",
@@ -256,7 +257,7 @@ def _rankmath_gate(article: dict, category: str) -> dict:
         # SUSPECT (data accuracy) fixes eppudu mundu — v66 gate hints venaka
         fixes = [f"SUSPECT data remove/verify cheyandi — {x}" for x in facts_before] + \
                 list(strict["fixes"])
-        # v66: pin-gate (67 checks) failures ni kuda refine hint ga ivvadam —
+        # v66: pin-gate (68 checks) failures ni kuda refine hint ga ivvadam —
         # "blog rasthunnapudu inka chala check cheyali" → writing loop lo ne fix avvali.
         try:
             from . import post_gate as _pg
@@ -564,6 +565,18 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
                     log.info("v94 schema image attach: %s", wp.last_media_url)
                 except Exception:  # noqa: BLE001 — schema patch fail publish aapadu
                     log.exception("v94 schema image attach skip (publish safe)")
+            # v95: content LOPALA image (keyword alt) — Rank Math "Focus Keyword
+            # in Image Alt" + Discover in-article image + engagement. Idempotent
+            # (html lo <img> unte no-op), CLS-safe (width/height), lazy load.
+            if media_id and getattr(wp, "last_media_url", ""):
+                try:
+                    final_html = seo.attach_inline_image(
+                        final_html, wp.last_media_url, alt_text,
+                        caption=article.get("title", "")[:120], width=1200, height=675)
+                    log.info("v95 inline figure attach: %s", wp.last_media_url)
+                except Exception:  # noqa: BLE001 — figure fail publish aapadu
+                    log.exception("v95 inline figure skip (publish safe)")
+
             # disk full avvakunda — upload ayyaka local file delete
             if media_id and not config.KEEP_IMAGES:
                 image_path.unlink(missing_ok=True)
