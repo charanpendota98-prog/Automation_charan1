@@ -1061,6 +1061,30 @@ def update_post(post_id: int, new_source_urls=None, mock: bool = False) -> Dict:
     except Exception:  # noqa: BLE001 — advisory (update safe)
         log.exception("update rm100 skip (post safe)")
 
+    # v101 DECEPTIVE-FRESHNESS GUARD: Google Aug-2026 spam update
+    # "dateModified bumped with no real change" ni target chestundi, mariyu
+    # "a scheduled job doing it nightly turns a one-off into a pattern".
+    # Mana auto_refresh roju nadustundi — so content nijamga marithe
+    # MATRAME dateModified bump cheyali. Lekapothe fake freshness signal.
+    # Fail-closed for the freshness *signal*: if the audit cannot run, the
+    # content refresh may continue but dateModified must NOT be fabricated.
+    _fresh = {"publish": True, "bump_date": False, "change_pct": 0.0,
+              "reason": "guard unavailable — dateModified bump blocked"}
+    try:
+        from . import freshness as _freshness
+
+        _fresh = _freshness.decide(existing_html, article["content_html"])
+        article["_freshness"] = _fresh
+        log.info("FRESHNESS change=%.1f%% bump=%s — %s",
+                 _fresh["change_pct"], _fresh["bump_date"], _fresh["reason"])
+    except Exception:  # noqa: BLE001 — guard fail refresh ni aapadu
+        log.exception("freshness guard skip (refresh safe, bump allowed)")
+    if not _fresh.get("publish", True):
+        log.warning("UPDATE SKIPPED post %s: %s", post_id, _fresh["reason"])
+        return {"skipped": True, "post_id": post_id,
+                "reason": _fresh["reason"], "freshness": _fresh,
+                "link": post.get("link", "")}
+
     # --- SEO re-enhance (fresh TOC/quick answer/schema) ---
     recent = wp.get_recent_published(per_page=8)
     internal = [p for p in recent if p.get("id") != post_id][:4]
@@ -1073,7 +1097,11 @@ def update_post(post_id: int, new_source_urls=None, mock: bool = False) -> Dict:
         faq=article.get("faq", []),
         # Google freshness rule: original datePublished preserve, dateModified new
         date_str=(post.get("date") or date.today().isoformat())[:10],
-        date_modified=date.today().isoformat(),
+        # v101: nijamaina change unte matrame kotha dateModified — lekapothe
+        # original modified date ne uncham (fake freshness Google ki vaddu).
+        date_modified=(date.today().isoformat() if _fresh.get("bump_date", True)
+                       else (post.get("modified") or post.get("date")
+                             or date.today().isoformat())[:10]),
         slug=slug,
         title=title,
         description=article["meta_description"],

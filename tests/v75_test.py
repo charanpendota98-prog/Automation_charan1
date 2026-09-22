@@ -177,7 +177,7 @@ def test_php_and_zip_fresh():
 
 def test_docs_v75():
     suites = len(list((ROOT / "tests").glob("*_test.py")))
-    assert suites == 80, f"suites {suites} (v100 tho 80 expect)"
+    assert suites == 81, f"suites {suites} (v101 tho 81 expect)"
     readme = read(ROOT / "README.md")
     manual = read(ROOT / "MANUAL_ADVANCED_CHECKLIST.md")
     go_live = read(ROOT / "GO_LIVE_CHECKLIST.md")

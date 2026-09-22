@@ -1564,6 +1564,9 @@ def main() -> int:
     parser.add_argument("--link-graph-apply", action="store_true",
                         help="v99: link fixes ni live posts lo nijamga apply "
                              "(idi lekapothe dry-run — edi marchadu)")
+    parser.add_argument("--freshness-audit", action="store_true",
+                        help="v101: 'deceptive freshness' guard status — "
+                             "refresh lo dateModified fake bump avutunda?")
     parser.add_argument("--verify-keyword", default="",
                         help="v97: oka focus keyword ki LIVE demand verify "
                              "(Google Autocomplete — dummy list kaadu)")
@@ -1685,6 +1688,10 @@ def main() -> int:
         return approval_bot.main_once()
     if args.revenue_check:
         return revenue_check()
+    if args.freshness_audit:
+        from . import freshness as _fr
+
+        return _fr.run_cli()
     if args.gsc:
         return gsc_opportunities(args.gsc)
     if args.doctor:

@@ -262,7 +262,7 @@ def test_ad_automation_proof():
 
 def test_update_freshness_chain():
     pipe = read(ROOT / "autoblog" / "pipeline.py")
-    assert "date_modified=date.today().isoformat()" in pipe
+    assert "date_modified=" in pipe and "_fresh.get(\"bump_date\"" in pipe
     assert "indexnow.submit(result.get(\"link\", \"\"))" in pipe
     seo = read(ROOT / "autoblog" / "seo.py")
     assert "Last Updated:" in seo
@@ -275,7 +275,7 @@ def test_update_freshness_chain():
 
 def test_docs_v77():
     suites = len(list((ROOT / "tests").glob("*_test.py")))
-    assert suites == 80, f"suites {suites} (v100 tho 80 expect)"
+    assert suites == 81, f"suites {suites} (v101 tho 81 expect)"
     readme = read(ROOT / "README.md")
     manual = read(ROOT / "MANUAL_ADVANCED_CHECKLIST.md")
     go_live = read(ROOT / "GO_LIVE_CHECKLIST.md")

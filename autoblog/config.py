@@ -61,6 +61,12 @@ LISTICLES_PER_DAY = int(_get("LISTICLES_PER_DAY", "1"))
 AUTO_REFRESH_PER_DAY = int(_get("AUTO_REFRESH_PER_DAY", "1"))
 AUTO_REFRESH_MIN_AGE_DAYS = int(_get("AUTO_REFRESH_MIN_AGE_DAYS", "30"))
 AUTO_REFRESH_HOUR = int(_get("AUTO_REFRESH_HOUR", "21"))
+# v101 DECEPTIVE-FRESHNESS GUARD (Google Aug-2026 spam update).
+# Refresh lo content ee % kanna takkuva marithe dateModified bump KAADU —
+# "dateModified bumped with no real change" = named spam signal.
+FRESHNESS_MIN_CHANGE_PCT = float(_get("FRESHNESS_MIN_CHANGE_PCT", "8"))
+# Ee % kanna takkuva marithe WP write motham skip (pointless revision).
+FRESHNESS_MIN_PUBLISH_PCT = float(_get("FRESHNESS_MIN_PUBLISH_PCT", "2"))
 # In-content ad shortcode (site lo ad plugin active unte; empty = off)
 # Example: AD_SHORTCODE=[quads id=1]  or  [advanced_ads_severities]
 AD_SHORTCODE = _get("AD_SHORTCODE", "")

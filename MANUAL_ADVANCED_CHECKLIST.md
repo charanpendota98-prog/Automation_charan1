@@ -2227,3 +2227,58 @@ Ivi CORRECTNESS + RELIABILITY fixes. Ee release traffic ni PERCHADU.
 Kaani nenu build chesina tools nijamga RUN AVUTAYI ani, mariyu avi
 TAPPU DATA meeda pani cheyyavu ani guarantee chestundi. Adi foundation.
 ```
+
+## PART 58 — v101: DECEPTIVE-FRESHNESS GUARD (Google Aug-2026 risk)
+
+### TOP-EXPERT DECISION
+
+NotebookLM integration / GSC expansion kanna mundu, site ni Google spam-risk
+nunchi protect cheyyadam first priority. Audit lo daily auto-refresh path lo
+critical gap dorikindi.
+
+### THE GAP
+
+```
+auto_refresh() -> update_post() -> dateModified = today
+                                      ^ content nijamga marinda? CHECK LEDU
+```
+
+LLM same post ni cosmetic ga rewrite chesina, scheduled job dateModified ni
+bump chesedi. Google August 2026 spam update **deceptive freshness** ni target
+chesindi: “dateModified bumped with no real change”. Oka sari ayithe mistake;
+nightly scheduled pattern ayithe spam signal risk.
+
+### THE FIX
+
+`autoblog/freshness.py`:
+
+- old/new HTML ni shingle-level Jaccard distance tho compare;
+- kotha vacancy counts, dates, fees and other numeric facts audit;
+- **<2% change:** WordPress write motham skip (revision/crawl noise vaddu);
+- **2%–8% change:** content update allow, kaani `dateModified` bump cheyyamu;
+- **>=8% change OR kotha facts:** genuine update, dateModified bump allow;
+- defaults `.env` lo `FRESHNESS_MIN_CHANGE_PCT=8`,
+  `FRESHNESS_MIN_PUBLISH_PCT=2`;
+- `python run.py --freshness-audit` status + thresholds chupistundi.
+
+`pipeline.update_post()` guard ni SEO enhancement mundu call chestundi. Fake
+freshness signal Google ki pampinchakunda, real update matrame fresh ga mark
+avutundi. Guard error ayithe refresh silently corrupt avvakunda log chestundi.
+
+### VERIFY
+
+```
+python run.py --freshness-audit
+python tests/v101_test.py
+python run.py --test-all       # 81/81
+```
+
+### HONEST EXPERT DECISION
+
+Originality verification already strong: exact phrase overlap, source rewrite
+distance, near-duplicate guard and hard floor. GSC CSV import already exists:
+`python run.py --gsc export.csv`. NotebookLM ni credentials/provenance lekunda
+fake ga pretend cheyyadam correct kaadu. First freshness risk close chesam;
+next evidence-based step is real GSC export ingestion + page/query experiments,
+then a documented NotebookLM source workflow.
+

@@ -551,6 +551,45 @@ ni ready cheyyagaladu — approval ni guarantee cheyyaledu. "Google lo suggest a
 ante autocomplete/Discover placement — adi **Google algorithm**, daaniki code tho force
 cheyyaleamu; cheyyagaligedi eligibility + quality signals mattrame.
 
+### v101 — DECEPTIVE-FRESHNESS GUARD (highest-risk Google protection)
+
+**Nenu top-expert level lo decide chesina next step:** NotebookLM integration
+kanna, GSC automation kanna mundu **site ni Google spam-risk nunchi protect
+cheyyadam** priority. Audit lo oka dangerous gap dorikindi.
+
+**Critical gap:** daily `auto_refresh()` old posts ni refresh chestundi. Kaani
+old vs new content nijamga entha marindo check cheyyakunda `dateModified` ni
+eppudu today ki bump chestundi. LLM same content ni cosmetic ga rewrite chesina
+kuda Google ki kotha update laga kanipistundi — roju automatic ga. Google
+August 2026 spam update exactly **"dateModified bumped with no real change"**
+(deceptive freshness) ni target chesindi; scheduled job pattern ayithe risk
+inka ekkuva.
+
+**Fix:** `autoblog/freshness.py` lo shingle-level content comparison + new
+numbers/dates/facts audit add chesanu:
+
+- identical / almost-identical refresh → **WP write kuda skip**;
+- content improve ayindi kaani kotha facts levu → publish avvochu, **dateModified
+  bump kaadu**;
+- real change or new vacancy/date/fee facts → publish + `dateModified` bump
+  allowed;
+- defaults: 2% kanna takkuva change = skip; 8% kanna ekkuva change = genuine
+  freshness signal. `.env` tho tune cheyyachu;
+- `python run.py --freshness-audit` owner-readable status/report;
+- failure-safe wiring: guard infrastructure fail ayina refresh aagadu, log avutundi.
+
+Idi refresh ni aapadam kaadu — **fake freshness ni aapadam**. Google ki
+"updated" ani cheppe right ippudu content change tho earn cheyyali.
+
+**Proof:** `--test-all` **81/81**; v101 lo identical skip, cosmetic no-bump,
+real new-fact bump, configurable thresholds, removed/new facts evidence,
+pipeline wiring, CLI/config/docs assertions unnayi.
+
+**Priority decision:** originality gate already strong ga undi; GSC import
+already available (`--gsc CSV`). NotebookLM ki official API/source boundary
+clear ga ledu, kabatti credentials/source provenance lekunda fake integration
+add cheyyadam kanna, first Google spam-risk ni close cheyyadam expert decision.
+
 ### v100 — AUTOMATION WIRING + 3 REAL BUG FIXES (audit release)
 
 **Mee brief:** "inka best ga em cheyyalo cheyu — anni fix cheyu".

@@ -138,9 +138,9 @@ def test_version_parity_192() -> None:
 def test_suite_pins_and_docs() -> None:
     for f in ("v75_test.py", "v76_test.py", "v77_test.py", "v78_test.py",
               "v79_test.py", "v80_test.py", "v81_test.py"):
-        assert "suites == 80" in read(ROOT / "tests" / f), f + " (74 pin ledu)"
+        assert "suites == 81" in read(ROOT / "tests" / f), f + " (74 pin ledu)"
     suites = len(list((ROOT / "tests").glob("*_test.py")))
-    assert suites == 80, f"suites {suites} (v100 tho 80 expect)"
+    assert suites == 81, f"suites {suites} (v101 tho 81 expect)"
     assert "71/71" in read(ROOT / "README.md"), "README 71/71 claim ledu"
     assert "71/71" in read(ROOT / "MANUAL_ADVANCED_CHECKLIST.md"), "MANUAL 71/71 ledu"
 
