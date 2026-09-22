@@ -26,6 +26,9 @@ class WordPressError(Exception):
 
 class WordPressClient:
     def __init__(self, site: str = None, username: str = None, password: str = None):
+        # v94: last uploaded media (schema image property kosam)
+        self.last_media_id = None
+        self.last_media_url = ""
         self.site = (site or config.WP_SITE).rstrip("/")
         self.auth = HTTPBasicAuth(username or config.WP_USERNAME, password or config.WP_APP_PASSWORD)
         self.session = requests.Session()
@@ -371,8 +374,14 @@ class WordPressClient:
             if resp.status_code not in (200, 201):
                 log.error("Media upload failed: %s %s", resp.status_code, resp.text[:300])
                 return None
-            media_id = resp.json()["id"]
-            log.info("Uploaded featured image id=%s", media_id)
+            data = resp.json()
+            media_id = data["id"]
+            # v94: source_url ni cache cheyyadam — Article schema ki `image`
+            # property kavali (Google Article rich result ki adi REQUIRED).
+            # Ippati varaku idi discard ayyedi, anduke schema lo image ledu.
+            self.last_media_url = str(data.get("source_url") or "")
+            self.last_media_id = media_id
+            log.info("Uploaded featured image id=%s url=%s", media_id, self.last_media_url)
             return media_id
         except WordPressAuthError:
             raise

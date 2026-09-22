@@ -85,6 +85,7 @@ $label = $terms ? $terms[0]->name : 'Update';
 				}
 				?>
 				<a class="su-readmore" href="<?php the_permalink(); ?>"><?php echo esc_html__( 'Read more', 'studentup' ) . ' →'; ?></a>
+				<?php echo studentup_save_button( 0, 'su-save-card' ); // v92: 🔖 save-for-later (escaped in helper) ?>
 			</div>
 		</div>
 	</article>
@@ -116,28 +117,159 @@ function studentup_trust_note() {
 }
 
 /**
- * Default menu (Appearance → Menus lo 'primary' assign cheyyakapote) — design order same.
+ * Default menu (Appearance → Menus lo 'primary' assign cheyyakapote).
+ *
+ * v93 (UI fix): ippati varaku idi Home + 9 categories ni **flat ga** render chesindi —
+ * prathi item ki description line tho. Result: header lo 10 items, 2 lines each,
+ * overflow — menu chala cluttered ga kanipinchindi (approved preview design ki
+ * polika ledu). Preview design lo menu **grouped dropdowns**:
+ *   Home · Jobs ▾ · Hall Tickets · Results · Current Affairs · More ▾
+ *
+ * Ippudu fallback kuda ade structure istundi (`menu-item-has-children` +
+ * `ul.sub-menu`) — anduke theme CSS dropdown anni pani chestayi, and
+ * `wp_nav_menu` (user menu) tho markup **okate** feel.
+ *
+ * Rules:
+ *   · Terms eppudu alias-aware (`studentup_used_term`) — TS/AP/Central missing aithe
+ *     aa item automatic ga skip (empty link ledu).
+ *   · Ee category okkati kuda exist kaakapote parent **khali dropdown** chupinchadu —
+ *     daaniki badulu flat Home-only menu (site clean).
+ *   · Page links (Saved / Contact / Quiz) unte mattrame chupistundi (404 ledu).
+ *
+ * @return void
  */
 function studentup_menu_fallback() {
-	$items = array(
-		array( 'label' => 'Home', 'url' => home_url( '/' ) ),
+	$home = home_url( '/' );
+
+	/** Theme slug → term (alias-aware). Missing = null (skip). */
+	$term_of = static function ( $slug ) {
+		return studentup_used_term( $slug );
+	};
+
+	// Dropdown group definitions (preview design order).
+	$groups = array(
+		array(
+			'label' => 'Jobs',
+			'items' => array( 'ts-jobs', 'ap-jobs', 'central-jobs', 'private-jobs', 'walkin-jobs', 'software-jobs' ),
+		),
 	);
+	$top = array( 'hall-tickets', 'results', 'current-affairs' );
+
+	$label_of = array();
 	foreach ( studentup_most_used() as $m ) {
-		$term = studentup_used_term( $m['slug'] );   // v89: alias-aware (ts-jobs → ts-govt-jobs)
-		if ( $term ) {
-			$items[] = array( 'label' => $m['label'], 'url' => get_category_link( $term ), 'desc' => $m['hint'] );
+		$label_of[ $m['slug'] ] = $m;
+	}
+
+	$menu = array();
+
+	/**
+	 * Jobs dropdown — terms unte mattrame (lekapote top-level ga chupinchadu).
+	 */
+	$jobs_children = array();
+	foreach ( $groups[0]['items'] as $slug ) {
+		$term = $term_of( $slug );
+		if ( ! $term || ! isset( $label_of[ $slug ] ) ) {
+			continue;
+		}
+		$jobs_children[] = array(
+			'label' => $label_of[ $slug ]['label'],
+			'url'   => get_category_link( $term ),
+			'desc'  => $label_of[ $slug ]['hint'],
+		);
+	}
+	if ( $jobs_children ) {
+		$menu[] = array( 'label' => 'Jobs', 'url' => $jobs_children[0]['url'], 'children' => $jobs_children );
+	}
+
+	/**
+	 * Top-level singles (only if the term really exists).
+	 */
+	foreach ( $top as $slug ) {
+		$term = $term_of( $slug );
+		if ( ! $term || ! isset( $label_of[ $slug ] ) ) {
+			continue;
+		}
+		$menu[] = array(
+			'label' => $label_of[ $slug ]['label'],
+			'url'   => get_category_link( $term ),
+		);
+	}
+
+	/**
+	 * "More" — page links unte mattrame (404 eppudu ledu).
+	 */
+	$more = array();
+	$pages = array(
+		array( 'slug' => 'saved',   'label' => 'Saved posts', 'desc' => 'Padhukoni tarvata chudandi' ),
+		array( 'slug' => 'contact', 'label' => 'Contact',     'desc' => 'Corrections · suggestions' ),
+		array( 'slug' => 'about',   'label' => 'About',       'desc' => 'Who writes this' ),
+		array( 'slug' => 'quiz',    'label' => 'Daily Quiz',  'desc' => 'Practice questions' ),
+	);
+	foreach ( $pages as $pg ) {
+		$page = get_page_by_path( $pg['slug'] );
+		if ( $page && 'publish' === get_post_status( $page ) ) {
+			$more[] = array(
+				'label' => $pg['label'],
+				'url'   => get_permalink( $page ),
+				'desc'  => $pg['desc'],
+			);
 		}
 	}
-	echo '<ul class="menu-primary">';
-	foreach ( $items as $it ) {
-		$cls = isset( $it['class'] ) ? ' class="' . esc_attr( $it['class'] ) . '"' : '';
-		printf(
-			'<li%s><a href="%s">%s%s</a></li>',
-			$cls,
-			esc_url( $it['url'] ),
-			esc_html( $it['label'] ),
-			isset( $it['desc'] ) ? '<small>' . esc_html( $it['desc'] ) . '</small>' : ''
+	$more[] = array(
+		'label' => 'Jobs by qualification',
+		'url'   => $home . '#qualsplit',
+		'desc'  => '10th · Inter · Degree · PG',
+	);
+	$tg = function_exists( 'studentup_tg_channel_url' ) ? studentup_tg_channel_url() : '';
+	if ( $tg ) {
+		$more[] = array( 'label' => 'Telegram channel', 'url' => $tg, 'desc' => 'Job alerts first' );
+	}
+	$more[] = array( 'label' => 'All categories', 'url' => $home . '#jobs', 'desc' => 'Every job section' );
+
+	if ( $more ) {
+		$menu[] = array(
+			'label'    => 'More',
+			'url'      => $more[0]['url'],
+			'children' => $more,
 		);
+	}
+
+	/**
+	 * Render — `wp_nav_menu` markup ki same (CSS okkate pani chestundi).
+	 */
+	echo '<ul id="primary-menu" class="menu-primary">';
+	printf(
+		'<li class="menu-item%s"><a href="%s">%s</a></li>',
+		( is_front_page() ? ' current-menu-item' : '' ),
+		esc_url( $home ),
+		esc_html__( 'Home', 'studentup' )
+	);
+	foreach ( $menu as $it ) {
+		$has_kids = ! empty( $it['children'] );
+		printf(
+			'<li class="menu-item%s">',
+			$has_kids ? ' menu-item-has-children' : ''
+		);
+		if ( $has_kids ) {
+			printf(
+				'<a href="%s" aria-haspopup="true" aria-expanded="false">%s</a>',
+				esc_url( $it['url'] ),
+				esc_html( $it['label'] )
+			);
+			echo '<ul class="sub-menu">';
+			foreach ( $it['children'] as $ch ) {
+				printf(
+					'<li class="menu-item"><a href="%s">%s%s</a></li>',
+					esc_url( $ch['url'] ),
+					esc_html( $ch['label'] ),
+					( ! empty( $ch['desc'] ) ? '<small>' . esc_html( $ch['desc'] ) . '</small>' : '' )
+				);
+			}
+			echo '</ul>';
+		} else {
+			printf( '<a href="%s">%s</a>', esc_url( $it['url'] ), esc_html( $it['label'] ) );
+		}
+		echo '</li>';
 	}
 	echo '</ul>';
 }

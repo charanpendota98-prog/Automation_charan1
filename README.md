@@ -180,6 +180,7 @@ python run.py --setup --dry-run       # full audit + v28 plan
 python run.py --plugins --dry-run     # plugin plan only
 python run.py --plugins               # install/activate reviewed stack
 python run.py --theme-audit           # read-only theme check
+python run.py --adsense-ready            # v94: AdSense approval READINESS gate
 python run.py --adsense-kit --dry-run # validate client id, no widget write
 python run.py --adsense-kit           # install/update Auto Ads loader
 ```
@@ -506,6 +507,159 @@ python run.py --top-post-category        # advanced control
 python run.py --traffic-sessions         # advanced control
 python run.py --traffic-views            # advanced control
 ```
+
+### v94 — ADSENSE READINESS + GOOGLE DISCOVER + CWV (theme 1.9.5)
+
+**Mee brief:** "posts publish cheste ads approval ki problem leda? google lo mana
+post suggest avvali ante em em miss avutunnam? chala miss avutunnam — anni fix cheyu".
+
+End-to-end audit (repo + Google requirements) chesi **6 nijamaina gaps** kanukkunni fix chesam:
+
+**GAP-1 ARTICLE SCHEMA LO `image` LEDU (pedda fix):** Google Article structured
+data ki `image` **required property**. Bot schema lo adi ledu → Article rich result +
+Discover large card eligibility thaggutundi. Ippudu `schema_jsonld` `image`
+(ImageObject + 1200×675 dimensions) emit chestundi; featured image upload tarvata
+`attach_schema_image()` tho **idempotent** ga attach avutundi (schema upload ki mundu
+generate avutundi anduke — adi nijamaina wiring problem).
+
+**GAP-2 DISCOVER LARGE-CARD IMAGE:** Discover pedda card ki **1200px+** image kavali;
+theme 640×360 mattrame register chesindi. Fix: `studentup-discover` (1200×675) +
+`og:image:width/height/alt` + Rank Math/Yoast filter (**duplicate tag lekunda** —
+vaati OG image ni 1200px version ki upgrade chestundi mattrame).
+
+**GAP-3 PRIVACY DISCLOSURE:** AdSense rule — "third-party vendors, including Google,
+use cookies … opt out at Ads Settings" ane specific disclosure undali. Adi ledu.
+Fix: privacy policy lo dedicated section (+ aboutads.info opt-out link + CMP line).
+
+**GAP-4 POLICY PAGES FOOTER REACH:** AdSense reviewers + readers ki prathi page nunchi
+policy pages kanipinchali. Fix: footer lo 5 links (publish ayyithe mattrame — 404 ledu).
+
+**GAP-5 PRE-APPLICATION AUDIT LEDU:** "apply cheyyala?" ki okka chota jawabu ledu.
+Fix: **`python run.py --adsense-ready`** — 8 groups · 29 mandatory checks ·
+score + blockers + fix lines + JSON artifact.
+
+**GAP-6 CLS/INP:** content images ki `width/height` ledu (layout shift) + mobile taps ki
+~300ms delay. Fix: image dims filter + `touch-action: manipulation`.
+
+**Proof:** `--test-all` **74/74** (v94_test.py kotha: 13 checks) · jsdom **164/164** ·
+saved-engine **53/53** · readiness **100/100** · php-lint **38/38** · theme **1.9.5**.
+AdSense readiness score: **97%** (1 blocker = posts volume — live publishing tho mattrame).
+
+**Honest limit:** AdSense approval · Discover inclusion · ranking · traffic · revenue
+**Google + mee account + time** batti untayi. Ee tooling technical/content requirements
+ni ready cheyyagaladu — approval ni guarantee cheyyaledu. "Google lo suggest avvadam"
+ante autocomplete/Discover placement — adi **Google algorithm**, daaniki code tho force
+cheyyaleamu; cheyyagaligedi eligibility + quality signals mattrame.
+
+### v95 — SEO 100 PIN-TO-PIN + TERMS + IN-BODY SIGNALS (theme 1.9.6)
+
+**Mee brief:** "fix" — remaining audit gaps (Rank Math/SEO 100 · contextual linking ·
+policy completeness) okati okati ga close cheyyadam.
+
+**GAP-1 CONTENT LOPALA IMAGE LEDU (pedda fix):** featured image mattrame undi,
+article HTML lo `<img>` **ledu** → Rank Math "Focus Keyword in Image Alt" test fail,
+Discover/rich-result ki in-article image support takkuva, engagement takkuva.
+Ippudu `seo.attach_inline_image()` (featured image ni content lopala reuse):
+`width/height` tho **CLS 0** · `loading="lazy"` + `decoding="async"` (LCP ni touch
+cheyyadu) · figcaption · 2nd H2 tarvata (Discover top-of-article) · **idempotent**
+(`<img>` unte no-op).
+
+**GAP-2 IN-BODY CONTEXTUAL LINKS:** `su-related` section links mattrame unnayi
+(footer-style, weak internal-link signal). Ippudu `seo.contextual_links()` —
+paragraph **lopala** natural anchor: modati occurrence mattrame · `<a>` unna paragraph
+skip (nested link ledu) · headings/tag attributes touch cheyyadu · idempotent ·
+`CONTEXTUAL_LINKS_MAX` (default 3). CSS: `.su-ctx`.
+
+**GAP-3 RANK MATH PARITY:** `slug-length` (URL ≤75 chars — `rm100._trim_slug`
+guarantee) + `kw-in-img-alt` (image unte **mattrame** add avutundi → gate fair,
+image lekunda score padipodu). Pin gate: **68/68 checks** (kotha `content_image`).
+
+**GAP-4 TERMS PAGE:** AdSense/Google policy completeness ki **Terms of service** page
+kavali (usage rules · copyright + correction route · ad disclosure · third-party links ·
+"as is" information · liability limits · governing law India/Telangana · contact).
+`tools/build_policy_pages.py` lo TERMS + nav + sitemap; footer lo 6వ policy link.
+
+**Proof:** `--test-all` **75/75** (v95_test.py kotha: 13 checks) · jsdom **164/164** ·
+saved-engine **53/53** · pin gate **100/100 · 68/68** · readiness **100/100** ·
+php-lint **38/38** · theme **1.9.6**.
+
+**Honest limit:** "Google lo suggest avvali" anedi Google **algorithm** — code tho force
+cheyyaleamu. Ee v95 chesindi: Rank Math/SEO checks pin-to-pin, in-body images, real
+contextual internal links, policy completeness, terms page — ivanni Google ki *signals*
+mattrame; ranking/traffic/approval/revenue Google + mee content + time batti untayi.
+
+### v93 — TOP-WEBSITE UI PASS (theme 1.9.4: menu · icons · collisions)
+
+**Mee brief:** "top website ui avvali and menu clear and neatga cheyu, icons
+correctga vundali (whatsapp instagram telegram youtube), chala mistakes unnayi".
+
+Deep audit (icons ni **render chesi** chusanu — grep kaadu) tho 4 nijamaina
+mistakes dorikayi + anni fix:
+
+**BUG-1 MENU CLUTTER (pedda fix):** fallback menu Home + 9 categories ni **flat ga**
+render chesindi — prathi item ki description line tho → header lo 10 items, 2 lines
+each, overflow. Approved preview design lo menu **grouped dropdowns** (Home · Jobs ▾ ·
+Hall Tickets · Results · Current Affairs · Exams ▾ · More ▾). Ippudu theme kuda ade
+istundi: `menu-item-has-children` + `ul.sub-menu` markup (anduke dropdown CSS pani
+chestundi), caret, orange hover underline, keyboard focus ring, dark mode, and
+"More" dropdown screen nunchi bayataki velladu. **Missing categories automatic ga
+skip** (empty link ledu) + page links (Saved/Contact/About/Quiz) **publish ayyithe
+mattrame** — menu lo 404 eppudu ledu.
+
+**BUG-2 TELEGRAM LINK:** `studentup_social_links()['telegram']` v91 lo add chesina
+**private-channel override** ni ignore chesindi → private invite unte footer rail +
+mobile panel + footer link **tappu username** ki velledi. Ippudu resolver okkate source.
+
+**BUG-3 FIXED-BAR COLLISION (mobile):** `.su-stickyad` (bottom:0 · z95) `.su-social`
+row (bottom:10px · z45) ni full ga cover chesindi; footer bottom 24px valla
+`.installbtn` footer text ni cover chesindi; saved rail/panel/toast kuda todukkunnayi.
+Ippudu `su-has-stickyad` body class + footer safe space → overlap zero.
+
+**BUG-4 CSS HYGIENE:** `.su-ad-lazy::after` lo `display` rendu saarlu (block → grid) — teesesa.
+
+**Icons audit:** 8 icons (whatsapp · telegram · instagram · youtube · x · call ·
+email · link) ni SVG path data nunchi **nijamga render chesi** verify chesanu —
+anni correct + complete (`Z` closed paths) + brand gradients
+(`#2bd46b` · `#37aee2` · `#f09433` · `#ff4e45`). Icon ↔ link mismatch audit: **0**.
+
+**UI polish:** 64px header row · brand text · hero/section rhythm · subtle card
+hover lift (reduced-motion safe) · footer safe space · toast reposition.
+
+**Proof:** `--test-all` **73/73** (v93_test.py kotha: 12 checks) · jsdom
+**164/164** · saved-engine **53/53** · readiness **100/100** · php-lint **37/37** ·
+theme **1.9.4**.
+
+### v92 — SAVED / READER RETENTION (theme 1.9.3)
+
+**Mee brief:** "more and more advanced, fully deep" — deep audit chesi okka
+nijamaina reader-facing gap kanukkunamu: **job notification ni save cheyyadaniki
+daari ledu**. Student oka notification chusi "tarvata apply cheddam" anukuntadu,
+kaani save cheyyaleru → tirigi ravatam thaggutundi.
+
+**v92 — Saved (theme 1.9.3):** theme `inc/saved.php` +
+`assets/js/studentup-saved.js`:
+* 🔖 **Save/un-save** — prathi job card lo + single post lo (aria-pressed,
+  keyboard + screen-reader ready). Toggle state buttons anni sync avutayi.
+* **Saved rail + drawer** — count badge tho; panel lo saved list + ᳚Recently
+  read᳛ (reading history) block. Escape / outside-click tho close.
+* **`[studentup_saved]` shortcode** — /saved/ page create chesi paste cheyandi
+  (menu lo link pettachu). Page template avasaram ledu.
+* **localStorage mattrame** — DB table ledu · cookie ledu · server round-trip
+  ledu (privacy-policy + AdSense ki clean, server load zero).
+* **Graceful degradation** — private mode lo localStorage block aithe soft note
+  + saving off; page eppudu break avvadu (PART-45 rule).
+* Options: StudentUp → Content → "Saved / bookmarks" (default ON) +
+  "Saved posts limit" (5–200, default 60; FIFO drop).
+* **XSS-safe render** — items anni `textContent` tho (innerHTML ledu).
+
+**Real behaviour test:** `tests/runtime/saved_runtime_test.js` (jsdom) —
+**53 checks**: save/un-save, persistence, count badge, panel order, remove,
+clear + cancel, XSS payload, /saved/ grid, reading history, FIFO cap,
+blocked-storage fallback.
+
+**Proof:** `--test-all` **72/72** (v92_test.py kotha: 11 checks) · jsdom
+**164/164** · saved-engine **53/53** · readiness **100/100** ·
+php-lint **37/37** · theme **1.9.3**.
 
 ### v91 — TELEGRAM TOOLS (theme 1.9.2) + v90 — NOTIFICATIONS (theme 1.9.1)
 

@@ -722,7 +722,7 @@ def trends_check() -> int:
 
 
 def pin_check_run() -> int:
-    """v65/v66: pin-to-pin certificate proof (67 checks · deterministic fixture)."""
+    """v65/v66: pin-to-pin certificate proof (68 checks · deterministic fixture)."""
     from . import post_gate
 
     return post_gate.main()
@@ -1553,7 +1553,7 @@ def main() -> int:
     parser.add_argument("--trends", action="store_true",
                         help="Google Trends India education trends chupinchindi")
     parser.add_argument("--pin-check", action="store_true",
-                        help="Pin-to-pin certificate proof (67 checks, offline)")
+                        help="Pin-to-pin certificate proof (68 checks, offline)")
     parser.add_argument("--index-now", default="", metavar="URL",
                         help="v68: IndexNow + Google Indexing API (JobPosting) ki URL submit")
     parser.add_argument("--index-status", action="store_true",
@@ -1590,6 +1590,10 @@ def main() -> int:
                              "(add --dry-run to preview)")
     parser.add_argument("--theme-audit", action="store_true",
                         help="v28: read-only active-theme audit; never switches themes")
+    parser.add_argument("--adsense-ready", action="store_true",
+                        help="v94: AdSense approval READINESS (pre-application gate — "
+                             "policy pages · content depth · navigation · technical · "
+                             "prohibited scan · Discover) + JSON report")
     parser.add_argument("--adsense-kit", action="store_true",
                         help="v28: validate ADSENSE_CLIENT_ID and install/update "
                              "the site-wide Auto Ads loader widget")
@@ -1768,6 +1772,11 @@ def main() -> int:
         from . import site_setup
 
         return site_setup.run_theme_audit()
+    if args.adsense_ready:
+        from . import adsense_ready
+
+        return adsense_ready.run()
+
     if args.adsense_kit:
         from . import site_setup
 

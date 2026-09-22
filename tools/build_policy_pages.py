@@ -97,6 +97,7 @@ NAV = [
     ("contact.html", "Contact"),
     ("privacy.html", "Privacy policy"),
     ("disclaimer.html", "Disclaimer"),
+    ("terms.html", "Terms"),
     ("editorial-policy.html", "Editorial policy"),
 ]
 
@@ -336,6 +337,25 @@ PRIVACY = """
     <li>What we give advertisers is display space only — never your personal data.</li>
   </ul>
 
+  <h2>Third-party vendors and cookies (Google AdSense)</h2>
+  <p>This section applies when advertising is active on this site. It is written the way Google's
+  AdSense programme requires.</p>
+  <ul>
+    <li><b>Third-party vendors, including Google</b>, use cookies to serve ads based on your prior
+      visits to this website or other websites.</li>
+    <li>Google's use of advertising cookies enables it and its partners to serve ads to you based on
+      your visit to this site and/or other sites on the internet.</li>
+    <li>You may <b>opt out of personalised advertising</b> by visiting
+      <a href="https://www.google.com/settings/ads" rel="nofollow noopener" target="_blank">Google Ads
+      Settings</a>. You can also opt out of some third-party vendors' use of cookies for personalised
+      advertising at
+      <a href="https://www.aboutads.info/choices/" rel="nofollow noopener" target="_blank">www.aboutads.info</a>.</li>
+    <li>If you are in the EEA, the UK or Switzerland, a Google-certified consent message (CMP) is shown
+      before any advertising cookie is set, and advertising is held until you choose.</li>
+    <li>You can block or delete cookies at any time in your browser settings. Blocking ad cookies does
+      not stop you reading any page on this site.</li>
+  </ul>
+
   <h2>Information you email us</h2>
   <p>Any email you send is used only to make the correction. Once the correction is done there is no need
   to keep it.</p>
@@ -379,6 +399,80 @@ DISCLAIMER = """
   <p>We link to official portals. Their content, availability and security are their responsibility —
   they are not under our control.</p>
 """
+
+TERMS = """
+  <div class="note warn"><b>Short version:</b> studentup.in is a free information site for
+  Telangana &amp; Andhra Pradesh students. Use it for information only — always confirm on the
+  official portal before you apply or pay anything. We are not a government website and we do not
+  guarantee any job, seat, scholarship, result or income.</div>
+
+  <h2>1 · Who can use this site</h2>
+  <p>studentup.in is meant for students, parents, teachers and job-seekers. By opening or using
+  this website you accept these terms. If you do not agree with them, please do not use the site.
+  If you are under 18, use the site with a parent or guardian.</p>
+
+  <h2>2 · What you may do</h2>
+  <ul>
+    <li>Read, print and share our pages and article links freely — personal, non-commercial use.</li>
+    <li>Share a short excerpt with a <b>visible link back</b> to the original page.</li>
+    <li>Write to us with a correction, a new notification or a doubt — we act on official information.</li>
+  </ul>
+
+  <h2>3 · What you may not do</h2>
+  <ul>
+    <li>Do not copy full articles and republish them as your own (see section 4).</li>
+    <li>Do not scrape, hammer or automate requests in a way that slows the site for other readers.</li>
+    <li>Do not upload or post anything unlawful, abusive, casteist, communal, defamatory or misleading
+      — including in poll votes, saved lists or messages to us.</li>
+    <li>Do not use this site to run a scam, sell "guaranteed jobs or seats", or collect fees from
+      students in our name.</li>
+  </ul>
+
+  <h2>4 · Our content and copyright</h2>
+  <p>All original text, page design, graphics and the studentup name belong to studentup.in. Facts,
+  dates, fees and eligibility details belong to the official notification they came from — the credit
+  for those always goes to the department or board that published them. Logos and names of government
+  departments appear only to identify the notification; they do not mean any partnership or approval.</p>
+  <p>If you believe something on this site belongs to you and has been used wrongly, write to
+  <a href="mailto:{email}">{email}</a> with the page link and proof. We correct or remove it quickly.</p>
+
+  <h2>5 · Advertisements and sponsored placements</h2>
+  <ul>
+    <li>Some placements are paid and are always labelled <b>SPONSORED</b>. Sponsored links carry
+      <code>rel="sponsored nofollow"</code>.</li>
+    <li>Third-party ad networks (including Google and its partners) may use cookies to show ads.
+      This is explained in our <a href="privacy.html">privacy policy</a>, along with how to opt out.</li>
+    <li>We do not endorse an advertiser's service and are not responsible for what happens on their
+      website. Verify everything before you pay anyone.</li>
+  </ul>
+
+  <h2>6 · Third-party links</h2>
+  <p>We link to official portals (TSPSC, APPSC, SSC, NSP, board and university sites) and sometimes to
+  other useful pages. We do not control those sites and cannot promise that their content, links or
+  downloads are correct or safe at all times.</p>
+
+  <h2>7 · Information is provided "as is"</h2>
+  <p>We work only from official sources and check every post before publishing, but government dates,
+  vacancy numbers, fees and rules change without notice. This site is information, not legal, financial,
+  medical or career advice, and it is not a government service. The final authority is always the
+  official notification. See our <a href="disclaimer.html">disclaimer</a> for details.</p>
+
+  <h2>8 · Limits of our responsibility</h2>
+  <p>To the extent allowed by law, studentup.in is not liable for any loss — missed deadlines, rejected
+  applications, exam or travel expenses, lost data, or decisions taken after reading this site. Use the
+  site at your own risk and keep a copy of anything important.</p>
+
+  <h2>9 · Changes to these terms</h2>
+  <p>We may update these terms when the site, the law or our ad partners change. The new version appears
+  on this page with an updated date, and continuing to use the site means you accept it.</p>
+
+  <h2>10 · Governing law and contact</h2>
+  <p>These terms are governed by the laws of India, with jurisdiction in Telangana, India. Questions,
+  corrections or complaints: <a href="mailto:{email}">{email}</a> ·
+  <a href="{wa}" rel="noopener">WhatsApp us</a> · or read the
+  <a href="editorial-policy.html">editorial policy</a> to see how posts are made.</p>
+"""
+
 
 EDITORIAL = """
   <p>Every post has to clear these 5 gates before publishing. If a gate fails, the post stops —
@@ -486,6 +580,9 @@ PAGE_DEFS = [
     ("disclaimer", "Disclaimer",
      "studentup.in is not a government website — limits of the information, no guarantees, financial fraud warnings and advertising rules.",
      "Disclaimer (note)", "Important limits — a must read", DISCLAIMER),
+    ("terms", "Terms of service",
+     "The rules for using studentup.in — what you may share, copyright, advertisements, third-party links, limits and the law that applies.",
+     "Terms of service", "The simple rules for using studentup.in", TERMS),
     ("editorial-policy", "Editorial policy",
      "The 5 verification gates, official-source policy, correction deadline and advertising rules — how every studentup.in post is made.",
      "Editorial policy", "Every post is published only after clearing these 5 gates", EDITORIAL),
@@ -522,6 +619,7 @@ SITEMAP = """<?xml version="1.0" encoding="UTF-8"?>
   <url><loc>https://studentup.in/pages/contact.html</loc><lastmod>{d}</lastmod><priority>0.7</priority></url>
   <url><loc>https://studentup.in/pages/privacy.html</loc><lastmod>{d}</lastmod><priority>0.5</priority></url>
   <url><loc>https://studentup.in/pages/disclaimer.html</loc><lastmod>{d}</lastmod><priority>0.5</priority></url>
+  <url><loc>https://studentup.in/pages/terms.html</loc><lastmod>{d}</lastmod><priority>0.5</priority></url>
   <url><loc>https://studentup.in/pages/editorial-policy.html</loc><lastmod>{d}</lastmod><priority>0.6</priority></url>
 </urlset>
 """

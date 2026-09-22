@@ -260,6 +260,15 @@ def rankmath_strict(article: Dict, final_html: str = "") -> Dict:
         check("kw-in-h2",
               sum(1 for h in h2s if kw_l in strip_tags(h).lower()) >= 2, 5,
               "2+ H2 headings lo focus keyword undali")
+    # v95: Rank Math parity adds — slug length + image-alt (image unte mattrame;
+    # image ledu ante ee check add avvadu → gate fair ga untundi).
+    check("slug-length", len(slug) <= 75, 3,
+          f"URL/slug {len(slug)} chars — 75 lopala short cheyandi (rm100 fix_slug)")
+    _imgs = re.findall(r"<img\b[^>]*>", html, flags=re.I)
+    if _imgs:
+        _alts = " ".join(re.findall(r'alt="([^"]*)"', " ".join(_imgs))).lower()
+        check("kw-in-img-alt", bool(kw) and kw_l in _alts, 4,
+              "image alt lo focus keyword pettandi (seo.attach_inline_image)")
     check("content-length", words >= 1500, 8,
           f"content {words} words — 1500+ rayandi")
     # v83: engine-generated boxes (takeaways/TOC) <li> ni skip — check

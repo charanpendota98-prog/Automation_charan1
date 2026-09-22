@@ -58,7 +58,14 @@ def test_alias_resolver() -> None:
         assert "studentup_used_term( $m['slug'] )" in src, rel
         assert "get_category_by_slug( $m['slug'] )" not in src, rel + ": dead look-up inka undi"
     tpl = read(THEME / "inc" / "template.php")
-    assert "studentup_used_term( $m['slug'] )" in tpl, "menu fallback resolver ledu"
+    # v93: menu fallback grouped dropdowns ki rewrite ayyindi — resolver ippudu
+    # closure (`$term_of = function ( $slug ) { return studentup_used_term( $slug ); }`)
+    # tho call avutundi. Intent same: fallback **alias-aware resolver** ne vaadali,
+    # raw slug look-up (get_category_by_slug) eppudu vadakoodadu.
+    _fb = tpl[tpl.index("function studentup_menu_fallback"):]
+    _fb = _fb[:_fb.index("\nfunction ", 10)]
+    assert "studentup_used_term( $slug )" in _fb, "menu fallback resolver ledu"
+    assert "get_category_by_slug(" not in _fb, "menu fallback lo dead raw look-up undi"
     assert "studentup_theme_cat(" in tpl, "card cat reverse-map ledu"
     print("  alias resolver + 4 call-sites ✔")
 
@@ -203,16 +210,16 @@ def test_version_and_pins() -> None:
     php = re.search(r"STUDENTUP_VERSION',\s*'([^']+)'", read(THEME / "functions.php")).group(1)
     css = re.search(r"Version:\s*([0-9.]+)", read(THEME / "style.css")).group(1)
     stable = re.search(r"Stable tag:\s*([0-9.]+)", read(THEME / "readme.txt")).group(1)
-    assert php == css == stable == "1.9.2", f"parity tappu: {php}·{css}·{stable}"
+    assert php == css == stable == "1.9.6", f"parity tappu: {php}·{css}·{stable}"
     readme = read(THEME / "readme.txt")
-    for entry in ("= 1.9.0", "= 1.9.1", "= 1.9.2"):
+    for entry in ("= 1.9.0", "= 1.9.1", "= 1.9.2", "= 1.9.3", "= 1.9.4", "= 1.9.5", "= 1.9.6"):
         assert entry in readme, f"readme changelog {entry} ledu"
     assert "Central Govt Jobs" in readme
     for f in ("v75_test.py", "v76_test.py", "v77_test.py", "v78_test.py",
               "v79_test.py", "v80_test.py", "v81_test.py"):
-        assert "suites == 71" in read(ROOT / "tests" / f), f + " (69→71 pin)"
+        assert "suites == 75" in read(ROOT / "tests" / f), f + " (69→74 pin)"
     suites = len(list((ROOT / "tests").glob("*_test.py")))
-    assert suites == 71, f"suites {suites} (v91 tho 71)"
+    assert suites == 75, f"suites {suites} (v95 tho 75)"
     print("  version parity 1.9.2 + suites pins 71 ✔")
 
 

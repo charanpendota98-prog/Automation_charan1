@@ -110,7 +110,10 @@ def test_pwa_shell_english():
 
 def test_all_pages_english():
     pages = sorted((PREVIEW / "pages").glob("*.html"))
-    assert len(pages) == 6, [p.name for p in pages]
+    # v95: policy set — terms page kotha ga vachindi; ee set eppudu kalisi undali
+    slugs = {p.stem for p in pages}
+    assert {"about", "advertise", "contact", "disclaimer", "editorial-policy",
+            "privacy", "terms"} <= slugs, sorted(slugs)
     for p in pages:
         html = read(p)
         n = telugu(html)
@@ -214,7 +217,7 @@ TESTS = [
     ("preview slim hero + countdown poyindi", test_slim_hero_and_no_countdown),
     ("preview: Telugu mattrame content lo (UI kaadu)", test_ui_chrome_telugu_free),
     ("PWA shell English + sw bump", test_pwa_shell_english),
-    ("6 preview pages English", test_all_pages_english),
+    ("policy pages English (7)", test_all_pages_english),
     ("theme: Telugu mattrame detection keywords lo", test_theme_telugu_only_in_detection_keywords),
     ("theme surfaces English (hero · footer · qual labels)", test_theme_surfaces_english),
     ("bot labels English + deadline plumbing poyindi", test_bot_labels_and_no_deadline_plumbing),

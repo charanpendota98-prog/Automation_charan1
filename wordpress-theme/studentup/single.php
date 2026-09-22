@@ -46,6 +46,8 @@ get_header();
 					</div>
 				</div>
 
+				<?php echo wp_kses_post( studentup_save_button( 0, 'su-save-single' ) ); // v92: 🔖 save-for-later ?>
+
 				<?php echo function_exists( 'studentup_expired_notice' ) ? wp_kses_post( studentup_expired_notice() ) : ''; ?>
 
 				<?php studentup_ad( 'mid' ); ?>

@@ -52,6 +52,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 		</nav>
 
 		<div class="headactions">
+			<?php if ( studentup_saved_on() ) : ?>
+				<button type="button" class="iconbtn su-hdr-saved" data-su-saved-open aria-expanded="false" aria-controls="su-saved-panel" aria-label="<?php echo esc_attr__( 'Saved posts', 'studentup' ); ?>">🔖<span class="su-saved-count" data-su-saved-count hidden>0</span></button>
+			<?php endif; ?>
 			<button type="button" class="iconbtn" id="searchbtn" aria-label="Search" aria-expanded="false" aria-controls="searchpanel">🔍</button>
 			<button type="button" class="iconbtn" id="theme" aria-label="Dark mode" aria-pressed="false">☾</button>
 			<button type="button" class="menubtn" id="menubtn" aria-label="Menu" aria-expanded="false" aria-controls="mpanel">☰</button>
@@ -84,6 +87,9 @@ studentup_breaking_ticker();
 	<div class="mlabel">Explore</div>
 	<a href="<?php echo esc_url( home_url( '/' ) ); ?>">🏠 Home</a>
 	<a href="<?php echo esc_url( home_url( '/?s=' ) ); ?>">🔍 Search</a>
+	<?php if ( function_exists( 'studentup_saved_on' ) && studentup_saved_on() ) : ?>
+		<a href="#" class="su-msaved" data-su-saved-open>🔖 <?php echo esc_html__( 'Saved', 'studentup' ); ?></a>
+	<?php endif; ?>
 	<div class="mlabel">Most searched by students</div>
 	<?php foreach ( studentup_most_used() as $m ) : ?>
 		<?php

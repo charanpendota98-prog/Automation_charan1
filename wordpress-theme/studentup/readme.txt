@@ -2,9 +2,9 @@
 Contributors: studentup
 Requires at least: 6.0
 Tested up to: 6.7
-Stable tag: 1.9.2
+Stable tag: 1.9.6
 Requires PHP: 7.4
-Version: 1.9.2
+Version: 1.9.6
 License: GNU General Public License v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Tags: news, education, blog, custom-logo, custom-menu, featured-images, translation-ready, right-sidebar, block-styles, wide-blocks
@@ -47,6 +47,63 @@ The theme ships a REST bridge (`inc/seo-bridge.php`). Use an account with `manag
 user tho App Password ivvandi (Administrator role).
 
 == Changelog ==
+
+= 1.9.6 (2026-09-22, v95 in-content image + contextual links + terms) =
+* NEW: content lopala image (`.su-figure`) — rounded, caption styled, width/height
+  tho CLS-safe, lazy + async decode (LCP ni touch cheyyadu).
+* NEW: in-body contextual internal links (`.su-ctx`) — paragraph lopala, subtle.
+* Footer policy row lo Terms of service link add (page publish aithe render).
+
+= 1.9.5 (2026-09-22, v94 Discover + Core Web Vitals) =
+* Google Discover large-card image: the theme now registers a 1200x675 size
+  (`studentup-discover`) - Discover only shows the big card for images 1200px wide
+  or more, and the bot already generates its featured images at exactly 1200x675.
+* og:image now ships width, height and alt, so Discover and social unfurls pick
+  the right image without re-measuring it. When Rank Math (or Yoast) is active the
+  theme upgrades its OG image to the 1200px version through a filter instead of
+  printing a second tag - no duplicates, ever.
+* CLS: content images get width/height attributes so the browser reserves space
+  before the image loads (layout shift stays at zero).
+* INP: links and buttons get `touch-action: manipulation`, removing the ~300ms
+  double-tap delay on phones - taps feel instant.
+* Footer now links the policy pages (privacy, about, contact, disclaimer) so
+  readers and AdSense reviewers can reach them from every page.
+
+= 1.9.4 (2026-09-22, v93 top-website UI pass) =
+* MENU (main fix): the default menu no longer dumps nine categories into a flat
+  row with a description line under each one. It now mirrors the approved design:
+  Home / Jobs (dropdown) / Hall Tickets / Results / Current Affairs / More
+  (dropdown) - with caret, hover underline, keyboard focus rings, dark mode and a
+  "More" dropdown that stays inside the screen. Categories that do not exist yet
+  are skipped automatically, and page links (Saved, Contact, About, Quiz) only
+  appear when that page is really published - so the menu can never show a 404.
+* Telegram link fix: the private-channel invite override now also applies to the
+  footer rail icon, the mobile panel row and the footer channel link. Before this,
+  those three still pointed at the public username even when a private invite was
+  set - the join link simply went to the wrong place.
+* Fixed-bar collisions (mobile): the sticky bottom ad used to cover the social
+  icons, the floating app button covered the footer, and the saved panel/toast
+  sat underneath them. All fixed bars now shift when the sticky ad is on, and the
+  footer reserves safe space.
+* CSS hygiene: removed a duplicate `display` declaration on the ad placeholder.
+* Polish: 64px header row, larger brand text, better hero/section rhythm, subtle
+  card hover lift (reduced-motion safe).
+* Saved is now reachable from the mobile menu (it closes the menu first).
+
+= 1.9.3 (2026-09-22, v92 saved / reader retention) =
+* inc/saved.php + assets/js/studentup-saved.js — reader bookmarks (🔖 save-for-later).
+  Everything lives in localStorage: no database table, no cookie, no server round-trip
+  (privacy-policy and AdSense clean, zero server load).
+* Save button on every job card and on single posts (aria-pressed, keyboard + screen
+  reader ready). A saved rail + slide-out drawer keeps the count visible, and a
+  `[studentup_saved]` shortcode gives you a full /saved/ page (create it under Pages,
+  paste the shortcode, and link it from the menu).
+* Reading history: the drawer also lists "Recently read" so a reader can pick up where
+  they left off — the strongest return-visit signal on a jobs/exam site.
+* New options: StudentUp -> Content -> "Saved / bookmarks" (on by default) and
+  "Saved posts limit" (5-200, default 60; oldest entries drop first).
+* Graceful degradation: if localStorage is blocked (private mode) the note appears and
+  saving turns itself off — the page never breaks.
 
 = 1.9.2 (2026-09-20, v91 Telegram tools) =
 * inc/telegram.php — Telegram channel URL resolver with private-channel invite
