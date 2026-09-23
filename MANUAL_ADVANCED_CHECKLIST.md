@@ -2591,3 +2591,26 @@ python tests/v109_test.py
 python run.py --test-all       # 89/89
 ```
 
+## PART 67 — v110: NOTEBOOKLM IMMUTABLE SOURCE PROVENANCE
+
+NotebookLM-ready bundle lo prathi source ki immutable snapshot metadata:
+
+```
+captured_sha256
+word_count
+captured_at
+published_date / updated_date
+target-year relevance
+```
+
+Source page later change ayithe hash mismatch evidence ga kanipistundi. Private
+NotebookLM account login, password, OTP or private data bot handle cheyyadu.
+Owner bundle import chesi cited brief export chestadu; pipeline URLs and claims
+validate chestundi.
+
+```
+python run.py --research-brief "TSPSC Group 2 2026" --research-limit 6
+python tests/v110_test.py
+python run.py --test-all       # 90/90
+```
+

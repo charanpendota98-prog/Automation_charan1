@@ -551,6 +551,23 @@ ni ready cheyyagaladu — approval ni guarantee cheyyaledu. "Google lo suggest a
 ante autocomplete/Discover placement — adi **Google algorithm**, daaniki code tho force
 cheyyaleamu; cheyyagaligedi eligibility + quality signals mattrame.
 
+### v110 — NOTEBOOKLM IMMUTABLE SOURCE PROVENANCE
+
+NotebookLM actual private login bot cheyyadu. Existing source bundle + cited
+brief validation ni strengthen chesi, every imported public source ki manifest
+snapshot add chesanu:
+
+- captured SHA-256 text hash
+- source URL/domain/title
+- word count
+- published/updated dates
+- target-year relevance
+- capture date
+
+Later source page silently change ayithe hash difference evidence lo kanipistundi;
+old NotebookLM brief ni new source tho confuse cheyyamu. Private passwords/OTPs
+store cheyyamu. **Proof:** `--test-all` **90/90**.
+
 ### v109 — MOBILE PERFORMANCE + ACCESSIBILITY + CWV AUDIT
 
 Content/SEO strong unna slow page rank and user experience ni damage cheyyachu.
