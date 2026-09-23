@@ -439,7 +439,7 @@ BOT HOOK : roju GUARDIAN_HOUR (default 20 IST) tarvata okkasari automatic
 CHECKS   : 12 — site files · first-look UI blocks (ticker/used/breaking/feed fetch/
            nav) · tiles ↔ tests/jsdom sync · robots+sitemap · ads.txt status ·
            breaking feed freshness · ad inventory validity · keyword/pillar lock
-           (17 · 203 · 11,192 · 143) · menu wiring · storage · theme zip · .env readiness
+           (17 · 203 · 12,344 · 143) · menu wiring · storage · theme zip · .env readiness
 SEVERITY : ❌ = system break (fix cheyyali) · ⚠️ = mee pani pending (creds)
            exit code: hard fail unte 1, warn-only unte 0
 STATUS   : logs/guardian.json — chivari 14 runs history (gitignored)
@@ -471,7 +471,7 @@ GRID     : TS/AP ప్రభుత్వ ఉద్యోగాలు modati car
 BOT      : python run.py --breaking-feed              (radar → feed + Telegram flow alage)
            python run.py --breaking-from file.json    (offline/approved list)
            radar run lo auto hook: news_radar sweep → breaking.publish()
-HONESTY  : feed lo radar (Google News తెలుగు + 143 official sources) verified items
+HONESTY  : feed lo radar (Google News తెలుగు + 180 official sources) verified items
            matrame · item lekapote site "కొత్త verified బ్రేకింగ్ అప్డేట్‌లు లేవు" +
            "రాడార్ ప్రతి 6 గంటలకు చెక్ చేస్తుంది" ani cheptundi — fake/clickbait ledu
 TESTS    : tests/v59_test.py = 12 checks · run.py --test-all 45/45 · jsdom 138/138
@@ -489,9 +489,9 @@ CODE     : config CATEGORIES + priority 4 · pipeline rule (LIST MODATI — "గ
            ఉద్యోగాలు" → Abroad, Central kaadu) · Gemini CATEGORY_SEEDS ·
            14 sources (eMigrate/MEA/IELTS/Study abroad/Canada/UK…), 4 daily
 SITE     : nav dropdown + chip "విదేశీ ఉద్యోగాలు" + mobile link + #grid card
-           tiles: 17 content categories · 143 official sources · 11,192 keywords
+           tiles: 17 content categories · 180 official sources · 12,344 keywords
 KEYWORDS : top_post ENTITIES 188 → 203 (+15 abroad: Gulf/eMigrate/IELTS/PTE/Canada…)
-           universe 10,682 → 11,192 (510 abroad keywords) · exam-mechanics intents skip
+           universe 10,682 → 12,344 (510 abroad keywords) · exam-mechanics intents skip
 TOP_POST : LIVE_CATEGORIES lo 17 pillars (mundu 12 matrame — 5 pillars
            "Online Education" ki map ayyevi!) + abroad intent filter
 ADVISOR  : Tier-1 gap unte — 'విదేశీ ఉద్యోగాలు (Abroad Jobs)' pillar posts cheyyamani cheptundi
@@ -863,7 +863,7 @@ search · mobile lo app-laga install · colorful premium look, text/background c
 
 WHAT CHANGED
   Site copy  : బ్రేకింగ్ టికర్ + section + nav/mobile links + JS + CSS — public sitenunchi poyayi.
-               Hero proof-stats (11,192 keywords · 143 sources · 59 districts) mariyu topbar/footer
+               Hero proof-stats (12,344 keywords · 180 sources · 59 districts) mariyu topbar/footer
                district lines teesesaam. "నమూనా/DEMO" maatalu public pages/theme nunchi clean.
   Filters    : Homepage `.qrow` chips — అన్నీ · 10వ తరగతి · ఇంటర్ (10+2) · ఐటీఐ · డిప్లొమా · డిగ్రీ ·
                పీజీ · బీటెక్ · ⏳ 7 రోజుల్లో ముగిసేవి. `applyFilter()` qual + search + category ni
@@ -1859,10 +1859,10 @@ GAP-4 Terms of service page ledu (policy completeness)
 
 VERIFY (ippudu)
 ```
-python run.py --test-all          # 75/75
+python run.py --test-all          # 80/80
 python run.py --pin-check         # 100/100 · 68/68 checks
 python tests/v95_test.py          # 13 checks
-python tools/build_wp_theme.py    # 48 files · theme 1.9.6
+python tools/build_wp_theme.py    # 50 files · theme 1.9.8
 ```
 
 HONEST LIMIT
@@ -1871,3 +1871,774 @@ Rank Math 100 / SEO 100 = code tho measure cheyyagaligedi (ee repo lo proof undi
 Google ranking · Discover · AdSense approval · revenue = Google + mee content +
 time. v95 signals ni pin-to-pin chesindi; guarantee kaadu.
 ```
+
+## PART 53 — v96: COVERAGE MISS-ZERO + SESSION DEPTH + 3 REAL BUGS (theme 1.9.7)
+
+**Mee brief:** "em em posts vasthunnai anni … job melas · district jobs ·
+university results · daily current affairs … whatsapp/telegram buttons madhyalo …
+ads refresh (automation kadu — vere page ki vachi malli mundu page) … thumbnail
+name … chinna chinnavi kuda miss cheyoddu".
+
+ENTI CHESAMU
+```
+autoblog/sources_grid.py   # 143 → 180 sources (job melas · district · universities ·
+                           #   hall tickets axis · daily current affairs · BPO)
+autoblog/top_post.py       # 203 → 221 entities → 12,344 keywords
+autoblog/monetize.py       # NEW: join_strip_block() · insert_join_strip() ·
+                           #   whatsapp_channel_url() (number/link typo-safe)
+autoblog/seo.py            # NEW: image_filename() · image_alt() (SEO thumbnail name)
+autoblog/wordpress_client.py # BUG FIX: webp → image/webp (MIME map) + filename param
+autoblog/pipeline.py       # thumbnail name/alt wiring + BUG FIX: refresh lo monetize
+autoblog/district_hubs.py  # NEW: TS 33 + AP 26 district job hubs (thin-page guard)
+autoblog/config.py         # DISTRICT_HUB_MIN_POSTS (default 3)
+autoblog/main.py           # --district-hubs · --district-hubs-apply · --district-hubs-state
+autoblog/guardian.py       # counts lock → 17 · 221 · 12,344 · 180
+autoblog/readiness.py      # same counts lock
+wordpress-theme/inc/upnext.php # NEW: Up Next + mobile sticky next bar (policy-safe)
+wordpress-theme/inc/cta.php    # dedupe: bot strip unte inline strip skip
+wordpress-theme/...            # options (upnext · upnext_bar) · CSS · JS · 1.9.7
+tests/v96_test.py          # 17 checks
+```
+
+ENDUKU (nijamaina gaps)
+```
+GAP-1 job mela / district jobs / university results / daily CA queries grid lo levu
+      FIX: 180 sources + 221 entities (12,344 keywords) — counts guardian lo lock
+GAP-2 join buttons post chivara mattrame (chala mandi akkadi varaku scroll cheyyaru)
+      FIX: mid-article strip — idempotent · empty-safe · theme dedupe guard
+GAP-3 ad refresh: timer/auto-reload = AdSense INVALID TRAFFIC (ban risk)
+      FIX: Up Next + sticky next bar → reader tap = real pageview = legit ad request
+GAP-4 thumbnail eppudu {slug}.webp (Google Images ki context ledu)
+      FIX: seo.image_filename() — keyword-year-category.webp + image_alt()
+GAP-5 BUG: .webp ni image/jpeg ga upload → konni hosts REJECT → featured image ledu
+      FIX: extension → real MIME + Content-Disposition lo kotha name
+GAP-6 BUG: update_post() lo monetize.append_blocks() ledu → refresh ayina posts
+      nunchi Telegram CTA + affiliate + join strip DELETE ayyevi
+      FIX: update path lo monetize + ad_manager (QA/gate ki mundu)
+GAP-7 59 districts scan avutayi kaani landing page okkati ledu (local queries miss)
+      FIX: district_hubs.py + CLI — thin-page guard (3 posts kanna takkuva → page ledu)
+```
+
+VERIFY (ippudu)
+```
+python run.py --test-all                 # 77/77
+python tests/v96_test.py                 # 17 checks
+python run.py --district-hubs            # dry-run plan (eligible vs thin-guard)
+python run.py --district-hubs --district-hubs-apply   # WordPress lo publish
+python tools/build_wp_theme.py           # 49 files · theme 1.9.7
+node tools/php_lint.js                   # 39/39
+```
+
+OWNER SETUP (ee features pani cheyyadaniki)
+```
+.env lo:  SOCIAL_WHATSAPP=9182739312        # leda full invite link
+          TELEGRAM_CHANNEL_URL=https://t.me/<channel>
+          DISTRICT_HUB_MIN_POSTS=3          # thin-page guard (3 kanna takkuva vaddu)
+WP Admin: StudentUp → Settings → "Up Next block" + "Mobile sticky next article bar"
+          (rendu default ON; sticky ad tho collision automatic ga handle avutundi)
+```
+
+HONEST LIMIT
+```
+Coverage · signals · session depth ni penchamu. Google ranking, "top 0.01%",
+Discover placement, AdSense approval, views/clicks — Google + mee content + time
+batti untayi; code guarantee ivvaledu. Ad auto-refresh DELIBERATELY implement
+cheyyaledu (policy violation) — real navigation tho mattrame refresh penchamu.
+```
+
+## PART 54 — v97: REAL-TIME KEYWORD VERIFICATION (dummy list kaadu)
+
+**Mee brief:** "real time lo keyword verify cheyali, dummy vaddu".
+
+NIJAMAINA PROBLEM
+```
+focus_keyword ni LLM INVENT chesedi. "TSPSC Group 2 Notification Complete
+Details Telugu" — chudadaniki bagundi, search demand ZERO. Aa phrase ni
+evaru type cheyyaru => Rank Math 100 vachina traffic raadu.
+Verify chese code repo lo EKKADA LEDU (v96 varaku).
+```
+
+ENTI CHESAMU
+```
+autoblog/keyword_verify.py # NEW: verify() · best_alternative() · verify_and_fix()
+                           #      audit() · suggestions() (cache + 2 endpoints)
+autoblog/pipeline.py       # _hygiene lo: focus kw derive TARVATA live verify
+autoblog/config.py         # KW_VERIFY (default 1) · KW_VERIFY_TTL (3600s)
+autoblog/main.py           # --verify-keyword "..." · --keyword-audit
+tests/v97_test.py          # 12 checks (anni offline-safe)
+```
+
+ELA PANI CHESTUNDI
+```
+1 VERIFY  keyword prefix (modati 3 words) → Google Autocomplete
+          Suggest lo mana phrase unte => verified + rank (#1 = best demand)
+2 DETECT  "complete details / full guide / everything you need" = fluff
+          (humans ila search cheyyaru => invented keyword)
+3 REPLACE fail ayithe Suggest lo NIJAMGA unna best phrase tho replace
+          drift guard: "ts police" post ki "ap police" kw RAADU
+          fluff suggestions + 8 words kanna podugu phrases REJECT
+```
+
+VERIFY (ippudu)
+```
+python run.py --verify-keyword "tspsc group 2 notification"
+python run.py --verify-keyword "tspsc group 2 complete details telugu"
+       # ee rendo dani ki: WEAK + fluff + better phrase suggest avutundi
+python run.py --keyword-audit      # live WP posts focus kws bulk audit
+python tests/v97_test.py           # 12 checks
+python run.py --test-all           # 80/80
+```
+
+OWNER SETUP
+```
+.env lo:  KW_VERIFY=1         # 0 pedithe off (offline/CI)
+          KW_VERIFY_TTL=3600  # same prefix cache — Google ni hammer cheyyoddu
+API key AVASARAM LEDU (Autocomplete free).
+```
+
+FAIL-OPEN (muఖ్యam)
+```
+Network ledu / Google block ⇒ verdict "unknown":
+  · post BLOCK avvadu
+  · keyword MARCHADU
+  · fake "verified" stamp EPPUDU veyyadu
+Prathi post meta lo _kw_verify report untundi (verdict · rank · replaced).
+```
+
+HONEST LIMIT
+```
+Autocomplete EXACT MONTHLY SEARCH VOLUME ivvadu. Nijamaina volume numbers
+kavali ante paid API (DataForSEO / Keywords Everywhere / Ahrefs) kavali.
+Idi "demand undi / ledu" ane binary + ordinal signal mattrame — aina LLM
+invent chesina keyword kanna infinitely better. Suggest lo undadam ante
+"rank avutam" ani KAADU; demand undi ani mattrame.
+```
+
+## PART 55 — v98: VIRAL SHARE ENGINE (free reach lever · theme 1.9.8)
+
+**Mee brief:** "fully viral avvali, neatga undali, free ga best ga cheyu".
+
+NIJAMAINA GAP
+```
+Share buttons POST CHIVARA MATRAME. Mobile lo 60-70% readers akkadi varaku
+scroll cheyyaru => share option vaallaki EPPUDU kanipinchadu.
+Share = free reach (okka share -> WhatsApp group lo 200 mandi).
+Biggest free viral lever, adi miss ayyindi.
+```
+
+ENTI CHESAMU
+```
+wordpress-theme/inc/share.php   # NEW: studentup_share_bar() · share_text()
+                                #      share_hook() · the_content filter (prio 14)
+wordpress-theme/assets/js/...   # NEW: navigator.share feature-detect block
+wordpress-theme/style.css       # .su-sharebar (mobile stack · dark · reduced-motion)
+wordpress-theme/inc/options.php # 'share_inline' toggle (default ON)
+wordpress-theme/functions.php   # require inc/share.php
+tools/build_wp_theme.py         # REQUIRED lo inc/share.php + inc/upnext.php
+tests/v98_test.py               # 10 checks
+```
+
+ELA PANI CHESTUNDI
+```
+1 PLACEMENT  modati H2 + aa tarvata modati <p> tarvata share row
+             (heading ki venakane buttons awkward => para tarvata)
+             idempotent · singular+main query · H2 lekapothe chivara
+2 RICH TEXT  "Title - Last date in 3 day(s)" + link (bare URL kaadu)
+             deadline ledu => khali · deadline dhatipoyindi => urgency RAADU
+3 NATIVE     navigator.share unte "More" button => reader own apps ki 1 tap
+             support lekapothe button HIDDEN (broken button raadu)
+             tracking/pixel LEDU
+```
+
+VERIFY (ippudu)
+```
+python tests/v98_test.py           # 10 checks
+python run.py --test-all           # 80/80
+node tools/php_lint.js             # 40/40
+python tools/build_wp_theme.py     # 50 files · theme 1.9.8
+```
+
+OWNER SETUP
+```
+WP Admin: StudentUp -> Settings -> "In-content share bar" (default ON)
+Theme zip 1.9.8 malli upload cheyandi (Appearance -> Themes -> Add New -> Upload)
+Deadline urgency kavalante bot su_deadline meta rastundi (v40+) - automatic.
+```
+
+HONEST LIMIT
+```
+Idi organic sharing ni SULABHAM chestundi. Share avutunda ledha ante mee
+CONTENT QUALITY batti untundi. Fake/auto sharing, bot clicks EPPUDU cheyyamu
+(AdSense invalid traffic + platform ban risk). "Fully viral" ni code
+guarantee cheyyaledu - reach ki unna friction ni maatrame teesesamu.
+```
+
+## PART 56 — v99: INTERNAL LINK GRAPH + FAQ/AI SCHEMA (orphan posts)
+
+**Mee brief:** "anni build cheyu" (Web Stories · link graph · FAQ schema).
+Research tarvata: **rendu build chesanu, Web Stories deliberately VADDU**
+(karanam kinda).
+
+NIJAMAINA GAP-1: ORPHAN POSTS
+```
+seo.enhance() kotha post nunchi purana posts ki link pedutundi - OKKA
+DIRECTION. Purana post ni evaru link cheyyaru (adi publish ayinappudu
+tarvata posts inka lev).
+=> inbound internal link ZERO unna posts = ORPHANS
+=> Googlebot sitemap meeda matrame depend, crawl priority takkuva,
+   ranking weak, konnisarlu index kuda kaavu
+Rank Math lo IDI KANIPINCHADU (adi single page matrame chustundi).
+Idi site-level GRAPH problem - anduke ippati varaku miss ayindi.
+```
+
+ENTI CHESAMU
+```
+autoblog/link_graph.py   # NEW: build_graph() · plan_fixes() · insert_link()
+                         #      run() · run_cli() - real <a href> parse
+autoblog/seo.py          # FAQPage tirigi (real visible Q&A 2+ unte matrame)
+                         # + _faq_schema_items() thin/dupe/empty filter
+autoblog/config.py       # FAQ_SCHEMA_ENABLED (default 1)
+autoblog/main.py         # --link-graph · --link-graph-apply
+wordpress-theme/style.css# .su-rel (in-paragraph related link)
+tests/v99_test.py        # 14 checks
+```
+
+VERIFY (ippudu)
+```
+python run.py --link-graph                     # REPORT matrame - edi marchadu
+python run.py --link-graph --link-graph-apply  # live posts lo apply
+python tests/v99_test.py                       # 14 checks
+python run.py --test-all                       # 80/80
+```
+
+SAFETY (idi LIVE content ni touch chestundi - anduke strict)
+```
+--apply lekapothe EDI MARCHADU (dry-run default)
+donor ki max 1 kotha link per run (spam kaadu)
+already link unte skip (duplicate links raavu)
+nested <a> create cheyyadu (invalid HTML)
+headings / quick-answer / CTA / ad blocks lopala insert cheyyadu
+self-link eppudu cheyyadu
+donor ki already 12 links unte skip (over-linking = spam signal)
+anchor natural title nunchi (exact-match keyword stuffing KAADU)
+IDEMPOTENT - malli run cheste duplicate links raavu
+```
+
+GAP-2: FAQ SCHEMA - repo lo TAPPU assumption undedi
+```
+Code lo "Google retired FAQPage in 2026" ani schema motham skip chesaru.
+Research chesi cross-check chesanu - SAGAM nijam:
+  · Google FAQ RICH RESULT (SERP accordion) 7-May-2026 nunchi POYINDI - nijam
+  · KAANI Google schema ni content understanding ki inka parse chestundi
+  · Bing Copilot / Perplexity / AI Overviews = AI retrieval systems daanni
+    ACTIVELY vadutunnayi -> adi KOTHA traffic surface
+  · Google ye: "unused structured data does not cause problems for Search"
+FIX: FAQPage tirigi emit - kaani NIJAMAINA visible Q&A 2+ unte MATRAME.
+     thin answers / duplicate questions / khali questions automatic drop.
+     FAQ_SCHEMA_ENABLED=0 tho off cheyyochu.
+```
+
+WEB STORIES - DELIBERATELY BUILD CHEYYALEDU (mee time save chesanu)
+```
+Meeru adigaru, kaani research chesaka build cheyyakoodadu ani telisindi:
+  · Google 2024 lo Web Stories ni Google IMAGES nunchi TEESESINDI
+  · Discover CAROUSEL ni kuda TEESESINDI
+  · Ippudu Discover lo SINGLE CARD matrame, adi kuda
+    "most likely US, India, Brazil" ane weak language tho
+  · Industry experts 2024 lo ne "the demise of Web Stories" ani cheppparu
+Ante: AMP-based separate format + separate templates + separate maintenance,
+adi DECLINING surface kosam. Ade effort link graph (durable crawl equity) +
+AI schema (GROWING surface) meeda pedithe chala better ROI.
+Meeru "still kavali" ante cheppandi - build chestanu. Honest rec: VADDU.
+```
+
+HONEST LIMIT
+```
+Internal links CRAWL + EQUITY ni improve chestayi - ranking GUARANTEE
+cheyyavu. Orphan fix ante "rank avutundi" ani KAADU; "Google ki ee page
+kanipistundi, daaniki site lopala context undi" ani matrame.
+FAQ schema AI retrieval ki help avutundi - adi kuda guarantee kaadu.
+```
+
+## PART 57 — v100: AUTOMATION WIRING + 3 REAL BUG FIXES (audit release)
+
+**Mee brief:** "inka best ga em cheyyalo cheyu, anni fix cheyu".
+Kotha feature kanna — naa sonta v96-v99 code ni AUDIT chesi bugs pattukunnanu.
+
+GAP-1 AUTOMATION LEDU (pedda miss)
+```
+district hubs (v96) + link graph (v99) = CLI-ONLY.
+Ante meeru prathi vaaram gurtu pettukoni manual ga run cheyyali.
+ADI JARAGADU. Result: orphans perigipotayi, district pages stale -
+nenu build chesina rendu tools WASTE.
+FIX: rendu weekly cron slot lopala (hub rebuild jarige chotane).
+     prathi okkati try/except - okati fail aina DAILY POSTING AAGADU.
+     DISTRICT_HUBS_AUTO=0 / LINK_GRAPH_AUTO=0 tho off cheyyochu.
+```
+
+GAP-2 BUG: RELATIVE LINKS RESOLVE AVVATLEDU (naa v99 code lo)
+```
+"/tspsc-group-2/" lanti site-relative link graph lo match avvadu.
+=> nijamga inbound links UNNA posts kuda ORPHANS ga report ayyevi
+   (false positive) => anavasaram ga extra links add ayyevi
+WordPress themes relative links emit chestayi - real-world lo COMMON.
+FIX: site-relative + protocol-relative (//host/path) rendu resolve.
+```
+
+GAP-3 BUG: javascript: URL href lo velthundi (XSS)
+```
+seo._esc() TEXT ni escape chestundi - URL SCHEME ni validate cheyyadu.
+district hub table lo / link-graph insert lo
+   href="javascript:alert(1)"   appatike emit ayyedi
+FIX: seo.safe_url() - scheme allowlist + obfuscation guard
+     (java<tab>script: · JaVaScRiPt: · data: · vbscript: anni block)
+     + attribute-breakout quote escape
+```
+
+GAP-4 HUB PAGES INSTANT INDEXING KI POVATLEDU
+```
+Posts submit avutayi (_after_publish_push), kaani hub + district pages
+organic crawl kosam wait chesevi (konni rojulu).
+FIX: avi kuda IndexNow ki - apply mode lo matrame, best-effort
+     (IndexNow fail aina rebuild AAGADU - test tho proof)
+```
+
+VERIFY (ippudu)
+```
+python tests/v100_test.py    # 12 checks
+python run.py --test-all     # 80/80
+```
+
+OWNER SETUP
+```
+.env lo (anni default ON - em cheyyakapoyina pani chestundi):
+  DISTRICT_HUBS_AUTO=1
+  LINK_GRAPH_AUTO=1
+  LINK_GRAPH_LIMIT=100    # weekly crawl lo entha posts scan cheyyali
+Weekly jobs cron lo ne run avutayi (vere cron entry avasaram LEDU).
+Manual ga kavalante CLI inka pani chestundi:
+  python run.py --district-hubs --district-hubs-apply
+  python run.py --link-graph --link-graph-apply
+```
+
+HONEST LIMIT
+```
+Ivi CORRECTNESS + RELIABILITY fixes. Ee release traffic ni PERCHADU.
+Kaani nenu build chesina tools nijamga RUN AVUTAYI ani, mariyu avi
+TAPPU DATA meeda pani cheyyavu ani guarantee chestundi. Adi foundation.
+```
+
+## PART 58 — v101: DECEPTIVE-FRESHNESS GUARD (Google Aug-2026 risk)
+
+### TOP-EXPERT DECISION
+
+NotebookLM integration / GSC expansion kanna mundu, site ni Google spam-risk
+nunchi protect cheyyadam first priority. Audit lo daily auto-refresh path lo
+critical gap dorikindi.
+
+### THE GAP
+
+```
+auto_refresh() -> update_post() -> dateModified = today
+                                      ^ content nijamga marinda? CHECK LEDU
+```
+
+LLM same post ni cosmetic ga rewrite chesina, scheduled job dateModified ni
+bump chesedi. Google August 2026 spam update **deceptive freshness** ni target
+chesindi: “dateModified bumped with no real change”. Oka sari ayithe mistake;
+nightly scheduled pattern ayithe spam signal risk.
+
+### THE FIX
+
+`autoblog/freshness.py`:
+
+- old/new HTML ni shingle-level Jaccard distance tho compare;
+- kotha vacancy counts, dates, fees and other numeric facts audit;
+- **<2% change:** WordPress write motham skip (revision/crawl noise vaddu);
+- **2%–8% cosmetic change:** full update skip — WordPress internal `modified` timestamp kuda marchakudadu;
+- **>=8% change OR kotha facts:** genuine update, dateModified bump allow;
+- defaults `.env` lo `FRESHNESS_MIN_CHANGE_PCT=8`,
+  `FRESHNESS_MIN_PUBLISH_PCT=2`;
+- `python run.py --freshness-audit` status + thresholds chupistundi.
+
+`pipeline.update_post()` guard ni SEO enhancement mundu call chestundi. Fake
+freshness signal Google ki pampinchakunda, real update matrame fresh ga mark
+avutundi. Guard error ayithe refresh silently corrupt avvakunda log chestundi.
+
+### VERIFY
+
+```
+python run.py --freshness-audit
+python tests/v101_test.py
+python run.py --test-all       # 81/81
+```
+
+### HONEST EXPERT DECISION
+
+Originality verification already strong: exact phrase overlap, source rewrite
+distance, near-duplicate guard and hard floor. GSC CSV import already exists:
+`python run.py --gsc export.csv`. NotebookLM ni credentials/provenance lekunda
+fake ga pretend cheyyadam correct kaadu. First freshness risk close chesam;
+next evidence-based step is real GSC export ingestion + page/query experiments,
+then a documented NotebookLM source workflow.
+
+## PART 59 — v102: GSC-EVIDENCE REFRESH PRIORITY
+
+### WHY OLDEST-FIRST IS NOT EXPERT STRATEGY
+
+Old posts anni equal value kaavu. Search Console lo already impressions unna,
+position 4–20 edge lo unna, CTR low unna page ni improve chesthe immediate
+learning + traffic opportunity untundi. Zero-impression old page ni first
+refresh cheyyadam guesswork.
+
+### SETUP
+
+```
+Search Console → Performance → Pages → Export CSV
+python run.py --gsc-refresh search-console-pages.csv
+```
+
+Required columns: `Page` or `Top pages`, `Clicks`, `Impressions`, `CTR`,
+`Position`. System URL-to-local-post matching chestundi. Query-only export
+intentional ga reject — query ki page URL teliyadu, kabatti wrong article ni
+update cheyyadam kanna priority create cheyyakapovadam safe.
+
+### PRIORITY LOGIC
+
+```
+GSC page match?
+  no  → legacy safe order: never refreshed / oldest
+  yes → high impressions + position 4..20 + CTR gap = high priority
+
+selected post → freshness guard → originality → QA → post gate → update
+```
+
+Scores SQLite meta lo persist avutayi. URL query strings, fragments and
+trailing slash normalise avutayi. GSC data lekapothe system break avvadu.
+Score ranking prediction kaadu; **which page to inspect/update first** ane
+measurable priority only. Every update ki existing safety gates continue.
+
+### VERIFY
+
+```
+python run.py --gsc-refresh pages.csv
+python tests/v102_test.py
+python run.py --test-all       # 82/82
+```
+
+### IMPORTANT OWNER RULE
+
+GSC CSV export monthly/weekly fresh ga ingest cheyyandi; old CSV permanent
+truth kaadu. Update ayyaka 28-day comparison lo impressions, CTR, position
+measure cheyyandi. Winner pattern ni matrame scale cheyyandi. Blind mass
+refresh, CTR manipulation, fake dateModified, or keyword stuffing cheyyakandi.
+
+## PART 60 — v103: REAL-TIME MULTI-SOURCE ORIGINALITY CHECK
+
+### WHY LOCAL CHECK ALONE IS NOT ENOUGH
+
+Known research sources tho compare chesina, article lo fetched source list lo
+leni website nunchi exact sentence copy ayithe local check miss avvachu.
+Anduke final generated article ki live phrase evidence layer add chesam.
+
+### FLOW
+
+```
+article generated
+  -> local donor 5-gram + exact 12-word overlap
+  -> originality score + hard floor
+  -> near-duplicate site-wide check
+  -> select distinctive 9-24 word phrases
+  -> quoted live search
+  -> external result page fetch
+  -> exact phrase found? BLOCK : no evidence? continue
+  -> QA + post gate + human approval
+```
+
+### REAL GOOGLE CONFIGURATION
+
+Actual Google result engine kosam Google Custom Search JSON API credentials
+set cheyyali:
+
+```
+ORIG_LIVE_CHECK=1
+ORIG_LIVE_PHRASES=3
+ORIG_LIVE_REQUIRED=1
+GOOGLE_CSE_API_KEY=...
+GOOGLE_CSE_ID=...
+```
+
+Credentials lekunte fallback search engine use avutundi and report lo
+`engine=fallback` ani honest ga chupistundi. “Google lo verify ayyindi” ani
+fake claim cheyyadu. Search unavailable ayithe default `ORIG_LIVE_REQUIRED=0`
+lo local gates continue; strict no-copy workflow kosam `1` use cheyyandi.
+
+### IMPORTANT LIMIT
+
+Idi AI detector kaadu, 100% legal copyright certificate kaadu. Search engines
+all web pages return cheyyavu, paraphrase copy ni exact phrase check miss cheyyachu.
+Kabatti five layers + human review maintain chestam. Exact copied phrase dorikithe
+automation **publish cheyyadu** — source attribution or fresh rewrite required.
+
+### VERIFY
+
+```
+python tests/v103_test.py
+python run.py --test-all       # 83/83
+```
+
+## PART 61 — v104: EDITORIAL VALUE + CLAIM PROVENANCE LEDGER
+
+### ORIGINALITY ≠ ONLY WORDING
+
+Competitor article ni words marchi rayadam technically duplicate kaakapoyina,
+user-value takkuva aithe scaled low-value risk untundi. v104 source-backed
+claims + practical original value ni separate ga record chestundi.
+
+### LEDGER
+
+```
+claim: 783 vacancies
+support: source-1 (official TSPSC)
+source tier: 1
+checked: YYYY-MM-DD
+status: supported
+```
+
+Prathi date/number context ki support source IDs record avutayi. Source lo
+support leni vacancy/date/fee claims `UNVERIFIED-CLAIMS` ga flag avutayi.
+No-source article ki fake authority score ivvadu.
+
+### ORIGINAL VALUE SIGNALS
+
+- actionable verbs: apply, download, verify, upload, contact;
+- local Telangana/AP/district/Telugu context;
+- headings and useful tables/lists;
+- visible official links;
+- multiple independent source domains;
+- source tier and verification date.
+
+Word count పెంచితే score పెరగదు. Practical usefulness + evidence matrame
+score ni improve chestayi. `EDITORIAL_VALUE_MIN=55` and
+`EDITORIAL_VALUE_BLOCK=1` default ga live quality gate active.
+
+### VERIFY
+
+```
+python tests/v104_test.py
+python run.py --test-all       # 84/84
+```
+
+Drafts ki flags preserve chestam; live publish lo provenance/value failures
+block avutayi. Human editor unsupported claim ni official source tho verify chesi
+matrame publish cheyyali.
+
+## PART 62 — v105: UPDATE BACKUP + ROLLBACK SAFETY
+
+### WHY
+
+Old post update wrong ayithe WordPress revision undochu, kaani exact source
+ledger, candidate diff, old meta and rollback proof separate ga undali.
+
+### BEFORE EVERY UPDATE
+
+```
+old title + old HTML + old meta + date
+new candidate HTML + new meta
+editorial provenance ledger
+unified diff
+=> output/update_backups/post-ID-timestamp.json
+=> only then WordPress PUT
+```
+
+Backup create fail ayithe update **refuse** avutundi. Wrong update restore:
+
+```
+python run.py --rollback-post 123
+python run.py --rollback-post 123 --rollback-backup output/update_backups/FILE.json
+```
+
+Rollback automatic ga guess cheyyadu; latest backup or explicitly selected JSON
+use chestundi and restored result print chestundi.
+
+### VERIFY
+
+```
+python tests/v105_test.py
+python run.py --test-all       # 85/85
+```
+
+## PART 63 — v106: SEARCH-INTENT + CANNIBALIZATION AUDIT
+
+### WHY
+
+Oke keyword/intent kosam rendu pages compete chesthe signals split avvachu.
+Notification, apply, syllabus, result pages different intent ayithe separate
+ga undali; same notification pages ayithe pillar/canonical/merge review kavali.
+
+### RUN
+
+```
+python run.py --cannibalization-audit
+```
+
+Audit title tokens + intent map + similarity compare chestundi. Recommendations:
+
+```
+merge_or_301
+choose_pillar_and_canonical
+separate_intent_with_internal_links
+```
+
+System automatic ga merge or redirect cheyyadu — wrong redirect recover cheyyadam
+hard kabatti human editorial decision compulsory.
+
+### VERIFY
+
+```
+python tests/v106_test.py
+python run.py --test-all       # 86/86
+```
+
+## PART 64 — v107: DIRECT GSC API + RANKING-DROP ALERTS
+
+### SETUP
+
+Google Cloud service account create chesi Search Console property access ivvali.
+`.env` lo:
+
+```
+GSC_SITE_URL=https://studentup.in
+GSC_SERVICE_ACCOUNT_FILE=/secure/path/service-account.json
+```
+
+JSON ni Git lo commit cheyyakandi. Dependency:
+
+```
+pip install google-auth
+```
+
+### RUN
+
+```
+python run.py --gsc-sync --gsc-days 28
+```
+
+GSC final data lag kosam last two days exclude chestundi. Page-level data v102
+priority store lo save avutundi. Previous sync compare:
+
+```
+position +3 or more  → alert
+CTR -3 percentage points or more → alert
+impressions <100     → noise, no alert
+```
+
+GSC credentials lekunte system success ani pretend cheyyadu; CSV workflow use
+cheyyandi: `python run.py --gsc-refresh pages.csv`.
+
+### VERIFY
+
+```
+python tests/v107_test.py
+python run.py --test-all       # 87/87
+```
+
+## PART 65 — v108: IMAGE ORIGINALITY + LICENCE LEDGER
+
+### WHY
+
+Text original unna, competitor thumbnail copy ayithe trust/licence problem.
+Generated featured image upload mundu local ledger create chestundi.
+
+```
+output/media_ledger/<slug>.json
+```
+
+Contains SHA-256, dimensions, filename, alt text, media ID, source,
+licence and checked date. Same hash repeat ayithe live review flag; automatic
+image replacement or deletion cheyyadu.
+
+### VERIFY
+
+```
+python tests/v108_test.py
+python run.py --test-all       # 88/88
+```
+
+## PART 66 — v109: MOBILE PERFORMANCE + ACCESSIBILITY + CWV AUDIT
+
+### RUN
+
+```
+python run.py --performance-audit https://studentup.in/page/
+```
+
+PageSpeed Insights mobile report lo performance, accessibility, SEO, LCP, CLS,
+INP, FCP and opportunities save avutayi:
+
+```
+output/performance_audits/<url>.json
+```
+
+Page content, ad slots, thumbnail, theme changes tarvata key pages audit
+cheyyali. `PAGESPEED_API_KEY` optional; API unavailable aithe fake pass create
+cheyyadu.
+
+### VERIFY
+
+```
+python tests/v109_test.py
+python run.py --test-all       # 89/89
+```
+
+## PART 67 — v110: NOTEBOOKLM IMMUTABLE SOURCE PROVENANCE
+
+NotebookLM-ready bundle lo prathi source ki immutable snapshot metadata:
+
+```
+captured_sha256
+word_count
+captured_at
+published_date / updated_date
+target-year relevance
+```
+
+Source page later change ayithe hash mismatch evidence ga kanipistundi. Private
+NotebookLM account login, password, OTP or private data bot handle cheyyadu.
+Owner bundle import chesi cited brief export chestadu; pipeline URLs and claims
+validate chestundi.
+
+```
+python run.py --research-brief "TSPSC Group 2 2026" --research-limit 6
+python tests/v110_test.py
+python run.py --test-all       # 90/90
+```
+
+## PART 68 — v111: CORRECTION + UPDATE TRANSPARENCY LEDGER
+
+Every successful old-post update ki `output/corrections/ledger.jsonl` lo record:
+
+```
+post ID · timestamp · reason · official source URLs · backup · change summary
+previous hash · current hash
+```
+
+Hash chain valla accidental/manual tampering detect avutundi:
+
+```
+python run.py --corrections-audit
+```
+
+Wrong content restore kosam v105 rollback:
+
+```
+python run.py --rollback-post POST_ID
+```
+
+### VERIFY
+
+```
+python tests/v111_test.py
+python run.py --test-all       # 91/91
+```
+

@@ -152,7 +152,7 @@ SPONSORED, mana ad ki "StudentUp సేవ".
 
 | Item | Status |
 |---|---|
-| 17 content pillars · 143 sources · 11,192 keywords (incl. విదేశీ/గల్ఫ్ = Tier-1 line) | ✅ |
+| 17 content pillars · 180 sources · 12,344 keywords (incl. విదేశీ/గల్ఫ్ = Tier-1 line) | ✅ |
 | Rank Math fields + canonical + JSON-LD + IndexNow | ✅ |
 | Manual gate (draft → Telegram ✅) + QA 80 + originality 72% | ✅ |
 | Daily question + quiz (server lekunda) + admin ads (WP) | ✅ |

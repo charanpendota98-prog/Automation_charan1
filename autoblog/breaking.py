@@ -4,7 +4,7 @@
 Enduku idi:
   student site open cheyagane modati 3 sekundullo "ippude em jarigindi" +
   "నాకు పనికొచ్చేది" kanipinchali. Ee module rendu panulu chestundi:
-    1) radar (Google News Telugu + 143 official sources) nunchi vachina
+    1) radar (Google News Telugu + 180 official sources) nunchi vachina
        verified items ni preview/data/breaking.json ga rasi site ticker +
        బ్రేకింగ్ న్యూస్ section ki istundi.
     2) MOST_USED — TS/AP students ekkuvaga vethike category order (bot +

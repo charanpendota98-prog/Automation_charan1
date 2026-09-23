@@ -1,4 +1,4 @@
-"""v58: Official Sources Grid — 143 curated sources, ZERO misses.
+"""v58/v96: Official Sources Grid — 180 curated sources, ZERO misses.
 
 Official first (SSC/UPSC/TSPSC/APPSC/NEET...), private+software+walkins next.
 Prathi source = Google News query. 17 daily hot-list sources prathi radar
@@ -176,6 +176,55 @@ _S = [
     ("Passport Visa Update", "passport visa appointment rules update India 2026", "Abroad Jobs", False),
     ("NRI Guidance", "NRI students Telugu workers abroad guidance news", "Abroad Jobs", False),
     ("Overseas Scholarship", "overseas scholarship fellowship for Indian students 2026", "Abroad Jobs", False),
+    # ======================================================================
+    # v96 — MISS-ZERO EXPANSION (37 kotha sources → 180)
+    # Brief: "em em posts vasthunnai … job melas … every district pages jobs
+    # … university results … daily current affairs" — ee axes ippati varaku
+    # grid lo LEVU (radar districts generic news matrame teesedhi).
+    # ======================================================================
+    # ---- Job melas / mega drives (district + city level) ----
+    ("Job Mela Telangana", "job mela Telangana 2026 registration", "Walkin Jobs", True),
+    ("Job Mela Andhra Pradesh", "job mela Andhra Pradesh 2026 registration", "Walkin Jobs", True),
+    ("Job Mela Hyderabad", "job mela Hyderabad mega job fair", "Walkin Jobs", False),
+    ("Job Mela Vijayawada Guntur", "job mela Vijayawada Guntur job fair", "Walkin Jobs", False),
+    ("Job Mela Visakhapatnam", "job mela Visakhapatnam job fair", "Walkin Jobs", False),
+    ("Job Mela Warangal Karimnagar", "job mela Warangal Karimnagar job fair", "Walkin Jobs", False),
+    ("Job Mela Tirupati Nellore", "job mela Tirupati Nellore job fair", "Walkin Jobs", False),
+    ("District Employment Job Fair", "district employment exchange job fair Telangana Andhra", "Walkin Jobs", False),
+    # ---- Local / district-level jobs ("prathi district page" demand) ----
+    ("TS District Jobs", "Telangana district level recruitment notification 2026", "TS Govt Jobs", True),
+    ("AP District Jobs", "Andhra Pradesh district level recruitment notification 2026", "AP Govt Jobs", True),
+    ("TS Collectorate Jobs", "Telangana collectorate district office recruitment", "Outsourcing Jobs", False),
+    ("AP Collectorate Jobs", "Andhra Pradesh collectorate district office recruitment", "Outsourcing Jobs", False),
+    ("Anganwadi Recruitment", "anganwadi teacher ayah recruitment Telangana Andhra 2026", "Outsourcing Jobs", False),
+    ("ASHA & Health Worker", "ASHA worker ANM staff nurse recruitment Telangana Andhra", "Outsourcing Jobs", False),
+    ("Municipal & Panchayat Jobs", "municipal corporation panchayat recruitment Telangana Andhra", "Outsourcing Jobs", False),
+    ("Cooperative Bank Jobs", "DCCB cooperative bank recruitment Telangana Andhra 2026", "AP Govt Jobs", False),
+    # ---- University results + admissions (TS + AP) ----
+    ("JNTUH Results", "JNTUH B.Tech results 2026 revaluation", "Results", True),
+    ("JNTUK Results", "JNTUK B.Tech results 2026 revaluation", "Results", True),
+    ("JNTUA Results", "JNTUA B.Tech results 2026 revaluation", "Results", False),
+    ("Osmania University Results", "Osmania University degree results 2026", "Results", False),
+    ("Kakatiya University Results", "Kakatiya University degree results 2026", "Results", False),
+    ("Andhra University Results", "Andhra University degree results 2026", "Results", False),
+    ("SV University Results", "Sri Venkateswara University results 2026", "Results", False),
+    ("Krishna & ANU Results", "Acharya Nagarjuna Krishna University results 2026", "Results", False),
+    ("Palamuru & Satavahana", "Palamuru Satavahana University results 2026", "Results", False),
+    ("TS Open University", "Dr BR Ambedkar Open University Telangana results admission", "Online Education", False),
+    ("AP Open University", "Dr BR Ambedkar Open University AP results admission", "Online Education", False),
+    ("Degree Admissions DOST OAMDC", "DOST OAMDC degree admission 2026 web options", "Online Education", False),
+    # ---- Hall tickets (dedicated axis) ----
+    ("TS Hall Tickets", "Telangana hall ticket download 2026", "Hall Tickets", True),
+    ("AP Hall Tickets", "Andhra Pradesh hall ticket download 2026", "Hall Tickets", True),
+    ("University Hall Tickets", "university exam hall ticket download 2026 Telangana Andhra", "Hall Tickets", False),
+    # ---- Daily current affairs (roju students ki) ----
+    ("Daily Current Affairs Telugu", "daily current affairs Telugu today competitive exams", "Current Affairs", True),
+    ("Telangana Current Affairs", "Telangana current affairs today scheme GO", "Current Affairs", False),
+    ("AP Current Affairs", "Andhra Pradesh current affairs today scheme GO", "Current Affairs", False),
+    ("Budget & Student Schemes", "union budget state budget student scheme allocation 2026", "Current Affairs", False),
+    # ---- Private / BPO local hiring ----
+    ("BPO Voice Process Jobs", "BPO voice process hiring Hyderabad Vijayawada freshers", "Private Jobs", False),
+    ("Retail & Field Jobs", "retail field sales executive hiring Telangana Andhra freshers", "Private Jobs", False),
 ]
 
 SOURCES_GRID = [

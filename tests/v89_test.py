@@ -210,16 +210,16 @@ def test_version_and_pins() -> None:
     php = re.search(r"STUDENTUP_VERSION',\s*'([^']+)'", read(THEME / "functions.php")).group(1)
     css = re.search(r"Version:\s*([0-9.]+)", read(THEME / "style.css")).group(1)
     stable = re.search(r"Stable tag:\s*([0-9.]+)", read(THEME / "readme.txt")).group(1)
-    assert php == css == stable == "1.9.6", f"parity tappu: {php}·{css}·{stable}"
+    assert php == css == stable == "1.9.8", f"parity tappu: {php}·{css}·{stable}"
     readme = read(THEME / "readme.txt")
-    for entry in ("= 1.9.0", "= 1.9.1", "= 1.9.2", "= 1.9.3", "= 1.9.4", "= 1.9.5", "= 1.9.6"):
+    for entry in ("= 1.9.0", "= 1.9.1", "= 1.9.2", "= 1.9.3", "= 1.9.4", "= 1.9.5", "= 1.9.6", "= 1.9.7", "= 1.9.8"):
         assert entry in readme, f"readme changelog {entry} ledu"
     assert "Central Govt Jobs" in readme
     for f in ("v75_test.py", "v76_test.py", "v77_test.py", "v78_test.py",
               "v79_test.py", "v80_test.py", "v81_test.py"):
-        assert "suites == 75" in read(ROOT / "tests" / f), f + " (69→74 pin)"
+        assert "suites == 91" in read(ROOT / "tests" / f), f + " (69→74 pin)"
     suites = len(list((ROOT / "tests").glob("*_test.py")))
-    assert suites == 75, f"suites {suites} (v95 tho 75)"
+    assert suites == 91, f"suites {suites} (v111 tho 91)"
     print("  version parity 1.9.2 + suites pins 71 ✔")
 
 

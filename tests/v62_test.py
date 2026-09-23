@@ -86,7 +86,7 @@ def test_freshness_check_counts():
     row = rows[0]
     assert row["ok"], row
     assert "4x/day" in row["value"] and "59 districts" in row["value"]
-    assert "143 sources" in row["value"], row["value"]
+    assert "180 sources" in row["value"], row["value"]
 
 
 def test_rankmath_live_check():
@@ -159,7 +159,7 @@ def main():
         ("rows shape (label/value/ok/scored + pending fix)", test_rows_shape),
         ("report score >= 90 + honest note", test_report_score),
         ("blueprint 90+ (post quality engine)", test_blueprint_check_is_quality_proof),
-        ("freshness: radar 4x/day · 59 districts · 143 sources", test_freshness_check_counts),
+        ("freshness: radar 4x/day · 59 districts · 180 sources", test_freshness_check_counts),
         ("Rank Math LIVE fields (not grep)", test_rankmath_live_check),
         ("owner pending 5+ items with fix lines", test_owner_pending_items),
         ("check crash ayina report crash kaadu", test_no_crash_on_failure),

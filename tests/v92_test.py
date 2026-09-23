@@ -35,7 +35,7 @@ sys.path.insert(0, str(ROOT))
 
 THEME = ROOT / "wordpress-theme" / "studentup"
 ZIP = ROOT / "wordpress-theme" / "studentup-theme.zip"
-SUITES_EXPECTED = 75  # v95 tho
+SUITES_EXPECTED = 91  # v95 tho
 
 
 def read(rel: Path | str) -> str:
@@ -122,7 +122,7 @@ def test_js_engine_source() -> None:
 def test_theme_integration() -> None:
     fn = read(THEME / "functions.php")
     assert "inc/saved.php" in fn, "functions.php lo require ledu"
-    assert re.search(r"STUDENTUP_VERSION',\s*'([^']+)'", fn).group(1) == "1.9.6"
+    assert re.search(r"STUDENTUP_VERSION',\s*'([^']+)'", fn).group(1) == "1.9.8"
     header = read(THEME / "header.php")
     assert "data-su-saved-open" in header, "header lo saved button ledu"
     assert "data-su-saved-count" in header, "header lo count badge ledu"
@@ -161,9 +161,9 @@ def test_version_parity_193() -> None:
     php = re.search(r"STUDENTUP_VERSION',\s*'([^']+)'", read(THEME / "functions.php")).group(1)
     css = re.search(r"Version:\s*([0-9.]+)", read(THEME / "style.css")).group(1)
     stable = re.search(r"Stable tag:\s*([0-9.]+)", read(THEME / "readme.txt")).group(1)
-    assert php == css == stable == "1.9.6", f"parity tappu: {php}·{css}·{stable}"
+    assert php == css == stable == "1.9.8", f"parity tappu: {php}·{css}·{stable}"
     readme = read(THEME / "readme.txt")
-    for entry in ("= 1.9.0", "= 1.9.1", "= 1.9.2", "= 1.9.3", "= 1.9.4", "= 1.9.5", "= 1.9.6"):
+    for entry in ("= 1.9.0", "= 1.9.1", "= 1.9.2", "= 1.9.3", "= 1.9.4", "= 1.9.5", "= 1.9.6", "= 1.9.7", "= 1.9.8"):
         assert entry in readme, f"readme changelog {entry} ledu"
     assert "saved" in readme.lower(), "readme lo saved feature ledu"
 
@@ -190,9 +190,9 @@ def test_zip_packaged() -> None:
     for rel in ("studentup/inc/saved.php", "studentup/assets/js/studentup-saved.js"):
         assert rel in names, f"zip lo {rel} ledu"
     css = z.read("studentup/style.css").decode("utf-8")
-    assert re.search(r"Version:\s*1\.9\.6", css), "zip lo css version 1.9.6 kaadu"
+    assert re.search(r"Version:\s*1\.9\.8", css), "zip lo css version 1.9.8 kaadu"
     php = z.read("studentup/functions.php").decode("utf-8")
-    assert re.search(r"STUDENTUP_VERSION',\s*'1\.9\.6'", php), "zip lo php version 1.9.6 kaadu"
+    assert re.search(r"STUDENTUP_VERSION',\s*'1\.9\.8'", php), "zip lo php version 1.9.8 kaadu"
     assert all(n.startswith("studentup/") for n in names), "zip root tappu"
 
 

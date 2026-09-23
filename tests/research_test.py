@@ -212,8 +212,9 @@ def main():
     import re as _re
 
     scripts = _re.findall(r'<script type="application/ld\+json">(.*?)</script>', out, _re.S)
-    assert len(scripts) == 2, len(scripts)  # Article + Breadcrumb; FAQ stays visible HTML
-    assert "FAQPage" not in out
+    # v99: Article + FAQPage (real Q&A) + Breadcrumb
+    types = [json.loads(x)["@type"] for x in scripts]
+    assert "Article" in types and "BreadcrumbList" in types, types
     art_schema = json.loads(scripts[0])
     assert art_schema["@type"] == "Article" and art_schema["inLanguage"] == "te"
     assert json.loads(scripts[1])["@type"] == "BreadcrumbList"
@@ -244,7 +245,7 @@ def main():
     payload = wp_created[-1]
     content = payload["content"]
     assert "quick-answer" in content
-    assert "FAQPage" not in content and "Article" in content
+    assert "Article" in content   # v99: FAQPage real Q&A unte emit avutundi
     fk = payload["meta"]["rank_math_focus_keyword"]
     assert "," in fk and "test guide 2026" in fk
     draft = [m for m in tg_sent if "NEW DRAFT" in m["text"]]

@@ -8,6 +8,7 @@ Checks (Rank Math):
   - image alt text lo keyword
 """
 
+import html as _html_mod
 import logging
 import re
 from typing import Dict, List, Optional
@@ -210,6 +211,30 @@ def word_count(html: str) -> int:
 
 def _esc(t: str) -> str:
     return (t or "").replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+
+
+#: v100 — href lo allow chese schemes. `javascript:` / `data:` / `vbscript:`
+#: XSS vectors; `_esc()` text ni escape chestundi kaani SCHEME ni validate
+#: cheyyadu, so href lo avi appatike velthayi. WP sanitiser save cheyyochu
+#: kaani manam emit chese HTML lo ne adi undakudadu (defence in depth).
+_SAFE_SCHEMES = ("http://", "https://", "/", "#", "mailto:", "tel:")
+
+
+def safe_url(url: str, fallback: str = "") -> str:
+    """Escaped href — unsafe scheme aithe `fallback` (default khali).
+
+    Escape ki mundu scheme check cheyyali: "java\\tscript:" lanti obfuscation
+    ni kuda pattukovadaniki whitespace/control chars strip chestam.
+    """
+    raw = (url or "").strip()
+    probe = re.sub(r"[\s\x00-\x1f]+", "", raw).lower()
+    if not probe:
+        return _esc(fallback)
+    if not probe.startswith(_SAFE_SCHEMES):
+        # relative path (no scheme, no colon before first slash) sare
+        if ":" in probe.split("/")[0]:
+            return _esc(fallback)
+    return _esc(raw).replace('"', "&quot;")
 
 
 def quick_answer_block(focus_keyword: str, quick_answer: str, updated: str) -> str:
@@ -417,6 +442,42 @@ def jobposting_obj(recruitment, title: str, description: str,
     return obj
 
 
+def _faq_schema_items(faq: List[Dict[str, str]]) -> List[Dict]:
+    """FAQ list → schema Question/Answer nodes (visible answers matrame).
+
+    Strict ga undali — Google policy: structured data **visible content tho
+    match avvali**. Anduke:
+      · question + answer rendu undali (khali vi drop),
+      · answer lo HTML strip (plain text),
+      · chala chinna answer (<20 chars) = thin → drop,
+      · duplicate questions drop,
+      · max 10 (spam-looking giant FAQ blocks vaddu).
+    """
+    out: List[Dict] = []
+    seen = set()
+    for item in faq or []:
+        if not isinstance(item, dict):
+            continue
+        q = re.sub(r"<[^>]+>", " ", str(item.get("q") or item.get("question") or ""))
+        a = re.sub(r"<[^>]+>", " ", str(item.get("a") or item.get("answer") or ""))
+        q = _html_mod.unescape(" ".join(q.split())).strip()
+        a = _html_mod.unescape(" ".join(a.split())).strip()
+        if not q or len(a) < 20:
+            continue
+        key = q.lower()
+        if key in seen:
+            continue
+        seen.add(key)
+        out.append({
+            "@type": "Question",
+            "name": q[:300],
+            "acceptedAnswer": {"@type": "Answer", "text": a[:1200]},
+        })
+        if len(out) >= 10:
+            break
+    return out
+
+
 def schema_jsonld(
     title: str,
     description: str,
@@ -431,8 +492,8 @@ def schema_jsonld(
     image_width: int = 0,
     image_height: int = 0,
 ) -> str:
-    """Structured data: Article + BreadcrumbList (+ItemList and eligible
-    JobPosting). Visible FAQs are deliberately not represented as FAQPage.
+    """Structured data: Article + BreadcrumbList (+ItemList, eligible
+    JobPosting, and FAQPage when the post has real visible Q&A).
 
     v94: `image` property add ayyindi — Google Article structured data ki idi
     **required** property (adi ippati varaku ledu = real gap). Discover/Top
@@ -444,8 +505,25 @@ def schema_jsonld(
     if not config.SEO_SCHEMA_ENABLED:
         return ""
     scripts = []
-    # FAQ remains visible HTML for readers, but FAQPage rich-result markup is
-    # intentionally not emitted: Google retired that Search feature in 2026.
+    # v99 — FAQPage: Google 7 May 2026 nunchi FAQ **rich result** ni motham
+    # teesesindi (2023 restriction tarvata final step). Ante SERP lo accordion
+    # kanipinchadu. KAANI Google adi content ni **understand** cheyyadaniki
+    # inka parse chestundi, mariyu Bing/Copilot/Perplexity lanti **AI retrieval**
+    # systems daanni actively vadutunnayi (AI Overviews/AI search = kotha
+    # traffic surface). Kabatti:
+    #   · rich result kosam FAQPage add cheyyadam ledu (adi poyindi),
+    #   · **nijamaina, visible** Q&A unnappudu MATRAME emit chestam
+    #     (thin/fake FAQ spam = manual action risk — adi eppudu cheyyamu),
+    #   · config tho off cheyyochu.
+    # Google: "unused structured data does not cause problems for Search".
+    if faq and getattr(config, "FAQ_SCHEMA_ENABLED", True):
+        qa = _faq_schema_items(faq)
+        if len(qa) >= 2:          # 1 question ki FAQPage worth ledu
+            scripts.append({
+                "@context": "https://schema.org",
+                "@type": "FAQPage",
+                "mainEntity": qa,
+            })
     scripts.append({
         "@context": "https://schema.org",
         "@type": "Article",
@@ -830,6 +908,51 @@ SLUG_STOPWORDS = {
     "how", "what", "when", "where", "who", "why", "will", "that", "this",
     "it", "its", "as", "your", "you", "elaa", "andhu",
 }
+
+
+IMAGE_NAME_MAX = 70
+
+
+def image_filename(focus_keyword: str, slug: str = "", category: str = "",
+                   year: int = 0, ext: str = "webp") -> str:
+    """v96: SEO-friendly THUMBNAIL FILE NAME (Google Images + Discover signal).
+
+    Ippati varaku featured image `{slug}.webp` ga upload ayyedi. Slug lo
+    keyword unna, Google Images ki category/year context povutundi mariyu
+    WordPress lo `tspsc-group-2-1.webp` lanti duplicate-suffix names vastayi.
+
+    Ee helper: `focus-keyword-category-year.webp` — ascii-only, stopwords
+    ledu, duplicate tokens ledu, `IMAGE_NAME_MAX` chars limit, hyphen-clean.
+    Keyword khali aithe slug fallback (file name epudu khali kaadu).
+    """
+    ext = re.sub(r"[^a-z0-9]+", "", (ext or "webp").lower()) or "webp"
+    parts: List[str] = []
+    seen = set()
+    for chunk in (focus_keyword, slug, category, str(year or "")):
+        for token in re.findall(r"[a-zA-Z0-9]+", chunk or ""):
+            token = token.lower()
+            if not token or token in SLUG_STOPWORDS or token in seen:
+                continue
+            seen.add(token)
+            parts.append(token)
+            if len("-".join(parts)) >= IMAGE_NAME_MAX:
+                break
+        if len("-".join(parts)) >= IMAGE_NAME_MAX:
+            break
+    base = "-".join(parts)[:IMAGE_NAME_MAX].strip("-")
+    base = re.sub(r"-+", "-", base)
+    return f"{base or 'studentup-post'}.{ext}"
+
+
+def image_alt(focus_keyword: str, category: str = "", year: int = 0,
+              brand: str = "studentup.in") -> str:
+    """Featured/inline image alt — keyword modata, brand chivara (Rank Math
+    'Focus Keyword in Image Alt' + accessibility). Duplicate words ledu."""
+    bits = [b for b in (focus_keyword.strip(), category.strip(),
+                        str(year) if year else "") if b]
+    line = " ".join(bits)
+    line = re.sub(r"\s+", " ", line).strip(" -–|")
+    return f"{line} | {brand}" if line else brand
 
 
 def optimize_slug(slug: str, focus_keyword: str = "", max_len: int = 60) -> str:
