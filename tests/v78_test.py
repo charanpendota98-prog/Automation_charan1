@@ -240,7 +240,7 @@ def test_end_to_end_perfection():
 
 def test_docs_v78():
     suites = len(list((ROOT / "tests").glob("*_test.py")))
-    assert suites == 86, f"suites {suites} (v106 tho 86 expect)"
+    assert suites == 87, f"suites {suites} (v107 tho 87 expect)"
     readme = read(ROOT / "README.md")
     manual = read(ROOT / "MANUAL_ADVANCED_CHECKLIST.md")
     go_live = read(ROOT / "GO_LIVE_CHECKLIST.md")

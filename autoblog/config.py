@@ -387,6 +387,10 @@ EDITORIAL_VALUE_MIN = int(_get("EDITORIAL_VALUE_MIN", "55"))
 EDITORIAL_VALUE_BLOCK = _get("EDITORIAL_VALUE_BLOCK", "1") not in ("0", "false", "no")
 GOOGLE_CSE_API_KEY = _get("GOOGLE_CSE_API_KEY", "")
 GOOGLE_CSE_ID = _get("GOOGLE_CSE_ID", "")
+# v107: optional direct Google Search Console API (service account access).
+GSC_SITE_URL = _get("GSC_SITE_URL", WP_SITE)
+GSC_SERVICE_ACCOUNT_FILE = _get("GSC_SERVICE_ACCOUNT_FILE", "")
+GSC_SERVICE_ACCOUNT_JSON = _get("GSC_SERVICE_ACCOUNT_JSON", "")
 # Rank Math meta dwara set cheyadam (plugin active unte automatic)
 RANK_MATH_META_ENABLED = _get("RANK_MATH_META_ENABLED", "1") not in ("0", "false", "no")
 # A low score may still be saved as a draft for human editing, but direct live

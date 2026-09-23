@@ -551,6 +551,24 @@ ni ready cheyyagaladu — approval ni guarantee cheyyaledu. "Google lo suggest a
 ante autocomplete/Discover placement — adi **Google algorithm**, daaniki code tho force
 cheyyaleamu; cheyyagaligedi eligibility + quality signals mattrame.
 
+### v107 — DIRECT GSC API + RANKING-DROP ALERTS
+
+CSV export optional ga continue avutundi. Service account Search Console
+property access configure chesthe direct sync:
+
+```bash
+python run.py --gsc-sync --gsc-days 28
+```
+
+Real page-level clicks, impressions, CTR and position fetch chesi v102 refresh
+priority store update chestundi. Previous sync tho compare chesi 100+ impression
+pages lo position 3+ drop or CTR 3-point drop alert chestundi. Low-impression
+noise ignore chestundi. Credentials lekunte fake success kaadu; clear setup
+message and CSV fallback istundi.
+
+**Proof:** `--test-all` **87/87**; API row conversion, alert thresholds,
+noise suppression, missing-credential safety and CLI wiring tested.
+
 ### v106 — SEARCH-INTENT + CONTENT CANNIBALIZATION AUDIT
 
 Same intent kosam multiple pages compete chesthe ranking signals split avvachu.

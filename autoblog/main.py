@@ -1446,6 +1446,10 @@ def main() -> int:
                         help="v105: specific update backup JSON restore chey")
     parser.add_argument("--cannibalization-audit", action="store_true",
                         help="v106: same search-intent pages detect chey — merge/canonical recommendations")
+    parser.add_argument("--gsc-sync", action="store_true",
+                        help="v107: direct Search Console API sync + position/CTR drop alerts")
+    parser.add_argument("--gsc-days", type=int, default=28,
+                        help="v107: GSC API comparison window days (default 28)")
     parser.add_argument("--listicle", nargs="?", const="auto", default=None,
                         metavar="TOPIC",
                         help="trending listicle post (Top 10 jobs lanti stories); topic optional")
@@ -1700,6 +1704,10 @@ def main() -> int:
         from . import cannibalization as _ca
 
         return _ca.run_cli()
+    if args.gsc_sync:
+        from . import gsc_api as _ga
+
+        return _ga.run_cli(days=args.gsc_days)
     if args.rollback_post:
         from . import update_safety as _us
 

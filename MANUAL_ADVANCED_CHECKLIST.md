@@ -2500,3 +2500,46 @@ python tests/v106_test.py
 python run.py --test-all       # 86/86
 ```
 
+## PART 64 — v107: DIRECT GSC API + RANKING-DROP ALERTS
+
+### SETUP
+
+Google Cloud service account create chesi Search Console property access ivvali.
+`.env` lo:
+
+```
+GSC_SITE_URL=https://studentup.in
+GSC_SERVICE_ACCOUNT_FILE=/secure/path/service-account.json
+```
+
+JSON ni Git lo commit cheyyakandi. Dependency:
+
+```
+pip install google-auth
+```
+
+### RUN
+
+```
+python run.py --gsc-sync --gsc-days 28
+```
+
+GSC final data lag kosam last two days exclude chestundi. Page-level data v102
+priority store lo save avutundi. Previous sync compare:
+
+```
+position +3 or more  → alert
+CTR -3 percentage points or more → alert
+impressions <100     → noise, no alert
+```
+
+GSC credentials lekunte system success ani pretend cheyyadu; CSV workflow use
+cheyyandi: `python run.py --gsc-refresh pages.csv`.
+
+### VERIFY
+
+```
+python tests/v107_test.py
+python run.py --test-all       # 87/87
+```
+

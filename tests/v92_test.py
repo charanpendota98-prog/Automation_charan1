@@ -35,7 +35,7 @@ sys.path.insert(0, str(ROOT))
 
 THEME = ROOT / "wordpress-theme" / "studentup"
 ZIP = ROOT / "wordpress-theme" / "studentup-theme.zip"
-SUITES_EXPECTED = 86  # v95 tho
+SUITES_EXPECTED = 87  # v95 tho
 
 
 def read(rel: Path | str) -> str:
