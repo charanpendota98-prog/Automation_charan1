@@ -551,6 +551,24 @@ ni ready cheyyagaladu — approval ni guarantee cheyyaledu. "Google lo suggest a
 ante autocomplete/Discover placement — adi **Google algorithm**, daaniki code tho force
 cheyyaleamu; cheyyagaligedi eligibility + quality signals mattrame.
 
+### v106 — SEARCH-INTENT + CONTENT CANNIBALIZATION AUDIT
+
+Same intent kosam multiple pages compete chesthe ranking signals split avvachu.
+Ippudu local published posts ni intent map lo classify chesi, similar pages
+pair ni flag chestundi:
+
+```bash
+python run.py --cannibalization-audit
+```
+
+Recommendations only: `merge_or_301`, `choose_pillar_and_canonical`, or keep
+separate intents with internal links. Automatic destructive merge/redirect
+cheyyadu. Notification, apply, eligibility, syllabus, hall-ticket, result,
+scholarship and current-affairs intents separate ga map chestundi.
+
+**Proof:** `--test-all` **86/86**; duplicate intent, separate intent,
+non-destructive recommendation and CLI wiring tested.
+
 ### v105 — UPDATE BACKUP + ONE-CLICK ROLLBACK
 
 Old post refresh safe ga undadaniki WordPress revisions meeda matrame depend

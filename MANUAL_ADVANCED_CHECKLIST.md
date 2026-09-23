@@ -2468,3 +2468,35 @@ python tests/v105_test.py
 python run.py --test-all       # 85/85
 ```
 
+## PART 63 — v106: SEARCH-INTENT + CANNIBALIZATION AUDIT
+
+### WHY
+
+Oke keyword/intent kosam rendu pages compete chesthe signals split avvachu.
+Notification, apply, syllabus, result pages different intent ayithe separate
+ga undali; same notification pages ayithe pillar/canonical/merge review kavali.
+
+### RUN
+
+```
+python run.py --cannibalization-audit
+```
+
+Audit title tokens + intent map + similarity compare chestundi. Recommendations:
+
+```
+merge_or_301
+choose_pillar_and_canonical
+separate_intent_with_internal_links
+```
+
+System automatic ga merge or redirect cheyyadu — wrong redirect recover cheyyadam
+hard kabatti human editorial decision compulsory.
+
+### VERIFY
+
+```
+python tests/v106_test.py
+python run.py --test-all       # 86/86
+```
+

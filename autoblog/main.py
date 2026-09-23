@@ -1444,6 +1444,8 @@ def main() -> int:
                         help="v105: latest safe backup nunchi post restore chey")
     parser.add_argument("--rollback-backup", default="", metavar="JSON",
                         help="v105: specific update backup JSON restore chey")
+    parser.add_argument("--cannibalization-audit", action="store_true",
+                        help="v106: same search-intent pages detect chey — merge/canonical recommendations")
     parser.add_argument("--listicle", nargs="?", const="auto", default=None,
                         metavar="TOPIC",
                         help="trending listicle post (Top 10 jobs lanti stories); topic optional")
@@ -1694,6 +1696,10 @@ def main() -> int:
         return approval_bot.main_once()
     if args.revenue_check:
         return revenue_check()
+    if args.cannibalization_audit:
+        from . import cannibalization as _ca
+
+        return _ca.run_cli()
     if args.rollback_post:
         from . import update_safety as _us
 
