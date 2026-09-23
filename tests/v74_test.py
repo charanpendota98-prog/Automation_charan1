@@ -124,7 +124,7 @@ def test_theme_has_no_exam():
         assert s in pwa, f"shortcut ledu: {s}"
     assert "studentup_exam=1" not in pwa
     css = re.search(r"^Version:\s*(\S+)", (theme / "style.css").read_text(encoding="utf-8"), re.M).group(1)
-    assert css == "1.9.6", css
+    assert css == "1.9.8", css
     print("  theme: exam options/buttons/dead-link poyayi · shortcuts aligned · 1.9.4 ✔")
 
 

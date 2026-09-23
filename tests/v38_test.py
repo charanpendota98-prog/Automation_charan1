@@ -346,7 +346,7 @@ def main():
         def get_term_link(self, term_id, taxonomy):
             return "https://studentup.in/category/central-govt-jobs/"
 
-        def upload_media(self, path, title="", alt_text=""):
+        def upload_media(self, path, title="", alt_text="", filename="", **kw):
             return 88
 
         def create_post(self, **kwargs):

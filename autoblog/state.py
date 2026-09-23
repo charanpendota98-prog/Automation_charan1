@@ -127,23 +127,62 @@ def record_refresh(db_path: Path, wp_id: int) -> None:
         )
 
 
-def posts_to_refresh(db_path: Path, older_days: int = 14, limit: int = 1) -> list:
-    """Auto-refresh selection: purana + publish ayyina + WP id unna posts.
+def _refresh_url(url: str) -> str:
+    """GSC + WP URL match: ignore query/fragment/trailing slash/case host."""
+    from urllib.parse import urlsplit
 
-    Priority: never-refreshed first (oldest first), then least-recently refreshed.
+    try:
+        p = urlsplit((url or "").strip())
+        if not p.netloc:
+            return (p.path or "").rstrip("/").lower()
+        return (p.netloc.lower() + (p.path.rstrip("/") or "/")).lower()
+    except ValueError:
+        return (url or "").strip().rstrip("/").lower()
+
+
+def posts_to_refresh(db_path: Path, older_days: int = 14, limit: int = 1) -> list:
+    """Auto-refresh selection with GSC opportunity priority.
+
+    GSC Pages export ingest ayithe, matching URLs first — high impressions,
+    page-1/2 edge, low CTR. GSC data lekapothe safe legacy order (never
+    refreshed/oldest) continue avutundi. Never blindly selects a URL absent
+    from the local publication state.
     """
+    import json
+
     with _connect(db_path) as conn:
         rows = conn.execute(
             """
-            SELECT wp_id, title, link FROM posts
+            SELECT wp_id, title, link, refreshed_at, created_at FROM posts
             WHERE status = 'publish' AND wp_id IS NOT NULL
               AND created_at <= datetime('now', 'localtime', ?)
-            ORDER BY (refreshed_at IS NULL) DESC, refreshed_at ASC, created_at ASC
-            LIMIT ?
             """,
-            (f"-{older_days} days", limit),
+            (f"-{older_days} days",),
         ).fetchall()
-    return [dict(r) for r in rows]
+        meta = conn.execute(
+            "SELECT value FROM meta WHERE key = 'gsc:refresh-priority:v1'"
+        ).fetchone()
+    candidates = [dict(r) for r in rows]
+    ranks = {}
+    try:
+        data = json.loads(meta["value"]) if meta else {}
+        ranks = {str(x.get("url")): float(x.get("score", 0))
+                 for x in data.get("rows", []) if x.get("url")}
+        ranks = {_refresh_url(k): v for k, v in ranks.items()}
+    except (ValueError, TypeError, KeyError):
+        ranks = {}
+
+    # First establish the safe legacy order: never-refreshed first, then
+    # least-recently refreshed (ASC). Do not reverse this tuple — reversing
+    # would pick the most recently refreshed post after every run.
+    candidates.sort(key=lambda row: (
+        0 if row.get("refreshed_at") is None else 1,
+        row.get("refreshed_at") or row.get("created_at") or ""))
+    # Stable second sort moves only URL-matched GSC opportunities to the front;
+    # among equal evidence, the legacy order above remains intact.
+    candidates.sort(key=lambda row: ranks.get(_refresh_url(row.get("link", "")), 0.0),
+                    reverse=True)
+    return [{k: row[k] for k in ("wp_id", "title", "link")} for row in candidates[:limit]]
 
 
 def avg_scores(db_path: Path) -> dict:

@@ -97,5 +97,17 @@ def rebuild_hubs(dry_run: bool = False) -> list:
                      res.get("link", ""))
         except Exception as exc:  # noqa: BLE001 — one hub fail skip
             log.warning("HUB %s failed: %s", slug, exc)
+    # v100: exam hub pages ni kuda instant indexing ki pampali (posts laage).
+    # Best-effort — key/network ledu ⇒ silent skip.
+    if not dry_run:
+        links = [r["link"] for r in out if r.get("link")]
+        if links:
+            try:
+                from . import indexnow
+
+                if indexnow.submit(links):
+                    log.info("Hubs: %d URLs IndexNow ki pampam", len(links))
+            except Exception as exc:  # noqa: BLE001 — advisory
+                log.debug("hub indexnow skip: %s", exc)
     log.info("Hubs rebuilt: %d pages", len(out))
     return out

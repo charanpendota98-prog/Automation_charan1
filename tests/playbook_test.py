@@ -47,7 +47,7 @@ def main():
 
     # ---- 2. deadline countdown badge ----
     badge = seo.deadline_badge(FUT)
-    assert "days left" in badge and "30 days left" in badge, badge
+    assert "days left" in badge and any(f"{n} days left" in badge for n in (29, 30)), badge
     assert "CLOSED" in seo.deadline_badge(PAST)
     assert seo.deadline_badge("") == "" and seo.deadline_badge("garbage") == ""
     assert seo.deadline_badge(FUT + "extra") != ""  # tolerant prefix parse

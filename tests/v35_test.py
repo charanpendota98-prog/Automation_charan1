@@ -12,7 +12,8 @@ from autoblog import config, google_audit, monetize, seo  # noqa: E402
 def main():
     print("v35 DEEP QUALITY + GOOGLE POLICY TESTS:")
 
-    # Google retired FAQ rich-result markup; visible FAQs are still retained.
+    # v99: FAQPage emit avutundi kaani 2+ real Q&A unte matrame.
+    # Ikkada 1 question matrame → thin → FAQPage raadu (correct).
     schema = seo.schema_jsonld(
         "SSC CGL 2026 Guide", "Useful description", 
         [{"question": "Q?", "answer": "A."}], "2026-09-13", "ssc-cgl-2026"

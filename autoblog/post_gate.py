@@ -25,7 +25,7 @@ import hashlib
 import json
 import logging
 import re
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import Dict, List, Optional
 
@@ -600,7 +600,7 @@ def self_test() -> Dict:
     # seo.jobposting_obj ki kavalsinavi: org_name + future apply_end + 100+ ch description
     art["recruitment"] = {
         "org_name": "TSPSC", "org_url": "https://www.tspsc.gov.in/",
-        "apply_end": date.today().isoformat(),
+        "apply_end": (date.today() + timedelta(days=1)).isoformat(),
         "location": "Hyderabad, Telangana",
     }
     art["_media_alt"] = f"{art['focus_keyword']} – Government Jobs 2026 | studentup.in"
