@@ -2722,3 +2722,20 @@ python tests/v115_test.py
 python run.py --test-all       # 95/95
 ```
 
+## PART 73 — v116: TRACKED-SECRET SECURITY AUDIT
+
+Deploy mundu:
+
+```
+python run.py --security-audit
+```
+
+Git tracked files lo private keys, Telegram/Gemini/Google-style keys, GitHub
+tokens and generic secret patterns scan chestundi. Secrets chat lo/store cheyyakandi;
+`.env` and service-account JSON Git tracked kakunda verify cheyyandi.
+
+```
+python tests/v116_test.py
+python run.py --test-all       # 96/96
+```
+

@@ -26,7 +26,7 @@ sys.path.insert(0, str(ROOT))
 
 from autoblog import keyword_verify as kv  # noqa: E402
 
-SUITES_EXPECTED = 95
+SUITES_EXPECTED = 96
 
 
 def read(p: Path) -> str:

@@ -28,7 +28,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-SUITES_EXPECTED = 95
+SUITES_EXPECTED = 96
 THEME = ROOT / "wordpress-theme" / "studentup"
 
 

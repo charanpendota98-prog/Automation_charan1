@@ -551,6 +551,18 @@ ni ready cheyyagaladu — approval ni guarantee cheyyaledu. "Google lo suggest a
 ante autocomplete/Discover placement — adi **Google algorithm**, daaniki code tho force
 cheyyaleamu; cheyyagaligedi eligibility + quality signals mattrame.
 
+### v116 — TRACKED-SECRET SECURITY AUDIT
+
+Deploy/push mundu tracked files lo accidental credentials leak ayyada scan cheyyadaniki:
+
+```bash
+python run.py --security-audit
+```
+
+Private keys, Telegram tokens, Google API keys, GitHub tokens and generic secret
+patterns detect chestundi. `.env.example` safe template exclude; real secrets
+Git lo commit cheyyakoodadu. **Proof:** `--test-all` **96/96**.
+
 ### v115 — GOOGLE URL INSPECTION + INDEXING STATUS
 
 GSC Analytics lo impressions data undadam = Google URL indexed ani kaadu.

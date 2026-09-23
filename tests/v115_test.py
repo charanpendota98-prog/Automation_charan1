@@ -5,7 +5,7 @@ import sys
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT))
 from autoblog import config, gsc_api  # noqa: E402
-SUITES_EXPECTED=95
+SUITES_EXPECTED=96
 class Resp:
  status_code=200
  def json(self):
@@ -20,8 +20,8 @@ def test_inspection_mapping():
  print("      URL Inspection maps index/canonical/robots/crawl state ✔")
 def test_cli_wired_docs():
  src=(ROOT/"autoblog/main.py").read_text(encoding="utf-8");r=(ROOT/"README.md").read_text(encoding="utf-8");m=(ROOT/"MANUAL_ADVANCED_CHECKLIST.md").read_text(encoding="utf-8")
- assert "--gsc-inspect" in src and "inspect_url" in src and "### v115" in r and "PART 72" in m and "95/95" in r and "95/95" in m
- print("      gsc-inspect CLI + docs 95/95 pinned ✔")
+ assert "--gsc-inspect" in src and "inspect_url" in src and "### v115" in r and "PART 72" in m and "96/96" in r and "96/96" in m
+ print("      gsc-inspect CLI + docs 96/96 pinned ✔")
 TESTS=[("mapping",test_inspection_mapping),("CLI/docs",test_cli_wired_docs)]
 def main():
  bad=0
