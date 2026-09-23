@@ -617,3 +617,88 @@
     }
   });
 })();
+
+/* ---------- v96: Up Next sticky bar (session depth, policy-safe) ----------
+ * Rules jagratha ga follow ayyam:
+ *   · NO timer-based ad refresh, NO auto redirect, NO forced reload.
+ *     (AdSense invalid-traffic policy — account ban risk.)
+ *   · Bar 55% scroll tarvata MATRAME kanipistundi (reader article lo
+ *     engage ayyaka) → annoying kaadu, CLS ledu (fixed element).
+ *   · Reader ✕ kottite aa session lo malli raadhu (sessionStorage).
+ *   · Already chusina link aithe (localStorage history) bar hide —
+ *     same page ki malli pampinchamu.
+ */
+(function () {
+  "use strict";
+  var bar = document.querySelector("[data-su-nextbar]");
+  if (!bar) { return; }
+  var link = bar.querySelector(".su-nextbar-link");
+  var HIST = "suSeenPosts";
+  function seen() {
+    try { return JSON.parse(sessionStorage.getItem(HIST) || "[]"); }
+    catch (e) { return []; }
+  }
+  function remember(href) {
+    try {
+      var list = seen();
+      if (list.indexOf(href) === -1) { list.push(href); }
+      sessionStorage.setItem(HIST, JSON.stringify(list.slice(-40)));
+    } catch (e) { /* private mode — feature optional */ }
+  }
+  remember(location.pathname);
+  if (link && seen().indexOf(new URL(link.href, location.href).pathname) !== -1) {
+    return;   // ee post already chusaru — bar chupinchamu
+  }
+  var dismissed = false;
+  try { dismissed = !!sessionStorage.getItem("suNextbarClosed"); } catch (e) { dismissed = false; }
+  if (dismissed) { return; }
+  var closeBtn = bar.querySelector("[data-su-nextbar-close]");
+  if (closeBtn) {
+    closeBtn.addEventListener("click", function () {
+      bar.setAttribute("hidden", "");
+      try { sessionStorage.setItem("suNextbarClosed", "1"); } catch (e) { /* ignore */ }
+    });
+  }
+  function onScroll() {
+    var h = document.documentElement;
+    var max = (h.scrollHeight - h.clientHeight) || 1;
+    var pct = (h.scrollTop || document.body.scrollTop) / max;
+    if (pct > 0.55) {
+      bar.removeAttribute("hidden");
+      window.removeEventListener("scroll", onScroll);
+    }
+  }
+  window.addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
+})();
+
+/* ==================== v98: NATIVE SHARE SHEET (free viral lever) ============
+ * Enduku: mobile lo `navigator.share` unte reader tana OWN apps (WhatsApp,
+ * Instagram, SMS, Gmail…) ki 1 tap lo pampochu. Adi manam ivvagalige
+ * highest-conversion share path — mariyu free.
+ *
+ * Rules:
+ *   · Feature-detect — support lekapothe button HIDDEN ye untundi (broken
+ *     button eppudu chupinchamu; desktop lo normal WA/TG links panichestayi).
+ *   · Tracking/pixel LEDU. AbortError (user cancel) silent ga vadileyyali.
+ *   · Fail ayithe WhatsApp link ki graceful fallback.
+ */
+(function () {
+  "use strict";
+  if (!navigator.share) { return; }           /* desktop → hidden ye */
+  var bars = document.querySelectorAll("[data-su-share]");
+  Array.prototype.forEach.call(bars, function (bar) {
+    var btn = bar.querySelector("[data-su-share-native]");
+    if (!btn) { return; }
+    btn.removeAttribute("hidden");            /* support unte matrame */
+    btn.addEventListener("click", function () {
+      var url = bar.getAttribute("data-url") || location.href;
+      var title = bar.getAttribute("data-title") || document.title;
+      try {
+        navigator.share({ title: title, text: title, url: url })["catch"](function () {
+          /* user cancel (AbortError) leda share fail — silent */
+        });
+      } catch (e) { /* older browsers — WA/TG links unnayi */ }
+    });
+  });
+})();

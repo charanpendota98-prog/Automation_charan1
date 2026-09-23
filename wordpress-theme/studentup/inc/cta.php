@@ -123,6 +123,15 @@ function studentup_inject_join_cta( $content ) {
 	if ( false !== strpos( $content, 'su-join-inline' ) ) {
 		return $content;   // already inject ayyindi (double render ledu)
 	}
+	/*
+	 * v96 DEDUPE: bot (autoblog `monetize.insert_join_strip`) kuda article
+	 * madhyalo `.su-join-strip` ni HTML lopala pedutundi — adi content lo
+	 * unte theme inkoka strip render cheyyakudadu (okate page lo rendu join
+	 * boxes = spammy look + AdSense "value" review lo minus).
+	 */
+	if ( false !== strpos( $content, 'su-join-strip' ) ) {
+		return $content;
+	}
 	$parts = explode( '</p>', $content, 3 );
 	if ( count( $parts ) < 3 ) {
 		return $content;   // 2 paragraphs kanna takkuva → strip vaddu

@@ -359,16 +359,32 @@ class WordPressClient:
 
     # ---------------------------------------------------------------- media
 
-    def upload_media(self, image_path: Path, title: str, alt_text: str) -> Optional[int]:
+    #: v96 BUG FIX — file extension ↔ MIME map. Ippati varaku `.webp` files
+    #: kuda `image/jpeg` ga upload ayyevi (v81 lo webp default ayyaka vachina
+    #: regression). WordPress `wp_check_filetype_and_ext()` mismatch valla
+    #: hosting batti upload REJECT avvachu ("Sorry, you are not allowed to
+    #: upload this file type") → post featured image ledu → Discover/Article
+    #: schema image ledu. Ippudu extension nunchi real MIME pampistunnam.
+    _MIME = {
+        ".webp": "image/webp", ".jpg": "image/jpeg", ".jpeg": "image/jpeg",
+        ".png": "image/png", ".gif": "image/gif", ".avif": "image/avif",
+    }
+
+    def upload_media(self, image_path: Path, title: str, alt_text: str,
+                     filename: str = "") -> Optional[int]:
+        """Featured image upload. `filename` ivvakapote path name vadatam
+        (v96: SEO thumbnail name — seo.image_filename())."""
+        name = (filename or image_path.name).strip() or image_path.name
+        mime = self._MIME.get(Path(name).suffix.lower(), "image/jpeg")
         try:
             with open(image_path, "rb") as fh:
                 resp = self._request(
                     "POST",
                     "media",
-                    files={"file": (image_path.name, fh, "image/jpeg")},
+                    files={"file": (name, fh, mime)},
                     data={"title": title, "alt_text": alt_text},
                     headers={
-                        "Content-Disposition": f'attachment; filename="{image_path.name}"'
+                        "Content-Disposition": f'attachment; filename="{name}"'
                     },
                 )
             if resp.status_code not in (200, 201):

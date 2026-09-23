@@ -44,6 +44,7 @@ get_header();
 						}
 						?>
 					</div>
+					<?php if ( function_exists( 'studentup_author_meta' ) ) { studentup_author_meta(); } ?>
 				</div>
 
 				<?php echo wp_kses_post( studentup_save_button( 0, 'su-save-single' ) ); // v92: 🔖 save-for-later ?>
@@ -72,6 +73,13 @@ get_header();
 				</nav>
 			</article>
 
+			<?php
+			// v96: Up Next — reader tap = NIJAMAINA kotha pageview (policy-safe
+			// ad refresh). Ad ki MUNDU pedatunnam: content link modata, ad tarvata.
+			if ( function_exists( 'studentup_upnext_block' ) ) {
+				studentup_upnext_block();
+			}
+			?>
 			<?php studentup_ad( 'below-content' ); ?>
 			<?php
 			if ( comments_open() || get_comments_number() ) {

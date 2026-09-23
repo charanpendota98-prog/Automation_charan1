@@ -186,6 +186,60 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
                 log.info("WEEKLY HUBS: %d pages refreshed", n)
             except Exception:
                 log.exception("Weekly hub rebuild failed (non-fatal)")
+            # v100: district hubs (v96) + link graph (v99) ee weekly slot lo ne
+            # automatic ga run avvali. Ivi ippati varaku CLI-only — ante owner
+            # manual ga gurtu pettukoni run cheyyali. Adi jaragadu (nenu
+            # cheppanu, adi nijam): orphan posts perigipotayi, district pages
+            # stale avutayi. Ippudu rendu cron flow lopala.
+            if getattr(config, "DISTRICT_HUBS_AUTO", True):
+                try:
+                    from . import district_hubs as _dh
+
+                    rows = _dh.rebuild(apply=True)
+                    made = sum(1 for r in rows if r.get("publish"))
+                    log.info("WEEKLY DISTRICT HUBS: %d/%d pages (thin-guard %d)",
+                             made, len(rows), len(rows) - made)
+                except Exception:
+                    log.exception("Weekly district hubs failed (non-fatal)")
+            if getattr(config, "LINK_GRAPH_AUTO", True):
+                try:
+                    from . import link_graph as _lg
+
+                    rep = _lg.run(apply=True,
+                                  limit=getattr(config, "LINK_GRAPH_LIMIT", 100))
+                    log.info("WEEKLY LINK GRAPH: %d orphans · %d weak · "
+                             "%d links added", rep.get("orphans", 0),
+                             rep.get("weak", 0), rep.get("applied", 0))
+                except Exception:
+                    log.exception("Weekly link graph failed (non-fatal)")
+        # v114: daily GSC sync + deduplicated control-center alert. This is
+        # maintenance only; credentials/network failure never stops posting.
+        if (getattr(config, "GSC_AUTO_SYNC", True)
+                and now_hour == getattr(config, "GSC_SYNC_HOUR", 6)
+                and not state.meta_get(config.STATE_PATH, f"gscauto:{today.isoformat()}")):
+            try:
+                from . import gsc_api as _gapi
+                _end = today - timedelta(days=2)
+                _start = _end - timedelta(days=27)
+                _gapi.sync(_start.isoformat(), _end.isoformat())
+                log.info("DAILY GSC API SYNC ✔")
+            except Exception:
+                log.warning("Daily GSC sync unavailable — CSV/manual mode remains safe",
+                            exc_info=True)
+            finally:
+                state.meta_set(config.STATE_PATH, f"gscauto:{today.isoformat()}", "1")
+        if (getattr(config, "OPS_ALERTS_ENABLED", True)
+                and now_hour == getattr(config, "GSC_SYNC_HOUR", 6)
+                and not state.meta_get(config.STATE_PATH, f"opsalert:{today.isoformat()}")):
+            try:
+                from . import ops_alerts as _ops
+                _ops.check_and_alert(send=True)
+                log.info("DAILY OPS ALERT CHECK ✔")
+            except Exception:
+                log.exception("Daily ops alert failed (non-fatal)")
+            finally:
+                state.meta_set(config.STATE_PATH, f"opsalert:{today.isoformat()}", "1")
+
         count = state.today_count(config.STATE_PATH, today)
         if count >= config.DAILY_MAX:
             log.info("Daily limit reached (%d/%d) — stopping.", count, config.DAILY_MAX)
@@ -814,7 +868,7 @@ def guardian_run(notify: bool = False, quiet: bool = False) -> int:
 def breaking_feed_run(from_file: str = "") -> int:
     """v59: బ్రేకింగ్ న్యూస్ feed build — site ticker + section ki.
 
-    Default: radar sweep (district + 143 official sources) → verified items
+    Default: radar sweep (district + 180 official sources) → verified items
     matrame → preview/data/breaking.json. `--breaking-from FILE` tho offline
     (test/approved list) nunchi kuda generate cheyochu.
     """
@@ -1414,6 +1468,28 @@ def main() -> int:
                         help="sources_queue.txt lo first N URLs ippude process chey")
     parser.add_argument("--update", type=int, default=0, metavar="POST_ID",
                         help="existing post ni kotha info tho improve chesi update chey")
+    parser.add_argument("--rollback-post", type=int, default=0, metavar="POST_ID",
+                        help="v105: latest safe backup nunchi post restore chey")
+    parser.add_argument("--rollback-backup", default="", metavar="JSON",
+                        help="v105: specific update backup JSON restore chey")
+    parser.add_argument("--cannibalization-audit", action="store_true",
+                        help="v106: same search-intent pages detect chey — merge/canonical recommendations")
+    parser.add_argument("--gsc-sync", action="store_true",
+                        help="v107: direct Search Console API sync + position/CTR drop alerts")
+    parser.add_argument("--gsc-days", type=int, default=28,
+                        help="v107: GSC API comparison window days (default 28)")
+    parser.add_argument("--gsc-inspect", default="", metavar="URL",
+                        help="v115: direct Google URL Inspection — index/canonical/crawl status")
+    parser.add_argument("--performance-audit", default="", metavar="URL",
+                        help="v109: mobile PageSpeed/CWV/accessibility/SEO audit")
+    parser.add_argument("--corrections-audit", action="store_true",
+                        help="v111: verify tamper-evident update/correction ledger")
+    parser.add_argument("--control-center", action="store_true",
+                        help="v112: unified read-only editorial/SEO safety action queue")
+    parser.add_argument("--ops-alert", action="store_true",
+                        help="v113: deduplicated Telegram alert for new control-center actions")
+    parser.add_argument("--security-audit", action="store_true",
+                        help="v116: scan tracked files for leaked credentials/secrets")
     parser.add_argument("--listicle", nargs="?", const="auto", default=None,
                         metavar="TOPIC",
                         help="trending listicle post (Top 10 jobs lanti stories); topic optional")
@@ -1450,6 +1526,8 @@ def main() -> int:
                         help="Tier-1 traffic share 0-1 (0.5 = 50%%)")
     parser.add_argument("--gsc", default="", metavar="CSV",
                         help="Search Console queries CSV -> striking-distance opportunities")
+    parser.add_argument("--gsc-refresh", default="", metavar="CSV",
+                        help="Search Console Pages CSV -> evidence-based old-post refresh priority")
     parser.add_argument("--doctor", action="store_true",
                         help="deployment health check — anni dependencies verify")
     parser.add_argument("--production-audit", action="store_true",
@@ -1532,6 +1610,29 @@ def main() -> int:
     parser.add_argument("--orphans", nargs="*", default=None, metavar="SITEMAP-URL",
                         help="v81 (§32): sitemap crawl → inbound-0 ORPHAN pages "
                              "report (ex: --orphans https://site/sitemap.xml)")
+    parser.add_argument("--link-graph", action="store_true",
+                        help="v99: internal link graph audit — orphan posts "
+                             "(inbound link ZERO) kanukkoni fix plan")
+    parser.add_argument("--link-graph-apply", action="store_true",
+                        help="v99: link fixes ni live posts lo nijamga apply "
+                             "(idi lekapothe dry-run — edi marchadu)")
+    parser.add_argument("--freshness-audit", action="store_true",
+                        help="v101: 'deceptive freshness' guard status — "
+                             "refresh lo dateModified fake bump avutunda?")
+    parser.add_argument("--verify-keyword", default="",
+                        help="v97: oka focus keyword ki LIVE demand verify "
+                             "(Google Autocomplete — dummy list kaadu)")
+    parser.add_argument("--keyword-audit", action="store_true",
+                        help="v97: live WP posts focus keywords ni bulk verify "
+                             "(verified/weak/dead + fluff report)")
+    parser.add_argument("--district-hubs", action="store_true",
+                        help="v96: TS 33 + AP 26 district job hub pages "
+                             "(local jobs + job melas) — default dry-run plan")
+    parser.add_argument("--district-hubs-apply", action="store_true",
+                        help="v96: district hubs ni WordPress lo nijamga "
+                             "publish/update chey (thin-page guard active)")
+    parser.add_argument("--district-hubs-state", default="",
+                        help="v96: okka state matrame (TS leda AP)")
     parser.add_argument("--site-audit", action="store_true",
                         help="v41: full site audit (21 problem classes — thin/junk "
                              "content, wrong category, PII, tags, timezone) + report")
@@ -1639,6 +1740,64 @@ def main() -> int:
         return approval_bot.main_once()
     if args.revenue_check:
         return revenue_check()
+    if args.cannibalization_audit:
+        from . import cannibalization as _ca
+
+        return _ca.run_cli()
+    if args.gsc_sync:
+        from . import gsc_api as _ga
+
+        return _ga.run_cli(days=args.gsc_days)
+    if args.gsc_inspect:
+        from . import gsc_api as _gi
+
+        try:
+            result = _gi.inspect_url(args.gsc_inspect)
+            print(json.dumps(result, ensure_ascii=False, indent=2))
+            return 0
+        except Exception as exc:  # noqa: BLE001
+            print(f"❌ URL Inspection unavailable: {exc}")
+            return 1
+    if args.performance_audit:
+        from . import performance_audit as _pa
+
+        return _pa.run_cli(args.performance_audit)
+    if args.corrections_audit:
+        from . import corrections as _co
+
+        return _co.run_cli()
+    if args.control_center:
+        from . import control_center as _cc
+
+        return _cc.run_cli()
+    if args.ops_alert:
+        from . import ops_alerts as _oa
+
+        return _oa.run_cli()
+    if args.security_audit:
+        from . import security_audit as _sa_sec
+
+        return _sa_sec.run_cli()
+    if args.rollback_post:
+        from . import update_safety as _us
+
+        _wp = wordpress_client.WordPressClient()
+        _wp.check_connection()
+        try:
+            result = _us.rollback(_wp, args.rollback_post, args.rollback_backup)
+            print(f"  ✅ rollback restored: {result.get('link', '')}")
+            return 0
+        except Exception as exc:  # noqa: BLE001
+            print(f"  ❌ rollback failed: {exc}")
+            return 1
+    if args.freshness_audit:
+        from . import freshness as _fr
+
+        return _fr.run_cli()
+    if args.gsc_refresh:
+        from . import gsc_refresh as _gr
+
+        return _gr.run_cli(args.gsc_refresh)
     if args.gsc:
         return gsc_opportunities(args.gsc)
     if args.doctor:
@@ -1703,6 +1862,20 @@ def main() -> int:
         # v84: URL ivvakapote WP sitemap default (cron-friendly — usage kaadu)
         urls = args.orphans or [config.WP_SITE.rstrip("/") + "/wp-sitemap.xml"]
         return _cl.main(["check_links", "--orphans"] + urls)
+    if getattr(args, "link_graph", False):
+        from . import link_graph as _lg
+
+        return _lg.run_cli(apply=args.link_graph_apply)
+    if getattr(args, "verify_keyword", "") or getattr(args, "keyword_audit", False):
+        from . import keyword_verify as _kv
+
+        return _kv.run_cli(keyword=args.verify_keyword,
+                           audit_live=args.keyword_audit)
+    if getattr(args, "district_hubs", False):
+        from . import district_hubs as _dh
+
+        return _dh.run_cli(state=args.district_hubs_state,
+                           apply=args.district_hubs_apply)
     if args.site_audit or args.site_audit_fix:
         return site_audit_run(fix=args.site_audit_fix, apply=args.site_audit_apply,
                               allow_trash=args.site_audit_trash,

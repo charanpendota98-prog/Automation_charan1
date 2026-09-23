@@ -33,6 +33,23 @@ function studentup_last_updated() {
  * v79: real logo avatar (custom_logo → site icon → emoji fallback) + Person
  * schema (Google News/Discover byline) + reviewed-date + channel follow links.
  */
+/**
+ * Compact top byline: reader ki author + reviewed date immediate ga kanipinchali.
+ * Detailed E-E-A-T/correction box article bottom lo continue avutundi.
+ */
+function studentup_author_meta() {
+	$name = (string) studentup_opt( 'author_name', 'StudentUp Editorial Team' );
+	$rev  = get_the_modified_date();
+	?>
+	<div class="su-author-meta" itemprop="author" itemscope itemtype="https://schema.org/Person">
+		<span>✍️ <strong itemprop="name"><?php echo esc_html( $name ); ?></strong></span>
+		<?php if ( $rev ) : ?>
+			<span>🔍 Reviewed: <time itemprop="dateModified" datetime="<?php echo esc_attr( get_the_modified_date( 'c' ) ); ?>"><?php echo esc_html( $rev ); ?></time></span>
+		<?php endif; ?>
+	</div>
+	<?php
+}
+
 function studentup_author_box() {
 	$name  = (string) studentup_opt( 'author_name', 'StudentUp Editorial Team' );
 	$bio   = (string) studentup_opt( 'author_bio', 'Verified from official notifications and government websites, and written in simple language.' );

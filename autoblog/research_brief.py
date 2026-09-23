@@ -10,6 +10,7 @@ It deliberately stores public source URLs/text only. Do not put passwords,
 OTPs, private documents or bank/identity data into this bundle.
 """
 import logging
+import hashlib
 
 log = logging.getLogger("autoblog.research_brief")
 import json
@@ -333,7 +334,12 @@ def write_bundle(topic: str, articles: Sequence[sources.SourceArticle],
              "domain": urlparse(item.url).netloc.replace("www.", ""),
              "published_date": item.published_date,
              "updated_date": item.updated_date,
-             "year_relevance": _year_relevance(item, target_year)}
+             "year_relevance": _year_relevance(item, target_year),
+             # v110 immutable evidence snapshot: NotebookLM brief claims can
+             # later be audited against the exact text imported today.
+             "captured_sha256": hashlib.sha256((item.text or "").encode("utf-8")).hexdigest(),
+             "word_count": len((item.text or "").split()),
+             "captured_at": date.today().isoformat()}
             for i, item in enumerate(articles, 1)
         ],
         "bundle": str(bundle_path),
