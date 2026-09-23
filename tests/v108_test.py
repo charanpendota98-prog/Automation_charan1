@@ -6,7 +6,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from autoblog import config, media_ledger  # noqa: E402
-SUITES_EXPECTED = 92
+SUITES_EXPECTED = 93
 
 def test_media_record_hash_dimensions():
     with tempfile.TemporaryDirectory() as d:
@@ -38,8 +38,8 @@ def test_pipeline_media_ledger_gate():
 
 def test_docs():
     r=(ROOT/"README.md").read_text(encoding="utf-8");m=(ROOT/"MANUAL_ADVANCED_CHECKLIST.md").read_text(encoding="utf-8")
-    assert "### v108" in r and "PART 65" in m and "92/92" in r and "92/92" in m
-    print("      README v108 + PART 65 + 92/92 pinned ✔")
+    assert "### v108" in r and "PART 65" in m and "93/93" in r and "93/93" in m
+    print("      README v108 + PART 65 + 93/93 pinned ✔")
 TESTS=[("record",test_media_record_hash_dimensions),("duplicate",test_duplicate_hash_detected),("gate",test_pipeline_media_ledger_gate),("docs",test_docs)]
 def main():
     bad=0

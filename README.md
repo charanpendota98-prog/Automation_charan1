@@ -551,6 +551,20 @@ ni ready cheyyagaladu — approval ni guarantee cheyyaledu. "Google lo suggest a
 ante autocomplete/Discover placement — adi **Google algorithm**, daaniki code tho force
 cheyyaleamu; cheyyagaligedi eligibility + quality signals mattrame.
 
+### v113 — DEDUPLICATED CONTROL-CENTER ALERTS
+
+Control center manual report tho paatu action-only Telegram alert:
+
+```bash
+python run.py --ops-alert
+```
+
+New action queue create ayithe alert; same alert repeat ayithe suppress. Healthy
+runs Telegram noise create cheyyavu. Telegram credentials lekunte no-op and
+clear status. Content/ads/publish automatic ga touch cheyyadu.
+
+**Proof:** `--test-all` **93/93**.
+
 ### v112 — UNIFIED EDITORIAL CONTROL CENTER
 
 Separate safety tools ni one read-only owner dashboard lo aggregate chestundi:

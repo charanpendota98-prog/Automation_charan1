@@ -2668,3 +2668,20 @@ python tests/v112_test.py
 python run.py --test-all       # 92/92
 ```
 
+## PART 70 — v113: DEDUPLICATED CONTROL-CENTER ALERTS
+
+Action queue ki duplicate Telegram alerts ravakunda hash-based dedupe:
+
+```
+python run.py --ops-alert
+```
+
+New action item ayithe alert; same action repeat ayithe suppress. Healthy
+runs silent. `OPS_ALERTS_ENABLED=1` default; Telegram credentials lekunte
+clear no-op. Alert tool content, ads, redirects or publishing modify cheyyadu.
+
+```
+python tests/v113_test.py
+python run.py --test-all       # 93/93
+```
+

@@ -393,6 +393,8 @@ GSC_SERVICE_ACCOUNT_FILE = _get("GSC_SERVICE_ACCOUNT_FILE", "")
 GSC_SERVICE_ACCOUNT_JSON = _get("GSC_SERVICE_ACCOUNT_JSON", "")
 # v109: PageSpeed Insights / Lighthouse field audit.
 PAGESPEED_API_KEY = _get("PAGESPEED_API_KEY", "")
+# v113: deduplicated control-center Telegram alerts.
+OPS_ALERTS_ENABLED = _get("OPS_ALERTS_ENABLED", "1") not in ("0", "false", "no")
 # Rank Math meta dwara set cheyadam (plugin active unte automatic)
 RANK_MATH_META_ENABLED = _get("RANK_MATH_META_ENABLED", "1") not in ("0", "false", "no")
 # A low score may still be saved as a draft for human editing, but direct live

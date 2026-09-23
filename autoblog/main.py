@@ -1456,6 +1456,8 @@ def main() -> int:
                         help="v111: verify tamper-evident update/correction ledger")
     parser.add_argument("--control-center", action="store_true",
                         help="v112: unified read-only editorial/SEO safety action queue")
+    parser.add_argument("--ops-alert", action="store_true",
+                        help="v113: deduplicated Telegram alert for new control-center actions")
     parser.add_argument("--listicle", nargs="?", const="auto", default=None,
                         metavar="TOPIC",
                         help="trending listicle post (Top 10 jobs lanti stories); topic optional")
@@ -1726,6 +1728,10 @@ def main() -> int:
         from . import control_center as _cc
 
         return _cc.run_cli()
+    if args.ops_alert:
+        from . import ops_alerts as _oa
+
+        return _oa.run_cli()
     if args.rollback_post:
         from . import update_safety as _us
 
