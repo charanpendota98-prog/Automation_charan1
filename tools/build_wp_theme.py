@@ -31,7 +31,7 @@ REQUIRED = [
     "404.php", "searchform.php", "theme.json",
     "inc/breaking.php", "inc/ads.php", "inc/template.php", "inc/seo-bridge.php",
     "inc/options.php", "inc/toc.php", "inc/schema.php", "inc/author-box.php",
-    "inc/pwa.php",
+    "inc/pwa.php", "inc/upnext.php", "inc/share.php",
     "assets/js/studentup.js",
 ]
 SKIP_DIRS = {"__pycache__", ".git", "node_modules"}

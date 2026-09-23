@@ -72,6 +72,13 @@ get_header();
 				</nav>
 			</article>
 
+			<?php
+			// v96: Up Next — reader tap = NIJAMAINA kotha pageview (policy-safe
+			// ad refresh). Ad ki MUNDU pedatunnam: content link modata, ad tarvata.
+			if ( function_exists( 'studentup_upnext_block' ) ) {
+				studentup_upnext_block();
+			}
+			?>
 			<?php studentup_ad( 'below-content' ); ?>
 			<?php
 			if ( comments_open() || get_comments_number() ) {

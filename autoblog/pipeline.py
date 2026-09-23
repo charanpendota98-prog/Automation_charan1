@@ -197,6 +197,17 @@ def _hygiene(article: Dict) -> Dict:
         toks = [t for t in re.sub(r"[^a-zA-Z0-9 ]", " ", title).split()
                 if len(t) > 2][:4]
         article["focus_keyword"] = " ".join(toks) or title[:60]
+    # v97: REAL-TIME keyword verification. LLM invent chesina keyword ki
+    # (e.g. "... complete details telugu") search demand undakapovachu —
+    # Google Autocomplete tho live verify chesi, demand unna phrase tho
+    # replace chestam. Network ledu ⇒ verdict "unknown", post block avvadu.
+    if getattr(config, "KW_VERIFY", False):
+        try:
+            from . import keyword_verify
+
+            keyword_verify.verify_and_fix(article)
+        except Exception as exc:  # noqa: BLE001 — advisory, never blocks
+            log.debug("kw verify skip: %s", exc)
     # meta description fallback: quick_answer or first para nunchi
     md = (article.get("meta_description") or "").strip()
     if len(md) < 120:
@@ -463,6 +474,21 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
     if article.get("_source_texts"):
         article["_orig"] = validator.originality_score(
             final_html, article["_source_texts"])
+    # v104: claim provenance + original practical value ledger. This does not
+    # reward word count; it records source support and user-helpful signals.
+    try:
+        from . import editorial_value as _ev
+
+        _ledger = _ev.build_ledger(article, final_html,
+                                   article.get("_deep_sources") or [])
+        article["_editorial_value"] = _ledger
+        article["_editorial_flags"] = _ev.gate(
+            _ledger, minimum=int(getattr(config, "EDITORIAL_VALUE_MIN", 55)))
+        log.info("Editorial value %s/100 (%s) · flags=%s",
+                 _ledger["score"], _ledger["grade"],
+                 article["_editorial_flags"] or "none")
+    except Exception:  # noqa: BLE001 — ledger advisory; other gates remain
+        log.exception("editorial value ledger skipped (safe)")
     # v38: TOP POST SCORE — measurable on-page quality (30+ weighted checks).
     # Quiz posts ki skip (interactive format different rules tho untundi).
     if not is_quiz:
@@ -497,6 +523,13 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
                 raise RuntimeError(
                     f"LIVE-PUBLISH BLOCKED: originality {article['_orig']}% < "
                     f"{min_orig:g}% — source-backed rewrite needs editorial work")
+        # v104: a source summary with unsupported claims or no practical value
+        # is not enough for live publishing. Draft review still receives flags.
+        if (getattr(config, "EDITORIAL_VALUE_BLOCK", True)
+                and article.get("_editorial_flags")):
+            raise RuntimeError(
+                "LIVE-PUBLISH BLOCKED: editorial provenance/value review — "
+                + "; ".join(article["_editorial_flags"][:4]))
         # v38: Top Post gate — on-page quality measured, not claimed.
         if article.get("_top") is not None:
             from . import top_post as _tp
@@ -546,11 +579,18 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
         fk = article.get("focus_keyword") or article["banner_text"]
         year = article.get("year", date.today().year)
         if image_gen.generate_featured_image(article["banner_text"], article["category"], image_path):
-            alt_text = f"{fk} – {article['category']} {year} | studentup.in"
+            alt_text = seo.image_alt(fk, article.get("category", ""), year)
+            # v96: SEO thumbnail FILE NAME (keyword-category-year.webp) —
+            # slug-only name kanna Google Images/Discover ki better context.
+            img_name = seo.image_filename(fk, article.get("slug", ""),
+                                          article.get("category", ""), year,
+                                          ext=image_path.suffix.lstrip(".") or "webp")
+            article["_media_filename"] = img_name
             media_id = wp.upload_media(
                 image_path,
                 title=article["title"],
                 alt_text=alt_text,
+                filename=img_name,
             )
             # v38: Top Post Score image-alt check ee alt text ni verify chestundi
             if media_id:
@@ -895,6 +935,35 @@ def create_from_source(url: str, mock: bool = False, category: str = "",
                 f"{floor}% — ee source ni skip chestunnam (AdSense risk). "
                 f"Inko deep-rewrite source try cheyandi: {src.url}")
 
+        # v103: local donors tho match avvakapoyina, internet lo unknown copied
+        # phrase undochu. Distinctive sentences ni live exact-search chesi
+        # returned pages fetch chesi verify chestam. Match = publish BLOCK.
+        if getattr(config, "ORIG_LIVE_CHECK", True):
+            try:
+                from . import originality_live as _live
+
+                _live_rep = _live.check(
+                    article["content_html"],
+                    own_domain=urlparse(config.WP_SITE).netloc,
+                    max_phrases=getattr(config, "ORIG_LIVE_PHRASES", 3),
+                )
+                article["_live_originality"] = _live_rep
+                log.info("%s", _live.format_report(_live_rep))
+                if _live_rep.get("matches"):
+                    raise RuntimeError(
+                        "SKIP-LIVE-EXACT-OVERLAP: live web search found copied "
+                        f"phrase(s) on {len(_live_rep['matches'])} page(s); "
+                        "human rewrite/source attribution required")
+                if (_live_rep.get("status") in ("partial", "error")
+                        and getattr(config, "ORIG_LIVE_REQUIRED", False)):
+                    raise RuntimeError(
+                        "SKIP-LIVE-CHECK-UNAVAILABLE: required real-time "
+                        "originality check did not complete")
+            except RuntimeError:
+                raise
+            except Exception:  # noqa: BLE001 — report, never fake PASS
+                log.exception("live originality check failed (local gates remain)")
+
     # v19: near-duplicate guard — Google "scaled content abuse" policy:
     # swapped-name/only-date-changed pages site-wide signal ni charchestayi.
     # Mana published posts tho ee level dup ante SKIP (AdSense + ranking both).
@@ -1043,6 +1112,30 @@ def update_post(post_id: int, new_source_urls=None, mock: bool = False) -> Dict:
     except Exception:  # noqa: BLE001 — advisory (update safe)
         log.exception("update rm100 skip (post safe)")
 
+    # v101 DECEPTIVE-FRESHNESS GUARD: Google Aug-2026 spam update
+    # "dateModified bumped with no real change" ni target chestundi, mariyu
+    # "a scheduled job doing it nightly turns a one-off into a pattern".
+    # Mana auto_refresh roju nadustundi — so content nijamga marithe
+    # MATRAME dateModified bump cheyali. Lekapothe fake freshness signal.
+    # Fail-closed for the freshness *signal*: if the audit cannot run, the
+    # content refresh may continue but dateModified must NOT be fabricated.
+    _fresh = {"publish": True, "bump_date": False, "change_pct": 0.0,
+              "reason": "guard unavailable — dateModified bump blocked"}
+    try:
+        from . import freshness as _freshness
+
+        _fresh = _freshness.decide(existing_html, article["content_html"])
+        article["_freshness"] = _fresh
+        log.info("FRESHNESS change=%.1f%% bump=%s — %s",
+                 _fresh["change_pct"], _fresh["bump_date"], _fresh["reason"])
+    except Exception:  # noqa: BLE001 — guard fail refresh ni aapadu
+        log.exception("freshness guard skip (refresh safe, bump allowed)")
+    if not _fresh.get("publish", True):
+        log.warning("UPDATE SKIPPED post %s: %s", post_id, _fresh["reason"])
+        return {"skipped": True, "post_id": post_id,
+                "reason": _fresh["reason"], "freshness": _fresh,
+                "link": post.get("link", "")}
+
     # --- SEO re-enhance (fresh TOC/quick answer/schema) ---
     recent = wp.get_recent_published(per_page=8)
     internal = [p for p in recent if p.get("id") != post_id][:4]
@@ -1055,7 +1148,11 @@ def update_post(post_id: int, new_source_urls=None, mock: bool = False) -> Dict:
         faq=article.get("faq", []),
         # Google freshness rule: original datePublished preserve, dateModified new
         date_str=(post.get("date") or date.today().isoformat())[:10],
-        date_modified=date.today().isoformat(),
+        # v101: nijamaina change unte matrame kotha dateModified — lekapothe
+        # original modified date ne uncham (fake freshness Google ki vaddu).
+        date_modified=(date.today().isoformat() if _fresh.get("bump_date", True)
+                       else (post.get("modified") or post.get("date")
+                             or date.today().isoformat())[:10]),
         slug=slug,
         title=title,
         description=article["meta_description"],
@@ -1063,6 +1160,25 @@ def update_post(post_id: int, new_source_urls=None, mock: bool = False) -> Dict:
         source_domains=[e.site_name for e in extras],
         recruitment=article.get("recruitment"),
     )
+    # v96 BUG FIX: refresh flow lo monetize blocks MISS ayyevi. `publish_article`
+    # lo `monetize.append_blocks()` untundi, kaani update path lo ledu — so
+    # auto-refresh (roju purana posts) ayina prathi post nunchi Telegram CTA,
+    # affiliate section mariyu v96 join strip **poyevi**. Refresh ekkuva
+    # ayina kొద్దీ site lo CTA-less posts perigevi (channel growth + RPM loss).
+    try:
+        from . import monetize as _mz_upd
+
+        final_html = _mz_upd.append_blocks(final_html, article)
+        try:
+            from . import ad_manager as _admgr_upd
+
+            final_html, _ad_report = _admgr_upd.inject(final_html, article)
+            article["_ads"] = _ad_report
+        except Exception:  # noqa: BLE001 — owner ads must never block a refresh
+            log.exception("Update ad manager inject skipped (safe)")
+    except Exception:  # noqa: BLE001 — CTA fail update aapadu
+        log.exception("update monetize blocks skip (post safe)")
+
     qa = validator.validate_article(article, final_html)
     article["_qa"] = qa
     log.info("Update QA %s/100 words=%d", qa["score"], qa["words"])
@@ -1094,6 +1210,23 @@ def update_post(post_id: int, new_source_urls=None, mock: bool = False) -> Dict:
                  gate["critical_fails"] or "none")
     except Exception:
         log.exception("update gate skip (post safe)")
+    # v105: exact rollback point BEFORE the remote PUT. WordPress revisions
+    # alone are not enough — preserve source ledger + candidate diff locally.
+    try:
+        from . import update_safety as _us
+
+        article["_update_backup"] = _us.create_backup(
+            post, final_html, new_meta=meta,
+            ledger=article.get("_editorial_value") or {},
+        )
+        log.info("Update backup ✔ %s (%d diff lines)",
+                 article["_update_backup"]["path"],
+                 article["_update_backup"]["diff_lines"])
+    except Exception as exc:  # noqa: BLE001 — never update without logging
+        log.exception("update backup failed — REFUSING remote update")
+        return {"error": "update_backup", "post_id": post_id,
+                "reason": str(exc), "link": post.get("link", "")}
+
     result = wp.update_post(
         post_id,
         content_html=final_html,

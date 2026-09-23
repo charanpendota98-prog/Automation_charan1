@@ -74,7 +74,7 @@ def test_gemini_seeds_and_sources():
         assert needle.lower() in seed.lower(), f"seed lo ledu: {needle}"
 
     grid = sources_grid._S
-    assert len(grid) == 143, f"143 sources undali, vachhindi {len(grid)}"
+    assert len(grid) == 180, f"180 sources undali, vachhindi {len(grid)}"
     abroad = [s for s in grid if s[2] == "Abroad Jobs"]
     assert len(abroad) == 14, f"14 abroad sources undali, unnai {len(abroad)}"
     assert sum(1 for s in abroad if s[3]) >= 4, "daily hot-list lo kuda undali"
@@ -134,7 +134,7 @@ def test_advisor_uses_abroad_pillar_for_tier1():
 
 def test_docs_updated():
     plan = io.open(ROOT / "CONTENT_PLAN_DAILY.md", encoding="utf-8").read()
-    assert "17" in plan and "143" in plan and "Abroad" in plan.replace("విదేశీ", "Abroad"), \
+    assert "17" in plan and "180" in plan and "Abroad" in plan.replace("విదేశీ", "Abroad"), \
         "content plan lo kotha pillar + sources update avvali"
     manual = io.open(ROOT / "MANUAL_ADVANCED_CHECKLIST.md", encoding="utf-8").read()
     assert "Abroad Jobs" in manual and "PART 17" in manual
@@ -144,8 +144,8 @@ def test_keyword_universe_has_abroad():
     from autoblog import top_post
     top_post._UNIVERSE_CACHE = None
     uni = top_post.keyword_universe()
-    assert len(top_post.ENTITIES) == 203, len(top_post.ENTITIES)
-    assert len(uni) == 11_192, len(uni)
+    assert len(top_post.ENTITIES) == 221, len(top_post.ENTITIES)
+    assert len(uni) == 12_344, len(uni)
     abroad = [k for k in uni if k["cat"] == "Abroad Jobs"]
     assert len(abroad) >= 400, f"abroad keywords thakkuva: {len(abroad)}"
     kws = " ".join(k["kw"] for k in abroad)
@@ -155,7 +155,7 @@ def test_keyword_universe_has_abroad():
     # Telugu intents kuda generate avvali (visible content Telugu)
     assert any("telugu" in k["kw"] for k in abroad), "Telugu keyword variants undali"
     stats = top_post.universe_stats(uni)
-    assert stats["entities"] == 203
+    assert stats["entities"] == 221
 
 
 def test_robots_blocks_internal_artifacts():
@@ -202,7 +202,7 @@ def main():
         ("site: nav + chip + mpanel + card + public-text clean", test_website_wiring),
         ("card content pure-Telugu + leaks ledu", test_card_has_pure_telugu_and_no_leaks),
         ("advisor Tier-1 advice ee daari chupistundi", test_advisor_uses_abroad_pillar_for_tier1),
-        ("keyword universe: 203 entities · 11,192 keywords (+abroad)", test_keyword_universe_has_abroad),
+        ("keyword universe: 221 entities · 12,344 keywords (+abroad)", test_keyword_universe_has_abroad),
         ("docs: content plan + manual PART 17", test_docs_updated),
         ("robots.txt internal artifacts block + sitemap intact", test_robots_blocks_internal_artifacts),
         ("top-200 CSV engine tho match (stale kaadu)", test_keyword_csv_matches_engine),
