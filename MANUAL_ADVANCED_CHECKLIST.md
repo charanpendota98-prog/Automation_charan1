@@ -2565,3 +2565,29 @@ python tests/v108_test.py
 python run.py --test-all       # 88/88
 ```
 
+## PART 66 — v109: MOBILE PERFORMANCE + ACCESSIBILITY + CWV AUDIT
+
+### RUN
+
+```
+python run.py --performance-audit https://studentup.in/page/
+```
+
+PageSpeed Insights mobile report lo performance, accessibility, SEO, LCP, CLS,
+INP, FCP and opportunities save avutayi:
+
+```
+output/performance_audits/<url>.json
+```
+
+Page content, ad slots, thumbnail, theme changes tarvata key pages audit
+cheyyali. `PAGESPEED_API_KEY` optional; API unavailable aithe fake pass create
+cheyyadu.
+
+### VERIFY
+
+```
+python tests/v109_test.py
+python run.py --test-all       # 89/89
+```
+

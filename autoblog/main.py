@@ -1450,6 +1450,8 @@ def main() -> int:
                         help="v107: direct Search Console API sync + position/CTR drop alerts")
     parser.add_argument("--gsc-days", type=int, default=28,
                         help="v107: GSC API comparison window days (default 28)")
+    parser.add_argument("--performance-audit", default="", metavar="URL",
+                        help="v109: mobile PageSpeed/CWV/accessibility/SEO audit")
     parser.add_argument("--listicle", nargs="?", const="auto", default=None,
                         metavar="TOPIC",
                         help="trending listicle post (Top 10 jobs lanti stories); topic optional")
@@ -1708,6 +1710,10 @@ def main() -> int:
         from . import gsc_api as _ga
 
         return _ga.run_cli(days=args.gsc_days)
+    if args.performance_audit:
+        from . import performance_audit as _pa
+
+        return _pa.run_cli(args.performance_audit)
     if args.rollback_post:
         from . import update_safety as _us
 

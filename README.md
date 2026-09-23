@@ -551,6 +551,23 @@ ni ready cheyyagaladu — approval ni guarantee cheyyaledu. "Google lo suggest a
 ante autocomplete/Discover placement — adi **Google algorithm**, daaniki code tho force
 cheyyaleamu; cheyyagaligedi eligibility + quality signals mattrame.
 
+### v109 — MOBILE PERFORMANCE + ACCESSIBILITY + CWV AUDIT
+
+Content/SEO strong unna slow page rank and user experience ni damage cheyyachu.
+PageSpeed Insights audit:
+
+```bash
+python run.py --performance-audit https://studentup.in/example/
+```
+
+Mobile performance, accessibility, SEO scores, LCP, CLS, INP, FCP and top
+opportunities persist chestundi. API unavailable aithe fake PASS kaadu — clear
+failure/report istundi. Ads/images changes tarvata critical pages malli audit
+cheyyali.
+
+**Proof:** `--test-all` **89/89**; score mapping, CWV metrics, low-score review,
+report persistence and CLI wiring tested.
+
 ### v108 — IMAGE ORIGINALITY + LICENCE LEDGER
 
 Text no-copy protection tho paatu thumbnails/assets kuda traceable ga undali.

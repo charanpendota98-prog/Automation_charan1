@@ -217,9 +217,9 @@ def test_version_and_pins() -> None:
     assert "Central Govt Jobs" in readme
     for f in ("v75_test.py", "v76_test.py", "v77_test.py", "v78_test.py",
               "v79_test.py", "v80_test.py", "v81_test.py"):
-        assert "suites == 88" in read(ROOT / "tests" / f), f + " (69→74 pin)"
+        assert "suites == 89" in read(ROOT / "tests" / f), f + " (69→74 pin)"
     suites = len(list((ROOT / "tests").glob("*_test.py")))
-    assert suites == 88, f"suites {suites} (v108 tho 88)"
+    assert suites == 89, f"suites {suites} (v109 tho 89)"
     print("  version parity 1.9.2 + suites pins 71 ✔")
 
 
