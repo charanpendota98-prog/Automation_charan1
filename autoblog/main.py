@@ -1478,6 +1478,8 @@ def main() -> int:
                         help="v107: direct Search Console API sync + position/CTR drop alerts")
     parser.add_argument("--gsc-days", type=int, default=28,
                         help="v107: GSC API comparison window days (default 28)")
+    parser.add_argument("--gsc-inspect", default="", metavar="URL",
+                        help="v115: direct Google URL Inspection — index/canonical/crawl status")
     parser.add_argument("--performance-audit", default="", metavar="URL",
                         help="v109: mobile PageSpeed/CWV/accessibility/SEO audit")
     parser.add_argument("--corrections-audit", action="store_true",
@@ -1744,6 +1746,16 @@ def main() -> int:
         from . import gsc_api as _ga
 
         return _ga.run_cli(days=args.gsc_days)
+    if args.gsc_inspect:
+        from . import gsc_api as _gi
+
+        try:
+            result = _gi.inspect_url(args.gsc_inspect)
+            print(json.dumps(result, ensure_ascii=False, indent=2))
+            return 0
+        except Exception as exc:  # noqa: BLE001
+            print(f"❌ URL Inspection unavailable: {exc}")
+            return 1
     if args.performance_audit:
         from . import performance_audit as _pa
 

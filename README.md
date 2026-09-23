@@ -551,6 +551,19 @@ ni ready cheyyagaladu — approval ni guarantee cheyyaledu. "Google lo suggest a
 ante autocomplete/Discover placement — adi **Google algorithm**, daaniki code tho force
 cheyyaleamu; cheyyagaligedi eligibility + quality signals mattrame.
 
+### v115 — GOOGLE URL INSPECTION + INDEXING STATUS
+
+GSC Analytics lo impressions data undadam = Google URL indexed ani kaadu.
+Direct inspection:
+
+```bash
+python run.py --gsc-inspect https://studentup.in/page/
+```
+
+Reports Google verdict, coverage state, indexing state, robots state, selected
+canonical, user canonical and last crawl. Credentials/API access lekapothe
+fake result kaadu — clear failure. **Proof:** `--test-all` **95/95**.
+
 ### v114 — AUTOMATIC DAILY GSC + OPS MAINTENANCE
 
 Manual commands matrame kaadu. Existing hourly scheduler lo once-per-day:

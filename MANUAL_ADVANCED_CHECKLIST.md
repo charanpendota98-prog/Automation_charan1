@@ -2704,3 +2704,21 @@ python tests/v114_test.py
 python run.py --test-all       # 94/94
 ```
 
+## PART 72 — v115: GOOGLE URL INSPECTION + INDEXING STATUS
+
+Analytics lo page impressions undadam and Google index status rendu different.
+Search Console property access unna service account tho:
+
+```
+python run.py --gsc-inspect https://studentup.in/page/
+```
+
+Output: verdict, coverage, indexing allowed/blocked, robots state, Google
+selected canonical, user canonical and last crawl. API fail ayithe fake PASS
+create cheyyadu.
+
+```
+python tests/v115_test.py
+python run.py --test-all       # 95/95
+```
+

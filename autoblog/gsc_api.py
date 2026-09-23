@@ -48,6 +48,31 @@ def _site() -> str:
     return getattr(config, "GSC_SITE_URL", "") or getattr(config, "WP_SITE", "")
 
 
+def inspect_url(url: str) -> Dict:
+    """Google URL Inspection API: indexed state + canonical + crawl verdict."""
+    token = _token()
+    site = _site()
+    endpoint = "https://searchconsole.googleapis.com/v1/urlInspection/index:inspect"
+    resp = requests.post(endpoint,
+                         headers={"Authorization": f"Bearer {token}"},
+                         json={"inspectionUrl": url, "siteUrl": site},
+                         timeout=config.HTTP_TIMEOUT)
+    if resp.status_code != 200:
+        raise RuntimeError(f"URL Inspection HTTP {resp.status_code}: {resp.text[:300]}")
+    raw = resp.json().get("inspectionResult", {})
+    idx = raw.get("indexStatusResult", {})
+    return {"version": "v115", "url": url, "site": site,
+            "checked_at": date.today().isoformat(),
+            "verdict": idx.get("verdict", "UNKNOWN"),
+            "coverage_state": idx.get("coverageState", ""),
+            "indexing_state": idx.get("indexingState", ""),
+            "robots_txt_state": idx.get("robotsTxtState", ""),
+            "google_canonical": idx.get("googleCanonical", ""),
+            "user_canonical": idx.get("userCanonical", ""),
+            "last_crawl": idx.get("lastCrawlTime", ""),
+            "raw": raw}
+
+
 def query(start: str, end: str, row_limit: int = 25000) -> List[Dict]:
     token = _token()
     site = _site()

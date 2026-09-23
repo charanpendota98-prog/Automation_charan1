@@ -5,7 +5,7 @@ import sys, tempfile
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT))
 from autoblog import config, performance_audit  # noqa: E402
-SUITES_EXPECTED=94
+SUITES_EXPECTED=95
 class Resp:
     status_code=200
     def json(self):
@@ -39,7 +39,7 @@ def test_report_save():
 def test_cli_docs():
     src=(ROOT/"autoblog/main.py").read_text(encoding="utf-8");r=(ROOT/"README.md").read_text(encoding="utf-8");m=(ROOT/"MANUAL_ADVANCED_CHECKLIST.md").read_text(encoding="utf-8")
     assert "--performance-audit" in src and "performance_audit as _pa" in src
-    assert "### v109" in r and "PART 66" in m and "94/94" in r and "94/94" in m
+    assert "### v109" in r and "PART 66" in m and "95/95" in r and "95/95" in m
     print("      performance CLI + README/PART 66/89-89 pinned ✔")
 TESTS=[("scores",test_fetch_maps_scores),("status",test_review_status),("save",test_report_save),("CLI/docs",test_cli_docs)]
 def main():

@@ -12,7 +12,7 @@ sys.path.insert(0, str(ROOT))
 
 from autoblog import config, update_safety  # noqa: E402
 
-SUITES_EXPECTED = 94
+SUITES_EXPECTED = 95
 
 
 def test_backup_persists_exact_before_and_candidate() -> None:
@@ -74,7 +74,7 @@ def test_cli_and_docs() -> None:
     r = (ROOT / "README.md").read_text(encoding="utf-8")
     m = (ROOT / "MANUAL_ADVANCED_CHECKLIST.md").read_text(encoding="utf-8")
     assert "--rollback-post" in src and "--rollback-backup" in src
-    assert "### v105" in r and "PART 62" in m and "94/94" in r and "94/94" in m
+    assert "### v105" in r and "PART 62" in m and "95/95" in r and "95/95" in m
     print("      rollback CLI + README/PART 62/85-85 pinned ✔")
 
 
