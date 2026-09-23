@@ -159,7 +159,7 @@ def test_ui_sodi_clean():
 
 def test_docs_v76():
     suites = len(list((ROOT / "tests").glob("*_test.py")))
-    assert suites == 93, f"suites {suites} (v113 tho 93 expect)"
+    assert suites == 94, f"suites {suites} (v114 tho 94 expect)"
     readme = read(ROOT / "README.md")
     manual = read(ROOT / "MANUAL_ADVANCED_CHECKLIST.md")
     go_live = read(ROOT / "GO_LIVE_CHECKLIST.md")

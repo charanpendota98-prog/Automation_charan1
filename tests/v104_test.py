@@ -10,7 +10,7 @@ sys.path.insert(0, str(ROOT))
 
 from autoblog import editorial_value  # noqa: E402
 
-SUITES_EXPECTED = 93
+SUITES_EXPECTED = 94
 
 
 class Source:
@@ -80,7 +80,7 @@ def test_config_and_docs() -> None:
     m = (ROOT / "MANUAL_ADVANCED_CHECKLIST.md").read_text(encoding="utf-8")
     for key in ("EDITORIAL_VALUE_MIN", "EDITORIAL_VALUE_BLOCK"):
         assert key in cfg and key in env
-    assert "### v104" in r and "PART 61" in m and "93/93" in r and "93/93" in m
+    assert "### v104" in r and "PART 61" in m and "94/94" in r and "94/94" in m
     print("      config + docs v104/PART 61/84-84 pinned ✔")
 
 

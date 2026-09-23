@@ -551,6 +551,19 @@ ni ready cheyyagaladu — approval ni guarantee cheyyaledu. "Google lo suggest a
 ante autocomplete/Discover placement — adi **Google algorithm**, daaniki code tho force
 cheyyaleamu; cheyyagaligedi eligibility + quality signals mattrame.
 
+### v114 — AUTOMATIC DAILY GSC + OPS MAINTENANCE
+
+Manual commands matrame kaadu. Existing hourly scheduler lo once-per-day:
+
+- GSC API sync at `GSC_SYNC_HOUR` (default 06:00);
+- previous-period ranking/CTR alerts;
+- control-center action aggregation;
+- deduplicated Telegram alert.
+
+Missing credentials/network failure non-fatal: marker set avutundi, daily
+posting continue avutundi. Configure `GSC_AUTO_SYNC=1`, `GSC_SYNC_HOUR=6`.
+**Proof:** `--test-all` **94/94**.
+
 ### v113 — DEDUPLICATED CONTROL-CENTER ALERTS
 
 Control center manual report tho paatu action-only Telegram alert:

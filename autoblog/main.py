@@ -212,6 +212,34 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
                              rep.get("weak", 0), rep.get("applied", 0))
                 except Exception:
                     log.exception("Weekly link graph failed (non-fatal)")
+        # v114: daily GSC sync + deduplicated control-center alert. This is
+        # maintenance only; credentials/network failure never stops posting.
+        if (getattr(config, "GSC_AUTO_SYNC", True)
+                and now_hour == getattr(config, "GSC_SYNC_HOUR", 6)
+                and not state.meta_get(config.STATE_PATH, f"gscauto:{today.isoformat()}")):
+            try:
+                from . import gsc_api as _gapi
+                _end = today - timedelta(days=2)
+                _start = _end - timedelta(days=27)
+                _gapi.sync(_start.isoformat(), _end.isoformat())
+                log.info("DAILY GSC API SYNC ✔")
+            except Exception:
+                log.warning("Daily GSC sync unavailable — CSV/manual mode remains safe",
+                            exc_info=True)
+            finally:
+                state.meta_set(config.STATE_PATH, f"gscauto:{today.isoformat()}", "1")
+        if (getattr(config, "OPS_ALERTS_ENABLED", True)
+                and now_hour == getattr(config, "GSC_SYNC_HOUR", 6)
+                and not state.meta_get(config.STATE_PATH, f"opsalert:{today.isoformat()}")):
+            try:
+                from . import ops_alerts as _ops
+                _ops.check_and_alert(send=True)
+                log.info("DAILY OPS ALERT CHECK ✔")
+            except Exception:
+                log.exception("Daily ops alert failed (non-fatal)")
+            finally:
+                state.meta_set(config.STATE_PATH, f"opsalert:{today.isoformat()}", "1")
+
         count = state.today_count(config.STATE_PATH, today)
         if count >= config.DAILY_MAX:
             log.info("Daily limit reached (%d/%d) — stopping.", count, config.DAILY_MAX)

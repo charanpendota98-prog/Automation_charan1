@@ -2685,3 +2685,22 @@ python tests/v113_test.py
 python run.py --test-all       # 93/93
 ```
 
+## PART 71 — v114: AUTOMATIC DAILY GSC + OPS MAINTENANCE
+
+Hourly scheduler lo once per day GSC/ops maintenance automatic:
+
+```
+GSC_AUTO_SYNC=1
+GSC_SYNC_HOUR=6
+```
+
+At that hour last-final-28-day GSC data sync avutundi, refresh priority update
+avutundi, previous period alerts calculate avutayi, and action-only Telegram
+alert dedupe tho send avutundi. Missing API credentials/network failure daily
+posting ni stop cheyyadu; CSV/manual mode continue.
+
+```
+python tests/v114_test.py
+python run.py --test-all       # 94/94
+```
+

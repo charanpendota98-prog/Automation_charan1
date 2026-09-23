@@ -395,6 +395,9 @@ GSC_SERVICE_ACCOUNT_JSON = _get("GSC_SERVICE_ACCOUNT_JSON", "")
 PAGESPEED_API_KEY = _get("PAGESPEED_API_KEY", "")
 # v113: deduplicated control-center Telegram alerts.
 OPS_ALERTS_ENABLED = _get("OPS_ALERTS_ENABLED", "1") not in ("0", "false", "no")
+# v114: once-daily API maintenance; missing credentials = non-fatal skip.
+GSC_AUTO_SYNC = _get("GSC_AUTO_SYNC", "1") not in ("0", "false", "no")
+GSC_SYNC_HOUR = int(_get("GSC_SYNC_HOUR", "6"))
 # Rank Math meta dwara set cheyadam (plugin active unte automatic)
 RANK_MATH_META_ENABLED = _get("RANK_MATH_META_ENABLED", "1") not in ("0", "false", "no")
 # A low score may still be saved as a draft for human editing, but direct live
