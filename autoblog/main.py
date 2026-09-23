@@ -1454,6 +1454,8 @@ def main() -> int:
                         help="v109: mobile PageSpeed/CWV/accessibility/SEO audit")
     parser.add_argument("--corrections-audit", action="store_true",
                         help="v111: verify tamper-evident update/correction ledger")
+    parser.add_argument("--control-center", action="store_true",
+                        help="v112: unified read-only editorial/SEO safety action queue")
     parser.add_argument("--listicle", nargs="?", const="auto", default=None,
                         metavar="TOPIC",
                         help="trending listicle post (Top 10 jobs lanti stories); topic optional")
@@ -1720,6 +1722,10 @@ def main() -> int:
         from . import corrections as _co
 
         return _co.run_cli()
+    if args.control_center:
+        from . import control_center as _cc
+
+        return _cc.run_cli()
     if args.rollback_post:
         from . import update_safety as _us
 

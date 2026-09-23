@@ -29,7 +29,7 @@ sys.path.insert(0, str(ROOT))
 
 from autoblog import config, link_graph as lg, seo  # noqa: E402
 
-SUITES_EXPECTED = 91
+SUITES_EXPECTED = 92
 SITE = "https://studentup.in"
 
 

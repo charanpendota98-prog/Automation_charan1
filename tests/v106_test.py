@@ -6,7 +6,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from autoblog import cannibalization  # noqa: E402
-SUITES_EXPECTED = 91
+SUITES_EXPECTED = 92
 
 
 def test_intent_classification():
@@ -50,8 +50,8 @@ def test_cli_wired():
 def test_docs():
     r = (ROOT / "README.md").read_text(encoding="utf-8")
     m = (ROOT / "MANUAL_ADVANCED_CHECKLIST.md").read_text(encoding="utf-8")
-    assert "### v106" in r and "PART 63" in m and "91/91" in r and "91/91" in m
-    print("      README v106 + PART 63 + 91/91 pinned ✔")
+    assert "### v106" in r and "PART 63" in m and "92/92" in r and "92/92" in m
+    print("      README v106 + PART 63 + 92/92 pinned ✔")
 
 TESTS = [("intent", test_intent_classification), ("duplicate", test_duplicate_intent_pair_flagged),
          ("separate", test_separate_intents_not_false_positive), ("safe", test_recommendation_never_destructive),

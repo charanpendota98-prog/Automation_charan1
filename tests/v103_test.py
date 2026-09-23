@@ -10,7 +10,7 @@ sys.path.insert(0, str(ROOT))
 
 from autoblog import config, originality_live  # noqa: E402
 
-SUITES_EXPECTED = 91
+SUITES_EXPECTED = 92
 
 
 def test_phrase_selection_ignores_short_generic_text() -> None:
@@ -82,8 +82,8 @@ def test_config_and_env() -> None:
 def test_docs() -> None:
     r = (ROOT / "README.md").read_text(encoding="utf-8")
     m = (ROOT / "MANUAL_ADVANCED_CHECKLIST.md").read_text(encoding="utf-8")
-    assert "### v103" in r and "PART 60" in m and "91/91" in r and "91/91" in m
-    print("      README v103 + PART 60 + 91/91 pinned ✔")
+    assert "### v103" in r and "PART 60" in m and "92/92" in r and "92/92" in m
+    print("      README v103 + PART 60 + 92/92 pinned ✔")
 
 
 TESTS = [("phrase selection", test_phrase_selection_ignores_short_generic_text),

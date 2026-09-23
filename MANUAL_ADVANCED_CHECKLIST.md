@@ -2642,3 +2642,29 @@ python tests/v111_test.py
 python run.py --test-all       # 91/91
 ```
 
+## PART 69 — v112: UNIFIED EDITORIAL CONTROL CENTER
+
+Daily/weekly owner check:
+
+```
+python run.py --control-center
+```
+
+One read-only report lo:
+
+- GSC ranking/CTR alerts;
+- same-intent cannibalization pairs;
+- correction ledger hash integrity;
+- PageSpeed/CWV review reports;
+- media ledger records;
+- freshness thresholds;
+- action queue.
+
+It never silently publishes, merges, redirects or modifies ads. Recommendations
+human editorial review kosam matrame.
+
+```
+python tests/v112_test.py
+python run.py --test-all       # 92/92
+```
+

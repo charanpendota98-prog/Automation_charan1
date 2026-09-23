@@ -551,6 +551,21 @@ ni ready cheyyagaladu — approval ni guarantee cheyyaledu. "Google lo suggest a
 ante autocomplete/Discover placement — adi **Google algorithm**, daaniki code tho force
 cheyyaleamu; cheyyagaligedi eligibility + quality signals mattrame.
 
+### v112 — UNIFIED EDITORIAL CONTROL CENTER
+
+Separate safety tools ni one read-only owner dashboard lo aggregate chestundi:
+
+```bash
+python run.py --control-center
+```
+
+Shows GSC alerts, cannibalization pairs, correction-ledger integrity,
+performance/CWV review reports, media ledger records and freshness thresholds.
+Action queue clear ga print chestundi. It never silently publishes, merges,
+redirects, changes ads or modifies content.
+
+**Proof:** `--test-all` **92/92**.
+
 ### v111 — CORRECTION + UPDATE TRANSPARENCY LEDGER
 
 Prathi successful old-post update ki tamper-evident correction record save avutundi:

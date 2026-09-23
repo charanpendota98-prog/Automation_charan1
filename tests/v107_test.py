@@ -6,7 +6,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from autoblog import config, gsc_api  # noqa: E402
-SUITES_EXPECTED = 91
+SUITES_EXPECTED = 92
 
 
 def test_api_rows_become_refresh_pages():
@@ -46,7 +46,7 @@ def test_cli_wired_and_docs():
     r = (ROOT / "README.md").read_text(encoding="utf-8")
     m = (ROOT / "MANUAL_ADVANCED_CHECKLIST.md").read_text(encoding="utf-8")
     assert "--gsc-sync" in src and "gsc_api as _ga" in src
-    assert "### v107" in r and "PART 64" in m and "91/91" in r and "91/91" in m
+    assert "### v107" in r and "PART 64" in m and "92/92" in r and "92/92" in m
     print("      GSC API CLI + README/PART 64/87-87 pinned ✔")
 
 TESTS = [("rows", test_api_rows_become_refresh_pages), ("alerts", test_position_ctr_alerts),
