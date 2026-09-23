@@ -235,7 +235,7 @@ table.su-facts th{background:#f2f7ff;color:#0f2e62;width:38%}
 body.dark table.su-facts th,body.dark table.su-facts td{border-color:#25406b}
 body.dark table.su-facts th{background:#16213a;color:#cfe0ff}
 /* Author box (E-E-A-T) */
-.su-author{display:flex;gap:12px;align-items:flex-start;background:#fafcff;border:1px solid #e3ecf9;border-radius:12px;padding:14px;margin:18px 0}
+.su-author-meta{display:flex;flex-wrap:wrap;gap:8px 14px;margin:8px 0 4px;color:#42566f;font-size:13px}.su-author-meta strong{color:#163f73}.su-author{display:flex;gap:12px;align-items:flex-start;background:#fafcff;border:1px solid #e3ecf9;border-radius:12px;padding:14px;margin:18px 0}
 .su-author-avatar{width:44px;height:44px;border-radius:50%;background:#e8f1ff;display:grid;place-items:center;font-size:22px}
 .su-author p{margin:4px 0;font-size:14px;color:#33475b}
 .su-author-links span{display:inline-block;margin-right:12px;white-space:nowrap}

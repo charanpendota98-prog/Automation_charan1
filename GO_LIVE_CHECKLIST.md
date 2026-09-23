@@ -115,7 +115,7 @@ Detail docs: `DEPLOY_MILESWEB.md` (cPanel steps) · `DEPLOY_ORACLE_CLOUD.md` (VM
 - [ ] **2. WordPress setup** — Rank Math; theme install (**v74**: theme **1.7.2** —
       `python tools/build_wp_theme.py` → zip → Appearance → Themes → Upload → Activate);
       **v98 zip:** 50 files · 694 KB · theme **1.9.8** · sha256
-      `5fd7a10d9335f50e18dafc09ce8241243d07e46cebca65ed8865d00387118784`
+      `705a57934f159f67fc05c624a7bef240c5bda83f8ad4265973536e61ced9aee0`
       (`sha256sum wordpress-theme/studentup-theme.zip` — upload chesina zip ide ani verify cheyandi;
       build ippudu **reproducible** — same content ⇒ same sha)
       `wp-admin → Users → Application Passwords` → app password create cheyyandi.

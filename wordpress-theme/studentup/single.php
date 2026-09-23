@@ -44,6 +44,7 @@ get_header();
 						}
 						?>
 					</div>
+					<?php if ( function_exists( 'studentup_author_meta' ) ) { studentup_author_meta(); } ?>
 				</div>
 
 				<?php echo wp_kses_post( studentup_save_button( 0, 'su-save-single' ) ); // v92: 🔖 save-for-later ?>
