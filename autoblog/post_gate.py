@@ -124,6 +124,9 @@ def run(article: dict, html: str = "", media_id: Optional[int] = None,
         toc_detail = f"{len(links)} links · ids {len(head_ids)}"
     add("toc", "CONTENT", "TOC links heading ids ki match", toc_ok, toc_detail,
         "rm100.fix_toc (ids okkasari compute avvali)", 2)
+    add("rankmath_toc", "SEO", "Rank Math TOC block detected",
+        "wp:rank-math/toc-block" in html and "wp-block-rank-math-toc-block" in html,
+        "official editor marker", "Rank Math TOC block wrapper add cheyandi", 2)
     low = plain.lower()
     dev = [p for p in DEV_PATTERNS if p in low]
     add("no_dev_text", "CONTENT", "Dev/demo/placeholder text ledu", not dev,
@@ -294,6 +297,9 @@ def run(article: dict, html: str = "", media_id: Optional[int] = None,
         "number ledu", "year add cheyandi", 1)
     add("title_power", "SEO", "Title lo power word",
         any(w in title.lower() for w in validator.TITLE_POWER_WORDS), "", "", 1)
+    add("title_sentiment", "SEO", "Title lo positive sentiment word",
+        any(w in title.lower() for w in ("best", "easy", "amazing", "excellent")),
+        "", "Best/Easy lanti natural sentiment word add cheyandi", 1)
     add("meta_ok", "SEO", "Meta 110–156 + keyword",
         110 <= len(meta) <= 156 and kw_l in meta.lower(), f"{len(meta)} ch",
         "rm100 meta fix", 2, critical=True)
@@ -302,8 +308,10 @@ def run(article: dict, html: str = "", media_id: Optional[int] = None,
         bool(slug) and sum(1 for t in toks if t in slug.lower()) >= min(2, len(toks) or 1),
         slug, "rm100 slug fix", 1)
     rm_score = int(rm.get("score") or (article.get("_rm100") or {}).get("score") or 0)
-    add("rm_score", "SEO", "Rank Math score 100", rm_score >= 100, f"{rm_score}/100",
-        "RM_TARGET=100 + rm100 + refine rounds chudandi", 3, critical=True)
+    add("rm_score", "SEO", "Local on-page preflight passed", rm_score >= 90,
+        "pass" if rm_score >= 90 else "needs fixes",
+        "Official Rank Math UI score kaadu; listed on-page issues fix cheyandi", 3,
+        critical=True)
     sk = article.get("secondary_keywords") or []
     add("secondary_kw", "SEO", "Secondary keywords", True,
         f"{len(sk)} keywords" if sk else "focus keyword mattrame", "", 1, scored=False)
@@ -358,6 +366,15 @@ def run(article: dict, html: str = "", media_id: Optional[int] = None,
     auth = [l for l in external if re.search(r"\.(gov|nic|edu|ac)\.in|\.gov|\.edu", l)]
     add("external_auth", "LINKS", "External authority link (gov/edu)", bool(auth),
         f"{len(auth)}/{len(external)}", "official source link add cheyandi", 2)
+    external_tags = [tag for tag in re.findall(r'<a\b[^>]+>', html, flags=re.I)
+                     if re.search(r'href="https?://', tag, re.I)
+                     and (not host or host not in tag)]
+    editorial_dofollow = [tag for tag in external_tags
+                          if "nofollow" not in tag.lower()
+                          and "sponsored" not in tag.lower()]
+    add("external_dofollow", "LINKS", "At least one editorial dofollow source",
+        bool(editorial_dofollow), f"{len(editorial_dofollow)}/{len(external_tags)}",
+        "official editorial link nunchi nofollow remove cheyandi", 2)
     ad_blocks = re.findall(r'<aside class="su-ad[^"]*">(.*?)</aside>', html, flags=re.S)
     ad_links = [a for blk in ad_blocks for a in re.findall(r"<a\s[^>]*>", blk)]
     lab = [a for a in ad_links if "sponsored" in a]
@@ -415,6 +432,14 @@ def run(article: dict, html: str = "", media_id: Optional[int] = None,
         "", "author_for_slug bylines", 1)
     add("publisher", "GOOGLE READINESS", "Publisher (brand signal)",
         '"publisher"' in html, "", "", 1)
+    people_first = article.get("_google_quality") or {}
+    add("methodology", "GOOGLE READINESS", "Visible Who/How/Why methodology",
+        "su-methodology" in html, "", "google_quality.inject_methodology", 2,
+        critical=True)
+    add("people_first", "GOOGLE READINESS", "People-first evidence audit",
+        bool(people_first.get("ok")),
+        f"{people_first.get('score', 0)}/100",
+        "; ".join(people_first.get("flags") or [])[:180], 3, critical=True)
     demand = article.get("_demand") or {}
     kw_score = int(demand.get("score") or 0)
     add("demand", "GOOGLE READINESS", "Demand signal (trend/priority)",
@@ -618,7 +643,7 @@ def self_test() -> Dict:
         title=art["title"], description=art["meta_description"], faq=[],
         date_published=art["date_published"], slug=art["slug"],
         category=art["category"], recruitment=art["recruitment"])
-    art["content_html"] += ('\n<p><a href="https://www.tspsc.gov.in/" rel="nofollow">'
+    art["content_html"] += ('\n<p><a href="https://www.tspsc.gov.in/" rel="noopener">'
                             'అధికారిక వెబ్‌సైట్</a> · '
                             f'<a href="{config.WP_SITE}">studentup.in</a> · '
                             f'<a href="{config.WP_SITE}/jobs/">ఉద్యోగాలు</a> · '
@@ -634,6 +659,11 @@ def self_test() -> Dict:
         Image.new("RGB", (1200, 675), (15, 46, 98)).save(img, quality=80)
     except Exception:  # noqa: BLE001
         pass
+    art["content_html"] += (
+        '<section class="su-methodology"><h2>ఈ Article ఎలా Prepare చేశాము?</h2>'
+        '<p><strong>Who:</strong> editor</p><p><strong>How:</strong> sources</p>'
+        '<p><strong>Why:</strong> applicant help</p></section>')
+    art["_google_quality"] = {"ok": True, "score": 100, "flags": []}
     return run(art, media_id=999)
 
 

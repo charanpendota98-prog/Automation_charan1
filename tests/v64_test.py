@@ -53,8 +53,10 @@ def test_rm100_proof_and_idempotent():
     before_words = words(art["content_html"])
     res = rm100.apply(art)
     assert res["before"] < 60, res["before"]
-    assert res["after"] == 100, res["after"]
-    assert res["remaining"] == [], res["remaining"]
+    # Reader-first deterministic pass does not manufacture keyword/transition
+    # paragraphs just to claim 100. LLM refine may improve the remaining score.
+    assert res["after"] >= 85, res["after"]
+    assert set(res["remaining"]) <= {"kw-density", "transition-words"}, res["remaining"]
     assert len(res["applied"]) >= 6, res["applied"]
     # content-loss guard (v64 bug: paragraph split text ni thosesthundi)
     after_words = words(art["content_html"])
@@ -62,7 +64,7 @@ def test_rm100_proof_and_idempotent():
     # idempotent — rendu sarlu apply chesina duplicate avvakudadu
     html1 = art["content_html"]
     res2 = rm100.apply(art)
-    assert res2["after"] == 100
+    assert res2["after"] >= 85
     assert html1.count("su-toc") == art["content_html"].count("su-toc")
     assert art["content_html"].count('class="su-lede"') <= 1
 
@@ -86,6 +88,8 @@ def test_title_rules_multiple_inputs():
         assert 40 <= len(t) <= 62, (t, len(t))
         assert re.search(r"\d", t), t
         assert any(p in t.lower() for p in validator.TITLE_POWER_WORDS), t
+        assert any(p in t.lower() for p in ("best", "easy", "amazing", "excellent")), t
+        assert art["seo_title"] == t
 
 
 def test_meta_slug_density_rules():
@@ -131,18 +135,18 @@ def test_toc_faq_table_conditions():
     toc_links = set(re.findall(r'<a href="#([^"]+)"', art["content_html"]))
     assert toc_links, "TOC links levu"
     assert toc_links <= head_ids, (sorted(toc_links - head_ids))
+    assert "wp:rank-math/toc-block" in art["content_html"]
+    assert "wp-block-rank-math-toc-block" in art["content_html"]
 
 
 def test_transitions_and_protected_paragraphs():
     art = rm100.sample_article()
-    rm100.apply(art)
-    n, have, ratio = rm100._transition_ratio(art["content_html"])
-    assert ratio >= 0.25, (n, have, ratio)
-    for m in re.finditer(r'<p[^>]*class="su-(lede|kw)"[^>]*>(.*?)</p>',
-                         art["content_html"], flags=re.S):
-        inner = m.group(2)
-        for c in rm100.CONNECTIVES:
-            assert not inner.startswith(c + ", "), inner[:40]
+    original = art["content_html"]
+    assert rm100.fix_transitions(art, original) == original
+    # No SEO-only keyword paragraphs: useful prose beats a synthetic 100 score.
+    padded = original + '<p class="su-kw">keyword filler text here.</p>'
+    cleaned = rm100.fix_density(art, padded)
+    assert "su-kw" not in cleaned and "keyword filler" not in cleaned
 
 
 def test_scorer_and_config():
@@ -162,16 +166,15 @@ def test_scorer_and_config():
 def test_pipeline_wiring():
     pipe = read(ROOT / "autoblog" / "pipeline.py")
     assert "rm100.apply(" in pipe
-    assert "_rm100" in pipe and "rank_math_seo_score" in pipe
-    # meta create + update rendu chotla
-    assert pipe.count('meta["rank_math_seo_score"]') >= 2
+    assert "_rm100" in pipe and "studentup_internal_seo_score" not in pipe
+    assert 'meta["rank_math_seo_score"]' not in pipe
     assert "for rnd in range(1, rounds + 1)" in pipe, "multi-round refine loop"
     assert "analyze_rm(" in pipe
     notifier = read(ROOT / "autoblog" / "notifier.py")
-    assert "_rm100" in notifier and "RankMath" in notifier
-    # seo-bridge lo score key register
+    assert "Internal SEO estimate" not in notifier
+    assert "local estimate hidden" in notifier
     bridge = read(THEME / "inc" / "seo-bridge.php")
-    assert "rank_math_seo_score" in bridge
+    assert "studentup_internal_seo_score" not in bridge
 
 
 def test_theme_v64_modules():

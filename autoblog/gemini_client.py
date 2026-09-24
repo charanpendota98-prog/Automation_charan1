@@ -158,6 +158,11 @@ CATEGORY_SEEDS = {
         "registration number recovery, exam day guidelines & reporting "
         "time, scribe rules, ID proof requirements"
     ),
+    "Success Stories": (
+        "documented UPSC/SSC/TSPSC/APPSC/university achiever journeys, verified "
+        "result and identity, preparation timeline, obstacles, practical lessons; "
+        "never invented quotes, marks, ranks, income or first-person experience"
+    ),
     "Outsourcing Jobs": (
         "TS/AP outsourcing & contract-basis recruitment, CRC (Commissionerate "
         "of Rural Development) outsourcing, TSSPDCL/TGSPDCL outsourced posts, "
@@ -187,6 +192,49 @@ CATEGORY_SEEDS = {
     ),
 }
 
+def _story_brief(topic: str) -> str:
+    """Return a strict reader-task brief; never manufacture a success story."""
+    value = (topic or "").lower()
+    if any(x in value for x in ("hall ticket", "admit card")):
+        return """
+CONTENT TYPE: HALL TICKET / ADMIT CARD
+- First say whether it is officially RELEASED or NOT RELEASED, based only on an official source.
+- Give the official Direct Link, required login details, exact download steps, exam date/time,
+  reporting time, venue checks, valid ID proof, photo/signature checks and correction/helpdesk path.
+- Never write 'released' from a search headline alone. Do not invent a link or exam-day rule.
+"""
+    if any(x in value for x in ("result", "merit list", "scorecard", "cut off")):
+        return """
+CONTENT TYPE: RESULT / MERIT LIST
+- First say the verified Result status and official board/recruiter source.
+- Give the official Direct Link, credentials needed, exact checking steps, scorecard fields,
+  cut-off/merit-list meaning, revaluation or objection route, supplementary next step and helpdesk.
+- Never predict marks, rank, cut-off or release time. Clearly label a pending Result as pending.
+"""
+    if any(x in value for x in ("success story", "selected candidate", "ranker", "topper",
+                                "inspiring journey")):
+        return """
+CONTENT TYPE: VERIFIED SUCCESS STORY
+- Publish only a real, named person's documented story supported by attributable sources.
+- Separate verified biography, timeline, preparation method, obstacles, result and practical lessons.
+- Never fabricate first-person experience, interview quotes, rank, salary, marks or emotional scenes.
+- If identity and achievement cannot be independently verified, refuse the story instead of composing it.
+"""
+    if any(x in value for x in ("job", "recruit", "vacancy", "notification", "walk-in",
+                                "internship", "apprentice")):
+        return """
+CONTENT TYPE: JOB / RECRUITMENT
+- Put the actionable answer first. Cover only verified Organization, Post names, Vacancy,
+  Eligibility, Age Limit, relaxation, Salary/pay, Application Fee, Important Dates, Selection
+  Process, Documents, Apply Online steps, official Notification PDF, Direct Link and warnings.
+- Distinguish permanent/contract/outsourcing roles and gross pay/stipend. Never guarantee selection.
+"""
+    return """
+CONTENT TYPE: EDUCATION SERVICE ARTICLE
+- Answer the reader's task first, then include only facts and steps that change what they should do.
+"""
+
+
 PROMPT_TEMPLATE = """You are an expert Telugu education-content writer for the website studentup.in (Telugu students audience: scholarships, govt jobs, exam updates, admissions, study tips).
 
 CATEGORY: {category}
@@ -196,7 +244,9 @@ TASK: Write ONE original, SEO-friendly blog post for this category. Choose a fre
 {avoid_block}
 
 LANGUAGE STYLE (very important):
-- Write the article in TELUGU SCRIPT, naturally mixing common English terms (scholarship, application, official website, eligibility, deadline, online, link, etc.) exactly like Telugu news/education sites do.
+- Write in easy, conversational Telugu for ordinary students and parents; this must NOT read like formal, pure, translated, or literary Telugu.
+- Keep familiar education/job words in ENGLISH script: Notification, Eligibility, Age Limit, Application Fee, Important Dates, Selection Process, Apply Online, Official Website, Last Date, Vacancy, Salary, Exam Pattern, Documents, Result, Hall Ticket and Direct Link. Do not transliterate these words into Telugu script.
+- Explain every uncommon term immediately in simple Telugu. Use short sentences and clear labels so even a first-time applicant can follow it.
 - Title: catchy, Telugu + English mix, SEO friendly, roughly 40-70 characters. Include the year {year} if the topic suits it.
 
 ACCURACY RULES (very important):
@@ -209,9 +259,9 @@ ARTICLE STRUCTURE (HTML):
 - 2-3 intro paragraphs (no heading).
 - Then <h2> sections covering: overview/key details, eligibility, benefits/important points, step-by-step "how to apply / how to check" as <ul><li> lists, useful tips.
 - Use <strong> for key phrases; include one simple <table> (3-5 rows) if a comparison or summary table fits naturally.
-- End with a short conclusion paragraph and then an FAQ section: 3 <h3> questions each followed by a short answer paragraph.
-- Final paragraph: a friendly call-to-action in Telugu asking readers to share the article and ask doubts in comments.
-- Prefer a complete, readable article over a word-count target; usually 1500-2200 words when the topic warrants it. Use ONLY these HTML tags: h2 h3 p ul ol li strong em table thead tbody tr th td a blockquote pre code. No <html>/<head>/<body>, no markdown, no code fences.
+- Add an FAQ only for real follow-up questions not already answered in the article.
+- Do NOT add a generic conclusion, motivational ending, share/comment CTA, repeated summary, history lesson, or word-count padding.
+- Stop as soon as the reader can safely complete the task; completeness matters, length does not. Use ONLY these HTML tags: h2 h3 p ul ol li strong em table thead tbody tr th td a blockquote pre code. No <html>/<head>/<body>, no markdown, no code fences.
 
 ALSO RETURN:
 - slug: English kebab-case URL slug for this post ( transliterate the topic, e.g. "ssc-cgl-preparation-guide" ), max 60 chars, lowercase, hyphens only.
@@ -249,7 +299,7 @@ STRICT ORIGINALITY RULES (copyright safe — very important):
 IMPROVE & EXPAND (advanced content — very important):
 - ADD extra valuable sections the source may not have: detailed step-by-step process, required documents list, common mistakes to avoid, pro tips, comparison table, extra background context.
 - Make it complete only where the source and official context support it; do not inflate the article to beat a word count.
-- LANGUAGE: TELUGU SCRIPT with natural English terms mixed (scholarship, apply, eligibility, official website...) like Telugu news sites.
+- LANGUAGE: easy spoken Telugu + familiar ENGLISH-script labels (Notification, Eligibility, Age Limit, Application Fee, Important Dates, Selection Process, Apply Online, Official Website, Documents, Direct Link). Never use formal/pure translated Telugu or transliterate these standard terms.
 
 ACCURACY RULES:
 - Keep only facts from the source + well-known real information. Do NOT invent dates/deadlines/vacancy numbers beyond what the source states.
@@ -258,8 +308,8 @@ ACCURACY RULES:
 ARTICLE STRUCTURE (HTML only — h2 h3 p ul ol li strong em table thead tbody tr th td a blockquote pre code):
 - 2-3 intro paragraphs (focus keyword in FIRST paragraph).
 - <h2> sections: overview, eligibility/details, benefits, step-by-step how to apply/check (as lists), documents required, tips & common mistakes, one <table> summary.
-- Conclusion paragraph + FAQ section (4 <h3> questions with answers).
-- End with a Telugu call-to-action (share + comment).
+- FAQ only for unanswered applicant questions supported by evidence.
+- No generic conclusion, share/comment CTA, repeated summary, motivation, or padding.
 
 ALSO RETURN (same JSON schema):
 - title: SEO Telugu+English title, 50-70 chars, focus keyword at start, year {year} if relevant.
@@ -292,13 +342,13 @@ RESEARCH AND VALUE STRATEGY (very important):
 - Resolve conflicts by naming the official source and flagging uncertainty; never silently choose a convenient number or deadline.
 - Include overview, eligibility, benefits/salary, application steps, documents, fee, selection process, common mistakes, and a comparison table only when each section is genuinely useful.
 - Include salary/fee/stipend/loan/cost figures only when verified and relevant. Never add commercial details to attract ads, inflate word count, or target high CPC.
-- Prefer concise, complete answers over a fixed word count; usually 1500-2200 words when the topic warrants it.
-- LANGUAGE: TELUGU SCRIPT with natural English terms (scholarship, apply, eligibility, official website, vacancy, notification...) like Telugu news sites.
+- Prefer concise, complete answers over a fixed word count. Do not add generic introductions, conclusions, repeated summaries, motivation, share/comment requests, or SEO padding.
+- LANGUAGE: easy spoken Telugu + familiar ENGLISH-script labels (Notification, Eligibility, Age Limit, Application Fee, Important Dates, Selection Process, Apply Online, Official Website, Vacancy, Documents, Direct Link). Write for ordinary students/parents, not highly educated readers; avoid formal/pure Telugu.
 
 ARTICLE STRUCTURE (HTML only — h2 h3 p ul ol li strong em table thead tbody tr th td a blockquote pre code):
 - 2-3 intro paragraphs (focus keyword in FIRST paragraph).
 - <h2> sections for each major area + step-by-step process as lists + at least one <table>.
-- Conclusion + FAQ (<h3> questions — must match the faq JSON you return).
+- FAQ only when useful (<h3> questions must match the faq JSON); no generic conclusion or CTA.
 
 ALSO RETURN (same JSON schema):
 - title: 50-75 chars, focus keyword at start, year {year}, power word + number if natural.
@@ -352,7 +402,7 @@ UPDATE RULES (very important):
 - Integrate every NEW fact from the research sources that the existing article is MISSING (new dates, fee changes, vacancy updates, extra steps, documents, official links). Do NOT remove existing correct information.
 - If sources conflict with the existing article, prefer the newer/official info.
 - The existing article may contain helper sections like "విషయ సూచిక (Table of Contents)", "Quick Answer", "About This Article", "Related Articles", "Official Links", "Reading Time" — EXCLUDE all of them from your output. Produce ONLY the main article body.
-- LANGUAGE: same TELUGU + English mix style as the existing article.
+- LANGUAGE: improve into easy spoken Telugu + standard English labels. Avoid pure/formal Telugu even if the old article uses it.
 - Length: keep or improve (2200-3000 words). Short paragraphs, lists, one table.
 
 ALSO RETURN (same JSON schema):
@@ -377,7 +427,7 @@ LISTICLE RULES (very important):
 - A "Evariki Best?" (who should choose what) short section.
 - Conclusion + FAQ (4-5 <h3> questions).
 - TOTAL: 2000-3000 words. Only REAL, well-known jobs/schemes/apps — no invented data, no fake salary numbers beyond well-known pay levels (use pay matrix levels like "Level-4 (25,500-81,100)").
-- LANGUAGE: TELUGU SCRIPT + natural English terms, Adda247/Telugu news style — engaging, short paragraphs, strong hooks.
+- LANGUAGE: easy spoken Telugu + standard ENGLISH-script labels; ordinary students/parents must understand it. No pure/formal Telugu; use short paragraphs and strong hooks.
 - focus_keyword: the list topic itself (e.g. "Central Government Jobs 2026") — in title, first para, 2+ h2s.
 - list_items: return the N item names as an array (same as your h2 items, short names).
 - Title format: "Top N {topic} 2026 – Complete List Telugu lo" style, 55-80 chars, number included.
@@ -412,7 +462,7 @@ BLUEPRINT (editor already planned this — follow the structure, write in your o
 {blueprint}
 
 ARTICLE RULES:
-- TELUGU SCRIPT + natural English terms (notification, eligibility, apply online, cut off, hall ticket).
+- Easy spoken Telugu + ENGLISH-script terms (Notification, Eligibility, Apply Online, Cut Off, Hall Ticket, Age Limit, Fee, Important Dates). Never formal/pure Telugu.
 - H1/title must be the blueprint's title style: exact keyword FIRST HALF + year + power word, 40-62 chars.
 - Every H2 from the blueprint (same order); each H2 gets 2-4 short paragraphs (2-3 sentences) plus the
   planned H3 subtopics and a table/list where the blueprint asks for one.
@@ -612,10 +662,14 @@ KEYWORD DOMINANCE (Google #1 target — students search chese exact phrases):
 - Focus keyword first 100 words lo rawali; H2 headings lo students vesē long-tail intent words pettandi (apply online, eligibility, hall ticket, cut off, salary, direct link...).
 - Meta description focus keyword THO start (first 60 chars lo kanipinchali — SERP CTR).
 
-NATURAL TELUGU STYLE (reader kinchukune bhasha — 'grantha/translation' feel kaadu):
-- Simple spoken Telugu (anchorman style). Bhari sanskrit/Tat-samam words addu; tech terms ENGLISH script lo ne undali: notification, eligibility, apply online, cut off, hall ticket, vacancy, stipend.
-- Okka sentence 15-20 words merisi kaanadu; paragraph 2-3 sentences; kaani/అందువల్ల/మరోవైపు/అలాగే/చివరగా/ఉదాహరణకు connectives 30%+ sentences lo vaadi (Rank Math readability).
-- H2 headings 4-8 words — laabam cheppali (e.g. "SSC CGL 2026: Eligibility & Fee Details").
+NATURAL TELUGU STYLE (ordinary student/parent ki first read lo ardam avvali):
+- Simple spoken Telugu only; granthika, formal, Sanskrit-heavy, word-for-word translated Telugu vaddu.
+- Ee standard words ENGLISH script lo ne undali: Notification, Eligibility, Age Limit, Application Fee, Important Dates, Selection Process, Apply Online, Official Website, Last Date, Vacancy, Salary, Exam Pattern, Documents, Result, Hall Ticket, Cut Off, Direct Link. Telugu script loki transliterate cheyakudadu.
+- Difficult term vaste ade sentence lo simple Telugu explanation ivvali. Reader already exam expert ani assume cheyakudadu.
+- SODI/FILLER strict ban: "చివరి వరకు చదవండి", "ఈ విషయం చాలా ముఖ్యమైనది", "పూర్తి వివరాలు తెలుసుకుందాం" lanti empty lines vaddu. Prathi paragraph oka fact, answer, warning, example leda action ivvali.
+- Oke point ni intro, body, conclusion lo repeat cheyakudadu. Word count/keyword density kosam paragraph add cheyakudadu.
+- Okka sentence 15-20 words minchakudadu; paragraph 2-3 sentences. Natural connectives vadali, kaani readability score kosam robotic ga repeat cheyakudadu.
+- H2 headings 4-8 words — familiar English label + clear benefit (e.g. "Eligibility & Age Limit వివరాలు", "Apply Online: Step-by-Step Process").
 - Prathi <li> step 10 words lo complete avvali (Rank Math "short list items" check — long steps FAIL avthayi).
 - Table cells lo words matrame (sentences kaadu); prathi cell 2-6 words.
 - Title 40-60 chars — focus keyword MODALO + year + number + power word (Complete/Best/Easy/Top).
@@ -945,6 +999,7 @@ def generate_article(
         year=year,
         avoid_block=avoid_block,
     )
+    prompt += _story_brief(f"{category} {trend_topic}")
     if trend_topic:
         # Google Trends real-time topic — searches ekkuvuntayi, rank fast
         prompt += (
@@ -978,6 +1033,7 @@ MUST FIX (item-by-item — Rank Math real checks):
 {fixes}
 
 REWRITE RULES:
+- Keep language easy spoken Telugu + familiar English labels (Eligibility, Age Limit, Fee, Important Dates, Selection Process, Apply Online, Official Website). Avoid pure/formal Telugu and explain unfamiliar terms simply.
 - Title 40-60 chars: focus keyword FIRST words + year + number + power word (Complete/Best/Easy/Top).
 - meta_description 110-156 chars, focus keyword THO start.
 - Focus keyword exact phrase ga: first paragraph + 2+ H2s + 8-14 times in body (0.5-3% density).
@@ -1049,6 +1105,7 @@ def generate_article_from_source(
             src_text=source.text or "(text extraction takkuva — title base ga rayandi)",
             year=year,
         )
+    prompt += _story_brief(f"{source.title} {getattr(source, 'category', '')}")
     if avoid_block:
         prompt += "\n" + avoid_block
     if notebooklm_brief:

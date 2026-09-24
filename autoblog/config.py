@@ -40,6 +40,10 @@ WP_APP_PASSWORD = _get("WP_APP_PASSWORD", "")
 # "draft" = review flow (Telegram lo approve cheyandi tarvata publish).
 # "publish" = posts direct ga live avtavvi.
 DEFAULT_POST_STATUS = _get("DEFAULT_POST_STATUS", "draft")
+# Automated discovery/research always creates a review draft. Publishing is a
+# separate owner action in WordPress; changing DEFAULT_POST_STATUS alone cannot
+# accidentally bypass this protection.
+AUTOMATION_DRAFT_ONLY = _get("AUTOMATION_DRAFT_ONLY", "1") not in ("0", "false", "no")
 
 # --- Notifications -------------------------------------------------------
 TELEGRAM_BOT_TOKEN = _get("TELEGRAM_BOT_TOKEN", "")
@@ -105,6 +109,16 @@ DEEP_POST_ENABLED = _get("DEEP_POST_ENABLED", "1") not in ("0", "false", "no")
 DEEP_MIN_SOURCES = int(_get("DEEP_MIN_SOURCES", "2"))
 # 0 = deep gate off (drafts + live rendu lo ledu)
 DEEP_GATE_STRICT = _get("DEEP_GATE_STRICT", "1") not in ("0", "false", "no")
+# Source-derived live posts: independent evidence + at least one official source.
+SOURCE_REQUIRED_ALL = _get("SOURCE_REQUIRED_ALL", "1") not in ("0", "false", "no")
+# Scheduled bot waits for a source-backed candidate instead of inventing a topic.
+AUTO_SOURCE_ONLY = _get("AUTO_SOURCE_ONLY", "1") not in ("0", "false", "no")
+SOURCE_MIN_LIVE = int(_get("SOURCE_MIN_LIVE", "3"))
+SOURCE_MIN_OFFICIAL = int(_get("SOURCE_MIN_OFFICIAL", "1"))
+SOURCE_CONFIDENCE_MIN = int(_get("SOURCE_CONFIDENCE_MIN", "65"))
+SOURCE_AUDIT_BLOCK = _get("SOURCE_AUDIT_BLOCK", "1") not in ("0", "false", "no")
+# Repetition/filler audit is separate from Rank Math and blocks low-value prose.
+CONTENT_QUALITY_BLOCK = _get("CONTENT_QUALITY_BLOCK", "1") not in ("0", "false", "no")
 # E-E-A-T: Article schema publisher logo (rich results kosam; optional)
 SITE_LOGO_URL = _get("SITE_LOGO_URL", "")
 # Google Discover: per-post robots lo max-image-preview:large (RM meta)

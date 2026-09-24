@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""v62: TOP WEBSITE READINESS — "asalu 100% advanced ga unda?" ki proof tho answer.
+"""v62: AUTOMATION SYSTEM READINESS (NOT RANK MATH) — "asalu 100% advanced ga unda?" ki proof tho answer.
 
 Enti idi:
   Okka command lo motham system ni measure chestundi — content engine · SEO · ads ·
@@ -193,29 +193,29 @@ def c_rankmath() -> List[dict]:
             "rank_math_robots"]
     have = [k for k in need if meta.get(k)]
     if len(have) == len(need):
-        return [_ok("Rank Math fields (100% SEO)",
+        return [_ok("Rank Math metadata payload contract",
                     f"focus/title/desc/robots · robots={meta['rank_math_robots']}", "SEO")]
     return [_bad("Rank Math fields", f"{len(have)}/{len(need)}: {sorted(meta)}", "SEO",
                  "seo.rankmath_meta output check")]
 
 
 def c_rm100() -> List[dict]:
-    """v64: Rank Math 100 engine — deterministic fixes (proof: imperfect draft → 100)."""
-    from . import rm100
-
-    art = rm100.sample_article()
-    res = rm100.apply(art)
+    """Static preflight wiring only; never present a fixture as Rank Math's score."""
     pipe = _read(ROOT / "autoblog" / "pipeline.py")
+    notifier = _read(ROOT / "autoblog" / "notifier.py")
     target = int(getattr(config, "RM_TARGET", 0) or 0)
-    wired = ("rm100.apply(" in pipe and "rank_math_seo_score" in pipe
-             and "RM_REFINE_ROUNDS" in pipe)
-    ok = res["after"] == 100 and not res["remaining"] and target == 100 and wired
-    value = (f"draft {res['before']}→100 · {len(res['applied'])} fixes · target {target} · "
-             f"pipeline {'wired' if wired else 'MISSING'}")
-    if ok:
-        return [_ok("Rank Math 100 engine (rm100)", value, "CONTENT ENGINE")]
-    return [_bad("Rank Math 100 engine (rm100)", value, "CONTENT ENGINE",
-                 "rm100.apply + RM_TARGET=100 + pipeline integration check cheyandi")]
+    wired = ("rm100.apply(" in pipe and "RM_REFINE_ROUNDS" in pipe
+             and "verify_meta" in pipe)
+    honest = ("local estimate hidden" in notifier
+              and "Internal SEO estimate" not in notifier)
+    value = (f"on-page remediation + WordPress readback "
+             f"{'wired' if wired else 'MISSING'} · honest UI label "
+             f"{'yes' if honest else 'no'} · target {target}")
+    if wired and honest:
+        return [_ok("On-page SEO preflight (not Rank Math UI score)", value,
+                    "CONTENT ENGINE")]
+    return [_bad("On-page SEO preflight", value, "CONTENT ENGINE",
+                 "rm100 + verify_meta wiring and honest notifier label check cheyandi")]
 
 
 def c_theme_v64() -> List[dict]:
@@ -288,6 +288,28 @@ def c_pin_gate() -> List[dict]:
     return [_bad("Pin-to-pin certificate gate",
                  value + (f" · fails: {', '.join(crit)}" if crit else ""),
                  "CONTENT ENGINE", "post_gate + pipeline wiring check cheyandi")]
+
+
+def c_people_first() -> List[dict]:
+    """Google Who/How/Why disclosure and strict live-publish wiring."""
+    module = _read(ROOT / "autoblog" / "google_quality.py")
+    pipe = _read(ROOT / "autoblog" / "pipeline.py")
+    css = _read(THEME / "style.css")
+    required = ["Who:</strong>", "How:</strong>", "Why:</strong>",
+                "Sources checked", "no_guarantees", "human_reviewer"]
+    present = sum(token in module for token in required)
+    wired = ("google_quality.inject_methodology" in pipe
+             and "google_quality.audit" in pipe
+             and "LIVE-PUBLISH BLOCKED: Google people-first" in pipe)
+    styled = ".su-methodology" in css
+    value = (f"guidance {present}/{len(required)} · pipeline "
+             f"{'wired' if wired else 'MISSING'} · theme "
+             f"{'styled' if styled else 'MISSING'}")
+    if present == len(required) and wired and styled:
+        return [_ok("Google people-first Who/How/Why gate", value,
+                    "CONTENT ENGINE")]
+    return [_bad("Google people-first gate", value, "CONTENT ENGINE",
+                 "google_quality.py + pipeline + methodology CSS check cheyandi")]
 
 
 def c_trends() -> List[dict]:
@@ -622,6 +644,7 @@ CHECKS: List[Tuple[str, Callable[[], List[dict]]]] = [
     ("rankmath", c_rankmath),
     ("rm100", c_rm100),
     ("pin_gate", c_pin_gate),
+    ("people_first", c_people_first),
     ("trends", c_trends),
     ("seo_bridge", c_seo_bridge),
     ("post_edit", c_post_edit_capability),
@@ -673,7 +696,7 @@ def run_report() -> dict:
 
 
 def report_markdown(rep: dict) -> str:
-    out = [f"# 🏆 TOP WEBSITE READINESS — {rep['score']}/100",
+    out = [f"# 🏆 AUTOMATION SYSTEM READINESS (NOT RANK MATH) — {rep['score']}/100",
            f"*{rep['at']} · {rep['passed']}/{rep['total']} system checks · "
            f"{rep['pending']} owner-pending*", ""]
     for section in SECTION_ORDER:
@@ -705,7 +728,7 @@ def write_artifacts(rep: dict) -> Dict[str, str]:
 
 def print_report(rep: dict, arts: Dict[str, str] = None) -> None:
     print("=" * 70)
-    print(f"  🏆 TOP WEBSITE READINESS — {rep['score']}/100  "
+    print(f"  🏆 AUTOMATION SYSTEM READINESS (NOT RANK MATH) — {rep['score']}/100  "
           f"({rep['passed']}/{rep['total']} system checks · {rep['pending']} owner-pending)")
     print("=" * 70)
     for section in SECTION_ORDER:

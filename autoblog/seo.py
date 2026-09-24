@@ -44,9 +44,12 @@ def add_table_of_contents(html: str) -> str:
         anchor = _slugify_id(clean, i)
         items.append(f'<li><a href="#{anchor}">{clean}</a></li>')
 
-    toc = ('<nav class="su-toc" aria-labelledby="table-of-contents">'
+    toc = ('<!-- wp:rank-math/toc-block {"title":"Table of Contents"} -->'
+           '<nav class="wp-block-rank-math-toc-block su-toc" '
+           'aria-labelledby="table-of-contents">'
            '<h2 id="table-of-contents">విషయ సూచిక (Table of Contents)</h2>'
-           "<ul>" + "".join(items) + "</ul></nav>")
+           "<ul>" + "".join(items) + "</ul></nav>"
+           '<!-- /wp:rank-math/toc-block -->')
 
     # TOC after the first paragraph (intro paragraph first ga untali SEO ki)
     idx = html.find("</p>")
@@ -125,8 +128,10 @@ def add_external_links(html: str, links: List[Dict[str, str]]) -> str:
         url = (l.get("url") or "").strip()
         text = (l.get("text") or "Official Website").strip()
         if url.startswith("http") and urlparse(url).netloc:
+            # Editorial/official citations are natural dofollow references.
+            # Only paid/affiliate links should carry sponsored+nofollow.
             valid.append(f'<li><a href="{url}" target="_blank" '
-                         f'rel="nofollow noopener">{text}</a></li>')
+                         f'rel="noopener">{text}</a></li>')
     if not valid:
         return html
     section = ('<section class="su-official-links" aria-labelledby="official-links">'

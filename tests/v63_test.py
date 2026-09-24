@@ -49,7 +49,8 @@ def test_seo_bridge_file():
     text = read(bridge)
     for needle in ("register_post_meta", "'show_in_rest'  => true", "auth_callback",
                    "current_user_can( 'edit_post'", "rest_pre_insert_value",
-                   "studentup/v1", "/theme-info"):
+                   "studentup/v1", "/theme-info", "studentup_write_rankmath_meta",
+                   "update_post_meta", "/posts/(?P<id>"):
         assert needle in text, needle
     keys = re.findall(r"'(rank_math_[a-z_]+)'", text)
     assert len(set(keys)) >= 8, keys
@@ -94,6 +95,8 @@ def test_update_post_is_url_safe_and_meta_safe():
     assert "URL/slug same untundi — SEO safe" in text
     assert 'payload.pop("meta", None)' in text, "meta reject ayithe meta leni retry"
     assert "def update_post(" in text and "def verify_meta(" in text
+    assert "def write_seo_meta(" in text and "def set_post_status(" in text
+    assert "rankmath/v1/updateMeta" in text, "native Rank Math endpoint fallback"
 
 
 def test_pipeline_verifies_meta_both_paths():
@@ -102,6 +105,13 @@ def test_pipeline_verifies_meta_both_paths():
     assert 'result["seo_meta_missing"] = missing' in text
     assert "SEO meta WAR" in text, "Telegram warning"
     assert "seo-bridge.php" in text, "warning lo fix pointer"
+    assert "# Two-phase live publish" in text
+    staged = text[text.index("# Two-phase live publish"):text.index("state.record_post")]
+    assert 'status="draft" if stage_for_seo' in staged
+    assert staged.index("verify_meta") < staged.index("set_post_status")
+    assert "studentup_internal_seo_score" not in text
+    assert "read_rankmath_state" in text and "rank_math_ui_score" in text
+    assert 'meta["rank_math_seo_score"]' not in text
     # create path: verify tarvata state record (order correct)
     create_part = text[text.index("def publish_article("):text.index("def _after_publish_push(")]
     assert create_part.index("verify_meta") < create_part.index("state.record_post")
@@ -132,6 +142,18 @@ def test_zip_contains_bridge():
         names = zf.namelist()
     assert "studentup/inc/seo-bridge.php" in names, names[:10]
     assert "studentup/functions.php" in names
+    plugin_zip = ROOT / "wordpress-plugin" / "studentup-seo-bridge.zip"
+    assert plugin_zip.exists(), "standalone SEO bridge plugin zip undali"
+    with zipfile.ZipFile(plugin_zip) as plugin:
+        pnames = plugin.namelist()
+        source = plugin.read(
+            "studentup-seo-bridge/studentup-seo-bridge.php").decode("utf-8")
+    assert "studentup-seo-bridge/studentup-seo-bridge.php" in pnames
+    assert "register_post_meta" in source and "update_post_meta" in source
+    assert "current_user_can( 'edit_post'" in source
+    assert "studentup_seo_plugin_read" in source
+    assert "get_post_meta( $post_id, 'rank_math_seo_score'" in source
+    assert "update_post_meta( $post_id, 'rank_math_seo_score'" not in source
 
 
 def test_docs_v63():

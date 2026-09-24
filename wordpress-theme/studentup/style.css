@@ -262,6 +262,12 @@ body.dark p.su-kw,body.dark p.su-source,body.dark p.su-internal{color:#c3d3ea}
 .su-takeaways-title{font-weight:700;color:#8a4b00;margin-bottom:6px}
 .su-takeaways ul{margin:0;padding-left:20px}
 .su-takeaways li{margin:3px 0;font-size:15px}
+.su-methodology{margin:24px 0;padding:18px 20px;background:#f5f9ff;border:1px solid #cbdcf3;border-left:4px solid #1c5da8;border-radius:10px;color:#25364b}
+.su-methodology h2{margin:0 0 10px;font-size:1.25rem;color:#123f75}
+.su-methodology h3{margin:14px 0 6px;font-size:1.05rem}
+.su-methodology p{margin:7px 0;line-height:1.65}
+.su-methodology ul{margin:6px 0 0;padding-left:22px}
+.su-methodology a{color:#145da0;text-decoration:underline;text-underline-offset:2px;overflow-wrap:anywhere}
 /* Related entities / topic cluster */
 /* v95: content-lopala image (seo.attach_inline_image) — Discover + CLS safe */
 .entry-content .su-figure{margin:16px 0;padding:0}
@@ -301,6 +307,9 @@ body.dark table.su-facts tr:nth-child(even) td{background:#101a30}
 .su-ad-lazy::after{content:"Advertisement";display:grid;place-items:center;height:100%;min-height:inherit;color:#8fa3bf;font-size:12px;background:#f7f9fc;border-radius:8px}
 body.dark .su-takeaways{background:#2a2113;border-color:#5a4020;color:#f0dcb8}
 body.dark .su-takeaways-title{color:#f3c07a}
+body.dark .su-methodology{background:#15243a;border-color:#31547a;color:#d9e7f7}
+body.dark .su-methodology h2,body.dark .su-methodology h3{color:#9fc8f4}
+body.dark .su-methodology a{color:#8ec5ff}
 body.dark .su-related-entities{background:#132318;border-color:#2a4a35}
 body.dark .su-related-title,body.dark .su-related-entities li a{color:#9fe0b8}
 /* Consent note (CMP off unte) */

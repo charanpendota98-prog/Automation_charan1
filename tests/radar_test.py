@@ -18,7 +18,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from autoblog import config, news_radar, state  # noqa: E402
+from autoblog import config, news_radar, research, state  # noqa: E402
 
 
 def main():
@@ -186,7 +186,7 @@ def main():
             "Private Jobs", "Software Jobs", "Part Time Jobs", "Walkin Jobs",
             "Hall Tickets", "Results", "Internships", "Online Education",
             "Outsourcing Jobs", "Current Affairs", "Exam Tips", "Upcoming Exams",
-            "Abroad Jobs",
+            "Abroad Jobs", "Success Stories",
             "Uncategorized"}
     assert cats <= LIVE, cats - LIVE
     names = " ".join(e["name"] for e in grid)
@@ -194,7 +194,10 @@ def main():
                      "ePASS", "TCS NQT", "LIC", "RBI", "IBPS", "UPSC", "NEET",
                      "AIIMS", "TGRTC", "APSRTC", "Singareni", "Employment News",
                      "Cognizant", "Capgemini", "Zoho", "ISRO", "DRDO", "NTPC",
-                     "Agniveer", "NABARD", "FCI", "JIPMER", "HMWSSB"):
+                     "Agniveer", "NABARD", "FCI", "JIPMER", "HMWSSB",
+                     "Adda247 Telugu", "Eenadu Pratibha", "Sakshi Education",
+                     "Job Updates Telugu", "Telugu Careers", "Telugu Jobs Point",
+                     "NaaJob", "FreeJobAlert", "FreshersNow", "Jobs.com"):
         assert official in names, official
     assert len({e["name"] for e in grid}) == len(grid)
     assert len({e["q"] for e in grid}) == len(grid)
@@ -237,6 +240,33 @@ def main():
     news_radar.mark_topic_done(pending[0])
     assert pending[0] not in news_radar.pending_topics(20)
     print("  9. topics queue dedupe + mark_done ✔")
+
+    # ---- 10. text alert -> official/Telugu source candidates ----
+    old_search = research.search_web
+    research.search_web = lambda query, max_results=10: [
+        {"url": "https://random.example/x", "title": "Random"},
+        {"url": "https://sakshi.com/jobs/x", "title": "Telugu report"},
+        {"url": "https://www.adda247.com/te/jobs/x", "title": "Adda Telugu"},
+        {"url": "https://upsc.gov.in/notice/x", "title": "Official notice"},
+        {"url": "https://www.studentup.in/own", "title": "Own"},
+    ]
+    old_site = config.WP_SITE
+    config.WP_SITE = "https://studentup.in"
+    try:
+        candidates = research.topic_source_candidates("UPSC jobs", limit=5)
+        assert candidates[0]["url"].startswith("https://upsc.gov.in")
+        assert "adda247.com" in candidates[1]["url"]
+        assert candidates[2]["url"].startswith("https://sakshi.com")
+        assert not any("studentup.in" in x["url"] for x in candidates)
+    finally:
+        research.search_web = old_search
+        config.WP_SITE = old_site
+    main_src = Path(__file__).resolve().parent.parent / "autoblog" / "main.py"
+    orchestration = main_src.read_text(encoding="utf-8")
+    assert "topic_source_candidates" in orchestration
+    assert orchestration.count("force_draft=True") >= 2
+    assert "AUTO_SOURCE_ONLY" in orchestration
+    print("  10. official/Telugu-first candidates + forced draft orchestration ✔")
 
     print("ALL v15/v16 RADAR TESTS PASSED ✔")
     return 0

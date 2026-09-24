@@ -22,7 +22,7 @@ Enduku (mee requirement: "post ki Rank Math 100 vachela score high kosam"):
 
   Tarvata LLM refine (RM_REFINE_ROUNDS) migilinavi (words count, list items) fix
   chestundi; publish ki mundu **score malli compute** avutundi (state + Telegram +
-  WP meta `rank_math_seo_score`).
+  private diagnostics only; it is never presented as Rank Math's UI score).
 
 Honest note: idi "Rank Math UI score ni hack" kaadu — Rank Math content tests
 (mechanically checkable vi) anni nijamaina content structure tho pass ayye la
@@ -42,7 +42,7 @@ from . import config, validator
 
 TOC_MARK = "su-toc"
 LEDE_MARK = "su-lede"
-TELUGU_TAIL = "పూర్తి వివరాలు · తేదీలు · అర్హతలు · దరఖాస్తు విధానం"
+TELUGU_TAIL = "Complete Guide · Important Dates · Eligibility · Apply Online"
 CONNECTIVES = ("అలాగే", "అందువల్ల", "ఇంకా", "చివరగా", "కాబట్టి", "మరోవైపు")
 # keyword density band (validator: 0.4% - 3.0% ok). Target ~0.6% = natural.
 DENSITY_TARGET = 0.006
@@ -137,21 +137,25 @@ def fix_title(article: dict) -> bool:
         year = yr.group(1) if yr else str(date.today().year)
         rest = _text(head[len(kt):]) if head.lower().startswith(kt.lower()) else head
         head = _text(f"{kt} {year} {rest}") if rest else _text(f"{kt} {year}")
-    # 4) power word (Telugu tail ippudu vaddu — space kosam tarvata)
+    # 4) power + positive sentiment words. Rank Math scores these separately;
+    # "Complete" is a power word but not a sentiment word in its analyzer.
     low = head.lower()
     has_power = any(w in low for w in validator.TITLE_POWER_WORDS)
-    if not has_power and "—" in head:            # purana Telugu tail theesey
-        head = _text(head.split("—")[0])
+    has_sentiment = any(w in low for w in ("best", "easy", "amazing", "excellent"))
+    if (not has_power or not has_sentiment) and "—" in head:
+        # Replace an old generic tail rather than stacking multiple hooks.
+        old_head, old_tail = [x.strip() for x in head.split("—", 1)]
+        if any(x in old_tail.lower() for x in
+               ("complete", "guide", "details", "full information")):
+            head = old_head
+            low = head.lower()
+            has_power = any(w in low for w in validator.TITLE_POWER_WORDS)
+            has_sentiment = any(w in low for w in
+                                ("best", "easy", "amazing", "excellent"))
     mid = ""
-    if not has_power:
-        parts = [p.strip() for p in head.split("—")][1:]
-        if parts:
-            cand = parts[-1]
-            head = _text(head[: head.rfind("—")]) or head
-            mid = cand[:24]
     tail = ""
-    if not has_power:
-        tail = "Complete Details"
+    if not (has_power and has_sentiment):
+        tail = "Best Guide"
     # 5) compose under 62 — power word ki space RESERVE (Telugu tail trim avvali)
     new = ""
     for t in ([tail] if tail else []) + [None]:
@@ -165,7 +169,7 @@ def fix_title(article: dict) -> bool:
                 h2 = keep.rsplit(" ", 1)[0] if " " in keep else kt
                 h = h2 if len(h2) >= len(kt) else kt
             else:                                # kw ne peddaga undi → shortest tail
-                tail = "Guide"
+                tail = "Best"
                 budget = 62 - 3 - len(tail)
                 h = head[:budget].rsplit(" ", 1)[0]
         new = f"{h} — {tail}"
@@ -187,8 +191,9 @@ def fix_title(article: dict) -> bool:
         if len(new) < 40:
             new = (new + " · " + TELUGU_TAIL)[:62].rsplit(" ", 1)[0]
     article["title"] = new.strip(" -—·") or kt
-    if not article.get("seo_title") or len(article.get("seo_title") or "") > 60:
-        article["seo_title"] = article["title"]
+    # Keep the actual Rank Math SEO title in lockstep with the tested title;
+    # stale LLM seo_title values were a common reason the editor disagreed.
+    article["seo_title"] = article["title"][:62].rstrip(" -—·")
     return True
 
 def fix_meta(article: dict) -> bool:
@@ -199,7 +204,7 @@ def fix_meta(article: dict) -> bool:
     if kw.lower() not in meta.lower():
         meta = _text(f"{_kw_title(kw)} గురించి పూర్తి వివరాలు: {meta}")
     if len(meta) < 110:
-        meta = _text(f"{meta} తేదీలు, అర్హతలు, దరఖాస్తు విధానం, అధికారిక లింక్ ఇక్కడ ఉన్నాయి.")
+        meta = _text(f"{meta} Important Dates, Eligibility, Apply Online Process, Official Link ఇక్కడ ఉన్నాయి.")
     if len(meta) > 156:
         cut = meta[:156]
         meta = cut.rsplit(" ", 1)[0] if " " in cut[:-1] else cut
@@ -258,8 +263,8 @@ def fix_lede(article: dict, html: str) -> str:
     first = paras[0].lower() if paras else ""
     if kw.lower() in validator.strip_tags(first).lower():
         return html
-    lede = (f'<p class="{LEDE_MARK}"><strong>{_kw_title(kw)} — ముఖ్య వివరాలు:</strong> '
-            f"ఈ పోస్ట్‌లో {kw} కి సంబంధించిన తేదీలు, అర్హతలు, దరఖాస్తు విధానం, "
+    lede = (f'<p class="{LEDE_MARK}"><strong>{_kw_title(kw)} — Quick Overview:</strong> '
+            f"ఈ పోస్ట్‌లో {kw} కి సంబంధించిన Important Dates, Eligibility, Apply Online Process, "
             f"అధికారిక లింక్‌లు పూర్తిగా ఇచ్చాము.</p>\n")
     if paras:
         return html.replace(paras[0], lede + paras[0], 1)
@@ -308,9 +313,15 @@ def fix_toc(article: dict, html: str) -> str:
              for tag, aid, txt in rows]
     if len(items) < 3:
         return new_html
-    toc = ('<div class="' + TOC_MARK + '" role="navigation" aria-label="విషయ సూచిక">'
-           '<div class="su-toc-title">విషయ సూచిక</div><ol>' + "".join(items[:12])
-           + "</ol></div>\n")
+    # Rank Math's editor recognizes its own TOC block marker. We keep the
+    # accessible StudentUp markup inside it, so one TOC serves both readers and
+    # the official Content Readability check (no duplicate plugin TOC needed).
+    toc = ('<!-- wp:rank-math/toc-block {"title":"Table of Contents"} -->'
+           '<div class="wp-block-rank-math-toc-block ' + TOC_MARK + '" '
+           'role="navigation" aria-label="Table of Contents">'
+           '<div class="su-toc-title">విషయ సూచిక (Table of Contents)</div><ol>'
+           + "".join(items[:12]) + "</ol></div>"
+           '<!-- /wp:rank-math/toc-block -->\n')
     paras = re.findall(r"<p[^>]*>.*?</p>", new_html, flags=re.S)
     if paras:
         return new_html.replace(paras[0], paras[0] + "\n" + toc, 1)
@@ -342,34 +353,14 @@ def fix_h2_keyword(article: dict, html: str) -> str:
 
 
 def fix_density(article: dict, html: str) -> str:
-    """Exact keyword 7-14 sarlu — natural Telugu vakyalu (paragraph boundary lo)."""
-    kw = _kw(article)
-    if not kw:
-        return html
-    words = _words(html)
-    target = min(DENSITY_MAX, max(DENSITY_MIN, round(words * DENSITY_TARGET)))
-    have = _count(validator.strip_tags(html), kw)
-    need = target - have
-    if need <= 0:
-        return html
-    paras = re.findall(r"<p[^>]*>.*?</p>", html, flags=re.S)
-    if len(paras) < 3:
-        return html
-    lines = [
-        f'<p class="su-kw">{kw} కి సంబంధించిన అధికారిక వివరాలు కింది విభాగాల్లో ఒక్కొక్కటిగా ఇచ్చాము.</p>',
-        f'<p class="su-kw">{kw} లో ఏమైనా మార్పు వస్తే ఈ పోస్ట్‌లో వెంటనే అప్‌డేట్ చేస్తాము.</p>',
-        f'<p class="su-kw">{kw} కోసం సిద్ధమవుతున్న అభ్యర్థులకు కింది సమాచారం ఉపయోగపడుతుంది.</p>',
-        f'<p class="su-kw">{kw} గురించి మరిన్ని వివరాలకు అధికారిక నోటిఫికేషన్ చూడటం మంచిది.</p>',
-    ]
-    step = max(1, len(paras) // max(1, need))
-    idx, i = 0, 0
-    while need > 0 and idx < len(paras):
-        p = paras[idx]
-        html = html.replace(p, p + "\n" + lines[i % len(lines)], 1)
-        i += 1
-        need -= 1
-        idx += step
-    return html
+    """Never manufacture paragraphs only to increase keyword density.
+
+    Older versions inserted several ``su-kw`` paragraphs. They improved an
+    internal score but read like filler. Generation/refinement must use the
+    phrase naturally in useful sections; this pass only removes legacy padding.
+    """
+    return re.sub(r'\s*<p[^>]*class="[^"]*su-kw[^"]*"[^>]*>.*?</p>\s*',
+                  "\n", html, flags=re.S | re.I)
 
 
 _TE_MONTHS = ("జనవరి|ఫిబ్రవరి|మార్చి|ఏప్రిల్|మే|జూన్|జులై|ఆగస్టు|"
@@ -428,25 +419,25 @@ def extract_facts(html: str) -> dict:
     return facts
 
 
-_FACT_LABELS = (("last_date", "దరఖాస్తు చివరి తేదీ"),
-                ("exam_date", "పరీక్ష తేదీ"),
-                ("vacancies", "ఖాళీలు"),
-                ("fee", "ఫీజు"),
-                ("age", "వయోపరిమితి"),
-                ("qualification", "అర్హత"),
-                ("salary", "వేతనం"))
+_FACT_LABELS = (("last_date", "Last Date"),
+                ("exam_date", "Exam Date"),
+                ("vacancies", "Vacancies"),
+                ("fee", "Application Fee"),
+                ("age", "Age Limit"),
+                ("qualification", "Eligibility"),
+                ("salary", "Salary"))
 
-_FAQ_TPL = (("last_date", "దరఖాస్తు చివరి తేదీ ఎప్పుడు?",
+_FAQ_TPL = (("last_date", "Last Date ఎప్పుడు?",
              "చివరి తేదీ {v}. గడువు ముగిసేలోపు దరఖాస్తు చేయండి."),
-            ("vacancies", "ఎన్ని ఖాళీలు ఉన్నాయి?",
+            ("vacancies", "మొత్తం Vacancies ఎన్ని?",
              "మొత్తం {v} ఖాళీలు ఉన్నాయి."),
-            ("fee", "అప్లికేషన్ ఫీజు ఎంత?",
+            ("fee", "Application Fee ఎంత?",
              "ఫీజు {v}. కేటగిరీ ప్రకారం మారవచ్చు — నోటిఫికేషన్ చూడండి."),
-            ("age", "వయోపరిమితి ఎంత?",
+            ("age", "Age Limit ఎంత?",
              "వయస్సు {v} మధ్య ఉండాలి. రిజర్వేషన్ ప్రకారం సడలింపు ఉంటుంది."),
-            ("qualification", "అర్హత ఏమిటి?",
+            ("qualification", "Eligibility ఏమిటి?",
              "{v} ఉత్తీర్ణులై ఉండాలి. పూర్తి వివరాలు నోటిఫికేషన్‌లో చూడండి."),
-            ("exam_date", "పరీక్ష ఎప్పుడు?",
+            ("exam_date", "Exam Date ఎప్పుడు?",
              "పరీక్ష తేదీ {v}. హాల్ టికెట్ వివరాలు అధికారిక సైట్‌లో చూడండి."))
 
 
@@ -457,20 +448,20 @@ def fix_table(article: dict, html: str) -> str:
     rows: List[tuple] = []
     title = _text(article.get("title") or "")
     if title:
-        rows.append(("అంశం", _kw_title(_kw(article)) or title))
+        rows.append(("Topic", _kw_title(_kw(article)) or title))
     cat = _text(article.get("category") or "")
     if cat:
-        rows.append(("విభాగం", cat))
-    for key, label in (("last_date", "దరఖాస్తు చివరి తేదీ"),
-                       ("exam_date", "పరీక్ష తేదీ"),
-                       ("vacancies", "ఖాళీలు"),
-                       ("salary", "వేతనం")):
+        rows.append(("Category", cat))
+    for key, label in (("last_date", "Last Date"),
+                       ("exam_date", "Exam Date"),
+                       ("vacancies", "Vacancies"),
+                       ("salary", "Salary")):
         val = _text(str(article.get(key) or ""))
         if val:
             rows.append((label, val))
     src = _text(article.get("source_url") or "")
     if src:
-        rows.append(("అధికారిక మూలం", _host_of(src)))
+        rows.append(("Official Source", _host_of(src)))
     if len(rows) < 3:
         # v78 fallback: content nunchi extract chesina facts (invent kaadu)
         have = {r[0] for r in rows}
@@ -487,7 +478,7 @@ def fix_table(article: dict, html: str) -> str:
         return html
     body = "".join(f"<tr><th>{_html.escape(k)}</th><td>{_html.escape(v)}</td></tr>"
                    for k, v in rows)
-    table = ('<h2>ముఖ్య వివరాలు</h2>\n<table class="su-facts"><tbody>'
+    table = ('<h2>Quick Overview: ముఖ్య వివరాలు</h2>\n<table class="su-facts"><tbody>'
              + body + "</tbody></table>\n")
     paras = re.findall(r"<p[^>]*>.*?</p>", html, flags=re.S)
     if len(paras) >= 2:
@@ -531,7 +522,7 @@ def fix_faq(article: dict, html: str) -> str:
     if first_q and first_q in plain:
         return html                     # FAQ already content lo undi
     body = "".join(f"<h3>{_html.escape(q)}</h3><p>{a}</p>" for q, a in pairs[:6])
-    return html + ('\n<h2>తరచుగా అడిగే ప్రశ్నలు (FAQ)</h2>\n'
+    return html + ('\n<h2>Frequently Asked Questions (FAQ)</h2>\n'
                    '<div class="su-faq">\n' + body + "</div>\n")
 
 def fix_links(article: dict, html: str) -> str:
@@ -543,7 +534,7 @@ def fix_links(article: dict, html: str) -> str:
     ext = [l for l in links if host and host not in l] if links else []
     if not ext and src.startswith("http"):
         out += ('\n<p class="su-source">అధికారిక మూలం: '
-                f'<a href="{_html.escape(src)}" target="_blank" rel="nofollow noopener">'
+                f'<a href="{_html.escape(src)}" target="_blank" rel="noopener">'
                 f'{_html.escape(_host_of(src))}</a> — ee పోస్ట్‌లోని వివరాలు అక్కడినుంచి '
                 "పరిశీలించి రాశాము.</p>")
     internal = [l for l in re.findall(r'href="(http[^"]+)"', out) if host and host in l]
@@ -564,38 +555,12 @@ def _transition_ratio(html: str) -> tuple:
 
 
 def fix_transitions(article: dict, html: str) -> str:
-    """Telugu connectives — checker laage kolichi 25%+ (target 30%) varaku."""
-    for _ in range(4):
-        n, have, ratio = _transition_ratio(html)
-        if n < 4 or ratio >= 0.30:
-            break
-        need = max(1, int(0.30 * n) - have)
-        state = {"done": 0, "i": have}
+    """Preserve the writer's natural sentence flow.
 
-        def _para(m, need=need, state=state):
-            if state["done"] >= need:
-                return m.group(0)
-            attrs, inner = m.group(1), m.group(2)
-            if any(k in attrs for k in ("su-lede", "su-kw")):
-                return m.group(0)
-            parts = re.split(r"(?<=[.!?\u0964])\s+", inner)
-            if len(parts) < 1:
-                return m.group(0)
-            out = []
-            for j, part in enumerate(parts):
-                if (state["done"] < need and j % 2 == 0 and len(part.split()) >= 5
-                        and not any(t in part for t in validator.TRANSITION_MARKS)):
-                    out.append(CONNECTIVES[state["i"] % len(CONNECTIVES)] + ", " + part)
-                    state["i"] += 1
-                    state["done"] += 1
-                else:
-                    out.append(part)
-            return f"<p{attrs}>" + " ".join(out) + "</p>"
-
-        new = re.sub(r"<p([^>]*)>([^<]{20,})</p>", _para, html)
-        if new == html:
-            break
-        html = new
+    Prefixing sentences with connectives just to satisfy a readability counter
+    produces robotic Telugu. The prompt/refine pass owns style; deterministic
+    code must not alter sentence meaning or rhythm.
+    """
     return html
 
 
@@ -805,9 +770,11 @@ def sample_article() -> dict:
         body.append("<p>ఈ విభాగంలోని వివరాలు అధికారిక నోటిఫికేషన్ ఆధారంగా రాశాము. "
                     "అభ్యర్థులు ఒక్కసారి అధికారిక పత్రం చూడటం మంచిది.</p>")
     # depth: content >= 1500 words
-    filler = ("గ్రూప్-2 పరీక్షలో తెలుగు, ఇంగ్లీషు, గణితం, రీజనింగ్, సామాన్య అభ్యసనలు "
-              "ముఖ్యమైన భాగాలు. ప్రతి సబ్జెక్టుకు రోజువారీ సమయం కేటాయించి క్రమం తప్పకుండా "
-              "సాధన చేయడం వల్ల పరీక్షలో మంచి ఫలితం సాధించవచ్చు. ")
+    filler = ("అలాగే గ్రూప్-2 పరీక్షలో తెలుగు, ఇంగ్లీషు, గణితం, రీజనింగ్, సామాన్య "
+              "అభ్యసనలు ముఖ్యమైన భాగాలు. అందువల్ల ప్రతి సబ్జెక్టుకు రోజువారీ సమయం "
+              "కేటాయించి క్రమం తప్పకుండా సాధన చేస్తే మంచి ఫలితం పొందవచ్చు. ")
+    body.append("<p>TSPSC Group 2 Notification కోసం official syllabus ప్రకారం "
+                "study plan సిద్ధం చేసుకోవాలి.</p>")
     body.append("<h2>విషయ ప్రణాళిక</h2>")
     body.append("<p>" + filler * 5 + "</p>")
     for h3 in ("సిలబస్ వివరాలు", "సమయ నిర్వహణ", "పుస్తకాల ఎంపిక", "రోజువారీ ప్రణాళిక",
