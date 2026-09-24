@@ -474,6 +474,82 @@ class WordPressClient:
         return {"id": data.get("id"), "link": data.get("link"),
                 "status": data.get("status")}
 
+    def write_seo_meta(self, post_id: int, meta: Dict[str, object]) -> bool:
+        """Write Rank Math fields through StudentUp's authenticated bridge.
+
+        WordPress' generic posts endpoint can reject Rank Math keys depending on
+        plugin registration order. The bridge allow-lists keys server-side and
+        uses the same ``edit_post`` capability, so this is a safe deterministic
+        fallback rather than silently publishing without SEO fields.
+        """
+        # First use Rank Math's own authenticated endpoint. Application Password
+        # auth works on current WordPress/Rank Math installs and avoids depending
+        # on the active theme. The plugin still performs its own sanitization.
+        native_url = f"{self.site}/wp-json/rankmath/v1/updateMeta"
+        native_ok = False
+        try:
+            native = self.session.post(native_url, json={
+                "objectID": int(post_id), "objectType": "post", "meta": meta,
+            }, timeout=config.HTTP_TIMEOUT)
+            native_ok = native.status_code in (200, 201)
+            if native_ok:
+                log.info("Rank Math native meta endpoint accepted post %s", post_id)
+            else:
+                log.info("Rank Math native endpoint unavailable (%s) — StudentUp bridge try",
+                         native.status_code)
+        except requests.RequestException as exc:
+            log.info("Rank Math native endpoint failed (%s) — bridge try", exc)
+
+        url = f"{self.site}/wp-json/studentup/v1/posts/{int(post_id)}/seo"
+        try:
+            resp = self.session.post(
+                url, json={"meta": meta}, timeout=config.HTTP_TIMEOUT)
+        except requests.RequestException as exc:
+            log.warning("SEO bridge request failed: %s", exc)
+            return native_ok
+        if resp.status_code != 200:
+            log.warning("SEO bridge unavailable: HTTP %s: %s",
+                        resp.status_code, resp.text[:240])
+            return native_ok
+        try:
+            data = resp.json()
+        except ValueError:
+            return native_ok
+        return bool(data.get("ok")) or native_ok
+
+    def read_rankmath_state(self, post_id: int) -> Dict:
+        """Read persisted fields and Rank Math's own stored score, if available.
+
+        The score is read-only. This client never calculates or writes it, so an
+        absent value remains ``None`` rather than being replaced by a local guess.
+        """
+        url = f"{self.site}/wp-json/studentup/v1/posts/{int(post_id)}/seo"
+        try:
+            resp = self.session.get(url, timeout=config.HTTP_TIMEOUT)
+            if resp.status_code != 200:
+                return {"ok": False, "rank_math_ui_score": None,
+                        "reason": f"HTTP {resp.status_code}"}
+            data = resp.json()
+            score = data.get("rank_math_ui_score")
+            return {"ok": bool(data.get("ok")), "fields": data.get("fields") or {},
+                    "rank_math_ui_score": int(score) if score is not None else None,
+                    "score_note": data.get("score_note", "")}
+        except (requests.RequestException, ValueError, TypeError):
+            return {"ok": False, "rank_math_ui_score": None,
+                    "reason": "bridge read failed"}
+
+    def set_post_status(self, post_id: int, status: str) -> Dict:
+        """Promote a verified staged draft (or move a post back to draft)."""
+        if status not in {"draft", "pending", "private", "publish"}:
+            raise ValueError(f"unsupported post status: {status}")
+        resp = self._request("POST", f"posts/{int(post_id)}", json={"status": status})
+        if resp.status_code not in (200, 201):
+            raise WordPressError(
+                f"Post status update failed: HTTP {resp.status_code}: {resp.text[:300]}")
+        data = resp.json()
+        return {"id": data.get("id"), "link": data.get("link"),
+                "status": data.get("status")}
+
     def verify_meta(self, post_id: int, keys: List[str]) -> Dict[str, bool]:
         """Post lo meta keys nijamainaa land ayyaya? (SEO silent-fail pattadaniki).
 

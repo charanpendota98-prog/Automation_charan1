@@ -360,7 +360,8 @@ def main():
     real_wp = pipeline.WordPressClient
     saved = (config.DEFAULT_POST_STATUS, config.EDITORIAL_REVIEWER,
              config.PUBLISH_QA_MIN_SCORE, config.PUBLISH_ORIGINALITY_MIN,
-             config.TOP_POST_STRICT, config.TOP_POST_MIN_SCORE)
+             config.TOP_POST_STRICT, config.TOP_POST_MIN_SCORE,
+             config.AUTOMATION_DRAFT_ONLY)
     try:
         pipeline.WordPressClient = FakeWP
         config.DEFAULT_POST_STATUS = "draft"
@@ -376,6 +377,7 @@ def main():
 
         # live publish mode → gate enforces score
         config.DEFAULT_POST_STATUS = "publish"
+        config.AUTOMATION_DRAFT_ONLY = False  # explicitly exercise manual live gate
         config.EDITORIAL_REVIEWER = "Test Editor"
         config.PUBLISH_QA_MIN_SCORE = 0
         config.PUBLISH_ORIGINALITY_MIN = 0
@@ -393,7 +395,8 @@ def main():
         pipeline.WordPressClient = real_wp
         (config.DEFAULT_POST_STATUS, config.EDITORIAL_REVIEWER,
          config.PUBLISH_QA_MIN_SCORE, config.PUBLISH_ORIGINALITY_MIN,
-         config.TOP_POST_STRICT, config.TOP_POST_MIN_SCORE) = saved
+         config.TOP_POST_STRICT, config.TOP_POST_MIN_SCORE,
+         config.AUTOMATION_DRAFT_ONLY) = saved
     print("  8. pipeline integration (draft score + live gate) ✔")
 
     # ---------------------------------------------------------------- 9

@@ -135,8 +135,8 @@ def test_update_e2e():
         db.unlink(missing_ok=True)
     html = CAP.get("content") or ""
     assert CAP.get("title") == "AP DSC 2026 Guide", "title preserve kaledu"
-    assert (CAP.get("meta") or {}).get("rank_math_seo_score"), \
-        "rm100 score meta lo ledu (KeyError dead?)"
+    assert "studentup_internal_seo_score" not in (CAP.get("meta") or {}), \
+        "internal estimate WordPress/Rank Math score laga save cheyyakudadu"
     assert '"datePublished": "2026-09-01"' in html, "published preserve kaledu"
     assert html.count('id="related-articles"') == 1
     assert calls and calls[0] and calls[0][0].endswith("/g"), \

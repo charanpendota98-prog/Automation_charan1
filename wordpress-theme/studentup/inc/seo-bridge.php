@@ -26,7 +26,8 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 function studentup_rankmath_keys() {
 	return array(
-		'rank_math_seo_score',   // bot compute chesina score (admin column)
+		// Internal writing estimate is deliberately separate from Rank Math's
+		// own score. Never write rank_math_seo_score: only the plugin may own it.
 		'rank_math_title',
 		'rank_math_description',
 		'rank_math_focus_keyword',
@@ -62,7 +63,9 @@ function studentup_register_seo_meta() {
 		}
 	}
 }
-add_action( 'init', 'studentup_register_seo_meta' );
+// Run after SEO plugins so our REST visibility cannot be overwritten by an
+// earlier registration of the same Rank Math keys.
+add_action( 'init', 'studentup_register_seo_meta', 99 );
 
 /**
  * rank_math_robots array ga vasthundi (bot: ["index, follow, max-image-preview:large"]).
@@ -78,6 +81,93 @@ add_filter(
 	},
 	10,
 	3
+);
+
+/**
+ * Reliable authenticated writer for automation.
+ *
+ * The core posts endpoint validates meta against its REST schema before saving.
+ * Rank Math/plugin load order can therefore reject otherwise valid fields. This
+ * narrow endpoint bypasses that schema conflict, but still permits only the
+ * allow-listed keys and users who can edit the target post.
+ */
+function studentup_read_rankmath_meta( WP_REST_Request $request ) {
+	$post_id = absint( $request['id'] );
+	$fields  = array();
+	foreach ( studentup_rankmath_keys() as $key ) {
+		$fields[ $key ] = (string) get_post_meta( $post_id, $key, true );
+	}
+	$stored_score = get_post_meta( $post_id, 'rank_math_seo_score', true );
+	return new WP_REST_Response(
+		array(
+			'ok'                 => true,
+			'post_id'            => $post_id,
+			'fields'             => $fields,
+			'rank_math_ui_score' => is_numeric( $stored_score ) ? (int) $stored_score : null,
+			'score_note'         => 'Read-only Rank Math stored value; never generated or overwritten by StudentUp.',
+		),
+		200
+	);
+}
+
+function studentup_write_rankmath_meta( WP_REST_Request $request ) {
+	$post_id = absint( $request['id'] );
+	$values  = $request->get_json_params();
+	$values  = is_array( $values ) && isset( $values['meta'] ) && is_array( $values['meta'] )
+		? $values['meta'] : array();
+	$allowed = studentup_rankmath_keys();
+	$saved   = array();
+
+	foreach ( $values as $key => $value ) {
+		if ( ! in_array( $key, $allowed, true ) ) {
+			continue;
+		}
+		if ( is_array( $value ) ) {
+			$value = implode( ', ', array_map( 'sanitize_text_field', $value ) );
+		} else {
+			$value = sanitize_text_field( (string) $value );
+		}
+		update_post_meta( $post_id, $key, $value );
+		$saved[ $key ] = (string) get_post_meta( $post_id, $key, true );
+	}
+
+	return new WP_REST_Response(
+		array( 'ok' => true, 'post_id' => $post_id, 'saved' => $saved ),
+		200
+	);
+}
+
+add_action(
+	'rest_api_init',
+	function () {
+		register_rest_route(
+			'studentup/v1',
+			'/posts/(?P<id>[\d]+)/seo',
+			array(
+				'methods'             => 'GET',
+				'callback'            => 'studentup_read_rankmath_meta',
+				'permission_callback' => function ( WP_REST_Request $request ) {
+					return current_user_can( 'edit_post', absint( $request['id'] ) );
+				},
+			)
+		);
+		register_rest_route(
+			'studentup/v1',
+			'/posts/(?P<id>[\d]+)/seo',
+			array(
+				'methods'             => 'POST',
+				'callback'            => 'studentup_write_rankmath_meta',
+				'permission_callback' => function ( WP_REST_Request $request ) {
+					return current_user_can( 'edit_post', absint( $request['id'] ) );
+				},
+				'args'                => array(
+					'id' => array( 'validate_callback' => function ( $value ) {
+						return get_post( absint( $value ) ) instanceof WP_Post;
+					} ),
+				),
+			)
+		);
+	}
 );
 
 /**

@@ -9,7 +9,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from autoblog import config, deep_research as dr  # noqa: E402
+from autoblog import config, content_quality, deep_research as dr  # noqa: E402
 from autoblog.sources import SourceArticle  # noqa: E402
 
 
@@ -262,6 +262,48 @@ def test_pipeline_integration_shim():
     assert "_deep" not in article2
 
 
+def test_source_set_and_reader_quality():
+    sources = [
+        _sa("https://upsc.gov.in/x", "Official", "Last date to apply is 15 October 2026."),
+        _sa("https://thehindu.com/x", "Report", "Last date to apply is 15 October 2026."),
+        _sa("https://example.org/x", "Guide", "Eligibility details and documents."),
+    ]
+    report = dr.build_report("UPSC 2026", sources, target_year=2026)
+    article = {"source_url": sources[0].url, "_deep_sources": sources,
+               "_source_urls": [s.url for s in sources], "_deep": report}
+    audit = dr.audit_source_set(article)
+    assert audit["ok"] and audit["independent_domains"] == 3
+    assert audit["official_count"] >= 1
+    weak = dr.audit_source_set({"source_url": "https://example.com/x",
+                                "_source_urls": ["https://example.com/x"]})
+    assert not weak["ok"] and weak["flags"]
+    assert not dr.audit_source_set({"title": "Evidence-free AI post"})["ok"]
+    assert not dr.audit_source_set({"article_type": "quiz"})["applicable"]
+    # Two private blogs agreeing is useful corroboration, but cannot validate a
+    # deadline unless the official source supports that same fact.
+    blogs = [
+        _sa("https://upsc.gov.in/general", "Official", "Recruitment information."),
+        _sa("https://blog-one.example/x", "Blog 1", "Last date is 15 October 2026."),
+        _sa("https://blog-two.example/x", "Blog 2", "Last date is 15 October 2026."),
+    ]
+    blog_report = dr.build_report("Test jobs", blogs, target_year=2026)
+    blog_article = {"source_url": blogs[0].url, "_deep_sources": blogs,
+                    "_source_urls": [s.url for s in blogs], "_deep": blog_report}
+    blog_audit = dr.audit_source_set(blog_article)
+    assert blog_audit["facts_without_official"] >= 1
+    assert any("FACTS-WITHOUT-OFFICIAL" in x for x in blog_audit["flags"])
+
+    clean = ("<h2>ఎలిజిబిలిటీ & వయోపరిమితి</h2>"
+             "<p>నోటిఫికేషన్ ప్రకారం అప్లికేషన్ ఫీజు వివరాలు చూడండి.</p>"
+             "<p>Official Website లో Documents upload చేసి Apply Online చేయాలి.</p>")
+    polished, quality = content_quality.polish_and_audit(clean)
+    assert "Eligibility" in polished and "Age Limit" in polished
+    assert "Notification" in polished and "Application Fee" in polished
+    assert not quality["flags"], quality
+    repeated = "<p>ఈ విషయం చాలా ముఖ్యమైనది. చివరి వరకు చదవండి.</p>" * 4
+    assert content_quality.audit(repeated)["flags"]
+
+
 def test_deep_prompt_extension():
     assert "Pass 6" in dr.DEEP_PASSES
     assert "year-over-year" in dr.DEEP_PASSES.lower()
@@ -293,6 +335,8 @@ def main():
     print("  NotebookLM brief merge + validation gate ✔")
     test_pipeline_integration_shim()
     print("  pipeline integration shim (min-sources no-op) ✔")
+    test_source_set_and_reader_quality()
+    print("  3-source official audit + anti-filler language quality ✔")
     test_deep_prompt_extension()
     print("  NotebookLM deep prompt (passes 6-8) ✔")
     print("ALL v44 DEEP RESEARCH TESTS PASSED ✔")

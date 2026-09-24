@@ -9,6 +9,7 @@ Verifies:
 """
 
 import json
+import re
 import sys
 import threading
 from http.server import BaseHTTPRequestHandler, HTTPServer
@@ -153,7 +154,9 @@ def test_seo_enhance():
     # internal + external links sections
     assert "https://studentup.in/x/" in out and "X Post" in out
     assert 'https://ssc.gov.in' in out and "SSC Official" in out
-    assert 'rel="nofollow noopener"' in out
+    assert 'wp:rank-math/toc-block' in out
+    official = re.search(r'<a href="https://ssc.gov.in"[^>]+>', out).group(0)
+    assert 'rel="noopener"' in official and "nofollow" not in official
     print("  1. seo.enhance (TOC + keyword intro + links) ✔")
 
 

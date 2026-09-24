@@ -14,8 +14,9 @@ from pathlib import Path
 from typing import Dict, Optional
 from urllib.parse import urlparse
 
-from . import (config, gemini_client, image_gen, notifier, post_gate, qual, research,
-               rm100, seo, sources, state, validator)
+from . import (config, content_quality, gemini_client, google_quality, image_gen,
+               notifier, post_gate, qual, research, rm100, seo, sources, state,
+               validator)
 from .notifier import esc, send_telegram
 from .wordpress_client import WordPressClient
 
@@ -456,6 +457,33 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
             log.exception("Deep post engine skipped (safe)")
             article["_deep"] = None
 
+    # Source audit is explicit even when research failed; no vague "verified"
+    # claim without a count of independent domains and official sources.
+    try:
+        from . import deep_research as _dr_source
+
+        article["_source_audit"] = _dr_source.audit_source_set(article)
+        log.info("Source audit: %s", _dr_source.format_source_audit(
+            article["_source_audit"]))
+    except Exception:
+        log.exception("source audit failed")
+        article["_source_audit"] = {"applicable": bool(article.get("source_url")),
+                                    "ok": False, "flags": ["SOURCE-AUDIT-FAILED"]}
+
+    # Google's Who/How/Why guidance: show readers how automation was used,
+    # who reviews the article, why it exists, and which sources were checked.
+    final_html = google_quality.inject_methodology(final_html, article)
+
+    # --- reader-first language + anti-filler audit ---
+    # Standard job/exam terms stay in English script; repeated/sodi prose is
+    # measured separately from SEO so keyword padding can never look "good".
+    final_html, article["_content_quality"] = content_quality.polish_and_audit(
+        final_html, article.get("focus_keyword", ""))
+    log.info("Reader quality %s/100 · filler=%s · flags=%s",
+             article["_content_quality"]["score"],
+             article["_content_quality"]["filler_hits"],
+             article["_content_quality"]["flags"] or "none")
+
     # --- QA step 2: validation score + originality proof ---
     qa = validator.validate_article(article, final_html)
     article["_qa"] = qa
@@ -489,6 +517,14 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
                  article["_editorial_flags"] or "none")
     except Exception:  # noqa: BLE001 — ledger advisory; other gates remain
         log.exception("editorial value ledger skipped (safe)")
+
+    article["_google_quality"] = google_quality.audit(article, final_html, live=False)
+    log.info("Google people-first self-assessment %s/100 · flags=%s",
+             article["_google_quality"]["score"],
+             article["_google_quality"]["flags"] or "none")
+    # Deficient drafts remain available for correction; the live gate below is
+    # strict. This preserves evidence instead of silently discarding research.
+
     # v38: TOP POST SCORE — measurable on-page quality (30+ weighted checks).
     # Quiz posts ki skip (interactive format different rules tho untundi).
     if not is_quiz:
@@ -505,13 +541,26 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
              qa["issues"][:3] or "none")
     # v35: never let an unreviewed/under-validated article go straight live.
     # Drafts remain available for a human to fix; only direct publish is blocked.
-    live_status = getattr(config, "DEFAULT_POST_STATUS", "draft")
+    live_status = str(article.get("_force_status") or
+                      getattr(config, "DEFAULT_POST_STATUS", "draft")).lower()
+    if (getattr(config, "AUTOMATION_DRAFT_ONLY", True)
+            and live_status == "publish"
+            and not article.get("_manual_publish_approved")):
+        log.warning("AUTOMATION_DRAFT_ONLY: automatic publish downgraded to review draft")
+        article["_force_status"] = "draft"
+        live_status = "draft"
     if live_status == "publish":
         reviewer = (getattr(config, "EDITORIAL_REVIEWER", "") or "").strip()
         if not reviewer:
             raise RuntimeError(
                 "LIVE-PUBLISH BLOCKED: EDITORIAL_REVIEWER is empty; "
                 "a named human must review the draft and official source first")
+        article["_google_quality"] = google_quality.audit(
+            article, final_html, live=True)
+        if article["_google_quality"]["flags"]:
+            raise RuntimeError(
+                "LIVE-PUBLISH BLOCKED: Google people-first self-assessment — "
+                + "; ".join(article["_google_quality"]["flags"][:5]))
         min_qa = max(0, min(100, int(getattr(config, "PUBLISH_QA_MIN_SCORE", 80))))
         if qa["score"] < min_qa:
             raise RuntimeError(
@@ -523,6 +572,18 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
                 raise RuntimeError(
                     f"LIVE-PUBLISH BLOCKED: originality {article['_orig']}% < "
                     f"{min_orig:g}% — source-backed rewrite needs editorial work")
+        reader = article.get("_content_quality") or {}
+        if (getattr(config, "CONTENT_QUALITY_BLOCK", True)
+                and reader.get("flags")):
+            raise RuntimeError(
+                "LIVE-PUBLISH BLOCKED: repetitive/filler language — "
+                + "; ".join(reader["flags"][:4]))
+        source_audit = article.get("_source_audit") or {}
+        if (getattr(config, "SOURCE_AUDIT_BLOCK", True)
+                and source_audit.get("applicable") and not source_audit.get("ok")):
+            raise RuntimeError(
+                "LIVE-PUBLISH BLOCKED: source verification — "
+                + "; ".join(source_audit.get("flags", [])[:5]))
         # v108: media duplicate/licence ledger flags live review too.
         if article.get("_media_flags"):
             raise RuntimeError(
@@ -654,8 +715,6 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
             secondary_keywords=article.get("secondary_keywords", []),
         )
 
-    if meta and (article.get("_rm100") or {}).get("score") is not None:
-        meta["rank_math_seo_score"] = str((article["_rm100"] or {}).get("score"))
     # --- v72: qualification auto-tag (site filter: 10th · 10+2 · డిగ్రీ · పీజీ) ---
     if meta is not None:
         try:
@@ -684,8 +743,7 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
         article["_originality"] = {"overlap": 0.0, "fresh": 1.0,
                                    "verdict": "skip"}
     # --- v65 PIN-TO-PIN GATE: certificate + critical block (live publish mattrame) ---
-    is_live = (article.get("_live") is True or
-               str(getattr(config, "DEFAULT_POST_STATUS", "draft")).lower() == "publish")
+    is_live = live_status == "publish"
     gate = ({"score": 0, "passed": 0, "total": 0, "critical_fails": [], "block": False,
              "cert_id": "mock", "rows": [], "words": 0, "rankmath": 0,
              "title": article.get("title", ""), "slug": article.get("slug", ""),
@@ -715,6 +773,13 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
         except Exception as exc:  # noqa: BLE001 — best-effort (silent kaadu)
             log.debug("publish_article skip: %s", exc)
         return {"error": "pin_gate", "detail": msg, "gate": gate}
+    # Two-phase live publish: first create a private draft, verify that the
+    # official Rank Math fields really landed, and only then make it public.
+    # A missing/outdated SEO bridge can no longer produce another live 23/100
+    # post with empty Focus Keyword / SEO title / Description fields.
+    requested_status = str(article.get("_force_status") or
+                           getattr(config, "DEFAULT_POST_STATUS", "draft")).lower()
+    stage_for_seo = requested_status == "publish"
     result = wp.create_post(
         title=article["title"],
         content_html=final_html,
@@ -723,16 +788,25 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
         tag_ids=tag_ids,
         excerpt=article["meta_description"],
         media_id=media_id,
+        status="draft" if stage_for_seo else requested_status,
         meta=meta,
     )
     # v63: SEO fields nijamainaa land ayyaya? (silent-fail pattadam — "mistake lekunda")
+    if stage_for_seo and not meta:
+        result["seo_meta_missing"] = ["Rank Math meta generation disabled"]
+        log.error("Live publish blocked: RANK_MATH_META_ENABLED is off")
     if meta and result.get("id"):
         try:
-            landed = wp.verify_meta(result["id"], ["rank_math_focus_keyword",
-                                                   "rank_math_title",
-                                                   "rank_math_description",
-                                                   "studentup_qual"])  # v72
+            required_seo = ["rank_math_focus_keyword", "rank_math_title",
+                            "rank_math_description"]
+            landed = wp.verify_meta(result["id"], required_seo)
             missing = [k for k, ok in landed.items() if not ok]
+            if missing:
+                # Generic wp/v2 meta schema failed: use the narrow authenticated
+                # theme bridge, then read back from WordPress for proof.
+                wp.write_seo_meta(result["id"], meta)
+                landed = wp.verify_meta(result["id"], required_seo)
+                missing = [k for k, ok in landed.items() if not ok]
             if missing:
                 log.warning("Rank Math meta land avvaledu: %s (id=%s) — theme seo-bridge "
                             "activate cheyandi (wordpress-theme/studentup/inc/seo-bridge.php)",
@@ -747,8 +821,26 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
                     log.debug("publish_article skip: %s", exc)
             else:
                 log.info("Rank Math meta verified ✔ (id=%s)", result["id"])
+                if stage_for_seo:
+                    result.update(wp.set_post_status(result["id"], "publish"))
+                    log.info("SEO-verified draft promoted to publish ✔ (id=%s)",
+                             result["id"])
         except Exception:
-            log.exception("meta verify skip (post safe)")
+            # In two-phase mode the post is still a draft, so a bridge/readback
+            # failure is safe and cannot trigger the public-channel notification.
+            log.exception("meta verify failed; staged post remains draft")
+    if result.get("id") and hasattr(wp, "read_rankmath_state"):
+        try:
+            rankmath_state = wp.read_rankmath_state(result["id"])
+            result["rank_math_ui_score"] = rankmath_state.get("rank_math_ui_score")
+            article["_rank_math_state"] = rankmath_state
+            if result["rank_math_ui_score"] is None:
+                log.info("Official Rank Math stored UI score unavailable; no estimate reported")
+            else:
+                log.info("Rank Math stored UI score (read-only): %s/100",
+                         result["rank_math_ui_score"])
+        except Exception:
+            log.exception("Rank Math read-only state unavailable")
     state.record_post(config.STATE_PATH, article["title"], article["slug"],
                       article["category"], result["link"], result["status"],
                       qa_score=(article.get("_qa") or {}).get("score"),
@@ -789,11 +881,13 @@ def _after_publish_push(article: Dict, result: Dict) -> None:
     try:
         if config.TELEGRAM_CHANNEL_CHAT_ID:
             qa = article.get("_qa") or {}
+            gq = article.get("_google_quality") or {}
             send_telegram(
                 f"🆕 <b>{esc(article['title'])}</b>\n\n"
                 f"{esc((article.get('meta_description') or '')[:180])}\n\n"
                 f"🔗 {esc(result.get('link', ''))}\n"
-                f"📊 QA {qa.get('score', '-')}/100 · ~{qa.get('reading_min', '-')} min read",
+                f"📊 QA {qa.get('score', '-')}/100 · People-first "
+                f"{gq.get('score', '-')}/100 · ~{qa.get('reading_min', '-')} min read",
                 chat_id=config.TELEGRAM_CHANNEL_CHAT_ID,
             )
     except Exception:
@@ -826,7 +920,8 @@ def _append_official_sources(article: dict) -> None:
 
 def create_from_source(url: str, mock: bool = False, category: str = "",
                        notebooklm_brief: str = "",
-                       target_year: int | None = None) -> Dict:
+                       target_year: int | None = None,
+                       force_draft: bool = False) -> Dict:
     """Vere site URL -> 100% original SEO article -> draft post.
 
     category empty aite auto-classify (Telugu+English keywords tho).
@@ -1031,6 +1126,29 @@ def create_from_source(url: str, mock: bool = False, category: str = "",
     article.setdefault("quick_answer", "")
     article.setdefault("faq", [])
     article.setdefault("seo_title", "")
+    if force_draft:
+        # Radar/orchestrator output always waits for owner review, irrespective
+        # of the site's normal publishing default. It must also pass evidence
+        # quality BEFORE consuming a WordPress draft slot or notifying Telegram.
+        article["_force_status"] = "draft"
+        if not mock:
+            from . import deep_research as _pre
+
+            article["_deep"] = _pre.build_report(
+                article.get("title", src.title), [src] + extras,
+                notebooklm_brief=notebooklm_brief,
+                target_year=target_year)
+            preflight = _pre.audit_source_set(article)
+            article["_source_audit"] = preflight
+            if not preflight.get("ok"):
+                raise RuntimeError(
+                    "DRAFT EVIDENCE REJECTED: "
+                    + "; ".join(preflight.get("flags", [])[:5]))
+            hard, _warnings = _pre.gate_post(
+                article.get("content_html", ""), article["_deep"], live=True)
+            if hard:
+                raise RuntimeError("DRAFT FACT CONFLICT: " + "; ".join(hard[:4]))
+            log.info("Evidence preflight ✔ %s", _pre.format_source_audit(preflight))
 
     return publish_article(article)
 
@@ -1121,7 +1239,7 @@ def update_post(post_id: int, new_source_urls=None, mock: bool = False) -> Dict:
     _append_official_sources(article)
 
     # v84: update kuda rm100 re-run (LLM rewrite structure degrade kakunda +
-    # rank_math_seo_score fresh). Fail ayina update aagadu (advisory).
+    # internal preflight fresh). Fail ayina update aagadu (advisory).
     try:
         if not article.get("_no_rm100"):
             _ures = rm100.optimize(
@@ -1202,9 +1320,38 @@ def update_post(post_id: int, new_source_urls=None, mock: bool = False) -> Dict:
     except Exception:  # noqa: BLE001 — CTA fail update aapadu
         log.exception("update monetize blocks skip (post safe)")
 
+    try:
+        from . import deep_research as _dr_update
+        article["_source_audit"] = _dr_update.audit_source_set(article)
+    except Exception:
+        log.exception("update source audit failed")
+        article["_source_audit"] = {"applicable": True, "ok": False,
+                                    "flags": ["SOURCE-AUDIT-FAILED"]}
+    final_html = google_quality.inject_methodology(final_html, article)
+    final_html, article["_content_quality"] = content_quality.polish_and_audit(
+        final_html, article.get("focus_keyword", ""))
+    try:
+        from . import editorial_value as _ev_update
+        article["_editorial_value"] = _ev_update.build_ledger(
+            article, final_html, article.get("_deep_sources") or [])
+    except Exception:
+        log.exception("update editorial ledger failed")
+        article["_editorial_value"] = {"score": 0,
+                                       "unsupported_claims": ["ledger unavailable"]}
+    article["_google_quality"] = google_quality.audit(article, final_html, live=True)
+    if article["_google_quality"]["flags"] and not mock:
+        return {"error": "google_quality", "post_id": post_id,
+                "reason": "; ".join(article["_google_quality"]["flags"]),
+                "link": post.get("link", "")}
+    if (getattr(config, "CONTENT_QUALITY_BLOCK", True)
+            and article["_content_quality"]["flags"] and not mock):
+        return {"error": "content_quality", "post_id": post_id,
+                "reason": "; ".join(article["_content_quality"]["flags"]),
+                "link": post.get("link", "")}
     qa = validator.validate_article(article, final_html)
     article["_qa"] = qa
-    log.info("Update QA %s/100 words=%d", qa["score"], qa["words"])
+    log.info("Update QA %s/100 words=%d · reader=%s/100", qa["score"], qa["words"],
+             article["_content_quality"]["score"])
     try:  # v77: update kuda originality proof (donor sources vs final)
         article["_originality"] = validator.rewrite_distance(
             final_html, [e.text for e in extras if getattr(e, "text", "")])
@@ -1223,8 +1370,6 @@ def update_post(post_id: int, new_source_urls=None, mock: bool = False) -> Dict:
             secondary_keywords=article.get("secondary_keywords", []),
         )
 
-    if meta and (article.get("_rm100") or {}).get("score") is not None:
-        meta["rank_math_seo_score"] = str((article["_rm100"] or {}).get("score"))
     try:  # v65: update ki kuda certificate (evidence)
         gate = post_gate.run(article, final_html)
         article["_gate"] = gate
@@ -1276,6 +1421,12 @@ def update_post(post_id: int, new_source_urls=None, mock: bool = False) -> Dict:
                                               "rank_math_title",
                                               "rank_math_description"])
             missing = [k for k, ok in landed.items() if not ok]
+            if missing:
+                wp.write_seo_meta(post_id, meta)
+                landed = wp.verify_meta(post_id, ["rank_math_focus_keyword",
+                                                  "rank_math_title",
+                                                  "rank_math_description"])
+                missing = [k for k, ok in landed.items() if not ok]
             if missing:
                 log.warning("UPDATE %s: Rank Math meta missing %s", post_id, missing)
         except Exception:

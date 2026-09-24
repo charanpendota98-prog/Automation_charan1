@@ -139,11 +139,17 @@ def notify_updated_post(article: dict, result: dict) -> None:
     if notes:
         lines += ["🆕 <b>Kotha info add ayyindi:</b>", esc(notes), ""]
     if qa:
-        lines.append(f"📊 QA: <b>{qa.get('score', '-')}/100</b> · "
+        lines.append(f"📊 Editorial QA (not Rank Math): <b>{qa.get('score', '-')}/100</b> · "
                      f"📝 {qa.get('words', '-')} words · ⏱️ ~{qa.get('reading_min', '-')} min")
     rm = article.get("_rm") or {}
     if rm:
-        lines.append(f"🎯 RankMath: <b>{rm.get('score', '-')}/100</b> (refresh tarvata)")
+        missing = result.get("seo_meta_missing") or []
+        lines.append("⛔ Rank Math field readback failed: " + esc(", ".join(missing))
+                     if missing else "✅ Rank Math fields WordPress readback verified")
+        ui_score = result.get("rank_math_ui_score")
+        lines.append((f"🎯 Rank Math stored UI score: <b>{ui_score}/100</b> (read-only)"
+                      if ui_score is not None else
+                      "ℹ️ Rank Math stored UI score unavailable; local estimate hidden"))
     if result.get("link"):
         lines += ["", f"🔗 {esc(result['link'])}"]
     send_telegram("\n".join(lines))
@@ -182,20 +188,35 @@ def notify_new_post(article: dict, result: dict) -> None:
     qa = article.get("_qa") or {}
     qa_bits = []
     if qa:
-        qa_bits.append(f"📊 QA: <b>{qa.get('score', '-')}/100</b>")
+        qa_bits.append(f"📊 Editorial QA (not Rank Math): <b>{qa.get('score', '-')}/100</b>")
         qa_bits.append(f"📝 {qa.get('words', '-')} words · ⏱️ ~{qa.get('reading_min', '-')} min")
     rm = article.get("_rm") or {}
     if rm:
-        score = rm.get("score", "-")
-        d = article.get("_rm100") or {}
-        if d.get("score") == 100:
-            qa_bits.append("🎯 RankMath: <b>{}/100</b> 🏆 (rm100 fixes: {})".format(
-                score, ", ".join(d.get("applied", [])[:4]) or "—"))
-        elif d.get("before") is not None:
-            qa_bits.append("🎯 RankMath: <b>{}/100</b> (draft {}/100 · mīgilina: {})".format(
-                score, d.get("before"), ", ".join(rm.get("issues", [])[:3]) or "—"))
+        missing = result.get("seo_meta_missing") or []
+        if missing:
+            qa_bits.append("⛔ Rank Math fields WordPress readback FAILED: "
+                           + esc(", ".join(missing)))
         else:
-            qa_bits.append("🎯 RankMath strict: <b>{}/100</b>".format(score))
+            qa_bits.append("✅ Rank Math Focus Keyword, SEO Title, Description "
+                           "WordPress readback verified")
+        ui_score = result.get("rank_math_ui_score")
+        qa_bits.append((f"🎯 Rank Math stored UI score: <b>{ui_score}/100</b> (read-only)"
+                        if ui_score is not None else
+                        "ℹ️ Rank Math stored UI score unavailable; local estimate hidden"))
+    source_audit = article.get("_source_audit") or {}
+    if source_audit.get("applicable"):
+        qa_bits.append(
+            "🔎 Sources: <b>{}</b> independent · <b>{}</b> official · "
+            "confidence <b>{}/100</b> {}".format(
+                source_audit.get("independent_domains", 0),
+                source_audit.get("official_count", 0),
+                source_audit.get("confidence", 0),
+                "✅" if source_audit.get("ok") else "⚠️"))
+    reader = article.get("_content_quality") or {}
+    if reader:
+        qa_bits.append("🧹 Reader quality: <b>{}/100</b> · filler {} · repeats {}".format(
+            reader.get("score", 0), reader.get("filler_hits", 0),
+            len(reader.get("duplicate_sentences", []))))
     gate = article.get("_gate") or {}
     if gate:
         crit = gate.get("critical_fails") or []

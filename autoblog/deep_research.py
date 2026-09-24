@@ -52,6 +52,15 @@ TIER1_HOSTS = {
     "ssc.gov.in", "upsc.nic.in", "nsp.gov.in", "scholarships.gov.in",
     "tsdsc.gov.in", "apdsc.gov.in", "tsbie.ac.in", "apscrb.gov.in",
     "tsgovtjobs.in", "ap.gov.in", "ts.gov.in", "iascsenior.com",
+    "ibps.in", "sbi.co.in", "bank.sbi", "rbi.org.in", "licindia.in",
+    # First-party private/company career portals count as official for that
+    # employer. Aggregators (Naukri/Indeed/jobs.com) deliberately do not.
+    "amazon.jobs", "careers.google.com", "jobs.careers.microsoft.com",
+    "careers.microsoft.com", "tcs.com", "career.infosys.com", "infosys.com",
+    "careers.wipro.com", "wipro.com", "careers.cognizant.com",
+    "accenture.com", "careers.capgemini.com", "careers.ibm.com",
+    "careers.deloitte.com", "careers.hcltech.com", "careers.techmahindra.com",
+    "careers.zoho.com", "zoho.com",
 }
 TIER2_HOSTS = {
     "tv9telugu.com", "tv9.com", "sakti.com", "telusuko.io", "abplive.com",
@@ -100,7 +109,9 @@ def source_tier(url: str) -> int:
         host = urlparse(url).netloc.lower().replace("www.", "")
     except ValueError:
         return 3
-    if host in TIER1_HOSTS or any(host.endswith(s) for s in TIER1_SUFFIXES):
+    if (host in TIER1_HOSTS
+            or any(host.endswith("." + known) for known in TIER1_HOSTS)
+            or any(host.endswith(s) for s in TIER1_SUFFIXES)):
         return 1
     if host in TIER2_HOSTS:
         return 2
@@ -243,6 +254,7 @@ def verify_facts(facts: List[Dict]) -> Dict:
                 continue
             seen.add(key)
             verified.append({**fact, "status": "official",
+                             "official_supported": True,
                              "sources": [fact["source_id"]]})
             continue
         key = (fact["kind"], fact["label"], fact["norm"])
@@ -259,7 +271,9 @@ def verify_facts(facts: List[Dict]) -> Dict:
             status = "official"
         else:
             status = "single"
-        verified.append({**fact, "status": status, "sources": srcs})
+        verified.append({**fact, "status": status,
+                         "official_supported": 1 in tiers,
+                         "sources": srcs})
 
     # date conflicts: same label, different normalized values
     by_label: Dict[str, set] = {}
@@ -498,7 +512,83 @@ def inject_deep(html_in: str, report: Dict) -> str:
     return html_in[:pos] + "\n" + block + "\n" + html_in[pos:]
 
 
-# ---------------------------------------------------------------- gates
+# ---------------------------------------------------------------- source-set audit + gates
+
+def audit_source_set(article: Dict) -> Dict:
+    """Measure independent/official evidence used by a source-derived post.
+
+    A search result count is not verification. We count distinct domains,
+    require an official Tier-1 source, and use the cross-source fact report's
+    confidence. By default every non-quiz live article requires evidence; an
+    AI-generated post with no source set is therefore review-only, not publishable.
+    """
+    raw = list(article.get("_deep_sources") or [])
+    urls = list(article.get("_source_urls") or [])
+    if not urls:
+        for source in raw:
+            url = source.get("url", "") if isinstance(source, dict) else getattr(source, "url", "")
+            if url:
+                urls.append(url)
+    has_sources = bool(article.get("source_url") or urls)
+    require_all = bool(getattr(config, "SOURCE_REQUIRED_ALL", True))
+    applicable = has_sources or (require_all and article.get("article_type") != "quiz")
+    domains = sorted({_domain(url) for url in urls if _domain(url)})
+    official = sorted({d for d in domains
+                       if source_tier("https://" + d) == 1})
+    report = article.get("_deep") or {}
+    confidence = int(report.get("confidence") or 0)
+    confirmed = sum(1 for fact in report.get("verified", [])
+                    if fact.get("status") in ("confirmed", "official"))
+    singles = sum(1 for fact in report.get("verified", [])
+                  if fact.get("status") == "single")
+    critical_kinds = {"date", "vacancy", "fee", "age", "salary"}
+    unofficial_facts = [fact for fact in report.get("verified", [])
+                        if fact.get("kind") in critical_kinds
+                        and not fact.get("official_supported")]
+
+    min_sources = max(1, int(getattr(config, "SOURCE_MIN_LIVE", 3)))
+    min_official = max(0, int(getattr(config, "SOURCE_MIN_OFFICIAL", 1)))
+    min_confidence = max(0, int(getattr(config, "SOURCE_CONFIDENCE_MIN", 65)))
+    flags: List[str] = []
+    if applicable and len(domains) < min_sources:
+        flags.append(f"SOURCES {len(domains)}/{min_sources} independent domains")
+    if applicable and len(official) < min_official:
+        flags.append(f"OFFICIAL-SOURCES {len(official)}/{min_official}")
+    if applicable and not report:
+        flags.append("CROSS-SOURCE-REPORT missing")
+    elif applicable and confidence < min_confidence:
+        flags.append(f"SOURCE-CONFIDENCE {confidence}/{min_confidence}")
+    if report.get("conflicts"):
+        flags.append(f"SOURCE-CONFLICTS {len(report['conflicts'])}")
+    if unofficial_facts:
+        sample = ", ".join(f"{f.get('kind')}={f.get('norm')}"
+                           for f in unofficial_facts[:3])
+        flags.append(f"FACTS-WITHOUT-OFFICIAL {len(unofficial_facts)} ({sample})")
+    return {
+        "applicable": applicable,
+        "ok": not flags,
+        "source_count": len(urls),
+        "independent_domains": len(domains),
+        "domains": domains,
+        "official_count": len(official),
+        "official_domains": official,
+        "confidence": confidence,
+        "confirmed_facts": confirmed,
+        "single_source_facts": singles,
+        "facts_without_official": len(unofficial_facts),
+        "flags": flags,
+    }
+
+
+def format_source_audit(audit: Dict) -> str:
+    if not audit.get("applicable"):
+        return "not applicable (no donor/source URL)"
+    return (f"{audit.get('independent_domains', 0)} independent sources · "
+            f"{audit.get('official_count', 0)} official · "
+            f"{audit.get('confirmed_facts', 0)} verified facts · "
+            f"confidence {audit.get('confidence', 0)}/100 · "
+            f"{'PASS' if audit.get('ok') else 'REVIEW: ' + ', '.join(audit.get('flags', []))}")
+
 
 def gate_post(html: str, report: Dict, live: bool = True) -> Tuple[List[str], List[str]]:
     """(hard_problems, warnings) — the PERFECT post gate.

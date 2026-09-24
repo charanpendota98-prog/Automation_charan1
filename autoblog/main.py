@@ -362,7 +362,8 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
         # trending listicle quota: roju LISTICLES_PER_DAY stories
         lkey = f"listiclecount:{today.isoformat()}"
         lcount = int(state.meta_get(config.STATE_PATH, lkey) or 0)
-        if lcount < config.LISTICLES_PER_DAY:
+        if (lcount < config.LISTICLES_PER_DAY
+                and not getattr(config, "AUTO_SOURCE_ONLY", True)):
             log.info("Listicle slot (%d/%d today) — trending story mode",
                      lcount + 1, config.LISTICLES_PER_DAY)
             if not mock and not config.GEMINI_API_KEY:
@@ -386,8 +387,8 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
             sources.mark_done_and_clean(queued)
         else:
             try:
-                result = pipeline.create_from_source(queued, mock=mock,
-                                                     category=category)
+                result = pipeline.create_from_source(
+                    queued, mock=mock, category=category, force_draft=True)
                 log.info("SOURCE POST READY ✔ %s (status=%s)", result["link"], result["status"])
                 return 0
             except Exception as exc:
@@ -396,7 +397,13 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
             finally:
                 sources.mark_done_and_clean(queued)
 
-    # --- generate (auto topic) ---------------------------------------------
+    # Source-first automation: if radar found nothing trustworthy, wait for the
+    # next sweep. Never fill a scheduled slot with an evidence-free AI topic.
+    if (getattr(config, "AUTO_SOURCE_ONLY", True) and not mock and not category):
+        log.info("No verified source candidate — scheduled generic generation skipped")
+        return 0
+
+    # --- generate (manual category/mock fallback only) ---------------------
     cat = category or topic_engine.pick_category(config.STATE_PATH)
     log.info("Category selected: %s%s", cat, " (forced)" if category else "")
 
@@ -989,31 +996,32 @@ def radar_run(process_posts: bool = True) -> int:
 
     n = min(config.RADAR_POSTS_PER_DAY, d + g + w + kw_queued)
     done = 0
-    # 1) pending topics first (channel texts + keyword gap targets)
+    # 1) Text-only alerts are NOT sent straight to Gemini. Resolve them to an
+    # official/Telugu article first, then run the full multi-source evidence
+    # pipeline. This is slower, but produces a reviewable source-backed draft.
     for topic in news_radar.pending_topics(limit=n):
+        made = False
         try:
-            cat = pipeline.classify_category(topic)
-            recent = state.recent_titles(config.STATE_PATH, limit=40)
-            article = gemini_client.generate_article(
-                cat, recent, year=_now().year, trend_topic=topic)
-            title = (article.get("title") or "").strip()
-            if not title or state.title_exists(config.STATE_PATH, title):
-                news_radar.mark_topic_done(topic)
-                continue
-            from . import seo as _seo
+            from . import research as _research
 
-            article["slug"] = _seo.optimize_slug(
-                _safe_slug(article.get("slug", ""), title),
-                focus_keyword=article.get("focus_keyword", ""))
-            for k, v in (("external_links", []), ("secondary_keywords", []),
-                         ("quick_answer", ""), ("faq", []), ("seo_title", ""),
-                         ("focus_keyword", topic[:60])):
-                article.setdefault(k, v)
-            result = pipeline.publish_article(article, day=_now().date())
-            done += 1
-            print(f"  RADAR POST ✔ {result['link']}")
+            candidates = _research.topic_source_candidates(topic, limit=6)
+            for candidate in candidates:
+                try:
+                    result = pipeline.create_from_source(
+                        candidate["url"], category=pipeline.classify_category(topic),
+                        force_draft=True)
+                    done += 1
+                    made = True
+                    print(f"  VERIFIED DRAFT ✔ {result['link']} "
+                          f"(topic source: {candidate['url'][:55]})")
+                    break
+                except Exception as exc:
+                    log.warning("topic candidate rejected (%s): %s",
+                                candidate["url"][:55], exc)
+            if not made:
+                log.warning("topic has no verified source set — no draft: %s", topic[:90])
         except Exception as exc:
-            log.error("radar topic post failed (%s): %s", topic[:50], exc)
+            log.error("radar topic research failed (%s): %s", topic[:50], exc)
         finally:
             news_radar.mark_topic_done(topic)  # poison-loop kaadu
     # 2) source queue URLs (district/grid news) — original rewrite flow
@@ -1022,9 +1030,9 @@ def radar_run(process_posts: bool = True) -> int:
         if not url:
             break
         try:
-            result = pipeline.create_from_source(url)
+            result = pipeline.create_from_source(url, force_draft=True)
             done += 1
-            print(f"  RADAR POST ✔ {result['link']}")
+            print(f"  VERIFIED DRAFT ✔ {result['link']}")
         except Exception as exc:
             log.error("radar URL failed (%s): %s — skip", url[:60], exc)
         finally:
