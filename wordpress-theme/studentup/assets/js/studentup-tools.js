@@ -71,6 +71,9 @@
     close.focus();
     close.addEventListener("click", function () { node.remove(); });
     node.addEventListener("click", function (event) { if (event.target === node) node.remove(); });
+    node.addEventListener("keydown", function (event) {
+      if (event.key === "Escape") { event.preventDefault(); node.remove(); }
+    });
   }
   function add(id, button) {
     var i = find(id);
@@ -86,10 +89,13 @@
     var date = button.getAttribute("data-date") || "";
     if (!/^20\d{2}-\d{2}-\d{2}$/.test(date)) { window.alert(I.noDate || "No confirmed date is available."); return; }
     var ymd = date.replace(/-/g, "");
+    var next = new Date(date + "T00:00:00Z");
+    next.setUTCDate(next.getUTCDate() + 1);
+    var endYmd = next.toISOString().slice(0, 10).replace(/-/g, "");
     var title = icsEscape(button.getAttribute("data-title") || "StudentUp deadline");
     var url = icsEscape(button.getAttribute("data-url") || window.location.href);
     var body = "Confirm the official notification before acting.\\n" + url;
-    var ics = "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//StudentUp//Deadline Reminder//EN\r\nBEGIN:VEVENT\r\nUID:studentup-" + ymd + "-" + Date.now() + "@studentup.in\r\nDTSTAMP:" + new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d{3}Z$/, "Z") + "\r\nDTSTART;VALUE=DATE:" + ymd + "\r\nDTEND;VALUE=DATE:" + ymd + "\r\nSUMMARY:" + title + "\r\nDESCRIPTION:" + icsEscape(body) + "\r\nURL:" + url + "\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n";
+    var ics = "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//StudentUp//Deadline Reminder//EN\r\nBEGIN:VEVENT\r\nUID:studentup-" + ymd + "-" + Date.now() + "@studentup.in\r\nDTSTAMP:" + new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d{3}Z$/, "Z") + "\r\nDTSTART;VALUE=DATE:" + ymd + "\r\nDTEND;VALUE=DATE:" + endYmd + "\r\nSUMMARY:" + title + "\r\nDESCRIPTION:" + icsEscape(body) + "\r\nURL:" + url + "\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n";
     var blob = new Blob([ics], {type: "text/calendar;charset=utf-8"});
     var link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.download = "studentup-deadline-" + ymd + ".ics"; link.click();
     setTimeout(function () { URL.revokeObjectURL(link.href); }, 1000);
