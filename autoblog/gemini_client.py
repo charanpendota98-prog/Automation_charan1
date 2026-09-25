@@ -219,6 +219,8 @@ CONTENT TYPE: EXAM / SUPPLEMENTARY EXAM UPDATE
   NOT RELEASED or only EXPECTED. Use the official board/exam authority notice.
 - Give exact Exam Date, fee by category, fee-payment Last Date, application Last Date,
   hall-ticket status, required documents, official Direct Link and helpdesk only when verified.
+- Use useful student-question H2s where applicable: “Fee entha?”, “Last date eppudu?”,
+  “Exam eppudu?” and “Apply ela cheyali?”. If a value is missing, answer “not announced”.
 - Separate confirmed dates from a tentative/coming-soon update. Never convert an expected date,
   fee or last date into a fact; if the official source is silent, say so clearly.
 """
@@ -314,6 +316,7 @@ STRICT ORIGINALITY RULES (copyright safe — very important):
 IMPROVE & EXPAND (advanced content — very important):
 - ADD extra valuable sections the source may not have: detailed step-by-step process, required documents list, common mistakes to avoid, pro tips, comparison table, extra background context.
 - Make it complete only where the source and official context support it; do not inflate the article to beat a word count.
+- For exam/supplementary updates, use question-led H2s such as “Fee entha?”, “Last date eppudu?”, “Exam eppudu?” and “Apply ela cheyali?” only when the source supports the answer; otherwise say “not announced”.
 - LANGUAGE: easy spoken Telugu + familiar ENGLISH-script labels (Notification, Eligibility, Age Limit, Application Fee, Important Dates, Selection Process, Apply Online, Official Website, Documents, Direct Link). Never use formal/pure translated Telugu or transliterate these standard terms.
 
 ACCURACY RULES:
@@ -361,6 +364,7 @@ RESEARCH AND VALUE STRATEGY (very important):
 - Inspect every supplied research source before drafting. Build a private fact matrix for status, fee, last date, exam date, eligibility, documents, links, result/syllabus and missing values; do not silently ignore source 2, 3 or 4.
 - Resolve conflicts by naming the official source and flagging uncertainty; never silently choose a convenient number or deadline.
 - Include overview, eligibility, benefits/salary, application steps, documents, fee, selection process, common mistakes, and a comparison table only when each section is genuinely useful.
+- For exam updates, use student-language question H2s such as “Fee entha?”, “Last date eppudu?”, “Exam eppudu?” and “Apply ela cheyali?” when that fact is relevant. If the official source is silent, say “not announced” instead of creating a fake answer.
 - Include salary/fee/stipend/loan/cost figures only when verified and relevant. Never add commercial details to attract ads, inflate word count, or target high CPC.
 - Prefer concise, complete answers over a fixed word count. Do not add generic introductions, conclusions, repeated summaries, motivation, share/comment requests, or SEO padding.
 - LANGUAGE: easy spoken Telugu + familiar ENGLISH-script labels (Notification, Eligibility, Age Limit, Application Fee, Important Dates, Selection Process, Apply Online, Official Website, Vacancy, Documents, Direct Link). Write for ordinary students/parents, not highly educated readers; avoid formal/pure Telugu.
