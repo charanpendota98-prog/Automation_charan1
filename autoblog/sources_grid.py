@@ -1,4 +1,4 @@
-"""v58/v96/v117: Official Sources Grid — 220+ curated sources.
+"""v58/v96/v117/v118: Official Sources Grid — 250+ curated sources.
 
 Official first (SSC/UPSC/TSPSC/APPSC/NEET...), private+software+walkins next.
 Prathi source = Google News query. Daily hot-list sources prathi radar run lo
@@ -69,6 +69,14 @@ _S = [
     ("SEBI", "SEBI Grade A recruitment 2026", "Central Govt Jobs", False),
     ("CWC", "Central Water Commission recruitment 2026", "Central Govt Jobs", False),
     ("DGT Apprenticeship", "DGT apprenticeship India 2026 official", "Internships", True),
+    ("Navodaya Vidyalaya", "Navodaya Vidyalaya admission 2027 JNVST official", "Online Education", True),
+    ("Navodaya Class 6", "JNVST Class 6 admission 2027 notification", "Online Education", False),
+    ("Navodaya Class 9", "JNVST Class 9 lateral entry admission 2027", "Online Education", False),
+    ("Sainik Schools", "AISSEE Sainik School admission 2027 official", "Online Education", False),
+    ("NMMS Scholarship", "NMMS scholarship examination 2026 official", "Scholarships", True),
+    ("KGBV Admissions", "KGBV girls admission Telangana Andhra official", "Online Education", False),
+    ("Model Schools", "model school admission Telangana Andhra 2026 official", "Online Education", False),
+    ("RTE Admissions", "RTE school admission Telangana Andhra 2026", "Online Education", False),
     # ---- Telangana ----
     ("TSPSC", "TSPSC notification 2026", "TS Govt Jobs", True),
     ("TGPSC Gurukul", "TGPSC Gurukul teacher recruitment", "TS Govt Jobs", True),
@@ -122,6 +130,21 @@ _S = [
     ("PM YASASVI", "PM YASASVI scholarship 2026", "Scholarships", False),
     ("AICTE Pragati Saksham", "AICTE Pragati Saksham 2026", "Scholarships", False),
     ("PM Internship", "PM Internship scheme 2026", "Internships", False),
+    # ---- Government schemes and applicant support ----
+    ("PM Kisan", "PM Kisan installment status official 2026", "Current Affairs", True),
+    ("PM Vishwakarma", "PM Vishwakarma scheme eligibility registration 2026", "Current Affairs", False),
+    ("Mudra Yojana", "PM Mudra loan scheme women youth 2026 official", "Current Affairs", False),
+    ("Women Welfare Schemes", "women welfare scheme Telangana Andhra government 2026", "Current Affairs", True),
+    ("SHG Women Schemes", "self help group women scheme Telangana Andhra 2026", "Current Affairs", False),
+    ("Girl Child Schemes", "girl child education scheme scholarship India 2026", "Scholarships", False),
+    ("Rythu Bharosa", "Rythu Bharosa Telangana farmer scheme official 2026", "Current Affairs", True),
+    ("AP Rythu Support", "Andhra Pradesh farmer welfare scheme official 2026", "Current Affairs", True),
+    ("Kalyana Lakshmi", "Kalyana Lakshmi Shaadi Mubarak scheme Telangana 2026", "Current Affairs", False),
+    ("Aasara Pension", "Telangana Aasara pension scheme latest official", "Current Affairs", False),
+    ("Amma Vodi", "AP Amma Vodi scheme latest official 2026", "Current Affairs", False),
+    ("Vidya Deevena", "Jagananna Vidya Deevena scholarship latest official", "Scholarships", False),
+    ("Skill India", "Skill India PMKVY training registration official 2026", "Internships", False),
+    ("Employment Exchange", "Telangana Andhra employment exchange registration update", "Private Jobs", False),
     # ---- Telugu/private job publishers (discovery only; official notice wins) ----
     ("Adda247 Telugu Jobs", "site:adda247.com/te jobs notification Telugu", "Central Govt Jobs", True),
     ("Eenadu Pratibha Jobs", "site:pratibha.eenadu.net government jobs notification", "Central Govt Jobs", True),
@@ -272,6 +295,12 @@ _S = [
     ("Telangana Current Affairs", "Telangana current affairs today scheme GO", "Current Affairs", False),
     ("AP Current Affairs", "Andhra Pradesh current affairs today scheme GO", "Current Affairs", False),
     ("Budget & Student Schemes", "union budget state budget student scheme allocation 2026", "Current Affairs", False),
+    ("Daily Govt Notifications", "government notification today India Telangana Andhra students", "Current Affairs", True),
+    ("Daily Education News", "education news today Telangana Andhra official", "Current Affairs", True),
+    ("Daily Employment News", "employment news today government jobs India official", "Current Affairs", True),
+    ("Daily Welfare Updates", "welfare scheme update today Telangana Andhra official", "Current Affairs", True),
+    ("Women Current Affairs", "women safety welfare employment news Telangana Andhra", "Current Affairs", False),
+    ("Farmer Current Affairs", "farmer agriculture scheme news Telangana Andhra official", "Current Affairs", False),
     # ---- Private / BPO local hiring ----
     ("BPO Voice Process Jobs", "BPO voice process hiring Hyderabad Vijayawada freshers", "Private Jobs", False),
     ("Retail & Field Jobs", "retail field sales executive hiring Telangana Andhra freshers", "Private Jobs", False),

@@ -264,7 +264,13 @@ TREND_EDU_PATTERNS = [
     "syllabus", "admit card", "hall ticket", "answer key", "counselling",
     "university", "college", "board", "ssc", "upsc", "rrb", "ibps",
     "neet", "jee", "cuet", "cat exam", "degree", "btech", "inter",
+    # Verified public-interest opportunities students/applicants search for.
+    "scheme", "schemes", "welfare", "government order", "go", "job fair",
+    "job mela", "apprenticeship", "navodaya", "jnv", "nmms", "sainik school",
+    "model school", "kgbv", "farmer", "rythu", "women", "mahila", "self help",
+    "current affairs", "skill development", "employment exchange", "career",
     "ఉద్యోగాలు", "ఫలితాలు", "నోటిఫికేషన్", "స్కాలర్‌షిప్", "హాల్‌టికెట్",
+    "పథకం", "రైతు", "మహిళ", "ప్రస్తుత వ్యవహారాలు",
 ]
 
 
