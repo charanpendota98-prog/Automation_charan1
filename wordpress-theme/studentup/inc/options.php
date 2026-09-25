@@ -46,6 +46,13 @@ function studentup_option_fields() {
 				'ads_on_policy'  => array( 'Legal pages lo ads (privacy/about)', 'check', '0', 'Default OFF (AdSense policy safe)' ),
 				'sticky_ad'      => array( 'Sticky bottom ad ON', 'check', '0', 'Mobile lo kindha fixed ad (house/AdSense anchor)' ),
 				'house_ads'      => array( 'House ads (JSON)', 'textarea', '', 'Filled by the bot (ads/house.json → here). Format: [{"title":"..","text":"..","url":".."}]' ),
+				'partner_ad_enabled' => array( 'Featured college partner ad ON', 'check', '0', 'ON chesthe homepage mid sponsored slot lo mee partner photo + copy + link render avutayi' ),
+				'partner_ad_name'    => array( 'Partner name', 'text', '', 'College/institute/business name — image kinda small label ga kanipistundi' ),
+				'partner_ad_title'   => array( 'Partner ad headline', 'text', '', 'Example: Admissions open for B.Tech, MBA & skill courses' ),
+				'partner_ad_description' => array( 'Partner ad description', 'textarea', '', 'Short, factual student-useful description. Claims ni partner tho verify cheyyandi.' ),
+				'partner_ad_image_url' => array( 'Partner photo URL', 'text', '', 'WordPress Media Library lo image upload chesi full https:// URL ikkada paste cheyyandi (1200×630 or similar)' ),
+				'partner_ad_link'    => array( 'Partner destination URL', 'text', '', 'Full https:// admissions/course page URL. Sponsored link ga rel=sponsored nofollow tho render avutundi.' ),
+				'partner_ad_cta'     => array( 'Partner button text', 'text', 'View details →', 'Example: Apply now → / View courses →' ),
 			),
 		),
 		'socials' => array(

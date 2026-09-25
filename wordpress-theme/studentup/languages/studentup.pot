@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: StudentUp 1.9.9\n"
 "Report-Msgid-Bugs-To: https://studentup.in/\n"
-"POT-Creation-Date: 2026-09-25 18:22+0000\n"
+"POT-Creation-Date: 2026-09-25 18:44+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -153,7 +153,7 @@ msgstr ""
 msgid "Latest Jobs"
 msgstr ""
 
-#: front-page.php:51
+#: front-page.php:49
 msgid "Latest student updates"
 msgstr ""
 
