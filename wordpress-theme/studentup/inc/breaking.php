@@ -258,9 +258,10 @@ function studentup_latest_ticker() {
 	foreach ( array( 0, 1 ) as $dup ) {   // duplicate set — seamless 50% loop
 		foreach ( $items as $it ) {
 			printf(
-				'<a href="%s"%s>%s <span class="tsrc">%s</span></a>',
+				'<a href="%s"%s aria-label="%s" title="Open article">%s <span class="tsrc">%s</span></a>',
 				esc_url( $it['link'] ),
 				$dup ? ' aria-hidden="true" tabindex="-1"' : '',
+				esc_attr( 'Open article: ' . wp_strip_all_tags( (string) $it['title'] ) ),
 				esc_html( $it['title'] ),
 				esc_html( studentup_ago( $it['time'] ) )
 			);

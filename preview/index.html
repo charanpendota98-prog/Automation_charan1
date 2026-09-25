@@ -79,7 +79,11 @@
     .latestbar .tclip{overflow:hidden;flex:1;position:relative;height:23px}
     .latestbar .tmove{position:absolute;top:0;left:0;white-space:nowrap;display:flex;gap:36px;animation:latest-slide 55s linear infinite}
     .latestbar .tmove a{color:#eaf2ff;font-size:13px;font-weight:700;white-space:nowrap}
+    .latestbar .tmove a span{opacity:.68;font-size:11px;font-weight:600;margin-left:3px}
     .latestbar .tmove a:hover{color:#ffd9a8;text-decoration:underline}
+    .latestbar .tclip:before,.latestbar .tclip:after{content:"";position:absolute;top:0;bottom:0;width:28px;z-index:1;pointer-events:none}
+    .latestbar .tclip:before{left:0;background:linear-gradient(90deg,#0f2e62,transparent)}
+    .latestbar .tclip:after{right:0;background:linear-gradient(270deg,#13406f,transparent)}
     .latestbar:hover .tmove{animation-play-state:paused}
     @keyframes latest-slide{from{transform:translateX(0)}to{transform:translateX(-50%)}}
     @media(prefers-reduced-motion:reduce){.latestbar .tmove{animation:none}}
@@ -659,12 +663,12 @@
     <div class="wrap trow">
       <span class="tlabel"><i aria-hidden="true"></i>Latest Jobs</span>
       <div class="tclip"><div class="tmove">
-        <a href="#jobs">Guide <span>23 h ago</span></a>
-        <a href="#jobs">UPSC జూనియర్ అసిస్టెంట్ పరీక్ష 2026 — Complete Details <span>yesterday</span></a>
-        <a href="#jobs">ఇంజనీరింగ్ విద్యార్థులకు ప్రభుత్వ ఇంటర్న్‌షిప్‌లు 2026: చెక్ ది డేట్స్ <span>yesterday</span></a>
-        <a href="#jobs" aria-hidden="true" tabindex="-1">Guide <span>23 h ago</span></a>
-        <a href="#jobs" aria-hidden="true" tabindex="-1">UPSC జూనియర్ అసిస్టెంట్ పరీక్ష 2026 — Complete Details <span>yesterday</span></a>
-        <a href="#jobs" aria-hidden="true" tabindex="-1">ఇంజనీరింగ్ విద్యార్థులకు ప్రభుత్వ ఇంటర్న్‌షిప్‌లు 2026: చెక్ ది డేట్స్ <span>yesterday</span></a>
+        <a href="#jobs" aria-label="Open article: Guide" title="Open article">Guide <span>23 h ago</span></a>
+        <a href="#jobs" aria-label="Open article: UPSC Junior Assistant 2026" title="Open article">UPSC జూనియర్ అసిస్టెంట్ పరీక్ష 2026 — Complete Details <span>yesterday</span></a>
+        <a href="#jobs" aria-label="Open article: Engineering internships 2026" title="Open article">ఇంజనీరింగ్ విద్యార్థులకు ప్రభుత్వ ఇంటర్న్‌షిప్‌లు 2026: చెక్ ది డేట్స్ <span>yesterday</span></a>
+        <a href="#jobs" aria-hidden="true" tabindex="-1" aria-label="Open article: Guide">Guide <span>23 h ago</span></a>
+        <a href="#jobs" aria-hidden="true" tabindex="-1" aria-label="Open article: UPSC Junior Assistant 2026">UPSC జూనియర్ అసిస్టెంట్ పరీక్ష 2026 — Complete Details <span>yesterday</span></a>
+        <a href="#jobs" aria-hidden="true" tabindex="-1" aria-label="Open article: Engineering internships 2026">ఇంజనీరింగ్ విద్యార్థులకు ప్రభుత్వ ఇంటర్న్‌షిప్‌లు 2026: చెక్ ది డేట్స్ <span>yesterday</span></a>
       </div></div>
     </div>
   </div>

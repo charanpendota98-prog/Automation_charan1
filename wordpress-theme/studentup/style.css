@@ -620,6 +620,10 @@ body.dark .qgroup .qgmeta{color:#ffc88a}
 .su-lticker .tmove{animation-duration:55s}
 .su-lticker .tmove a{color:#eaf2ff;font-size:13px;font-weight:700}
 .su-lticker .tmove a:hover{color:#ffd9a8;text-decoration:underline}
+.su-lticker .tmove .tsrc{opacity:.68;font-size:11px;font-weight:600;margin-left:3px}
+.su-lticker .tclip:before,.su-lticker .tclip:after{content:"";position:absolute;top:0;bottom:0;width:28px;z-index:1;pointer-events:none}
+.su-lticker .tclip:before{left:0;background:linear-gradient(90deg,#0f2e62,transparent)}
+.su-lticker .tclip:after{right:0;background:linear-gradient(270deg,#13406f,transparent)}
 .tclip:hover .tmove,.su-lticker:hover .tmove{animation-play-state:paused}
 body.dark .su-lticker{background:linear-gradient(90deg,#101a30,#16213a)}
 body.dark .tlabel-blue{background:#1a3a6d;color:#dceaff}
