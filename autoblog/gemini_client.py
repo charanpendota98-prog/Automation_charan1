@@ -269,7 +269,7 @@ ALSO RETURN:
 - tags: 5 to 8 tags, mix of Telugu and English keywords.
 - banner_text: short ENGLISH text (max 6 words) suitable for a featured image banner, e.g. "Scholarships 2026 Apply Online".
 - focus_keyword: ONE main SEO keyword phrase (Telugu + English mix). It must appear: in the title, in the FIRST paragraph, in at least 2 <h2> headings, and naturally 5-8 times in the body (density ~1%).
-- secondary_keywords: 3-5 related keyword phrases people also search (mix Telugu/English).
+- secondary_keywords: 5-8 related keyword phrases people also search (mix Telugu/English; use only natural, topic-relevant phrases).
 - seo_title: SEO title with focus keyword at the START, under 60 characters, include the year and a power word (Complete/Guide/Best) and a number if natural.
 - quick_answer: 40-60 word direct answer in Telugu summarizing the article (featured snippet bait). Must contain the focus keyword.
 - faq: 4-6 objects with "question" and "answer" string fields — "People Also Ask" style questions (Telugu) with short 2-3 sentence answers.
@@ -362,7 +362,7 @@ ALSO RETURN (same JSON schema):
 - title: 50-75 chars, focus keyword at start, year {year}, power word + number if natural.
 - slug (English kebab-case), meta_description (140-160 chars, keyword included), tags (6-8), banner_text (English, max 6 words).
 - focus_keyword: main keyword — in title, first para, 2+ h2s, ~1% density.
-- secondary_keywords: 3-5 related search phrases (Telugu+English).
+- secondary_keywords: 5-8 related search phrases (Telugu+English; only natural topic-relevant phrases).
 - seo_title: keyword at start, under 60 chars, year + power word + number.
 - quick_answer: 40-60 word Telugu direct answer (featured snippet bait) with keyword.
 - faq: 5-6 objects with "question" and "answer" string fields — People-Also-Ask style.
@@ -645,6 +645,15 @@ def _models() -> List[str]:
 # score perugutundi: keyword placement, numbers, short paras, link anchors)
 WRITING_RULES = """
 
+SENIOR EDITORIAL STANDARD (emulate the judgement of a top newsroom editor with 20+ years of publishing experience):
+- Write with calm authority, precise language and genuine reader empathy; never sound like an AI template, ad copy or a translated press release.
+- Decide the reader's single next action before writing. Lead with the answer, then give evidence, caveats, steps and a practical decision path.
+- Separate verified fact, reasonable explanation and unknown information. If evidence is missing, say so plainly instead of filling the gap from memory.
+- Give every section a job: answer a question, prevent a mistake, explain a term, compare options or help the reader complete a task. Delete anything that does none of these.
+- Prefer specific, useful detail over hype: who it is for, what changes, what to prepare, what can go wrong and where to verify it.
+- Use an honest headline and a strong opening promise; do not use fake urgency, guaranteed outcomes, exaggerated salary or clickbait punctuation.
+- Edit once for structure, once for factual clarity and once for natural Telugu rhythm. The final copy must feel written for StudentUp readers, not assembled from source paragraphs.
+
 RANK MATH WRITING RULES (follow exactly):
 - Put the focus keyword in the FIRST HALF of the title and include a NUMBER (year/vacancies/count).
 - Focus keyword: first paragraph lo + at least 2 <h2> subheadings lo + naturally 8-15 times total (1-2% density) — keyword stuffing cheyakudadu.
@@ -707,7 +716,7 @@ EXACT keys (spellings marakudadu — bot idi parse chestundi):
   "meta_description": "140-160 chars Telugu summary with focus keyword",
   "content_html": "FULL article HTML here (h2/h3/p/ul/ol/li/table/a only). THIS key holds the article body — 'content'/'html'/'body' vaddu, 'content_html' matrame.",
   "focus_keyword": "ONE exact search phrase",
-  "secondary_keywords": ["related phrase 1", "related phrase 2", "related phrase 3"],
+  "secondary_keywords": ["related phrase 1", "related phrase 2", "related phrase 3", "related phrase 4", "related phrase 5"],
   "seo_title": "keyword-first title under 60 chars",
   "tags": ["tag1", "tag2", "tag3", "tag4", "tag5"],
   "banner_text": "ENGLISH banner max 6 words",
@@ -1049,6 +1058,7 @@ VERIFIED SOURCE EVIDENCE (use only this evidence; do not infer beyond it):
 {source_evidence}
 
 REWRITE RULES:
+- Emulate a senior newsroom editor: calm authority, sharp structure, precise wording, reader empathy and no AI/template voice. Every paragraph must earn its place.
 - Keep the draft's verified facts, but rewrite any repaired section in a fresh StudentUp voice; never copy a source-like sentence or preserve a source paragraph order.
 - Keep language easy spoken Telugu + familiar English labels (Eligibility, Age Limit, Fee, Important Dates, Selection Process, Apply Online, Official Website). Avoid pure/formal Telugu and explain unfamiliar terms simply.
 - Title 40-60 chars: focus keyword FIRST words + year + number + power word (Complete/Best/Easy/Top).

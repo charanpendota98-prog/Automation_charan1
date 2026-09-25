@@ -217,6 +217,29 @@ def _hygiene(article: Dict) -> Dict:
             keyword_verify.verify_and_fix(article)
         except Exception as exc:  # noqa: BLE001 — advisory, never blocks
             log.debug("kw verify skip: %s", exc)
+    # Senior-editor SEO hygiene: keep a useful 5–8 phrase keyword family even
+    # when Gemini returns too few phrases. These are query intents, not claims,
+    # and are never inserted into the article as repetitive filler.
+    focus = (article.get("focus_keyword") or "").strip()
+    secondary = []
+    seen_secondary = set()
+    for value in article.get("secondary_keywords") or []:
+        phrase = " ".join(str(value).split()).strip()
+        key = phrase.casefold()
+        if phrase and key != focus.casefold() and key not in seen_secondary:
+            seen_secondary.add(key)
+            secondary.append(phrase[:90])
+    if focus:
+        for suffix in ("eligibility", "apply online", "official notification",
+                       "documents", "selection process"):
+            phrase = f"{focus} {suffix}".strip()
+            key = phrase.casefold()
+            if len(secondary) >= 8:
+                break
+            if key not in seen_secondary:
+                seen_secondary.add(key)
+                secondary.append(phrase[:90])
+    article["secondary_keywords"] = secondary[:8]
     # meta description fallback: quick_answer or first para nunchi
     md = (article.get("meta_description") or "").strip()
     if len(md) < 120:

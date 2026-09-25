@@ -184,8 +184,8 @@ def validate_article(article: Dict, final_html: str = "") -> Dict:
                  8, "meta description length/keyword problem")
     score += add(5 <= len(article.get("tags") or []) <= 8, 4, "tags 5-8 kavali")
     score += add(bool(article.get("quick_answer")), 5, "quick_answer ledu (snippet bait)")
-    score += add(len(article.get("secondary_keywords") or []) >= 3, 4,
-                 "secondary keywords 3+ kavali")
+    score += add(5 <= len(article.get("secondary_keywords") or []) <= 10, 4,
+                 "secondary keywords 5-10 kavali")
     # Rank Math readability: prathi paragraph 160 words kanna takkuva
     para_words = [len(strip_tags(m).split()) for m in re.findall(r"<p>(.*?)</p>", html, flags=re.S)]
     long_paras = sum(1 for w_ in para_words if w_ > 160)
