@@ -242,10 +242,8 @@ add_action( 'save_post', 'studentup_latest_ticker_flush', 30 );
  * Render the marquee — home page mattrame (post pages lo reading ki distraction vaddu).
  */
 function studentup_latest_ticker() {
-	// v126: the scrolling latest-jobs bar was retired from the public UI.
-	// Keep this compatibility wrapper so old theme hooks do not fatal; it emits
-	// no markup and therefore cannot consume first-viewport space or distract readers.
-	return;
+	// v127: owner-enabled latest jobs strip restored — same compact, useful bar
+	// as the approved reference design. It is still homepage-only and cached.
 	if ( ! is_front_page() || '0' === (string) studentup_opt( 'latest_ticker', '1' ) ) {
 		return;
 	}

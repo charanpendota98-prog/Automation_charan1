@@ -71,6 +71,18 @@
     .round{min-width:44px}
     input,select,textarea{font-size:16px}   /* iOS zoom-on-focus fix */
     button,a{font:inherit}a{text-decoration:none;color:inherit}.wrap{max-width:1220px;margin:auto;padding:0 24px}
+    /* v127: compact latest-jobs strip restored from the approved reference */
+    .latestbar{background:linear-gradient(90deg,#0b2149,#0f2e62 60%,#13406f);color:#fff;overflow:hidden}
+    .latestbar .trow{display:flex;align-items:center;gap:12px;padding:7px 0;min-height:42px}
+    .latestbar .tlabel{background:#173c78;color:#eaf2ff;font-weight:800;font-size:11px;padding:4px 10px;border-radius:999px;display:inline-flex;gap:6px;align-items:center;flex-shrink:0;white-space:nowrap}
+    .latestbar .tlabel i{width:7px;height:7px;border-radius:50%;background:#6ea3e8;display:inline-block}
+    .latestbar .tclip{overflow:hidden;flex:1;position:relative;height:23px}
+    .latestbar .tmove{position:absolute;top:0;left:0;white-space:nowrap;display:flex;gap:36px;animation:latest-slide 55s linear infinite}
+    .latestbar .tmove a{color:#eaf2ff;font-size:13px;font-weight:700;white-space:nowrap}
+    .latestbar .tmove a:hover{color:#ffd9a8;text-decoration:underline}
+    .latestbar:hover .tmove{animation-play-state:paused}
+    @keyframes latest-slide{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+    @media(prefers-reduced-motion:reduce){.latestbar .tmove{animation:none}}
     .screen-reader-text{position:absolute!important;clip:rect(1px,1px,1px,1px);width:1px;height:1px;overflow:hidden;margin:-1px;padding:0;border:0}
     .skip{position:absolute;left:-9999px;top:0;background:var(--navy);color:#fff;padding:10px 16px;z-index:99;border-radius:0 0 10px 0}
     .skip:focus{left:0}
@@ -643,6 +655,19 @@
       <button type="button" class="iconbtn" id="searchclose" aria-label="Close">✕</button>
     </div>
   </div></header>
+  <div class="latestbar" aria-label="Latest jobs — scrolling list">
+    <div class="wrap trow">
+      <span class="tlabel"><i aria-hidden="true"></i>Latest Jobs</span>
+      <div class="tclip"><div class="tmove">
+        <a href="#jobs">Guide <span>23 h ago</span></a>
+        <a href="#jobs">UPSC జూనియర్ అసిస్టెంట్ పరీక్ష 2026 — Complete Details <span>yesterday</span></a>
+        <a href="#jobs">ఇంజనీరింగ్ విద్యార్థులకు ప్రభుత్వ ఇంటర్న్‌షిప్‌లు 2026: చెక్ ది డేట్స్ <span>yesterday</span></a>
+        <a href="#jobs" aria-hidden="true" tabindex="-1">Guide <span>23 h ago</span></a>
+        <a href="#jobs" aria-hidden="true" tabindex="-1">UPSC జూనియర్ అసిస్టెంట్ పరీక్ష 2026 — Complete Details <span>yesterday</span></a>
+        <a href="#jobs" aria-hidden="true" tabindex="-1">ఇంజనీరింగ్ విద్యార్థులకు ప్రభుత్వ ఇంటర్న్‌షిప్‌లు 2026: చెక్ ది డేట్స్ <span>yesterday</span></a>
+      </div></div>
+    </div>
+  </div>
   <aside class="savedpanel" id="savedpanel" hidden aria-label="Saved posts" aria-live="polite">
     <div class="savedhead"><strong>Saved posts</strong><span id="savedtotal">0</span><button type="button" class="savedclose" id="savedclose" aria-label="Close saved posts">✕</button></div>
     <div id="savedbody"><p class="savedempty">No saved posts yet. Tap 🔖 on a job card to keep it here.</p></div>

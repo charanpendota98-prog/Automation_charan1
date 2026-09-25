@@ -6,9 +6,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 <?php
 /**
  * Front page — compact student-first order:
-	 * "Most searched by students" → ad → accessible hidden H1 →
+	 * latest jobs strip → "Most searched by students" → ad → accessible hidden H1 →
 	 * qualification filter (v72) → latest opportunities grid (chips filter) → footer.
-	 * The legacy ticker call remains a no-output compatibility hook.
  *
  * @package studentup
  */
