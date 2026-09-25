@@ -2,7 +2,7 @@
 Contributors: studentup
 Requires at least: 6.0
 Tested up to: 6.7
-Stable tag: 1.9.8
+Stable tag: 1.9.9
 Requires PHP: 7.4
 Version: 1.9.6
 License: GNU General Public License v2 or later
@@ -47,6 +47,16 @@ The theme ships a REST bridge (`inc/seo-bridge.php`). Use an account with `manag
 user tho App Password ivvandi (Administrator role).
 
 == Changelog ==
+
+= 1.9.9 (2026-09-25, v119 performance hardening + verified story sharing) =
+* Featured 1200×675 image is rendered on article pages with eager LCP loading,
+  async decoding, reserved aspect ratio and cache-busted theme assets.
+* Conditional third-party resource hints: AdSense/GA4 connections are not opened
+  before the corresponding feature is configured.
+* Unused WordPress embed/block assets are removed on pages that do not need them.
+* Caddy static preview serves gzip/zstd plus browser cache headers.
+* Verified Success Stories share copy clearly describes the real journey and
+  practical lessons without fake urgency or automated sharing.
 
 = 1.9.8 (2026-09-22, v98 viral share engine: in-content share bar + native share sheet) =
 * In-content share bar after the first H2 paragraph (WhatsApp/Telegram/copy).

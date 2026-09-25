@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'STUDENTUP_VERSION', '1.9.8' );  // v98: viral share engine (in-content share bar + native sheet)
+define( 'STUDENTUP_VERSION', '1.9.9' );  // v119: LCP image + conditional frontend asset loading
 
 require_once get_template_directory() . '/inc/options.php';
 require_once get_template_directory() . '/inc/qual-filter.php';  // v72: 10th/Inter/Degree/PG filter (auto tags)
@@ -192,6 +192,35 @@ function studentup_assets() {
 add_action( 'wp_enqueue_scripts', 'studentup_assets' );
 
 /**
+ * Remove WordPress payload that this theme does not need on ordinary public
+ * pages. Keep block CSS and wp-embed when the current post really uses them;
+ * this avoids breaking editors while trimming unused mobile bytes.
+ */
+function studentup_trim_frontend_assets() {
+	if ( is_admin() ) {
+		return;
+	}
+	$uses_embed = false;
+	if ( is_singular() ) {
+		$post = get_post();
+		$body = $post ? (string) $post->post_content : '';
+		$uses_embed = (bool) preg_match( '/\[embed(?:\s|\])|wp:embed|<iframe\b/i', $body );
+	}
+	if ( ! $uses_embed ) {
+		wp_deregister_script( 'wp-embed' );
+	}
+	$uses_blocks = false;
+	if ( is_singular() && function_exists( 'has_blocks' ) ) {
+		$uses_blocks = has_blocks( get_post() );
+	}
+	if ( ! $uses_blocks ) {
+		wp_dequeue_style( 'wp-block-library' );
+		wp_dequeue_style( 'wp-block-library-theme' );
+	}
+}
+add_action( 'wp_enqueue_scripts', 'studentup_trim_frontend_assets', 100 );
+
+/**
  * Widgets — sidebar + footer (optional; design single-column tho kuda perfect ga untundi).
  */
 function studentup_widgets() {
@@ -243,6 +272,10 @@ function studentup_head_cleanup() {
 	remove_action( 'wp_head', 'print_emoji_detection_script', 7 );
 	remove_action( 'wp_print_styles', 'print_emoji_styles' );
 	remove_action( 'admin_print_scripts', 'print_emoji_detection_script' );
+	remove_action( 'wp_head', 'wp_oembed_add_discovery_links' );
+	remove_action( 'wp_head', 'wp_oembed_add_host_js' );
+	remove_action( 'wp_head', 'wp_shortlink_wp_head' );
+	remove_action( 'wp_head', 'rsd_link' );
 }
 add_action( 'init', 'studentup_head_cleanup' );
 
