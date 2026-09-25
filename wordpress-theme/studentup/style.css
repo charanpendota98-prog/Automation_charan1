@@ -613,15 +613,16 @@ body.dark .qgroup .qgmeta{color:#ffc88a}
 }
 
 /* --- latest-jobs ticker (blue, distinct from breaking red) --- */
-.su-lticker{background:linear-gradient(90deg,#0b2149,#0f2e62 60%,#13406f)}
-.tlabel-blue{background:#fff;color:#0f2e62}
-.tlabel-blue i{background:#2463b7}
+.su-lticker{background:linear-gradient(90deg,#0b2149,#0f2e62 60%,#13406f);border-bottom:1px solid rgba(255,255,255,.08)}
+.su-lticker .trow{min-height:42px;padding:7px 0}
+.tlabel-blue{background:#173c78;color:#eaf2ff;box-shadow:inset 0 0 0 1px rgba(145,190,255,.18)}
+.tlabel-blue i{background:#6ea3e8}
 .su-lticker .tmove{animation-duration:55s}
-.su-lticker .tmove a{color:#eaf2ff}
+.su-lticker .tmove a{color:#eaf2ff;font-size:13px;font-weight:700}
 .su-lticker .tmove a:hover{color:#ffd9a8;text-decoration:underline}
 .tclip:hover .tmove,.su-lticker:hover .tmove{animation-play-state:paused}
 body.dark .su-lticker{background:linear-gradient(90deg,#101a30,#16213a)}
-body.dark .tlabel-blue{background:#1a2547;color:#cfe1ff}
+body.dark .tlabel-blue{background:#1a3a6d;color:#dceaff}
 
 /* --- nav polish: current page pill + animated submenu + safe laptop scroll --- */
 .menu-primary{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}
