@@ -18,7 +18,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from autoblog import config, news_radar, research, state  # noqa: E402
+from autoblog import config, news_radar, research, sources, state  # noqa: E402
 
 
 def main():
@@ -69,7 +69,34 @@ def main():
     assert news_radar._queue_url("not-a-url") is False
     lines = [l for l in config.SOURCES_QUEUE_PATH.read_text().splitlines() if l]
     assert lines == ["https://a.example/n1"], lines
-    print("  4. URL queue dedupe (state + file) ✔")
+    assert news_radar._opportunity_key(
+        "Latest SSC GD Constable Recruitment 2026 — Apply Online"
+    ) == "constable gd ssc 2026"
+    assert news_radar._opportunity_key("SSC GD Constable Recruitment 2027") != \
+        news_radar._opportunity_key("SSC GD Constable Recruitment 2026")
+    assert news_radar._opportunity_key(
+        "SSC GD Constable 2026: 25 vacancies, last date 15 April"
+    ) == news_radar._opportunity_key(
+        "Constable GD SSC 2026 — 500 posts, apply online"
+    )
+    # Two publisher URLs for the same vacancy must produce one queue item.
+    assert news_radar._queue_url(
+        "https://jobs.example.com/ssc-gd", "SSC GD Constable Recruitment 2026"
+    ) is True
+    assert news_radar._queue_url(
+        "https://mirror.example.org/ssc-gd-notice", "SSC GD Constable Recruitment 2026"
+    ) is False
+    duplicate_events = state.recent_radar_events(config.STATE_PATH, 20)
+    assert any(e["event_type"] == "duplicate_opportunity" for e in duplicate_events)
+    # A failed source remains retryable and does not poison the opportunity key.
+    sources.mark_done_and_clean("https://jobs.example.com/ssc-gd", completed=False,
+                                failure_type="fetch_failure", details="HTTP 503")
+    assert any(e["event_type"] == "fetch_failure"
+               for e in state.recent_radar_events(config.STATE_PATH, 20))
+    assert news_radar._queue_url(
+        "https://mirror.example.org/ssc-gd-notice", "SSC GD Constable Recruitment 2026"
+    ) is True
+    print("  4. URL + cross-source opportunity dedupe, audit, retry ✔")
 
     # ---- 5. district rotation ----
     def fake_fetch(query, limit=5):
@@ -223,7 +250,10 @@ def main():
         assert all("source_name" in it and "category_hint" in it for it in b1)
         seen1 = {it["source_name"] for it in b1}
         seen2 = {it["source_name"] for it in b2}
-        assert daily_names <= seen1 and daily_names <= seen2
+        # Daily discovery is scanned again, but cross-source opportunity
+        # dedupe intentionally prevents the same vacancy being returned twice.
+        assert daily_names <= seen1 and not (daily_names & seen2)
+        assert len(b2) == 4, b2
         assert (seen1 - daily_names) & (seen2 - daily_names) == set()
     finally:
         news_radar.fetch_google_news = orig

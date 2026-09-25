@@ -63,6 +63,17 @@ def init(db_path: Path) -> None:
                 post_id INTEGER,
                 created_at TEXT DEFAULT (datetime('now', 'localtime'))
             );
+
+            CREATE TABLE IF NOT EXISTS radar_events (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                event_type TEXT NOT NULL,
+                url TEXT,
+                title TEXT,
+                details TEXT,
+                created_at TEXT DEFAULT (datetime('now', 'localtime'))
+            );
+            CREATE INDEX IF NOT EXISTS idx_radar_events_created
+                ON radar_events(created_at);
             """
         )
         # old DBs kosam column upgrade (idempotent)
@@ -222,6 +233,12 @@ def meta_set(db_path: Path, key: str, value: str) -> None:
     _meta_set(db_path, key, value)
 
 
+def meta_delete(db_path: Path, key: str) -> None:
+    """Delete a transient queue/lock marker without touching publication state."""
+    with _connect(db_path) as conn:
+        conn.execute("DELETE FROM meta WHERE key = ?", (key,))
+
+
 def meta_cleanup(db_path: Path, keep_days: int = 7) -> None:
     """Purana rojuvella keys (slots:/count:/digest:) clean — DB tidy."""
     import re as _re
@@ -297,6 +314,25 @@ def source_done(db_path: Path, url: str) -> bool:
     return row is not None
 
 
+def mark_source_queued(db_path: Path, url: str) -> None:
+    """Keep a durable pending/retryable source status for radar reporting."""
+    with _connect(db_path) as conn:
+        conn.execute(
+            "INSERT INTO sources (url, status) VALUES (?, 'queued') "
+            "ON CONFLICT(url) DO UPDATE SET status='queued'",
+            (url,),
+        )
+
+
+def mark_source_retry(db_path: Path, url: str) -> None:
+    with _connect(db_path) as conn:
+        conn.execute(
+            "INSERT INTO sources (url, status) VALUES (?, 'retry') "
+            "ON CONFLICT(url) DO UPDATE SET status='retry'",
+            (url,),
+        )
+
+
 def mark_source_done(db_path: Path, url: str, post_id: Optional[int] = None) -> None:
     with _connect(db_path) as conn:
         conn.execute(
@@ -304,6 +340,39 @@ def mark_source_done(db_path: Path, url: str, post_id: Optional[int] = None) -> 
             "ON CONFLICT(url) DO UPDATE SET status='done', post_id=excluded.post_id",
             (url, post_id),
         )
+
+
+def record_radar_event(
+    db_path: Path,
+    event_type: str,
+    url: str = "",
+    title: str = "",
+    details: str = "",
+) -> None:
+    """Persist an auditable discovery/pipeline outcome, not just a log line."""
+    with _connect(db_path) as conn:
+        conn.execute(
+            "INSERT INTO radar_events (event_type, url, title, details) VALUES (?, ?, ?, ?)",
+            (event_type, (url or "")[:2000], (title or "")[:500], (details or "")[:2000]),
+        )
+
+
+def recent_radar_events(db_path: Path, limit: int = 100) -> list:
+    with _connect(db_path) as conn:
+        rows = conn.execute(
+            "SELECT event_type, url, title, details, created_at "
+            "FROM radar_events ORDER BY id DESC LIMIT ?", (limit,)
+        ).fetchall()
+    return [dict(row) for row in rows]
+
+
+def source_status_counts(db_path: Path) -> dict:
+    """Current queued/retry/done source inventory for operator reporting."""
+    with _connect(db_path) as conn:
+        rows = conn.execute(
+            "SELECT status, COUNT(*) AS count FROM sources GROUP BY status"
+        ).fetchall()
+    return {row["status"]: int(row["count"]) for row in rows}
 
 
 # --- stats ----------------------------------------------------------------

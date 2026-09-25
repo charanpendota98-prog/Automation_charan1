@@ -114,14 +114,27 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
             if not url:
                 log.info("Queue empty — %d URLs process ayyayi", done)
                 break
+            completed = False
+            failure_type = "draft_failed"
+            failure_details = ""
             try:
                 result = pipeline.create_from_source(url, mock=mock, category=category)
                 log.info("QUEUE POST ✔ %s -> %s", url[:60], result["link"])
                 done += 1
+                completed = True
             except Exception as exc:
-                log.error("Queue URL failed (%s): %s — skip", url[:60], exc)
+                failure_details = str(exc)
+                low = failure_details.lower()
+                if any(word in low for word in ("fetch", "http ", "timeout", "connection")):
+                    failure_type = "fetch_failure"
+                elif any(word in low for word in ("stale", "expired", "deadline passed")):
+                    failure_type = "stale_notice"
+                log.error("Queue URL failed (%s): %s — retryable; keep opportunity open", url[:60], exc)
             finally:
-                sources.mark_done_and_clean(url)
+                sources.mark_done_and_clean(
+                    url, completed=completed, failure_type=failure_type,
+                    details=failure_details,
+                )
         return 0
 
     # --- manual listicle mode (--listicle "Top 10 ...") ---------------------
@@ -383,19 +396,34 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
     if queued:
         log.info("Sources queue lo URL dorikindi — original rewrite mode: %s", queued)
         if not mock and not config.GEMINI_API_KEY:
-            log.error("GEMINI_API_KEY ledu — ee URL skip chesi mark chestanu")
-            sources.mark_done_and_clean(queued)
+            log.error("GEMINI_API_KEY ledu — ee URL retryable ga unchutanu")
+            sources.mark_done_and_clean(
+                queued, completed=False, details="GEMINI_API_KEY unavailable; draft deferred"
+            )
         else:
+            completed = False
+            failure_type = "draft_failed"
+            failure_details = ""
             try:
                 result = pipeline.create_from_source(
                     queued, mock=mock, category=category, force_draft=True)
                 log.info("SOURCE POST READY ✔ %s (status=%s)", result["link"], result["status"])
+                completed = True
                 return 0
             except Exception as exc:
-                log.error("Queue URL failed (%s) — mark chesi normal post ki veltanu: %s",
+                failure_details = str(exc)
+                low = failure_details.lower()
+                if any(word in low for word in ("fetch", "http ", "timeout", "connection")):
+                    failure_type = "fetch_failure"
+                elif any(word in low for word in ("stale", "expired", "deadline passed")):
+                    failure_type = "stale_notice"
+                log.error("Queue URL failed (%s) — retryable; normal flow continues: %s",
                           queued, exc)
             finally:
-                sources.mark_done_and_clean(queued)
+                sources.mark_done_and_clean(
+                    queued, completed=completed, failure_type=failure_type,
+                    details=failure_details,
+                )
 
     # Source-first automation: if radar found nothing trustworthy, wait for the
     # next sweep. Never fill a scheduled slot with an evidence-free AI topic.
@@ -514,6 +542,29 @@ def show_status() -> int:
     print(f"Today        : {today}  (now {_now().strftime('%H:%M')})")
     print(f"Today plan   : {plan}  -> posts done: {state.today_count(config.STATE_PATH, today)}")
     print(f"Total posts  : {summary['total']}")
+    # Radar is intentionally observable: skipped mirrors, stale notices and
+    # fetch failures stay in SQLite instead of vanishing from scheduler logs.
+    try:
+        from collections import Counter
+        from . import sources as _sources
+
+        queue_lines = (_sources.queue_file_path().read_text(encoding="utf-8").splitlines()
+                       if _sources.queue_file_path().exists() else [])
+        pending = [u for u in queue_lines if u.strip() and u.strip().startswith("http")
+                   and not state.source_done(config.STATE_PATH, u.strip())]
+        event_counts = Counter(e["event_type"] for e in state.recent_radar_events(
+            config.STATE_PATH, limit=500))
+        source_counts = state.source_status_counts(config.STATE_PATH)
+        print(f"Radar queue : {len(pending)} pending review source(s) · "
+              f"queued={source_counts.get('queued', 0)} · "
+              f"retry={source_counts.get('retry', 0)}")
+        print("Radar audit : " + ", ".join(
+            f"{name}={event_counts[name]}" for name in (
+                "queued", "duplicate_opportunity", "duplicate_url", "stale_notice",
+                "fetch_failure", "draft_failed", "draft_ready") if event_counts[name]
+        ) or "no events")
+    except Exception as exc:  # noqa: BLE001 — status must remain useful
+        log.debug("Radar status unavailable: %s", exc)
     avgs = state.avg_scores(config.STATE_PATH)
     if avgs["n"]:
         print(f"Quality      : avg QA {avgs['qa']}/100 · avg originality {avgs['orig']}%"
@@ -1029,14 +1080,28 @@ def radar_run(process_posts: bool = True) -> int:
         url = sources.pending_from_queue()
         if not url:
             break
+        completed = False
+        failure_type = "draft_failed"
+        details = ""
         try:
             result = pipeline.create_from_source(url, force_draft=True)
             done += 1
+            completed = True
             print(f"  VERIFIED DRAFT ✔ {result['link']}")
         except Exception as exc:
-            log.error("radar URL failed (%s): %s — skip", url[:60], exc)
+            details = str(exc)
+            low = details.lower()
+            if any(word in low for word in ("fetch", "http ", "timeout", "connection")):
+                failure_type = "fetch_failure"
+            elif any(word in low for word in ("stale", "expired", "deadline passed")):
+                failure_type = "stale_notice"
+            elif any(word in low for word in ("conflict", "unsupported", "preflight", "evidence", "validation")):
+                failure_type = "validation_blocked"
+            log.error("radar URL failed (%s): %s — retryable", url[:60], exc)
         finally:
-            sources.mark_done_and_clean(url)
+            sources.mark_done_and_clean(
+                url, completed=completed, failure_type=failure_type, details=details
+            )
     print(f"  Radar posts created: {done}")
     return 0
 

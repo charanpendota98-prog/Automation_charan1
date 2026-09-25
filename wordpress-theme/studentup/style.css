@@ -1023,3 +1023,43 @@ body.dark .su-sb-native,body.dark .su-sb-copy{background:transparent;color:#e8f0
 .su-rel a{color:#0f5bd7;text-decoration:underline;text-underline-offset:2px}
 .su-rel a:hover{color:#0a3f96}
 body.dark .su-rel a{color:#8fc0ff}
+
+/* ==================== v100: focused polish + accessible interaction ====================
+/* One calm focus language across keyboard, touch and dark mode. */
+:root{--su-focus:#f08a32;--su-focus-shadow:0 0 0 3px rgba(240,138,50,.24)}
+:where(a,button,input,select,textarea):focus-visible{outline:3px solid var(--su-focus);outline-offset:3px;box-shadow:var(--su-focus-shadow)}
+.skip-link:focus{clip:auto;width:auto;height:auto;overflow:visible;outline:3px solid var(--su-focus);outline-offset:3px}
+
+/* Keep cards expressive without adding layout work or a new image request. */
+.news,.usedcard,.breaking,.article{isolation:isolate}
+.news{position:relative}
+.news::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;
+  background:linear-gradient(115deg,transparent 34%,rgba(255,255,255,.34) 50%,transparent 66%);
+  transform:translateX(-22%);transition:opacity .2s ease,transform .45s ease;z-index:2}
+.news:hover::after,.news:focus-within::after{opacity:1;transform:translateX(22%)}
+.newsbody,.thumb{position:relative;z-index:3}
+
+/* Filter/search controls read as one tool on small screens. */
+.chips{scroll-margin-top:84px}
+.chip{min-height:38px;transition:background-color .16s ease,color .16s ease,border-color .16s ease,transform .16s ease}
+.chip:hover{border-color:#b8cfee;transform:translateY(-1px)}
+.searchbox input{min-height:42px}
+
+/* Dark-mode surfaces that are easy to miss on article and ad boundaries. */
+body.dark .news::after{background:linear-gradient(115deg,transparent 34%,rgba(255,255,255,.08) 50%,transparent 66%)}
+body.dark .article-content blockquote{background:#16243b;border-left-color:#f0a25f}
+body.dark .su-ad{background:linear-gradient(180deg,#2a2117,#182238);border-color:#6f4c2b}
+body.dark .su-ad-title{color:#e8f0ff}
+body.dark .su-ad-desc,body.dark .su-ad-disc{color:#b7c6dc}
+
+@media(max-width:600px){
+  .wrap{padding-left:14px;padding-right:14px}
+  .article{padding:17px 14px;border-radius:15px}
+  .article-content{font-size:16px;line-height:1.86}
+  .news::after{display:none}
+  .chip{padding-inline:13px}
+}
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .news::after,.chip,.chip:hover{transition:none;transform:none}
+}

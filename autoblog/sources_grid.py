@@ -295,7 +295,7 @@ def radar_sources(per_run: int = None) -> list:
         for it in items:
             if not news_radar._edu_relevant(it["title"]):
                 continue
-            if news_radar._queue_url(it["link"]):
+            if news_radar._queue_url(it["link"], title=it["title"]):
                 new_items.append({"title": it["title"], "link": it["link"],
                                   "source_name": s["name"],
                                   "category_hint": s["cat"]})
