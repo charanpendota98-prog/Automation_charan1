@@ -248,4 +248,9 @@ def research_topic(
             log.debug("Research fetch skip %s: %s", row["url"][:60], exc)
             continue
         time.sleep(1.0)  # polite crawling
+    log.info(
+        "Research fan-out complete: %d intent queries · %d unique candidates · "
+        "%d/%d extra domains fetched · %d competitor titles",
+        len(queries), len(candidates), len(extras), max_extra, len(competitor_titles),
+    )
     return extras, competitor_titles

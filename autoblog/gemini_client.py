@@ -358,6 +358,7 @@ STRICT ORIGINALITY RULES (copyright safe — very important):
 
 RESEARCH AND VALUE STRATEGY (very important):
 - Start from the PRIMARY source's facts, then add only useful, source-backed context that helps a reader act safely (eligibility, fee details, selection stages, documents, dates mentioned).
+- Inspect every supplied research source before drafting. Build a private fact matrix for status, fee, last date, exam date, eligibility, documents, links, result/syllabus and missing values; do not silently ignore source 2, 3 or 4.
 - Resolve conflicts by naming the official source and flagging uncertainty; never silently choose a convenient number or deadline.
 - Include overview, eligibility, benefits/salary, application steps, documents, fee, selection process, common mistakes, and a comparison table only when each section is genuinely useful.
 - Include salary/fee/stipend/loan/cost figures only when verified and relevant. Never add commercial details to attract ads, inflate word count, or target high CPC.
@@ -382,6 +383,51 @@ ALSO RETURN (same JSON schema):
 Return ONLY valid JSON."""
 
 
+_EVIDENCE_TERMS = (
+    "fee", "application", "last date", "deadline", "exam date", "important dates",
+    "eligibility", "age limit", "vacancy", "salary", "stipend", "documents",
+    "apply", "notification", "result", "syllabus", "hall ticket", "ఫీజు",
+    "చివరి తేదీ", "పరీక్ష తేదీ", "అర్హత", "వయస్సు", "ఖాళీలు", "పత్రాలు",
+    "దరఖాస్తు", "ఫలితాలు", "హాల్ టికెట్",
+)
+
+
+def _evidence_excerpt(text: str, limit: int = 5000) -> str:
+    """Keep the source's facts, not just its first screenful, in the prompt.
+
+    Fees and deadlines frequently appear below a long introduction or inside a
+    closing table. A plain ``text[:3000]`` silently discarded those facts even
+    though the fetch and private evidence ledger had them. This bounded excerpt
+    keeps the beginning, end, and small windows around applicant-intent terms,
+    so prompt size stays predictable without making the source shallow.
+    """
+    text = " ".join(str(text or "").split())
+    if len(text) <= limit:
+        return text
+    import re as _re
+
+    snippets = []
+    lower = text.lower()
+    for term in _EVIDENCE_TERMS:
+        start = lower.find(term.lower())
+        if start < 0:
+            continue
+        left = max(0, start - 260)
+        right = min(len(text), start + len(term) + 620)
+        snippets.append(text[left:right])
+        if len(snippets) >= 8:
+            break
+    parts = [text[:1700], *snippets, text[-900:]]
+    out, seen = [], set()
+    for part in parts:
+        part = _re.sub(r"\s+", " ", part).strip()
+        if part and part not in seen:
+            seen.add(part)
+            out.append(part)
+    joined = "\n[... source excerpt continues ...]\n".join(out)
+    return joined[:limit]
+
+
 def _format_extra_sources(extras) -> str:
     if not extras:
         return ""
@@ -391,13 +437,13 @@ def _format_extra_sources(extras) -> str:
             f"--------------- RESEARCH SOURCE {i} ---------------\n"
             f"URL: {s.url} | SITE: {s.site_name}\n"
             f"TITLE: {s.title}\n"
-            f"CONTENT:\n{s.text[:3000]}\n"
+            f"CONTENT:\n{_evidence_excerpt(s.text)}\n"
         )
     return (
         "=======================================================================\n"
         "ADDITIONAL EVIDENCE SOURCES (use for corroboration and gap checking):\n"
         + "\n".join(blocks)
-        + "======================================================================="
+        + "\n======================================================================="
     )
 
 
