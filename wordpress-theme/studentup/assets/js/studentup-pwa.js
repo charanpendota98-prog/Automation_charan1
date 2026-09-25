@@ -49,8 +49,13 @@
     if (!sheet) return;
     if (steps) moved(Array.prototype.slice.call(steps.children));
     sheet.hidden = false;
+    if (btn) btn.setAttribute("aria-expanded", "true");
+    if (closeBtn) closeBtn.focus();
   }
-  function closeSheet() { if (sheet) sheet.hidden = true; }
+  function closeSheet() {
+    if (sheet) sheet.hidden = true;
+    if (btn) btn.setAttribute("aria-expanded", "false");
+  }
 
   window.addEventListener("beforeinstallprompt", function (e) {
     e.preventDefault();

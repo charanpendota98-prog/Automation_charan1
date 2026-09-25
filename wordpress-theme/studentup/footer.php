@@ -106,8 +106,8 @@ if ( studentup_opt( 'sticky_ad', '0' ) ) :
 // Click: Android/Chrome lo install prompt, iPhone/desktop lo device-wise steps.
 if ( studentup_opt( 'pwa', '1' ) && studentup_opt( 'install_prompt', '1' ) ) :
 	?>
-	<button type="button" class="installbtn" id="installbtn">⬇️ Download App <span class="ibadge">FREE</span></button>
-	<div class="installsheet" id="installhint" hidden role="dialog" aria-labelledby="isheet-title">
+	<button type="button" class="installbtn" id="installbtn" aria-controls="installhint" aria-expanded="false">⬇️ Download App <span class="ibadge">FREE</span></button>
+	<div class="installsheet" id="installhint" hidden role="dialog" aria-modal="true" aria-labelledby="isheet-title">
 		<h3 id="isheet-title">Install StudentUp as an app</h3>
 		<p class="isub">Open it with one tap · pages you visited stay available offline.</p>
 		<ol id="isteps">

@@ -5,9 +5,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 ?>
 <?php
 /**
- * Front page — design (preview/index.html) same order:
-	 * Ticker → "Most searched by students" → ad → slim hero →
+ * Front page — compact student-first order:
+	 * "Most searched by students" → ad → accessible hidden H1 →
 	 * qualification filter (v72) → latest opportunities grid (chips filter) → footer.
+	 * The legacy ticker call remains a no-output compatibility hook.
  *
  * @package studentup
  */

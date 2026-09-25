@@ -174,10 +174,14 @@ background:linear-gradient(135deg,#0f2e62,#2463b7);padding:10px}
 .su-social{position:fixed;right:14px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:8px;z-index:45}
 .su-social a{height:40px;width:40px;border-radius:12px;background:#fff;border:1px solid var(--line);display:grid;place-items:center;
 font-size:17px;box-shadow:0 8px 20px rgba(15,46,98,.12)}
-.mpanel{position:fixed;top:0;right:-320px;width:300px;height:100%;background:#fff;z-index:60;padding:18px;overflow-y:auto;
-transition:right .25s ease;box-shadow:-20px 0 45px rgba(15,46,98,.18)}
+.mpanel{position:fixed;top:0;right:-320px;width:min(320px,92vw);height:100%;background:#fff;z-index:60;padding:14px 16px 24px;overflow-y:auto;
+transition:right .25s ease;box-shadow:-20px 0 45px rgba(15,46,98,.18);overscroll-behavior:contain}
 .mpanel.open{right:0}
+.mpanel-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:2px 4px 12px;border-bottom:1px solid var(--line);margin-bottom:4px;color:var(--navy)}
+.mpanel-head strong{font-size:17px;letter-spacing:-.02em}
+.mpanel-head button{width:36px;height:36px;border:1px solid var(--line);border-radius:10px;background:var(--soft);color:var(--navy);font-size:16px;cursor:pointer}
 .mpanel a{display:block;padding:11px 8px;border-radius:10px;color:var(--ink);font-weight:700;font-size:13.5px}
+body.mlock{overflow:hidden}
 .mpanel .mlabel{font-size:11px;color:var(--muted);font-weight:800;letter-spacing:.05em;margin:12px 8px 4px}
 .mbackdrop{position:fixed;inset:0;background:rgba(11,33,73,.45);z-index:55;display:none}
 .mbackdrop.show{display:block}

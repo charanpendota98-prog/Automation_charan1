@@ -121,6 +121,10 @@ function studentup_ago( $iso ) {
  * Ticker (renders only when there is a feed — hidden when empty).
  */
 function studentup_breaking_ticker() {
+	// v126: all scrolling bars are retired from the public surface.
+	// Keep the hook for compatibility with older templates; the regular
+	// Breaking section remains available separately when explicitly enabled.
+	return;
 	if ( ! studentup_breaking_enabled() ) {
 		return;   // v72: default OFF (turn it on in WP admin → StudentUp → Content)
 	}
@@ -238,6 +242,10 @@ add_action( 'save_post', 'studentup_latest_ticker_flush', 30 );
  * Render the marquee — home page mattrame (post pages lo reading ki distraction vaddu).
  */
 function studentup_latest_ticker() {
+	// v126: the scrolling latest-jobs bar was retired from the public UI.
+	// Keep this compatibility wrapper so old theme hooks do not fatal; it emits
+	// no markup and therefore cannot consume first-viewport space or distract readers.
+	return;
 	if ( ! is_front_page() || '0' === (string) studentup_opt( 'latest_ticker', '1' ) ) {
 		return;
 	}
