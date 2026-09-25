@@ -28,7 +28,13 @@ BLOCKED_HOSTS = ("facebook.com", "twitter.com", "x.com", "instagram.com")
 OFFICIAL_SUFFIX = (".gov.in", ".nic.in", ".gov", ".edu", ".ac.in", ".edu.in")
 OFFICIAL_HOSTS = ("tspsc.gov.in", "appsc.gov.in", "upsc.gov.in", "ssc.gov.in",
                   "ibps.in", "rrbcdg.gov.in", "nta.ac.in", "scholarships.gov.in",
-                  "nsdl.co.in", "cbse.gov.in", "bie.ap.gov.in", "bse.telangana.gov.in")
+                  "nsdl.co.in", "cbse.gov.in", "bie.ap.gov.in", "bse.telangana.gov.in",
+                  "nta.ac.in", "ugcnet.nta.ac.in", "ctet.nic.in", "rrbcdg.gov.in",
+                  "epfindia.gov.in", "esic.gov.in", "sebi.gov.in", "dgt.gov.in",
+                  "education.gov.in", "apmsrb.ap.gov.in", "telangana.gov.in",
+                  "ap.gov.in", "osmania.ac.in", "jntuh.ac.in", "jntuk.ac.in",
+                  "jntuk.edu.in", "andhrauniversity.edu.in", "braou.ac.in",
+                  "kakatiya.ac.in")
 
 
 @dataclass

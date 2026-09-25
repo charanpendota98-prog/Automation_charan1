@@ -403,6 +403,11 @@ STATE_PATH = Path(_get("STATE_PATH", str(BASE_DIR / "state.db")))
 LOG_DIR = Path(_get("LOG_DIR", str(BASE_DIR / "log")))
 OUTPUT_DIR = Path(_get("OUTPUT_DIR", str(BASE_DIR / "output")))
 RESEARCH_BRIEF_DIR = Path(_get("RESEARCH_BRIEF_DIR", str(OUTPUT_DIR / "research")))
+# Save a private NotebookLM-ready evidence bundle for real source candidates.
+# This prepares sources; it never pretends to access a private NotebookLM account.
+NOTEBOOKLM_AUTO_BUNDLE = _get("NOTEBOOKLM_AUTO_BUNDLE", "1") not in ("0", "false", "no")
+# Require a validated cited NotebookLM brief only when the owner explicitly enables it.
+NOTEBOOKLM_REQUIRED = _get("NOTEBOOKLM_REQUIRED", "0") not in ("0", "false", "no")
 HTTP_TIMEOUT = int(_get("HTTP_TIMEOUT", "90"))
 
 # --- Sources (URL -> original rewrite) ------------------------------------

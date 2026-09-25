@@ -61,6 +61,12 @@ TIER1_HOSTS = {
     "accenture.com", "careers.capgemini.com", "careers.ibm.com",
     "careers.deloitte.com", "careers.hcltech.com", "careers.techmahindra.com",
     "careers.zoho.com", "zoho.com",
+    # Additional first-party education, employment and state portals.
+    "nta.ac.in", "ugcnet.nta.ac.in", "ctet.nic.in", "rrbcdg.gov.in",
+    "epfindia.gov.in", "esic.gov.in", "sebi.gov.in", "dgt.gov.in",
+    "education.gov.in", "apmsrb.ap.gov.in", "telangana.gov.in", "ap.gov.in",
+    "osmania.ac.in", "jntuh.ac.in", "jntuk.edu.in", "andhrauniversity.edu.in",
+    "braou.ac.in", "kakatiya.ac.in",
 }
 TIER2_HOSTS = {
     "tv9telugu.com", "tv9.com", "sakti.com", "telusuko.io", "abplive.com",

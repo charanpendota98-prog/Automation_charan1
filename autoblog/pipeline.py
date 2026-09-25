@@ -1032,6 +1032,7 @@ def create_from_source(url: str, mock: bool = False, category: str = "",
 
     # --- multi-source research: internet lo same topic articles ---
     extras, competitor_titles = [], []
+    notebooklm_bundle = {}
     if config.RESEARCH_ENABLED and not mock:
         try:
             extras, competitor_titles = research.research_topic(
@@ -1042,6 +1043,19 @@ def create_from_source(url: str, mock: bool = False, category: str = "",
                 log.info("Research: extra sources levu — primary source tho rewrite")
         except Exception:
             log.exception("Research step failed — primary source tho continue")
+        if getattr(config, "NOTEBOOKLM_AUTO_BUNDLE", True):
+            try:
+                from . import research_brief as _rb
+
+                notebooklm_bundle = _rb.write_bundle(
+                    src.title, [src] + extras, target_year=target_year)
+                log.info("NotebookLM bundle ready: %d sources → %s",
+                         notebooklm_bundle.get("sources", 0),
+                         notebooklm_bundle.get("bundle"))
+            except Exception:
+                # Bundle preparation is observable but never substitutes for
+                # the strict fetched-source preflight below.
+                log.exception("NotebookLM bundle preparation skipped")
 
     if mock:
         article = {
@@ -1189,6 +1203,18 @@ def create_from_source(url: str, mock: bool = False, category: str = "",
         raise
     except Exception as exc:  # noqa: BLE001 — guard never blocks on infra error
         log.warning("Dup guard skipped (%s)", exc)
+
+    if notebooklm_bundle:
+        # Private provenance only; never render bundle paths or source labels in
+        # the public article.
+        article["_notebooklm_bundle"] = {
+            key: str(value) for key, value in notebooklm_bundle.items()
+        }
+    if (getattr(config, "NOTEBOOKLM_REQUIRED", False)
+            and not mock and not notebooklm_brief):
+        raise RuntimeError(
+            "NOTEBOOKLM BRIEF REQUIRED: import the private evidence bundle into "
+            "NotebookLM and rerun with --notebooklm-brief <cited-brief.md>")
 
     # --- QA data (notification + trust box kosam) ---
     article["_source_texts"] = [src.text] + [e.text for e in extras]

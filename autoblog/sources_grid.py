@@ -1,8 +1,8 @@
-"""v58/v96: Official Sources Grid — 180 curated sources, ZERO misses.
+"""v58/v96/v117: Official Sources Grid — 220+ curated sources.
 
 Official first (SSC/UPSC/TSPSC/APPSC/NEET...), private+software+walkins next.
-Prathi source = Google News query. 17 daily hot-list sources prathi radar
-run lo check (4x/day); bavita rotation lo (RADAR_SOURCES_PER_run/run). Kotha
+Prathi source = Google News query. Daily hot-list sources prathi radar run lo
+check (4x/day); migata rotation lo (RADAR_SOURCES_PER_RUN/run). Kotha
 edu-relevant items → sources_queue.txt (news_radar._queue_url).
 """
 
@@ -60,6 +60,15 @@ _S = [
     ("CUET UG", "CUET UG 2026", "Online Education", False),
     ("NTA Exams", "NTA exam 2026", "Hall Tickets", False),
     ("AICTE", "AICTE 2026", "Scholarships", False),
+    # ---- Additional first-party national authorities ----
+    ("NTA UGC NET", "NTA UGC NET notification 2026", "Central Govt Jobs", False),
+    ("CTET", "CTET notification 2026 official", "Central Govt Jobs", False),
+    ("RRB Official", "site:rrbcdg.gov.in railway recruitment 2026", "Central Govt Jobs", False),
+    ("EPFO", "EPFO recruitment 2026 official", "Central Govt Jobs", False),
+    ("ESIC", "ESIC recruitment 2026 official", "Central Govt Jobs", False),
+    ("SEBI", "SEBI Grade A recruitment 2026", "Central Govt Jobs", False),
+    ("CWC", "Central Water Commission recruitment 2026", "Central Govt Jobs", False),
+    ("DGT Apprenticeship", "DGT apprenticeship India 2026 official", "Internships", True),
     # ---- Telangana ----
     ("TSPSC", "TSPSC notification 2026", "TS Govt Jobs", True),
     ("TGPSC Gurukul", "TGPSC Gurukul teacher recruitment", "TS Govt Jobs", True),
@@ -81,6 +90,11 @@ _S = [
     ("TS LAWCET PGETCET", "TS LAWCET PGETCET 2026", "Online Education", False),
     ("Telangana Forest", "Telangana forest recruitment", "TS Govt Jobs", False),
     ("Telangana Universities", "Telangana university recruitment 2026", "TS Govt Jobs", False),
+    ("TGPSC Group Exams", "TGPSC Group 1 Group 2 notification 2026", "TS Govt Jobs", True),
+    ("Telangana Medical Board", "Telangana medical health recruitment 2026 official", "TS Govt Jobs", False),
+    ("Telangana State Govt Orders", "site:telangana.gov.in education recruitment notification", "TS Govt Jobs", False),
+    ("Kakatiya University", "Kakatiya University admissions results 2026", "Online Education", False),
+    ("BRAOU", "BRAOU admission results 2026 official", "Online Education", False),
     # ---- Andhra Pradesh ----
     ("APPSC", "APPSC notification 2026", "AP Govt Jobs", True),
     ("AP DSC Teachers", "AP DSC school teacher 2026", "AP Govt Jobs", True),
@@ -98,6 +112,10 @@ _S = [
     ("Grama Sachivalayam AP", "AP grama sachivalayam ward secretary", "AP Govt Jobs", False),
     ("AP Forest", "AP forest department recruitment", "AP Govt Jobs", False),
     ("AP Universities", "Andhra University SV University recruitment", "AP Govt Jobs", False),
+    ("AP Medical Services", "APMSRB medical recruitment 2026 official", "AP Govt Jobs", False),
+    ("AP Government Orders", "site:ap.gov.in education recruitment notification", "AP Govt Jobs", False),
+    ("Andhra University Admissions", "Andhra University admissions results 2026", "Online Education", False),
+    ("JNTUK Admissions", "JNTUK admissions results 2026 official", "Online Education", False),
     ("AP ICET LAWCET", "AP ICET LAWCET 2026", "Online Education", False),
     # ---- Scholarships ----
     ("NSP Scholarship", "NSP scholarship apply 2026", "Scholarships", True),
