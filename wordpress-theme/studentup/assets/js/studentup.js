@@ -37,6 +37,7 @@
   function setMenu(open) {
     if (!panel) return;
     panel.classList.toggle("open", open);
+    panel.setAttribute("aria-hidden", open ? "false" : "true");
     if (backdrop) backdrop.classList.toggle("show", open);
     document.body.classList.toggle("mlock", open);
     if (menuBtn) {

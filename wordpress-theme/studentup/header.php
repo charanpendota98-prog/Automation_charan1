@@ -83,7 +83,7 @@ studentup_breaking_ticker();
 ?>
 
 <div class="mbackdrop" id="mbackdrop" aria-hidden="true"></div>
-<div class="mpanel" id="mpanel" role="dialog" aria-label="Site menu" aria-modal="true">
+<div class="mpanel" id="mpanel" role="dialog" aria-label="Site menu" aria-modal="true" aria-hidden="true">
 	<div class="mpanel-head"><strong>StudentUp</strong><button type="button" id="mpanelclose" aria-label="Close menu">✕</button></div>
 	<div class="mlabel">Explore</div>
 	<a href="<?php echo esc_url( home_url( '/' ) ); ?>">🏠 Home</a>
