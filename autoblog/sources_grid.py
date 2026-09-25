@@ -340,7 +340,7 @@ def radar_sources(per_run: int = None) -> list:
             log.debug("grid fetch fail (%s): %s", s["name"], exc)
             continue
         for it in items:
-            if not news_radar._edu_relevant(it["title"]):
+            if not news_radar._edu_relevant(it["title"], s["cat"]):
                 continue
             if news_radar._queue_url(it["link"], title=it["title"]):
                 new_items.append({"title": it["title"], "link": it["link"],

@@ -29,7 +29,25 @@ UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
       "(KHTML, like Gecko) Chrome/124.0 Safari/537.36")
 
 GOOGLE_NEWS_RSS = "https://news.google.com/rss/search?q={q}&hl=te&gl=IN&ceid=IN:te"
-EDU_TERMS = "education OR jobs OR scholarship OR exam OR result OR admission OR notification"
+# District discovery must also surface practical welfare, farmer, women, skill,
+# apprenticeship and job-fair notices—not only exams and recruitment.
+EDU_TERMS = (
+    "education OR jobs OR scholarship OR exam OR result OR admission OR notification "
+    "OR scheme OR welfare OR farmer OR agriculture OR women OR skill "
+    "OR apprenticeship OR job fair OR employment exchange OR current affairs"
+)
+
+# Current-affairs feeds are intentionally broader than ordinary job/exam feeds,
+# but still require a student/applicant/family-useful signal. Generic political,
+# celebrity and sports stories remain filtered out; strict source preflight runs
+# later before anything can become a WordPress draft.
+CURRENT_AFFAIRS_PATTERNS = (
+    "scheme", "welfare", "government order", "government notification", "budget",
+    "education", "student", "scholarship", "employment", "skill", "job fair",
+    "apprenticeship", "farmer", "agriculture", "pm kisan", "kisan", "rythu",
+    "women", "mahila", "self help", "shg", "pension", "subsidy", "benefit",
+    "పథకం", "ప్రభుత్వం", "రైతు", "వ్యవసాయం", "మహిళ", "విద్య", "ఉపాధి",
+)
 
 # Telangana 33 districts (2026 reorg: Warangal merged -> Hanumakonda)
 TS_DISTRICTS = [
@@ -105,10 +123,20 @@ def _parse_feed(xml_text: str, limit: int) -> List[Dict]:
     return out
 
 
-def _edu_relevant(text: str) -> bool:
-    """Education/jobs/scholarship relevant matrame (sports/politics filter)."""
+def _edu_relevant(text: str, category_hint: str = "") -> bool:
+    """Keep useful opportunity/news leads and reject generic trend noise.
+
+    ``category_hint`` is supplied by the curated source grid. Current-affairs
+    feeds need a wider, still practical filter than ordinary district feeds;
+    their articles continue through the official-source and evidence gates
+    before a draft is created.
+    """
     hay = (text or "").lower()
-    return any(p in hay for p in TREND_EDU_PATTERNS)
+    if any(p in hay for p in TREND_EDU_PATTERNS):
+        return True
+    if (category_hint or "").strip().lower() == "current affairs":
+        return any(p in hay for p in CURRENT_AFFAIRS_PATTERNS)
+    return False
 
 
 # ------------------------------------------------------------------ queues

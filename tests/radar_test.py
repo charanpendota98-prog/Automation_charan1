@@ -61,7 +61,16 @@ def main():
     assert news_radar._edu_relevant("గ్రూప్ 2 ఫలితాలు జారీ")
     assert not news_radar._edu_relevant("IPL cricket match highlights today")
     assert not news_radar._edu_relevant("movie trailer released")
-    print("  3. education relevance filter ✔")
+    assert news_radar._edu_relevant(
+        "PM Kisan installment and farmer welfare update", "Current Affairs"
+    )
+    assert news_radar._edu_relevant(
+        "Government notification on student scholarship", "Current Affairs"
+    )
+    assert not news_radar._edu_relevant(
+        "Cabinet political speech and movie event", "Current Affairs"
+    )
+    print("  3. education + practical current-affairs relevance filter ✔")
 
     # ---- 4. URL queue dedupe ----
     assert news_radar._queue_url("https://a.example/n1") is True
