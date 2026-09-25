@@ -77,7 +77,12 @@ function studentup_share_text( $post_id = 0 ) {
 	$post_id = $post_id ? (int) $post_id : get_the_ID();
 	$title   = wp_strip_all_tags( get_the_title( $post_id ) );
 	$hook    = studentup_share_hook( $post_id );
-	$text    = $title;
+	$is_story = has_category( 'success-stories', $post_id );
+	$text    = $is_story ? 'StudentUp Verified Success Story: ' . $title
+		: $title;
+	if ( $is_story ) {
+		$text .= ' — real journey, preparation and practical lessons';
+	}
 	if ( $hook ) {
 		$text .= ' — ' . $hook;
 	}

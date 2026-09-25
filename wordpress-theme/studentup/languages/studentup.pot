@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: StudentUp 1.9.8\n"
 "Report-Msgid-Bugs-To: https://studentup.in/\n"
-"POT-Creation-Date: 2026-09-25 12:15+0000\n"
+"POT-Creation-Date: 2026-09-25 12:20+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -56,7 +56,7 @@ msgstr ""
 msgid "Comments are closed."
 msgstr ""
 
-#: inc/share.php:120
+#: inc/share.php:125
 msgid "Copy link"
 msgstr ""
 
@@ -120,7 +120,7 @@ msgstr ""
 msgid "Latest updates"
 msgstr ""
 
-#: inc/share.php:118
+#: inc/share.php:123
 msgid "More"
 msgstr ""
 
@@ -230,7 +230,7 @@ msgstr ""
 msgid "Saved posts"
 msgstr ""
 
-#: inc/share.php:110
+#: inc/share.php:115
 msgid "Share this with your friends"
 msgstr ""
 
