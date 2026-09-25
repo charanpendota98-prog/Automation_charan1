@@ -1042,8 +1042,11 @@ CONTENT (HTML):
 {content}
 ==============================================
 
-MUST FIX (item-by-item — Rank Math real checks):
+MUST FIX (item-by-item — Rank Math and evidence checks):
 {fixes}
+
+VERIFIED SOURCE EVIDENCE (use only this evidence; do not infer beyond it):
+{source_evidence}
 
 REWRITE RULES:
 - Keep the draft's verified facts, but rewrite any repaired section in a fresh StudentUp voice; never copy a source-like sentence or preserve a source paragraph order.
@@ -1055,13 +1058,17 @@ REWRITE RULES:
 - Prathi paragraph 2-3 sentences (120 words eravaddu). 300+ words unna section ki kotha <h2> add cheyandi.
 - Sentences lo connectives 30%+ (kaani/అందువల్ల/మరోవైపు/అలాగే/చివరగా).
 - Table (+1 ayna good), FAQ 3+ questions — maintain cheyandi.
-- Facts marchakundu — ADD missing value (fees, eligibility, steps) only well-known info.
-- recruitment object (org_name/apply_end/salary) unte correct ga maintain cheyandi — dates GUESS cheyyakundu.
+- Facts marchakundu. Never add a missing fee, eligibility, vacancy, date, salary or step from memory; remove unsupported claims or write that the source does not state it.
+- recruitment object (org_name/apply_end/salary) unte source evidence tho matrame maintain cheyandi — dates GUESS cheyyakundu.
 Return ONLY valid JSON (same schema)."""
 
 
-def refine_article(article: Dict, fixes: List[str]) -> Dict:
-    """v18: Rank Math gate fix round — same topic, corrected draft."""
+def refine_article(
+    article: Dict,
+    fixes: List[str],
+    source_evidence: str = "",
+) -> Dict:
+    """Correct SEO/evidence issues without inventing facts."""
     if not config.gemini_configured():
         raise GeminiError("GEMINI_API_KEY not set")
     prompt = REFINE_PROMPT_TEMPLATE.format(
@@ -1071,6 +1078,7 @@ def refine_article(article: Dict, fixes: List[str]) -> Dict:
         # v85: 12000 → lengthy posts sections LLM chudakunda poyayi
         content=(article.get("content_html") or "")[:20000],
         fixes="\n".join(f"- {f}" for f in fixes[:12]),
+        source_evidence=(source_evidence or "No extra source evidence supplied; remove any unsupported claim.")[:12000],
     )
     improved = _generate_core(prompt, article.get("category", ""),
                               strict_category=True)

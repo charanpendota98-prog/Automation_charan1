@@ -951,8 +951,70 @@ def _append_official_sources(article: dict) -> None:
         })
 
 
+def _source_evidence_context(report: Dict) -> str:
+    """Compact verified-fact ledger supplied to a correction pass."""
+    rows = []
+    for fact in (report or {}).get("verified", [])[:40]:
+        value = fact.get("value", "")
+        if not value or fact.get("kind") == "official_link":
+            continue
+        sources = ", ".join(fact.get("sources", [])[:4])
+        rows.append(f"{fact.get('kind', 'fact')}: {value} [{fact.get('status', 'unknown')}; {sources}]")
+    return "\n".join(rows) or "No verified numeric/date facts; do not add any."
+
+
+def _correct_source_claims(article: Dict) -> None:
+    """Make a bounded factual correction pass before the hard preflight.
+
+    The first model output is never trusted blindly. If dates/counts are not
+    supported by the fetched source text, or the deep report finds a conflict,
+    ask the model to remove/correct those claims using only the evidence ledger.
+    A failed correction is left for the hard gate to reject.
+    """
+    if article.get("_mock") or not config.gemini_configured():
+        return
+    from . import deep_research as _dr
+
+    sources_text = [
+        getattr(source, "text", "") or (source.get("text", "") if isinstance(source, dict) else "")
+        for source in (article.get("_deep_sources") or [])
+    ]
+    report = _dr.build_report(
+        article.get("title", ""), article.get("_deep_sources") or [],
+        notebooklm_brief=article.get("_notebooklm_brief", ""),
+        target_year=article.get("_target_year"),
+    )
+    fact_flags = validator.fact_guard(article.get("content_html", ""), sources_text)
+    hard, _warnings = _dr.gate_post(article.get("content_html", ""), report, live=True)
+    fixes = fact_flags + hard
+    if not fixes:
+        return
+    log.warning("Source correction pass: %d unsupported/conflicting item(s)", len(fixes))
+    try:
+        evidence = _source_evidence_context(report)
+        improved = gemini_client.refine_article(
+            article, fixes[:12], source_evidence=evidence)
+        for key in ("title", "meta_description", "seo_title", "content_html",
+                    "focus_keyword", "secondary_keywords", "tags", "faq",
+                    "quick_answer"):
+            if improved.get(key):
+                article[key] = improved[key]
+        corrected_html = article.get("content_html", "")
+        overlaps = validator.verbatim_overlaps(corrected_html, sources_text)
+        originality = validator.originality_score(corrected_html, sources_text)
+        floor = float(getattr(config, "ORIG_HARD_FLOOR", 72))
+        if overlaps or originality < floor:
+            raise RuntimeError(
+                "SOURCE CORRECTION REJECTED: rewrite copy-risk remains "
+                f"(originality={originality:.1f}%, overlaps={len(overlaps)})")
+    except RuntimeError:
+        raise
+    except Exception as exc:  # noqa: BLE001 — preflight remains the hard gate
+        log.warning("Source correction pass unavailable: %s", exc)
+
+
 def _strict_source_preflight(article: Dict, *, allow_mock: bool = False) -> Dict:
-    """Validate evidence before a source-derived article reaches WordPress.
+    """Validate evidence before a source-derived article reaches WordPress.""
 
     A source URL/search result is not permission to invent missing facts. This
     gate requires the fetched source set, an official source, the cross-source
@@ -1227,6 +1289,9 @@ def create_from_source(url: str, mock: bool = False, category: str = "",
         + [urlparse(e.url).netloc.replace("www.", "") for e in extras]
     ]
 
+    # One bounded correction pass fixes source-detectable mistakes before the
+    # strict preflight. Anything still unsupported/conflicting is rejected.
+    _correct_source_claims(article)
     _append_official_sources(article)
 
     # Do not spend a WordPress draft slot on an article whose source facts or
