@@ -11,3 +11,4 @@ User-agent: Mediapartners-Google
 Allow: /
 
 Sitemap: https://studentup.in/sitemap.xml
+Sitemap: https://studentup.in/news-sitemap.xml
