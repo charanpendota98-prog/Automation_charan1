@@ -211,6 +211,17 @@ CONTENT TYPE: RESULT / MERIT LIST
   cut-off/merit-list meaning, revaluation or objection route, supplementary next step and helpdesk.
 - Never predict marks, rank, cut-off or release time. Clearly label a pending Result as pending.
 """
+    if any(x in value for x in ("supplementary", "supply exam", "advanced supplementary",
+                                "exam date", "coming soon", "application fee", "last date")):
+        return """
+CONTENT TYPE: EXAM / SUPPLEMENTARY EXAM UPDATE
+- First state whether the exam, fee payment or notification is OPEN, CLOSED, RELEASED,
+  NOT RELEASED or only EXPECTED. Use the official board/exam authority notice.
+- Give exact Exam Date, fee by category, fee-payment Last Date, application Last Date,
+  hall-ticket status, required documents, official Direct Link and helpdesk only when verified.
+- Separate confirmed dates from a tentative/coming-soon update. Never convert an expected date,
+  fee or last date into a fact; if the official source is silent, say so clearly.
+"""
     if any(x in value for x in ("success story", "selected candidate", "ranker", "topper",
                                 "inspiring journey")):
         return """
@@ -269,7 +280,7 @@ ALSO RETURN:
 - tags: 5 to 8 tags, mix of Telugu and English keywords.
 - banner_text: short ENGLISH text (max 6 words) suitable for a featured image banner, e.g. "Scholarships 2026 Apply Online".
 - focus_keyword: ONE main SEO keyword phrase (Telugu + English mix). It must appear: in the title, in the FIRST paragraph, in at least 2 <h2> headings, and naturally 5-8 times in the body (density ~1%).
-- secondary_keywords: 3-5 related keyword phrases people also search (mix Telugu/English).
+- secondary_keywords: 5-8 related keyword phrases people also search (mix Telugu/English; use only natural, topic-relevant phrases).
 - seo_title: SEO title with focus keyword at the START, under 60 characters, include the year and a power word (Complete/Guide/Best) and a number if natural.
 - quick_answer: 40-60 word direct answer in Telugu summarizing the article (featured snippet bait). Must contain the focus keyword.
 - faq: 4-6 objects with "question" and "answer" string fields — "People Also Ask" style questions (Telugu) with short 2-3 sentence answers.
@@ -291,10 +302,14 @@ SOURCE CONTENT:
 ============================================================================
 
 STRICT ORIGINALITY RULES (copyright safe — very important):
-- Do NOT copy any sentence, phrase structure, or paragraph from the source.
-- Use ONLY the FACTS/information from the source (scheme names, eligibility, process, numbers).
-- Everything must be freshly written by you in a completely different structure and wording.
+- Do NOT copy any sentence, phrase structure, paragraph, title hook, or section order from the source.
+- Use ONLY the FACTS/information from the source (scheme names, eligibility, process, numbers); separate facts from the source's expression before writing.
+- First plan a new reader journey for StudentUp, then write it. Do not translate, lightly paraphrase, or mechanically walk through the source paragraph by paragraph.
+- Everything must be freshly written by you in a completely different structure and wording, with a distinct opening and distinct H2/H3 phrasing.
 - Write it as if you are an independent expert explaining the topic from scratch.
+- When the facts support it, aim for 700-1000 useful words; never repeat a fact or add generic text just to hit a length target.
+- The published article must read as StudentUp's own article. Do not mention the reference website, source site, automation, AI, evidence score, editorial workflow or "source-backed draft" in the article body.
+- Do not add a byline/review-pending line, reading-time badge, methodology block, or "Best Guide" title suffix.
 
 IMPROVE & EXPAND (advanced content — very important):
 - ADD extra valuable sections the source may not have: detailed step-by-step process, required documents list, common mistakes to avoid, pro tips, comparison table, extra background context.
@@ -333,9 +348,13 @@ CONTENT:
 =======================================================================
 {extra_sources_block}
 STRICT ORIGINALITY RULES (copyright safe — very important):
-- Do NOT copy any sentence/phrase from ANY source. Facts only, fresh original writing.
-- Write as an independent expert explaining the topic from scratch.
+- Do NOT copy any sentence, phrase, title hook, section order, or distinctive structure from ANY source. Facts only, fresh original writing.
+- First build an independent outline around the reader's decision or next step; do not merge or translate the source paragraphs in order.
+- Write as an independent expert explaining the topic from scratch, with a distinct opening and your own H2/H3 wording.
+- When the evidence supports it, aim for 700-1000 useful words; never pad, repeat facts, or add generic SEO prose to reach a count.
+- The final post must sound like StudentUp's own blog. Never print source names, source counts, automation/AI notes, evidence confidence, editorial workflow, "Sources checked", "source-backed draft" or review-pending labels in the article.
 - If sources CONFLICT on a number/date, use the most repeated/official value and phrase it as "notification prakaram" (as per notification).
+- Do not add a byline, reading-time badge, methodology block, generic "Best Guide" suffix, or unrelated related-topic links.
 
 RESEARCH AND VALUE STRATEGY (very important):
 - Start from the PRIMARY source's facts, then add only useful, source-backed context that helps a reader act safely (eligibility, fee details, selection stages, documents, dates mentioned).
@@ -354,7 +373,7 @@ ALSO RETURN (same JSON schema):
 - title: 50-75 chars, focus keyword at start, year {year}, power word + number if natural.
 - slug (English kebab-case), meta_description (140-160 chars, keyword included), tags (6-8), banner_text (English, max 6 words).
 - focus_keyword: main keyword — in title, first para, 2+ h2s, ~1% density.
-- secondary_keywords: 3-5 related search phrases (Telugu+English).
+- secondary_keywords: 5-8 related search phrases (Telugu+English; only natural topic-relevant phrases).
 - seo_title: keyword at start, under 60 chars, year + power word + number.
 - quick_answer: 40-60 word Telugu direct answer (featured snippet bait) with keyword.
 - faq: 5-6 objects with "question" and "answer" string fields — People-Also-Ask style.
@@ -438,7 +457,7 @@ Return ONLY valid JSON."""
 
 def generate_listicle(topic: str, recent_titles: List[str], year: int) -> Dict:
     """Trending listicle article (Top 10 jobs lanti stories)."""
-    if not config.GEMINI_API_KEY:
+    if not config.gemini_configured():
         raise GeminiError("GEMINI_API_KEY not set")
     avoid_block = ""
     if recent_titles:
@@ -493,7 +512,7 @@ def generate_top_post(blueprint: Dict, year: int = 0) -> Dict:
     Blueprint ni prompt ga istham — MODEL facts invent cheyyakudadu;
     structure/on-page plan matrame blueprint nunchi vastundi.
     """
-    if not config.GEMINI_API_KEY and not getattr(config, "GEMINI_API_KEYS", []):
+    if not config.gemini_configured():
         raise GeminiError("GEMINI_API_KEY not set")
     from . import top_post as _tp
 
@@ -545,7 +564,7 @@ def generate_quiz(topic: str, topic_te: str, level: int, n: int,
                   year: int) -> Dict:
     """Bilingual exam-grade MCQ set. Returns normalized quiz dict.
     Raises GeminiError after retries (validation feedback appended)."""
-    if not config.GEMINI_API_KEY and not _api_keys():
+    if not config.gemini_configured():
         raise GeminiError("GEMINI_API_KEY not set")
     prompt = QUIZ_PROMPT_TEMPLATE.format(
         topic=topic, topic_te=topic_te, level=level, n=n, year=year,
@@ -610,7 +629,7 @@ def generate_update(
     year: int,
 ) -> Dict:
     """Published article + kotha research -> improved version (same URL)."""
-    if not config.GEMINI_API_KEY:
+    if not config.gemini_configured():
         raise GeminiError("GEMINI_API_KEY not set")
     prompt = UPDATE_PROMPT_TEMPLATE.format(
         title=existing_title,
@@ -637,6 +656,15 @@ def _models() -> List[str]:
 # score perugutundi: keyword placement, numbers, short paras, link anchors)
 WRITING_RULES = """
 
+SENIOR EDITORIAL STANDARD (emulate the judgement of a top newsroom editor with 20+ years of publishing experience):
+- Write with calm authority, precise language and genuine reader empathy; never sound like an AI template, ad copy or a translated press release.
+- Decide the reader's single next action before writing. Lead with the answer, then give evidence, caveats, steps and a practical decision path.
+- Separate verified fact, reasonable explanation and unknown information. If evidence is missing, say so plainly instead of filling the gap from memory.
+- Give every section a job: answer a question, prevent a mistake, explain a term, compare options or help the reader complete a task. Delete anything that does none of these.
+- Prefer specific, useful detail over hype: who it is for, what changes, what to prepare, what can go wrong and where to verify it.
+- Use an honest headline and a strong opening promise; do not use fake urgency, guaranteed outcomes, exaggerated salary or clickbait punctuation.
+- Edit once for structure, once for factual clarity and once for natural Telugu rhythm. The final copy must feel written for StudentUp readers, not assembled from source paragraphs.
+
 RANK MATH WRITING RULES (follow exactly):
 - Put the focus keyword in the FIRST HALF of the title and include a NUMBER (year/vacancies/count).
 - Focus keyword: first paragraph lo + at least 2 <h2> subheadings lo + naturally 8-15 times total (1-2% density) — keyword stuffing cheyakudadu.
@@ -649,6 +677,11 @@ NO-COPY RULE (absolute — copyright + Google safety):
 - Vere website/article content nunchi SENTENCES, paragraph structure, headings order copy cheyakudadu.
 - FACTS (names, numbers, dates, process) matrame teesukuni — 100% mana own words lo, mana structure lo ravadam.
 - Source ki idi "rewrite" kaadu — idi "fresh expert article on the same facts". Duplicate-content penalty endukuadu.
+
+PUBLIC ARTICLE VOICE:
+- Article ni StudentUp tana readers kosam rasina normal blog laga rayandi; source website, competitor website, automation, AI, evidence score, editorial workflow, "source-backed draft", "Sources checked", reading time or review-pending text ni content lo mention cheyakandi.
+- Byline ni article body lo inject cheyakandi. Title ki "Best Guide" / "— Best Guide" lanti artificial suffix vadakandi.
+- Related links ante same topic/entity ki nijanga panikoche pages matrame; broad category lo unna unrelated jobs ni list cheyakandi.
 
 10X CONTENT STRATEGY (top publisher standard — beat every competitor):
 - Competitors ichina information ANNI + inka ekkuva ivvali: common mistakes section, pro tips, real numbers (pay matrix levels, fees, stipends — well-known values matrame), minimum 2 tables (info table + comparison table).
@@ -694,7 +727,7 @@ EXACT keys (spellings marakudadu — bot idi parse chestundi):
   "meta_description": "140-160 chars Telugu summary with focus keyword",
   "content_html": "FULL article HTML here (h2/h3/p/ul/ol/li/table/a only). THIS key holds the article body — 'content'/'html'/'body' vaddu, 'content_html' matrame.",
   "focus_keyword": "ONE exact search phrase",
-  "secondary_keywords": ["related phrase 1", "related phrase 2", "related phrase 3"],
+  "secondary_keywords": ["related phrase 1", "related phrase 2", "related phrase 3", "related phrase 4", "related phrase 5"],
   "seo_title": "keyword-first title under 60 chars",
   "tags": ["tag1", "tag2", "tag3", "tag4", "tag5"],
   "banner_text": "ENGLISH banner max 6 words",
@@ -703,7 +736,7 @@ EXACT keys (spellings marakudadu — bot idi parse chestundi):
   "external_links": [{"url": "https://official-portal.gov.in", "text": "Telugu anchor"}],
   "recruitment": {"org_name": "ORG (ONLY if source states)", "org_url": "https://...", "apply_end": "YYYY-MM-DD or empty", "location": "city/state or empty"}
 }
-Rules: content_html KHALI vaddu (1500+ words HTML). faq 4+ items. recruitment facts source lo LEKAPOTE {"org_name": "", "apply_end": ""} — GUESS cheyyakundu.
+Rules: content_html KHALI vaddu (600+ useful words when the topic supports it). Do not pad, repeat or invent facts for length. faq 4+ items. recruitment facts source lo LEKAPOTE {"org_name": "", "apply_end": ""} — GUESS cheyyakundu.
 """
 
 def _key_tag(key: str) -> str:
@@ -980,7 +1013,7 @@ def generate_article(
     trend_topic: Google Trends nunchi vachina trending topic (optional) —
     aa topic meede article rastundi (fresh trending content).
     """
-    if not config.GEMINI_API_KEY:
+    if not config.gemini_configured():
         raise GeminiError("GEMINI_API_KEY not set")
 
     avoid_block = ""
@@ -1029,10 +1062,15 @@ CONTENT (HTML):
 {content}
 ==============================================
 
-MUST FIX (item-by-item — Rank Math real checks):
+MUST FIX (item-by-item — Rank Math and evidence checks):
 {fixes}
 
+VERIFIED SOURCE EVIDENCE (use only this evidence; do not infer beyond it):
+{source_evidence}
+
 REWRITE RULES:
+- Emulate a senior newsroom editor: calm authority, sharp structure, precise wording, reader empathy and no AI/template voice. Every paragraph must earn its place.
+- Keep the draft's verified facts, but rewrite any repaired section in a fresh StudentUp voice; never copy a source-like sentence or preserve a source paragraph order.
 - Keep language easy spoken Telugu + familiar English labels (Eligibility, Age Limit, Fee, Important Dates, Selection Process, Apply Online, Official Website). Avoid pure/formal Telugu and explain unfamiliar terms simply.
 - Title 40-60 chars: focus keyword FIRST words + year + number + power word (Complete/Best/Easy/Top).
 - meta_description 110-156 chars, focus keyword THO start.
@@ -1041,14 +1079,18 @@ REWRITE RULES:
 - Prathi paragraph 2-3 sentences (120 words eravaddu). 300+ words unna section ki kotha <h2> add cheyandi.
 - Sentences lo connectives 30%+ (kaani/అందువల్ల/మరోవైపు/అలాగే/చివరగా).
 - Table (+1 ayna good), FAQ 3+ questions — maintain cheyandi.
-- Facts marchakundu — ADD missing value (fees, eligibility, steps) only well-known info.
-- recruitment object (org_name/apply_end/salary) unte correct ga maintain cheyandi — dates GUESS cheyyakundu.
+- Facts marchakundu. Never add a missing fee, eligibility, vacancy, date, salary or step from memory; remove unsupported claims or write that the source does not state it.
+- recruitment object (org_name/apply_end/salary) unte source evidence tho matrame maintain cheyandi — dates GUESS cheyyakundu.
 Return ONLY valid JSON (same schema)."""
 
 
-def refine_article(article: Dict, fixes: List[str]) -> Dict:
-    """v18: Rank Math gate fix round — same topic, corrected draft."""
-    if not config.GEMINI_API_KEY and not getattr(config, "GEMINI_API_KEYS", []):
+def refine_article(
+    article: Dict,
+    fixes: List[str],
+    source_evidence: str = "",
+) -> Dict:
+    """Correct SEO/evidence issues without inventing facts."""
+    if not config.gemini_configured():
         raise GeminiError("GEMINI_API_KEY not set")
     prompt = REFINE_PROMPT_TEMPLATE.format(
         title=article.get("title", ""),
@@ -1057,6 +1099,7 @@ def refine_article(article: Dict, fixes: List[str]) -> Dict:
         # v85: 12000 → lengthy posts sections LLM chudakunda poyayi
         content=(article.get("content_html") or "")[:20000],
         fixes="\n".join(f"- {f}" for f in fixes[:12]),
+        source_evidence=(source_evidence or "No extra source evidence supplied; remove any unsupported claim.")[:12000],
     )
     improved = _generate_core(prompt, article.get("category", ""),
                               strict_category=True)
@@ -1079,7 +1122,7 @@ def generate_article_from_source(
     source-backed context and fact checking; the model must not copy or
     mechanically combine competitor pages.
     """
-    if not config.GEMINI_API_KEY:
+    if not config.gemini_configured():
         raise GeminiError("GEMINI_API_KEY not set")
 
     avoid_block = ""

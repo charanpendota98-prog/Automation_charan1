@@ -87,9 +87,17 @@ CATEGORY_RULES = [
     ("Outsourcing Jobs", ["outsourcing", "contract basis", "contractual",
                           "కాంట్రాక్ట్", "అవుట్‌సోర్సింగ్", "crc", "outsourced",
                           "guest faculty", "honorarium"]),
+    ("Success Stories", ["success story", "success stories", "achiever", "topper",
+                         "ranker", "selected candidate", "selected students",
+                         "విజయగాథ", "సాధించిన", "టాపర్"]),
     ("Current Affairs", ["current affairs", "జాతీయ", "ప్రస్తుతాంశాలు",
                          "pib", "press release", "news today", "daily news",
-                         "కరెంట్ అఫైర్స్", "studytoday news"]),
+                         "government order", "government notification", "scheme",
+                         "welfare", "budget", "pm kisan", "kisan", "farmer",
+                         "agriculture", "rythu", "women welfare", "mahila",
+                         "self help", "pension", "subsidy", "job fair",
+                         "కరెంట్ అఫైర్స్", "studytoday news", "పథకం", "రైతు",
+                         "మహిళ", "వ్యవసాయం"]),
     ("Upcoming Exams", ["upcoming exam", "exam calendar", "notification coming",
                         "రానున్న పరీక్షలు", "exam schedule", "tentative schedule",
                         "recruitment calendar", "పరీక్షల క్యాలెండర్"]),
@@ -109,37 +117,230 @@ CATEGORY_RULES = [
 ]
 
 
-# Generic job words: ivatiki thakkuva weight — "job/vacancy" unna headline ni
-# "Outsourcing Jobs" / "Upcoming Exams" lanti specific category lu outrank cheyyali.
-_RULE_GENERIC = {"job", "jobs", "vacancy", "posts", "notification", "recruitment",
-                 "bharti", "hiring", "apply", "apply online"}
+# Generic job words are deliberately *not* enough to decide a taxonomy. A
+# headline containing only "job", "vacancy" or "notification" must never
+# become Central Govt Jobs. That was the source of the Software → Central bug.
+_RULE_GENERIC = {"job", "jobs", "vacancy", "vacancies", "posts", "notification",
+                 "recruitment", "bharti", "hiring", "apply", "apply online"}
+
+# These are organisation/exam signals, not generic words. Keep this list
+# conservative: a false Central/State label is worse than a manual review.
+_CENTRAL_SIGNALS = (
+    "ssc", "upsc", "rrb", "railway", "ibps", "sbi po", "sbi clerk",
+    "india post", "agniveer", "drdo", "isro", "esic", "epfo", "lic",
+    "air force", "airforce", "army", "navy", "coast guard", "defence",
+    "central government", "central govt", "కేంద్ర ప్రభుత్వం", "కేంద్ర ఉద్యోగ",
+)
+_TS_SIGNALS = (
+    "tspsc", "telangana", "ts police", "tg police", "ts genco", "tstransco",
+    "transco", "gurukul", "tgpsc", "telangana government", "ts govt",
+    "తెలంగాణ", "టీఎస్పీఎస్సీ", "తెలంగాణ ప్రభుత్వం",
+)
+_AP_SIGNALS = (
+    "appsc", "andhra pradesh", "andhra", "ap police", "apsrtc", "ap genco",
+    "aptransco", "ap dsc", "grama sachivalayam", "ap govt", "ఆంధ్రప్రదేశ్",
+    "ఏపీపీఎస్సీ", "ఆంధ్రప్రదేశ్ ప్రభుత్వం",
+)
+_SOFTWARE_SIGNALS = (
+    "software developer", "software engineer", "frontend", "front-end",
+    "backend", "back-end", "full stack", "full-stack", "web developer",
+    "data analyst", "data scientist", "machine learning", "devops", "qa tester",
+    "software testing", "automation tester", "programmer", "coding job",
+    "it job", "it jobs", "python developer", "java developer", "android developer",
+    "ఫుల్ స్టాక్", "డెవలపర్", "సాఫ్ట్‌వేర్ ఉద్యోగ",
+)
+_PRIVATE_SIGNALS = (
+    "tcs", "infosys", "wipro", "hcl", "cognizant", "accenture", "amazon",
+    "deloitte", "microsoft", "google careers", "private company", "private job",
+    "mnc", "off campus", "campus hiring", "fresher hiring",
+)
+_JOB_CONTEXT = (
+    "job", "jobs", "vacancy", "vacancies", "recruitment", "notification",
+    "hiring", "career", "careers", "opening", "role", "roles", "apply",
+    "salary", "walk-in", "walkin", "భర్తీ", "ఉద్యోగ", "నియామక", "ఖాళీ",
+)
+
+
+def _has_any(blob: str, signals: tuple[str, ...]) -> bool:
+    return any(signal.lower() in blob for signal in signals)
 
 
 def _rule_weight(word: str) -> float:
-    """Keyword specificity: phrase/Telugu 2.0 · normal word 1.0 · generic 0.5."""
+    """Keyword specificity for the conservative fallback scorer."""
     w = word.strip().lower()
     if w in _RULE_GENERIC:
-        return 0.5
+        return 0.25
     if " " in w or "-" in w:
-        return 2.0          # "contract basis", "hall ticket", "exam tips"
+        return 2.0
     if not w.isascii():
-        return 2.0          # Telugu keyword (తెలంగాణ, ప్రస్తుతాంశాలు)
+        return 2.0
     return 1.0
 
 
 def classify_category(title: str, text: str = "") -> str:
-    """URL mode lo category auto-detect (Telugu + English keywords).
+    """Return one canonical live-site category for a title/source.
 
-    v50: weighted scoring so the *specific* pillar wins over generic job words
-    (e.g. "TSSPDCL outsourcing jobs" → Outsourcing Jobs, not Central Govt Jobs).
+    Classification is intent-first, not keyword-count-first:
+    - software roles stay in Software Jobs unless an explicit government
+      organisation/exam proves that the post belongs in TS/AP/Central;
+    - Central Govt Jobs requires an actual central exam/organisation signal;
+    - generic words such as *notification* and *vacancy* never create a
+      government category by themselves;
+    - exam status (calendar, result, hall ticket) and scholarships outrank a
+      broad jobs label where that is the reader's real task.
     """
-    blob = f"{title} {title} {text[:600]}".lower()
+    blob = re.sub(r"\\s+", " ", f"{title} {title} {text[:900]}".lower()).strip()
+    has_job = _has_any(blob, _JOB_CONTEXT)
+    has_software = _has_any(blob, _SOFTWARE_SIGNALS)
+    has_central = _has_any(blob, _CENTRAL_SIGNALS)
+    has_ts = _has_any(blob, _TS_SIGNALS)
+    has_ap = _has_any(blob, _AP_SIGNALS)
+
+    # High-precision non-job intents first. This avoids an "SSC calendar"
+    # becoming Central Govt Jobs and an "NSP last date" becoming a job post.
+    if _has_any(blob, ("gulf", "abroad", "overseas", "work visa", "visa appointment",
+                       "ielts", "pte", "toefl", "emigrate", "nri", "passport",
+                       "saudi", "uae", "dubai", "qatar", "kuwait", "oman",
+                       "bahrain", "విదేశీ", "గల్ఫ్", "వీసా")):
+        return "Abroad Jobs"
+    # A press release/current-affairs story about a scholarship is not a
+    # scholarship application guide. Keep the six daily-current streams in
+    # Current Affairs; actual eligibility/apply/last-date pieces go below.
+    if _has_any(blob, ("current affairs", "daily news", "press release", "pib",
+                       "government order", "budget", "ప్రస్తుతాంశాలు", "కరెంట్ అఫైర్స్")) and not has_job:
+        return "Current Affairs"
+    if _has_any(blob, ("scholarship", "fellowship", "nsp", "pragati", "saksham",
+                       "yasasvi", "fee reimbursement", "epass", "e-pass", "స్కాలర్")):
+        return "Scholarships"
+    if _has_any(blob, ("success story", "success stories", "achiever", "topper",
+                       "ranker", "selected candidate", "విజయగాథ", "టాపర్")):
+        return "Success Stories"
+    if _has_any(blob, ("outsourcing", "contract basis", "contractual", "outsourced",
+                       "guest faculty", "honorarium", "అవుట్‌సోర్సింగ్", "కాంట్రాక్ట్")):
+        return "Outsourcing Jobs"
+    if _has_any(blob, ("walk-in", "walk in", "walkin", "direct interview", "వాక్-ఇన్")):
+        return "Walkin Jobs"
+    if _has_any(blob, ("part time", "part-time", "work from home", "freelance",
+                       "data entry", "online tutor")):
+        return "Part Time Jobs"
+    if _has_any(blob, ("supplementary exam", "supplementary exams", "supply exam",
+                       "advanced supplementary", "supplementary fee", "సప్లిమెంటరీ")):
+        if _has_any(blob, ("supplementary result", "supply result", "ఫలిత")):
+            return "Results"
+        return "Upcoming Exams"
+    if _has_any(blob, ("coming soon", "exam coming", "notification soon", "exam date",
+                       "upcoming exam", "upcoming exams", "exam calendar",
+                       "exam schedule", "recruitment calendar", "tentative schedule",
+                       "రానున్న పరీక్షలు", "పరీక్షల క్యాలెండర్")) and _has_any(blob, ("exam", "పరీక్ష")):
+        return "Upcoming Exams"
+    if _has_any(blob, ("exam tips", "preparation strategy", "study plan", "revision",
+                       "previous papers", "mock test", "how to prepare", "time table",
+                       "పరీక్షా చిట్కాలు", "సన్నద్ధత")) and not has_software:
+        return "Exam Tips"
+    if _has_any(blob, ("hall ticket", "hall tickets", "admit card", "call letter",
+                       "హాల్ టికెట్", "అడ్మిట్ కార్డ్")):
+        # Recruitment-board admit cards can stay with the state/central jobs
+        # archive (the existing site contract); generic exam/university cards
+        # use the dedicated Hall Tickets archive.
+        if has_ts and _has_any(blob, ("tspsc", "tgpsc", "ts police", "gurukul")):
+            return "TS Govt Jobs"
+        if has_ap and _has_any(blob, ("appsc", "ap police", "ap dsc", "apsrtc")):
+            return "AP Govt Jobs"
+        if has_central and _has_any(blob, ("ssc", "upsc", "rrb", "ibps", "sbi", "railway")):
+            return "Central Govt Jobs"
+        return "Hall Tickets"
+    if _has_any(blob, ("result", "results", "scorecard", "merit list", "answer key",
+                       "cut-off", "cutoff", "ఫలిత")):
+        return "Results"
+    if _has_any(blob, ("internship", "internships", "apprenticeship", "ఇంటర్న్")):
+        return "Internships"
+
+    # A software role is its own job intent. Government signals are allowed to
+    # override it only when the organisation/exam is explicit (e.g. DRDO
+    # Software Engineer), never because the text says "notification".
+    if has_software and (has_central or has_ts or has_ap) and has_job:
+        if has_ts and not has_ap and not has_central:
+            return "TS Govt Jobs"
+        if has_ap and not has_ts and not has_central:
+            return "AP Govt Jobs"
+        if has_central and not has_ts and not has_ap:
+            return "Central Govt Jobs"
+    if has_software and has_job:
+        return "Software Jobs"
+
+    # Generic government employment is classified only by a verifiable
+    # organisation/exam or an explicit state/central label.
+    if has_ts and has_job and not has_ap:
+        return "TS Govt Jobs"
+    if has_ap and has_job and not has_ts:
+        return "AP Govt Jobs"
+    if has_central and has_job:
+        return "Central Govt Jobs"
+    if _has_any(blob, ("current affairs", "daily news", "press release", "pib",
+                       "government order", "scheme", "welfare", "budget", "farmer",
+                       "agriculture", "women welfare", "ప్రస్తుతాంశాలు", "కరెంట్ అఫైర్స్",
+                       "పథకం", "రైతు", "మహిళ")) and not has_job:
+        return "Current Affairs"
+    if has_job and _has_any(blob, _PRIVATE_SIGNALS):
+        return "Private Jobs"
+
+    # Conservative compatibility fallback for older sources. It cannot select
+    # Central Govt Jobs from generic words because those were removed from the
+    # central rule above.
     best, best_score = "Online Education", 0.0
     for cat, words in CATEGORY_RULES:
+        if cat == "Central Govt Jobs":
+            words = [w for w in words if w not in _RULE_GENERIC and w not in
+                     {"si ", "constable"}]
         score = sum(_rule_weight(w) for w in words if w in blob)
         if score > best_score:
             best, best_score = cat, score
     return best
+
+
+def reconcile_category(article: Dict) -> Dict:
+    """Repair a model/category mismatch before taxonomy terms are created.
+
+    A requested source-grid category is authoritative and is handled by the
+    caller. For model-generated articles we use the title/focus/source title as
+    the classification evidence. In particular, a software role must not be
+    silently filed under Central Govt Jobs merely because its title contains
+    "notification" or "vacancy".
+    """
+    proposed = str(article.get("category") or "").strip()
+    probe = " ".join(str(article.get(k) or "") for k in
+                     ("title", "focus_keyword", "source_title"))
+    inferred = classify_category(probe)
+    if not proposed:
+        article["category"] = inferred
+        return article
+    if inferred not in config.CATEGORIES:
+        article["category"] = proposed
+        return article
+    if proposed not in config.CATEGORIES:
+        # Migrate only known legacy labels; preserve a deliberate custom term
+        # instead of inventing a new WordPress archive.
+        legacy = {
+            "govt jobs": "Central Govt Jobs",
+            "education news": "Current Affairs",
+            "exam updates": "Upcoming Exams",
+            "admissions": "Online Education",
+            "study tips": "Exam Tips",
+        }
+        alias = legacy.get(proposed.lower())
+        if alias:
+            article["category"] = inferred if inferred != "Online Education" else alias
+        return article
+    employment_categories = {
+        "Central Govt Jobs", "TS Govt Jobs", "AP Govt Jobs",
+        "Software Jobs", "Private Jobs",
+    }
+    if proposed in employment_categories and inferred in employment_categories:
+        # Strong organisation/role evidence wins in either direction. This is
+        # what prevents a Software article from carrying a Central category,
+        # and also prevents SSC/UPSC articles from carrying Software tags.
+        article["category"] = inferred
+    return article
 
 
 # v15 tag hygiene: brand/junk tags create cheyakudadu (SEO value undadu)
@@ -173,19 +374,26 @@ def suggest_tags(article: Dict) -> list:
 
 def _hygiene(article: Dict) -> Dict:
     """Chinna chinna quality fixes publish mundhe."""
+    reconcile_category(article)
     article["tags"] = suggest_tags(article)  # v78 auto-tags (hygiene dedupes)
     # title too long -> seo_title use cheyi (Rank Math 60-75 chars ideal)
     title = article.get("title", "")
     seo_title = article.get("seo_title", "")
     if len(title) > 85 and seo_title and 20 <= len(seo_title) <= 85:
         article["title"] = seo_title
-    # tags: junk blocklist + dedupe + max 32 chars + max 8 (v15 hygiene —
-    # "Studentup.in"/"News" lanti value-leni tags create avvakudadu)
+    # tags: remove a different canonical category tag (e.g. Central Govt Jobs
+    # accidentally returned for a Software Jobs article), then dedupe/cap.
+    # Category and tags serve different jobs: keep the selected category tag,
+    # but never create a second contradictory archive signal.
+    category = str(article.get("category") or "").strip().lower()
+    canonical_categories = {str(c).strip().lower() for c in config.CATEGORIES}
+    conflicting_categories = canonical_categories - ({category} if category else set())
     seen, tags = set(), []
     for t in article.get("tags", []):
         t = str(t).strip()[:32]
         low = t.lower()
-        if not t or low in JUNK_TAGS or low in seen:
+        if (not t or low in JUNK_TAGS or low in seen or
+                (low in conflicting_categories and category in canonical_categories)):
             continue
         seen.add(low)
         tags.append(t)
@@ -209,6 +417,29 @@ def _hygiene(article: Dict) -> Dict:
             keyword_verify.verify_and_fix(article)
         except Exception as exc:  # noqa: BLE001 — advisory, never blocks
             log.debug("kw verify skip: %s", exc)
+    # Senior-editor SEO hygiene: keep a useful 5–8 phrase keyword family even
+    # when Gemini returns too few phrases. These are query intents, not claims,
+    # and are never inserted into the article as repetitive filler.
+    focus = (article.get("focus_keyword") or "").strip()
+    secondary = []
+    seen_secondary = set()
+    for value in article.get("secondary_keywords") or []:
+        phrase = " ".join(str(value).split()).strip()
+        key = phrase.casefold()
+        if phrase and key != focus.casefold() and key not in seen_secondary:
+            seen_secondary.add(key)
+            secondary.append(phrase[:90])
+    if focus:
+        for suffix in ("eligibility", "apply online", "official notification",
+                       "documents", "selection process"):
+            phrase = f"{focus} {suffix}".strip()
+            key = phrase.casefold()
+            if len(secondary) >= 8:
+                break
+            if key not in seen_secondary:
+                seen_secondary.add(key)
+                secondary.append(phrase[:90])
+    article["secondary_keywords"] = secondary[:8]
     # meta description fallback: quick_answer or first para nunchi
     md = (article.get("meta_description") or "").strip()
     if len(md) < 120:
@@ -234,7 +465,8 @@ def _rankmath_gate(article: dict, category: str) -> dict:
     Flow: rm100.apply (title/meta/slug/TOC/table/FAQ/links/density/transitions)
        → score check → RM_REFINE_ROUNDS varaku LLM refine (content depth, list items)
        → prathi refine tarvata rm100 malli (rewrite structure break cheyyakunda)
-       → final score article["_rm100"] lo (Telegram + WP meta lo chupistamu)
+       → final score article["_rm100"] lo private preflight ga store chestamu.
+         WordPress Rank Math score ni eppudu fabricate/write cheyyamu.
 
     Mock/no-key flows skip (silently) — score inka compute avutundi.
     """
@@ -432,8 +664,8 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
             log.exception("Ad manager inject skipped (safe)")
             article["_ads"] = []
 
-    # v44: DEEP POST ENGINE — cross-source verification + visible
-    # "In-Depth Analysis" section + perfect-post flags (drafts).
+    # v44: DEEP POST ENGINE — cross-source verification + private report;
+    # optional visible analysis is reserved for internal/debug exports.
     if not is_quiz and getattr(config, "DEEP_POST_ENABLED", True):
         try:
             from . import deep_research as _dr
@@ -444,7 +676,11 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
                     article.get("title", ""), deep_sources,
                     notebooklm_brief=article.get("_notebooklm_brief", ""),
                     target_year=article.get("_target_year"))
-                final_html = _dr.inject_deep(final_html, _report)
+                # Cross-source analysis is retained for gates and the private
+                # ledger. It is not printed as a confidence/source table in a
+                # normal StudentUp article.
+                if not getattr(config, "PUBLIC_EDITORIAL_CLEAN", True):
+                    final_html = _dr.inject_deep(final_html, _report)
                 article["_deep"] = _report
                 _hard, _warn = _dr.gate_post(final_html, _report, live=False)
                 article["_deep_flags"] = ([f"DEEP: {h}" for h in _hard] +
@@ -470,9 +706,11 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
         article["_source_audit"] = {"applicable": bool(article.get("source_url")),
                                     "ok": False, "flags": ["SOURCE-AUDIT-FAILED"]}
 
-    # Google's Who/How/Why guidance: show readers how automation was used,
-    # who reviews the article, why it exists, and which sources were checked.
-    final_html = google_quality.inject_methodology(final_html, article)
+    # Public article surface: keep the writing, useful SEO structure and
+    # verified links, but remove automation/source-count wrappers. The source
+    # URLs and hashes remain in the private provenance ledger.
+    if getattr(config, "PUBLIC_EDITORIAL_CLEAN", True):
+        final_html = seo.clean_public_article(final_html)
 
     # --- reader-first language + anti-filler audit ---
     # Standard job/exam terms stay in English script; repeated/sodi prose is
@@ -713,7 +951,12 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
             description=article["meta_description"],
             seo_title=article.get("seo_title") or article["title"],
             secondary_keywords=article.get("secondary_keywords", []),
+            slug=article.get("slug", ""),
         )
+        # Keep the exact delivery manifest with the candidate. This is not
+        # rendered in the article; it lets the create/update path and tests
+        # prove which fields were intended for WordPress.
+        article["_rankmath_meta"] = dict(meta)
 
     # --- v72: qualification auto-tag (site filter: 10th · 10+2 · డిగ్రీ · పీజీ) ---
     if meta is not None:
@@ -795,18 +1038,24 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
     if stage_for_seo and not meta:
         result["seo_meta_missing"] = ["Rank Math meta generation disabled"]
         log.error("Live publish blocked: RANK_MATH_META_ENABLED is off")
-    if meta and result.get("id"):
+    if meta and result.get("id") and not article.get("_mock"):
         try:
-            required_seo = ["rank_math_focus_keyword", "rank_math_title",
-                            "rank_math_description"]
-            landed = wp.verify_meta(result["id"], required_seo)
+            required_seo = [k for k in meta if k.startswith("rank_math_")]
+            # verify_meta is the legacy/core read; verify_rankmath_meta adds
+            # bridge readback so a hidden REST field is not reported as empty.
+            landed = wp.verify_rankmath_meta(result["id"], required_seo)
             missing = [k for k, ok in landed.items() if not ok]
-            if missing:
+            if missing and not article.get("_mock"):
                 # Generic wp/v2 meta schema failed: use the narrow authenticated
-                # theme bridge, then read back from WordPress for proof.
+                # theme bridge, then read back from WordPress for proof. The
+                # bridge read is important because some Rank Math versions do
+                # not expose registered meta in the normal post response.
                 wp.write_seo_meta(result["id"], meta)
-                landed = wp.verify_meta(result["id"], required_seo)
+                landed = wp.verify_rankmath_meta(result["id"], required_seo)
                 missing = [k for k, ok in landed.items() if not ok]
+            article["_rankmath_landed"] = dict(landed)
+            result["seo_meta_persisted"] = not missing
+            result["seo_meta_keys"] = required_seo
             if missing:
                 log.warning("Rank Math meta land avvaledu: %s (id=%s) — theme seo-bridge "
                             "activate cheyandi (wordpress-theme/studentup/inc/seo-bridge.php)",
@@ -905,6 +1154,21 @@ def _append_official_sources(article: dict) -> None:
     from .sources import is_official_domain
     # v87: None-safe (update-path articles lo key missing/None untundi)
     article["external_links"] = article.get("external_links") or []
+    source_hosts = {urlparse(u).netloc.lower().replace("www.", "")
+                    for u in (article.get("_source_urls") or []) if u}
+    # A model may echo the research blog as an "official link". Keep the
+    # private provenance, but do not publish that duplicate attribution block;
+    # genuine authority/company links supplied separately remain available.
+    filtered = []
+    for item in article["external_links"]:
+        if not isinstance(item, dict):
+            continue
+        u = str(item.get("url", "")).strip()
+        host = urlparse(u).netloc.lower().replace("www.", "") if u else ""
+        if host and host in source_hosts and not is_official_domain(host):
+            continue
+        filtered.append(item)
+    article["external_links"] = filtered
     known_links = {str(item.get("url", "")).rstrip("/")
                    for item in article["external_links"] if isinstance(item, dict)}
     for source_url in (article.get("_source_urls") or [])[:6]:
@@ -916,6 +1180,123 @@ def _append_official_sources(article: dict) -> None:
             "text": f"Official Notice — {host.replace('www.', '')}",
             "url": source_url,
         })
+
+
+def _source_evidence_context(report: Dict) -> str:
+    """Compact verified-fact ledger supplied to a correction pass."""
+    rows = []
+    for fact in (report or {}).get("verified", [])[:40]:
+        value = fact.get("value", "")
+        if not value or fact.get("kind") == "official_link":
+            continue
+        sources = ", ".join(fact.get("sources", [])[:4])
+        rows.append(f"{fact.get('kind', 'fact')}: {value} [{fact.get('status', 'unknown')}; {sources}]")
+    return "\n".join(rows) or "No verified numeric/date facts; do not add any."
+
+
+def _correct_source_claims(article: Dict) -> None:
+    """Make a bounded factual correction pass before the hard preflight.
+
+    The first model output is never trusted blindly. If dates/counts are not
+    supported by the fetched source text, or the deep report finds a conflict,
+    ask the model to remove/correct those claims using only the evidence ledger.
+    A failed correction is left for the hard gate to reject.
+    """
+    if article.get("_mock") or not config.gemini_configured():
+        return
+    from . import deep_research as _dr
+
+    sources_text = [
+        getattr(source, "text", "") or (source.get("text", "") if isinstance(source, dict) else "")
+        for source in (article.get("_deep_sources") or [])
+    ]
+    report = _dr.build_report(
+        article.get("title", ""), article.get("_deep_sources") or [],
+        notebooklm_brief=article.get("_notebooklm_brief", ""),
+        target_year=article.get("_target_year"),
+    )
+    fact_flags = validator.fact_guard(article.get("content_html", ""), sources_text)
+    hard, _warnings = _dr.gate_post(article.get("content_html", ""), report, live=True)
+    fixes = fact_flags + hard
+    if not fixes:
+        return
+    log.warning("Source correction pass: %d unsupported/conflicting item(s)", len(fixes))
+    try:
+        evidence = _source_evidence_context(report)
+        improved = gemini_client.refine_article(
+            article, fixes[:12], source_evidence=evidence)
+        for key in ("title", "meta_description", "seo_title", "content_html",
+                    "focus_keyword", "secondary_keywords", "tags", "faq",
+                    "quick_answer"):
+            if improved.get(key):
+                article[key] = improved[key]
+        corrected_html = article.get("content_html", "")
+        overlaps = validator.verbatim_overlaps(corrected_html, sources_text)
+        originality = validator.originality_score(corrected_html, sources_text)
+        floor = float(getattr(config, "ORIG_HARD_FLOOR", 72))
+        if overlaps or originality < floor:
+            raise RuntimeError(
+                "SOURCE CORRECTION REJECTED: rewrite copy-risk remains "
+                f"(originality={originality:.1f}%, overlaps={len(overlaps)})")
+    except RuntimeError:
+        raise
+    except Exception as exc:  # noqa: BLE001 — preflight remains the hard gate
+        log.warning("Source correction pass unavailable: %s", exc)
+
+
+def _strict_source_preflight(article: Dict, *, allow_mock: bool = False) -> Dict:
+    """Validate evidence before a source-derived article reaches WordPress.""
+
+    A source URL/search result is not permission to invent missing facts. This
+    gate requires the fetched source set, an official source, the cross-source
+    report, numeric/date fact support and the claim ledger. It deliberately
+    runs before draft creation, not only before live publishing.
+    """
+    if allow_mock or article.get("article_type") == "quiz":
+        return {"ok": True, "skipped": True}
+    if not getattr(config, "SOURCE_PREFLIGHT_REQUIRED", True):
+        return {"ok": True, "skipped": True, "reason": "disabled by config"}
+    from . import deep_research as _dr
+    from . import editorial_value as _ev
+
+    deep_sources = list(article.get("_deep_sources") or [])
+    report = _dr.build_report(
+        article.get("title", ""), deep_sources,
+        notebooklm_brief=article.get("_notebooklm_brief", ""),
+        target_year=article.get("_target_year"),
+    )
+    article["_deep"] = report
+    audit = _dr.audit_source_set(article)
+    article["_source_audit"] = audit
+    source_texts = []
+    for source in deep_sources:
+        text = source.get("text", "") if isinstance(source, dict) else getattr(source, "text", "")
+        if text:
+            source_texts.append(text)
+    fact_flags = validator.fact_guard(article.get("content_html", ""), source_texts)
+    article["_source_fact_flags"] = fact_flags
+    ledger = _ev.build_ledger(article, article.get("content_html", ""), deep_sources)
+    article["_editorial_value"] = ledger
+    claim_flags = [
+        f"{item.get('value', 'claim')}: source evidence missing"
+        for item in ledger.get("unsupported_claims", [])[:8]
+    ]
+    article["_claim_flags"] = claim_flags
+    hard, warnings = _dr.gate_post(article.get("content_html", ""), report, live=True)
+    result = {
+        "ok": not audit.get("flags") and not fact_flags and not claim_flags and not hard,
+        "audit": audit, "fact_flags": fact_flags,
+        "claim_flags": claim_flags, "deep_hard": hard, "warnings": warnings,
+    }
+    article["_source_preflight"] = result
+    if not result["ok"]:
+        parts = (audit.get("flags", []) + fact_flags + claim_flags + hard)[:8]
+        raise RuntimeError(
+            "SOURCE PREFLIGHT FAILED — article not created because evidence is incomplete: "
+            + "; ".join(parts)
+        )
+    log.info("SOURCE PREFLIGHT PASS ✔ %s", _dr.format_source_audit(audit))
+    return result
 
 
 def create_from_source(url: str, mock: bool = False, category: str = "",
@@ -944,6 +1325,7 @@ def create_from_source(url: str, mock: bool = False, category: str = "",
 
     # --- multi-source research: internet lo same topic articles ---
     extras, competitor_titles = [], []
+    notebooklm_bundle = {}
     if config.RESEARCH_ENABLED and not mock:
         try:
             extras, competitor_titles = research.research_topic(
@@ -954,6 +1336,19 @@ def create_from_source(url: str, mock: bool = False, category: str = "",
                 log.info("Research: extra sources levu — primary source tho rewrite")
         except Exception:
             log.exception("Research step failed — primary source tho continue")
+        if getattr(config, "NOTEBOOKLM_AUTO_BUNDLE", True):
+            try:
+                from . import research_brief as _rb
+
+                notebooklm_bundle = _rb.write_bundle(
+                    src.title, [src] + extras, target_year=target_year)
+                log.info("NotebookLM bundle ready: %d sources → %s",
+                         notebooklm_bundle.get("sources", 0),
+                         notebooklm_bundle.get("bundle"))
+            except Exception:
+                # Bundle preparation is observable but never substitutes for
+                # the strict fetched-source preflight below.
+                log.exception("NotebookLM bundle preparation skipped")
 
     if mock:
         article = {
@@ -963,8 +1358,8 @@ def create_from_source(url: str, mock: bool = False, category: str = "",
             "tags": [str(generation_year), "Students", "Telugu", "Guide", "News"],
             "banner_text": f"Students Guide {generation_year}",
             "content_html": (
-                "<p>Ee article source nunchi facts teesi original ga "
-                f"rayabadda test article. Source: {src.title}</p>"
+                "<p>ఈ ఆర్టికల్‌లోని ముఖ్యమైన విషయాలను సులభమైన భాషలో "
+                f"వివరించాము: {src.title}</p>"
                 "<h2>Key Details</h2><ul><li>Point one</li><li>Point two</li></ul>"
                 "<h2>Process</h2><ol><li>Step one</li><li>Step two</li></ol>"
                 "<h2>FAQ</h2><h3>Question?</h3><p>Answer</p>"
@@ -992,10 +1387,15 @@ def create_from_source(url: str, mock: bool = False, category: str = "",
             notebooklm_brief=notebooklm_brief,
         )
         if category:
+            # Curated source-grid hints are authoritative; they were assigned
+            # by the editor/source map, not guessed from generic headlines.
             article["category"] = category
-        elif article.get("category", "Education News") == "Education News":
+        else:
+            # Never trust the model's broad fallback (often Central Govt Jobs
+            # for a software notification). Reclassify from the source title +
+            # generated title with the canonical intent rules.
             article["category"] = classify_category(
-                f"{src.title} {article['title']}", src.text)
+                f"{src.title} {article.get('title', '')}", src.text)
         # --- originality guard: 70% kante takkuva aite OKKO regenerate ---
         source_texts = [src.text] + [e.text for e in extras]
         if notebooklm_brief:
@@ -1102,6 +1502,18 @@ def create_from_source(url: str, mock: bool = False, category: str = "",
     except Exception as exc:  # noqa: BLE001 — guard never blocks on infra error
         log.warning("Dup guard skipped (%s)", exc)
 
+    if notebooklm_bundle:
+        # Private provenance only; never render bundle paths or source labels in
+        # the public article.
+        article["_notebooklm_bundle"] = {
+            key: str(value) for key, value in notebooklm_bundle.items()
+        }
+    if (getattr(config, "NOTEBOOKLM_REQUIRED", False)
+            and not mock and not notebooklm_brief):
+        raise RuntimeError(
+            "NOTEBOOKLM BRIEF REQUIRED: import the private evidence bundle into "
+            "NotebookLM and rerun with --notebooklm-brief <cited-brief.md>")
+
     # --- QA data (notification + trust box kosam) ---
     article["_source_texts"] = [src.text] + [e.text for e in extras]
     article["_deep_sources"] = [src] + extras  # v44: full objects (tiering)
@@ -1113,7 +1525,14 @@ def create_from_source(url: str, mock: bool = False, category: str = "",
         + [urlparse(e.url).netloc.replace("www.", "") for e in extras]
     ]
 
+    # One bounded correction pass fixes source-detectable mistakes before the
+    # strict preflight. Anything still unsupported/conflicting is rejected.
+    _correct_source_claims(article)
     _append_official_sources(article)
+
+    # Do not spend a WordPress draft slot on an article whose source facts or
+    # claim evidence have not passed the strict source preflight.
+    _strict_source_preflight(article, allow_mock=mock)
 
     # slug safe ga + Rank Math optimize (keyword tokens + stopwords)
     from .main import _safe_slug
@@ -1126,6 +1545,9 @@ def create_from_source(url: str, mock: bool = False, category: str = "",
     article.setdefault("quick_answer", "")
     article.setdefault("faq", [])
     article.setdefault("seo_title", "")
+    # Mock runs can assert the outbound payload, but they must never be
+    # mistaken for proof that a real WordPress bridge persisted it.
+    article["_mock"] = bool(mock)
     if force_draft:
         # Radar/orchestrator output always waits for owner review, irrespective
         # of the site's normal publishing default. It must also pass evidence
@@ -1237,6 +1659,7 @@ def update_post(post_id: int, new_source_urls=None, mock: bool = False) -> Dict:
     # gov notice links updates lo poyevai!)
     article["_source_urls"] = [e.url for e in extras if getattr(e, "url", "")]
     _append_official_sources(article)
+    _strict_source_preflight(article, allow_mock=mock)
 
     # v84: update kuda rm100 re-run (LLM rewrite structure degrade kakunda +
     # internal preflight fresh). Fail ayina update aagadu (advisory).
@@ -1327,7 +1750,8 @@ def update_post(post_id: int, new_source_urls=None, mock: bool = False) -> Dict:
         log.exception("update source audit failed")
         article["_source_audit"] = {"applicable": True, "ok": False,
                                     "flags": ["SOURCE-AUDIT-FAILED"]}
-    final_html = google_quality.inject_methodology(final_html, article)
+    if getattr(config, "PUBLIC_EDITORIAL_CLEAN", True):
+        final_html = seo.clean_public_article(final_html)
     final_html, article["_content_quality"] = content_quality.polish_and_audit(
         final_html, article.get("focus_keyword", ""))
     try:
@@ -1368,7 +1792,9 @@ def update_post(post_id: int, new_source_urls=None, mock: bool = False) -> Dict:
             description=article["meta_description"],
             seo_title=article.get("seo_title") or title,
             secondary_keywords=article.get("secondary_keywords", []),
+            slug=article.get("slug", ""),
         )
+        article["_rankmath_meta"] = dict(meta)
 
     try:  # v65: update ki kuda certificate (evidence)
         gate = post_gate.run(article, final_html)
@@ -1415,18 +1841,20 @@ def update_post(post_id: int, new_source_urls=None, mock: bool = False) -> Dict:
     except Exception:  # noqa: BLE001 — update succeeded; ledger warning only
         log.exception("correction ledger write failed (post already updated)")
     log.info("POST UPDATED ✔ id=%s link=%s", post_id, result.get("link"))
-    if meta:
+    if meta and not mock:
         try:
-            landed = wp.verify_meta(post_id, ["rank_math_focus_keyword",
-                                              "rank_math_title",
-                                              "rank_math_description"])
+            required_seo = [k for k in meta if k.startswith("rank_math_")]
+            # The underlying verify_meta read remains part of the compatibility
+            # path; verify_rankmath_meta supplements it with bridge readback.
+            landed = wp.verify_rankmath_meta(post_id, required_seo)
             missing = [k for k, ok in landed.items() if not ok]
-            if missing:
+            if missing and not mock:
                 wp.write_seo_meta(post_id, meta)
-                landed = wp.verify_meta(post_id, ["rank_math_focus_keyword",
-                                                  "rank_math_title",
-                                                  "rank_math_description"])
+                landed = wp.verify_rankmath_meta(post_id, required_seo)
                 missing = [k for k, ok in landed.items() if not ok]
+            article["_rankmath_landed"] = dict(landed)
+            result["seo_meta_persisted"] = not missing
+            result["seo_meta_keys"] = required_seo
             if missing:
                 log.warning("UPDATE %s: Rank Math meta missing %s", post_id, missing)
         except Exception:
@@ -1469,6 +1897,10 @@ def create_listicle(topic: str = "", mock: bool = False) -> Dict:
         article = gemini_client.generate_listicle(idea, recent, date.today().year)
 
     from .main import _safe_slug
+    # Keep the offline/mock path side-effect-compatible with the other test
+    # generators: it may create a draft in FakeWP, but must not attempt SEO
+    # bridge writes or send production notifications.
+    article["_mock"] = bool(mock)
     article["slug"] = seo.optimize_slug(
         _safe_slug(article.get("slug", ""), article["title"]),
         focus_keyword=article.get("focus_keyword", "") or idea)

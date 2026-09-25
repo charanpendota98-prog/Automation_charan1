@@ -162,7 +162,7 @@ class ApprovalBot:
     def _run_source_pipeline(self, chat_id: str, url: str) -> None:
         from . import pipeline
         try:
-            mock = not config.GEMINI_API_KEY
+            mock = not config.gemini_configured()
             result = pipeline.create_from_source(url, mock=mock)
             # v86: pin-gate block = error DICT (exception kaadu!) — silent
             # success kakunda user ki honest message (live-mode hole).
@@ -293,7 +293,7 @@ class ApprovalBot:
         try:
             urls = [extra_url] if extra_url else None
             result = pipeline.update_post(post_id, new_source_urls=urls,
-                                          mock=not config.GEMINI_API_KEY)
+                                          mock=not config.gemini_configured())
             # v86: pin-gate error dict ayina "ayyindi ✔" cheppakudadu!
             if isinstance(result, dict) and result.get("error"):
                 self.tg("sendMessage", {

@@ -20,13 +20,13 @@ log = logging.getLogger("autoblog.topics")
 
 MOCK_TOPICS = [
     ("Scholarships", "NSP Scholarship 2026 – National Scholarship Portal lo Apply elaa cheyali"),
-    ("Govt Jobs", "SSC MTS 2026 – Complete Preparation Guide Telugu lo"),
-    ("Exam Updates", "Admit Card Download elaa cheyali – Step by Step Guide"),
-    ("Admissions", "TS EAMCET 2026 Counselling – Web Options Priority Tips"),
-    ("Study Tips", "Revision Time Table Plan – Exam Mundu 30 Rojulu"),
+    ("Central Govt Jobs", "SSC MTS 2026 – Complete Preparation Guide Telugu lo"),
+    ("Hall Tickets", "Admit Card Download elaa cheyali – Step by Step Guide"),
+    ("Online Education", "TS EAMCET 2026 Counselling – Web Options Priority Tips"),
+    ("Exam Tips", "Revision Time Table Plan – Exam Mundu 30 Rojulu"),
     ("Internships", "AICTE Internship Portal 2026 – Students ki Free Opportunities"),
     ("Results", "Revaluation vs Recounting – Difference emito Telugu lo"),
-    ("Education News", "SWAYAM & NPTEL Free Courses – Certificate Value emito"),
+    ("Online Education", "SWAYAM & NPTEL Free Courses – Certificate Value emito"),
 ]
 
 # Trending listicle ("stories") ideas — Adda247 style, rotate avtayi
@@ -264,7 +264,13 @@ TREND_EDU_PATTERNS = [
     "syllabus", "admit card", "hall ticket", "answer key", "counselling",
     "university", "college", "board", "ssc", "upsc", "rrb", "ibps",
     "neet", "jee", "cuet", "cat exam", "degree", "btech", "inter",
+    # Verified public-interest opportunities students/applicants search for.
+    "scheme", "schemes", "welfare", "government order", "go", "job fair",
+    "job mela", "apprenticeship", "navodaya", "jnv", "nmms", "sainik school",
+    "model school", "kgbv", "farmer", "rythu", "women", "mahila", "self help",
+    "current affairs", "skill development", "employment exchange", "career",
     "ఉద్యోగాలు", "ఫలితాలు", "నోటిఫికేషన్", "స్కాలర్‌షిప్", "హాల్‌టికెట్",
+    "పథకం", "రైతు", "మహిళ", "ప్రస్తుత వ్యవహారాలు",
 ]
 
 

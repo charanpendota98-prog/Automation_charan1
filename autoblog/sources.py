@@ -28,7 +28,13 @@ BLOCKED_HOSTS = ("facebook.com", "twitter.com", "x.com", "instagram.com")
 OFFICIAL_SUFFIX = (".gov.in", ".nic.in", ".gov", ".edu", ".ac.in", ".edu.in")
 OFFICIAL_HOSTS = ("tspsc.gov.in", "appsc.gov.in", "upsc.gov.in", "ssc.gov.in",
                   "ibps.in", "rrbcdg.gov.in", "nta.ac.in", "scholarships.gov.in",
-                  "nsdl.co.in", "cbse.gov.in", "bie.ap.gov.in", "bse.telangana.gov.in")
+                  "nsdl.co.in", "cbse.gov.in", "bie.ap.gov.in", "bse.telangana.gov.in",
+                  "nta.ac.in", "ugcnet.nta.ac.in", "ctet.nic.in", "rrbcdg.gov.in",
+                  "epfindia.gov.in", "esic.gov.in", "sebi.gov.in", "dgt.gov.in",
+                  "education.gov.in", "apmsrb.ap.gov.in", "telangana.gov.in",
+                  "ap.gov.in", "osmania.ac.in", "jntuh.ac.in", "jntuk.ac.in",
+                  "jntuk.edu.in", "andhrauniversity.edu.in", "braou.ac.in",
+                  "kakatiya.ac.in")
 
 
 @dataclass
@@ -309,14 +315,51 @@ def pending_from_queue() -> Optional[str]:
     for line in path.read_text(encoding="utf-8").splitlines():
         url = line.strip()
         if url and url.startswith("http") and not state.source_done(config.STATE_PATH, url):
+            try:
+                state.mark_source_queued(config.STATE_PATH, url)
+            except Exception:
+                pass
             return url
     return None
 
 
-def mark_done_and_clean(url: str) -> None:
-    from . import state
+def mark_done_and_clean(
+    url: str,
+    completed: bool = True,
+    failure_type: str = "draft_failed",
+    details: str = "",
+) -> None:
+    """Remove a queue URL and finalize its source/opportunity state.
 
-    state.mark_source_done(config.STATE_PATH, url)
+    Failed drafts are retryable, and their outcome is retained in the radar
+    audit table rather than silently disappearing from the queue.
+    """
+    from . import state
+    import hashlib
+
+    if completed:
+        state.mark_source_done(config.STATE_PATH, url)
+        try:
+            state.record_radar_event(config.STATE_PATH, "draft_ready", url,
+                                     details="draft created after source preflight")
+        except Exception:
+            pass
+    else:
+        state.mark_source_retry(config.STATE_PATH, url)
+        try:
+            state.record_radar_event(config.STATE_PATH, failure_type, url,
+                                     details=details)
+        except Exception:
+            pass
+        url_key = "radar:url:" + hashlib.md5((url or "").encode("utf-8")).hexdigest()[:16]
+        ref_key = url_key + ":opportunity"
+        opportunity_key = state.meta_get(config.STATE_PATH, ref_key)
+        for key in (url_key, ref_key, opportunity_key):
+            if key:
+                try:
+                    state.meta_delete(config.STATE_PATH, key)
+                except Exception:
+                    pass
     path = queue_file_path()
     if path.exists():
         lines = [l for l in path.read_text(encoding="utf-8").splitlines()

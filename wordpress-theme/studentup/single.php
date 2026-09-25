@@ -25,8 +25,8 @@ get_header();
 					<h1><?php the_title(); ?></h1>
 					<div class="article-meta">
 						<span>📅 <?php echo esc_html( get_the_date() ); ?></span>
-						<span>⏱ <?php echo esc_html( studentup_reading_time() ); ?></span>
 						<?php echo wp_kses_post( studentup_last_updated() ); ?>
+						<?php // studentup_reading_time() intentionally not shown on article pages. ?>
 						<?php $su_cats = get_the_category(); ?>
 						<?php if ( $su_cats ) : ?>
 							<span>🏷 <?php echo esc_html( $su_cats[0]->name ); ?></span>
@@ -44,8 +44,19 @@ get_header();
 						}
 						?>
 					</div>
-					<?php if ( function_exists( 'studentup_author_meta' ) ) { studentup_author_meta(); } ?>
+					<?php // Byline is intentionally omitted from the article header; schema retains publisher/author data. ?>
 				</div>
+
+				<?php if ( has_post_thumbnail() ) : ?>
+					<figure class="su-featured-hero">
+						<?php the_post_thumbnail( 'studentup-discover', array(
+							'loading'       => 'eager',
+							'fetchpriority' => 'high',
+							'decoding'      => 'async',
+							'alt'           => esc_attr( get_the_title() ),
+						) ); ?>
+					</figure>
+				<?php endif; ?>
 
 				<?php echo wp_kses_post( studentup_save_button( 0, 'su-save-single' ) ); // v92: 🔖 save-for-later ?>
 
@@ -62,8 +73,13 @@ get_header();
 					<button type="button" class="su-copy su-share-copy" data-url="<?php echo esc_url( get_permalink() ); ?>"><?php echo studentup_social_icon( 'link', 14 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Copy link</button>
 				</div>
 
-				<?php studentup_trust_note(); ?>
-				<?php studentup_author_box(); ?>
+				<?php
+				// These helpers remain available for policy pages, not every post.
+				if ( false ) {
+					studentup_trust_note();
+					studentup_author_box();
+				}
+				?>
 				<?php if ( has_tag() ) : ?>
 					<div class="su-tags" aria-label="Tags">🏷 <?php the_tags( '', ' · ', '' ); ?></div>
 				<?php endif; ?>
@@ -89,10 +105,14 @@ get_header();
 
 			<?php
 			$su_rel = get_the_category();
-			if ( $su_rel ) {
+			$su_tags = wp_get_post_tags( get_the_ID(), array( 'fields' => 'ids' ) );
+			if ( $su_rel && $su_tags ) {
+				// Topic tags are generated from the focus/secondary keywords. Use
+				// them first; category-only matching was showing unrelated posts.
 				$su_q = new WP_Query(
 					array(
 						'category__in'        => wp_list_pluck( $su_rel, 'term_id' ),
+						'tag__in'             => $su_tags,
 						'post__not_in'        => array( get_the_ID() ),
 						'posts_per_page'      => 3,
 						'ignore_sticky_posts' => true,

@@ -145,33 +145,72 @@ def topic_source_candidates(topic: str, limit: int = 8) -> list:
     return out
 
 
+def _research_queries(title: str) -> list[str]:
+    """Build a small fact-intent query fan-out instead of one shallow search."""
+    base = _clean_query(title)
+    if not base:
+        return []
+    queries = [
+        base,
+        f"{base} official notification",
+        f"{base} last date fee exam date",
+        f"{base} result syllabus documents apply",
+    ]
+    # Preserve order while removing repeated words/queries.
+    out, seen = [], set()
+    for query in queries:
+        key = query.lower().strip()
+        if key and key not in seen:
+            seen.add(key)
+            out.append(query[:120])
+    return out
+
+
 def research_topic(
     primary: SourceArticle,
     max_extra: int = 3,
 ):
-    """Primary article topic meeda web search -> extra source articles.
+    """Primary article topic meeda multi-intent web research -> extra sources.
+
+    Search fan-out covers the official notice, deadline/fee/exam-date details
+    and result/documents/apply intent. It gathers a wider candidate pool, then
+    fetches at most ``max_extra`` distinct domains after the primary source.
+    Search results are discovery only; fetched facts still go through the
+    official-first/editorial verification rules.
 
     Returns (extras, competitor_titles):
       extras            -> list[SourceArticle] (fetch avtayina sources)
-      competitor_titles -> search result titles (KEYWORD INTELLIGENCE —
-                           Google lo already ranking titles; prompt ki
-                           istamu better keywords kosam)
+      competitor_titles -> search result titles (keyword intelligence)
     """
-    query = _clean_query(primary.title)
-    if not query:
+    queries = _research_queries(primary.title)
+    if not queries:
         return [], []
-    # Fetch a wider candidate pool than the final source count: duplicate
-    # domains, own-site pages and failed fetches are removed below.
-    results = search_web(query, max_results=max(10, max_extra * 3))
-    results = sorted(results, key=lambda item: _source_priority(item.get("url", "")))
+    # Fetch a wider candidate pool than the final source count. Fan-out is
+    # intentionally bounded (four queries) and sequential to remain polite.
+    candidates, seen_urls = [], set()
+    for query in queries:
+        for row in search_web(query, max_results=max(10, max_extra * 3)):
+            url = (row.get("url") or "").strip()
+            if not url or url in seen_urls:
+                continue
+            seen_urls.add(url)
+            candidates.append(row)
 
+    results = sorted(candidates, key=lambda item: _source_priority(item.get("url", "")))
     own_domain = urlparse(config.WP_SITE).netloc.replace("www.", "")
     primary_domain = urlparse(primary.url).netloc.replace("www.", "")
     skip_domains = {primary_domain, own_domain}
-    competitor_titles = [
-        r["title"] for r in results
-        if urlparse(r["url"]).netloc.replace("www.", "") not in skip_domains
-    ][:8]
+    competitor_titles = []
+    seen_titles = set()
+    for row in results:
+        host = urlparse(row["url"]).netloc.replace("www.", "")
+        title = row.get("title", "")
+        if host in skip_domains or title in seen_titles:
+            continue
+        seen_titles.add(title)
+        competitor_titles.append(title)
+        if len(competitor_titles) >= 8:
+            break
 
     extras = []
     # v77: source page lopala unna OFFICIAL links ni mundhu follow —
@@ -193,20 +232,20 @@ def research_topic(
             log.debug("Research official skip %s: %s", link[:60], exc)
             continue
         time.sleep(1.0)  # polite crawling
-    for r in results:
+    for row in results:
         if len(extras) >= max_extra:
             break
-        netloc = urlparse(r["url"]).netloc.replace("www.", "")
-        if netloc in skip_domains or not is_valid_source_url(r["url"]):
+        netloc = urlparse(row["url"]).netloc.replace("www.", "")
+        if netloc in skip_domains or not is_valid_source_url(row["url"]):
             continue
         try:
-            art = fetch_source(r["url"])
+            art = fetch_source(row["url"])
             if len(art.text) > 300:
                 extras.append(art)
                 skip_domains.add(netloc)
                 log.info("Research source add: %s (%d chars)", netloc, len(art.text))
         except Exception as exc:
-            log.debug("Research fetch skip %s: %s", r["url"][:60], exc)
+            log.debug("Research fetch skip %s: %s", row["url"][:60], exc)
             continue
         time.sleep(1.0)  # polite crawling
     return extras, competitor_titles

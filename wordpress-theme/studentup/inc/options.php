@@ -55,6 +55,7 @@ function studentup_option_fields() {
 				'social_telegram'  => array( 'Telegram', 'text', 'studentup_in', 't.me/<idi> — channel username' ),
 				'telegram_channel_url' => array( 'Telegram channel URL override (v91)', 'text', '', 'PRIVATE channel aithe full invite link (https://t.me/+AbCd…); khali unte username t.me link use avutundi' ),
 				'social_instagram' => array( 'Instagram', 'text', 'studentup.in', 'instagram.com/<idi>' ),
+				'social_linkedin'  => array( 'LinkedIn editorial profile', 'text', '', 'Full https://www.linkedin.com/in/... URL or profile username' ),
 				'social_youtube'   => array( 'YouTube', 'text', '@studentupin', 'youtube.com/<idi>' ),
 			),
 		),
@@ -62,6 +63,7 @@ function studentup_option_fields() {
 			'title'  => 'Content & site',
 			'fields' => array(
 				'contact_email' => array( 'Contact email', 'text', '', 'Errors/suggestions — falls back to the admin email if empty' ),
+				'success_story_form_url' => array( 'Verified Success Story Google Form URL', 'text', '', 'Public intake link. Collect consent + evidence only; never ask for Aadhaar, PAN, bank details, OTPs or passwords.' ),
 				'author_name'   => array( 'Editorial team name', 'text', 'StudentUp Editorial Team', 'Shown in the E-E-A-T box under the post' ),
 				'author_bio'    => array( 'Editorial team description', 'textarea', 'We verify from official notifications and government websites, then write it in simple language. If you spot a mistake, email us — we fix it fast.', '' ),
 				'breaking_json' => array( 'Breaking feed (JSON)', 'textarea', '', 'Bot nimpustundi (--push-theme-data). Format: {"items":[{"title":"..","link":"..","time":"..","tag":".."}]}' ),
@@ -262,6 +264,7 @@ function studentup_rest_get_options() {
 				'whatsapp'  => studentup_opt( 'social_whatsapp', '9182739312' ),
 				'telegram'  => studentup_opt( 'social_telegram', 'studentup_in' ),
 				'instagram' => studentup_opt( 'social_instagram', 'studentup.in' ),
+				'linkedin'  => studentup_opt( 'social_linkedin', '' ),
 				'youtube'   => studentup_opt( 'social_youtube', '@studentupin' ),
 			),
 			'adsense_on'  => (bool) studentup_opt( 'adsense_client', '' ),
@@ -337,6 +340,11 @@ function studentup_call_number( $raw = '' ) {
 function studentup_social_links() {
 	$wa  = studentup_wa_number( studentup_opt( 'social_whatsapp', '9182739312' ) );
 	$ig  = ltrim( (string) studentup_opt( 'social_instagram', 'studentup.in' ), '@' );
+	$li  = trim( (string) studentup_opt( 'social_linkedin', '' ) );
+	$liu = '';
+	if ( $li ) {
+		$liu = 0 === strpos( $li, 'http' ) ? $li : 'https://www.linkedin.com/in/' . ltrim( $li, '@/' );
+	}
 	$yt  = (string) studentup_opt( 'social_youtube', '@studentupin' );
 	$ytu = 0 === strpos( $yt, 'http' ) ? $yt : 'https://www.youtube.com/' . ( 0 === strpos( $yt, '@' ) ? $yt : '@' . $yt );
 
@@ -359,6 +367,7 @@ function studentup_social_links() {
 		'whatsapp'  => 'https://wa.me/' . $wa,
 		'telegram'  => $tg_url,
 		'instagram' => 'https://www.instagram.com/' . $ig . '/',
+		'linkedin'  => $liu,
 		'youtube'   => $ytu,
 	);
 }

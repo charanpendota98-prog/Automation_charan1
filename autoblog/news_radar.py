@@ -29,7 +29,25 @@ UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
       "(KHTML, like Gecko) Chrome/124.0 Safari/537.36")
 
 GOOGLE_NEWS_RSS = "https://news.google.com/rss/search?q={q}&hl=te&gl=IN&ceid=IN:te"
-EDU_TERMS = "education OR jobs OR scholarship OR exam OR result OR admission OR notification"
+# District discovery must also surface practical welfare, farmer, women, skill,
+# apprenticeship and job-fair notices—not only exams and recruitment.
+EDU_TERMS = (
+    "education OR jobs OR scholarship OR exam OR result OR admission OR notification "
+    "OR scheme OR welfare OR farmer OR agriculture OR women OR skill "
+    "OR apprenticeship OR job fair OR employment exchange OR current affairs"
+)
+
+# Current-affairs feeds are intentionally broader than ordinary job/exam feeds,
+# but still require a student/applicant/family-useful signal. Generic political,
+# celebrity and sports stories remain filtered out; strict source preflight runs
+# later before anything can become a WordPress draft.
+CURRENT_AFFAIRS_PATTERNS = (
+    "scheme", "welfare", "government order", "government notification", "budget",
+    "education", "student", "scholarship", "employment", "skill", "job fair",
+    "apprenticeship", "farmer", "agriculture", "pm kisan", "kisan", "rythu",
+    "women", "mahila", "self help", "shg", "pension", "subsidy", "benefit",
+    "పథకం", "ప్రభుత్వం", "రైతు", "వ్యవసాయం", "మహిళ", "విద్య", "ఉపాధి",
+)
 
 # Telangana 33 districts (2026 reorg: Warangal merged -> Hanumakonda)
 TS_DISTRICTS = [
@@ -105,16 +123,69 @@ def _parse_feed(xml_text: str, limit: int) -> List[Dict]:
     return out
 
 
-def _edu_relevant(text: str) -> bool:
-    """Education/jobs/scholarship relevant matrame (sports/politics filter)."""
+def _edu_relevant(text: str, category_hint: str = "") -> bool:
+    """Keep useful opportunity/news leads and reject generic trend noise.
+
+    ``category_hint`` is supplied by the curated source grid. Current-affairs
+    feeds need a wider, still practical filter than ordinary district feeds;
+    their articles continue through the official-source and evidence gates
+    before a draft is created.
+    """
     hay = (text or "").lower()
-    return any(p in hay for p in TREND_EDU_PATTERNS)
+    if any(p in hay for p in TREND_EDU_PATTERNS):
+        return True
+    if (category_hint or "").strip().lower() == "current affairs":
+        return any(p in hay for p in CURRENT_AFFAIRS_PATTERNS)
+    return False
 
 
 # ------------------------------------------------------------------ queues
 
-def _queue_url(url: str) -> bool:
-    """Kotha news URL -> sources_queue.txt (state+file dedup). True=queued."""
+def _opportunity_key(title: str) -> str:
+    """Stable job/opportunity identity independent of publisher URL.
+
+    Publisher headlines vary in word order, boilerplate, closing dates and
+    vacancy counts. Keep the organization/post/year/location facts that make
+    an opportunity recognizable, while dropping mutable count/date noise.
+    Years stay in the key so annual recruitments do not collapse together.
+    """
+    raw = (title or "").lower()
+    aliases = (
+        (r"staff\s+selection\s+commission", "ssc"),
+        (r"state\s+bank\s+of\s+india", "sbi"),
+        (r"life\s+insurance\s+corporation", "lic"),
+        (r"national\s+testing\s+agency", "nta"),
+    )
+    for pattern, replacement in aliases:
+        raw = re.sub(pattern, replacement, raw)
+    words = re.findall(r"[a-z0-9\u0c00-\u0c7f]+", raw)
+    stop = {
+        "latest", "breaking", "new", "update", "notification", "released",
+        "recruitment", "jobs", "job", "vacancy", "vacancies", "posts", "post",
+        "apply", "online", "official", "notice", "applications", "application",
+        "last", "date", "deadline", "closing", "today", "the", "and", "for",
+        "of", "in", "to", "jan", "january", "feb", "february", "mar", "march",
+        "apr", "april", "may", "jun", "june", "jul", "july", "aug", "august",
+        "sep", "september", "oct", "october", "nov", "november", "dec", "december",
+        "తెలుగు", "తెలంగాణ", "ఆంధ్రప్రదేశ్",
+    }
+    # Counts, day/month dates and fees change between mirrors/updates. Preserve
+    # four-digit years and qualification tokens such as 10th/12th.
+    meaningful = [
+        word for word in words
+        if len(word) > 1 and word not in stop
+        and not (word.isdigit() and not re.fullmatch(r"20\d{2}", word))
+    ]
+    non_year = [word for word in meaningful if not re.fullmatch(r"20\d{2}", word)]
+    # Refuse generic one-topic headlines ("jobs 2026") rather than merging
+    # unrelated notices. The URL-level queue still handles exact URLs.
+    if len(non_year) < 2:
+        return ""
+    return " ".join(sorted(set(meaningful), key=lambda word: (bool(re.fullmatch(r"20\d{2}", word)), word))[:12])
+
+
+def _queue_url(url: str, title: str = "") -> bool:
+    """Kotha news URL -> sources_queue.txt (URL + opportunity dedup). True=queued."""
     url = (url or "").strip()
     if not url.startswith("http"):
         return False
@@ -124,12 +195,45 @@ def _queue_url(url: str) -> bool:
         return False
     try:
         if state.source_done(config.STATE_PATH, url):
+            try:
+                state.record_radar_event(
+                    config.STATE_PATH, "duplicate_url", url, title,
+                    "source URL already completed",
+                )
+            except Exception as audit_exc:  # noqa: BLE001 — audit must not block radar
+                log.debug("news_radar completed duplicate audit failed: %s", audit_exc)
             return False
     except Exception as exc:  # noqa: BLE001 — best-effort (silent kaadu)
         log.debug("news_radar._queue_url skip: %s", exc)
+    opportunity = _opportunity_key(title)
+    opportunity_key = "radar:opportunity:" + hashlib.sha1(
+        opportunity.encode("utf-8")
+    ).hexdigest()[:20] if opportunity else ""
+    if opportunity_key:
+        try:
+            if state.meta_get(config.STATE_PATH, opportunity_key):
+                log.info("Radar duplicate opportunity skipped: %s", title[:100])
+                try:
+                    state.record_radar_event(
+                        config.STATE_PATH, "duplicate_opportunity", url, title,
+                        "same normalized opportunity already queued or completed",
+                    )
+                except Exception as exc:  # noqa: BLE001 — audit must not block radar
+                    log.debug("news_radar duplicate audit failed: %s", exc)
+                return False
+        except Exception as exc:  # noqa: BLE001 — best-effort (silent kaadu)
+            log.debug("news_radar opportunity dedup skip: %s", exc)
     key = "radar:url:" + hashlib.md5(url.encode("utf-8")).hexdigest()[:16]
+    opportunity_ref = key + ":opportunity"
     try:
         if state.meta_get(config.STATE_PATH, key):
+            try:
+                state.record_radar_event(
+                    config.STATE_PATH, "duplicate_url", url, title,
+                    "source URL already queued or completed",
+                )
+            except Exception as audit_exc:  # noqa: BLE001 — audit must not block radar
+                log.debug("news_radar URL duplicate audit failed: %s", audit_exc)
             return False
     except Exception as exc:  # noqa: BLE001 — best-effort (silent kaadu)
         log.debug("news_radar._queue_url skip: %s", exc)
@@ -141,6 +245,10 @@ def _queue_url(url: str) -> bool:
     if url in existing:
         try:
             state.meta_set(config.STATE_PATH, key, "1")
+            if opportunity_key:
+                state.meta_set(config.STATE_PATH, opportunity_key, "1")
+                state.meta_set(config.STATE_PATH, opportunity_ref, opportunity_key)
+            state.mark_source_queued(config.STATE_PATH, url)
         except Exception as exc:  # noqa: BLE001 — best-effort (silent kaadu)
             log.debug("news_radar._queue_url skip: %s", exc)
         return False
@@ -149,6 +257,12 @@ def _queue_url(url: str) -> bool:
         fh.write(url + "\n")
     try:
         state.meta_set(config.STATE_PATH, key, "1")
+        if opportunity_key:
+            state.meta_set(config.STATE_PATH, opportunity_key, "1")
+            state.meta_set(config.STATE_PATH, opportunity_ref, opportunity_key)
+        state.mark_source_queued(config.STATE_PATH, url)
+        state.record_radar_event(config.STATE_PATH, "queued", url, title,
+                                 "discovered by continuous radar")
     except Exception as exc:  # noqa: BLE001 — best-effort (silent kaadu)
         log.debug("news_radar._queue_url skip: %s", exc)
     return True
@@ -230,7 +344,7 @@ def radar_districts(per_run: int = None) -> List[Dict]:
         for it in items:
             if not _edu_relevant(it["title"]):
                 continue
-            if _queue_url(it["link"]):
+            if _queue_url(it["link"], title=it["title"]):
                 new_items.append({"title": it["title"], "link": it["link"],
                                   "district": district, "state": st_code})
     state.meta_set(config.STATE_PATH, "radar:last_idx",
@@ -262,7 +376,7 @@ def _watch_site(url: str) -> int:
     if "<item>" in text.lower():
         queued = 0
         for it in _parse_feed(text, 15):
-            if _edu_relevant(it["title"]) and _queue_url(it["link"]):
+            if _edu_relevant(it["title"]) and _queue_url(it["link"], title=it["title"]):
                 queued += 1
         return queued
     queued = 0
@@ -275,7 +389,7 @@ def _watch_site(url: str) -> int:
         seen.add(u)
         if not _edu_relevant(label or u):
             continue
-        if _queue_url(u):
+        if _queue_url(u, title=label):
             queued += 1
         if queued >= 5:
             break

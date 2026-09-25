@@ -86,6 +86,9 @@ function studentup_author_box() {
 				<?php if ( ! empty( $soc['whatsapp'] ) ) : ?>
 					<span class="su-a-soc wa"><?php echo studentup_social_icon( 'whatsapp', 14 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> <a href="<?php echo esc_url( $soc['whatsapp'] ); ?>" target="_blank" rel="noopener">WhatsApp</a></span>
 				<?php endif; ?>
+				<?php if ( ! empty( $soc['linkedin'] ) ) : ?>
+					<span class="su-a-soc li"><?php echo studentup_social_icon( 'link', 14 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> <a href="<?php echo esc_url( $soc['linkedin'] ); ?>" target="_blank" rel="noopener">LinkedIn editorial profile</a></span>
+				<?php endif; ?>
 				<?php if ( $email ) : ?>
 					<span>✉️ Report mistakes:
 						<a href="mailto:<?php echo esc_attr( $email ); ?>"><?php echo esc_html( $email ); ?></a></span>

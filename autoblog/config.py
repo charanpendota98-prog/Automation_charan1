@@ -117,8 +117,16 @@ SOURCE_MIN_LIVE = int(_get("SOURCE_MIN_LIVE", "3"))
 SOURCE_MIN_OFFICIAL = int(_get("SOURCE_MIN_OFFICIAL", "1"))
 SOURCE_CONFIDENCE_MIN = int(_get("SOURCE_CONFIDENCE_MIN", "65"))
 SOURCE_AUDIT_BLOCK = _get("SOURCE_AUDIT_BLOCK", "1") not in ("0", "false", "no")
+# Source-derived posts are not even saved as drafts until the fetched source
+# set, official evidence, numeric/date facts and claim ledger pass preflight.
+SOURCE_PREFLIGHT_REQUIRED = _get("SOURCE_PREFLIGHT_REQUIRED", "1") not in ("0", "false", "no")
 # Repetition/filler audit is separate from Rank Math and blocks low-value prose.
 CONTENT_QUALITY_BLOCK = _get("CONTENT_QUALITY_BLOCK", "1") not in ("0", "false", "no")
+# Public posts should read like StudentUp's own editorial work. Provenance,
+# source hashes and review diagnostics remain in the private ledger, but
+# automation/source-count boilerplate is not inserted into reader-facing copy.
+# Set PUBLIC_EDITORIAL_CLEAN=0 only for an internal audit/debug export.
+PUBLIC_EDITORIAL_CLEAN = _get("PUBLIC_EDITORIAL_CLEAN", "1") not in ("0", "false", "no")
 # E-E-A-T: Article schema publisher logo (rich results kosam; optional)
 SITE_LOGO_URL = _get("SITE_LOGO_URL", "")
 # Google Discover: per-post robots lo max-image-preview:large (RM meta)
@@ -144,7 +152,10 @@ RADAR_HOUR = int(_get("RADAR_HOUR", "7"))               # first radar slot (IST)
 RADAR_INTERVAL_HOURS = int(_get("RADAR_INTERVAL_HOURS", "6"))  # 4x/day scan
 RADAR_DISTRICTS_PER_RUN = int(_get("RADAR_DISTRICTS_PER_RUN", "10"))
 RADAR_SOURCES_PER_RUN = int(_get("RADAR_SOURCES_PER_RUN", "10"))
-RADAR_POSTS_PER_DAY = int(_get("RADAR_POSTS_PER_DAY", "2"))
+# Strictly source-backed review drafts per radar day. Increase from the old
+# 2-post cap so discovered job opportunities are not silently left unprepared;
+# the evidence/preflight gates still block unsupported or stale notices.
+RADAR_POSTS_PER_DAY = int(_get("RADAR_POSTS_PER_DAY", "10"))
 
 # v59: site బ్రేకింగ్ న్యూస్ feed (radar → preview/data/breaking.json → ticker)
 BREAKING_ENABLED = _get("BREAKING_ENABLED", "1") not in ("0", "false", "no")
@@ -186,14 +197,27 @@ GEMINI_MAX_OUTPUT_TOKENS = int(_get("GEMINI_MAX_OUTPUT_TOKENS", "32768"))
 # v18: Multiple Gemini keys — 429 quota rotation (comma-separated okka line)
 GEMINI_API_KEYS = [k.strip() for k in _get("GEMINI_API_KEYS", "").split(",")
                    if k.strip()]
+
+
+def gemini_configured() -> bool:
+    """Whether at least one configured model key can serve draft generation."""
+    return bool(GEMINI_API_KEY or GEMINI_API_KEYS)
+
+
 GEMINI_RPD_PER_KEY = int(_get("GEMINI_RPD_PER_KEY", "1400"))
 # v18: Rank Math STRICT gate (real panel checks) — target + refine rounds
 RM_TARGET = int(_get("RM_TARGET", "100"))   # v64: 100 target (Rank Math)
+# Rank Math's regular-post content check is a 600-word recommendation. Keep
+# this separate from the optional long-form/top-post quality target so the bot
+# does not add filler merely to satisfy an internal 1500-word rule.
+RM_MIN_WORDS = int(_get("RM_MIN_WORDS", "600"))
 # v95: in-body contextual internal links (paragraph lopala) max count
 CONTEXTUAL_LINKS_MAX = int(_get("CONTEXTUAL_LINKS_MAX", "3"))
 RM_REFINE_ROUNDS = int(_get("RM_REFINE_ROUNDS", "2"))  # v64: 2 rounds
-# v18: AdSense-safe originality floor — ee % kindha post publish cheyyadu
-ORIG_HARD_FLOOR = float(_get("ORIG_HARD_FLOOR", "72"))
+# v18: AdSense-safe originality floor — ee % kindha post publish cheyyadu.
+# 80 keeps a paraphrase-heavy rewrite in review instead of presenting it as
+# StudentUp's own article; the exact-overlap guard below remains mandatory.
+ORIG_HARD_FLOOR = float(_get("ORIG_HARD_FLOOR", "80"))
 # Mobile lo headings peddaga unte — responsive clamp CSS add (1=on)
 MOBILE_HEADLINE_TUNE = _get("MOBILE_HEADLINE_TUNE", "1") not in ("0", "false", "no")
 
@@ -245,23 +269,36 @@ ACTIVE_HOUR_END = int(_get("ACTIVE_HOUR_END", "22"))      # last posting hour (l
 TIMEZONE = _get("TIMEZONE", "Asia/Kolkata")
 
 # --- Content -------------------------------------------------------------
-CATEGORIES = [
-    c.strip()
-    for c in _get(
-        "CATEGORIES",
-        # LIVE SITE categories (studentup.in wp-json lo unnavi — exact match,
-        # bot duplicate categories create cheyadu, existing IDs reuse avtayi)
-        "Scholarships,Central Govt Jobs,TS Govt Jobs,AP Govt Jobs,"
-        "Private Jobs,Software Jobs,Part Time Jobs,Walkin Jobs,"
-        "Outsourcing Jobs,Hall Tickets,Results,Internships,Online Education,"
-        "Current Affairs,Exam Tips,Upcoming Exams,Abroad Jobs",
-    ).split(",")
-    if c.strip()
-]
+_CATEGORY_ALIASES = {
+    # Older .env files used these broad labels. Normalize them at startup so
+    # they cannot create duplicate WordPress archives beside the canonical map.
+    "govt jobs": "Central Govt Jobs",
+    "education news": "Current Affairs",
+    "exam updates": "Upcoming Exams",
+    "admissions": "Online Education",
+    "study tips": "Exam Tips",
+}
+_raw_categories = _get(
+    "CATEGORIES",
+    # LIVE SITE categories (studentup.in wp-json lo unnavi — exact match,
+    # bot duplicate categories create cheyadu, existing IDs reuse avtayi)
+    "Scholarships,Central Govt Jobs,TS Govt Jobs,AP Govt Jobs,"
+    "Private Jobs,Software Jobs,Part Time Jobs,Walkin Jobs,"
+    "Outsourcing Jobs,Hall Tickets,Results,Internships,Online Education,"
+    "Current Affairs,Exam Tips,Upcoming Exams,Abroad Jobs,Success Stories",
+).split(",")
+CATEGORIES = []
+for _category in _raw_categories:
+    _category = _category.strip()
+    if not _category:
+        continue
+    _canonical = _CATEGORY_ALIASES.get(_category.lower(), _category)
+    if _canonical not in CATEGORIES:
+        CATEGORIES.append(_canonical)
 
-# Category priority — ee categories ki extra tickets (revenue strategy:
-# Jobs high-CPC ads attract chestundi, Results high search volume).
-# Format: "Govt Jobs:4,Results:3,Education News:2" (0 = boost ledu)
+# Category priority — ee canonical categories ki extra tickets (revenue
+# strategy: job/exam intent gets demand, but classification stays editorial).
+# Format: "Central Govt Jobs:4,Results:3,Current Affairs:2" (0 = no boost)
 CATEGORY_PRIORITY = {}
 for _pair in _get("CATEGORY_PRIORITY",
                   "Central Govt Jobs:4,TS Govt Jobs:4,AP Govt Jobs:3,"
@@ -337,6 +374,14 @@ SERVICE_CENTER_UPLOAD_URL = _get("SERVICE_CENTER_UPLOAD_URL", "").strip()
 SERVICE_CENTER_DB = Path(_get("SERVICE_CENTER_DB", str(BASE_DIR / "service_center.db")))
 SERVICE_RETENTION_DAYS = int(_get("SERVICE_RETENTION_DAYS", "30"))
 
+# --- Verified Success Stories ---------------------------------------------
+# Public intake is optional and never auto-publishes. The editor selects up to
+# three verified TS/AP stories per ISO week after consent and evidence review.
+SUCCESS_STORIES_ENABLED = _get("SUCCESS_STORIES_ENABLED", "1") not in ("0", "false", "no")
+SUCCESS_STORY_FORM_URL = _get("SUCCESS_STORY_FORM_URL", "").strip()
+SUCCESS_STORY_WEEKLY_MAX = max(1, min(7, int(_get("SUCCESS_STORY_WEEKLY_MAX", "3") or "3")))
+SUCCESS_STORY_QUEUE = Path(_get("SUCCESS_STORY_QUEUE", str(BASE_DIR / "output" / "success-stories-review.json")))
+
 # --- v33: Google-facing public page audit ---------------------------------
 PAGESPEED_API_KEY = _get("PAGESPEED_API_KEY", "").strip()
 GOOGLE_AUDIT_TIMEOUT = int(_get("GOOGLE_AUDIT_TIMEOUT", "90"))
@@ -379,6 +424,11 @@ STATE_PATH = Path(_get("STATE_PATH", str(BASE_DIR / "state.db")))
 LOG_DIR = Path(_get("LOG_DIR", str(BASE_DIR / "log")))
 OUTPUT_DIR = Path(_get("OUTPUT_DIR", str(BASE_DIR / "output")))
 RESEARCH_BRIEF_DIR = Path(_get("RESEARCH_BRIEF_DIR", str(OUTPUT_DIR / "research")))
+# Save a private NotebookLM-ready evidence bundle for real source candidates.
+# This prepares sources; it never pretends to access a private NotebookLM account.
+NOTEBOOKLM_AUTO_BUNDLE = _get("NOTEBOOKLM_AUTO_BUNDLE", "1") not in ("0", "false", "no")
+# Require a validated cited NotebookLM brief only when the owner explicitly enables it.
+NOTEBOOKLM_REQUIRED = _get("NOTEBOOKLM_REQUIRED", "0") not in ("0", "false", "no")
 HTTP_TIMEOUT = int(_get("HTTP_TIMEOUT", "90"))
 
 # --- Sources (URL -> original rewrite) ------------------------------------

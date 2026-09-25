@@ -4,7 +4,7 @@ Theme URI: https://studentup.in/
 Author: StudentUp
 Author URI: https://studentup.in/
 Description: StudentUp design for Telangana & Andhra Pradesh students — TS/AP/Central govt jobs, qualification filter (SSC/10th · Inter · Degree · PG), live search, latest-jobs scrolling ticker, brand social icons, install as an app (PWA), job/exam cards, AdSense-ready ad slots, dark mode. Mobile-first, Rank Math + AdSense friendly.
-Version: 1.9.8
+Version: 1.9.9
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 7.4
@@ -457,6 +457,8 @@ body.dark .post-nav a{color:#9ec4ff}
 .article-content pre{background:#0f2e62;color:#e7f0ff;border-radius:10px;padding:12px 14px;overflow-x:auto;font-size:13.5px;line-height:1.6}
 .article-content code{font-family:ui-monospace,Consolas,monospace}
 .article-content p code{background:#eef3fc;padding:1px 6px;border-radius:6px;font-size:.9em}
+.su-featured-hero{margin:18px 0 20px;border-radius:16px;overflow:hidden;background:var(--soft);line-height:0}
+.su-featured-hero img{display:block;width:100%;height:auto;aspect-ratio:1200/675;object-fit:cover}
 body.dark .article-content pre{background:#0a1428}
 body.dark .article-content p code{background:#1a2547;color:#d7e6ff}
 
@@ -763,6 +765,7 @@ body.dark .su-ic-perks span{background:#12362c;border-color:#1d5b48;color:#7fe0b
 body.dark .su-share-x{background:#eef2f9;color:#14171a}
 .su-a-soc.tg{color:#1d8fd1}
 .su-a-soc.wa{color:#128c50}
+.su-a-soc.li{color:#0a66c2}
 .su-a-soc a{color:inherit;font-weight:700}
 .su-join-wa,.su-join-tg{display:inline-flex!important;align-items:center;justify-content:center;gap:8px}
 .su-join-inline-btns a{display:inline-flex;align-items:center;gap:8px}
@@ -1023,3 +1026,55 @@ body.dark .su-sb-native,body.dark .su-sb-copy{background:transparent;color:#e8f0
 .su-rel a{color:#0f5bd7;text-decoration:underline;text-underline-offset:2px}
 .su-rel a:hover{color:#0a3f96}
 body.dark .su-rel a{color:#8fc0ff}
+
+/* ==================== v100: focused polish + accessible interaction ====================
+/* One calm focus language across keyboard, touch and dark mode. */
+:root{--su-focus:#f08a32;--su-focus-shadow:0 0 0 3px rgba(240,138,50,.24)}
+:where(a,button,input,select,textarea):focus-visible{outline:3px solid var(--su-focus);outline-offset:3px;box-shadow:var(--su-focus-shadow)}
+.skip-link:focus{clip:auto;width:auto;height:auto;overflow:visible;outline:3px solid var(--su-focus);outline-offset:3px}
+
+/* Keep cards expressive without adding layout work or a new image request. */
+.news,.usedcard,.breaking,.article{isolation:isolate}
+.news{position:relative}
+.news::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;
+  background:linear-gradient(115deg,transparent 34%,rgba(255,255,255,.34) 50%,transparent 66%);
+  transform:translateX(-22%);transition:opacity .2s ease,transform .45s ease;z-index:2}
+.news:hover::after,.news:focus-within::after{opacity:1;transform:translateX(22%)}
+.newsbody,.thumb{position:relative;z-index:3}
+
+/* Filter/search controls read as one tool on small screens. */
+.chips{scroll-margin-top:84px}
+.chip{min-height:38px;transition:background-color .16s ease,color .16s ease,border-color .16s ease,transform .16s ease}
+.chip:hover{border-color:#b8cfee;transform:translateY(-1px)}
+.searchbox input{min-height:42px}
+
+/* Dark-mode surfaces that are easy to miss on article and ad boundaries. */
+body.dark .news::after{background:linear-gradient(115deg,transparent 34%,rgba(255,255,255,.08) 50%,transparent 66%)}
+body.dark .article-content blockquote{background:#16243b;border-left-color:#f0a25f}
+body.dark .su-ad{background:linear-gradient(180deg,#2a2117,#182238);border-color:#6f4c2b}
+body.dark .su-ad-title{color:#e8f0ff}
+body.dark .su-ad-desc,body.dark .su-ad-disc{color:#b7c6dc}
+
+@media(max-width:600px){
+  .wrap{padding-left:14px;padding-right:14px}
+  .article{padding:17px 14px;border-radius:15px}
+  .article-content{font-size:16px;line-height:1.86}
+  .news::after{display:none}
+  .chip{padding-inline:13px}
+}
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .news::after,.chip,.chip:hover{transition:none;transform:none}
+}
+
+/* ==================== v117: verified success-story intake ==================== */
+.su-success-intake{margin:24px 0;padding:22px 24px;border:1px solid var(--line);border-left:4px solid var(--orange);
+  border-radius:16px;background:linear-gradient(135deg,var(--card),var(--soft));box-shadow:var(--shadow)}
+.su-success-intake h2{margin:4px 0 8px;color:var(--navy);line-height:1.3}
+.su-success-intake ul{margin:12px 0;padding-left:22px}.su-success-intake li{margin:4px 0}
+.su-success-intake .su-kicker{color:var(--orange);font-size:11px;font-weight:800;letter-spacing:.12em}
+.su-success-intake .su-button{display:inline-block;padding:10px 18px;border-radius:999px;background:var(--orange);color:#fff;font-weight:800}
+.su-success-intake .su-button:hover{filter:brightness(.95);transform:translateY(-1px)}
+.su-success-intake .su-muted{color:var(--muted);font-size:13px}
+body.dark .su-success-intake{background:linear-gradient(135deg,#17243a,#202b3c);border-color:#3b4b63}
+body.dark .su-success-intake h2{color:#e8f0ff}
