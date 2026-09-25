@@ -358,10 +358,13 @@ PROBLEM  : WordPress REST default ga custom meta accept cheyyadu → bot rank_ma
            (silent mistake — ee roju pattukunna gap)
 FIX 1    : theme inc/seo-bridge.php — 10 keys REST ki register (show_in_rest +
            edit_post auth). Theme activate unte bot meta writes land avutayi.
-FIX 2    : WordPressClient.verify_meta() — publish/update tarvata check:
-           focus keyword/title/description land ayyaya? Ledu ante Telegram ⚠️ WAR +
-           log + result lo seo_meta_missing (fix pointer: seo-bridge)
-FIX 3    : UPDATE path lo kuda verify (purana posts refresh lo kuda same check)
+FIX 2    : WordPressClient.verify_rankmath_meta() — core REST read tarvata
+           StudentUp bridge readback tho **all generated rank_math_* keys** land ayyaya?
+           Focus/secondary keyword string, title, description, social, robots and canonical
+           missing aithe Telegram ⚠️ WAR + log + result lo seo_meta_missing.
+FIX 3    : UPDATE path lo kuda write + bridge readback verify (purana posts refresh lo kuda same check)
+           `wordpress-plugin/studentup-seo-bridge.zip` standalone fallback ga activate cheyandi;
+           local preflight score ni Rank Math UI score ani eppudu claim cheyyadu.
 POST EDIT: bot existing posts ni edit chestundi —
            · python run.py --update <id> [--update-source URL]  (manual)
            · auto_refresh (roju purana posts kotha research tho refresh)

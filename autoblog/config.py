@@ -194,11 +194,17 @@ GEMINI_API_KEYS = [k.strip() for k in _get("GEMINI_API_KEYS", "").split(",")
 GEMINI_RPD_PER_KEY = int(_get("GEMINI_RPD_PER_KEY", "1400"))
 # v18: Rank Math STRICT gate (real panel checks) — target + refine rounds
 RM_TARGET = int(_get("RM_TARGET", "100"))   # v64: 100 target (Rank Math)
+# Rank Math's regular-post content check is a 600-word recommendation. Keep
+# this separate from the optional long-form/top-post quality target so the bot
+# does not add filler merely to satisfy an internal 1500-word rule.
+RM_MIN_WORDS = int(_get("RM_MIN_WORDS", "600"))
 # v95: in-body contextual internal links (paragraph lopala) max count
 CONTEXTUAL_LINKS_MAX = int(_get("CONTEXTUAL_LINKS_MAX", "3"))
 RM_REFINE_ROUNDS = int(_get("RM_REFINE_ROUNDS", "2"))  # v64: 2 rounds
-# v18: AdSense-safe originality floor — ee % kindha post publish cheyyadu
-ORIG_HARD_FLOOR = float(_get("ORIG_HARD_FLOOR", "72"))
+# v18: AdSense-safe originality floor — ee % kindha post publish cheyyadu.
+# 80 keeps a paraphrase-heavy rewrite in review instead of presenting it as
+# StudentUp's own article; the exact-overlap guard below remains mandatory.
+ORIG_HARD_FLOOR = float(_get("ORIG_HARD_FLOOR", "80"))
 # Mobile lo headings peddaga unte — responsive clamp CSS add (1=on)
 MOBILE_HEADLINE_TUNE = _get("MOBILE_HEADLINE_TUNE", "1") not in ("0", "false", "no")
 

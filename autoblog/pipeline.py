@@ -234,7 +234,8 @@ def _rankmath_gate(article: dict, category: str) -> dict:
     Flow: rm100.apply (title/meta/slug/TOC/table/FAQ/links/density/transitions)
        → score check → RM_REFINE_ROUNDS varaku LLM refine (content depth, list items)
        → prathi refine tarvata rm100 malli (rewrite structure break cheyyakunda)
-       → final score article["_rm100"] lo (Telegram + WP meta lo chupistamu)
+       → final score article["_rm100"] lo private preflight ga store chestamu.
+         WordPress Rank Math score ni eppudu fabricate/write cheyyamu.
 
     Mock/no-key flows skip (silently) — score inka compute avutundi.
     """
@@ -719,7 +720,12 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
             description=article["meta_description"],
             seo_title=article.get("seo_title") or article["title"],
             secondary_keywords=article.get("secondary_keywords", []),
+            slug=article.get("slug", ""),
         )
+        # Keep the exact delivery manifest with the candidate. This is not
+        # rendered in the article; it lets the create/update path and tests
+        # prove which fields were intended for WordPress.
+        article["_rankmath_meta"] = dict(meta)
 
     # --- v72: qualification auto-tag (site filter: 10th · 10+2 · డిగ్రీ · పీజీ) ---
     if meta is not None:
@@ -803,16 +809,22 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
         log.error("Live publish blocked: RANK_MATH_META_ENABLED is off")
     if meta and result.get("id"):
         try:
-            required_seo = ["rank_math_focus_keyword", "rank_math_title",
-                            "rank_math_description"]
-            landed = wp.verify_meta(result["id"], required_seo)
+            required_seo = [k for k in meta if k.startswith("rank_math_")]
+            # verify_meta is the legacy/core read; verify_rankmath_meta adds
+            # bridge readback so a hidden REST field is not reported as empty.
+            landed = wp.verify_rankmath_meta(result["id"], required_seo)
             missing = [k for k, ok in landed.items() if not ok]
-            if missing:
+            if missing and not article.get("_mock"):
                 # Generic wp/v2 meta schema failed: use the narrow authenticated
-                # theme bridge, then read back from WordPress for proof.
+                # theme bridge, then read back from WordPress for proof. The
+                # bridge read is important because some Rank Math versions do
+                # not expose registered meta in the normal post response.
                 wp.write_seo_meta(result["id"], meta)
-                landed = wp.verify_meta(result["id"], required_seo)
+                landed = wp.verify_rankmath_meta(result["id"], required_seo)
                 missing = [k for k, ok in landed.items() if not ok]
+            article["_rankmath_landed"] = dict(landed)
+            result["seo_meta_persisted"] = not missing
+            result["seo_meta_keys"] = required_seo
             if missing:
                 log.warning("Rank Math meta land avvaledu: %s (id=%s) — theme seo-bridge "
                             "activate cheyandi (wordpress-theme/studentup/inc/seo-bridge.php)",
@@ -1147,6 +1159,9 @@ def create_from_source(url: str, mock: bool = False, category: str = "",
     article.setdefault("quick_answer", "")
     article.setdefault("faq", [])
     article.setdefault("seo_title", "")
+    # Mock runs can assert the outbound payload, but they must never be
+    # mistaken for proof that a real WordPress bridge persisted it.
+    article["_mock"] = bool(mock)
     if force_draft:
         # Radar/orchestrator output always waits for owner review, irrespective
         # of the site's normal publishing default. It must also pass evidence
@@ -1390,7 +1405,9 @@ def update_post(post_id: int, new_source_urls=None, mock: bool = False) -> Dict:
             description=article["meta_description"],
             seo_title=article.get("seo_title") or title,
             secondary_keywords=article.get("secondary_keywords", []),
+            slug=article.get("slug", ""),
         )
+        article["_rankmath_meta"] = dict(meta)
 
     try:  # v65: update ki kuda certificate (evidence)
         gate = post_gate.run(article, final_html)
@@ -1439,16 +1456,18 @@ def update_post(post_id: int, new_source_urls=None, mock: bool = False) -> Dict:
     log.info("POST UPDATED ✔ id=%s link=%s", post_id, result.get("link"))
     if meta:
         try:
-            landed = wp.verify_meta(post_id, ["rank_math_focus_keyword",
-                                              "rank_math_title",
-                                              "rank_math_description"])
+            required_seo = [k for k in meta if k.startswith("rank_math_")]
+            # The underlying verify_meta read remains part of the compatibility
+            # path; verify_rankmath_meta supplements it with bridge readback.
+            landed = wp.verify_rankmath_meta(post_id, required_seo)
             missing = [k for k, ok in landed.items() if not ok]
-            if missing:
+            if missing and not mock:
                 wp.write_seo_meta(post_id, meta)
-                landed = wp.verify_meta(post_id, ["rank_math_focus_keyword",
-                                                  "rank_math_title",
-                                                  "rank_math_description"])
+                landed = wp.verify_rankmath_meta(post_id, required_seo)
                 missing = [k for k, ok in landed.items() if not ok]
+            article["_rankmath_landed"] = dict(landed)
+            result["seo_meta_persisted"] = not missing
+            result["seo_meta_keys"] = required_seo
             if missing:
                 log.warning("UPDATE %s: Rank Math meta missing %s", post_id, missing)
         except Exception:

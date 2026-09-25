@@ -145,7 +145,8 @@ def notify_updated_post(article: dict, result: dict) -> None:
     if rm:
         missing = result.get("seo_meta_missing") or []
         lines.append("⛔ Rank Math field readback failed: " + esc(", ".join(missing))
-                     if missing else "✅ Rank Math fields WordPress readback verified")
+                     if missing else
+                     "✅ All generated Rank Math fields WordPress readback verified")
         ui_score = result.get("rank_math_ui_score")
         lines.append((f"🎯 Rank Math stored UI score: <b>{ui_score}/100</b> (read-only)"
                       if ui_score is not None else
@@ -197,8 +198,8 @@ def notify_new_post(article: dict, result: dict) -> None:
             qa_bits.append("⛔ Rank Math fields WordPress readback FAILED: "
                            + esc(", ".join(missing)))
         else:
-            qa_bits.append("✅ Rank Math Focus Keyword, SEO Title, Description "
-                           "WordPress readback verified")
+            qa_bits.append("✅ All generated Rank Math fields (focus/secondary, title, "
+                           "description, social, robots, canonical) WordPress readback verified")
         ui_score = result.get("rank_math_ui_score")
         qa_bits.append((f"🎯 Rank Math stored UI score: <b>{ui_score}/100</b> (read-only)"
                         if ui_score is not None else

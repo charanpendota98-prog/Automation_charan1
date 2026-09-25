@@ -291,10 +291,12 @@ SOURCE CONTENT:
 ============================================================================
 
 STRICT ORIGINALITY RULES (copyright safe — very important):
-- Do NOT copy any sentence, phrase structure, or paragraph from the source.
-- Use ONLY the FACTS/information from the source (scheme names, eligibility, process, numbers).
-- Everything must be freshly written by you in a completely different structure and wording.
+- Do NOT copy any sentence, phrase structure, paragraph, title hook, or section order from the source.
+- Use ONLY the FACTS/information from the source (scheme names, eligibility, process, numbers); separate facts from the source's expression before writing.
+- First plan a new reader journey for StudentUp, then write it. Do not translate, lightly paraphrase, or mechanically walk through the source paragraph by paragraph.
+- Everything must be freshly written by you in a completely different structure and wording, with a distinct opening and distinct H2/H3 phrasing.
 - Write it as if you are an independent expert explaining the topic from scratch.
+- When the facts support it, aim for 700-1000 useful words; never repeat a fact or add generic text just to hit a length target.
 - The published article must read as StudentUp's own article. Do not mention the reference website, source site, automation, AI, evidence score, editorial workflow or "source-backed draft" in the article body.
 - Do not add a byline/review-pending line, reading-time badge, methodology block, or "Best Guide" title suffix.
 
@@ -335,8 +337,10 @@ CONTENT:
 =======================================================================
 {extra_sources_block}
 STRICT ORIGINALITY RULES (copyright safe — very important):
-- Do NOT copy any sentence/phrase from ANY source. Facts only, fresh original writing.
-- Write as an independent expert explaining the topic from scratch.
+- Do NOT copy any sentence, phrase, title hook, section order, or distinctive structure from ANY source. Facts only, fresh original writing.
+- First build an independent outline around the reader's decision or next step; do not merge or translate the source paragraphs in order.
+- Write as an independent expert explaining the topic from scratch, with a distinct opening and your own H2/H3 wording.
+- When the evidence supports it, aim for 700-1000 useful words; never pad, repeat facts, or add generic SEO prose to reach a count.
 - The final post must sound like StudentUp's own blog. Never print source names, source counts, automation/AI notes, evidence confidence, editorial workflow, "Sources checked", "source-backed draft" or review-pending labels in the article.
 - If sources CONFLICT on a number/date, use the most repeated/official value and phrase it as "notification prakaram" (as per notification).
 - Do not add a byline, reading-time badge, methodology block, generic "Best Guide" suffix, or unrelated related-topic links.
@@ -712,7 +716,7 @@ EXACT keys (spellings marakudadu — bot idi parse chestundi):
   "external_links": [{"url": "https://official-portal.gov.in", "text": "Telugu anchor"}],
   "recruitment": {"org_name": "ORG (ONLY if source states)", "org_url": "https://...", "apply_end": "YYYY-MM-DD or empty", "location": "city/state or empty"}
 }
-Rules: content_html KHALI vaddu (1500+ words HTML). faq 4+ items. recruitment facts source lo LEKAPOTE {"org_name": "", "apply_end": ""} — GUESS cheyyakundu.
+Rules: content_html KHALI vaddu (600+ useful words when the topic supports it). Do not pad, repeat or invent facts for length. faq 4+ items. recruitment facts source lo LEKAPOTE {"org_name": "", "apply_end": ""} — GUESS cheyyakundu.
 """
 
 def _key_tag(key: str) -> str:
@@ -1042,6 +1046,7 @@ MUST FIX (item-by-item — Rank Math real checks):
 {fixes}
 
 REWRITE RULES:
+- Keep the draft's verified facts, but rewrite any repaired section in a fresh StudentUp voice; never copy a source-like sentence or preserve a source paragraph order.
 - Keep language easy spoken Telugu + familiar English labels (Eligibility, Age Limit, Fee, Important Dates, Selection Process, Apply Online, Official Website). Avoid pure/formal Telugu and explain unfamiliar terms simply.
 - Title 40-60 chars: focus keyword FIRST words + year + number + power word (Complete/Best/Easy/Top).
 - meta_description 110-156 chars, focus keyword THO start.

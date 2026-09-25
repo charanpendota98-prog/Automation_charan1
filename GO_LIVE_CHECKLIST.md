@@ -119,6 +119,10 @@ Detail docs: `DEPLOY_MILESWEB.md` (cPanel steps) · `DEPLOY_ORACLE_CLOUD.md` (VM
       (`sha256sum wordpress-theme/studentup-theme.zip` — upload chesina zip ide ani verify cheyandi;
       build ippudu **reproducible** — same content ⇒ same sha)
       `wp-admin → Users → Application Passwords` → app password create cheyyandi.
+      **SEO bridge mandatory**: active StudentUp theme lo `inc/seo-bridge.php` load avvali;
+      theme ni update cheyyakapothe `wordpress-plugin/studentup-seo-bridge.zip` ni Plugins → Add New → Upload → Activate cheyandi.
+      Bot post create/update tarvata focus/title/description/social/robots/canonical fields ni
+      authenticated bridge GET tho verify chestundi; bridge missing aithe live promotion aagipothundi.
       **v68**: IndexNow key file ni **theme ne serve chestundi** (`/<key>.key`) — cPanel lo
       upload cheyyalsina pani ledu. Key: `python run.py --index-key-gen` → `.env` →
       `python run.py --push-theme-data`.

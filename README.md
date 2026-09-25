@@ -1821,8 +1821,8 @@ Ippudu moonu layers lo fix:
 | Layer | Enti |
 |---|---|
 | `wordpress-theme/studentup/inc/seo-bridge.php` | 10 Rank Math keys ni REST ki register (show_in_rest + `edit_post` auth) → bot meta writes land avutayi |
-| `WordPressClient.verify_meta()` | publish/update tarvata **verify** — field land avvaledu ante Telegram ⚠️ + log (silent fail ledu) |
-| `pipeline` create + update | rendu chotla verify + `seo_meta_missing` result lo + fix pointer (seo-bridge) |
+| `WordPressClient.verify_rankmath_meta()` | core REST tarvata authenticated bridge readback tho **all generated fields verify** — field land avvaledu ante Telegram ⚠️ + log (silent fail ledu) |
+| `pipeline` create + update | rendu chotla write + readback verify + `seo_meta_missing` result lo + fix pointer (seo-bridge) |
 
 Post edit/refresh capability (mee "edit cheyyagalava?" prashna): `update_post()` REST edit
 (URL/slug same — SEO safe) · `python run.py --update <id>` (manual) · `auto_refresh`
@@ -2395,12 +2395,12 @@ Prathi post lo automatic ga:
 - ✅ **Article + Breadcrumb JSON-LD schema** — visible FAQ remains useful HTML; deprecated FAQPage rich-result markup is intentionally not emitted — `te` language tag tho
 - ✅ **Social OG/Twitter meta** — Facebook/WhatsApp/Twitter preview titles (CTR boost)
 - ✅ **Image alt text** — focus keyword tho alt text
-- ✅ **Rank Math meta** — `rank_math_focus_keyword` (primary + secondary), `rank_math_description`, `rank_math_title` direct REST API dwara
-- ✅ **Content quality** — useful length for the topic, short paragraphs, transition words; no forced 2200-3000-word target
+- ✅ **Rank Math meta** — `rank_math_focus_keyword` (primary + secondary), `rank_math_description`, `rank_math_title`, social, robots and canonical fields through the authenticated REST bridge
+- ✅ **Content quality** — useful length for the topic, short paragraphs, transition words; Rank Math's regular-post 600-word recommendation is a floor, never a reason to add filler
 - ✅ **Meta description** — 140-160 chars keyword tho
 - ✅ **Tables + lists** — snippet-eligible formats
 
-> Tip: WordPress lo **Rank Math plugin active cheyandi** — bot automatic ga plugin meta fill chestundi, editor lo open chuste 90-100/100 score kanipistundi.
+> Tip: WordPress lo **Rank Math plugin + StudentUp SEO bridge active cheyandi**. The bot reads the stored fields back after create/update; it never fabricates or writes `rank_math_seo_score`. The Rank Math UI score is only reported when WordPress has stored one.
 
 ---
 

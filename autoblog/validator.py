@@ -162,7 +162,10 @@ def validate_article(article: Dict, final_html: str = "") -> Dict:
         score += add(0.008 <= density <= 0.025, 5,
                      f"keyword density out of range ({density:.3f})")
 
-    score += add(words >= 1500, 10, f"word count takkuva ({words} < 1500)")
+    from . import config as _cfg
+    min_words = int(getattr(_cfg, "RM_MIN_WORDS", 600))
+    score += add(words >= min_words, 10,
+                 f"word count takkuva ({words} < {min_words})")
     score += add("<table" in html, 5, "table ledu (snippet eligibility)")
     score += add(len(article.get("faq") or []) >= 3, 10, "FAQ 3+ kavali")
     score += add(bool(article.get("external_links")), 4, "external links ledu")
@@ -272,8 +275,10 @@ def rankmath_strict(article: Dict, final_html: str = "") -> Dict:
         _alts = " ".join(re.findall(r'alt="([^"]*)"', " ".join(_imgs))).lower()
         check("kw-in-img-alt", bool(kw) and kw_l in _alts, 4,
               "image alt lo focus keyword pettandi (seo.attach_inline_image)")
-    check("content-length", words >= 1500, 8,
-          f"content {words} words — 1500+ rayandi")
+    from . import config as _cfg
+    min_words = int(getattr(_cfg, "RM_MIN_WORDS", 600))
+    check("content-length", words >= min_words, 8,
+          f"content {words} words — {min_words}+ useful words rayandi; filler vaddu")
     # v83: engine-generated boxes (takeaways/TOC) <li> ni skip — check
     # content STEPS kosam (takeaway summary = step kaadu; self-fail fix).
     li_html = re.sub(r'<div class="su-takeaways".*?</ul>\s*</div>', "",

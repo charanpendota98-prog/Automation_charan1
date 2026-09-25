@@ -491,7 +491,13 @@ class WordPressClient:
             native = self.session.post(native_url, json={
                 "objectID": int(post_id), "objectType": "post", "meta": meta,
             }, timeout=config.HTTP_TIMEOUT)
-            native_ok = native.status_code in (200, 201)
+            native_data = {}
+            try:
+                native_data = native.json() if native.content else {}
+            except ValueError:
+                native_data = {}
+            native_ok = (native.status_code in (200, 201)
+                         and native_data.get("success", True) is not False)
             if native_ok:
                 log.info("Rank Math native meta endpoint accepted post %s", post_id)
             else:
@@ -515,7 +521,13 @@ class WordPressClient:
             data = resp.json()
         except ValueError:
             return native_ok
-        return bool(data.get("ok")) or native_ok
+        saved = data.get("saved") or {}
+        bridge_ok = bool(data.get("ok")) and all(
+            bool(str(saved.get(key, "")).strip()) for key in meta
+        )
+        # A native success may have saved fields before the bridge response;
+        # the following readback remains the source of truth for each value.
+        return bridge_ok or native_ok
 
     def read_rankmath_state(self, post_id: int) -> Dict:
         """Read persisted fields and Rank Math's own stored score, if available.
@@ -559,7 +571,11 @@ class WordPressClient:
             data = self.get_post(post_id)
         except WordPressError:
             return {k: False for k in keys}
+        if not isinstance(data, dict):
+            return {k: False for k in keys}
         meta = data.get("meta") or {}
+        if not isinstance(meta, dict):
+            meta = {}
         out = {}
         for k in keys:
             val = meta.get(k)
@@ -567,6 +583,27 @@ class WordPressClient:
                 val = ", ".join(str(x) for x in val)
             out[k] = bool(str(val or "").strip())
         return out
+
+    def verify_rankmath_meta(self, post_id: int, keys: List[str]) -> Dict[str, bool]:
+        """Verify through core REST first, then the SEO bridge.
+
+        Some WordPress/Rank Math combinations save the fields correctly but do
+        not expose them in ``wp/v2/posts/<id>?context=edit``. Treating that
+        read-path limitation as a missing field caused the bot to report empty
+        SEO keys even after the authenticated bridge had saved them.
+        """
+        result = self.verify_meta(post_id, keys)
+        if all(result.values()):
+            return result
+        try:
+            state = self.read_rankmath_state(post_id)
+            fields = state.get("fields") or {}
+            for key in keys:
+                if fields.get(key):
+                    result[key] = True
+        except Exception:  # noqa: BLE001 — preserve the core REST result
+            log.debug("Rank Math bridge readback unavailable", exc_info=True)
+        return result
 
     def create_post(
         self,

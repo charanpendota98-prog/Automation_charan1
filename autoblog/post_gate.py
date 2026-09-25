@@ -97,8 +97,10 @@ def run(article: dict, html: str = "", media_id: Optional[int] = None,
 
     # ------------------------------------------------------------ CONTENT
     rm = article.get("_rm") or {}
-    add("words", "CONTENT", "Content depth (≥1500 words)", words >= 1500,
-        f"{words} words", "deep research + 1600+ words rayandi", 3)
+    min_words = int(getattr(config, "RM_MIN_WORDS", 600))
+    add("words", "CONTENT", f"Content depth (≥{min_words} useful words)",
+        words >= min_words, f"{words} words",
+        "useful detail add cheyandi; filler tho length penchavaddu", 3)
     dens = (plain.lower().count(kw_l) / words) if (kw_l and words) else 0
     add("density", "CONTENT", "Keyword density (0.4–3%)", 0.004 <= dens <= 0.03,
         f"{dens:.2%} ({plain.lower().count(kw_l)}x)", "rm100 density fix chudandi", 2)

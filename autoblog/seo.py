@@ -3,7 +3,7 @@
 Checks (Rank Math):
   - focus keyword: SEO title lo, meta description lo, URL (slug) lo,
     first paragraph lo, subheadings lo
-  - keyword density (~1-1.5%), content length 1500+ words
+  - keyword density (~1-1.5%), content length at the configured Rank Math recommendation
   - TOC (table of contents), internal links, external links
   - image alt text lo keyword
 """
@@ -821,8 +821,10 @@ def enhance(
                           date_modified=date_modified, list_items=list_items,
                           recruitment=recruitment)
     log.info("SEO enhanced: %d words, keyword=%r", words, focus_keyword)
-    if words < 1200:
-        log.warning("Word count takkuva (%d) — Rank Math full score kosari 1500+ kavali", words)
+    min_words = int(getattr(config, "RM_MIN_WORDS", 600))
+    if words < min_words:
+        log.warning("Word count takkuva (%d) — Rank Math content check kosam %d+ useful words kavali",
+                    words, min_words)
     return html
 
 
@@ -915,7 +917,8 @@ def rankmath_meta(
     description: str,
     seo_title: str,
     secondary_keywords: Optional[List[str]] = None,
-) -> Dict[str, str]:
+    slug: str = "",
+) -> Dict[str, object]:
     """Rank Math REST meta payload (plugin active unte work avtundi).
 
     Focus keyword field lo primary + secondary keywords comma tho —
@@ -937,6 +940,11 @@ def rankmath_meta(
         "rank_math_twitter_description": description[:160],
         "rank_math_twitter_use_open_graph": "on",
     }
+    # Keep the canonical URL explicit when the caller knows the final slug.
+    # WordPress can otherwise retain a stale canonical after an update.
+    if slug:
+        canonical = f"{config.WP_SITE.rstrip('/')}/{slug.strip('/')}/"
+        meta["rank_math_canonical_url"] = canonical
     # Google Discover eligibility: big image preview allow
     # (Rank Math > Titles & Meta lo kuda set cheyandi — idhi per-post)
     if config.DISCOVER_META_ENABLED:

@@ -773,7 +773,7 @@ def sample_article() -> dict:
         body.append("<ul>" + "".join(f"<li>{i}</li>" for i in items) + "</ul>")
         body.append("<p>ఈ విభాగంలోని వివరాలు అధికారిక నోటిఫికేషన్ ఆధారంగా రాశాము. "
                     "అభ్యర్థులు ఒక్కసారి అధికారిక పత్రం చూడటం మంచిది.</p>")
-    # depth: content >= 1500 words
+    # Keep the fixture long enough to exercise the optional long-form checks.
     filler = ("అలాగే గ్రూప్-2 పరీక్షలో తెలుగు, ఇంగ్లీషు, గణితం, రీజనింగ్, సామాన్య "
               "అభ్యసనలు ముఖ్యమైన భాగాలు. అందువల్ల ప్రతి సబ్జెక్టుకు రోజువారీ సమయం "
               "కేటాయించి క్రమం తప్పకుండా సాధన చేస్తే మంచి ఫలితం పొందవచ్చు. ")
@@ -785,7 +785,7 @@ def sample_article() -> dict:
                "మాక్ టెస్ట్‌లు", "పునశ్చరణ చిట్కాలు"):
         body.append(f"<h3>{h3}</h3>")
         body.append("<p>" + filler * 5 + "</p>")
-    # depth guarantee (Rank Math content-length 1500+) — deterministic top-up
+    # depth guarantee for this offline fixture — deterministic top-up
     while len(validator._normalize_words(validator.strip_tags("\n".join(body)))) < 1750:
         body.append("<h3>అదనపు సూచనలు</h3>")
         body.append("<p>" + filler * 5 + "</p>")
