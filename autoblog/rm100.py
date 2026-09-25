@@ -121,6 +121,11 @@ def fix_title(article: dict) -> bool:
         return False
     kt = _kw_title(kw)
     title = _text(article.get("title") or kt)
+    # Do not append or preserve artificial publisher-style hooks. A title is
+    # allowed to use a natural power word, but "Best Guide" made every post
+    # look templated and did not add reader value.
+    title = _text(re.sub(r"\s*(?:[—–-]\s*)?Best Guide\b", "", title,
+                         flags=re.I))
 
     # 1) keyword ledu → front lo pettali
     if kw.lower() not in title.lower():
@@ -137,46 +142,9 @@ def fix_title(article: dict) -> bool:
         year = yr.group(1) if yr else str(date.today().year)
         rest = _text(head[len(kt):]) if head.lower().startswith(kt.lower()) else head
         head = _text(f"{kt} {year} {rest}") if rest else _text(f"{kt} {year}")
-    # 4) power + positive sentiment words. Rank Math scores these separately;
-    # "Complete" is a power word but not a sentiment word in its analyzer.
-    low = head.lower()
-    has_power = any(w in low for w in validator.TITLE_POWER_WORDS)
-    has_sentiment = any(w in low for w in ("best", "easy", "amazing", "excellent"))
-    if (not has_power or not has_sentiment) and "—" in head:
-        # Replace an old generic tail rather than stacking multiple hooks.
-        old_head, old_tail = [x.strip() for x in head.split("—", 1)]
-        if any(x in old_tail.lower() for x in
-               ("complete", "guide", "details", "full information")):
-            head = old_head
-            low = head.lower()
-            has_power = any(w in low for w in validator.TITLE_POWER_WORDS)
-            has_sentiment = any(w in low for w in
-                                ("best", "easy", "amazing", "excellent"))
-    mid = ""
-    tail = ""
-    if not (has_power and has_sentiment):
-        tail = "Best Guide"
-    # 5) compose under 62 — power word ki space RESERVE (Telugu tail trim avvali)
-    new = ""
-    for t in ([tail] if tail else []) + [None]:
-        pass
-    if tail:
-        budget = 62 - 3 - len(tail)
-        h = head
-        if len(h) > budget:                      # Telugu bhagam trim (kw intact)
-            if len(kt) <= budget:
-                keep = h[:budget]
-                h2 = keep.rsplit(" ", 1)[0] if " " in keep else kt
-                h = h2 if len(h2) >= len(kt) else kt
-            else:                                # kw ne peddaga undi → shortest tail
-                tail = "Best"
-                budget = 62 - 3 - len(tail)
-                h = head[:budget].rsplit(" ", 1)[0]
-        new = f"{h} — {tail}"
-    else:
-        new = head
-    if mid and len(new) + 3 + len(mid) <= 62:
-        new = new.replace(" — ", f" — {mid} — ", 1) if " — " in new else f"{new} — {mid}"
+    # 4) Do not force a promotional suffix into the visible H1. The SEO title
+    # can carry a natural power word separately when Rank Math needs it.
+    new = head
     if len(new) > 62:                             # mid/th esthe kuda pedda → word boundary
         cut = new[:62]
         new = cut.rsplit(" ", 1)[0] if " " in cut[:-1] else cut
@@ -186,14 +154,17 @@ def fix_title(article: dict) -> bool:
             if len(new) + 3 + len(e) > 62:
                 break
             new = f"{new} · {e}"
-        while len(new) < 40 and tail == "":
-            new = f"{new} · {kw}"
         if len(new) < 40:
             new = (new + " · " + TELUGU_TAIL)[:62].rsplit(" ", 1)[0]
     article["title"] = new.strip(" -—·") or kt
-    # Keep the actual Rank Math SEO title in lockstep with the tested title;
-    # stale LLM seo_title values were a common reason the editor disagreed.
-    article["seo_title"] = article["title"][:62].rstrip(" -—·")
+    # Keep the visible title natural. Rank Math's title field can use one
+    # concise power word without changing the blog's H1 into a template.
+    seo_title = article["title"][:62].rstrip(" -—·")
+    if not any(w in seo_title.lower() for w in validator.TITLE_POWER_WORDS):
+        rest = seo_title[len(kt):].lstrip(" :—-·")
+        candidate = _text(f"{kt} Complete {rest}")
+        seo_title = candidate[:62].rstrip(" -—·")
+    article["seo_title"] = seo_title
     return True
 
 def fix_meta(article: dict) -> bool:
@@ -526,22 +497,43 @@ def fix_faq(article: dict, html: str) -> str:
                    '<div class="su-faq">\n' + body + "</div>\n")
 
 def fix_links(article: dict, html: str) -> str:
-    """External (source) + internal (site hub) link — kotha URL invent cheyyadu."""
+    """Add useful links without publishing an automation/source disclosure.
+
+    The source URL remains in the private provenance record. If an external
+    link is needed for the SEO check, use a neutral reader label — never
+    "official source" or "we copied/checked this article" wording.
+    """
     out = html
     links = re.findall(r'href="(http[^"]+)"', html)
     host = _host()
     src = _text(article.get("source_url") or "")
     ext = [l for l in links if host and host not in l] if links else []
-    if not ext and src.startswith("http"):
-        out += ('\n<p class="su-source">అధికారిక మూలం: '
-                f'<a href="{_html.escape(src)}" target="_blank" rel="noopener">'
-                f'{_html.escape(_host_of(src))}</a> — ee పోస్ట్‌లోని వివరాలు అక్కడినుంచి '
-                "పరిశీలించి రాశాము.</p>")
+    if not ext:
+        # Only a verified authority/company link belongs in the public body.
+        # A third-party research URL stays private; it must not be presented as
+        # the post's "official source" just to make an SEO check green.
+        authority_suffixes = (".gov.in", ".nic.in", ".gov", ".edu", ".ac.in", ".edu.in")
+        authority_hosts = {"ssc.gov.in", "upsc.gov.in", "tspsc.gov.in", "appsc.gov.in",
+                           "nta.ac.in", "ibps.in", "cbse.gov.in"}
+        def _authority(url: str) -> bool:
+            h = _host_of(url).lower().replace("www.", "")
+            return h in authority_hosts or h.endswith(authority_suffixes)
+        candidates = [
+            item.get("url", "") for item in (article.get("external_links") or [])
+            if isinstance(item, dict) and str(item.get("url", "")).startswith("http")
+            and _authority(str(item.get("url", "")))
+        ]
+        public_url = next((u for u in candidates if u and (not host or host not in u)), "")
+        if not public_url and src.startswith("http") and _authority(src):
+            public_url = src
+        if public_url:
+            out += ('\n<p class="su-reference"><a href="'
+                    f'{_html.escape(public_url)}" target="_blank" rel="noopener">'
+                    "వెరిఫై చేయడానికి Official Website చూడండి</a></p>")
     internal = [l for l in re.findall(r'href="(http[^"]+)"', out) if host and host in l]
     if not internal and config.WP_SITE.startswith("http"):
-        out += ('\n<p class="su-internal">ఇది కూడా చూడండి: '
-                f'<a href="{_html.escape(config.WP_SITE.rstrip("/"))}">తాజా ఉద్యోగ '
-                "నోటిఫికేషన్లు, పరీక్షా అప్‌డేట్లు</a></p>")
+        out += ('\n<p class="su-internal">మరిన్ని సంబంధిత Updates కోసం '
+                f'<a href="{_html.escape(config.WP_SITE.rstrip("/"))}">StudentUp లో చూడండి</a></p>')
     return out
 
 
@@ -642,14 +634,26 @@ def fix_entities(article: dict, html: str) -> str:
         universe = top_post.keyword_universe()
     except Exception:  # noqa: BLE001
         return html
+    # Same broad category is not enough. Ignore generic job/year words and
+    # require a concrete entity overlap, otherwise Anganwadi links can appear
+    # on an unrelated Infor or SSC article.
+    generic = {"2024", "2025", "2026", "2027", "job", "jobs", "recruitment",
+               "notification", "latest", "apply", "online", "details", "telugu",
+               "vacancy", "vacancies", "government", "govt"}
+    toks = {x for x in re.findall(r"[a-z0-9\u0c00-\u0c7f]+", kw.lower())
+            if len(x) > 2 and x not in generic}
     names = []
     if ent:
         names = [e["kw"] for e in universe
-                 if e.get("cluster") == ent.get("name") and e["kw"].lower() != kw.lower()][:4]
+                 if e.get("cluster") == ent.get("name")
+                 and e["kw"].lower() != kw.lower()
+                 and toks.intersection({x for x in re.findall(r"[a-z0-9\u0c00-\u0c7f]+", e["kw"].lower())
+                                        if x not in generic})][:4]
     if len(names) < 2:
-        toks = set(kw.lower().split())
         names = [e["kw"] for e in universe
-                 if len(toks & set(e["kw"].split())) >= 2 and e["kw"].lower() != kw.lower()][:4]
+                 if e["kw"].lower() != kw.lower()
+                 and len(toks.intersection({x for x in re.findall(r"[a-z0-9\u0c00-\u0c7f]+", e["kw"].lower())
+                                            if x not in generic})) >= 1][:4]
     if len(names) < 2:
         return html
     base = config.WP_SITE.rstrip("/")

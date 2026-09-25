@@ -229,19 +229,22 @@ def rankmath_strict(article: Dict, final_html: str = "") -> Dict:
     check("focus-keyword", bool(kw), 4,
           "focus_keyword set cheyandi (exact search phrase)")
     if kw:
-        tl = title.lower()
+        # Rank Math evaluates the SEO title field. The visible H1 remains a
+        # natural article title; seo_title may carry a concise power word.
+        seo_title = (article.get("seo_title") or title).strip()
+        tl = seo_title.lower()
         check("kw-in-title", kw_l in tl, 10, "title lo focus keyword undali")
         _pos = tl.find(kw_l)
         check("kw-title-start", _pos != -1
               and _pos <= max(0, len(tl) // 2 - len(kw_l)), 5,
               "focus keyword TITLE MODALO (first half) vundali")
-        check("title-length", 40 <= len(title) <= 62, 5,
-              f"title {len(title)} chars — 40-60 chars madhya pettandi")
-        check("title-number", bool(re.search(r"\d", title)), 5,
+        check("title-length", 40 <= len(seo_title) <= 62, 5,
+              f"title {len(seo_title)} chars — 40-60 chars madhya pettandi")
+        check("title-number", bool(re.search(r"\d", seo_title)), 5,
               "title lo number (year / vacancy count) undali")
         check("title-power-word",
               any(w in tl for w in TITLE_POWER_WORDS), 4,
-              "title lo power word add (Best/Top/Easy/Complete/Free)")
+              "title lo power word add (Complete/Guide/Top/Easy)")
         md = meta.lower()
         check("kw-in-meta", kw_l in md, 8, "meta description lo focus keyword undali")
         check("meta-length", 110 <= len(meta) <= 160, 4,

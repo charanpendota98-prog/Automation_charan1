@@ -432,8 +432,8 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
             log.exception("Ad manager inject skipped (safe)")
             article["_ads"] = []
 
-    # v44: DEEP POST ENGINE — cross-source verification + visible
-    # "In-Depth Analysis" section + perfect-post flags (drafts).
+    # v44: DEEP POST ENGINE — cross-source verification + private report;
+    # optional visible analysis is reserved for internal/debug exports.
     if not is_quiz and getattr(config, "DEEP_POST_ENABLED", True):
         try:
             from . import deep_research as _dr
@@ -444,7 +444,11 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
                     article.get("title", ""), deep_sources,
                     notebooklm_brief=article.get("_notebooklm_brief", ""),
                     target_year=article.get("_target_year"))
-                final_html = _dr.inject_deep(final_html, _report)
+                # Cross-source analysis is retained for gates and the private
+                # ledger. It is not printed as a confidence/source table in a
+                # normal StudentUp article.
+                if not getattr(config, "PUBLIC_EDITORIAL_CLEAN", True):
+                    final_html = _dr.inject_deep(final_html, _report)
                 article["_deep"] = _report
                 _hard, _warn = _dr.gate_post(final_html, _report, live=False)
                 article["_deep_flags"] = ([f"DEEP: {h}" for h in _hard] +
@@ -470,9 +474,11 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
         article["_source_audit"] = {"applicable": bool(article.get("source_url")),
                                     "ok": False, "flags": ["SOURCE-AUDIT-FAILED"]}
 
-    # Google's Who/How/Why guidance: show readers how automation was used,
-    # who reviews the article, why it exists, and which sources were checked.
-    final_html = google_quality.inject_methodology(final_html, article)
+    # Public article surface: keep the writing, useful SEO structure and
+    # verified links, but remove automation/source-count wrappers. The source
+    # URLs and hashes remain in the private provenance ledger.
+    if getattr(config, "PUBLIC_EDITORIAL_CLEAN", True):
+        final_html = seo.clean_public_article(final_html)
 
     # --- reader-first language + anti-filler audit ---
     # Standard job/exam terms stay in English script; repeated/sodi prose is
@@ -905,6 +911,21 @@ def _append_official_sources(article: dict) -> None:
     from .sources import is_official_domain
     # v87: None-safe (update-path articles lo key missing/None untundi)
     article["external_links"] = article.get("external_links") or []
+    source_hosts = {urlparse(u).netloc.lower().replace("www.", "")
+                    for u in (article.get("_source_urls") or []) if u}
+    # A model may echo the research blog as an "official link". Keep the
+    # private provenance, but do not publish that duplicate attribution block;
+    # genuine authority/company links supplied separately remain available.
+    filtered = []
+    for item in article["external_links"]:
+        if not isinstance(item, dict):
+            continue
+        u = str(item.get("url", "")).strip()
+        host = urlparse(u).netloc.lower().replace("www.", "") if u else ""
+        if host and host in source_hosts and not is_official_domain(host):
+            continue
+        filtered.append(item)
+    article["external_links"] = filtered
     known_links = {str(item.get("url", "")).rstrip("/")
                    for item in article["external_links"] if isinstance(item, dict)}
     for source_url in (article.get("_source_urls") or [])[:6]:
@@ -963,8 +984,8 @@ def create_from_source(url: str, mock: bool = False, category: str = "",
             "tags": [str(generation_year), "Students", "Telugu", "Guide", "News"],
             "banner_text": f"Students Guide {generation_year}",
             "content_html": (
-                "<p>Ee article source nunchi facts teesi original ga "
-                f"rayabadda test article. Source: {src.title}</p>"
+                "<p>ఈ ఆర్టికల్‌లోని ముఖ్యమైన విషయాలను సులభమైన భాషలో "
+                f"వివరించాము: {src.title}</p>"
                 "<h2>Key Details</h2><ul><li>Point one</li><li>Point two</li></ul>"
                 "<h2>Process</h2><ol><li>Step one</li><li>Step two</li></ol>"
                 "<h2>FAQ</h2><h3>Question?</h3><p>Answer</p>"
@@ -1327,7 +1348,8 @@ def update_post(post_id: int, new_source_urls=None, mock: bool = False) -> Dict:
         log.exception("update source audit failed")
         article["_source_audit"] = {"applicable": True, "ok": False,
                                     "flags": ["SOURCE-AUDIT-FAILED"]}
-    final_html = google_quality.inject_methodology(final_html, article)
+    if getattr(config, "PUBLIC_EDITORIAL_CLEAN", True):
+        final_html = seo.clean_public_article(final_html)
     final_html, article["_content_quality"] = content_quality.polish_and_audit(
         final_html, article.get("focus_keyword", ""))
     try:

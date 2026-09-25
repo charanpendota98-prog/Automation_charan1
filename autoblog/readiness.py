@@ -298,7 +298,8 @@ def c_people_first() -> List[dict]:
     required = ["Who:</strong>", "How:</strong>", "Why:</strong>",
                 "Sources checked", "no_guarantees", "human_reviewer"]
     present = sum(token in module for token in required)
-    wired = ("google_quality.inject_methodology" in pipe
+    wired = (("seo.clean_public_article" in pipe
+              or "google_quality.inject_methodology" in pipe)
              and "google_quality.audit" in pipe
              and "LIVE-PUBLISH BLOCKED: Google people-first" in pipe)
     styled = ".su-methodology" in css

@@ -295,6 +295,8 @@ STRICT ORIGINALITY RULES (copyright safe — very important):
 - Use ONLY the FACTS/information from the source (scheme names, eligibility, process, numbers).
 - Everything must be freshly written by you in a completely different structure and wording.
 - Write it as if you are an independent expert explaining the topic from scratch.
+- The published article must read as StudentUp's own article. Do not mention the reference website, source site, automation, AI, evidence score, editorial workflow or "source-backed draft" in the article body.
+- Do not add a byline/review-pending line, reading-time badge, methodology block, or "Best Guide" title suffix.
 
 IMPROVE & EXPAND (advanced content — very important):
 - ADD extra valuable sections the source may not have: detailed step-by-step process, required documents list, common mistakes to avoid, pro tips, comparison table, extra background context.
@@ -335,7 +337,9 @@ CONTENT:
 STRICT ORIGINALITY RULES (copyright safe — very important):
 - Do NOT copy any sentence/phrase from ANY source. Facts only, fresh original writing.
 - Write as an independent expert explaining the topic from scratch.
+- The final post must sound like StudentUp's own blog. Never print source names, source counts, automation/AI notes, evidence confidence, editorial workflow, "Sources checked", "source-backed draft" or review-pending labels in the article.
 - If sources CONFLICT on a number/date, use the most repeated/official value and phrase it as "notification prakaram" (as per notification).
+- Do not add a byline, reading-time badge, methodology block, generic "Best Guide" suffix, or unrelated related-topic links.
 
 RESEARCH AND VALUE STRATEGY (very important):
 - Start from the PRIMARY source's facts, then add only useful, source-backed context that helps a reader act safely (eligibility, fee details, selection stages, documents, dates mentioned).
@@ -649,6 +653,11 @@ NO-COPY RULE (absolute — copyright + Google safety):
 - Vere website/article content nunchi SENTENCES, paragraph structure, headings order copy cheyakudadu.
 - FACTS (names, numbers, dates, process) matrame teesukuni — 100% mana own words lo, mana structure lo ravadam.
 - Source ki idi "rewrite" kaadu — idi "fresh expert article on the same facts". Duplicate-content penalty endukuadu.
+
+PUBLIC ARTICLE VOICE:
+- Article ni StudentUp tana readers kosam rasina normal blog laga rayandi; source website, competitor website, automation, AI, evidence score, editorial workflow, "source-backed draft", "Sources checked", reading time or review-pending text ni content lo mention cheyakandi.
+- Byline ni article body lo inject cheyakandi. Title ki "Best Guide" / "— Best Guide" lanti artificial suffix vadakandi.
+- Related links ante same topic/entity ki nijanga panikoche pages matrame; broad category lo unna unrelated jobs ni list cheyakandi.
 
 10X CONTENT STRATEGY (top publisher standard — beat every competitor):
 - Competitors ichina information ANNI + inka ekkuva ivvali: common mistakes section, pro tips, real numbers (pay matrix levels, fees, stipends — well-known values matrame), minimum 2 tables (info table + comparison table).

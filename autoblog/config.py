@@ -119,6 +119,11 @@ SOURCE_CONFIDENCE_MIN = int(_get("SOURCE_CONFIDENCE_MIN", "65"))
 SOURCE_AUDIT_BLOCK = _get("SOURCE_AUDIT_BLOCK", "1") not in ("0", "false", "no")
 # Repetition/filler audit is separate from Rank Math and blocks low-value prose.
 CONTENT_QUALITY_BLOCK = _get("CONTENT_QUALITY_BLOCK", "1") not in ("0", "false", "no")
+# Public posts should read like StudentUp's own editorial work. Provenance,
+# source hashes and review diagnostics remain in the private ledger, but
+# automation/source-count boilerplate is not inserted into reader-facing copy.
+# Set PUBLIC_EDITORIAL_CLEAN=0 only for an internal audit/debug export.
+PUBLIC_EDITORIAL_CLEAN = _get("PUBLIC_EDITORIAL_CLEAN", "1") not in ("0", "false", "no")
 # E-E-A-T: Article schema publisher logo (rich results kosam; optional)
 SITE_LOGO_URL = _get("SITE_LOGO_URL", "")
 # Google Discover: per-post robots lo max-image-preview:large (RM meta)

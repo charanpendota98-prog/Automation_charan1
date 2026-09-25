@@ -106,15 +106,60 @@ def ensure_keyword_first_para(html: str, keyword: str, seed: str = "") -> str:
     return intro + html
 
 
+def _topic_tokens(value: str) -> set:
+    """Useful topic tokens for relevance filtering (not a keyword stuffing rule)."""
+    stop = {
+        "the", "and", "for", "with", "from", "this", "that", "latest",
+        "new", "update", "updates", "guide", "complete", "details", "telugu",
+        "2024", "2025", "2026", "2027", "notification", "recruitment", "jobs",
+        "job", "apply", "online", "direct", "link", "official", "website",
+    }
+    words = re.findall(r"[a-z0-9\u0c00-\u0c7f]+", (value or "").lower())
+    return {w for w in words if len(w) > 2 and w not in stop}
+
+
+def relevant_internal_links(links: List[Dict[str, str]], focus_keyword: str,
+                           max_links: int = 6) -> List[Dict[str, str]]:
+    """Keep only sibling links that genuinely share the article's topic.
+
+    A recent post from the same broad category is not automatically a related
+    article. In particular, an Infor post must not receive Anganwadi links just
+    because both happen to be job posts. Category/home fallbacks are useful for
+    crawlability, but they are deliberately not shown in the related block.
+    """
+    topic = _topic_tokens(focus_keyword)
+    if not topic:
+        return []
+    out, seen = [], set()
+    for item in links or []:
+        url = (item.get("link") or item.get("url") or "").strip()
+        title = validator.strip_tags(item.get("title") or "")
+        if not url or url in seen:
+            continue
+        candidate = _topic_tokens(title)
+        # One specific shared entity is enough (e.g. SSC or Infor), while
+        # generic words such as recruitment/year never make a link relevant.
+        if not topic.intersection(candidate):
+            continue
+        seen.add(url)
+        out.append({**item, "link": url, "title": title})
+        if len(out) >= max_links:
+            break
+    return out
+
+
 def add_internal_links(html: str, links: List[Dict[str, str]], seed: str = "") -> str:
-    """Related articles section (internal links) — heading rotate avtundi."""
+    """Add a small, topic-matched related block; unrelated links are omitted."""
     if not links:
         return html
     # v86: long titles truncate (mobile) — read-also `_short_title` merge
     items = "".join(
-        f'<li><a href="{l["link"]}">{_esc(_short_title(l["title"]))}</a></li>'
+        f'<li><a href="{safe_url(l["link"])}">{_esc(_short_title(l["title"]))}</a></li>'
         for l in links[:6]
+        if safe_url(l.get("link", ""))
     )
+    if not items:
+        return html
     heading = _pick(RELATED_HEADINGS, seed)
     section = ('<section class="su-related" aria-labelledby="related-articles">'
                f'<h2 id="related-articles">{heading}</h2><ul>{items}</ul></section>')
@@ -261,7 +306,7 @@ def reading_badge(words: int, minutes: int) -> str:
 
 
 def trust_box(date_str: str, source_domains: Optional[List[str]] = None) -> str:
-    """E-E-A-T context without falsely claiming a human review."""
+    """Legacy trust block kept for internal/debug exports only."""
     domains = ", ".join(source_domains[:4]) if source_domains else "official notification"
     return (
         '<section class="su-trust-box" aria-labelledby="about-this-article">'
@@ -274,6 +319,60 @@ def trust_box(date_str: str, source_domains: Optional[List[str]] = None) -> str:
         f"{getattr(config, 'SUPPORT_EMAIL', '')}</a>కి చెప్పండి — 24 గంటల్లో "
         "(<a href=\"/corrections-policy/\">Corrections Policy</a>).</p></section>"
     )
+
+
+def clean_public_article(html: str) -> str:
+    """Remove machine/editorial chrome from the reader-facing article.
+
+    Source text is used for fact checking and the private provenance ledger;
+    it must not leak into the article as a misleading "source-backed draft"
+    label. This deliberately removes only generated wrapper blocks, not the
+    article's facts, SEO headings, FAQ, schema or verified links.
+    """
+    if not getattr(config, "PUBLIC_EDITORIAL_CLEAN", True):
+        return html
+    out = html or ""
+
+    def _drop_balanced_div(text: str, class_fragment: str) -> str:
+        """Remove a generated div without leaving nested child markup behind."""
+        opening = re.compile(
+            r'<div\b[^>]*class=["\\\'][^"\\\']*' +
+            re.escape(class_fragment) + r'[^"\\\']*["\\\'][^>]*>', re.I)
+        while True:
+            match = opening.search(text)
+            if not match:
+                return text
+            depth, end = 0, None
+            for tag in re.finditer(r'</?div\b[^>]*>', text[match.start():], re.I):
+                raw = tag.group(0)
+                depth += -1 if raw.startswith('</') else 1
+                if depth == 0:
+                    end = match.start() + tag.end()
+                    break
+            if end is None:
+                return text[:match.start()]
+            text = text[:match.start()] + text[end:]
+
+    # Blocks generated by seo.enhance/google_quality. Keep the functions
+    # available for diagnostics, but never ship these wrappers by default.
+    out = _drop_balanced_div(out, "su-related-entities")
+    for pattern in (
+        r'<p\b[^>]*class=["\\\'][^"\\\']*su-reading-badge[^>]*>.*?</p>',
+        r'<div\b[^>]*class=["\\\'][^"\\\']*su-byline[^>]*>.*?</div>',
+        r'<section\b[^>]*class=["\\\'][^"\\\']*su-trust-box[^>]*>.*?</section>',
+        r'<section\b[^>]*class=["\\\'][^"\\\']*su-methodology[^>]*>.*?</section>',
+        r'<p\b[^>]*class=["\\\'][^"\\\']*su-source[^>]*>.*?</p>',
+        r'<div\b[^>]*class=["\\\'][^"\\\']*su-related-entities[^>]*>.*?</div>\s*</div>',
+        r'<div\b[^>]*class=["\\\'][^"\\\']*su-related-entities[^>]*>.*?</div>',
+        r'<section\b[^>]*class=["\\\'][^"\\\']*su-deep[^>]*>.*?</section>',
+        r'<style\b[^>]*>.*?\.su-deep[^{]*\{.*?</style>',
+    ):
+        out = re.sub(pattern, "", out, flags=re.S | re.I)
+    # A model/refine round can put the unwanted suffix into an H1-like heading
+    # or an inline title; the actual post title is normalized in rm100 too.
+    out = re.sub(r"\s*(?:[—–-]\s*)?Best Guide\b", "", out, flags=re.I)
+    out = re.sub(r"\n{3,}", "\n\n", out).strip()
+    return out
 
 
 # ---------------------------------------------------------------- v19
@@ -704,13 +803,15 @@ def enhance(
     # v29: structured facts card uses only model/source-backed values.
     html = key_facts_block(recruitment) + html
     html = add_table_of_contents(html)
-    # v95: in-body contextual links (paragraph lopala) — section links ki ADD
+    # v95: in-body contextual links (paragraph lopala). Related links are
+    # filtered separately so a broad category cannot inject an unrelated post.
     html = contextual_links(html, internal_links,
                             max_links=int(getattr(config, "CONTEXTUAL_LINKS_MAX", 3) or 0),
                             seed=slug)
-    # v86: ONE related block (su-related) — read-also duplicate delete
-    # (same links tho rendu sections = unprofessional; v86 probe finding)
-    html = add_internal_links(html, internal_links, seed=slug)
+    # v86: ONE topic-matched related block. Anganwadi/SSC/etc. must never be
+    # shown on an Infor post merely because all are in a jobs category.
+    related = relevant_internal_links(internal_links, focus_keyword, max_links=6)
+    html = add_internal_links(html, related, seed=slug)
     html = add_external_links(html, external_links)
     # v21: related-questions PAA block (own content, honest answers)
     html += related_questions_block(html, focus_keyword)
