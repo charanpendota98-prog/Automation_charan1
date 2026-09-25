@@ -6,8 +6,10 @@ approval_bot). WhatsApp = text-only alert (no buttons possible).
 
 import html
 import logging
+import re
+from datetime import datetime
 from typing import Optional
-from urllib.parse import quote
+from urllib.parse import quote, urlparse
 
 import requests
 
@@ -61,6 +63,48 @@ def send_telegram(
     return False
 
 
+def send_telegram_photo(
+    photo_url: str,
+    caption_html: str,
+    chat_id: Optional[str] = None,
+    buttons: Optional[dict] = None,
+) -> bool:
+    """Send a public channel post with the article's featured image.
+
+    Telegram fetches the HTTPS image URL itself, so no image bytes or private
+    credentials are uploaded by this process. Captions are intentionally kept
+    below Telegram's 1024-character photo-caption limit.
+    """
+    parsed = urlparse(str(photo_url or ""))
+    if parsed.scheme not in ("http", "https") or not parsed.netloc:
+        return False
+    token = config.TELEGRAM_BOT_TOKEN
+    chat = chat_id or config.TELEGRAM_CHANNEL_CHAT_ID
+    if not token or not chat:
+        log.info("Telegram photo not configured — skipping channel post")
+        return False
+    caption_html = str(caption_html or "").strip()
+    if len(caption_html) > 1000:
+        caption_html = caption_html[:990] + "…"
+    payload = {
+        "chat_id": chat,
+        "photo": str(photo_url),
+        "caption": caption_html,
+        "parse_mode": "HTML",
+    }
+    if buttons:
+        payload["reply_markup"] = buttons
+    try:
+        resp = requests.post(_tg_api(token, "sendPhoto"), json=payload,
+                             timeout=config.HTTP_TIMEOUT)
+        if resp.status_code == 200 and resp.json().get("ok"):
+            return True
+        log.error("Telegram sendPhoto failed: %s", resp.text[:300])
+    except Exception:
+        log.exception("Telegram sendPhoto error")
+    return False
+
+
 def send_whatsapp(text: str) -> bool:
     """CallMeBot free WhatsApp alert (text only, no buttons)."""
     base = config.WHATSAPP_CALLMEBOT_URL
@@ -101,6 +145,104 @@ def post_buttons(post_id: int, link: str) -> dict:
             ],
         ]
     }
+
+
+def _plain(value: object, limit: int = 180) -> str:
+    """Strip article HTML before putting a value in a Telegram caption."""
+    text = html.unescape(re.sub(r"<[^>]+>", " ", str(value or "")))
+    text = re.sub(r"\s+", " ", text).strip()
+    return text[:limit].rstrip()
+
+
+def _safe_iso_date(value: object) -> str:
+    raw = str(value or "").strip()
+    if not re.fullmatch(r"20\d{2}-\d{2}-\d{2}", raw):
+        return ""
+    try:
+        return datetime.strptime(raw, "%Y-%m-%d").strftime("%d %b %Y")
+    except ValueError:
+        return ""
+
+
+def _source_fact(rec: dict, article: dict, *keys: str) -> str:
+    for key in keys:
+        value = rec.get(key) if isinstance(rec, dict) else ""
+        if not value:
+            value = article.get(key, "") if isinstance(article, dict) else ""
+        value = _plain(value, 90)
+        if value:
+            return value
+    return ""
+
+
+def channel_caption(article: dict, result: dict) -> str:
+    """Create the short, student-first caption used after live approval.
+
+    Only structured article fields are shown. Missing vacancy, eligibility,
+    salary or dates are omitted rather than guessed; the article link remains
+    the source of the complete, reviewed details.
+    """
+    article = article or {}
+    result = result or {}
+    rec = article.get("recruitment") or {}
+    if not isinstance(rec, dict):
+        rec = {}
+    title = _plain(article.get("title") or "StudentUp update", 180)
+    link = str(result.get("link") or article.get("link") or "").strip()
+    lines = [f"🔥 <b>{esc(title)}</b>", ""]
+
+    vacancies = _source_fact(rec, article, "vacancies", "vacancy", "post_count", "total_posts")
+    if vacancies and re.fullmatch(r"[\d,]+", vacancies):
+        lines.append(f"👉 <b>Vacancies:</b> {esc(vacancies)}")
+    eligibility = _source_fact(rec, article, "qualification", "eligibility")
+    if eligibility:
+        lines.append(f"👉 <b>Eligibility:</b> {esc(eligibility)}")
+    deadline = _safe_iso_date(rec.get("apply_end") or article.get("apply_end") or article.get("last_date"))
+    lines.append(f"👉 <b>Last Date:</b> {esc(deadline or 'Not announced')}")
+    exam_date = _safe_iso_date(rec.get("exam_date") or article.get("exam_date"))
+    if exam_date:
+        lines.append(f"🗓️ <b>Exam Date:</b> {esc(exam_date)}")
+    fee = _source_fact(rec, article, "application_fee", "fee")
+    if fee:
+        lines.append(f"💳 <b>Application Fee:</b> {esc(fee)}")
+    location = _source_fact(rec, article, "location")
+    if location:
+        lines.append(f"📍 <b>Location:</b> {esc(location)}")
+    salary = _source_fact(rec, article, "salary")
+    if not salary and (rec.get("salary_min") is not None or rec.get("salary_max") is not None):
+        low, high = rec.get("salary_min"), rec.get("salary_max")
+        salary = "₹" + str(low if low is not None else high)
+        if high is not None and high != low:
+            salary += " – ₹" + str(high)
+    if salary:
+        lines.append(f"💰 <b>Salary:</b> {esc(salary)}")
+
+    summary = _plain(article.get("quick_answer") or article.get("meta_description"), 210)
+    if summary and len(lines) <= 3:
+        lines += ["", f"📌 {esc(summary)}"]
+    lines += ["", "✅ <b>Apply / Full Details 👇👇</b>"]
+    if link:
+        lines.append(f'<a href="{esc(link)}">Open StudentUp article →</a>')
+    official = _source_fact(rec, article, "org_url", "official_url")
+    if official and official != link and urlparse(official).scheme in ("http", "https"):
+        lines.append(f'<a href="{esc(official)}">Official notification →</a>')
+    lines += ["", "⚠️ Apply cheyyemundu official notification lo dates, fee & eligibility verify cheyyandi."]
+    return "\n".join(lines)
+
+
+def channel_post(article: dict, result: dict, image_url: str = "") -> bool:
+    """Broadcast one attractive post only after the post is live."""
+    if not config.TELEGRAM_CHANNEL_CHAT_ID or not result.get("link"):
+        return False
+    caption = channel_caption(article, result)
+    link = result.get("link", "")
+    buttons = {"inline_keyboard": [[{"text": "📖 పూర్తి వివరాలు", "url": link}]]}
+    image = image_url or article.get("_media_url") or result.get("image_url") or ""
+    if image and send_telegram_photo(image, caption, buttons=buttons):
+        return True
+    # A missing/failed featured image must not lose the approved announcement.
+    return send_telegram(caption, chat_id=config.TELEGRAM_CHANNEL_CHAT_ID,
+                         buttons=buttons)
 
 
 # ------------------------------------------------------------------ main API
@@ -253,15 +395,12 @@ def notify_new_post(article: dict, result: dict) -> None:
         buttons = post_buttons(post_id, result.get("link", "")) if status == "draft" else None
         send_telegram(text, buttons=buttons)
 
-    # v21: public Telegram CHANNEL broadcast — owned distribution (playbook
-    # advantage #3). ONLY published posts; drafts/mocks never go public.
-    ch = getattr(config, "TELEGRAM_CHANNEL_CHAT_ID", "")
-    if ch and status == "publish" and result.get("link") and not article.get("_mock"):
-        ch_msg = (f"📰 <b>{esc(title)}</b>\n"
-                  f"{esc(excerpt[:130])}\n\U0001f449 {esc(result['link'])}")
-        if config.TELEGRAM_CHANNEL_URL:
-            ch_msg += f"\n\n🔔 Inka alerts: {esc(config.TELEGRAM_CHANNEL_URL)}"
-        send_telegram(ch_msg, chat_id=ch)
+    # Public channel: exactly one attractive broadcast, and only after live
+    # approval. Drafts/mocks never reach students. The featured image is
+    # optional; if it fails, the same caption is sent as a text post.
+    if (getattr(config, "TELEGRAM_CHANNEL_CHAT_ID", "") and
+            status == "publish" and result.get("link") and not article.get("_mock")):
+        channel_post(article, result, image_url=article.get("_media_url", ""))
 
     # WhatsApp text-only alert
     if config.WHATSAPP_CALLMEBOT_URL:

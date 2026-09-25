@@ -70,8 +70,10 @@
 - **Related Questions block:** article own H2 sections nunchi max 3 honest questions/answers — useful for readers, without claiming a rich-result placement.
 - **Structured-data hygiene:** visible FAQs remain in HTML, but deprecated FAQPage and unsupported speakable markup are not emitted.
 - **Public Telegram channel auto-broadcast:** TELEGRAM_CHANNEL_CHAT_ID set
-  cheste prathi PUBLISHED post channel ki automatic (drafts/mocks eppudu
-  pampabadu) — owned distribution stream, Google-dependency lekapote growth.
+  cheste prathi PUBLISHED post channel ki automatic — featured image, short
+  verified fact caption, Apply/Full Details button and official-link caution
+  tho. Drafts/mocks eppudu pampabavu; vacancy/eligibility/date missing aithe
+  bot guess cheyyadu.
 - **GSC data loop:** `run.py --gsc export.csv` ippudu top striking-distance
   query tokens ni state lo save chesi, radar/topic QUEUE ni re-sort chesthundi
   — meeru provide chechina real Google data bot priorities ni drive chesthundi

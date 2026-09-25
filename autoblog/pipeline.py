@@ -899,6 +899,7 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
             # v38: Top Post Score image-alt check ee alt text ni verify chestundi
             if media_id:
                 article["_media_alt"] = alt_text
+                article["_media_url"] = getattr(wp, "last_media_url", "")
             # v94: Article JSON-LD ki `image` (REQUIRED for Google Article rich
             # results + Discover large card). Schema upload ki MUNDU generate
             # ayyindi, anduke ippudu patch chestunnamu (idempotent + safe).
@@ -1126,19 +1127,9 @@ def _after_publish_push(article: Dict, result: Dict) -> None:
             log.info("Google Indexing API ✔ (JobPosting) %s", result.get("link", ""))
     except Exception as exc:  # noqa: BLE001 — indexing best-effort (publish aapadu)
         log.warning("Indexing push fail: %s", exc)
-    # 2) Telegram channel auto-post (instant traffic + social signal)
-    try:
-        if config.TELEGRAM_CHANNEL_CHAT_ID:
-            qa = article.get("_qa") or {}
-            gq = article.get("_google_quality") or {}
-            send_telegram(
-                f"🆕 <b>{esc(article['title'])}</b>\n\n"
-                f"{esc((article.get('meta_description') or '')[:180])}\n\n"
-                f"🔗 {esc(result.get('link', ''))}\n"
-                f"📊 QA {qa.get('score', '-')}/100 · People-first "
-                f"{gq.get('score', '-')}/100 · ~{qa.get('reading_min', '-')} min read",
-                chat_id=config.TELEGRAM_CHANNEL_CHAT_ID,
-            )
+    # Channel broadcast is centralized in notifier.notify_new_post(), which
+    # runs after this indexing step. Keeping one owner here prevents duplicate
+    # channel posts for direct live runs.
     except Exception:
         log.exception("Channel auto-post failed")
 

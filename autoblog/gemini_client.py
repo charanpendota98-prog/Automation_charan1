@@ -40,7 +40,12 @@ RESPONSE_SCHEMA = {
                 "org_name": {"type": "STRING"},
                 "org_url": {"type": "STRING"},
                 "identifier": {"type": "STRING"},
+                "vacancies": {"type": "INTEGER"},
+                "qualification": {"type": "STRING"},
+                "eligibility": {"type": "STRING"},
+                "application_fee": {"type": "STRING"},
                 "apply_end": {"type": "STRING"},
+                "exam_date": {"type": "STRING"},
                 "salary_min": {"type": "INTEGER"},
                 "salary_max": {"type": "INTEGER"},
                 "location": {"type": "STRING"},
@@ -784,9 +789,9 @@ EXACT keys (spellings marakudadu — bot idi parse chestundi):
   "quick_answer": "40-60 word Telugu direct answer with focus keyword",
   "faq": [{"question": "Telugu question?", "answer": "2-3 sentence Telugu answer."}],
   "external_links": [{"url": "https://official-portal.gov.in", "text": "Telugu anchor"}],
-  "recruitment": {"org_name": "ORG (ONLY if source states)", "org_url": "https://...", "apply_end": "YYYY-MM-DD or empty", "location": "city/state or empty"}
+  "recruitment": {"org_name": "ORG (ONLY if source states)", "org_url": "https://...", "vacancies": 0, "qualification": "ONLY if source states", "eligibility": "ONLY if source states", "application_fee": "ONLY if source states", "apply_end": "YYYY-MM-DD or empty", "exam_date": "YYYY-MM-DD or empty", "location": "city/state or empty"}
 }
-Rules: content_html KHALI vaddu (600+ useful words when the topic supports it). Do not pad, repeat or invent facts for length. faq 4+ items. recruitment facts source lo LEKAPOTE {"org_name": "", "apply_end": ""} — GUESS cheyyakundu.
+Rules: content_html KHALI vaddu (600+ useful words when the topic supports it). Do not pad, repeat or invent facts for length. faq 4+ items. Every recruitment number, qualification, fee and date must be copied only from supplied evidence; if absent use 0/empty and write that it is not announced in the article — GUESS cheyyakundu.
 """
 
 def _key_tag(key: str) -> str:
