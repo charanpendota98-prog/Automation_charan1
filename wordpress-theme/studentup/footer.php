@@ -18,8 +18,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<div class="footer-grid">
 			<div>
 				<h4><?php bloginfo( 'name' ); ?></h4>
-				<p><?php echo esc_html( get_bloginfo( 'description' ) ); ?></p>
-				<p>✅ Every post is verified against official sources. Spotted a mistake? Tell us at <a href="mailto:<?php echo esc_attr( studentup_contact_email() ); ?>"><?php echo esc_html( studentup_contact_email() ); ?></a></p>
+				<p>Jobs, scholarships, results and exam updates for students.</p>
+				<p>✅ Spotted a mistake? Tell us at <a href="mailto:<?php echo esc_attr( studentup_contact_email() ); ?>"><?php echo esc_html( studentup_contact_email() ); ?></a></p>
 			</div>
 			<div>
 				<h4>Categories</h4>

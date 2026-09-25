@@ -189,6 +189,22 @@ def channel_caption(article: dict, result: dict) -> str:
         rec = {}
     title = _plain(article.get("title") or "StudentUp update", 180)
     link = str(result.get("link") or article.get("link") or "").strip()
+    is_quiz = (str(article.get("category") or "").strip().lower() == "daily quiz" or
+               "daily quiz" in title.lower())
+    if is_quiz:
+        questions = ""
+        quiz = article.get("_quiz") or {}
+        if isinstance(quiz, dict) and quiz.get("questions"):
+            questions = str(len(quiz["questions"]))
+        lines = ["🧠 <b>Today’s Daily Quiz</b>", "", f"📚 <b>{esc(title)}</b>"]
+        if questions:
+            lines.append(f"👉 <b>Questions:</b> {esc(questions)}")
+        lines += ["", "🎯 Try today’s quiz and check your answers.", "", "✅ <b>Open Quiz 👇👇</b>"]
+        if link:
+            lines.append(f'<a href="{esc(link)}">Start today’s quiz →</a>')
+        lines.append("")
+        lines.append("📌 One free practice quiz per day. Read the explanations after submitting.")
+        return "\n".join(lines)
     lines = [f"🔥 <b>{esc(title)}</b>", ""]
 
     vacancies = _source_fact(rec, article, "vacancies", "vacancy", "post_count", "total_posts")

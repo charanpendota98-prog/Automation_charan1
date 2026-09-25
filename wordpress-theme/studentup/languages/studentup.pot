@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: StudentUp 1.9.9\n"
 "Report-Msgid-Bugs-To: https://studentup.in/\n"
-"POT-Creation-Date: 2026-09-25 18:02+0000\n"
+"POT-Creation-Date: 2026-09-25 18:22+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -153,6 +153,10 @@ msgstr ""
 msgid "Latest Jobs"
 msgstr ""
 
+#: front-page.php:51
+msgid "Latest student updates"
+msgstr ""
+
 #: index.php:26
 msgid "Latest updates"
 msgstr ""
@@ -184,10 +188,6 @@ msgstr ""
 
 #: inc/saved.php:132
 msgid "No saved posts yet. Tap 🔖 on any card to save it for later."
-msgstr ""
-
-#: front-page.php:52
-msgid "Official-source updates for TS & AP students. Always confirm a deadline once in the official notification."
 msgstr ""
 
 #: comments.php:45

@@ -280,8 +280,10 @@ class ApprovalBot:
                         )
                         if media_resp.status_code == 200:
                             image_url = media_resp.json().get("source_url", "")
+                    channel_title = (snapshot.get("title") or {}).get("rendered", title)
                     channel_article = {
-                        "title": (snapshot.get("title") or {}).get("rendered", title),
+                        "title": channel_title,
+                        "category": "Daily Quiz" if "daily quiz" in channel_title.lower() else "",
                         "meta_description": (snapshot.get("excerpt") or {}).get("rendered", ""),
                     }
                     notifier.channel_post(

@@ -1976,6 +1976,9 @@ def create_quiz(topic: str = "", level: int = 0, questions: int = 0,
         "_quiz": quiz,
         "_quiz_level": lvl,
         "_mock": mock,
+        # Daily quiz is one review draft per IST day. Owner approval can
+        # promote it later; the scheduler must never publish it silently.
+        "_force_status": "draft",
     }
     from .main import _safe_slug
     article["slug"] = seo.optimize_slug(

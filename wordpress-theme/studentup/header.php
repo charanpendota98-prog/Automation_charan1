@@ -33,7 +33,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<?php else : ?>
 			<a class="logo" href="<?php echo esc_url( home_url( '/' ) ); ?>">
 				<span class="mark" aria-hidden="true">S</span>
-				<span class="brand"><?php bloginfo( 'name' ); ?><small><?php bloginfo( 'description' ); ?></small></span>
+				<span class="brand"><?php bloginfo( 'name' ); ?></span>
 			</a>
 		<?php endif; ?>
 

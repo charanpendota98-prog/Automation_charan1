@@ -48,8 +48,7 @@ get_header();
 
 <section class="hero hero-slim">
 	<div class="wrap">
-		<h1><?php echo esc_html( get_bloginfo( 'description' ) ? get_bloginfo( 'description' ) : 'Telangana & Andhra Pradesh — jobs, scholarships, results' ); ?></h1>
-		<p class="lede"><?php esc_html_e( 'Official-source updates for TS & AP students. Always confirm a deadline once in the official notification.', 'studentup' ); ?></p>
+		<h1><?php esc_html_e( 'Latest student updates', 'studentup' ); ?></h1>
 	</div>
 </section>
 
