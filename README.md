@@ -2404,6 +2404,10 @@ Prathi post lo automatic ga:
 
 ---
 
+## Evidence-first source validation
+
+Source-derived posts use `SOURCE_PREFLIGHT_REQUIRED=1` by default. Before WordPress receives a draft, the bot requires fetched text for every source, the configured independent-domain and official-source minimums, a cross-source fact report, supported dates/numbers, and an editorial claim ledger. Conflicts, unverified numbers, missing official evidence, or incomplete source extraction stop the run; the bot does not fill the gap with guesses. `SOURCE_AUDIT_BLOCK` remains the final live-publish gate.
+
 ## Daily working style
 
 - Prathi గంట (hourly) scheduler bot ni run chestundi

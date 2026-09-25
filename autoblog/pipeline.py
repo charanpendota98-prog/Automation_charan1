@@ -951,6 +951,61 @@ def _append_official_sources(article: dict) -> None:
         })
 
 
+def _strict_source_preflight(article: Dict, *, allow_mock: bool = False) -> Dict:
+    """Validate evidence before a source-derived article reaches WordPress.
+
+    A source URL/search result is not permission to invent missing facts. This
+    gate requires the fetched source set, an official source, the cross-source
+    report, numeric/date fact support and the claim ledger. It deliberately
+    runs before draft creation, not only before live publishing.
+    """
+    if allow_mock or article.get("article_type") == "quiz":
+        return {"ok": True, "skipped": True}
+    if not getattr(config, "SOURCE_PREFLIGHT_REQUIRED", True):
+        return {"ok": True, "skipped": True, "reason": "disabled by config"}
+    from . import deep_research as _dr
+    from . import editorial_value as _ev
+
+    deep_sources = list(article.get("_deep_sources") or [])
+    report = _dr.build_report(
+        article.get("title", ""), deep_sources,
+        notebooklm_brief=article.get("_notebooklm_brief", ""),
+        target_year=article.get("_target_year"),
+    )
+    article["_deep"] = report
+    audit = _dr.audit_source_set(article)
+    article["_source_audit"] = audit
+    source_texts = []
+    for source in deep_sources:
+        text = source.get("text", "") if isinstance(source, dict) else getattr(source, "text", "")
+        if text:
+            source_texts.append(text)
+    fact_flags = validator.fact_guard(article.get("content_html", ""), source_texts)
+    article["_source_fact_flags"] = fact_flags
+    ledger = _ev.build_ledger(article, article.get("content_html", ""), deep_sources)
+    article["_editorial_value"] = ledger
+    claim_flags = [
+        f"{item.get('value', 'claim')}: source evidence missing"
+        for item in ledger.get("unsupported_claims", [])[:8]
+    ]
+    article["_claim_flags"] = claim_flags
+    hard, warnings = _dr.gate_post(article.get("content_html", ""), report, live=True)
+    result = {
+        "ok": not audit.get("flags") and not fact_flags and not claim_flags and not hard,
+        "audit": audit, "fact_flags": fact_flags,
+        "claim_flags": claim_flags, "deep_hard": hard, "warnings": warnings,
+    }
+    article["_source_preflight"] = result
+    if not result["ok"]:
+        parts = (audit.get("flags", []) + fact_flags + claim_flags + hard)[:8]
+        raise RuntimeError(
+            "SOURCE PREFLIGHT FAILED — article not created because evidence is incomplete: "
+            + "; ".join(parts)
+        )
+    log.info("SOURCE PREFLIGHT PASS ✔ %s", _dr.format_source_audit(audit))
+    return result
+
+
 def create_from_source(url: str, mock: bool = False, category: str = "",
                        notebooklm_brief: str = "",
                        target_year: int | None = None,
@@ -1148,6 +1203,10 @@ def create_from_source(url: str, mock: bool = False, category: str = "",
 
     _append_official_sources(article)
 
+    # Do not spend a WordPress draft slot on an article whose source facts or
+    # claim evidence have not passed the strict source preflight.
+    _strict_source_preflight(article, allow_mock=mock)
+
     # slug safe ga + Rank Math optimize (keyword tokens + stopwords)
     from .main import _safe_slug
     article["slug"] = seo.optimize_slug(
@@ -1273,6 +1332,7 @@ def update_post(post_id: int, new_source_urls=None, mock: bool = False) -> Dict:
     # gov notice links updates lo poyevai!)
     article["_source_urls"] = [e.url for e in extras if getattr(e, "url", "")]
     _append_official_sources(article)
+    _strict_source_preflight(article, allow_mock=mock)
 
     # v84: update kuda rm100 re-run (LLM rewrite structure degrade kakunda +
     # internal preflight fresh). Fail ayina update aagadu (advisory).

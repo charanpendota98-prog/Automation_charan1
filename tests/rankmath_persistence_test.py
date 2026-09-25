@@ -10,7 +10,7 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from autoblog import config, seo  # noqa: E402
+from autoblog import config, pipeline, seo  # noqa: E402
 from autoblog.wordpress_client import WordPressClient  # noqa: E402
 
 
@@ -85,6 +85,59 @@ def test_all_rank_math_fields_are_written_and_bridge_readback_counts():
         config.DISCOVER_META_ENABLED = original_discover
 
 
+def test_source_preflight_rejects_unverified_claims_before_wordpress():
+    source_text = (
+        "SSC Recruitment 2026 has 100 posts. The application deadline is "
+        "15 October 2026. Apply at https://ssc.gov.in/notice. "
+        "The notice explains eligibility, documents, selection stages, registration, "
+        "fee payment, correction instructions, helpdesk details and the official "
+        "application process for eligible candidates. Read the complete notice "
+        "before submitting the form and keep the acknowledgement for records."
+    )
+    article = {
+        "title": "SSC Recruitment 2026 Complete Details",
+        "content_html": (
+            "<p>SSC Recruitment 2026 has 100 posts. Apply before 15 October 2026.</p>"
+        ),
+        "source_url": "https://ssc.gov.in/notice",
+        "_source_urls": [
+            "https://ssc.gov.in/notice",
+            "https://board.gov.in/notice",
+            "https://university.edu.in/notice",
+        ],
+        "_deep_sources": [
+            {"url": url, "title": "Notice", "text": source_text}
+            for url in [
+                "https://ssc.gov.in/notice",
+                "https://board.gov.in/notice",
+                "https://university.edu.in/notice",
+            ]
+        ],
+        "_target_year": 2026,
+    }
+    old = config.SOURCE_PREFLIGHT_REQUIRED
+    config.SOURCE_PREFLIGHT_REQUIRED = True
+    try:
+        report = pipeline._strict_source_preflight(article)
+        assert report["ok"], report
+        assert article["_source_audit"]["official_count"] == 3
+    finally:
+        config.SOURCE_PREFLIGHT_REQUIRED = old
+
+    article["content_html"] = "<p>SSC Recruitment 2026 has 99999 posts.</p>"
+    config.SOURCE_PREFLIGHT_REQUIRED = True
+    try:
+        try:
+            pipeline._strict_source_preflight(article)
+        except RuntimeError as exc:
+            assert "SOURCE PREFLIGHT FAILED" in str(exc)
+        else:
+            raise AssertionError("unsupported numeric claim was not rejected")
+    finally:
+        config.SOURCE_PREFLIGHT_REQUIRED = old
+
+
 if __name__ == "__main__":
     test_all_rank_math_fields_are_written_and_bridge_readback_counts()
-    print("Rank Math persistence regression passed")
+    test_source_preflight_rejects_unverified_claims_before_wordpress()
+    print("Rank Math + source preflight regression passed")

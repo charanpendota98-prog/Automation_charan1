@@ -529,6 +529,15 @@ def audit_source_set(article: Dict) -> Dict:
             url = source.get("url", "") if isinstance(source, dict) else getattr(source, "url", "")
             if url:
                 urls.append(url)
+    # A URL in a search result is not evidence. Every source used for a strict
+    # post must have meaningful extracted text; otherwise the model may be
+    # filling gaps from memory or guessing.
+    empty_sources = []
+    for source in raw:
+        text = source.get("text", "") if isinstance(source, dict) else getattr(source, "text", "")
+        url = source.get("url", "") if isinstance(source, dict) else getattr(source, "url", "")
+        if len((text or "").split()) < 40:
+            empty_sources.append(_domain(url) or url or "unknown")
     has_sources = bool(article.get("source_url") or urls)
     require_all = bool(getattr(config, "SOURCE_REQUIRED_ALL", True))
     applicable = has_sources or (require_all and article.get("article_type") != "quiz")
@@ -552,6 +561,8 @@ def audit_source_set(article: Dict) -> Dict:
     flags: List[str] = []
     if applicable and len(domains) < min_sources:
         flags.append(f"SOURCES {len(domains)}/{min_sources} independent domains")
+    if applicable and empty_sources:
+        flags.append("SOURCE-TEXT-INCOMPLETE " + ", ".join(empty_sources[:3]))
     if applicable and len(official) < min_official:
         flags.append(f"OFFICIAL-SOURCES {len(official)}/{min_official}")
     if applicable and not report:
@@ -568,6 +579,7 @@ def audit_source_set(article: Dict) -> Dict:
         "applicable": applicable,
         "ok": not flags,
         "source_count": len(urls),
+        "source_text_incomplete": empty_sources,
         "independent_domains": len(domains),
         "domains": domains,
         "official_count": len(official),

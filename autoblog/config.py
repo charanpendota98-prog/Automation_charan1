@@ -117,6 +117,9 @@ SOURCE_MIN_LIVE = int(_get("SOURCE_MIN_LIVE", "3"))
 SOURCE_MIN_OFFICIAL = int(_get("SOURCE_MIN_OFFICIAL", "1"))
 SOURCE_CONFIDENCE_MIN = int(_get("SOURCE_CONFIDENCE_MIN", "65"))
 SOURCE_AUDIT_BLOCK = _get("SOURCE_AUDIT_BLOCK", "1") not in ("0", "false", "no")
+# Source-derived posts are not even saved as drafts until the fetched source
+# set, official evidence, numeric/date facts and claim ledger pass preflight.
+SOURCE_PREFLIGHT_REQUIRED = _get("SOURCE_PREFLIGHT_REQUIRED", "1") not in ("0", "false", "no")
 # Repetition/filler audit is separate from Rank Math and blocks low-value prose.
 CONTENT_QUALITY_BLOCK = _get("CONTENT_QUALITY_BLOCK", "1") not in ("0", "false", "no")
 # Public posts should read like StudentUp's own editorial work. Provenance,
