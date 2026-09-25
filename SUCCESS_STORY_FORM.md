@@ -6,7 +6,7 @@ StudentUp can publish up to **three independently verified Telangana/AP success 
 
 1. Create the form in the owner's Google Workspace account.
 2. Turn on a response receipt if appropriate, but do not publish the response sheet.
-3. Use **File upload** only for an optional portrait/photo. Google may require the respondent to sign in; explain that the upload is private and used only for editorial review.
+3. Use **File upload** for one portrait/photo. Google may require the respondent to sign in; explain that the upload is private and used only for editorial review.
 4. Do not ask for Aadhaar, PAN, bank details, OTPs, passwords, certificates, hall tickets or other identity/financial documents.
 5. Restrict the response spreadsheet to the editorial team. Do not put its URL in a public article or `llms.txt`.
 6. Put the final `https://forms.gle/...` URL in `.env` as `SUCCESS_STORY_FORM_URL`, then run `python run.py --push-theme-data`. Or set it in **WordPress Admin → StudentUp → Content & site → Verified Success Story Google Form URL**.
