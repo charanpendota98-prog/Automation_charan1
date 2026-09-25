@@ -7,7 +7,7 @@
 - **Multi-source research:** internet lo same topic articles search chesi, source-backed context ni fact-check flow tho use chestundi; competitor copy/word-count race kaadu
 - **SEO + QA:** focus/secondary keywords, useful Quick Answer, TOC, internal/external links, visible FAQs, Article/Breadcrumb/eligible JobPosting schema, meta tags — Google result guarantee kaadu
 - **Review flow:** posts **DRAFT** lo vastayi → **Telegram ki message** (✅ Publish / 🗑️ Delete buttons) → **one tap lo approve**
-- **Categories:** Scholarships, Govt Jobs, Education News, Exam Updates, Admissions, Results, Internships, Study Tips
+- **Categories:** TS Govt Jobs, AP Govt Jobs, Central Govt Jobs, Private Jobs, Software Jobs, Part Time Jobs, Walkin Jobs, Outsourcing Jobs, Abroad Jobs, Scholarships, Hall Tickets, Results, Internships, Online Education, Current Affairs, Upcoming Exams, Exam Tips, Success Stories
 - **Auto-publish:** WordPress REST API — post + category + tags + featured image + SEO meta
 - **Schedule:** default 3–5 draft slots/day, spread across 6 AM – 10 PM IST; human review decides what goes live
 - **No duplicates:** SQLite state tracks every posted title + source URL

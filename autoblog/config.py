@@ -269,23 +269,36 @@ ACTIVE_HOUR_END = int(_get("ACTIVE_HOUR_END", "22"))      # last posting hour (l
 TIMEZONE = _get("TIMEZONE", "Asia/Kolkata")
 
 # --- Content -------------------------------------------------------------
-CATEGORIES = [
-    c.strip()
-    for c in _get(
-        "CATEGORIES",
-        # LIVE SITE categories (studentup.in wp-json lo unnavi — exact match,
-        # bot duplicate categories create cheyadu, existing IDs reuse avtayi)
-        "Scholarships,Central Govt Jobs,TS Govt Jobs,AP Govt Jobs,"
-        "Private Jobs,Software Jobs,Part Time Jobs,Walkin Jobs,"
-        "Outsourcing Jobs,Hall Tickets,Results,Internships,Online Education,"
-        "Current Affairs,Exam Tips,Upcoming Exams,Abroad Jobs,Success Stories",
-    ).split(",")
-    if c.strip()
-]
+_CATEGORY_ALIASES = {
+    # Older .env files used these broad labels. Normalize them at startup so
+    # they cannot create duplicate WordPress archives beside the canonical map.
+    "govt jobs": "Central Govt Jobs",
+    "education news": "Current Affairs",
+    "exam updates": "Upcoming Exams",
+    "admissions": "Online Education",
+    "study tips": "Exam Tips",
+}
+_raw_categories = _get(
+    "CATEGORIES",
+    # LIVE SITE categories (studentup.in wp-json lo unnavi — exact match,
+    # bot duplicate categories create cheyadu, existing IDs reuse avtayi)
+    "Scholarships,Central Govt Jobs,TS Govt Jobs,AP Govt Jobs,"
+    "Private Jobs,Software Jobs,Part Time Jobs,Walkin Jobs,"
+    "Outsourcing Jobs,Hall Tickets,Results,Internships,Online Education,"
+    "Current Affairs,Exam Tips,Upcoming Exams,Abroad Jobs,Success Stories",
+).split(",")
+CATEGORIES = []
+for _category in _raw_categories:
+    _category = _category.strip()
+    if not _category:
+        continue
+    _canonical = _CATEGORY_ALIASES.get(_category.lower(), _category)
+    if _canonical not in CATEGORIES:
+        CATEGORIES.append(_canonical)
 
-# Category priority — ee categories ki extra tickets (revenue strategy:
-# Jobs high-CPC ads attract chestundi, Results high search volume).
-# Format: "Govt Jobs:4,Results:3,Education News:2" (0 = boost ledu)
+# Category priority — ee canonical categories ki extra tickets (revenue
+# strategy: job/exam intent gets demand, but classification stays editorial).
+# Format: "Central Govt Jobs:4,Results:3,Current Affairs:2" (0 = no boost)
 CATEGORY_PRIORITY = {}
 for _pair in _get("CATEGORY_PRIORITY",
                   "Central Govt Jobs:4,TS Govt Jobs:4,AP Govt Jobs:3,"

@@ -20,13 +20,13 @@ log = logging.getLogger("autoblog.topics")
 
 MOCK_TOPICS = [
     ("Scholarships", "NSP Scholarship 2026 – National Scholarship Portal lo Apply elaa cheyali"),
-    ("Govt Jobs", "SSC MTS 2026 – Complete Preparation Guide Telugu lo"),
-    ("Exam Updates", "Admit Card Download elaa cheyali – Step by Step Guide"),
-    ("Admissions", "TS EAMCET 2026 Counselling – Web Options Priority Tips"),
-    ("Study Tips", "Revision Time Table Plan – Exam Mundu 30 Rojulu"),
+    ("Central Govt Jobs", "SSC MTS 2026 – Complete Preparation Guide Telugu lo"),
+    ("Hall Tickets", "Admit Card Download elaa cheyali – Step by Step Guide"),
+    ("Online Education", "TS EAMCET 2026 Counselling – Web Options Priority Tips"),
+    ("Exam Tips", "Revision Time Table Plan – Exam Mundu 30 Rojulu"),
     ("Internships", "AICTE Internship Portal 2026 – Students ki Free Opportunities"),
     ("Results", "Revaluation vs Recounting – Difference emito Telugu lo"),
-    ("Education News", "SWAYAM & NPTEL Free Courses – Certificate Value emito"),
+    ("Online Education", "SWAYAM & NPTEL Free Courses – Certificate Value emito"),
 ]
 
 # Trending listicle ("stories") ideas — Adda247 style, rotate avtayi
