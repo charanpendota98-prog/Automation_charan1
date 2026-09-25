@@ -74,6 +74,14 @@ Static select chesthe bot posts WP lo untayi kaani site lo kanipinchavu.
 Detail docs: `DEPLOY_MILESWEB.md` (cPanel steps) · `DEPLOY_ORACLE_CLOUD.md` (VM + watchdog + limits) ·
 `DEPLOY.md` (VPS/Docker/PaaS paths).
 
+### Verified Success Stories launch flow
+
+1. Create the owner-controlled Google Form using `SUCCESS_STORY_FORM.md`; keep the response sheet and photo uploads private.
+2. Set `SUCCESS_STORY_FORM_URL` in `.env` and run `python run.py --push-theme-data`, or set the URL in WP Admin → StudentUp → Content & site.
+3. Create a WordPress page with `[studentup_success_story_form]`.
+4. Export responses privately and run `python run.py --success-stories private/google-form-export.csv --success-stories-out private/success-stories-review.json`.
+5. Select no more than three verified TS/AP stories per ISO week. Human editor verifies official links, consent, quote permission and photo rights before creating a draft; there is no auto-publish path.
+
 ---
 
 ## A) Ippude ready (proof tho)

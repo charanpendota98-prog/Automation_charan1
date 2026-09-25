@@ -41,6 +41,7 @@ require_once get_template_directory() . '/inc/saved.php';     // v92: reader boo
 require_once get_template_directory() . '/inc/discover.php';  // v94: Discover large-card image + og dims + CLS/INP
 require_once get_template_directory() . '/inc/upnext.php';    // v96: Up Next session-depth (real pageviews, policy-safe ad refresh)
 require_once get_template_directory() . '/inc/share.php';     // v98: viral share engine (in-content share bar + native sheet)
+require_once get_template_directory() . '/inc/success-stories.php'; // v117: consented TS/AP story intake CTA
 
 /**
  * "Most searched by students" — order okkate source (bot lo autoblog/breaking.py

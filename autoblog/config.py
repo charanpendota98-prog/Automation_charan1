@@ -374,6 +374,14 @@ SERVICE_CENTER_UPLOAD_URL = _get("SERVICE_CENTER_UPLOAD_URL", "").strip()
 SERVICE_CENTER_DB = Path(_get("SERVICE_CENTER_DB", str(BASE_DIR / "service_center.db")))
 SERVICE_RETENTION_DAYS = int(_get("SERVICE_RETENTION_DAYS", "30"))
 
+# --- Verified Success Stories ---------------------------------------------
+# Public intake is optional and never auto-publishes. The editor selects up to
+# three verified TS/AP stories per ISO week after consent and evidence review.
+SUCCESS_STORIES_ENABLED = _get("SUCCESS_STORIES_ENABLED", "1") not in ("0", "false", "no")
+SUCCESS_STORY_FORM_URL = _get("SUCCESS_STORY_FORM_URL", "").strip()
+SUCCESS_STORY_WEEKLY_MAX = max(1, min(7, int(_get("SUCCESS_STORY_WEEKLY_MAX", "3") or "3")))
+SUCCESS_STORY_QUEUE = Path(_get("SUCCESS_STORY_QUEUE", str(BASE_DIR / "output" / "success-stories-review.json")))
+
 # --- v33: Google-facing public page audit ---------------------------------
 PAGESPEED_API_KEY = _get("PAGESPEED_API_KEY", "").strip()
 GOOGLE_AUDIT_TIMEOUT = int(_get("GOOGLE_AUDIT_TIMEOUT", "90"))

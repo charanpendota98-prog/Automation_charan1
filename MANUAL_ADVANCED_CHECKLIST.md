@@ -336,6 +336,9 @@ GATE (pipeline) : rm100 → LLM refine (RM_REFINE_ROUNDS=2, RM_TARGET=100) → r
 WEBSITE OPTIONS : WP Admin → StudentUp (tabs: Ads · Socials · Content · Advanced)
                   REST /wp-json/studentup/v1/options (GET public · POST manage_options)
                   bot --push-theme-data lo 'options' block (socials/adsense/flags)
+SUCCESS STORIES  : `SUCCESS_STORY_FORM.md` → owner-controlled Google Form → private CSV;
+                  `python run.py --success-stories private/export.csv` creates a review-only
+                  manifest (max 3 valid TS/AP stories per ISO week; never auto-publishes).
 THEME 100x      : inc/options.php (admin+REST) · inc/toc.php (auto TOC) ·
                   inc/schema.php (Organization/WebSite/SearchAction/Breadcrumb) ·
                   inc/author-box.php (E-E-A-T + last updated) · inc/pwa.php

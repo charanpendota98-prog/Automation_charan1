@@ -63,6 +63,7 @@ function studentup_option_fields() {
 			'title'  => 'Content & site',
 			'fields' => array(
 				'contact_email' => array( 'Contact email', 'text', '', 'Errors/suggestions — falls back to the admin email if empty' ),
+				'success_story_form_url' => array( 'Verified Success Story Google Form URL', 'text', '', 'Public intake link. Collect consent + evidence only; never ask for Aadhaar, PAN, bank details, OTPs or passwords.' ),
 				'author_name'   => array( 'Editorial team name', 'text', 'StudentUp Editorial Team', 'Shown in the E-E-A-T box under the post' ),
 				'author_bio'    => array( 'Editorial team description', 'textarea', 'We verify from official notifications and government websites, then write it in simple language. If you spot a mistake, email us — we fix it fast.', '' ),
 				'breaking_json' => array( 'Breaking feed (JSON)', 'textarea', '', 'Bot nimpustundi (--push-theme-data). Format: {"items":[{"title":"..","link":"..","time":"..","tag":".."}]}' ),

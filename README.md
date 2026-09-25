@@ -185,7 +185,16 @@ python run.py --theme-audit           # read-only theme check
 python run.py --adsense-ready            # v94: AdSense approval READINESS gate
 python run.py --adsense-kit --dry-run # validate client id, no widget write
 python run.py --adsense-kit           # install/update Auto Ads loader
+python run.py --success-stories private/google-form-export.csv \
+  --success-stories-out private/success-stories-review.json
+# consent/evidence/photo-rights review only — never publishes automatically
 ```
+
+**Verified Success Stories:** Create the owner-controlled Google Form from
+`SUCCESS_STORY_FORM.md`, set `SUCCESS_STORY_FORM_URL`, and run
+`--push-theme-data` (or set the URL in WP Admin → StudentUp → Content & site).
+The private CSV review command selects at most three valid TS/AP stories per
+ISO week. Never place the export, photo files or manifest under `preview/`.
 
 **Honest limitation:** `ADSENSE_CLIENT_ID` set cheyyadam revenue/approval
  guarantee kaadu. AdSense approve ayyaka publisher id tho ads.txt line ni

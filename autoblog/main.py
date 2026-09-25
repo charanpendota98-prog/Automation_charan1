@@ -61,6 +61,29 @@ def _safe_slug(slug: str, fallback_title: str) -> str:
     return slug
 
 
+def success_story_review(csv_path: str, output_path: str = "") -> int:
+    """Private Google Forms CSV → consent/evidence review manifest.
+
+    This command never calls WordPress and never publishes. The CSV and
+    manifest must remain outside public web roots; the owner controls deletion.
+    """
+    from . import success_story_intake
+
+    source = Path(csv_path).expanduser()
+    target = Path(output_path or config.SUCCESS_STORY_QUEUE).expanduser()
+    try:
+        rows = success_story_intake.load_csv(source)
+        manifest = success_story_intake.write_manifest(rows, target)
+    except Exception as exc:  # noqa: BLE001
+        print(f"❌ success-story review failed: {exc}")
+        return 1
+    print("VERIFIED SUCCESS STORIES — PRIVATE REVIEW ONLY")
+    print(f"  selected: {len(manifest['selected'])} · deferred/rejected: {len(manifest['rejected'])}")
+    print(f"  weekly cap: {config.SUCCESS_STORY_WEEKLY_MAX} · manifest: {target}")
+    print("  ⚠️  Human evidence, consent and photo-rights review required; nothing was published.")
+    return 0
+
+
 def generate_one(category: str, mock: bool, mock_index: int = 0,
                  trend_topic: str = "") -> dict:
     """Generate an article with duplicate-avoidance retries."""
@@ -1780,6 +1803,10 @@ def main() -> int:
                              "the site-wide Auto Ads loader widget")
     parser.add_argument("--ensure-adsense", action="store_true",
                         help="AdSense approval: mandatory pages auto-create + full checklist")
+    parser.add_argument("--success-stories", default="", metavar="CSV",
+                        help="v117: private Google Forms CSV → consent/evidence review manifest (never publishes)")
+    parser.add_argument("--success-stories-out", default="", metavar="JSON",
+                        help="v117: private output path (default SUCCESS_STORY_QUEUE)")
     parser.add_argument("--keywords", action="store_true",
                         help="keyword dominance engine: matrix + coverage + autocomplete")
     parser.add_argument("--polish", action="store_true",
@@ -2029,6 +2056,9 @@ def main() -> int:
         from . import adsense_ready
 
         return adsense_ready.run()
+
+    if args.success_stories:
+        return success_story_review(args.success_stories, args.success_stories_out)
 
     if args.adsense_kit:
         from . import site_setup
