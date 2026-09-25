@@ -59,6 +59,9 @@ get_header();
 				<?php endif; ?>
 
 				<?php echo wp_kses_post( studentup_save_button( 0, 'su-save-single' ) ); // v92: 🔖 save-for-later ?>
+				<?php if ( function_exists( 'studentup_tool_buttons' ) ) : ?>
+					<?php echo wp_kses_post( studentup_tool_buttons( 0, 'single' ) ); ?>
+				<?php endif; ?>
 
 				<?php echo function_exists( 'studentup_expired_notice' ) ? wp_kses_post( studentup_expired_notice() ) : ''; ?>
 

@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'STUDENTUP_VERSION', '1.9.9' );  // v119: LCP image + conditional frontend asset loading
+define( 'STUDENTUP_VERSION', '1.9.9' );  // v120: LCP assets + student compare/reminder/print utilities
 
 require_once get_template_directory() . '/inc/options.php';
 require_once get_template_directory() . '/inc/qual-filter.php';  // v72: 10th/Inter/Degree/PG filter (auto tags)
@@ -42,6 +42,7 @@ require_once get_template_directory() . '/inc/discover.php';  // v94: Discover l
 require_once get_template_directory() . '/inc/upnext.php';    // v96: Up Next session-depth (real pageviews, policy-safe ad refresh)
 require_once get_template_directory() . '/inc/share.php';     // v98: viral share engine (in-content share bar + native sheet)
 require_once get_template_directory() . '/inc/success-stories.php'; // v117: consented TS/AP story intake CTA
+require_once get_template_directory() . '/inc/student-tools.php'; // v120: compare, reminders and print/PDF utility layer
 
 /**
  * "Most searched by students" — order okkate source (bot lo autoblog/breaking.py

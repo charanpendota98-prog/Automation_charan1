@@ -4,7 +4,7 @@ Requires at least: 6.0
 Tested up to: 6.7
 Stable tag: 1.9.9
 Requires PHP: 7.4
-Version: 1.9.6
+Version: 1.9.9
 License: GNU General Public License v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Tags: news, education, blog, custom-logo, custom-menu, featured-images, translation-ready, right-sidebar, block-styles, wide-blocks
@@ -48,7 +48,12 @@ user tho App Password ivvandi (Administrator role).
 
 == Changelog ==
 
-= 1.9.9 (2026-09-25, v119 performance hardening + verified story sharing) =
+= 1.9.9 (2026-09-25, v120 student utility layer + v119 performance hardening) =
+* Compare up to three posts locally without an account or reader profile.
+* Export a confirmed ISO deadline as a local calendar `.ics` reminder; missing or invalid dates never create a guessed reminder.
+* Add accessible Print / PDF actions, keyboard-safe dialogs, reduced-motion styling and dark-mode utility surfaces.
+* Keep compare metadata in browser storage only; remind readers to confirm official notifications before acting.
+
 * Featured 1200×675 image is rendered on article pages with eager LCP loading,
   async decoding, reserved aspect ratio and cache-busted theme assets.
 * Conditional third-party resource hints: AdSense/GA4 connections are not opened
