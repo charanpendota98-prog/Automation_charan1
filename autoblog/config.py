@@ -152,7 +152,10 @@ RADAR_HOUR = int(_get("RADAR_HOUR", "7"))               # first radar slot (IST)
 RADAR_INTERVAL_HOURS = int(_get("RADAR_INTERVAL_HOURS", "6"))  # 4x/day scan
 RADAR_DISTRICTS_PER_RUN = int(_get("RADAR_DISTRICTS_PER_RUN", "10"))
 RADAR_SOURCES_PER_RUN = int(_get("RADAR_SOURCES_PER_RUN", "10"))
-RADAR_POSTS_PER_DAY = int(_get("RADAR_POSTS_PER_DAY", "2"))
+# Strictly source-backed review drafts per radar day. Increase from the old
+# 2-post cap so discovered job opportunities are not silently left unprepared;
+# the evidence/preflight gates still block unsupported or stale notices.
+RADAR_POSTS_PER_DAY = int(_get("RADAR_POSTS_PER_DAY", "10"))
 
 # v59: site బ్రేకింగ్ న్యూస్ feed (radar → preview/data/breaking.json → ticker)
 BREAKING_ENABLED = _get("BREAKING_ENABLED", "1") not in ("0", "false", "no")
@@ -194,6 +197,13 @@ GEMINI_MAX_OUTPUT_TOKENS = int(_get("GEMINI_MAX_OUTPUT_TOKENS", "32768"))
 # v18: Multiple Gemini keys — 429 quota rotation (comma-separated okka line)
 GEMINI_API_KEYS = [k.strip() for k in _get("GEMINI_API_KEYS", "").split(",")
                    if k.strip()]
+
+
+def gemini_configured() -> bool:
+    """Whether at least one configured model key can serve draft generation."""
+    return bool(GEMINI_API_KEY or GEMINI_API_KEYS)
+
+
 GEMINI_RPD_PER_KEY = int(_get("GEMINI_RPD_PER_KEY", "1400"))
 # v18: Rank Math STRICT gate (real panel checks) — target + refine rounds
 RM_TARGET = int(_get("RM_TARGET", "100"))   # v64: 100 target (Rank Math)

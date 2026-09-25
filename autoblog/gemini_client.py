@@ -446,7 +446,7 @@ Return ONLY valid JSON."""
 
 def generate_listicle(topic: str, recent_titles: List[str], year: int) -> Dict:
     """Trending listicle article (Top 10 jobs lanti stories)."""
-    if not config.GEMINI_API_KEY:
+    if not config.gemini_configured():
         raise GeminiError("GEMINI_API_KEY not set")
     avoid_block = ""
     if recent_titles:
@@ -501,7 +501,7 @@ def generate_top_post(blueprint: Dict, year: int = 0) -> Dict:
     Blueprint ni prompt ga istham — MODEL facts invent cheyyakudadu;
     structure/on-page plan matrame blueprint nunchi vastundi.
     """
-    if not config.GEMINI_API_KEY and not getattr(config, "GEMINI_API_KEYS", []):
+    if not config.gemini_configured():
         raise GeminiError("GEMINI_API_KEY not set")
     from . import top_post as _tp
 
@@ -553,7 +553,7 @@ def generate_quiz(topic: str, topic_te: str, level: int, n: int,
                   year: int) -> Dict:
     """Bilingual exam-grade MCQ set. Returns normalized quiz dict.
     Raises GeminiError after retries (validation feedback appended)."""
-    if not config.GEMINI_API_KEY and not _api_keys():
+    if not config.gemini_configured():
         raise GeminiError("GEMINI_API_KEY not set")
     prompt = QUIZ_PROMPT_TEMPLATE.format(
         topic=topic, topic_te=topic_te, level=level, n=n, year=year,
@@ -618,7 +618,7 @@ def generate_update(
     year: int,
 ) -> Dict:
     """Published article + kotha research -> improved version (same URL)."""
-    if not config.GEMINI_API_KEY:
+    if not config.gemini_configured():
         raise GeminiError("GEMINI_API_KEY not set")
     prompt = UPDATE_PROMPT_TEMPLATE.format(
         title=existing_title,
@@ -993,7 +993,7 @@ def generate_article(
     trend_topic: Google Trends nunchi vachina trending topic (optional) —
     aa topic meede article rastundi (fresh trending content).
     """
-    if not config.GEMINI_API_KEY:
+    if not config.gemini_configured():
         raise GeminiError("GEMINI_API_KEY not set")
 
     avoid_block = ""
@@ -1062,7 +1062,7 @@ Return ONLY valid JSON (same schema)."""
 
 def refine_article(article: Dict, fixes: List[str]) -> Dict:
     """v18: Rank Math gate fix round — same topic, corrected draft."""
-    if not config.GEMINI_API_KEY and not getattr(config, "GEMINI_API_KEYS", []):
+    if not config.gemini_configured():
         raise GeminiError("GEMINI_API_KEY not set")
     prompt = REFINE_PROMPT_TEMPLATE.format(
         title=article.get("title", ""),
@@ -1093,7 +1093,7 @@ def generate_article_from_source(
     source-backed context and fact checking; the model must not copy or
     mechanically combine competitor pages.
     """
-    if not config.GEMINI_API_KEY:
+    if not config.gemini_configured():
         raise GeminiError("GEMINI_API_KEY not set")
 
     avoid_block = ""

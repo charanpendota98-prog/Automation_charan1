@@ -167,7 +167,7 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
 
     # --- explicit source URL mode (--url / Telegram) -----------------------
     if source_url:
-        if not mock and not config.GEMINI_API_KEY:
+        if not mock and not config.gemini_configured():
             log.error("GEMINI_API_KEY set kavali! .env file lo key pettandi.")
             return 2
         brief = ""
@@ -328,8 +328,7 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
                 and now_hour >= config.QUIZ_HOUR
                 and not state.meta_get(config.STATE_PATH,
                                        f"quizdate:{today.isoformat()}")):
-            if not mock and not config.GEMINI_API_KEY \
-                    and not getattr(config, "GEMINI_API_KEYS", []):
+            if not mock and not config.gemini_configured():
                 log.warning("QUIZ skip — GEMINI_API_KEY ledu")
             else:
                 try:
@@ -379,7 +378,7 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
                 and not getattr(config, "AUTO_SOURCE_ONLY", True)):
             log.info("Listicle slot (%d/%d today) — trending story mode",
                      lcount + 1, config.LISTICLES_PER_DAY)
-            if not mock and not config.GEMINI_API_KEY:
+            if not mock and not config.gemini_configured():
                 log.error("GEMINI_API_KEY ledu — listicle skip")
             else:
                 try:
@@ -395,10 +394,15 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
     queued = sources.pending_from_queue()
     if queued:
         log.info("Sources queue lo URL dorikindi — original rewrite mode: %s", queued)
-        if not mock and not config.GEMINI_API_KEY:
-            log.error("GEMINI_API_KEY ledu — ee URL retryable ga unchutanu")
-            sources.mark_done_and_clean(
-                queued, completed=False, details="GEMINI_API_KEY unavailable; draft deferred"
+        if not mock and not config.gemini_configured():
+            # Keep the URL in sources_queue.txt. A missing model key is an
+            # environment/setup issue, not a failed opportunity; deleting it
+            # here made the bot appear to do nothing and lost review work.
+            log.error("GEMINI_API_KEY ledu — URL pending ga preserve chesanu")
+            state.mark_source_retry(config.STATE_PATH, queued)
+            state.record_radar_event(
+                config.STATE_PATH, "draft_deferred", queued,
+                details="GEMINI_API_KEY unavailable; source remains pending",
             )
         else:
             completed = False
@@ -435,7 +439,7 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
     cat = category or topic_engine.pick_category(config.STATE_PATH)
     log.info("Category selected: %s%s", cat, " (forced)" if category else "")
 
-    if not mock and not config.GEMINI_API_KEY:
+    if not mock and not config.gemini_configured():
         log.error("GEMINI_API_KEY set kavali! .env file lo key pettandi.")
         return 2
 
@@ -561,7 +565,8 @@ def show_status() -> int:
         print("Radar audit : " + ", ".join(
             f"{name}={event_counts[name]}" for name in (
                 "queued", "duplicate_opportunity", "duplicate_url", "stale_notice",
-                "fetch_failure", "draft_failed", "draft_ready") if event_counts[name]
+                "fetch_failure", "validation_blocked", "draft_failed", "draft_deferred",
+                "draft_ready") if event_counts[name]
         ) or "no events")
     except Exception as exc:  # noqa: BLE001 — status must remain useful
         log.debug("Radar status unavailable: %s", exc)
@@ -714,10 +719,12 @@ def doctor() -> int:
 
     # 1) Gemini key + live validation
     def _gemini():
-        if not config.GEMINI_API_KEY:
+        key = config.GEMINI_API_KEY or (config.GEMINI_API_KEYS[0]
+                                        if config.GEMINI_API_KEYS else "")
+        if not key:
             raise RuntimeError("GEMINI_API_KEY ledu (.env)")
         r = _rq.get(f"{config.GEMINI_API_BASE}/models",
-                    params={"key": config.GEMINI_API_KEY}, timeout=15)
+                    params={"key": key}, timeout=15)
         if r.status_code != 200:
             raise RuntimeError(f"API {r.status_code} — key invalid?")
         n = len(r.json().get("models", []))
@@ -1041,7 +1048,7 @@ def radar_run(process_posts: bool = True) -> int:
     if not process_posts:
         print("  (posts processing skip — --dry-run mode)")
         return 0
-    if not config.GEMINI_API_KEY:
+    if not config.gemini_configured():
         print("  GEMINI_API_KEY ledu — queue fill ayyindi, posts skip")
         return 0
 
