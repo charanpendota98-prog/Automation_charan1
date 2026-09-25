@@ -866,6 +866,8 @@ body.dark .su-saved-all{color:#8fb6ff}
 @media (prefers-reduced-motion:reduce){
  .su-save-btn,.su-saved-tab,.su-saved-toast{transition:none}
 }
+/* v120: saved list polish — clear on laptop and comfortable on phone */
+.su-saved-list{display:grid;gap:7px}.su-saved-row{background:var(--soft);border:1px solid rgba(15,46,98,.08);border-top:0;border-radius:12px;padding:9px 8px;transition:background .14s,border-color .14s,transform .14s}.su-saved-row:hover{background:#edf4ff;border-color:rgba(21,96,216,.22);transform:translateY(-1px)}.su-saved-title{color:var(--navy);font-size:13px;font-weight:750}.su-saved-item:focus-visible{outline:3px solid var(--orange);outline-offset:2px;border-radius:8px}.su-saved-page-fallback{border:0;background:transparent;font:inherit;cursor:pointer;padding:0;text-align:left}.su-saved-page .su-saved-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,270px),1fr));gap:14px}.su-saved-page .su-saved-row{min-height:82px;background:var(--card);box-shadow:0 8px 24px rgba(15,46,98,.08);border-top:1px solid rgba(15,46,98,.1)}body.dark .su-saved-row{background:#1a2b45;border-color:rgba(255,255,255,.1)}body.dark .su-saved-row:hover{background:#213b60}body.dark .su-saved-title{color:#e8f0ff}
 
 /* === v93: MENU + HEADER UI POLISH (approved preview design parity) ===
  * Problem (user report): fallback menu Home + 9 flat categories ga render ayyi,

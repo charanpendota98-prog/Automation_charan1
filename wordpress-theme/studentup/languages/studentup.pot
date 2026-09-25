@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: StudentUp 1.9.9\n"
 "Report-Msgid-Bugs-To: https://studentup.in/\n"
-"POT-Creation-Date: 2026-09-25 17:51+0000\n"
+"POT-Creation-Date: 2026-09-25 18:02+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -35,7 +35,7 @@ msgstr ""
 msgid "Added"
 msgstr ""
 
-#: inc/saved.php:202
+#: inc/saved.php:214
 msgid "All saved posts removed."
 msgstr ""
 
@@ -55,11 +55,11 @@ msgstr ""
 msgid "Clear"
 msgstr ""
 
-#: inc/saved.php:130
+#: inc/saved.php:140
 msgid "Clear all"
 msgstr ""
 
-#: inc/saved.php:123
+#: inc/saved.php:129
 #: inc/upnext.php:140
 msgid "Close"
 msgstr ""
@@ -177,12 +177,12 @@ msgstr ""
 msgid "No results — try a different word."
 msgstr ""
 
-#: inc/saved.php:151
-#: inc/saved.php:200
+#: inc/saved.php:161
+#: inc/saved.php:212
 msgid "No saved posts yet. Open any post and tap 🔖 Save."
 msgstr ""
 
-#: inc/saved.php:126
+#: inc/saved.php:132
 msgid "No saved posts yet. Tap 🔖 on any card to save it for later."
 msgstr ""
 
@@ -198,7 +198,7 @@ msgstr ""
 msgid "Open comparison"
 msgstr ""
 
-#: inc/saved.php:129
+#: inc/saved.php:136
 msgid "Open the saved page"
 msgstr ""
 
@@ -210,7 +210,7 @@ msgstr ""
 msgid "Post comment"
 msgstr ""
 
-#: inc/saved.php:198
+#: inc/saved.php:210
 msgid "Post saved — open 🔖 any time to read it later."
 msgstr ""
 
@@ -246,7 +246,7 @@ msgstr ""
 msgid "Recent articles"
 msgstr ""
 
-#: inc/saved.php:203
+#: inc/saved.php:215
 msgid "Recently read"
 msgstr ""
 
@@ -254,11 +254,15 @@ msgstr ""
 msgid "Reminder file downloaded. Add it to your calendar."
 msgstr ""
 
-#: inc/saved.php:201
+#: inc/saved.php:213
 msgid "Remove all saved posts?"
 msgstr ""
 
-#: inc/saved.php:197
+#: inc/saved.php:208
+msgid "Remove this post from saved"
+msgstr ""
+
+#: inc/saved.php:209
 msgid "Removed from saved"
 msgstr ""
 
@@ -267,23 +271,24 @@ msgid "Reply to %s"
 msgstr ""
 
 #: inc/saved.php:99
-#: inc/saved.php:195
+#: inc/saved.php:205
 msgid "Save"
 msgstr ""
 
 #: inc/saved.php:98
+#: inc/saved.php:207
 msgid "Save this post for later"
 msgstr ""
 
 #: header.php:91
-#: inc/saved.php:121
-#: inc/saved.php:196
+#: inc/saved.php:127
+#: inc/saved.php:206
 msgid "Saved"
 msgstr ""
 
 #: header.php:56
-#: inc/saved.php:115
-#: inc/saved.php:119
+#: inc/saved.php:121
+#: inc/saved.php:125
 msgid "Saved posts"
 msgstr ""
 
@@ -307,7 +312,7 @@ msgstr ""
 msgid "Social media"
 msgstr ""
 
-#: inc/saved.php:199
+#: inc/saved.php:211
 msgid "Storage is not available in this browser (private mode?) — saving is off."
 msgstr ""
 
@@ -337,6 +342,10 @@ msgstr ""
 
 #: inc/upnext.php:91
 msgid "Up next — read this too"
+msgstr ""
+
+#: inc/saved.php:138
+msgid "View saved here"
 msgstr ""
 
 #: inc/cta.php:74

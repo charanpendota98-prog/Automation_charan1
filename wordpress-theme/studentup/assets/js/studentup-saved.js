@@ -92,6 +92,7 @@
       b = btns[i];
       on = isSaved(b.getAttribute("data-id"));
       b.setAttribute("aria-pressed", on ? "true" : "false");
+      b.setAttribute("aria-label", on ? (I18N.savedLabel || "Remove from saved") : (I18N.saveLabel || "Save this post for later"));
       b.classList.toggle("on", on);
       txt = b.querySelector(".su-save-txt");
       if (txt) { txt.textContent = on ? (I18N.saved || "Saved") : (I18N.save || "Save"); }
