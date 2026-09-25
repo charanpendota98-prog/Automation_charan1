@@ -457,6 +457,8 @@ body.dark .post-nav a{color:#9ec4ff}
 .article-content pre{background:#0f2e62;color:#e7f0ff;border-radius:10px;padding:12px 14px;overflow-x:auto;font-size:13.5px;line-height:1.6}
 .article-content code{font-family:ui-monospace,Consolas,monospace}
 .article-content p code{background:#eef3fc;padding:1px 6px;border-radius:6px;font-size:.9em}
+.su-featured-hero{margin:18px 0 20px;border-radius:16px;overflow:hidden;background:var(--soft);line-height:0}
+.su-featured-hero img{display:block;width:100%;height:auto;aspect-ratio:1200/675;object-fit:cover}
 body.dark .article-content pre{background:#0a1428}
 body.dark .article-content p code{background:#1a2547;color:#d7e6ff}
 

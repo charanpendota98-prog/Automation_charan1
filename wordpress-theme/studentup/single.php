@@ -47,6 +47,17 @@ get_header();
 					<?php // Byline is intentionally omitted from the article header; schema retains publisher/author data. ?>
 				</div>
 
+				<?php if ( has_post_thumbnail() ) : ?>
+					<figure class="su-featured-hero">
+						<?php the_post_thumbnail( 'studentup-discover', array(
+							'loading'       => 'eager',
+							'fetchpriority' => 'high',
+							'decoding'      => 'async',
+							'alt'           => esc_attr( get_the_title() ),
+						) ); ?>
+					</figure>
+				<?php endif; ?>
+
 				<?php echo wp_kses_post( studentup_save_button( 0, 'su-save-single' ) ); // v92: 🔖 save-for-later ?>
 
 				<?php echo function_exists( 'studentup_expired_notice' ) ? wp_kses_post( studentup_expired_notice() ) : ''; ?>
