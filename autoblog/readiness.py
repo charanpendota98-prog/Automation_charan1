@@ -111,30 +111,43 @@ def c_pillars_and_keywords() -> List[dict]:
     cats = len(config.CATEGORIES)
     ents = len(top_post.ENTITIES)
     uni = len(top_post.keyword_universe())
-    src = len(sources_grid.SOURCES_GRID)
-    daily = len([s for s in sources_grid.SOURCES_GRID if s.get("daily")])
-    ok = (cats, ents, uni, src) == (17, 221, 12_344, 180)
-    line = f"{cats} pillars · {ents} entities · {uni:,} keywords · {src} sources ({daily} daily)"
+    grid = sources_grid.SOURCES_GRID
+    src = len(grid)
+    daily = len([s for s in grid if s.get("daily")])
+    grid_cats = {str(s.get("cat", "")).strip() for s in grid if s.get("cat")}
+    missing_cats = sorted(grid_cats - set(config.CATEGORIES))
+    # Coverage is data-driven: source expansion must not turn a valid grid into
+    # a false failure merely because an old release hard-coded 180 sources.
+    ok = (cats >= len(grid_cats) and not missing_cats and ents >= 221
+          and uni >= 12_344 and src >= 250 and daily >= 50)
+    line = (f"{cats} pillars · {ents} entities · {uni:,} keywords · "
+            f"{src} sources ({daily} daily)"
+            + (f" · missing categories: {', '.join(missing_cats)}" if missing_cats else ""))
     return [_ok("Coverage (pillars/keywords/sources)", line, "CONTENT ENGINE")
             if ok else _bad("Coverage (pillars/keywords/sources)", line, "CONTENT ENGINE",
-                            "v58/v59 counts sync cheyandi")]
+                            "source-grid/config categories and keyword counts sync cheyandi")]
 
 
 def c_latest_news_engine() -> List[dict]:
     """'Latest posts anni vasthaya?' — radar sweep capacity + post plan."""
+    from . import sources_grid
+
     interval = getattr(config, "RADAR_INTERVAL_HOURS", 6)
     sweeps = max(1, 24 // max(1, interval))
     districts = 33 + 26
+    grid = sources_grid.SOURCES_GRID
+    source_count = len(grid)
+    daily = len([s for s in grid if s.get("daily")])
     posts_day = getattr(config, "RADAR_POSTS_PER_DAY", 2)
     plan = getattr(config, "POSTS_PER_DAY", "")
-    line = (f"radar {sweeps}x/day · {districts} districts · Google News తెలుగు + 180 sources · "
-            f"radar posts {posts_day}/day")
+    line = (f"radar {sweeps}x/day · {districts} districts · Google News తెలుగు + "
+            f"{source_count} sources ({daily} daily) · radar posts {posts_day}/day")
     if plan:
         line += f" · plan {plan}"
-    ok = sweeps >= 4 and districts == 59
+    ok = sweeps >= 4 and districts == 59 and source_count >= 250 and daily >= 50
     return [_ok("Latest-news engine (freshness)", line, "CONTENT ENGINE")
             if ok else _bad("Latest-news engine (freshness)", line, "CONTENT ENGINE",
-                            "RADAR_INTERVAL_HOURS=6 pettandi (4x/day)")]
+                            "RADAR_INTERVAL_HOURS=6 and a populated 250+ source grid required")]
 
 
 def c_schema() -> List[dict]:

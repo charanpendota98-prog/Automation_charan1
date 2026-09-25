@@ -4,6 +4,8 @@
 **Ee file = mee haath tho cheyyalsina ANNI — exact order, exact commands.**
 Bot automatic ga chesthunna varam rework cheyakapovadu — idi mee 15-min/day ritual matrame.
 
+> **2026-09-25 inventory note:** the repository currently contains **99/99 test-suite files**. This is an inventory count only; it does not claim that production credentials, live integrations, or Google rankings are already complete.
+
 ---
 
 ## PART 0 — ONE-TIME SETUP (Day 1 · ~90 min)

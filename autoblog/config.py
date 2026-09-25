@@ -278,7 +278,7 @@ CATEGORIES = [
         "Scholarships,Central Govt Jobs,TS Govt Jobs,AP Govt Jobs,"
         "Private Jobs,Software Jobs,Part Time Jobs,Walkin Jobs,"
         "Outsourcing Jobs,Hall Tickets,Results,Internships,Online Education,"
-        "Current Affairs,Exam Tips,Upcoming Exams,Abroad Jobs",
+        "Current Affairs,Exam Tips,Upcoming Exams,Abroad Jobs,Success Stories",
     ).split(",")
     if c.strip()
 ]

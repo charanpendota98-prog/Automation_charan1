@@ -13,6 +13,8 @@
 - **No duplicates:** SQLite state tracks every posted title + source URL
 - **WhatsApp alerts** too (optional)
 
+> **2026-09-25 inventory note:** the repository currently contains **99/99 test-suite files**. This is an inventory count, not a claim that every owner-side integration (WordPress, GSC, GA4, Gemini, Telegram) is configured or that Google rankings are guaranteed.
+
 ## 📡 v15–v17.1: Breaking News Radar + 105 Official Sources + Keyword Dominance
 - **District Radar:** TS 33 + AP 26 districts Google News (Telugu) — breaking
   news **6 గంటలకోసారి** scan (4×/day). Education-relevant matrame → auto draft.
