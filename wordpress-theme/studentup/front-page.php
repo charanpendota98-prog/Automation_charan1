@@ -46,11 +46,7 @@ get_header();
 
 <div class="wrap"><?php studentup_ad( 'leaderboard' ); ?></div>
 
-<section class="hero hero-slim">
-	<div class="wrap">
-		<h1><?php esc_html_e( 'Latest student updates', 'studentup' ); ?></h1>
-	</div>
-</section>
+<h1 class="screen-reader-text"><?php esc_html_e( 'Latest student updates', 'studentup' ); ?></h1>
 
 <main id="main">
 	<div class="wrap">

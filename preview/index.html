@@ -71,6 +71,7 @@
     .round{min-width:44px}
     input,select,textarea{font-size:16px}   /* iOS zoom-on-focus fix */
     button,a{font:inherit}a{text-decoration:none;color:inherit}.wrap{max-width:1220px;margin:auto;padding:0 24px}
+    .screen-reader-text{position:absolute!important;clip:rect(1px,1px,1px,1px);width:1px;height:1px;overflow:hidden;margin:-1px;padding:0;border:0}
     .skip{position:absolute;left:-9999px;top:0;background:var(--navy);color:#fff;padding:10px 16px;z-index:99;border-radius:0 0 10px 0}
     .skip:focus{left:0}
     :focus-visible{outline:3px solid var(--orange);outline-offset:2px;border-radius:6px}
@@ -713,7 +714,7 @@
   </div>
 
   <div id="top"></div>
-  <section class="hero hero-slim"><div class="wrap">
+  <section class="hero hero-slim screen-reader-text" aria-label="Page title"><div class="wrap">
     <h1>Latest student updates</h1>
   </div></section>
 
