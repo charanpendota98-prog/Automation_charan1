@@ -1485,7 +1485,10 @@ provenance/featured/excerpt/slug).
 **Fixes (6):**
 1. `seo.py` — read-also duplicate delete; `su-related` single block +
    `_short_title` + "వీటిని కూడా చదవండి" rotation (4 headings)
-2. `pipeline._append_official_sources` — gov/edu matrame official-links;
+2. `pipeline._append_official_sources` — exact URLs from fetched HTML/PDF/text
+   evidence or the verified official primary source only; semantic application /
+   notice / result / admit-card / syllabus / fee / organization / contact map,
+   resolve secondary targets, and keep redirect/canonical audit private;
    news sources skip (su-source + trust-box cover); dedupe
 3. `sources.is_official_domain` — hosts + full URLs (pipeline gate)
 4. `rm100._anchor_id` — ASCII-only (pure-Telugu → section-N); seo side

@@ -10,9 +10,12 @@ import json
 import logging
 import re
 from datetime import date
+from html import unescape
 from pathlib import Path
 from typing import Dict, Optional
 from urllib.parse import urlparse
+
+import requests
 
 from . import (config, content_quality, gemini_client, google_quality, image_gen,
                notifier, post_gate, qual, research, rm100, seo, sources, state,
@@ -46,6 +49,7 @@ def _save_provenance(article: Dict) -> None:
             "created": date.today().isoformat(),
             "notebooklm_claims": article.get("_notebooklm_claims", 0),
             "sources": records,
+            "official_link_audit": article.get("_official_link_audit", {}),
         }, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
@@ -64,6 +68,14 @@ def _source_identity_meta(article: Dict) -> Dict[str, str]:
         out["studentup_source_url"] = primary
     if urls:
         out["studentup_source_urls"] = json.dumps(urls[:6], ensure_ascii=False)
+    # These fields are written only after _append_official_sources has built a
+    # verified evidence map. Never persist the model's raw recruitment URL.
+    apply_url = str(article.get("application_url") or "").strip()
+    org_url = str(article.get("verified_org_url") or "").strip()
+    if sources.is_valid_source_url(apply_url):
+        out["studentup_apply_url"] = apply_url
+    if sources.is_valid_source_url(org_url):
+        out["studentup_org_url"] = org_url
     return out
 
 
@@ -1238,43 +1250,329 @@ def _after_publish_push(article: Dict, result: Dict) -> None:
         log.exception("Channel auto-post failed")
 
 
-def _append_official_sources(article: dict) -> None:
-    """Provenance → visible official links (v86 gated).
+def _source_dict(source) -> dict:
+    """Return only serialisable source evidence fields."""
+    if isinstance(source, dict):
+        return source
+    return {
+        "url": getattr(source, "url", ""),
+        "title": getattr(source, "title", ""),
+        "canonical_url": getattr(source, "canonical_url", ""),
+        "outbound_links": getattr(source, "outbound_links", []) or [],
+        "outbound": getattr(source, "outbound", []) or [],
+    }
 
-    Article independently written; links let a student verify a date/fee
-    instead of trusting an AI summary. ONLY official domains → external
-    links ("అధికారిక లింక్స్"); news/blog sources stay out (su-source +
-    trust-box already give provenance, mislabel kakunda).
+
+def _url_key(value: str) -> str:
+    """Compare URLs conservatively: scheme/host case and trailing slash only."""
+    try:
+        parsed = urlparse(str(value or "").strip())
+        if parsed.scheme not in ("http", "https") or not parsed.netloc:
+            return ""
+        path = parsed.path or "/"
+        if path != "/":
+            path = path.rstrip("/") or "/"
+        return f"{parsed.scheme.lower()}://{parsed.netloc.lower()}{path}{('?' + parsed.query) if parsed.query else ''}"
+    except ValueError:
+        return ""
+
+
+def _link_record(url: str, *, source_url: str, source_title: str = "",
+                 link_type: str = "official_notice", anchor_text: str = "",
+                 primary: bool = False) -> dict:
+    host = urlparse(url).netloc.lower().replace("www.", "")
+    domain_class = ("official_explicit" if host in sources.OFFICIAL_HOSTS else
+                    "official_suffix" if sources.is_official_domain(host) else "external")
+    return {
+        "url": url,
+        "exact_url": url,
+        "anchor_text": anchor_text or source_title[:180],
+        "text": anchor_text or source_title[:180],
+        "source_url": source_url,
+        "source_title": source_title,
+        "canonical_url": url,
+        "final_url": url if primary else "",
+        "domain_class": domain_class,
+        "link_type": link_type,
+        "verification_status": "verified_primary_source" if primary else "present_in_source_evidence",
+        "primary_source": bool(primary),
+    }
+
+
+def _topic_tokens(*values: str) -> set:
+    stop = {"official", "website", "online", "apply", "application", "notice",
+            "notification", "download", "click", "here", "the", "and", "for",
+            "from", "with", "2026", "2025", "india", "home", "portal"}
+    tokens = set()
+    for value in values:
+        tokens.update(t for t in re.findall(r"[a-z0-9]{4,}", str(value or "").lower())
+                      if t not in stop)
+    return tokens
+
+
+def _authority_evidence_allowed(record: dict) -> bool:
+    """Allow non-government authorities only with an explicit source label."""
+    url = str(record.get("exact_url") or record.get("url") or "")
+    if sources.is_official_domain(url):
+        return True
+    label = str(record.get("anchor_text") or record.get("text") or "").lower()
+    kind = str(record.get("link_type") or "unknown")
+    return kind in {"application", "organization", "contact", "fee_payment"} and bool(
+        re.search(r"official|career|apply|application|registration|payment|fee|contact|website|portal",
+                  label, re.I))
+
+
+def _resolve_evidence_link(record: dict, article: dict) -> tuple[bool, dict]:
+    """Resolve an evidence link and fail closed on bad redirects/pages.
+
+    The primary fetched source is already validated by ``fetch_source``. A
+    secondary outbound URL must survive a real HTTP resolution, remain on an
+    official host, and not land on an obvious error/home redirect. The final
+    URL is private audit data; public HTML uses the exact evidence URL.
     """
-    from .sources import is_official_domain
-    # v87: None-safe (update-path articles lo key missing/None untundi)
+    item = dict(record)
+    if item.get("primary_source"):
+        final_url = item.get("canonical_url") or item.get("url", "")
+        if final_url and not sources.is_official_domain(final_url):
+            item["final_url"] = final_url
+            item["verification_status"] = "rejected_primary_nonofficial_canonical"
+            return False, item
+        item["final_url"] = final_url
+        item["verification_status"] = "verified_primary_source"
+        return True, item
+    url = str(item.get("exact_url") or item.get("url") or "").strip()
+    if not sources.is_valid_source_url(url) or not _authority_evidence_allowed(item):
+        item["verification_status"] = "rejected_not_authority_evidence"
+        return False, item
+    try:
+        response = requests.get(url, headers={"User-Agent": "studentup-link-check/1.0"},
+                                timeout=min(int(config.HTTP_TIMEOUT), 10),
+                                allow_redirects=True)
+        final_url = str(response.url or url)
+        final_host = urlparse(final_url).netloc
+        item["final_url"] = final_url
+        item["resolved_status"] = int(response.status_code)
+        if response.status_code < 200 or response.status_code >= 400:
+            item["verification_status"] = "rejected_http_status"
+            return False, item
+        original_host = urlparse(url).netloc.lower().replace("www.", "")
+        final_host_key = final_host.lower().replace("www.", "")
+        if (not sources.is_official_domain(final_host)
+                and final_host_key != original_host):
+            item["verification_status"] = "rejected_redirect_nonofficial"
+            return False, item
+        content_type = response.headers.get("content-type", "").lower()
+        if "html" in content_type or not content_type:
+            from bs4 import BeautifulSoup
+            soup = BeautifulSoup(response.text[:250000], "html.parser")
+            page_title = unescape((soup.title.get_text(" ", strip=True)
+                                   if soup.title else ""))
+            page_h1 = unescape((soup.find("h1").get_text(" ", strip=True)
+                                if soup.find("h1") else ""))
+            page_heading = f"{page_title} {page_h1}".lower()
+            item["destination_title"] = (page_title or page_h1)[:180]
+            if not page_heading.strip():
+                item["verification_status"] = "rejected_no_destination_title"
+                return False, item
+            expected = _topic_tokens(
+                article.get("title", ""), item.get("source_title", ""),
+                item.get("anchor_text", ""), item.get("link_type", ""))
+            destination = _topic_tokens(page_title, page_h1, final_url)
+            overlap = sorted(expected.intersection(destination))
+            item["destination_topic_overlap"] = overlap[:12]
+            if (len(destination) >= 2 and expected and not overlap
+                    and item.get("link_type") not in {"organization", "contact"}):
+                item["verification_status"] = "rejected_wrong_topic_redirect"
+                return False, item
+            if re.search(r"404|not found|page unavailable|access denied|server error",
+                         page_heading, re.I):
+                item["verification_status"] = "rejected_error_page"
+                return False, item
+            # A redirect to a generic official home page is not a proof of the
+            # application/result purpose claimed by the article.
+            if page_heading.strip() in {"home", "homepage", "official website"}:
+                item["verification_status"] = "rejected_generic_home"
+                return False, item
+        item["verification_status"] = (
+            "verified_resolved_official" if sources.is_official_domain(final_host)
+            else "verified_resolved_evidence_external")
+        return True, item
+    except requests.RequestException as exc:
+        item["verification_status"] = "rejected_unreachable"
+        item["verification_error"] = str(exc)[:180]
+        return False, item
+
+
+def _append_official_sources(article: dict) -> None:
+    """Build public links only from exact, verified source evidence.
+
+    Model-proposed URLs are treated as untrusted suggestions. A URL is
+    eligible only when it is the fetched official primary source or the exact
+    URL of an anchor found in fetched source evidence. Each selected link is
+    resolved before rendering, and its evidence/final URL stays in the private
+    audit ledger.
+    """
     article["external_links"] = article.get("external_links") or []
-    source_hosts = {urlparse(u).netloc.lower().replace("www.", "")
-                    for u in (article.get("_source_urls") or []) if u}
-    # A model may echo the research blog as an "official link". Keep the
-    # private provenance, but do not publish that duplicate attribution block;
-    # genuine authority/company links supplied separately remain available.
-    filtered = []
+    source_urls = [str(u).strip() for u in (article.get("_source_urls") or []) if str(u).strip()]
+    deep_sources = list(article.get("_deep_sources") or [])
+    records, by_key = [], {}
+
+    # Primary URLs are allowed only when official and present in the fetched
+    # source set. This keeps the original source usable even if it has no links.
+    for raw_source in deep_sources:
+        source = _source_dict(raw_source)
+        source_url = str(source.get("url") or "").strip()
+        source_title = str(source.get("title") or "").strip()
+        canonical = str(source.get("canonical_url") or source_url).strip()
+        if sources.is_official_domain(source_url) and source_url:
+            primary_type = sources._link_type(source_title, source_url)
+            rec = _link_record(source_url, source_url=source_url,
+                               source_title=source_title,
+                               link_type=(primary_type if primary_type != "unknown"
+                                          else "official_notice"), primary=True)
+            rec["canonical_url"] = canonical or source_url
+            records.append(rec)
+            by_key[_url_key(source_url)] = rec
+        for link in source.get("outbound_links") or []:
+            if not isinstance(link, dict):
+                continue
+            exact = str(link.get("exact_url") or link.get("url") or "").strip()
+            if not exact:
+                continue
+            rec = dict(link)
+            rec.setdefault("exact_url", exact)
+            rec.setdefault("url", exact)
+            rec.setdefault("source_url", source_url)
+            rec.setdefault("source_title", source_title)
+            rec.setdefault("anchor_text", rec.get("text", ""))
+            rec.setdefault("text", rec.get("anchor_text", ""))
+            rec.setdefault("canonical_url", exact)
+            rec.setdefault("final_url", "")
+            rec.setdefault("domain_class", "external")
+            rec.setdefault("link_type", "unknown")
+            if rec.get("link_type") == "unknown":
+                rec["link_type"] = sources._link_type(
+                    rec.get("anchor_text") or rec.get("text", ""), exact)
+            rec.setdefault("verification_status", "present_in_source_evidence")
+            rec["primary_source"] = False
+            records.append(rec)
+            by_key[_url_key(exact)] = rec
+        # URLs printed as plain text in fetched HTML/PDF are evidence too;
+        # they do not need to be clickable anchors to be retained privately.
+        for exact in sources._text_urls(str(source.get("text") or "")):
+            key = _url_key(exact)
+            if key and key not in by_key:
+                rec = sources._source_link_record(
+                    exact, source_url, "URL in source text",
+                    verification_status="present_in_source_text")
+                records.append(rec)
+                by_key[key] = rec
+        # Backward-compatible SourceArticle fixtures may have URL-only outbound.
+        for exact in source.get("outbound") or []:
+            key = _url_key(exact)
+            if key and key not in by_key:
+                rec = _link_record(str(exact), source_url=source_url,
+                                   source_title=source_title,
+                                   link_type="unknown")
+                records.append(rec)
+                by_key[key] = rec
+
+    # Some callers provide only _source_urls. These remain valid primary
+    # evidence, but non-official news/blog URLs can never become public links.
+    for source_url in source_urls:
+        key = _url_key(source_url)
+        if key in by_key or not sources.is_official_domain(source_url):
+            continue
+        rec = _link_record(source_url, source_url=source_url,
+                           source_title="Official Notice", primary=True)
+        records.append(rec)
+        by_key[key] = rec
+
+    # The model's URL is accepted only if it exactly matches an evidence record.
+    # Its label cannot override the evidence's semantic type. Keep rejected
+    # suggestions privately so an editor can see why a link disappeared.
+    selected = []
+    rejected_model_links = []
     for item in article["external_links"]:
         if not isinstance(item, dict):
             continue
-        u = str(item.get("url", "")).strip()
-        host = urlparse(u).netloc.lower().replace("www.", "") if u else ""
-        if host and host in source_hosts and not is_official_domain(host):
+        key = _url_key(str(item.get("url") or ""))
+        rec = by_key.get(key)
+        if not rec:
+            rejected_model_links.append({
+                "url": str(item.get("url") or ""),
+                "text": str(item.get("text") or "")[:180],
+                "reason": "not_present_in_fetched_source_evidence",
+            })
             continue
-        filtered.append(item)
-    article["external_links"] = filtered
-    known_links = {str(item.get("url", "")).rstrip("/")
-                   for item in article["external_links"] if isinstance(item, dict)}
-    for source_url in (article.get("_source_urls") or [])[:6]:
-        host = urlparse(source_url).netloc
-        if source_url.rstrip("/") in known_links or not is_official_domain(host):
+        selected.append(rec)
+    # Include verified official evidence even if the model omitted the link.
+    selected.extend(rec for rec in records if rec not in selected)
+    # Do not probe every navigation/resource URL on a large source page.
+    # Purpose-first ordering still preserves application/result links before a
+    # long tail of generic official resources.
+    priority = {"application": 0, "official_notice": 1, "result": 2,
+                "admit_card": 3, "syllabus": 4, "fee_payment": 5,
+                "organization": 6, "contact": 7, "unknown": 8}
+    selected.sort(key=lambda item: (priority.get(item.get("link_type"), 9),
+                                   0 if item.get("primary_source") else 1))
+    selected = selected[:24]
+
+    # Resolve, dedupe, and keep a small purpose-diverse set for students.
+    resolved = []
+    seen = set()
+    for rec in selected:
+        key = _url_key(rec.get("exact_url") or rec.get("url"))
+        if not key or key in seen:
             continue
-        known_links.add(source_url.rstrip("/"))
-        article["external_links"].append({
-            "text": f"Official Notice — {host.replace('www.', '')}",
-            "url": source_url,
+        ok, checked = _resolve_evidence_link(rec, article)
+        record_index = records.index(rec) if rec in records else -1
+        if record_index >= 0:
+            records[record_index] = checked
+        if not ok:
+            continue
+        seen.add(key)
+        resolved.append(checked)
+
+    resolved.sort(key=lambda item: (priority.get(item.get("link_type"), 9),
+                                   records.index(item) if item in records else 0))
+    visible = []
+    for item in resolved:
+        kind = item.get("link_type", "unknown")
+        visible.append({
+            "text": item.get("anchor_text") or item.get("text") or
+                    f"Official link — {urlparse(item['url']).netloc}",
+            "url": item["url"],
+            "link_type": kind,
+            "source_url": item.get("source_url", ""),
         })
+        if len(visible) >= 8:
+            break
+    article["external_links"] = visible
+    article["_source_link_records"] = [dict(item) for item in records]
+    article["_verified_link_map"] = {
+        kind: next((item for item in resolved if item.get("link_type") == kind), None)
+        for kind in ("application", "official_notice", "organization", "result",
+                     "admit_card", "syllabus", "fee_payment", "contact")
+    }
+    # Recruitment URLs are derived exclusively from the evidence map.
+    link_map = article["_verified_link_map"]
+    application = link_map.get("application")
+    organization = link_map.get("organization")
+    article["application_url"] = application["url"] if application else ""
+    article["verified_org_url"] = organization["url"] if organization else ""
+    rec = article.get("recruitment")
+    if isinstance(rec, dict):
+        rec["org_url"] = article["verified_org_url"]
+    article["_official_link_audit"] = {
+        "candidate_count": len(records),
+        "verified_count": len(resolved),
+        "published_count": len(visible),
+        "links": [dict(item) for item in records],
+        "rejected_model_links": rejected_model_links[:20],
+        "mapping": {key: (value or {}).get("url", "")
+                    for key, value in link_map.items()},
+    }
 
 
 def _source_evidence_context(report: Dict) -> str:
@@ -1767,8 +2065,12 @@ def update_post(post_id: int, new_source_urls=None, mock: bool = False) -> Dict:
     article.setdefault("update_notes", "")
     article["_deep_sources"] = list(extras)  # v77: update originality scoring
     # v87: update kuda official-source links (create-path parity — kotha
-    # gov notice links updates lo poyevai!)
-    article["_source_urls"] = [e.url for e in extras if getattr(e, "url", "")]
+    # gov notice links updates lo poyevai!). Preserve the existing primary
+    # source as evidence instead of allowing a model-generated URL.
+    previous_source = str((post.get("meta") or {}).get("studentup_source_url", "")).strip()
+    article["source_url"] = previous_source or (extras[0].url if extras else "")
+    article["_source_urls"] = ([previous_source] if previous_source else []) + \
+        [e.url for e in extras if getattr(e, "url", "")]
     _append_official_sources(article)
     _strict_source_preflight(article, allow_mock=mock)
 

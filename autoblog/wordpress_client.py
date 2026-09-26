@@ -123,6 +123,7 @@ class WordPressClient:
                 "source_url": meta.get("studentup_source_url", "") if isinstance(meta, dict) else "",
                 "source_checked": meta.get("studentup_source_checked", "") if isinstance(meta, dict) else "",
                 "application_url": meta.get("studentup_apply_url", "") if isinstance(meta, dict) else "",
+                "org_url": meta.get("studentup_org_url", "") if isinstance(meta, dict) else "",
                 "qualification": meta.get("studentup_qual", "") if isinstance(meta, dict) else "",
             })
         return rows

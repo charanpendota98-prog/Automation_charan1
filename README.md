@@ -2511,6 +2511,10 @@ Prathi post lo automatic ga:
 
 Source-derived posts use `SOURCE_PREFLIGHT_REQUIRED=1` by default. Before WordPress receives a draft, the bot requires fetched text for every source, the configured independent-domain and official-source minimums, a cross-source fact report, supported dates/numbers, and an editorial claim ledger. Conflicts, unverified numbers, missing official evidence, or incomplete source extraction stop the run; the bot does not fill the gap with guesses. `SOURCE_AUDIT_BLOCK` remains the final live-publish gate.
 
+### Evidence-backed official links
+
+Official links are now an evidence allowlist, not a model trust signal. HTML anchors, visible source-text URLs, and PDF URLs retain exact URL, anchor text, source URL, canonical/final URL, domain class, semantic purpose, and verification status. A generated URL is discarded unless it exactly matches a fetched evidence URL or the verified official primary source. Selected secondary links are resolved before rendering; non-official redirects, error/home pages, and obvious wrong-topic redirects are rejected. Application, notification, result, admit-card, syllabus, fee, organization, and contact mappings are conservative. `studentup_apply_url`, `org_url`, and the opportunity board are populated only from the verified map; missing evidence means the field stays empty.
+
 ## Daily working style
 
 - Prathi గంట (hourly) scheduler bot ni run chestundi

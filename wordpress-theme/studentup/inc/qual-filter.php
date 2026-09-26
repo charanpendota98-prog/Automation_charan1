@@ -237,7 +237,7 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
 function studentup_register_qual_meta() {
 	$keys = array(
 		'studentup_qual', 'studentup_last_date', 'studentup_apply_url',
-		'studentup_source_url', 'studentup_source_urls', 'studentup_source_checked',
+		'studentup_source_url', 'studentup_source_urls', 'studentup_source_checked', 'studentup_org_url',
 	);
 	foreach ( $keys as $key ) {
 		register_post_meta(
