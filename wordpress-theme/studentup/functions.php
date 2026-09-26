@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'STUDENTUP_VERSION', '1.9.8' );  // v98: viral share engine (in-content share bar + native sheet)
+define( 'STUDENTUP_VERSION', '1.9.9' );  // v120: LCP assets + student compare/reminder/print utilities
 
 require_once get_template_directory() . '/inc/options.php';
 require_once get_template_directory() . '/inc/qual-filter.php';  // v72: 10th/Inter/Degree/PG filter (auto tags)
@@ -27,6 +27,7 @@ require_once get_template_directory() . '/inc/consent.php';
 require_once get_template_directory() . '/inc/ads-txt.php';
 require_once get_template_directory() . '/inc/perf.php';
 require_once get_template_directory() . '/inc/news-sitemap.php';
+require_once get_template_directory() . '/inc/llms-txt.php';
 require_once get_template_directory() . '/inc/security.php';
 require_once get_template_directory() . '/inc/indexnow.php';
 require_once get_template_directory() . '/inc/pwa.php';
@@ -40,6 +41,10 @@ require_once get_template_directory() . '/inc/saved.php';     // v92: reader boo
 require_once get_template_directory() . '/inc/discover.php';  // v94: Discover large-card image + og dims + CLS/INP
 require_once get_template_directory() . '/inc/upnext.php';    // v96: Up Next session-depth (real pageviews, policy-safe ad refresh)
 require_once get_template_directory() . '/inc/share.php';     // v98: viral share engine (in-content share bar + native sheet)
+require_once get_template_directory() . '/inc/success-stories.php'; // v117: consented TS/AP story intake CTA
+require_once get_template_directory() . '/inc/student-tools.php'; // v120: compare, reminders and print/PDF utility layer
+require_once get_template_directory() . '/inc/opportunities.php'; // v121: live active list, expiry-safe sections and job board
+require_once get_template_directory() . '/inc/shortlinks.php'; // v122: first-party /slug redirects + click counts
 
 /**
  * "Most searched by students" — order okkate source (bot lo autoblog/breaking.py
@@ -54,6 +59,7 @@ function studentup_most_used() {
 		array( 'slug' => 'results', 'label' => 'Results', 'icon' => '📄', 'hint' => 'Board · competitive exams · keys' ),
 		array( 'slug' => 'walkin-jobs', 'label' => 'Walk-in Interviews', 'icon' => '🚶', 'hint' => 'This week\'s drives · venues' ),
 		array( 'slug' => 'software-jobs', 'label' => 'Software Jobs', 'icon' => '💻', 'hint' => 'IT · developer · fresher' ),
+		array( 'slug' => 'success-stories', 'label' => 'Success Stories', 'icon' => '🏆', 'hint' => 'Verified journeys · lessons' ),
 		array( 'slug' => 'private-jobs', 'label' => 'Private Jobs', 'icon' => '🏢', 'hint' => 'TCS · Infosys · Off-campus' ),
 		array( 'slug' => 'current-affairs', 'label' => 'Current Affairs', 'icon' => '📰', 'hint' => 'Daily GK · for exams' ),
 	);
@@ -72,13 +78,14 @@ function studentup_most_used() {
  */
 function studentup_cat_aliases() {
 	return array(
-		'ts-jobs'         => array( 'ts-govt-jobs', 'telangana-govt-jobs', 'ts-jobs' ),
-		'ap-jobs'         => array( 'ap-govt-jobs', 'ap-jobs' ),
-		'central-jobs'    => array( 'central-govt-jobs', 'central-jobs', 'central' ),
+		'ts-jobs'         => array( 'ts-govt-jobs', 'telangana-govt-jobs', 'ts-jobs', 'ts-government-jobs' ),
+		'ap-jobs'         => array( 'ap-govt-jobs', 'ap-jobs', 'ap-government-jobs' ),
+		'central-jobs'    => array( 'central-govt-jobs', 'central-jobs', 'central', 'central-government-jobs' ),
 		'hall-tickets'    => array( 'hall-tickets', 'hallticket', 'hall-ticket' ),
 		'results'         => array( 'results' ),
 		'walkin-jobs'     => array( 'walkin-jobs', 'walkin', 'walk-in-jobs' ),
 		'software-jobs'   => array( 'software-jobs', 'software' ),
+		'success-stories' => array( 'success-stories', 'success-story' ),
 		'private-jobs'    => array( 'private-jobs', 'private' ),
 		'current-affairs' => array( 'current-affairs', 'current' ),
 	);
@@ -106,6 +113,66 @@ function studentup_used_term( $slug ) {
 	}
 	return null;
 }
+
+/**
+ * Seed the categories the bot and homepage expect when the theme is activated.
+ *
+ * This is deliberately idempotent and alias-aware: if an existing site already
+ * has `ts-jobs`, the theme does not create a second `ts-govt-jobs` archive.
+ * The admin-init retry covers a theme update where WordPress does not fire the
+ * activation hook again. It never creates posts or changes existing terms.
+ */
+function studentup_seed_categories() {
+	$version = '2026-09-category-seed-1';
+	if ( $version === (string) get_option( 'studentup_category_seed_version', '' ) ) {
+		return;
+	}
+	$seed = array(
+		'ts-jobs'         => array( 'TS Govt Jobs', 'ts-govt-jobs' ),
+		'ap-jobs'         => array( 'AP Govt Jobs', 'ap-govt-jobs' ),
+		'central-jobs'    => array( 'Central Govt Jobs', 'central-govt-jobs' ),
+		'hall-tickets'    => array( 'Hall Tickets', 'hall-tickets' ),
+		'results'         => array( 'Results', 'results' ),
+		'walkin-jobs'     => array( 'Walkin Jobs', 'walkin-jobs' ),
+		'software-jobs'   => array( 'Software Jobs', 'software-jobs' ),
+		'success-stories' => array( 'Success Stories', 'success-stories' ),
+		'private-jobs'    => array( 'Private Jobs', 'private-jobs' ),
+		'current-affairs' => array( 'Current Affairs', 'current-affairs' ),
+		'scholarships'    => array( 'Scholarships', 'scholarships' ),
+		'part-time-jobs'  => array( 'Part Time Jobs', 'part-time-jobs' ),
+		'outsourcing-jobs'=> array( 'Outsourcing Jobs', 'outsourcing-jobs' ),
+		'internships'     => array( 'Internships', 'internships' ),
+		'online-education'=> array( 'Online Education', 'online-education' ),
+		'exam-tips'       => array( 'Exam Tips', 'exam-tips' ),
+		'upcoming-exams'  => array( 'Upcoming Exams', 'upcoming-exams' ),
+		'abroad-jobs'     => array( 'Abroad Jobs', 'abroad-jobs' ),
+		'daily-quiz'      => array( 'Daily Quiz', 'daily-quiz' ),
+	);
+	$aliases = studentup_cat_aliases();
+	$failed  = false;
+	foreach ( $seed as $theme_slug => $item ) {
+		$candidates = isset( $aliases[ $theme_slug ] ) ? $aliases[ $theme_slug ] : array( $item[1] );
+		$found      = false;
+		foreach ( $candidates as $candidate ) {
+			if ( get_category_by_slug( $candidate ) ) {
+				$found = true;
+				break;
+			}
+		}
+		if ( $found || get_category_by_slug( sanitize_title( $item[0] ) ) ) {
+			continue;
+		}
+		$result = wp_insert_term( $item[0], 'category', array( 'slug' => $item[1] ) );
+		if ( is_wp_error( $result ) ) {
+			$failed = true;
+		}
+	}
+	if ( ! $failed ) {
+		update_option( 'studentup_category_seed_version', $version, false );
+	}
+}
+add_action( 'after_switch_theme', 'studentup_seed_categories' );
+add_action( 'admin_init', 'studentup_seed_categories' );
 
 /**
  * Reverse map — live category slug → theme chip slug.
@@ -190,6 +257,35 @@ function studentup_assets() {
 add_action( 'wp_enqueue_scripts', 'studentup_assets' );
 
 /**
+ * Remove WordPress payload that this theme does not need on ordinary public
+ * pages. Keep block CSS and wp-embed when the current post really uses them;
+ * this avoids breaking editors while trimming unused mobile bytes.
+ */
+function studentup_trim_frontend_assets() {
+	if ( is_admin() ) {
+		return;
+	}
+	$uses_embed = false;
+	if ( is_singular() ) {
+		$post = get_post();
+		$body = $post ? (string) $post->post_content : '';
+		$uses_embed = (bool) preg_match( '/\[embed(?:\s|\])|wp:embed|<iframe\b/i', $body );
+	}
+	if ( ! $uses_embed ) {
+		wp_deregister_script( 'wp-embed' );
+	}
+	$uses_blocks = false;
+	if ( is_singular() && function_exists( 'has_blocks' ) ) {
+		$uses_blocks = has_blocks( get_post() );
+	}
+	if ( ! $uses_blocks ) {
+		wp_dequeue_style( 'wp-block-library' );
+		wp_dequeue_style( 'wp-block-library-theme' );
+	}
+}
+add_action( 'wp_enqueue_scripts', 'studentup_trim_frontend_assets', 100 );
+
+/**
  * Widgets — sidebar + footer (optional; design single-column tho kuda perfect ga untundi).
  */
 function studentup_widgets() {
@@ -241,6 +337,10 @@ function studentup_head_cleanup() {
 	remove_action( 'wp_head', 'print_emoji_detection_script', 7 );
 	remove_action( 'wp_print_styles', 'print_emoji_styles' );
 	remove_action( 'admin_print_scripts', 'print_emoji_detection_script' );
+	remove_action( 'wp_head', 'wp_oembed_add_discovery_links' );
+	remove_action( 'wp_head', 'wp_oembed_add_host_js' );
+	remove_action( 'wp_head', 'wp_shortlink_wp_head' );
+	remove_action( 'wp_head', 'rsd_link' );
 }
 add_action( 'init', 'studentup_head_cleanup' );
 

@@ -193,7 +193,7 @@ def check_ads_inventory() -> tuple:
 
 
 def check_keyword_pillar_lock() -> tuple:
-    """Counts lock: 17 pillars · 221 entities · 12,344 kws · 180 sources."""
+    """Counts lock: 18 pillars · 221 entities · 12,344 kws · 258 sources."""
     try:
         from . import sources_grid, top_post
 
@@ -204,7 +204,7 @@ def check_keyword_pillar_lock() -> tuple:
         daily = len([s for s in sources_grid.SOURCES_GRID if s.get("daily")])
     except Exception as exc:  # noqa: BLE001
         return False, f"engine check fail: {exc}", "autoblog modules import check"
-    want = (17, 221, 12_344, 180)
+    want = (18, 221, 12_344, 258)
     got = (cats, ents, uni, src)
     if got != want:
         return False, f"counts marayi: {got} (expected {want})", "pillar/keyword counts sync cheyandi (v58/v59 docs)"
@@ -213,14 +213,14 @@ def check_keyword_pillar_lock() -> tuple:
 
 def check_menu_wiring() -> tuple:
     html = _read(PREVIEW / "index.html")
-    want = ["ts-jobs", "ap-jobs", "hallticket", "results", "walkin", "software"]
+    want = ["ts-jobs", "ap-jobs", "hallticket", "results", "walkin", "software", "success-stories"]
     probs = [c for c in want if f'data-goto-cat="{c}"' not in html]
     if probs:
         return False, "menu links poyayi: " + ", ".join(probs), "nav/mpanel markup check cheyandi"
     used = re.findall(r'<a class="usedcard[^"]*" href="#jobs" data-goto-cat="([a-z-]+)"', html)
-    if len(used) != 9:
-        return False, f"most-used tiles {len(used)} (9 undali — v89 Central tho)", "v59/v89 used-strip restore cheyandi"
-    return True, "menu + most-used 9 tiles intact (TS · AP · Central top)", ""
+    if len(used) != 10:
+        return False, f"most-used tiles {len(used)} (10 undali — Success Stories added below Software)", "v59/v89 used-strip restore cheyandi"
+    return True, "menu + most-used 10 tiles intact (TS · AP · Central top; Success Stories below Software)", ""
 
 
 def check_storage() -> tuple:
@@ -261,14 +261,14 @@ def check_env_readiness() -> tuple:
     """Warn-only: mee .env lo em set cheyyali (deploy gate)."""
     have = []
     miss = []
-    for flag, label in ((config.GEMINI_API_KEY or getattr(config, "GEMINI_API_KEYS", []), "Gemini"),
+    for flag, label in ((config.ai_configured(), "Gemini/AI provider"),
                         (config.WP_APP_PASSWORD, "WP creds"),
                         (config.TELEGRAM_BOT_TOKEN, "Telegram")):
         (have if flag else miss).append(label)
     if miss:
         return False, "set avvaledu: " + ", ".join(miss) + f" (set: {', '.join(have) or '—'})", \
             ".env lo owner creds pettandi (GO_LIVE_CHECKLIST.md PART A)"
-    return True, "Gemini · WP · Telegram anni set", ""
+    return True, "Gemini/AI provider · WP · Telegram anni set", ""
 
 
 # (id, fn, warn_only) — warn_only = mee pani (owner creds), system break kaadu

@@ -179,107 +179,94 @@ def build(slug: str, title: str, desc: str, h1: str, sub: str, body: str,
 
 
 ABOUT = """
-  <h2>What is studentup.in?</h2>
-  <p>studentup.in is an attempt to put jobs, scholarships, results, exams and career guidance for
-  Telangana and Andhra Pradesh students in one place, in simple language. Sources are always official
-  portals only; there are no rumours, guesses or copied content.</p>
+  <h2>Welcome to StudentUp</h2>
+  <p>StudentUp is an independent education and career-information platform for students,
+  freshers and job-seekers. We bring useful TS, AP and central updates into one clear place,
+  using simple language and links back to the official notification.</p>
+
+  <h2>What you can find here</h2>
+  <div class="grid">
+    <div class="tile"><b>Jobs &amp; opportunities</b><span>Government, private, software, walk-in and internship updates with eligibility and official apply links.</span></div>
+    <div class="tile"><b>Scholarships &amp; admissions</b><span>Application windows, documents and steps for students — always check the issuing portal before applying.</span></div>
+    <div class="tile"><b>Exams, hall tickets &amp; results</b><span>Exam notices, admit cards, results and preparation guidance in a student-friendly format.</span></div>
+    <div class="tile"><b>Skills &amp; practice</b><span>Reasoning, simple English aptitude, general knowledge, interview preparation and technology-learning resources.</span></div>
+  </div>
+
+  <h2>Our mission</h2>
+  <p>Our mission is to make important student information easier to understand and act on,
+  while helping readers make their own informed decisions. We do not replace an official
+  department, university or employer; we help readers find and read the original source.</p>
 
   <h2>How it works</h2>
   <div class="grid">
-    <div class="tile"><b>1 · Source monitoring</b><span>A grid of official sources — TSPSC, APPSC, SSC, NSP,
-      state boards, DSC, DISCOMs. Checked several times a day.</span></div>
-    <div class="tile"><b>2 · Verification gates</b><span>Source check and deep cross-verification
-      (2+ sources), minimum originality — a draft is created only after these pass.</span></div>
-    <div class="tile"><b>3 · Human review</b><span>Every post arrives as a draft; it goes live only after
-      the quality bar is crossed. If anything is doubtful, publishing stops.</span></div>
-    <div class="tile"><b>4 · Continuous updates</b><span>When dates change or a notification is
-      re-released, older articles are corrected — the last-updated date sits on every article.</span></div>
+    <div class="tile"><b>1 · Source monitoring</b><span>We track official sources such as TSPSC, APPSC, SSC, NSP, state boards, DSC and DISCOMs.</span></div>
+    <div class="tile"><b>2 · Verification gates</b><span>Dates, eligibility and important claims are checked against the available official evidence before a draft is prepared.</span></div>
+    <div class="tile"><b>3 · Human review</b><span>Automation can assist research and drafting, but doubtful information stays out of public content until reviewed.</span></div>
+    <div class="tile"><b>4 · Corrections</b><span>When a notification changes, older information can be corrected and the last-updated date is shown on the article.</span></div>
   </div>
+
+  <h2>Our vision</h2>
+  <p>We want StudentUp to be a dependable starting point for Telangana and Andhra Pradesh
+  students as they learn, prepare and explore opportunities — with clarity, useful practice
+  and honest limits.</p>
 
   <h2>What we never do</h2>
   <ul>
-    <li>We are not a government body — we have no connection with TSPSC, APPSC, SSC, NSP or any department.</li>
-    <li>We never guarantee a job, a scholarship, admission, a ranking or income.</li>
-    <li>We never charge students; we never ask for an "account number" or OTP.</li>
+    <li>We are not a government body and have no connection with TSPSC, APPSC, SSC, NSP or any department.</li>
+    <li>We never guarantee a job, scholarship, admission, rank, income or selection.</li>
+    <li>We never ask for an OTP, PIN, password or bank details to show an update.</li>
     <li>We never sell personal data — see the <a href="privacy.html">privacy policy</a>.</li>
   </ul>
 
-  <div class="note"><b>Honest note:</b> deadlines, vacancy counts and results — always confirm them once
-  in the official notification. If you spot a mistake, email us and we correct it fast.</div>
+  <div class="note"><b>Always verify:</b> deadlines, vacancy counts, fees, eligibility and results can change.
+  Confirm them once in the official notification. If you spot a mistake, send us the article link
+  through the <a href="contact.html">Contact page</a> so we can review it.</div>
 
   <p><a class="cta" href="../index.html">See today's updates</a>
-     <a class="cta alt" href="contact.html">Contact us</a></p>
+     <a class="cta alt" href="contact.html">Contact StudentUp</a></p>
+  <p><b>StudentUp — learn, grow and make informed decisions.</b></p>
 """
 
 CONTACT = """
-  <p><b>Students Internet Center (TS &amp; AP)</b> · corrections · partnerships — reach us on WhatsApp
-  first; it is the fastest route. We usually reply within one working day.</p>
+  <p>For corrections, partnerships and student help, contact StudentUp through WhatsApp or email.
+  Please include the relevant page link so we can respond quickly.</p>
 
-  <h2>Students Internet Center — apply without travelling</h2>
-  <p>You do not need to visit any centre, cyber café or office to apply for a job or scholarship.
-  Call us and WhatsApp your documents — we complete the application and send you the PDF. Service
-  charge is kept as low as possible.</p>
-  <ol class="steps">
-    <li><b>Call us</b> with the post or notification you want to apply for.</li>
-    <li><b>WhatsApp your documents</b> — photo, signature, certificates, resume (clear photos are enough).</li>
-    <li><b>We apply &amp; send the PDF</b> — the filled application PDF reaches you on WhatsApp; corrections free.</li>
-  </ol>
-  <p class="sub">We fill the whole application — the PDF comes to you on WhatsApp.</p>
-  <p><a class="wa-box" href="{wa}" target="_blank" rel="noopener"><b>WhatsApp your documents</b><br>
-     <small>Tap to open our WhatsApp chat</small></a>
-     <a class="cta alt" href="tel:{phone}">Call {phone}</a>
-     <a class="cta alt" href="mailto:{email}?subject=Student%20Help">Email</a>
+  <p><a class="wa-box" href="{wa}" target="_blank" rel="noopener"><b>WhatsApp</b><br>
+     <small>Open our chat</small></a>
+     <a class="cta alt" href="tel:{phone}">Call</a>
+     <a class="cta alt" href="mailto:{email}">Email</a>
      <a class="cta alt" href="{tg}" target="_blank" rel="noopener">Telegram</a></p>
 
-  <h2>Get free job &amp; exam updates</h2>
-  <p>Daily job notifications, exam dates and results — free, straight to your phone. No spam calls,
-  and you can stop anytime.</p>
+  <h2>Corrections</h2>
+  <p>Send the article link, the incorrect detail and the official source showing the correction.
+  We review it before changing the page.</p>
+
+  <h2>Partnerships</h2>
+  <p>For colleges, coaching centres, shops or services, share your organisation name, city, website
+  and the page or campaign you are asking about. Paid placements are clearly labelled and never mixed
+  with editorial recommendations.</p>
+
+  <h2>Free updates</h2>
+  <p>Use the short form below to prepare a WhatsApp message for free job and exam updates. Nothing is
+  stored on this website until you choose to send the message.</p>
   <form id="leadform" novalidate>
     <div class="leadgrid">
-      <input type="text" id="ld-name" name="name" maxlength="60" autocomplete="name"
-             placeholder="Your name" aria-label="Your name" required>
-      <input type="tel" id="ld-phone" name="phone" maxlength="15" inputmode="numeric"
-             autocomplete="tel" placeholder="Mobile number (10 digits)" aria-label="Mobile number" required>
+      <input type="text" id="ld-name" name="name" maxlength="60" autocomplete="name" placeholder="Your name" aria-label="Your name" required>
+      <input type="tel" id="ld-phone" name="phone" maxlength="15" inputmode="numeric" autocomplete="tel" placeholder="Mobile number" aria-label="Mobile number" required>
       <select id="ld-interest" name="interest" aria-label="What are you looking for?">
-        <option value="jobs">Jobs</option>
-        <option value="scholarships">Scholarships</option>
-        <option value="college">College admissions</option>
-        <option value="coaching">Coaching</option>
-        <option value="exams">Exams</option>
-        <option value="other">Other</option>
+        <option value="jobs">Jobs</option><option value="scholarships">Scholarships</option>
+        <option value="exams">Exams</option><option value="other">Other</option>
       </select>
-      <input type="text" id="ld-city" name="city" maxlength="40" autocomplete="address-level2"
-             placeholder="City (optional)" aria-label="City">
-      <input type="text" class="lead-hp" id="ld-website" name="website" tabindex="-1"
-             autocomplete="off" aria-hidden="true">
+      <input type="text" id="ld-city" name="city" maxlength="40" autocomplete="address-level2" placeholder="City (optional)" aria-label="City">
+      <input type="text" class="lead-hp" id="ld-website" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
     </div>
-    <button type="submit" class="leadbtn" id="ld-submit">Get free updates</button>
+    <button type="submit" class="leadbtn" id="ld-submit">Open WhatsApp</button>
     <p class="leadmsg" id="ld-msg" role="status" aria-live="polite"></p>
-    <p class="leadnote">Pressing the button opens WhatsApp with your message ready — nothing is stored
-      on our site. We never sell your number. You can ask us to stop anytime —
-      see <a href="privacy.html">privacy policy</a>.</p>
+    <p class="leadnote">You control the final send. We do not sell your number. See the <a href="privacy.html">privacy policy</a>.</p>
   </form>
 
-  <h2>Other ways to reach us</h2>
-  <table>
-    <tr><th>What you need</th><th>Where</th><th>Reply time</th></tr>
-    <tr><td><b>Corrections / wrong information</b></td><td><a href="mailto:{email}?subject=Correction">{email}</a></td><td>24–48 hours</td></tr>
-    <tr><td><b>Partnership / advertising</b> (colleges, coaching, shops, services)</td>
-      <td><a href="{wa}" target="_blank" rel="noopener">WhatsApp</a> ·
-      <a href="mailto:{email}?subject=Advertising%20enquiry">{email}</a></td><td>1–2 working days</td></tr>
-    <tr><td><b>Student help</b> (applications, documents)</td>
-      <td><a href="tel:{phone}">Call</a> · <a href="{wa}" target="_blank" rel="noopener">WhatsApp</a> ·
-      <a href="{tg}" target="_blank" rel="noopener">Telegram</a></td><td>same day</td></tr>
-  </table>
-
-  <h2>When you email or message us, include</h2>
-  <ul>
-    <li>Page link, screenshot (if any) and the official source link for the correct information.</li>
-    <li>For partnerships: business name, city, target link and the duration you have in mind.</li>
-  </ul>
-
-  <div class="note warn"><b>Beware of fraud:</b> nobody from studentup.in will ever call and ask for Aadhaar,
-  OTP, bank details or a fee. If that happens, it is a scam — <a href="mailto:{email}">tell us immediately</a>.</div>
+  <div class="note warn"><b>Fraud warning:</b> StudentUp will never ask for an OTP, password, bank details,
+  UPI PIN or an upfront fee to show an update. Report suspicious messages to <a href="mailto:{email}">{email}</a>.</div>
 """
 
 CONTACT_SCRIPT = """<script>
@@ -310,60 +297,45 @@ CONTACT_SCRIPT = """<script>
 </script>"""
 
 PRIVACY = """
-  <p>This policy covers the studentup.in website, the daily quiz and the daily poll question.
-  In one line: we do not collect your name, phone number or Aadhaar details.</p>
+  <p>Welcome to StudentUp. This short policy explains what information may be processed when you
+  visit the site, read an article or use the quiz.</p>
 
-  <h2>What we do not collect</h2>
-  <ul>
-    <li>No accounts or login — we do not ask for name, email or phone number.</li>
-    <li>No documents, bank details or OTP — none of it.</li>
-    <li>Personal data is never sold or rented to anyone.</li>
-  </ul>
+  <h2>Information we collect</h2>
+  <p>Hosting and security systems may receive technical information such as browser type, device,
+  IP address, referring page, pages visited and basic usage or error data. This helps with security
+  and performance; exact logs and retention depend on the hosting provider.</p>
+  <p>StudentUp does not require an account or ask for Aadhaar, OTPs, passwords, UPI PINs or bank
+  details to read an update. If you contact us, we use the information you choose to send for that
+  request. We do not sell personal information.</p>
 
-  <h2>What stays in your browser</h2>
-  <table>
-    <tr><th>Item</th><th>Why</th><th>Where</th></tr>
-    <tr><td>Theme choice (dark / light)</td><td>So the site opens the way you left it</td><td>Your browser only</td></tr>
-    <tr><td>Quiz best score</td><td>So you can see your own progress</td><td>Your browser only</td></tr>
-    <tr><td>Daily poll answer</td><td>So you see the correct answer once answered</td><td>Your browser only</td></tr>
-  </table>
+  <h2>Cookies and browser storage</h2>
+  <p>Necessary cookies or similar browser features may support security, consent and performance.
+  Theme choice, saved posts, quiz scores and daily answers may stay in your browser. Optional saved-post
+  account sync works only when enabled and logged in. You can block or delete cookies in your browser;
+  some features may then stop working.</p>
 
-  <h2>Ads and measurement</h2>
-  <ul>
-    <li>Google AdSense / Analytics may be used for ads and measurement — they can use cookies.
-      They start <b>only after the owner's approval</b>.</li>
-    <li>Until AdSense approval, the ads shown are our own partners' creatives, clearly marked with a
-      SPONSORED label.</li>
-    <li>What we give advertisers is display space only — never your personal data.</li>
-  </ul>
+  <h2>Google AdSense</h2>
+  <p>Google AdSense is used only after approval, publisher configuration and consent setup. Until then,
+  house or partner placements are clearly labelled. When AdSense is active, Google and its partners may
+  use cookies for personalised or non-personalised advertising based on your choices and visits to this
+  or other websites.</p>
+  <p>Manage choices at <a href="https://www.google.com/settings/ads" rel="nofollow noopener" target="_blank">Google Ads Settings</a>
+  or <a href="https://www.aboutads.info/choices/" rel="nofollow noopener" target="_blank">aboutads.info/choices</a>.
+  Where required, a consent message is shown before advertising cookies are used.</p>
 
-  <h2>Third-party vendors and cookies (Google AdSense)</h2>
-  <p>This section applies when advertising is active on this site. It is written the way Google's
-  AdSense programme requires.</p>
-  <ul>
-    <li><b>Third-party vendors, including Google</b>, use cookies to serve ads based on your prior
-      visits to this website or other websites.</li>
-    <li>Google's use of advertising cookies enables it and its partners to serve ads to you based on
-      your visit to this site and/or other sites on the internet.</li>
-    <li>You may <b>opt out of personalised advertising</b> by visiting
-      <a href="https://www.google.com/settings/ads" rel="nofollow noopener" target="_blank">Google Ads
-      Settings</a>. You can also opt out of some third-party vendors' use of cookies for personalised
-      advertising at
-      <a href="https://www.aboutads.info/choices/" rel="nofollow noopener" target="_blank">www.aboutads.info</a>.</li>
-    <li>If you are in the EEA, the UK or Switzerland, a Google-certified consent message (CMP) is shown
-      before any advertising cookie is set, and advertising is held until you choose.</li>
-    <li>You can block or delete cookies at any time in your browser settings. Blocking ad cookies does
-      not stop you reading any page on this site.</li>
-  </ul>
+  <h2>Third-party links</h2>
+  <p>Articles may link to official portals, employers, universities and other websites. We do not
+  control their content or privacy practices. Read their policy before submitting personal data and
+  confirm jobs, scholarships, exams and results on the official notification.</p>
 
-  <h2>Information you email us</h2>
-  <p>Any email you send is used only to make the correction. Once the correction is done there is no need
-  to keep it.</p>
+  <h2>Security, requests and changes</h2>
+  <p>We take reasonable measures to protect information under our control, but no internet method is
+  completely secure. Do not send passwords, OTPs, financial credentials or sensitive documents through
+  ordinary email or chat. For a privacy question, correction or deletion request, contact
+  <a href="mailto:{email}">{email}</a>. We may update this page when the website, advertising tools or
+  legal requirements change.</p>
 
-  <h2>Your rights</h2>
-  <p>If you believe we hold anything about you, ask us to delete it —
-  <a href="mailto:{email}">email us</a>. If this policy changes, the updated date on this page changes
-  with it.</p>
+  <p><strong>StudentUp Team</strong><br>StudentUp — your education and career information platform.</p>
 """
 
 DISCLAIMER = """

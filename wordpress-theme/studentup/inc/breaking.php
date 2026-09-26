@@ -1,6 +1,8 @@
 <?php
 /**
- * Breaking news — radar feed inside WordPress. **v72: default OFF** (admin lo on/off).
+ * Breaking news — verified radar feed inside WordPress. The section is visible
+ * by default, but it renders only sanitized, fresh feed items (or an honest
+ * empty state); the admin can still turn the surface off.
  *
  * Data path (okka chota, honest):
  *   1) WP option 'studentup_breaking_json' (bot REST/CLI tho push cheyyochu) — fastest
@@ -21,8 +23,9 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @return array
  */
 function studentup_breaking_enabled() {
-	// v72: default OFF — public site lo breaking section chupinchamu (owner iste ON cheyyochu).
-	return (bool) studentup_opt( 'breaking_enabled', '0' );
+	// Default ON: the public surface must be visible even when the verified
+	// feed is empty, so readers get an honest status rather than a fake alert.
+	return (bool) studentup_opt( 'breaking_enabled', '1' );
 }
 
 function studentup_breaking_items( $max = 6 ) {
@@ -47,10 +50,20 @@ function studentup_breaking_items( $max = 6 ) {
 	if ( ! is_array( $data ) || empty( $data['items'] ) || ! is_array( $data['items'] ) ) {
 		return array();
 	}
+	if ( isset( $data['verified_only'] ) && true !== $data['verified_only'] ) {
+		return array();
+	}
+	// A stale feed must become an empty state, not an apparently live alert.
+	// The bot normally rotates items within 18 hours; this wider boundary also
+	// tolerates a temporary fetch failure without keeping yesterday's headline.
+	$updated = isset( $data['updated'] ) ? strtotime( (string) $data['updated'] ) : false;
+	if ( ! $updated || $updated > ( time() + 300 ) || ( time() - $updated ) > ( 36 * HOUR_IN_SECONDS ) ) {
+		return array();
+	}
 
 	$out = array();
 	foreach ( $data['items'] as $it ) {
-		if ( ! is_array( $it ) ) {
+		if ( ! is_array( $it ) || ( isset( $it['verified'] ) && true !== $it['verified'] ) || ( isset( $it['source_verified'] ) && true !== $it['source_verified'] ) ) {
 			continue;
 		}
 		$title = isset( $it['title'] ) ? wp_strip_all_tags( (string) $it['title'] ) : '';
@@ -91,7 +104,9 @@ function studentup_tag_label( $tag ) {
 		'abroad'       => 'Abroad',
 		'scholarship'  => 'Scholarship',
 		'current'      => 'Current affairs',
+		'success-stories' => 'Success story',
 	);
+
 	return isset( $map[ $tag ] ) ? $map[ $tag ] : 'Update';
 }
 
@@ -121,8 +136,12 @@ function studentup_ago( $iso ) {
  * Ticker (renders only when there is a feed — hidden when empty).
  */
 function studentup_breaking_ticker() {
+	// The compact section below is the public Breaking News surface. Keep this
+	// legacy hook inert so a verified headline is never duplicated in a moving
+	// banner; the section itself has a restrained live-dot treatment.
+	return;
 	if ( ! studentup_breaking_enabled() ) {
-		return;   // v72: default OFF (turn it on in WP admin → StudentUp → Content)
+		return;   // Admin may disable the public surface in StudentUp → Content.
 	}
 	$items = studentup_breaking_items( 5 );
 	if ( ! $items ) {
@@ -154,19 +173,19 @@ function studentup_breaking_ticker() {
  */
 function studentup_breaking_section() {
 	if ( ! studentup_breaking_enabled() ) {
-		return;   // v72: default OFF
+		return;   // Admin may disable the public surface in StudentUp → Content.
 	}
 	$items = studentup_breaking_items( 6 );
-	echo '<section class="breaking" id="breaking" aria-label="Breaking news">';
-	echo '<div class="brkhead"><span class="brkdot" aria-hidden="true"></span><h2>Breaking news</h2>';
-	echo '<span class="brklive">Radar · Google News Telugu + official sources · checked every 6 hours</span></div>';
+	echo '<section class="breaking" id="breaking" aria-labelledby="breaking-title">';
+	echo '<div class="brkhead"><span class="brkicon" aria-hidden="true">⚡</span><span class="brkdot" aria-hidden="true"></span><h2 id="breaking-title">Breaking News</h2>';
+	echo '<span class="brklive">Verified source feed · fresh items only</span></div>';
 	if ( ! $items ) {
-		echo '<p class="brkempty">No new verified breaking updates right now — the radar checks every 6 hours.</p>';
+		echo '<p class="brkempty">No new verified breaking updates right now. Official announcements appear here only after the source and date are checked.</p>';
 	} else {
 		echo '<ol class="brklist">';
 		foreach ( $items as $it ) {
 			printf(
-				'<li class="brkitem"><span class="bt">%s</span><a href="%s" target="_blank" rel="noopener">%s<span class="bwhen">%s · %s</span></a></li>',
+				'<li class="brkitem"><span class="bt">Verified · %s</span><a href="%s" target="_blank" rel="noopener">%s<span class="bwhen">%s · %s</span></a></li>',
 				esc_html( studentup_tag_label( $it['tag'] ) ),
 				esc_url( $it['link'] ),
 				esc_html( $it['title'] ),
@@ -194,6 +213,16 @@ function studentup_latest_ticker_items( $max = 12 ) {
 	$max    = max( 1, (int) $max );
 	$cached = get_transient( 'su_latest_ticker' );
 	if ( is_array( $cached ) ) {
+		$cached = array_values(
+			array_filter(
+				$cached,
+				static function ( $item ) {
+					$title = isset( $item['title'] ) ? wp_strip_all_tags( (string) $item['title'] ) : '';
+					$link  = isset( $item['link'] ) ? (string) $item['link'] : '';
+					return $link && 'guide' !== sanitize_title( $title );
+				}
+			)
+		);
 		return array_slice( $cached, 0, $max );
 	}
 	$q     = new WP_Query(
@@ -207,12 +236,17 @@ function studentup_latest_ticker_items( $max = 12 ) {
 	);
 	$items = array();
 	foreach ( (array) $q->posts as $p ) {
-		$link = get_permalink( $p );
-		if ( ! $link ) {
+		$link  = get_permalink( $p );
+		$title = wp_strip_all_tags( (string) get_the_title( $p ) );
+		$slug  = (string) get_post_field( 'post_name', $p );
+		/* A generic placeholder/guide is not a useful Latest Jobs item. Keep
+		 * the ticker focused on real student opportunities and avoid showing a
+		 * low-value "Guide" card above the homepage on mobile. */
+		if ( ! $link || 'guide' === sanitize_title( $title ) || 'guide' === $slug ) {
 			continue;
 		}
 		$items[] = array(
-			'title' => get_the_title( $p ),
+			'title' => $title,
 			'link'  => $link,
 			'time'  => get_post_time( DATE_W3C, false, $p ),
 		);
@@ -238,6 +272,8 @@ add_action( 'save_post', 'studentup_latest_ticker_flush', 30 );
  * Render the marquee — home page mattrame (post pages lo reading ki distraction vaddu).
  */
 function studentup_latest_ticker() {
+	// v127: owner-enabled latest jobs strip restored — same compact, useful bar
+	// as the approved reference design. It is still homepage-only and cached.
 	if ( ! is_front_page() || '0' === (string) studentup_opt( 'latest_ticker', '1' ) ) {
 		return;
 	}
@@ -252,9 +288,10 @@ function studentup_latest_ticker() {
 	foreach ( array( 0, 1 ) as $dup ) {   // duplicate set — seamless 50% loop
 		foreach ( $items as $it ) {
 			printf(
-				'<a href="%s"%s>%s <span class="tsrc">%s</span></a>',
+				'<a href="%s"%s aria-label="%s" title="Open article">%s <span class="tsrc">%s</span></a>',
 				esc_url( $it['link'] ),
 				$dup ? ' aria-hidden="true" tabindex="-1"' : '',
+				esc_attr( 'Open article: ' . wp_strip_all_tags( (string) $it['title'] ) ),
 				esc_html( $it['title'] ),
 				esc_html( studentup_ago( $it['time'] ) )
 			);

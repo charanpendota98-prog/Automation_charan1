@@ -25,6 +25,26 @@ function studentup_manifest() {
 	if ( has_site_icon() ) {
 		$icon = get_site_icon_url( 512 );
 	}
+	/*
+	 * Keep every long-press shortcut actionable. `#jobs` and `#qualsplit` are
+	 * real homepage anchors; results and quiz are content groups/pages and do
+	 * not have guaranteed anchors on every WordPress install. Resolve those to
+	 * the live category/page when available, with a same-site search fallback
+	 * instead of shipping shortcuts that open an empty section.
+	 */
+	$results_url = add_query_arg( 's', 'results', home_url( '/' ) );
+	$results_cat = function_exists( 'studentup_used_term' ) ? studentup_used_term( 'results' ) : null;
+	if ( $results_cat && ! is_wp_error( $results_cat ) ) {
+		$results_url = get_category_link( $results_cat );
+	}
+	$quiz_url  = add_query_arg( 's', 'daily quiz', home_url( '/' ) );
+	$quiz_page = get_page_by_path( 'quiz' );
+	$quiz_cat  = get_category_by_slug( 'daily-quiz' );
+	if ( $quiz_page && 'publish' === get_post_status( $quiz_page ) ) {
+		$quiz_url = get_permalink( $quiz_page );
+	} elseif ( $quiz_cat && ! is_wp_error( $quiz_cat ) ) {
+		$quiz_url = get_category_link( $quiz_cat );
+	}
 	$manifest = array(
 		'name'             => get_bloginfo( 'name' ),
 		'short_name'       => mb_substr( get_bloginfo( 'name' ), 0, 12 ),
@@ -37,7 +57,7 @@ function studentup_manifest() {
 		'orientation'      => 'portrait',
 		'description'      => get_bloginfo( 'description' ),
 		'categories'       => array( 'news', 'education', 'jobs' ),
-		// v72.1: app icon long-press → nerugaa mukhyamaina sections (student-focus)
+		// v72.1: app icon long-press → live, student-first destinations.
 		'shortcuts'        => array(
 			array(
 				'name'       => 'Jobs',
@@ -52,12 +72,12 @@ function studentup_manifest() {
 			array(
 				'name'       => 'Results',
 				'short_name' => 'Results',
-				'url'        => home_url( '/#results' ),
+				'url'        => $results_url,
 			),
 			array(
 				'name'       => 'Daily Quiz',
 				'short_name' => 'Quiz',
-				'url'        => home_url( '/#quiz' ),
+				'url'        => $quiz_url,
 			),
 		),
 	);
@@ -74,15 +94,16 @@ function studentup_manifest() {
 add_action( 'template_redirect', 'studentup_manifest' );
 
 /**
- * head hints: manifest link, theme-color, preconnect, apple icon.
+ * head hints: manifest link, theme-color and apple icon. Third-party hints live
+ * in perf.php and are conditional on a configured feature.
  */
 function studentup_head_hints() {
 	if ( is_admin() ) {
 		return;
 	}
 	echo '<meta name="theme-color" content="#0f2e62">' . "\n";
-	echo '<link rel="preconnect" href="https://pagead2.googlesyndication.com" crossorigin>' . "\n";
-	echo '<link rel="dns-prefetch" href="https://www.googletagmanager.com">' . "\n";
+	// Third-party resource hints are emitted centrally by perf.php only when
+	// Ads/GA4 are really enabled; avoid duplicate or unused connections here.
 	if ( studentup_opt( 'pwa', '1' ) ) {
 		echo '<link rel="manifest" href="' . esc_url( add_query_arg( 'studentup_manifest', '1', home_url( '/' ) ) ) . '">' . "\n";
 		echo '<meta name="apple-mobile-web-app-capable" content="yes">' . "\n";

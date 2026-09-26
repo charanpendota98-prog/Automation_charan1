@@ -50,8 +50,26 @@ CAT_DESCS: Dict[str, str] = {
         "Telangana Prabhuthi, DSC, Police, Panchayat Secretary — TS Govt "
         "notifications, hall tickets, results daily updates Telugu lo.",
     "AP Govt Jobs":
-        "Andhra Pradesh Group, Police, Railway gang, DSC notifications, "
-        "applications, results anni Telugu lo oka chota.",
+        "Andhra Pradesh Group, Police, DSC, APSRTC notifications, applications "
+        "and results Telugu lo official-source checks tho.",
+    "Outsourcing Jobs":
+        "Telangana and Andhra Pradesh outsourcing, contract-basis and guest-faculty "
+        "recruitments — eligibility, pay, documents and official apply links Telugu lo.",
+    "Current Affairs":
+        "Exam-relevant daily current affairs, government schemes, welfare, budget, "
+        "women and farmer updates — official sources tho Telugu lo.",
+    "Exam Tips":
+        "SSC, TSPSC, APPSC, RRB and other exams kosam preparation plans, previous "
+        "papers, revision and time-management tips Telugu lo.",
+    "Upcoming Exams":
+        "TSPSC, APPSC, SSC, RRB and NTA exam calendars, schedules and official "
+        "application windows — verified updates Telugu lo.",
+    "Abroad Jobs":
+        "Gulf and overseas jobs, work-visa process and safe recruitment guidance — "
+        "MEA/eMigrate and official sources based Telugu updates.",
+    "Success Stories":
+        "Independently verified student and job achiever journeys, preparation lessons "
+        "and evidence-based career takeaways — no fabricated outcomes.",
     "Online Education":
         "Online courses, SWAYAM, MOOC, upskilling — free/paid education "
         "programs details, eligibility, certificates Telugu lo.",

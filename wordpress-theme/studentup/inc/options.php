@@ -46,6 +46,13 @@ function studentup_option_fields() {
 				'ads_on_policy'  => array( 'Legal pages lo ads (privacy/about)', 'check', '0', 'Default OFF (AdSense policy safe)' ),
 				'sticky_ad'      => array( 'Sticky bottom ad ON', 'check', '0', 'Mobile lo kindha fixed ad (house/AdSense anchor)' ),
 				'house_ads'      => array( 'House ads (JSON)', 'textarea', '', 'Filled by the bot (ads/house.json → here). Format: [{"title":"..","text":"..","url":".."}]' ),
+				'partner_ad_enabled' => array( 'Featured college partner ad ON', 'check', '0', 'ON chesthe homepage mid sponsored slot lo mee partner photo + copy + link render avutayi' ),
+				'partner_ad_name'    => array( 'Partner name', 'text', '', 'College/institute/business name — image kinda small label ga kanipistundi' ),
+				'partner_ad_title'   => array( 'Partner ad headline', 'text', '', 'Example: Admissions open for B.Tech, MBA & skill courses' ),
+				'partner_ad_description' => array( 'Partner ad description', 'textarea', '', 'Short, factual student-useful description. Claims ni partner tho verify cheyyandi.' ),
+				'partner_ad_image_url' => array( 'Partner photo URL', 'text', '', 'WordPress Media Library lo image upload chesi full https:// URL ikkada paste cheyyandi (1200×630 or similar)' ),
+				'partner_ad_link'    => array( 'Partner destination URL', 'text', '', 'Full https:// admissions/course page URL. Sponsored link ga rel=sponsored nofollow tho render avutundi.' ),
+				'partner_ad_cta'     => array( 'Partner button text', 'text', 'View details →', 'Example: Apply now → / View courses →' ),
 			),
 		),
 		'socials' => array(
@@ -55,19 +62,26 @@ function studentup_option_fields() {
 				'social_telegram'  => array( 'Telegram', 'text', 'studentup_in', 't.me/<idi> — channel username' ),
 				'telegram_channel_url' => array( 'Telegram channel URL override (v91)', 'text', '', 'PRIVATE channel aithe full invite link (https://t.me/+AbCd…); khali unte username t.me link use avutundi' ),
 				'social_instagram' => array( 'Instagram', 'text', 'studentup.in', 'instagram.com/<idi>' ),
+				'social_linkedin'  => array( 'LinkedIn editorial profile', 'text', '', 'Full https://www.linkedin.com/in/... URL or profile username' ),
 				'social_youtube'   => array( 'YouTube', 'text', '@studentupin', 'youtube.com/<idi>' ),
+				'social_facebook'  => array( 'Facebook Page', 'text', '', 'Full https://www.facebook.com/... page URL or username' ),
+				'social_x'         => array( 'X (Twitter)', 'text', '', 'Full https://x.com/... profile URL or username' ),
+				'social_pinterest' => array( 'Pinterest', 'text', '', 'Full https://www.pinterest.com/... profile URL or username' ),
+				'social_reddit'    => array( 'Reddit profile/community', 'text', '', 'Full https://www.reddit.com/... URL; do not automate posting' ),
+				'social_quora'     => array( 'Quora profile', 'text', '', 'Full https://www.quora.com/profile/... URL; do not automate posting' ),
 			),
 		),
 		'content' => array(
 			'title'  => 'Content & site',
 			'fields' => array(
 				'contact_email' => array( 'Contact email', 'text', '', 'Errors/suggestions — falls back to the admin email if empty' ),
-				'author_name'   => array( 'Editorial team name', 'text', 'StudentUp Editorial Team', 'Shown in the E-E-A-T box under the post' ),
-				'author_bio'    => array( 'Editorial team description', 'textarea', 'We verify from official notifications and government websites, then write it in simple language. If you spot a mistake, email us — we fix it fast.', '' ),
+				'success_story_form_url' => array( 'Verified Success Story Google Form URL', 'text', '', 'Public intake link. Collect consent + evidence only; never ask for Aadhaar, PAN, bank details, OTPs or passwords.' ),
+				'author_name'   => array( 'Author name', 'text', 'Charan Pendota', 'Shown in the byline and E-E-A-T box under the post' ),
+				'author_bio'    => array( 'Author bio', 'textarea', 'Charan Pendota is a content writer and digital marketing editor with 6+ years of experience in content writing. At StudentUp, he focuses on clear, source-backed education and career information for Telangana and Andhra Pradesh students.', 'Keep this factual and update it when the author profile changes.' ),
 				'breaking_json' => array( 'Breaking feed (JSON)', 'textarea', '', 'Bot nimpustundi (--push-theme-data). Format: {"items":[{"title":"..","link":"..","time":"..","tag":".."}]}' ),
-				'breaking_enabled' => array( 'Breaking news section ON (v72 default OFF)', 'check', '0', 'OFF lo site lo ticker/section render avvadu (feed data intact unthundi)' ),
+				'breaking_enabled' => array( 'Breaking news section ON (verified feed only)', 'check', '1', 'Shows the restrained Breaking News surface; empty or stale feeds show an honest no-update state, never a fabricated headline.' ),
 				'qual_filter' => array( 'Qualification filter (SSC/10th · SSC +2 · Degree · PG)', 'check', '1', 'Chips on home/archive — the tag is set automatically when a post is saved' ),
-				'latest_ticker' => array( 'Latest jobs scrolling ticker (homepage)', 'check', '1', 'v89: header kindha latest posts marqee — prathi item click cheste aa post open avutundi' ),
+				'latest_ticker' => array( 'Latest jobs scrolling ticker (homepage)', 'check', '1', 'v127: compact homepage strip with links to the latest published posts; hover pauses it and reduced-motion users get a still list' ),
 				'notify_banner' => array( 'Critical alerts public banner (v90 notify)', 'check', '1', 'CRITICAL severity alerts site-wide banner ga chupistundi (readers dismiss cheste localStorage lo; admin notices ki impact ledu)' ),
 				'notify_queue' => array( 'Notify alert queue (JSON)', 'textarea', '', 'v90: bot/--tg-alert nimpustundi (REST studentup/v1/notify). Format: [{"code":"..","message":"..","severity":"info|warn|critical","ts":123}] — manual ga clear cheyyadaniki edit cheyyochu' ),
 				'join_cta_inline' => array( 'Mid-article join strip (WhatsApp/Telegram)', 'check', '1', '2nd para tarvata compact join box — same social options (owner number/username)' ),
@@ -84,7 +98,7 @@ function studentup_option_fields() {
 				'progress_bar' => array( 'Reading progress bar', 'check', '1', 'Reading progress bar at the top' ),
 				'toc'          => array( 'Table of contents (auto TOC)', 'check', '1', 'Automatic jump links from H2/H3' ),
 				'pwa'          => array( 'PWA (mobile install + app icon)', 'check', '1', 'On phones "Add to Home screen"' ),
-				'install_prompt' => array( 'Download App button (Android/iPhone)', 'check', '1', 'Install prompt on Android/Chrome, Share hint on iPhone' ),
+				'install_prompt' => array( 'Web app install button (Android/iPhone)', 'check', '1', 'Browser install prompt on Android/Chrome, Share hint on iPhone; no native APK' ),
 				'schema'       => array( 'JSON-LD schema (Organization/WebSite)', 'check', '1', 'Google ki site identity' ),
 				'consent_mode'    => array( 'Google Consent Mode v2', 'check', '1', 'EEA/UK/CH ki consent varaku ads hold (Google rule) — India ki impact ledu' ),
 				'consent_regions' => array( 'Consent regions', 'text', 'EEA,GB,CH', 'AdSense CMP lo mee regions (default EEA+UK+Switzerland)' ),
@@ -97,7 +111,9 @@ function studentup_option_fields() {
 				'indexnow_key' => array( 'IndexNow key (hex, 8+ chars)', 'text', '', 'Bot nimpustundi — /<key>.key file automatic ga serve avutundi (Bing/Yandex instant indexing)' ),
 				'redirects_json' => array( '301 redirects (JSON)', 'textarea', '', 'v80: {"/old-url/": "/new-url/"} — slug marina old links 404 kakunda 301 (chain/loop safe, relative paths only)' ),
 				'ga4_id' => array( 'GA4 Measurement ID', 'text', '', 'v80: G-XXXXXXXXXX — consent-aware analytics (EEA regions lo consent varaku hold, India lo direct)' ),
-				'gsc_verify' => array( 'Search Console verification', 'text', '', 'v80: GSC → Settings → Ownership verification → HTML tag content value (meta tag auto)' ),
+				'gsc_verify'  => array( 'Search Console verification', 'text', '', 'v80: GSC → Settings → Ownership verification → HTML tag content value (meta tag auto)' ),
+				'bing_verify' => array( 'Bing Webmaster verification', 'text', '', 'Bing Webmaster Tools → Verification → HTML meta tag content value' ),
+				'category_seed_version' => array( 'Category seed version (managed)', 'text', '', 'Managed automatically when StudentUp creates missing canonical categories; do not edit unless re-seeding is required.' ),
 			),
 		),
 	);
@@ -262,7 +278,13 @@ function studentup_rest_get_options() {
 				'whatsapp'  => studentup_opt( 'social_whatsapp', '9182739312' ),
 				'telegram'  => studentup_opt( 'social_telegram', 'studentup_in' ),
 				'instagram' => studentup_opt( 'social_instagram', 'studentup.in' ),
+				'linkedin'  => studentup_opt( 'social_linkedin', '' ),
 				'youtube'   => studentup_opt( 'social_youtube', '@studentupin' ),
+				'facebook'  => studentup_opt( 'social_facebook', '' ),
+				'x'         => studentup_opt( 'social_x', '' ),
+				'pinterest' => studentup_opt( 'social_pinterest', '' ),
+				'reddit'    => studentup_opt( 'social_reddit', '' ),
+				'quora'     => studentup_opt( 'social_quora', '' ),
 			),
 			'adsense_on'  => (bool) studentup_opt( 'adsense_client', '' ),
 			'sticky_ad'   => (bool) studentup_opt( 'sticky_ad', '0' ),
@@ -337,8 +359,28 @@ function studentup_call_number( $raw = '' ) {
 function studentup_social_links() {
 	$wa  = studentup_wa_number( studentup_opt( 'social_whatsapp', '9182739312' ) );
 	$ig  = ltrim( (string) studentup_opt( 'social_instagram', 'studentup.in' ), '@' );
+	$li  = trim( (string) studentup_opt( 'social_linkedin', '' ) );
+	$liu = '';
+	if ( $li ) {
+		$liu = 0 === strpos( $li, 'http' ) ? $li : 'https://www.linkedin.com/in/' . ltrim( $li, '@/' );
+	}
 	$yt  = (string) studentup_opt( 'social_youtube', '@studentupin' );
 	$ytu = 0 === strpos( $yt, 'http' ) ? $yt : 'https://www.youtube.com/' . ( 0 === strpos( $yt, '@' ) ? $yt : '@' . $yt );
+	$profile = static function ( $raw, $base, $prefix = '' ) {
+		$raw = trim( (string) $raw );
+		if ( '' === $raw ) {
+			return '';
+		}
+		if ( preg_match( '#^https?://#i', $raw ) ) {
+			return esc_url_raw( $raw );
+		}
+		return esc_url_raw( $base . $prefix . ltrim( $raw, '@/ ' ) );
+	};
+	$facebook  = $profile( studentup_opt( 'social_facebook', '' ), 'https://www.facebook.com/' );
+	$x_profile = $profile( studentup_opt( 'social_x', '' ), 'https://x.com/' );
+	$pinterest = $profile( studentup_opt( 'social_pinterest', '' ), 'https://www.pinterest.com/' );
+	$reddit    = $profile( studentup_opt( 'social_reddit', '' ), 'https://www.reddit.com/', 'u/' );
+	$quora     = $profile( studentup_opt( 'social_quora', '' ), 'https://www.quora.com/profile/' );
 
 	/*
 	 * v93 FIX (nijamaina bug): ippati varaku idi `https://t.me/<username>` ne
@@ -359,7 +401,13 @@ function studentup_social_links() {
 		'whatsapp'  => 'https://wa.me/' . $wa,
 		'telegram'  => $tg_url,
 		'instagram' => 'https://www.instagram.com/' . $ig . '/',
+		'linkedin'  => $liu,
 		'youtube'   => $ytu,
+		'facebook'  => $facebook,
+		'x'         => $x_profile,
+		'pinterest' => $pinterest,
+		'reddit'    => $reddit,
+		'quora'     => $quora,
 	);
 }
 

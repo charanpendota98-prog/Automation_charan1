@@ -4,7 +4,7 @@
 Enduku idi:
   student site open cheyagane modati 3 sekundullo "ippude em jarigindi" +
   "నాకు పనికొచ్చేది" kanipinchali. Ee module rendu panulu chestundi:
-    1) radar (Google News Telugu + 180 official sources) nunchi vachina
+    1) radar (Google News Telugu + 258 curated source queries) nunchi vachina
        verified items ni preview/data/breaking.json ga rasi site ticker +
        బ్రేకింగ్ న్యూస్ section ki istundi.
     2) MOST_USED — TS/AP students ekkuvaga vethike category order (bot +
@@ -49,6 +49,8 @@ MOST_USED: List[Dict[str, str]] = [
      "hint": "This week\u2019s drives · venues"},
     {"cat": "software", "label": "Software Jobs", "icon": "💻",
      "hint": "IT · developer · fresher"},
+    {"cat": "success-stories", "label": "Success Stories", "icon": "🏆",
+     "hint": "Verified journeys · lessons"},
     {"cat": "private", "label": "Private Jobs", "icon": "🏢",
      "hint": "TCS · Infosys · Off-campus"},
     {"cat": "current", "label": "Current Affairs", "icon": "📰",
@@ -154,16 +156,56 @@ def _host(link: str) -> str:
 # build + publish
 # ---------------------------------------------------------------------------
 
+def verify_candidates(raw: List[dict]) -> List[dict]:
+    """Re-fetch radar candidates before allowing them into the public feed.
+
+    Google News/RSS discovery is only a lead. A candidate is promoted after
+    its linked public page is fetched successfully and has useful text. An
+    explicitly verified item can come from the owner-approved offline fixture;
+    everything else is fail-closed when the source cannot be checked.
+    """
+    from . import sources
+
+    verified: List[dict] = []
+    for candidate in raw or []:
+        if not isinstance(candidate, dict):
+            continue
+        if candidate.get("verified") is True and candidate.get("source_verified") is True:
+            verified.append(dict(candidate))
+            continue
+        if candidate.get("verified") is False or candidate.get("source_verified") is False:
+            continue
+        link = str(candidate.get("link") or "").strip()
+        if not sources.is_valid_source_url(link):
+            continue
+        try:
+            source = sources.fetch_source(link)
+            if int(getattr(source, "status_code", 0) or 0) >= 400 or len((source.text or "").strip()) < 120:
+                continue
+            item = dict(candidate)
+            item["verified"] = True
+            item["source_verified"] = True
+            item["verification_url"] = link
+            verified.append(item)
+        except Exception as exc:  # noqa: BLE001 — one stale lead must not block the sweep
+            log.debug("breaking candidate verification failed (%s): %s", link[:100], exc)
+    return verified
+
+
 def build_items(raw: List[dict], limit: int = None) -> List[dict]:
-    """Raw radar items → site feed items (dedupe + tag + time + cap).
+    """Verified radar items → site feed items (dedupe + tag + time + cap).
 
     Nijamaina link lekunda / chala podugu title unte drop — fake/incomplete
-    item site ki vellakudadu.
+    item site ki vellakudadu. ``verify_candidates`` is the normal entry point.
     """
     limit = int(limit or getattr(config, "BREAKING_MAX", 8) or 8)
     out: List[dict] = []
     seen_title, seen_link, per_host = set(), set(), {}
     for it in raw or []:
+        # The writer never grants verification. Only a source recheck or an
+        # explicit owner-approved fixture can set both flags.
+        if it.get("verified") is not True or it.get("source_verified") is not True:
+            continue
         title = clean_title(it.get("title") or "")
         link = (it.get("link") or "").strip()
         if len(title) < MIN_TITLE or not link.startswith("http"):
@@ -179,7 +221,7 @@ def build_items(raw: List[dict], limit: int = None) -> List[dict]:
         source = (it.get("source_name") or it.get("source") or "రాడార్"
                   ).strip()
         item = {"title": title, "link": link, "tag": tag, "source": source,
-                "time": when}
+                "time": when, "verified": True, "source_verified": True}
         if it.get("district"):
             item["district"] = it["district"]
         out.append(item)
@@ -206,6 +248,11 @@ def merge_items(new_items: List[dict], old_feed: dict, keep_hours: float = None,
     out: List[dict] = []
     seen = set()
     for it in list(new_items or []) + list((old_feed or {}).get("items", [])):
+        if it.get("verified") is not True or it.get("source_verified") is not True:
+            continue
+        it = dict(it)
+        it["verified"] = True
+        it["source_verified"] = True
         when = None
         try:
             when = datetime.fromisoformat(str(it.get("time") or ""))
@@ -227,28 +274,35 @@ def write_feed(items: List[dict], path: Path = None, source: str = "radar",
     """Feed JSON ni atomic ga rasi, summary return (site + tests iddariki okate)."""
     target = Path(path or feed_path())
     target.parent.mkdir(parents=True, exist_ok=True)
+    safe_items = [
+        dict(item) for item in (items or [])
+        if isinstance(item, dict)
+        and item.get("verified") is True
+        and item.get("source_verified") is True
+    ]
     payload = {
         "updated": _iso(_now()),
         "source": source,
-        "count": len(items),
+        "count": len(safe_items),
+        "verified_only": True,
         # v72: ee note public site meeda kanipistundi — anduku internal tech maatalu ledu
-        "note": note or ("తాజా అప్డేట్‌లు" if items else
+        "note": note or ("తాజా అప్డేట్‌లు" if safe_items else
                          "ప్రస్తుతం కొత్త బ్రేకింగ్ అప్డేట్‌లు లేవు — "
                          "త్వరలో ఇక్కడ కనిపిస్తాయి."),
-        "items": items,
+        "items": safe_items,
     }
     tmp = target.with_suffix(target.suffix + ".tmp")
     tmp.write_text(json.dumps(payload, ensure_ascii=False, indent=2),
                    encoding="utf-8")
     os.replace(tmp, target)
-    return {"path": str(target), "count": len(items),
+    return {"path": str(target), "count": len(safe_items),
             "updated": payload["updated"], "note": payload["note"]}
 
 
 def publish(raw: List[dict], path: Path = None, source: str = "radar") -> dict:
-    """build_items → rolling merge (18h window) → write_feed (radar hook entry)."""
+    """Verify → build_items → rolling merge (18h) → write_feed."""
     target = Path(path or feed_path())
-    items = merge_items(build_items(raw), read_feed(target))
+    items = merge_items(build_items(verify_candidates(raw)), read_feed(target))
     res = write_feed(items, path=target, source=source)
     log.info("breaking feed: %d items → %s", res["count"], res["path"])
     return res
