@@ -46,6 +46,13 @@ function studentup_option_fields() {
 				'ads_on_policy'  => array( 'Legal pages lo ads (privacy/about)', 'check', '0', 'Default OFF (AdSense policy safe)' ),
 				'sticky_ad'      => array( 'Sticky bottom ad ON', 'check', '0', 'Mobile lo kindha fixed ad (house/AdSense anchor)' ),
 				'house_ads'      => array( 'House ads (JSON)', 'textarea', '', 'Filled by the bot (ads/house.json → here). Format: [{"title":"..","text":"..","url":".."}]' ),
+				'partner_ad_enabled' => array( 'Featured college partner ad ON', 'check', '0', 'ON chesthe homepage mid sponsored slot lo mee partner photo + copy + link render avutayi' ),
+				'partner_ad_name'    => array( 'Partner name', 'text', '', 'College/institute/business name — image kinda small label ga kanipistundi' ),
+				'partner_ad_title'   => array( 'Partner ad headline', 'text', '', 'Example: Admissions open for B.Tech, MBA & skill courses' ),
+				'partner_ad_description' => array( 'Partner ad description', 'textarea', '', 'Short, factual student-useful description. Claims ni partner tho verify cheyyandi.' ),
+				'partner_ad_image_url' => array( 'Partner photo URL', 'text', '', 'WordPress Media Library lo image upload chesi full https:// URL ikkada paste cheyyandi (1200×630 or similar)' ),
+				'partner_ad_link'    => array( 'Partner destination URL', 'text', '', 'Full https:// admissions/course page URL. Sponsored link ga rel=sponsored nofollow tho render avutundi.' ),
+				'partner_ad_cta'     => array( 'Partner button text', 'text', 'View details →', 'Example: Apply now → / View courses →' ),
 			),
 		),
 		'socials' => array(
@@ -55,6 +62,7 @@ function studentup_option_fields() {
 				'social_telegram'  => array( 'Telegram', 'text', 'studentup_in', 't.me/<idi> — channel username' ),
 				'telegram_channel_url' => array( 'Telegram channel URL override (v91)', 'text', '', 'PRIVATE channel aithe full invite link (https://t.me/+AbCd…); khali unte username t.me link use avutundi' ),
 				'social_instagram' => array( 'Instagram', 'text', 'studentup.in', 'instagram.com/<idi>' ),
+				'social_linkedin'  => array( 'LinkedIn editorial profile', 'text', '', 'Full https://www.linkedin.com/in/... URL or profile username' ),
 				'social_youtube'   => array( 'YouTube', 'text', '@studentupin', 'youtube.com/<idi>' ),
 			),
 		),
@@ -62,12 +70,13 @@ function studentup_option_fields() {
 			'title'  => 'Content & site',
 			'fields' => array(
 				'contact_email' => array( 'Contact email', 'text', '', 'Errors/suggestions — falls back to the admin email if empty' ),
+				'success_story_form_url' => array( 'Verified Success Story Google Form URL', 'text', '', 'Public intake link. Collect consent + evidence only; never ask for Aadhaar, PAN, bank details, OTPs or passwords.' ),
 				'author_name'   => array( 'Editorial team name', 'text', 'StudentUp Editorial Team', 'Shown in the E-E-A-T box under the post' ),
 				'author_bio'    => array( 'Editorial team description', 'textarea', 'We verify from official notifications and government websites, then write it in simple language. If you spot a mistake, email us — we fix it fast.', '' ),
 				'breaking_json' => array( 'Breaking feed (JSON)', 'textarea', '', 'Bot nimpustundi (--push-theme-data). Format: {"items":[{"title":"..","link":"..","time":"..","tag":".."}]}' ),
 				'breaking_enabled' => array( 'Breaking news section ON (v72 default OFF)', 'check', '0', 'OFF lo site lo ticker/section render avvadu (feed data intact unthundi)' ),
 				'qual_filter' => array( 'Qualification filter (SSC/10th · SSC +2 · Degree · PG)', 'check', '1', 'Chips on home/archive — the tag is set automatically when a post is saved' ),
-				'latest_ticker' => array( 'Latest jobs scrolling ticker (homepage)', 'check', '1', 'v89: header kindha latest posts marqee — prathi item click cheste aa post open avutundi' ),
+				'latest_ticker' => array( 'Latest jobs scrolling ticker (homepage)', 'check', '1', 'v127: compact homepage strip with links to the latest published posts; hover pauses it and reduced-motion users get a still list' ),
 				'notify_banner' => array( 'Critical alerts public banner (v90 notify)', 'check', '1', 'CRITICAL severity alerts site-wide banner ga chupistundi (readers dismiss cheste localStorage lo; admin notices ki impact ledu)' ),
 				'notify_queue' => array( 'Notify alert queue (JSON)', 'textarea', '', 'v90: bot/--tg-alert nimpustundi (REST studentup/v1/notify). Format: [{"code":"..","message":"..","severity":"info|warn|critical","ts":123}] — manual ga clear cheyyadaniki edit cheyyochu' ),
 				'join_cta_inline' => array( 'Mid-article join strip (WhatsApp/Telegram)', 'check', '1', '2nd para tarvata compact join box — same social options (owner number/username)' ),
@@ -262,6 +271,7 @@ function studentup_rest_get_options() {
 				'whatsapp'  => studentup_opt( 'social_whatsapp', '9182739312' ),
 				'telegram'  => studentup_opt( 'social_telegram', 'studentup_in' ),
 				'instagram' => studentup_opt( 'social_instagram', 'studentup.in' ),
+				'linkedin'  => studentup_opt( 'social_linkedin', '' ),
 				'youtube'   => studentup_opt( 'social_youtube', '@studentupin' ),
 			),
 			'adsense_on'  => (bool) studentup_opt( 'adsense_client', '' ),
@@ -337,6 +347,11 @@ function studentup_call_number( $raw = '' ) {
 function studentup_social_links() {
 	$wa  = studentup_wa_number( studentup_opt( 'social_whatsapp', '9182739312' ) );
 	$ig  = ltrim( (string) studentup_opt( 'social_instagram', 'studentup.in' ), '@' );
+	$li  = trim( (string) studentup_opt( 'social_linkedin', '' ) );
+	$liu = '';
+	if ( $li ) {
+		$liu = 0 === strpos( $li, 'http' ) ? $li : 'https://www.linkedin.com/in/' . ltrim( $li, '@/' );
+	}
 	$yt  = (string) studentup_opt( 'social_youtube', '@studentupin' );
 	$ytu = 0 === strpos( $yt, 'http' ) ? $yt : 'https://www.youtube.com/' . ( 0 === strpos( $yt, '@' ) ? $yt : '@' . $yt );
 
@@ -359,6 +374,7 @@ function studentup_social_links() {
 		'whatsapp'  => 'https://wa.me/' . $wa,
 		'telegram'  => $tg_url,
 		'instagram' => 'https://www.instagram.com/' . $ig . '/',
+		'linkedin'  => $liu,
 		'youtube'   => $ytu,
 	);
 }

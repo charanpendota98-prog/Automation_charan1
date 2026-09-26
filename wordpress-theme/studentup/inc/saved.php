@@ -106,10 +106,16 @@ function studentup_save_button( $post_id = 0, $class = '' ) {
  * List ni JS nimpustundi (localStorage). Server-side empty-state chupistundi —
  * anduke JS lekunda kuda page meeda "no saved posts" note kanipistundi, error kaadu.
  */
+function studentup_saved_page_url() {
+	$page = get_page_by_path( 'saved' );
+	return ( $page && 'publish' === get_post_status( $page ) ) ? get_permalink( $page ) : '';
+}
+
 function studentup_saved_panel() {
 	if ( ! studentup_saved_on() ) {
 		return;
 	}
+	$su_saved_url = studentup_saved_page_url();
 	?>
 	<div class="su-saved-rail" id="su-saved-rail">
 		<button type="button" class="su-saved-tab" id="su-saved-tab" data-su-saved-open aria-expanded="false" aria-controls="su-saved-panel" aria-label="<?php echo esc_attr__( 'Saved posts', 'studentup' ); ?>">
@@ -126,7 +132,11 @@ function studentup_saved_panel() {
 				<p class="su-saved-empty"><?php echo esc_html__( 'No saved posts yet. Tap 🔖 on any card to save it for later.', 'studentup' ); ?></p>
 			</div>
 			<div class="su-saved-foot">
-				<a class="su-saved-all" href="<?php echo esc_url( home_url( '/saved/' ) ); ?>"><?php echo esc_html__( 'Open the saved page', 'studentup' ); ?></a>
+				<?php if ( $su_saved_url ) : ?>
+					<a class="su-saved-all" href="<?php echo esc_url( $su_saved_url ); ?>"><?php echo esc_html__( 'Open the saved page', 'studentup' ); ?></a>
+				<?php else : ?>
+					<button type="button" class="su-saved-all su-saved-page-fallback" data-su-saved-open><?php echo esc_html__( 'View saved here', 'studentup' ); ?></button>
+				<?php endif; ?>
 				<button type="button" class="su-saved-clear" id="su-saved-clear"><?php echo esc_html__( 'Clear all', 'studentup' ); ?></button>
 			</div>
 		</div>
@@ -194,6 +204,8 @@ function studentup_saved_assets() {
 			'i18n'   => array(
 				'save'    => __( 'Save', 'studentup' ),
 				'saved'   => __( 'Saved', 'studentup' ),
+				'saveLabel' => __( 'Save this post for later', 'studentup' ),
+				'savedLabel' => __( 'Remove this post from saved', 'studentup' ),
 				'removed' => __( 'Removed from saved', 'studentup' ),
 				'savedmsg' => __( 'Post saved — open 🔖 any time to read it later.', 'studentup' ),
 				'nomore'  => __( 'Storage is not available in this browser (private mode?) — saving is off.', 'studentup' ),

@@ -74,6 +74,54 @@ class WordPressClient:
         except Exception:
             return 0
 
+    def published_opportunities(self, max_pages: int = 2, per_page: int = 100) -> List[Dict]:
+        """Read published posts for the deadline-aware owner digest.
+
+        This is read-only. The theme performs the same expiry check live for
+        the public board; the bot copy is only a compact forwarding message.
+        """
+        rows: List[Dict] = []
+        posts = []
+        for page in range(1, max(1, int(max_pages)) + 1):
+            r = self._request("GET", "posts", params={
+                "status": "publish", "per_page": min(100, max(1, int(per_page))),
+                "page": page, "orderby": "date", "order": "desc",
+                "_fields": "id,link,title,date,categories,meta",
+            })
+            if not r.ok:
+                break
+            batch = r.json() if isinstance(r.json(), list) else []
+            posts.extend(batch)
+            if len(batch) < min(100, max(1, int(per_page))):
+                break
+        ids = sorted({int(cid) for post in posts for cid in (post.get("categories") or []) if str(cid).isdigit()})
+        category_names: Dict[int, Dict[str, str]] = {}
+        if ids:
+            r = self._request("GET", "categories", params={
+                "include": ",".join(str(i) for i in ids), "per_page": 100,
+                "_fields": "id,slug,name",
+            })
+            if r.ok:
+                for term in (r.json() if isinstance(r.json(), list) else []):
+                    category_names[int(term.get("id", 0))] = {
+                        "slug": str(term.get("slug") or ""),
+                        "name": str(term.get("name") or ""),
+                    }
+        for post in posts:
+            title = post.get("title") or {}
+            meta = post.get("meta") or {}
+            cats = [category_names.get(int(cid), {}) for cid in (post.get("categories") or [])]
+            rows.append({
+                "id": post.get("id"),
+                "link": post.get("link", ""),
+                "title": title.get("rendered", "") if isinstance(title, dict) else str(title),
+                "date": post.get("date", ""),
+                "category_slugs": [c.get("slug", "") for c in cats if c.get("slug")],
+                "category_names": [c.get("name", "") for c in cats if c.get("name")],
+                "last_date": meta.get("studentup_last_date", "") if isinstance(meta, dict) else "",
+            })
+        return rows
+
     def search_posts(self, term: str, per_page: int = 10) -> List[Dict]:
         """Published posts matching term (hub pages kosam)."""
         try:
@@ -491,7 +539,13 @@ class WordPressClient:
             native = self.session.post(native_url, json={
                 "objectID": int(post_id), "objectType": "post", "meta": meta,
             }, timeout=config.HTTP_TIMEOUT)
-            native_ok = native.status_code in (200, 201)
+            native_data = {}
+            try:
+                native_data = native.json() if native.content else {}
+            except ValueError:
+                native_data = {}
+            native_ok = (native.status_code in (200, 201)
+                         and native_data.get("success", True) is not False)
             if native_ok:
                 log.info("Rank Math native meta endpoint accepted post %s", post_id)
             else:
@@ -515,7 +569,13 @@ class WordPressClient:
             data = resp.json()
         except ValueError:
             return native_ok
-        return bool(data.get("ok")) or native_ok
+        saved = data.get("saved") or {}
+        bridge_ok = bool(data.get("ok")) and all(
+            bool(str(saved.get(key, "")).strip()) for key in meta
+        )
+        # A native success may have saved fields before the bridge response;
+        # the following readback remains the source of truth for each value.
+        return bridge_ok or native_ok
 
     def read_rankmath_state(self, post_id: int) -> Dict:
         """Read persisted fields and Rank Math's own stored score, if available.
@@ -530,11 +590,17 @@ class WordPressClient:
                 return {"ok": False, "rank_math_ui_score": None,
                         "reason": f"HTTP {resp.status_code}"}
             data = resp.json()
+            if not isinstance(data, dict):
+                # A missing theme route can legitimately return a REST list
+                # (for example an empty collection). Treat that as unavailable
+                # read-only state, never as a pipeline failure.
+                return {"ok": False, "rank_math_ui_score": None,
+                        "reason": "bridge returned non-object"}
             score = data.get("rank_math_ui_score")
             return {"ok": bool(data.get("ok")), "fields": data.get("fields") or {},
                     "rank_math_ui_score": int(score) if score is not None else None,
                     "score_note": data.get("score_note", "")}
-        except (requests.RequestException, ValueError, TypeError):
+        except (requests.RequestException, ValueError, TypeError, AttributeError):
             return {"ok": False, "rank_math_ui_score": None,
                     "reason": "bridge read failed"}
 
@@ -559,7 +625,11 @@ class WordPressClient:
             data = self.get_post(post_id)
         except WordPressError:
             return {k: False for k in keys}
+        if not isinstance(data, dict):
+            return {k: False for k in keys}
         meta = data.get("meta") or {}
+        if not isinstance(meta, dict):
+            meta = {}
         out = {}
         for k in keys:
             val = meta.get(k)
@@ -567,6 +637,27 @@ class WordPressClient:
                 val = ", ".join(str(x) for x in val)
             out[k] = bool(str(val or "").strip())
         return out
+
+    def verify_rankmath_meta(self, post_id: int, keys: List[str]) -> Dict[str, bool]:
+        """Verify through core REST first, then the SEO bridge.
+
+        Some WordPress/Rank Math combinations save the fields correctly but do
+        not expose them in ``wp/v2/posts/<id>?context=edit``. Treating that
+        read-path limitation as a missing field caused the bot to report empty
+        SEO keys even after the authenticated bridge had saved them.
+        """
+        result = self.verify_meta(post_id, keys)
+        if all(result.values()):
+            return result
+        try:
+            state = self.read_rankmath_state(post_id)
+            fields = state.get("fields") or {}
+            for key in keys:
+                if fields.get(key):
+                    result[key] = True
+        except Exception:  # noqa: BLE001 — preserve the core REST result
+            log.debug("Rank Math bridge readback unavailable", exc_info=True)
+        return result
 
     def create_post(
         self,

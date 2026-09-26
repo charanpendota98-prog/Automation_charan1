@@ -7,19 +7,22 @@
 - **Multi-source research:** internet lo same topic articles search chesi, source-backed context ni fact-check flow tho use chestundi; competitor copy/word-count race kaadu
 - **SEO + QA:** focus/secondary keywords, useful Quick Answer, TOC, internal/external links, visible FAQs, Article/Breadcrumb/eligible JobPosting schema, meta tags — Google result guarantee kaadu
 - **Review flow:** posts **DRAFT** lo vastayi → **Telegram ki message** (✅ Publish / 🗑️ Delete buttons) → **one tap lo approve**
-- **Categories:** Scholarships, Govt Jobs, Education News, Exam Updates, Admissions, Results, Internships, Study Tips
+- **Categories:** TS Govt Jobs, AP Govt Jobs, Central Govt Jobs, Private Jobs, Software Jobs, Part Time Jobs, Walkin Jobs, Outsourcing Jobs, Abroad Jobs, Scholarships, Hall Tickets, Results, Internships, Online Education, Current Affairs, Upcoming Exams, Exam Tips, Success Stories
 - **Auto-publish:** WordPress REST API — post + category + tags + featured image + SEO meta
 - **Schedule:** default 3–5 draft slots/day, spread across 6 AM – 10 PM IST; human review decides what goes live
 - **No duplicates:** SQLite state tracks every posted title + source URL
 - **WhatsApp alerts** too (optional)
 
-## 📡 v15–v17.1: Breaking News Radar + 105 Official Sources + Keyword Dominance
+> **2026-09-25 inventory note:** the repository currently contains **99/99 test-suite files**. This is an inventory count, not a claim that every owner-side integration (WordPress, GSC, GA4, Gemini, Telegram) is configured or that Google rankings are guaranteed.
+
+## 📡 Breaking News Radar + 258 Curated Sources + Keyword Dominance
 - **District Radar:** TS 33 + AP 26 districts Google News (Telugu) — breaking
   news **6 గంటలకోసారి** scan (4×/day). Education-relevant matrame → auto draft.
-- **Official Sources Grid (v16.1):** 105 sources — SSC/UPSC/RRB/IBPS/SBI/LIC/RBI,
+- **Official Sources Grid:** 258 curated queries — SSC/UPSC/RRB/IBPS/SBI/LIC/RBI,
   TSPSC/APPSC/TGRTC/APSRTC/Police/DSC/DISCOMs, NEET/AIIMS/Kaloji/NTR (medical),
-  NSP/YASASVI/ePASS/Jnanabhumi (scholarships), TCS/Infosys/Cognizant/Zoho+ (software),
-  walk-ins 5 cities, internships. **17 daily hot-list** prathi run lo; bavita rotation.
+  NSP/YASASVI/ePASS/Jnanabhumi (scholarships), software, walk-ins, internships,
+  Navodaya, Sainik Schools, TS/AP supplementary exams and results. **57 daily hot-list**
+  sources prathi run lo; migata rotation.
 - **Channel/Website Watch:** `WATCH_SOURCES=` lo Telegram channels (t.me/s/...) +
   RSS/websites — vaalli edu-relevant posts mana queue → fresh original articles.
 - **Keyword Dominance (v17):** 66 exams × 14 intents = **980 exact search keywords**
@@ -40,7 +43,7 @@
 ## 🎯 v18–v19: Honest RankMath Gate + Multi-Key + Google Playbook Adoption
 - **v18 — Rank Math STRICT gate:** real panel checks (capped /100 — no inflation),
   auto-refine round when < 90, TOC/list truncation, mobile clamp CSS, crop-safe
-  thumbnails, multi-key Gemini rotation (429-proof: `GEMINI_API_KEYS=k2,k3` +
+  thumbnails, multi-provider/key rotation (429-proof: `AI_FALLBACK_PROVIDERS=groq,openrouter` +
   per-key RPD cap + dead-key day cooldown), near-copy HARD FLOOR (skip < 72%).
 - **v19 — top-site playbook adoption:**
   - **Google Jobs:** `JobPosting` JSON-LD auto-emitted on notification posts —
@@ -67,8 +70,10 @@
 - **Related Questions block:** article own H2 sections nunchi max 3 honest questions/answers — useful for readers, without claiming a rich-result placement.
 - **Structured-data hygiene:** visible FAQs remain in HTML, but deprecated FAQPage and unsupported speakable markup are not emitted.
 - **Public Telegram channel auto-broadcast:** TELEGRAM_CHANNEL_CHAT_ID set
-  cheste prathi PUBLISHED post channel ki automatic (drafts/mocks eppudu
-  pampabadu) — owned distribution stream, Google-dependency lekapote growth.
+  cheste prathi PUBLISHED post channel ki automatic — featured image, short
+  verified fact caption, Apply/Full Details button and official-link caution
+  tho. Drafts/mocks eppudu pampabavu; vacancy/eligibility/date missing aithe
+  bot guess cheyyadu.
 - **GSC data loop:** `run.py --gsc export.csv` ippudu top striking-distance
   query tokens ni state lo save chesi, radar/topic QUEUE ni re-sort chesthundi
   — meeru provide chechina real Google data bot priorities ni drive chesthundi
@@ -183,7 +188,16 @@ python run.py --theme-audit           # read-only theme check
 python run.py --adsense-ready            # v94: AdSense approval READINESS gate
 python run.py --adsense-kit --dry-run # validate client id, no widget write
 python run.py --adsense-kit           # install/update Auto Ads loader
+python run.py --success-stories private/google-form-export.csv \
+  --success-stories-out private/success-stories-review.json
+# consent/evidence/photo-rights review only — never publishes automatically
 ```
+
+**Verified Success Stories:** Create the owner-controlled Google Form from
+`SUCCESS_STORY_FORM.md`, set `SUCCESS_STORY_FORM_URL`, and run
+`--push-theme-data` (or set the URL in WP Admin → StudentUp → Content & site).
+The private CSV review command selects at most three valid TS/AP stories per
+ISO week. Never place the export, photo files or manifest under `preview/`.
 
 **Honest limitation:** `ADSENSE_CLIENT_ID` set cheyyadam revenue/approval
  guarantee kaadu. AdSense approve ayyaka publisher id tho ads.txt line ni
@@ -1631,7 +1645,7 @@ app-laga install (PWA) · colorful premium look, text/background contrast eppudu
 | # | What changed | Detail |
 |---|---|---|
 | 1 | **బ్రేకింగ్ న్యూస్ teesesaam** | Ticker + section + nav/mobile links + JS + CSS anni public sitenunchi poyayi. Bot radar feed (`autoblog/breaking.py`) intact — WP admin → *StudentUp → కంటెంట్ → బ్రేకింగ్ న్యూస్ సెక్షన్ ON* tho eppudaina tirigi on cheyyochu (**default OFF**). |
-| 2 | **Internal metrics public lo levu** | Homepage proof-stats row (12,344 keywords · 180 sources · 59 districts) mariyu topbar/footer district lines teesesaam. Ee numbers ippudu internal reports/README lo mattrame. |
+| 2 | **Internal metrics public lo levu** | Homepage proof-stats row (12,344 keywords · 258 curated source queries · 59 districts) mariyu topbar/footer district lines teesesaam. Ee numbers ippudu internal reports/README lo mattrame. |
 | 3 | **"నమూనా/DEMO" labels poyayi** | Public pages + theme copy nunchi demo/sample maatalu clean chesam (ads ki **SPONSORED** label intact — AdSense rule). |
 | 4 | **విద్యార్హత ఫిల్టర్ (flagship)** | Job cards ki `data-qual`; chips: అన్నీ · 10వ తరగతి · ఇంటర్ (10+2) · ఐటీఐ · డిప్లొమా · డిగ్రీ · పీజీ · బీటెక్ · ⏳ 7 రోజుల్లో ముగిసేవి. Filter + search kalisi pani chestayi, count ("12 అవకాశాలు") chupistundi. |
 | 5 | **Countdown + closing filter** | `data-last` unna cards ki "⏳ N రోజుల్లో ముగుస్తుంది" badge; గడువు ముగిసినవి default ga hide (`.expired`). |
@@ -1821,8 +1835,8 @@ Ippudu moonu layers lo fix:
 | Layer | Enti |
 |---|---|
 | `wordpress-theme/studentup/inc/seo-bridge.php` | 10 Rank Math keys ni REST ki register (show_in_rest + `edit_post` auth) → bot meta writes land avutayi |
-| `WordPressClient.verify_meta()` | publish/update tarvata **verify** — field land avvaledu ante Telegram ⚠️ + log (silent fail ledu) |
-| `pipeline` create + update | rendu chotla verify + `seo_meta_missing` result lo + fix pointer (seo-bridge) |
+| `WordPressClient.verify_rankmath_meta()` | core REST tarvata authenticated bridge readback tho **all generated fields verify** — field land avvaledu ante Telegram ⚠️ + log (silent fail ledu) |
+| `pipeline` create + update | rendu chotla write + readback verify + `seo_meta_missing` result lo + fix pointer (seo-bridge) |
 
 Post edit/refresh capability (mee "edit cheyyagalava?" prashna): `update_post()` REST edit
 (URL/slug same — SEO safe) · `python run.py --update <id>` (manual) · `auto_refresh`
@@ -1833,15 +1847,16 @@ GET `/wp-json/studentup/v1/theme-info` → theme version + seo_bridge + rankmath
 ### v62 — TOP WEBSITE READINESS (proof tho: enti ready, enti mee pani)
 
 ```bash
-python run.py --readiness      # 18 system checks score/100 + 6 owner-pending items
+python run.py --readiness      # system checks score/100 + owner-pending items
 ```
 
-**Ee command ee repo lo prastuta: 100/100 · 27/27 system checks · 10 owner-pending.**
+**Current repository snapshot: 97/100 · 28/29 system checks · 10 owner-pending.**
+PHP syntax lint remains pending until the optional `php-parser` dependency is installed; this is not a claim that owner credentials or live integrations are configured.
 Artifacts: `logs/readiness.json` + `output/readiness-<date>.md` (markdown report).
 
 | Section | Enti verify avutundi (verifiable number) |
 |---|---|
-| CONTENT ENGINE | blueprint score 100/100 (TOP POST 🏆) · gates QA 80+ / originality 72%+ / deep-gate ON · 17 pillars · 221 entities · 12,344 kws · 180 sources · radar 4x/day · 59 districts |
+| CONTENT ENGINE | blueprint score 100/100 (TOP POST 🏆) · gates QA 80+ / originality 72%+ / deep-gate ON · 18 pillars · 221 entities · 12,344 kws · 258 sources (57 daily) · radar 4x/day · 59 districts |
 | SEO | schema (Article · ItemList · JobPosting · BreadcrumbList) · head 6/6 (title/meta/canonical/OG/JSON-LD/lang) · robots+sitemap · Rank Math LIVE fields |
 | ADS & MONEY | slots 3/3 high-CTR order · SPONSORED labels · rel=sponsored · ads.txt status · money engine 6/6 (rate card · house · calculator · network plan · advisor · leads) |
 | AUTOMATION | daily hooks 6/6 (radar · auto-refresh · breaking · advisor · guardian · quiz) · draft-first approval · test tiles sync |
@@ -1893,7 +1908,7 @@ python run.py --guardian-notify     # same + Telegram report (daily hook automat
 | ads_txt | live/placeholder status | builder + ADSENSE_CLIENT_ID |
 | breaking_feed | freshness (GUARDIAN_FEED_MAX_AGE=26h) | `--breaking-feed` / radar cron |
 | ads_inventory | ad link/title/id validity (inventory + house) | ads/*.json correct |
-| keyword_pillar_lock | 17 pillars · 221 entities · 12,344 kws · 180 sources | counts sync |
+| keyword_pillar_lock | 18 pillars · 221 entities · 12,344 kws · 258 sources (57 daily) | counts sync |
 | menu_wiring | TS/AP/hall/results/walkin/software links + 8 used tiles | nav/mpanel |
 | storage | disk free · state.db · output size | `tools/prune_media.py --apply` |
 | env_readiness ⚠️ | Gemini/WP/Telegram creds (owner pani) | `.env` (GO_LIVE PART A) |
@@ -1907,10 +1922,10 @@ Student site open cheyagane modati 3 sekundullo kanipinche order:
 
 | Position | Enti | Detail |
 |---|---|---|
-| 1 | 🔴 **బ్రేకింగ్ టికర్** | radar feed (Google News తెలుగు + 180 official sources) — verified items matrame; feed khali aithe ticker **hide** (fake news ledu) |
+| 1 | 🔴 **బ్రేకింగ్ టికర్** | radar feed (Google News తెలుగు + 258 curated source queries) — verified items matrame; feed khali aithe ticker **hide** (fake news ledu) |
 | 2 | **విద్యార్థులు ఎక్కువగా వెతికేవి** | 8 tiles: టీఎస్ · ఏపీ ప్రభుత్వ ఉద్యోగాలు · హాల్ టికెట్లు · ఫలితాలు · వాక్-ఇన్ · సాఫ్ట్‌వేర్ · ప్రైవేట్ · ప్రస్తుతాంశాలు — prathi tile ki **live count** + one-tap filter |
 | 3 | ప్రకటన (leaderboard) | highest-visibility slot — content ki bhaadha lekunda |
-| 4 | Hero + ముఖ్య గడువు countdown | trust tiles (45/45 · 11/11 · 138/138 · 12,344 · 17 cats · 180 sources) |
+| 4 | Hero + ముఖ్య గడువు countdown | trust tiles (45/45 · 11/11 · 138/138 · 12,344 · 18 cats · 258 sources) |
 | 5 | బ్రేకింగ్ న్యూస్ section + తాజా అవకాశాలు grid | grid lo **TS/AP ప్రభుత్వ ఉద్యోగాలు modati cards** |
 
 Menu (desktop + mobile same order): హోమ్ · ఉద్యోగాలు▾ (టీఎస్ · ఏపీ · కేంద్ర · ప్రైవేట్ ·
@@ -2022,11 +2037,20 @@ python tests/v41_site_audit_test.py    # 15 sections: checks → fixers → gate
 
 ## Setup Guide (Telugu)
 
-### Step 1: Gemini API key (FREE) teyali
+### Step 1: AI provider API key (FREE tier option)
+
+Gemini is the default and is the simplest path:
 
 1. `https://aistudio.google.com` open cheyandi (Google account tho login)
 2. **"Get API key"** → **"Create API key"** click cheyandi
 3. Key copy chesi save cheyandi (`AIza...` tho start avtundi)
+4. `.env` lo `GEMINI_API_KEY=...` pettandi.
+
+Gemini quota alternative ga Groq/OpenRouter/Cerebras/Together/Mistral key
+pettavachu. `.env.example` lo corresponding `*_API_KEY`, `*_MODEL` and
+`AI_FALLBACK_PROVIDERS` examples unnayi. Provider free-tier limits and model
+names change avvachu; current dashboard lo verify chesi exact model override
+cheyandi. Keys ni Git/Telegram lo paste cheyakandi.
 
 ### Step 2: WordPress Application Password create cheyali
 
@@ -2395,14 +2419,18 @@ Prathi post lo automatic ga:
 - ✅ **Article + Breadcrumb JSON-LD schema** — visible FAQ remains useful HTML; deprecated FAQPage rich-result markup is intentionally not emitted — `te` language tag tho
 - ✅ **Social OG/Twitter meta** — Facebook/WhatsApp/Twitter preview titles (CTR boost)
 - ✅ **Image alt text** — focus keyword tho alt text
-- ✅ **Rank Math meta** — `rank_math_focus_keyword` (primary + secondary), `rank_math_description`, `rank_math_title` direct REST API dwara
-- ✅ **Content quality** — useful length for the topic, short paragraphs, transition words; no forced 2200-3000-word target
+- ✅ **Rank Math meta** — `rank_math_focus_keyword` (primary + secondary), `rank_math_description`, `rank_math_title`, social, robots and canonical fields through the authenticated REST bridge
+- ✅ **Content quality** — useful length for the topic, short paragraphs, transition words; Rank Math's regular-post 600-word recommendation is a floor, never a reason to add filler
 - ✅ **Meta description** — 140-160 chars keyword tho
 - ✅ **Tables + lists** — snippet-eligible formats
 
-> Tip: WordPress lo **Rank Math plugin active cheyandi** — bot automatic ga plugin meta fill chestundi, editor lo open chuste 90-100/100 score kanipistundi.
+> Tip: WordPress lo **Rank Math plugin + StudentUp SEO bridge active cheyandi**. The bot reads the stored fields back after create/update; it never fabricates or writes `rank_math_seo_score`. The Rank Math UI score is only reported when WordPress has stored one.
 
 ---
+
+## Evidence-first source validation
+
+Source-derived posts use `SOURCE_PREFLIGHT_REQUIRED=1` by default. Before WordPress receives a draft, the bot requires fetched text for every source, the configured independent-domain and official-source minimums, a cross-source fact report, supported dates/numbers, and an editorial claim ledger. Conflicts, unverified numbers, missing official evidence, or incomplete source extraction stop the run; the bot does not fill the gap with guesses. `SOURCE_AUDIT_BLOCK` remains the final live-publish gate.
 
 ## Daily working style
 
@@ -2460,12 +2488,45 @@ tail -f log/autoblog.log
 
 ## Configuration (`.env`)
 
+### AI provider fallback
+
+The content and quiz client defaults to Gemini, but it now supports a provider
+chain. `AI_PROVIDER` is tried first; then `AI_FALLBACK_PROVIDERS` and any other
+provider with a configured key are tried. A 429/quota or invalid-key response
+rotates to the next key/provider, while model-not-found responses move to the
+next configured model. Every provider still returns through the same JSON
+parser and the existing source/evidence gates; changing providers does not
+permit unsupported dates, fees, vacancies, salaries or URLs.
+
+```dotenv
+AI_PROVIDER=gemini
+AI_FALLBACK_PROVIDERS=groq,openrouter,cerebras,together,mistral,openai,custom
+GEMINI_API_KEY=...
+GROQ_API_KEY=...
+GROQ_MODEL=llama-3.3-70b-versatile
+OPENROUTER_API_KEY=...
+OPENROUTER_MODEL=openrouter/free
+```
+
+Supported adapters are Gemini native plus Groq, OpenRouter, Cerebras, Together,
+Mistral, OpenAI, and any custom OpenAI-compatible endpoint. Provider free tiers,
+model names, rate limits and eligibility can change, so use the provider's
+current dashboard and override `*_MODEL` when needed. Do not paste keys into
+Git, Telegram, WordPress, screenshots or article content. Free keys are an
+availability fallback, not a guarantee of daily output. Thumbnail generation
+still uses the local deterministic Pillow renderer; text-only providers do not
+replace an image-capable model.
+
 | Variable | Default | Description |
 |---|---|---|
 | `WP_SITE` | `https://studentup.in` | Site URL |
 | `WP_USERNAME` | — | WordPress admin username |
 | `WP_APP_PASSWORD` | — | Application Password (Step 2) |
-| `GEMINI_API_KEY` | — | Gemini API key (Step 1) |
+| `AI_PROVIDER` / `AI_FALLBACK_PROVIDERS` | `gemini` / provider list | Primary and fallback AI adapters |
+| `GEMINI_API_KEY` / `GEMINI_API_KEYS` | — | Gemini key(s), comma-separated rotation |
+| `GROQ_API_KEY` / `OPENROUTER_API_KEY` | — | Optional compatible-provider alternatives |
+| `CEREBRAS_API_KEY`, `TOGETHER_API_KEY`, `MISTRAL_API_KEY` | — | Optional compatible-provider alternatives |
+| `*_MODEL` / `*_API_BASE` | provider defaults | Override changing model names or custom gateways |
 | `DEFAULT_POST_STATUS` | `draft` | `draft` = Telegram review flow · `publish` = direct live |
 | `TELEGRAM_BOT_TOKEN` | — | @BotFather token — buttons tho review messages |
 | `TELEGRAM_CHAT_ID` | auto | `/start` cheythe bot automatic ga register avtundi |
@@ -2558,7 +2619,7 @@ Marpali te: `.env` edit chesi scheduler ni restart cheyandi: `sudo systemctl res
 ├── DEPLOY.md               # deployment guide — VPS(systemd+Caddy) / Docker / PaaS
 ├── DEPLOY_MILESWEB.md      # v49 cPanel/MilesWeb guide (Python App, cron, storage)
 ├── DEPLOY_ORACLE_CLOUD.md  # v51 Oracle Always Free vs MilesWeb split + crash-proofing
-├── CONTENT_PLAN_DAILY.md   # v58 daily plan: 17 pillars, rhythm, refresh, SEO gates
+├── CONTENT_PLAN_DAILY.md   # daily plan: 18 pillars, 258 source queries, refresh, SEO gates
 ├── breaking (autoblog/breaking.py)      # v59 site బ్రేకింగ్ feed + most-used order
 ├── guardian (autoblog/guardian.py)      # v60 roju automatic system check + alert
 ├── readiness (autoblog/readiness.py)    # v62 top-website readiness score (proof tho)

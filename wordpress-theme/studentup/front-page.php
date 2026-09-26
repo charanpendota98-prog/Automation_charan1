@@ -5,8 +5,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 ?>
 <?php
 /**
- * Front page — design (preview/index.html) same order:
-	 * Ticker → "Most searched by students" → ad → slim hero →
+ * Front page — compact student-first order:
+	 * latest jobs strip → "Most searched by students" → ad → accessible hidden H1 →
 	 * qualification filter (v72) → latest opportunities grid (chips filter) → footer.
  *
  * @package studentup
@@ -46,12 +46,7 @@ get_header();
 
 <div class="wrap"><?php studentup_ad( 'leaderboard' ); ?></div>
 
-<section class="hero hero-slim">
-	<div class="wrap">
-		<h1><?php echo esc_html( get_bloginfo( 'description' ) ? get_bloginfo( 'description' ) : 'Telangana & Andhra Pradesh — jobs, scholarships, results' ); ?></h1>
-		<p class="lede"><?php esc_html_e( 'Official-source updates for TS & AP students. Always confirm a deadline once in the official notification.', 'studentup' ); ?></p>
-	</div>
-</section>
+<h1 class="screen-reader-text"><?php esc_html_e( 'Latest student updates', 'studentup' ); ?></h1>
 
 <main id="main">
 	<div class="wrap">
@@ -62,6 +57,7 @@ get_header();
 				<h2>Latest opportunities</h2>
 				<p>Filter by qualification — Telangana · Andhra Pradesh · Central</p>
 			</div>
+			<a class="su-board-link" href="<?php echo esc_url( studentup_opportunity_board_url() ); ?>">All active sections →</a>
 		</div>
 
 		<?php

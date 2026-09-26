@@ -71,6 +71,23 @@
     .round{min-width:44px}
     input,select,textarea{font-size:16px}   /* iOS zoom-on-focus fix */
     button,a{font:inherit}a{text-decoration:none;color:inherit}.wrap{max-width:1220px;margin:auto;padding:0 24px}
+    /* v127: compact latest-jobs strip restored from the approved reference */
+    .latestbar{background:linear-gradient(90deg,#0b2149,#0f2e62 60%,#13406f);color:#fff;overflow:hidden}
+    .latestbar .trow{display:flex;align-items:center;gap:12px;padding:7px 0;min-height:42px}
+    .latestbar .tlabel{background:#173c78;color:#eaf2ff;font-weight:800;font-size:11px;padding:4px 10px;border-radius:999px;display:inline-flex;gap:6px;align-items:center;flex-shrink:0;white-space:nowrap}
+    .latestbar .tlabel i{width:7px;height:7px;border-radius:50%;background:#6ea3e8;display:inline-block}
+    .latestbar .tclip{overflow:hidden;flex:1;position:relative;height:23px}
+    .latestbar .tmove{position:absolute;top:0;left:0;white-space:nowrap;display:flex;gap:36px;animation:latest-slide 55s linear infinite}
+    .latestbar .tmove a{color:#eaf2ff;font-size:13px;font-weight:700;white-space:nowrap}
+    .latestbar .tmove a span{opacity:.68;font-size:11px;font-weight:600;margin-left:3px}
+    .latestbar .tmove a:hover{color:#ffd9a8;text-decoration:underline}
+    .latestbar .tclip:before,.latestbar .tclip:after{content:"";position:absolute;top:0;bottom:0;width:28px;z-index:1;pointer-events:none}
+    .latestbar .tclip:before{left:0;background:linear-gradient(90deg,#0f2e62,transparent)}
+    .latestbar .tclip:after{right:0;background:linear-gradient(270deg,#13406f,transparent)}
+    .latestbar:hover .tmove{animation-play-state:paused}
+    @keyframes latest-slide{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+    @media(prefers-reduced-motion:reduce){.latestbar .tmove{animation:none}}
+    .screen-reader-text{position:absolute!important;clip:rect(1px,1px,1px,1px);width:1px;height:1px;overflow:hidden;margin:-1px;padding:0;border:0}
     .skip{position:absolute;left:-9999px;top:0;background:var(--navy);color:#fff;padding:10px 16px;z-index:99;border-radius:0 0 10px 0}
     .skip:focus{left:0}
     :focus-visible{outline:3px solid var(--orange);outline-offset:2px;border-radius:6px}
@@ -121,6 +138,18 @@
     .mbackdrop.open{opacity:1;visibility:visible}
     body.mlock{overflow:hidden}
     .headactions{display:flex;align-items:center;gap:8px}
+    .savedbtn{position:relative}
+    .savedcount{position:absolute;top:-5px;right:-5px;min-width:16px;height:16px;padding:0 4px;border-radius:999px;background:var(--orange);color:#fff;font-size:10px;font-weight:800;line-height:16px;text-align:center}
+    .savedcount[hidden]{display:none}
+    .savedpanel{position:fixed;right:14px;top:70px;z-index:90;width:min(360px,calc(100vw - 28px));max-height:min(70vh,520px);overflow:auto;padding:14px;background:var(--card);border:1px solid var(--cardline);border-radius:16px;box-shadow:0 18px 48px rgba(8,24,52,.28)}
+    .savedpanel[hidden]{display:none}
+    .savedhead{display:flex;align-items:center;gap:8px;padding-bottom:10px;border-bottom:1px solid var(--line);font-size:15px;font-weight:800;color:var(--navy)}
+    .savedhead strong{margin-right:auto}.savedclose{border:1px solid var(--line);background:var(--soft);color:var(--ink);border-radius:8px;width:32px;height:32px;cursor:pointer}
+    .savedlist{display:grid;gap:7px;padding-top:8px}.savedrow{display:flex;align-items:flex-start;gap:8px;padding:9px;border:1px solid var(--line);border-radius:11px;background:var(--soft)}
+    .savedrow a{flex:1;min-width:0;color:var(--ink);font-size:13px;font-weight:700;line-height:1.4}.savedrow small{display:block;color:var(--muted);font-size:11px;font-weight:500;margin-top:2px}.savedremove{border:0;background:transparent;color:var(--muted);cursor:pointer;padding:4px}
+    .savedempty{color:var(--muted);font-size:13px;line-height:1.5}.savecard{border:1px solid var(--line);background:transparent;color:var(--navy);border-radius:999px;padding:4px 8px;font-size:11px;font-weight:800;cursor:pointer;white-space:nowrap}.savecard.on{background:var(--orange);border-color:var(--orange);color:#fff}
+    .newsfoot .savecard{margin-left:auto}.newsfoot .savecard + b{display:none}
+    body.dark .savecard{color:#e7f0ff;border-color:#4a6388}.savedfoot{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}.savedclear{border:0;background:none;color:var(--muted);font:inherit;font-size:12px;text-decoration:underline;cursor:pointer}
     /* v72: header search — menu pakkana neat search */
     .searchpanel{border-bottom:1px solid var(--line);background:var(--card);box-shadow:0 10px 24px rgba(15,46,98,.06)}
     .searchpanel .wrap{display:flex;align-items:center;gap:10px;padding-top:12px;padding-bottom:12px}
@@ -169,7 +198,7 @@
     .iconbtn{border:1px solid var(--line);color:var(--navy);background:var(--card);height:38px;width:38px;border-radius:11px;cursor:pointer;font-size:15px}
     .callbtn{border:0;background:var(--orange);color:#fff;font-weight:800;border-radius:11px;padding:11px 16px;cursor:pointer;box-shadow:0 8px 16px rgba(237,138,50,.22);font-size:13px}
     /* hero */
-    .hero{padding:40px 0 26px;background:radial-gradient(circle at 100% 0,#ddebff 0,transparent 38%),linear-gradient(180deg,#f7fbff 0,var(--bg) 100%)}
+    .hero{padding:18px 0 12px;background:radial-gradient(circle at 100% 0,#ddebff 0,transparent 38%),linear-gradient(180deg,#f7fbff 0,var(--bg) 100%)}
     .hero-slim{text-align:center}
     .hero h1{color:var(--navy);font-size:clamp(26px,3.4vw,42px);line-height:1.15;letter-spacing:-.035em;margin:0 auto 10px;max-width:880px}
     .hero .lede{color:var(--ink-soft);font-size:15px;line-height:1.7;max-width:680px;margin:0 auto}
@@ -569,7 +598,7 @@
 
 
   <header class="header"><div class="wrap headrow">
-    <a class="logo" href="#top" aria-label="studentup.in home"><span class="mark" aria-hidden="true">S</span><span class="brand">studentup<small>Learn · Apply · Grow</small></span></a>
+    <a class="logo" href="#top" aria-label="studentup.in home"><span class="mark" aria-hidden="true">S</span><span class="brand">studentup</span></a>
     <nav class="nav" aria-label="Main navigation">
       <a class="active" href="#top">Home</a>
       <span class="has-drop">
@@ -614,6 +643,7 @@
       </span>
     </nav>
     <div class="headactions">
+      <button class="iconbtn savedbtn" id="savedbtn" aria-label="Saved posts" aria-expanded="false" aria-controls="savedpanel">🔖<span class="savedcount" id="savedcount" hidden>0</span></button>
       <button class="iconbtn" id="searchbtn" aria-label="Search" aria-expanded="false" aria-controls="searchpanel">🔍</button>
       <button class="iconbtn" id="theme" aria-label="Toggle dark mode" aria-pressed="false">☾</button>
       <button class="menubtn" id="menubtn" aria-label="Open menu" aria-expanded="false" aria-controls="mpanel">☰</button>
@@ -629,6 +659,24 @@
       <button type="button" class="iconbtn" id="searchclose" aria-label="Close">✕</button>
     </div>
   </div></header>
+  <div class="latestbar" aria-label="Latest jobs — scrolling list">
+    <div class="wrap trow">
+      <span class="tlabel"><i aria-hidden="true"></i>Latest Jobs</span>
+      <div class="tclip"><div class="tmove">
+        <a href="posts/guide.html" aria-label="Open article: Guide" title="Open article">Guide <span>23 h ago</span></a>
+        <a href="posts/upsc-junior-assistant-2026.html" aria-label="Open article: UPSC Junior Assistant 2026" title="Open article">UPSC జూనియర్ అసిస్టెంట్ పరీక్ష 2026 — Complete Details <span>yesterday</span></a>
+        <a href="posts/engineering-internships-2026.html" aria-label="Open article: Engineering internships 2026" title="Open article">ఇంజనీరింగ్ విద్యార్థులకు ప్రభుత్వ ఇంటర్న్‌షిప్‌లు 2026: చెక్ ది డేట్స్ <span>yesterday</span></a>
+        <a href="posts/guide.html" aria-hidden="true" tabindex="-1" aria-label="Open article: Guide">Guide <span>23 h ago</span></a>
+        <a href="posts/upsc-junior-assistant-2026.html" aria-hidden="true" tabindex="-1" aria-label="Open article: UPSC Junior Assistant 2026">UPSC జూనియర్ అసిస్టెంట్ పరీక్ష 2026 — Complete Details <span>yesterday</span></a>
+        <a href="posts/engineering-internships-2026.html" aria-hidden="true" tabindex="-1" aria-label="Open article: Engineering internships 2026">ఇంజనీరింగ్ విద్యార్థులకు ప్రభుత్వ ఇంటర్న్‌షిప్‌లు 2026: చెక్ ది డేట్స్ <span>yesterday</span></a>
+      </div></div>
+    </div>
+  </div>
+  <aside class="savedpanel" id="savedpanel" hidden aria-label="Saved posts" aria-live="polite">
+    <div class="savedhead"><strong>Saved posts</strong><span id="savedtotal">0</span><button type="button" class="savedclose" id="savedclose" aria-label="Close saved posts">✕</button></div>
+    <div id="savedbody"><p class="savedempty">No saved posts yet. Tap 🔖 on a job card to keep it here.</p></div>
+    <div class="savedfoot"><span>Saved in this browser</span><button type="button" class="savedclear" id="savedclear">Clear all</button></div>
+  </aside>
 
   <!-- v59: what students search most — first screen (TS/AP first) -->
   <section class="usedwrap" aria-label="Most searched by students">
@@ -713,9 +761,8 @@
   </div>
 
   <div id="top"></div>
-  <section class="hero hero-slim"><div class="wrap">
-    <h1>Telangana &amp; Andhra Pradesh — Government Jobs, Scholarships &amp; Results</h1>
-    <p class="lede">Official-source updates for TS &amp; AP students. Always confirm a deadline once in the official notification.</p>
+  <section class="hero hero-slim screen-reader-text" aria-label="Page title"><div class="wrap">
+    <h1>Latest student updates</h1>
   </div></section>
 
 
@@ -963,7 +1010,7 @@
 
 <section class="quiz" id="quiz" aria-label="Daily quiz">
         <div class="quiz-head">
-          <div><h3>📝 Daily Quiz — Telangana &amp; Andhra Pradesh general knowledge</h3><div class="sub">6 questions · instant answers · your best score is saved in this browser</div></div>
+          <div><h3>📝 Daily Quiz</h3><div class="sub">Today’s practice questions · answers explained</div></div>
           <div class="quiz-progress" id="qprog" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
         </div>
         <div id="qwrap"></div>
@@ -977,13 +1024,6 @@
       </section>
     </section>
     <aside class="side" aria-label="Sidebar">
-      <div class="sidecard"><h3>Trending with students</h3><p class="sub">Most searched topics this week</p>
-        <div class="trend"><span class="rank">01</span><div><b>SSC CGL 2026 online application</b><span>Top search · Central</span></div></div>
-        <div class="trend"><span class="rank">02</span><div><b>TSPSC Group 2 notification</b><span>Telangana · state services</span></div></div>
-        <div class="trend"><span class="rank">03</span><div><b>NSP scholarship last date</b><span>Scholarships · central + state</span></div></div>
-        <div class="trend"><span class="rank">04</span><div><b>APPSC Group 1 cutoff trend</b><span>Andhra Pradesh</span></div></div>
-        <div class="trend"><span class="rank">05</span><div><b>TS Inter results revaluation</b><span>Results · TS boards</span></div></div>
-      </div>
       <div class="sidecard ic-card" id="services">
         <div class="ic-head"><h3>Students Internet Center</h3><span class="ic-badge">TS &amp; AP</span></div>
         <p class="ic-lead">Apply for any job or scholarship from home. No need to visit any centre —
@@ -1060,8 +1100,8 @@
   </nav>
   <button type="button" class="su-tab" id="sutab" aria-label="Show social icons" title="Social links">‹</button>
   <button class="totop" id="totop" aria-label="Back to top">↑</button>
-  <button type="button" class="installbtn" id="installbtn">⬇️ Download App <span class="ibadge">FREE</span></button>
-  <div class="installsheet" id="installhint" hidden role="dialog" aria-modal="false" aria-labelledby="isheet-title">
+  <button type="button" class="installbtn" id="installbtn" aria-controls="installhint" aria-expanded="false">⬇️ Download App <span class="ibadge">FREE</span></button>
+  <div class="installsheet" id="installhint" hidden role="dialog" aria-modal="true" aria-labelledby="isheet-title">
     <h3 id="isheet-title">Install StudentUp as an app</h3>
     <p class="isub">Open it with one tap · pages you visited stay available offline · almost no phone storage.</p>
     <ol id="isteps">
@@ -1079,6 +1119,60 @@
   (function(){
     "use strict";
     /* ---------- theme ---------- */
+    /* ---------- v126: saved jobs — localStorage, same browser on return ---------- */
+    (function(){
+      var KEY="studentup_saved_v1", savedBtn=document.getElementById("savedbtn"),
+          savedPanel=document.getElementById("savedpanel"), savedBody=document.getElementById("savedbody"),
+          savedCount=document.getElementById("savedcount"), savedTotal=document.getElementById("savedtotal");
+      function read(){try{var v=JSON.parse(localStorage.getItem(KEY)||"[]");return Array.isArray(v)?v:[];}catch(e){return[];}}
+      function write(v){try{localStorage.setItem(KEY,JSON.stringify(v));}catch(e){}}
+      function cardRows(){
+        var out=[], cards=document.querySelectorAll("#grid .news");
+        Array.prototype.forEach.call(cards,function(card,i){
+          var h=card.querySelector("h3"), tag=card.querySelector(".tag"), id="preview-"+i;
+          if(!h||card.querySelector("[data-savecard]"))return;
+          var b=document.createElement("button"); b.type="button"; b.className="savecard";
+          b.setAttribute("data-savecard",id); b.setAttribute("aria-pressed","false"); b.textContent="🔖 Save";
+          var foot=card.querySelector(".newsfoot"); if(foot)foot.appendChild(b);
+        });
+      }
+      function has(id){return read().some(function(x){return String(x.id)===String(id);});}
+      function sync(){
+        var list=read(), n=list.length;
+        if(savedCount){savedCount.textContent=String(n);savedCount.hidden=!n;}
+        if(savedTotal)savedTotal.textContent=String(n);
+        Array.prototype.forEach.call(document.querySelectorAll("[data-savecard]"),function(b){
+          var on=has(b.getAttribute("data-savecard")); b.classList.toggle("on",on); b.setAttribute("aria-pressed",on?"true":"false"); b.textContent=on?"✓ Saved":"🔖 Save";
+        });
+        if(!savedBody)return;
+        while(savedBody.firstChild)savedBody.removeChild(savedBody.firstChild);
+        if(!n){var empty=document.createElement("p");empty.className="savedempty";empty.textContent="No saved posts yet. Tap 🔖 on a job card to keep it here.";savedBody.appendChild(empty);return;}
+        var box=document.createElement("div");box.className="savedlist";
+        list.slice().reverse().forEach(function(row){
+          var wrap=document.createElement("div");wrap.className="savedrow";
+          var a=document.createElement("a");a.href=row.url||"#jobs";a.textContent=row.title||"Saved update";
+          var meta=document.createElement("small");meta.textContent=row.cat||"Student update";a.appendChild(meta);
+          var del=document.createElement("button");del.type="button";del.className="savedremove";del.setAttribute("data-saved-remove",String(row.id));del.setAttribute("aria-label","Remove saved post");del.textContent="✕";
+          wrap.appendChild(a);wrap.appendChild(del);box.appendChild(wrap);
+        });
+        savedBody.appendChild(box);
+      }
+      function toggle(id){var list=read(),idx=-1;list.forEach(function(x,i){if(String(x.id)===String(id))idx=i;});
+        if(idx>-1)list.splice(idx,1);else{var b=document.querySelector("[data-savecard='"+id+"']"),card=b&&b.closest(".news"),h=card&&card.querySelector("h3"),tag=card&&card.querySelector(".tag");list.push({id:id,title:h?h.textContent.trim():"Saved update",url:"#jobs",cat:tag?tag.textContent.trim():"Student update",ts:Date.now()});}
+        write(list);sync();
+      }
+      function open(on){if(!savedPanel)return;savedPanel.hidden=!on;if(savedBtn){savedBtn.setAttribute("aria-expanded",on?"true":"false");}if(on)sync();}
+      cardRows();sync();
+      document.addEventListener("click",function(e){var t=e.target&&e.target.closest?e.target.closest("button,a"):null;if(!t)return;
+        if(t.hasAttribute("data-savecard")){e.preventDefault();toggle(t.getAttribute("data-savecard"));return;}
+        if(t===savedBtn){e.preventDefault();open(savedPanel.hidden);return;}
+        if(t.id==="savedclose"){open(false);return;}
+        if(t.hasAttribute("data-saved-remove")){e.preventDefault();toggle(t.getAttribute("data-saved-remove"));return;}
+        if(t.id==="savedclear"){write([]);sync();return;}
+      });
+      window.addEventListener("pageshow",sync);window.addEventListener("storage",function(e){if(!e.key||e.key===KEY)sync();});
+    })();
+
     /* ---------- v46: mobile hamburger menu (top-right) ---------- */
     var menuBtn=document.getElementById("menubtn"), mpanel=document.getElementById("mpanel"),
         mbackdrop=document.getElementById("mbackdrop");
@@ -1307,13 +1401,16 @@
           order.forEach(function(li){ if(li) steps.appendChild(li); });
         }
         sheet.hidden=false;
+        if(btn)btn.setAttribute("aria-expanded","true");
+        if(close)close.focus();
       }
+      function closeSheet(){if(sheet)sheet.hidden=true;if(btn)btn.setAttribute("aria-expanded","false");}
       window.addEventListener("beforeinstallprompt",function(e){ e.preventDefault(); deferred=e; });
       function installNow(){
         if(deferred){
           deferred.prompt();
           if(deferred.userChoice&&deferred.userChoice.then){ deferred.userChoice.then(function(){ deferred=null; }); }
-          if(sheet)sheet.hidden=true;
+          closeSheet();
           return true;
         }
         return false;
@@ -1323,12 +1420,12 @@
         openSheet();
       });
       if(now)now.addEventListener("click",function(){ if(!installNow())openSheet(); });
-      if(close)close.addEventListener("click",function(){ sheet.hidden=true; });
+      if(close)close.addEventListener("click",closeSheet);
       document.addEventListener("keydown",function(e){
-        if(e.key==="Escape"&&sheet&&!sheet.hidden){sheet.hidden=true;}
+        if(e.key==="Escape"&&sheet&&!sheet.hidden){closeSheet();}
       });
       window.addEventListener("appinstalled",function(){
-        if(btn)btn.hidden=true; if(sheet)sheet.hidden=true;
+        if(btn)btn.hidden=true; closeSheet();
         try{localStorage.setItem("su_installed","1");}catch(e){}
       });
     })();

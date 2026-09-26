@@ -44,7 +44,10 @@ index/archive/search/page/404/searchform.php
 inc/breaking.php     feed (option → transient file → honest empty) + REST push
 inc/ads.php          AdSense unit + house ads (SPONSORED label, rel=sponsored)
 inc/template.php     cards, breadcrumbs (Rank Math compat), menu fallback
-assets/js/studentup.js  dark mode, mobile panel, chips filter, qualification filter
+assets/js/studentup.js  dark mode, mobile panel, chips filter, qualification filter, live search
+assets/js/studentup-saved.js  privacy-safe saved posts and recently read items
+assets/js/studentup-tools.js  local compare drawer, calendar reminder export, print/PDF action
+inc/student-tools.php        no-login student utilities; no private reader data leaves the browser
 theme.json           block editor colors/Typography (navy/blue/orange)
 ```
 

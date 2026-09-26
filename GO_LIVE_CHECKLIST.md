@@ -74,6 +74,14 @@ Static select chesthe bot posts WP lo untayi kaani site lo kanipinchavu.
 Detail docs: `DEPLOY_MILESWEB.md` (cPanel steps) · `DEPLOY_ORACLE_CLOUD.md` (VM + watchdog + limits) ·
 `DEPLOY.md` (VPS/Docker/PaaS paths).
 
+### Verified Success Stories launch flow
+
+1. Create the owner-controlled Google Form using `SUCCESS_STORY_FORM.md`; keep the response sheet and photo uploads private.
+2. Set `SUCCESS_STORY_FORM_URL` in `.env` and run `python run.py --push-theme-data`, or set the URL in WP Admin → StudentUp → Content & site.
+3. Create a WordPress page with `[studentup_success_story_form]`.
+4. Export responses privately and run `python run.py --success-stories private/google-form-export.csv --success-stories-out private/success-stories-review.json`.
+5. Select no more than three verified TS/AP stories per ISO week. Human editor verifies official links, consent, quote permission and photo rights before creating a draft; there is no auto-publish path.
+
 ---
 
 ## A) Ippude ready (proof tho)
@@ -81,7 +89,7 @@ Detail docs: `DEPLOY_MILESWEB.md` (cPanel steps) · `DEPLOY_ORACLE_CLOUD.md` (VM
 | Item | Proof |
 |---|---|
 | Test suites | **71/71** pass (`python run.py --test-all`) |
-| Test suites (v116) | **96/96** pass (`python run.py --test-all`) · saved-engine **53/53** |
+| Test suites inventory (v116+) | **99 test-suite files**; current feature suites pass individually · saved-engine **53/53** |
 | AdSense readiness (v94) | **97%** — `python run.py --adsense-ready` (8 groups · 29 checks · fix lines; 1 blocker = posts volume) |
 | Site guardian | **`python run.py --guardian`** — site/UI/SEO/ads/feed/storage/theme 12 checks (11 ok · 1 owner-pending) |
 | Readiness score | **`python run.py --readiness`** — **100/100** · 27/27 system checks · 10 owner-pending |
@@ -98,7 +106,7 @@ Detail docs: `DEPLOY_MILESWEB.md` (cPanel steps) · `DEPLOY_ORACLE_CLOUD.md` (VM
 | Install as an app | `preview/manifest.webmanifest` + `preview/sw.js` · theme `?studentup_sw=1` (root-scope SW, server config avasaram ledu) + install prompt |
 | Site copy clean | బ్రేకింగ్/internal metrics/demo maatalu public lo levu — `python run.py --guardian` → `first_look_ui` |
 | Deploy check | 9 ok · 3 warn · 0 fail (`python run.py --deploy-check`) |
-| Website | 17 categories · 180 sources · 12,344 keywords · menu + chips |
+| Website | 18 pillars · 258 curated source queries (57 daily) · 12,344 keywords · menu + chips |
 | Ads | AdSense gate · sponsor inventory · rate card · house ads |
 | Safety | QA 80 · originality 72% · manual approval · corrections email |
 | Crash-proof | systemd timers · 2-min watchdog (site+bot+TLS) · backups · homepage ping |
@@ -119,6 +127,10 @@ Detail docs: `DEPLOY_MILESWEB.md` (cPanel steps) · `DEPLOY_ORACLE_CLOUD.md` (VM
       (`sha256sum wordpress-theme/studentup-theme.zip` — upload chesina zip ide ani verify cheyandi;
       build ippudu **reproducible** — same content ⇒ same sha)
       `wp-admin → Users → Application Passwords` → app password create cheyyandi.
+      **SEO bridge mandatory**: active StudentUp theme lo `inc/seo-bridge.php` load avvali;
+      theme ni update cheyyakapothe `wordpress-plugin/studentup-seo-bridge.zip` ni Plugins → Add New → Upload → Activate cheyandi.
+      Bot post create/update tarvata focus/title/description/social/robots/canonical fields ni
+      authenticated bridge GET tho verify chestundi; bridge missing aithe live promotion aagipothundi.
       **v68**: IndexNow key file ni **theme ne serve chestundi** (`/<key>.key`) — cPanel lo
       upload cheyyalsina pani ledu. Key: `python run.py --index-key-gen` → `.env` →
       `python run.py --push-theme-data`.
@@ -156,7 +168,7 @@ Detail docs: `DEPLOY_MILESWEB.md` (cPanel steps) · `DEPLOY_ORACLE_CLOUD.md` (VM
         `python run.py --index-status`.
       · Manual submit eppudaina: `python run.py --index-now https://studentup.in/<slug>/`.
       (Signing ki `cryptography` leda `openssl` — rendu lekapote automatic skip, publish aagadu.)
-- [ ] **3. Gemini API key** — aistudio.google.com → API key (free tier chaalu).
+- [ ] **3. AI provider key** — Gemini (recommended) or a configured Groq/OpenRouter/Cerebras/Together/Mistral/custom OpenAI-compatible key; set `AI_PROVIDER` and `AI_FALLBACK_PROVIDERS`.
 - [ ] **4. Telegram bot** — @BotFather → token + mee chat id (@userinfobot).
 - [ ] **5. Oracle Cloud** (recommended) — Always Free VM (2 OCPU/12GB) + SSH key.
 
@@ -164,7 +176,7 @@ Ee 5 tarvata → `.env` file lo pettandi (`.env.example` nunchi copy):
 
 ```bash
 cp .env.example .env
-# WP_USERNAME, WP_APP_PASSWORD, GEMINI_API_KEY, TELEGRAM_BOT_TOKEN,
+# WP_USERNAME, WP_APP_PASSWORD, AI_PROVIDER key(s), TELEGRAM_BOT_TOKEN,
 # TELEGRAM_CHAT_ID, SITE_URL, ADSENSE_APPROVED=0 (approval tarvata 1),
 # HOUSE_AD_ENABLED=1
 python run.py --production-audit     # 3 blockers → 0 avvali
@@ -219,7 +231,7 @@ UptimeRobot → `https://studentup.in/` (5-min ping) — watchdog ki rendo kanna
 
 | Time | Pani | Evaru |
 |---|---|---|
-| 08:00 | 3–5 posts (17 pillars) → Telegram ✅/🗑️ | bot + **mee approval** |
+| 08:00 | 3–5 draft posts (18 pillars) → Telegram ✅/🗑️ | bot + **mee approval** |
 | 09:00, 18:00 | Current affairs + breaking refresh | auto |
 | Roju | Daily question + quiz (server lekunda) + auto-refresh purana posts | auto |
 | Roju | 📞 WhatsApp లీడ్లు చూసి 2 అమ్మకాల మెసేజ్‌లు (కళాశాల/కోచింగ్) పంపండి | **మీరు (15 నిమిషాలు)** |
@@ -258,4 +270,4 @@ job guarantee promises (advertisers kuda). Ivi AdSense ban + trust damage.
 *Last updated: v91 (2026-09-20) · 71/71 suites · 164/164 runtime · 11/11 production checks · theme v1.9.2 · v90 notifications + v91 Telegram tools*
 *Last updated: v92 (2026-09-22) · 72/72 suites · 53/53 saved-engine · 164/164 runtime · 11/11 production checks · theme v1.9.3 · v92 saved / reader retention*
 *Last updated: v93 (2026-09-22) · 73/73 suites · 53/53 saved-engine · 164/164 runtime · 11/11 production checks · theme v1.9.4 · v93 top-website UI pass (menu · icons · collisions)*
-*Last updated: v116 (2026-09-22) · 96/96 suites · pin gate 100/100 · AdSense readiness 97% · 53/53 saved-engine · 164/164 runtime · theme v1.9.8 · v116 security audit + URL inspection + automatic GSC/ops maintenance*
+*Last updated: 2026-09-25 · 99 test-suite files · readiness 97/100 (PHP parser pending) · pin gate wired · 53/53 saved-engine · theme v1.9.9 · source-backed draft/review flow*

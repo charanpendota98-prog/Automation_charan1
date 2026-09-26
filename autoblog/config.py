@@ -7,6 +7,7 @@ variables too.
 
 import os
 from pathlib import Path
+from typing import List
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -52,6 +53,20 @@ TELEGRAM_CHAT_ID = _get("TELEGRAM_CHAT_ID", "")  # empty = /start tho auto-regis
 # example -1001234... ; channel lo bot admin ga add cheyandi)
 TELEGRAM_CHANNEL_CHAT_ID = _get("TELEGRAM_CHANNEL_CHAT_ID", "")
 TELEGRAM_API_BASE = _get("TELEGRAM_API_BASE", "https://api.telegram.org")
+# Daily forward-ready list: owner chat only, never auto-published to the
+# public channel. The live WordPress board itself updates on every request.
+OPPORTUNITY_DIGEST_ENABLED = _get("OPPORTUNITY_DIGEST_ENABLED", "1") not in ("0", "false", "no")
+OPPORTUNITY_DIGEST_HOUR = int(_get("OPPORTUNITY_DIGEST_HOUR", "8") or 8)
+OPPORTUNITY_DIGEST_PER_SECTION = int(_get("OPPORTUNITY_DIGEST_PER_SECTION", "6") or 6)
+# Optional Bitly/Short.io/is.gd adapter for owner-forwarded StudentUp links.
+# Disabled by default until the owner configures a provider. Failure always
+# falls back to a native StudentUp link; no dead short link is ever sent.
+SHORTLINK_ENABLED = _get("SHORTLINK_ENABLED", "0") not in ("0", "false", "no")
+SHORTLINK_PROVIDER = _get("SHORTLINK_PROVIDER", "wordpress").strip().lower()
+SHORTLINK_API_TOKEN = _get("SHORTLINK_API_TOKEN", "").strip()
+SHORTLINK_DOMAIN = _get("SHORTLINK_DOMAIN", "").strip()
+SHORTLINK_TIMEOUT = int(_get("SHORTLINK_TIMEOUT", "12") or 12)
+SHORTLINK_CACHE = Path(_get("SHORTLINK_CACHE", str(BASE_DIR / "logs" / "shortlinks.json")))
 # IndexNow instant indexing (Bing/Yandex) — key file site root lo host cheyandi
 INDEXNOW_KEY = _get("INDEXNOW_KEY", "")
 # Upload ayyaka local featured image file ni delete (disk full avvakunda)
@@ -117,8 +132,16 @@ SOURCE_MIN_LIVE = int(_get("SOURCE_MIN_LIVE", "3"))
 SOURCE_MIN_OFFICIAL = int(_get("SOURCE_MIN_OFFICIAL", "1"))
 SOURCE_CONFIDENCE_MIN = int(_get("SOURCE_CONFIDENCE_MIN", "65"))
 SOURCE_AUDIT_BLOCK = _get("SOURCE_AUDIT_BLOCK", "1") not in ("0", "false", "no")
+# Source-derived posts are not even saved as drafts until the fetched source
+# set, official evidence, numeric/date facts and claim ledger pass preflight.
+SOURCE_PREFLIGHT_REQUIRED = _get("SOURCE_PREFLIGHT_REQUIRED", "1") not in ("0", "false", "no")
 # Repetition/filler audit is separate from Rank Math and blocks low-value prose.
 CONTENT_QUALITY_BLOCK = _get("CONTENT_QUALITY_BLOCK", "1") not in ("0", "false", "no")
+# Public posts should read like StudentUp's own editorial work. Provenance,
+# source hashes and review diagnostics remain in the private ledger, but
+# automation/source-count boilerplate is not inserted into reader-facing copy.
+# Set PUBLIC_EDITORIAL_CLEAN=0 only for an internal audit/debug export.
+PUBLIC_EDITORIAL_CLEAN = _get("PUBLIC_EDITORIAL_CLEAN", "1") not in ("0", "false", "no")
 # E-E-A-T: Article schema publisher logo (rich results kosam; optional)
 SITE_LOGO_URL = _get("SITE_LOGO_URL", "")
 # Google Discover: per-post robots lo max-image-preview:large (RM meta)
@@ -144,7 +167,10 @@ RADAR_HOUR = int(_get("RADAR_HOUR", "7"))               # first radar slot (IST)
 RADAR_INTERVAL_HOURS = int(_get("RADAR_INTERVAL_HOURS", "6"))  # 4x/day scan
 RADAR_DISTRICTS_PER_RUN = int(_get("RADAR_DISTRICTS_PER_RUN", "10"))
 RADAR_SOURCES_PER_RUN = int(_get("RADAR_SOURCES_PER_RUN", "10"))
-RADAR_POSTS_PER_DAY = int(_get("RADAR_POSTS_PER_DAY", "2"))
+# Strictly source-backed review drafts per radar day. Increase from the old
+# 2-post cap so discovered job opportunities are not silently left unprepared;
+# the evidence/preflight gates still block unsupported or stale notices.
+RADAR_POSTS_PER_DAY = int(_get("RADAR_POSTS_PER_DAY", "10"))
 
 # v59: site బ్రేకింగ్ న్యూస్ feed (radar → preview/data/breaking.json → ticker)
 BREAKING_ENABLED = _get("BREAKING_ENABLED", "1") not in ("0", "false", "no")
@@ -170,30 +196,144 @@ KEYWORD_DAILY_QUEUE = int(_get("KEYWORD_DAILY_QUEUE", "4"))
 # custom autocomplete seeds (comma); empty = top exams auto
 KEYWORD_SUGGEST_SEEDS = _get("KEYWORD_SUGGEST_SEEDS", "")
 
-# --- Gemini AI -----------------------------------------------------------
-GEMINI_API_BASE = _get("GEMINI_API_BASE",
-                       "https://generativelanguage.googleapis.com/v1beta")
+# --- AI providers --------------------------------------------------------
+# Gemini remains the default, but article/quiz generation can fail over to
+# OpenAI-compatible APIs.  Keep keys in .env or the server secret store only;
+# never commit them or paste them into Telegram.
+AI_PROVIDER = _get("AI_PROVIDER", "gemini").strip().lower()
+AI_FALLBACK_PROVIDERS = [
+    p.strip().lower()
+    for p in _get(
+        "AI_FALLBACK_PROVIDERS",
+        "groq,openrouter,cerebras,together,mistral,openai,custom",
+    ).split(",")
+    if p.strip()
+]
+AI_MAX_OUTPUT_TOKENS = int(_get("AI_MAX_OUTPUT_TOKENS", "8192"))
+
+# Gemini (native Google generateContent API)
+GEMINI_API_BASE = _get(
+    "GEMINI_API_BASE", "https://generativelanguage.googleapis.com/v1beta"
+)
 GEMINI_API_KEY = _get("GEMINI_API_KEY", "")
 GEMINI_MODEL = _get("GEMINI_MODEL", "gemini-2.5-flash")
 GEMINI_FALLBACK_MODELS = [
     m.strip()
-    for m in _get("GEMINI_FALLBACK_MODELS", "gemini-2.0-flash,gemini-1.5-flash").split(",")
+    for m in _get(
+        "GEMINI_FALLBACK_MODELS", "gemini-2.0-flash,gemini-1.5-flash"
+    ).split(",")
     if m.strip()
 ]
 GEMINI_MAX_RETRIES = int(_get("GEMINI_MAX_RETRIES", "3"))
 # v17.1: Telugu JSON 8192 tokens lo truncate avveti — big cap + env tunable
 GEMINI_MAX_OUTPUT_TOKENS = int(_get("GEMINI_MAX_OUTPUT_TOKENS", "32768"))
 # v18: Multiple Gemini keys — 429 quota rotation (comma-separated okka line)
-GEMINI_API_KEYS = [k.strip() for k in _get("GEMINI_API_KEYS", "").split(",")
-                   if k.strip()]
+GEMINI_API_KEYS = [
+    k.strip() for k in _get("GEMINI_API_KEYS", "").split(",") if k.strip()
+]
+
+# OpenAI-compatible providers. Models are deliberately environment-overridable
+# because free-tier model names and availability change frequently.
+GROQ_API_BASE = _get("GROQ_API_BASE", "https://api.groq.com/openai/v1").rstrip("/")
+GROQ_API_KEY = _get("GROQ_API_KEY", "")
+GROQ_API_KEYS = [k.strip() for k in _get("GROQ_API_KEYS", "").split(",") if k.strip()]
+GROQ_MODEL = _get("GROQ_MODEL", "llama-3.3-70b-versatile")
+GROQ_FALLBACK_MODELS = [m.strip() for m in _get("GROQ_FALLBACK_MODELS", "").split(",") if m.strip()]
+
+OPENROUTER_API_BASE = _get("OPENROUTER_API_BASE", "https://openrouter.ai/api/v1").rstrip("/")
+OPENROUTER_API_KEY = _get("OPENROUTER_API_KEY", "")
+OPENROUTER_API_KEYS = [k.strip() for k in _get("OPENROUTER_API_KEYS", "").split(",") if k.strip()]
+OPENROUTER_MODEL = _get("OPENROUTER_MODEL", "openrouter/free")
+OPENROUTER_FALLBACK_MODELS = [m.strip() for m in _get("OPENROUTER_FALLBACK_MODELS", "").split(",") if m.strip()]
+
+CEREBRAS_API_BASE = _get("CEREBRAS_API_BASE", "https://api.cerebras.ai/v1").rstrip("/")
+CEREBRAS_API_KEY = _get("CEREBRAS_API_KEY", "")
+CEREBRAS_API_KEYS = [k.strip() for k in _get("CEREBRAS_API_KEYS", "").split(",") if k.strip()]
+CEREBRAS_MODEL = _get("CEREBRAS_MODEL", "llama-3.3-70b")
+CEREBRAS_FALLBACK_MODELS = [m.strip() for m in _get("CEREBRAS_FALLBACK_MODELS", "").split(",") if m.strip()]
+
+TOGETHER_API_BASE = _get("TOGETHER_API_BASE", "https://api.together.xyz/v1").rstrip("/")
+TOGETHER_API_KEY = _get("TOGETHER_API_KEY", "")
+TOGETHER_API_KEYS = [k.strip() for k in _get("TOGETHER_API_KEYS", "").split(",") if k.strip()]
+TOGETHER_MODEL = _get("TOGETHER_MODEL", "meta-llama/Llama-3.3-70B-Instruct-Turbo")
+TOGETHER_FALLBACK_MODELS = [m.strip() for m in _get("TOGETHER_FALLBACK_MODELS", "").split(",") if m.strip()]
+
+MISTRAL_API_BASE = _get("MISTRAL_API_BASE", "https://api.mistral.ai/v1").rstrip("/")
+MISTRAL_API_KEY = _get("MISTRAL_API_KEY", "")
+MISTRAL_API_KEYS = [k.strip() for k in _get("MISTRAL_API_KEYS", "").split(",") if k.strip()]
+MISTRAL_MODEL = _get("MISTRAL_MODEL", "mistral-small-latest")
+MISTRAL_FALLBACK_MODELS = [m.strip() for m in _get("MISTRAL_FALLBACK_MODELS", "").split(",") if m.strip()]
+
+# Generic custom OpenAI-compatible endpoint: useful for any other provider
+# without another code change (e.g. a self-hosted gateway).
+OPENAI_API_BASE = _get("OPENAI_API_BASE", "https://api.openai.com/v1").rstrip("/")
+OPENAI_API_KEY = _get("OPENAI_API_KEY", "")
+OPENAI_API_KEYS = [k.strip() for k in _get("OPENAI_API_KEYS", "").split(",") if k.strip()]
+OPENAI_MODEL = _get("OPENAI_MODEL", "gpt-4o-mini")
+OPENAI_FALLBACK_MODELS = [m.strip() for m in _get("OPENAI_FALLBACK_MODELS", "").split(",") if m.strip()]
+
+CUSTOM_API_BASE = _get("CUSTOM_API_BASE", "").rstrip("/")
+CUSTOM_API_KEY = _get("CUSTOM_API_KEY", "")
+CUSTOM_API_KEYS = [k.strip() for k in _get("CUSTOM_API_KEYS", "").split(",") if k.strip()]
+CUSTOM_MODEL = _get("CUSTOM_MODEL", "")
+CUSTOM_FALLBACK_MODELS = [m.strip() for m in _get("CUSTOM_FALLBACK_MODELS", "").split(",") if m.strip()]
+
+
+_PROVIDER_NAMES = ("gemini", "groq", "openrouter", "cerebras", "together", "mistral", "openai", "custom")
+
+
+def ai_provider_keys(provider: str) -> List[str]:
+    """Return the primary key plus optional rotated keys for a provider."""
+    name = (provider or "").strip().lower()
+    prefix = name.upper()
+    primary = globals().get(f"{prefix}_API_KEY", "")
+    extras = globals().get(f"{prefix}_API_KEYS", []) or []
+    keys = list(extras)
+    if primary and primary not in keys:
+        keys.insert(0, primary)
+    placeholders = {
+        "your_gemini_api_key", "key2_here", "key3_here", "key4_here",
+        "your_api_key", "your_provider_key",
+    }
+    return [
+        str(k).strip()
+        for k in keys
+        if str(k).strip() and str(k).strip().lower() not in placeholders
+    ]
+
+
+def ai_provider_configured(provider: str) -> bool:
+    return bool(ai_provider_keys(provider))
+
+
+def configured_ai_providers() -> List[str]:
+    return [p for p in _PROVIDER_NAMES if ai_provider_configured(p)]
+
+
+def ai_configured() -> bool:
+    """Whether at least one configured provider can serve draft generation."""
+    return bool(configured_ai_providers())
+
+
+def gemini_configured() -> bool:
+    """Backward-compatible name used by older code; now means any AI provider."""
+    return ai_configured()
+
+
 GEMINI_RPD_PER_KEY = int(_get("GEMINI_RPD_PER_KEY", "1400"))
 # v18: Rank Math STRICT gate (real panel checks) — target + refine rounds
 RM_TARGET = int(_get("RM_TARGET", "100"))   # v64: 100 target (Rank Math)
+# Rank Math's regular-post content check is a 600-word recommendation. Keep
+# this separate from the optional long-form/top-post quality target so the bot
+# does not add filler merely to satisfy an internal 1500-word rule.
+RM_MIN_WORDS = int(_get("RM_MIN_WORDS", "600"))
 # v95: in-body contextual internal links (paragraph lopala) max count
 CONTEXTUAL_LINKS_MAX = int(_get("CONTEXTUAL_LINKS_MAX", "3"))
 RM_REFINE_ROUNDS = int(_get("RM_REFINE_ROUNDS", "2"))  # v64: 2 rounds
-# v18: AdSense-safe originality floor — ee % kindha post publish cheyyadu
-ORIG_HARD_FLOOR = float(_get("ORIG_HARD_FLOOR", "72"))
+# v18: AdSense-safe originality floor — ee % kindha post publish cheyyadu.
+# 80 keeps a paraphrase-heavy rewrite in review instead of presenting it as
+# StudentUp's own article; the exact-overlap guard below remains mandatory.
+ORIG_HARD_FLOOR = float(_get("ORIG_HARD_FLOOR", "80"))
 # Mobile lo headings peddaga unte — responsive clamp CSS add (1=on)
 MOBILE_HEADLINE_TUNE = _get("MOBILE_HEADLINE_TUNE", "1") not in ("0", "false", "no")
 
@@ -245,23 +385,36 @@ ACTIVE_HOUR_END = int(_get("ACTIVE_HOUR_END", "22"))      # last posting hour (l
 TIMEZONE = _get("TIMEZONE", "Asia/Kolkata")
 
 # --- Content -------------------------------------------------------------
-CATEGORIES = [
-    c.strip()
-    for c in _get(
-        "CATEGORIES",
-        # LIVE SITE categories (studentup.in wp-json lo unnavi — exact match,
-        # bot duplicate categories create cheyadu, existing IDs reuse avtayi)
-        "Scholarships,Central Govt Jobs,TS Govt Jobs,AP Govt Jobs,"
-        "Private Jobs,Software Jobs,Part Time Jobs,Walkin Jobs,"
-        "Outsourcing Jobs,Hall Tickets,Results,Internships,Online Education,"
-        "Current Affairs,Exam Tips,Upcoming Exams,Abroad Jobs",
-    ).split(",")
-    if c.strip()
-]
+_CATEGORY_ALIASES = {
+    # Older .env files used these broad labels. Normalize them at startup so
+    # they cannot create duplicate WordPress archives beside the canonical map.
+    "govt jobs": "Central Govt Jobs",
+    "education news": "Current Affairs",
+    "exam updates": "Upcoming Exams",
+    "admissions": "Online Education",
+    "study tips": "Exam Tips",
+}
+_raw_categories = _get(
+    "CATEGORIES",
+    # LIVE SITE categories (studentup.in wp-json lo unnavi — exact match,
+    # bot duplicate categories create cheyadu, existing IDs reuse avtayi)
+    "Scholarships,Central Govt Jobs,TS Govt Jobs,AP Govt Jobs,"
+    "Private Jobs,Software Jobs,Part Time Jobs,Walkin Jobs,"
+    "Outsourcing Jobs,Hall Tickets,Results,Internships,Online Education,"
+    "Current Affairs,Exam Tips,Upcoming Exams,Abroad Jobs,Success Stories",
+).split(",")
+CATEGORIES = []
+for _category in _raw_categories:
+    _category = _category.strip()
+    if not _category:
+        continue
+    _canonical = _CATEGORY_ALIASES.get(_category.lower(), _category)
+    if _canonical not in CATEGORIES:
+        CATEGORIES.append(_canonical)
 
-# Category priority — ee categories ki extra tickets (revenue strategy:
-# Jobs high-CPC ads attract chestundi, Results high search volume).
-# Format: "Govt Jobs:4,Results:3,Education News:2" (0 = boost ledu)
+# Category priority — ee canonical categories ki extra tickets (revenue
+# strategy: job/exam intent gets demand, but classification stays editorial).
+# Format: "Central Govt Jobs:4,Results:3,Current Affairs:2" (0 = no boost)
 CATEGORY_PRIORITY = {}
 for _pair in _get("CATEGORY_PRIORITY",
                   "Central Govt Jobs:4,TS Govt Jobs:4,AP Govt Jobs:3,"
@@ -337,6 +490,14 @@ SERVICE_CENTER_UPLOAD_URL = _get("SERVICE_CENTER_UPLOAD_URL", "").strip()
 SERVICE_CENTER_DB = Path(_get("SERVICE_CENTER_DB", str(BASE_DIR / "service_center.db")))
 SERVICE_RETENTION_DAYS = int(_get("SERVICE_RETENTION_DAYS", "30"))
 
+# --- Verified Success Stories ---------------------------------------------
+# Public intake is optional and never auto-publishes. The editor selects up to
+# three verified TS/AP stories per ISO week after consent and evidence review.
+SUCCESS_STORIES_ENABLED = _get("SUCCESS_STORIES_ENABLED", "1") not in ("0", "false", "no")
+SUCCESS_STORY_FORM_URL = _get("SUCCESS_STORY_FORM_URL", "").strip()
+SUCCESS_STORY_WEEKLY_MAX = max(1, min(7, int(_get("SUCCESS_STORY_WEEKLY_MAX", "3") or "3")))
+SUCCESS_STORY_QUEUE = Path(_get("SUCCESS_STORY_QUEUE", str(BASE_DIR / "output" / "success-stories-review.json")))
+
 # --- v33: Google-facing public page audit ---------------------------------
 PAGESPEED_API_KEY = _get("PAGESPEED_API_KEY", "").strip()
 GOOGLE_AUDIT_TIMEOUT = int(_get("GOOGLE_AUDIT_TIMEOUT", "90"))
@@ -379,6 +540,11 @@ STATE_PATH = Path(_get("STATE_PATH", str(BASE_DIR / "state.db")))
 LOG_DIR = Path(_get("LOG_DIR", str(BASE_DIR / "log")))
 OUTPUT_DIR = Path(_get("OUTPUT_DIR", str(BASE_DIR / "output")))
 RESEARCH_BRIEF_DIR = Path(_get("RESEARCH_BRIEF_DIR", str(OUTPUT_DIR / "research")))
+# Save a private NotebookLM-ready evidence bundle for real source candidates.
+# This prepares sources; it never pretends to access a private NotebookLM account.
+NOTEBOOKLM_AUTO_BUNDLE = _get("NOTEBOOKLM_AUTO_BUNDLE", "1") not in ("0", "false", "no")
+# Require a validated cited NotebookLM brief only when the owner explicitly enables it.
+NOTEBOOKLM_REQUIRED = _get("NOTEBOOKLM_REQUIRED", "0") not in ("0", "false", "no")
 HTTP_TIMEOUT = int(_get("HTTP_TIMEOUT", "90"))
 
 # --- Sources (URL -> original rewrite) ------------------------------------

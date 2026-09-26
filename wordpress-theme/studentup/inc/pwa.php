@@ -74,15 +74,16 @@ function studentup_manifest() {
 add_action( 'template_redirect', 'studentup_manifest' );
 
 /**
- * head hints: manifest link, theme-color, preconnect, apple icon.
+ * head hints: manifest link, theme-color and apple icon. Third-party hints live
+ * in perf.php and are conditional on a configured feature.
  */
 function studentup_head_hints() {
 	if ( is_admin() ) {
 		return;
 	}
 	echo '<meta name="theme-color" content="#0f2e62">' . "\n";
-	echo '<link rel="preconnect" href="https://pagead2.googlesyndication.com" crossorigin>' . "\n";
-	echo '<link rel="dns-prefetch" href="https://www.googletagmanager.com">' . "\n";
+	// Third-party resource hints are emitted centrally by perf.php only when
+	// Ads/GA4 are really enabled; avoid duplicate or unused connections here.
 	if ( studentup_opt( 'pwa', '1' ) ) {
 		echo '<link rel="manifest" href="' . esc_url( add_query_arg( 'studentup_manifest', '1', home_url( '/' ) ) ) . '">' . "\n";
 		echo '<meta name="apple-mobile-web-app-capable" content="yes">' . "\n";

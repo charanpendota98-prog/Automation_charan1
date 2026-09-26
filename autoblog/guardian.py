@@ -193,7 +193,7 @@ def check_ads_inventory() -> tuple:
 
 
 def check_keyword_pillar_lock() -> tuple:
-    """Counts lock: 17 pillars · 221 entities · 12,344 kws · 180 sources."""
+    """Counts lock: 18 pillars · 221 entities · 12,344 kws · 258 sources."""
     try:
         from . import sources_grid, top_post
 
@@ -204,7 +204,7 @@ def check_keyword_pillar_lock() -> tuple:
         daily = len([s for s in sources_grid.SOURCES_GRID if s.get("daily")])
     except Exception as exc:  # noqa: BLE001
         return False, f"engine check fail: {exc}", "autoblog modules import check"
-    want = (17, 221, 12_344, 180)
+    want = (18, 221, 12_344, 258)
     got = (cats, ents, uni, src)
     if got != want:
         return False, f"counts marayi: {got} (expected {want})", "pillar/keyword counts sync cheyandi (v58/v59 docs)"
@@ -261,14 +261,14 @@ def check_env_readiness() -> tuple:
     """Warn-only: mee .env lo em set cheyyali (deploy gate)."""
     have = []
     miss = []
-    for flag, label in ((config.GEMINI_API_KEY or getattr(config, "GEMINI_API_KEYS", []), "Gemini"),
+    for flag, label in ((config.ai_configured(), "Gemini/AI provider"),
                         (config.WP_APP_PASSWORD, "WP creds"),
                         (config.TELEGRAM_BOT_TOKEN, "Telegram")):
         (have if flag else miss).append(label)
     if miss:
         return False, "set avvaledu: " + ", ".join(miss) + f" (set: {', '.join(have) or '—'})", \
             ".env lo owner creds pettandi (GO_LIVE_CHECKLIST.md PART A)"
-    return True, "Gemini · WP · Telegram anni set", ""
+    return True, "Gemini/AI provider · WP · Telegram anni set", ""
 
 
 # (id, fn, warn_only) — warn_only = mee pani (owner creds), system break kaadu

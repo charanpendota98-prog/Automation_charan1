@@ -24,13 +24,17 @@ function studentup_preload_lcp() {
 	if ( is_admin() || ! is_singular() || ! has_post_thumbnail() ) {
 		return;
 	}
-	$img = wp_get_attachment_image_src( get_post_thumbnail_id(), 'full' );
+	$size = function_exists( 'studentup_big_image_size' )
+		? studentup_big_image_size( get_the_ID() ) : 'large';
+	$size = $size ? $size : 'large';
+	$img  = wp_get_attachment_image_src( get_post_thumbnail_id(), $size );
 	if ( ! $img ) {
 		return;
 	}
 	printf(
-		'<link rel="preload" as="image" href="%s" fetchpriority="high">' . "\n",
-		esc_url( $img[0] )
+		'<link rel="preload" as="image" href="%s" fetchpriority="high" type="image/%s">' . "\n",
+		esc_url( $img[0] ),
+		esc_attr( pathinfo( wp_parse_url( $img[0], PHP_URL_PATH ), PATHINFO_EXTENSION ) ?: 'jpeg' )
 	);
 }
 add_action( 'wp_head', 'studentup_preload_lcp', 2 );
@@ -92,15 +96,23 @@ add_action( 'wp_footer', 'studentup_lazy_ads_js', 20 );
  * avutundi → viewability + RPM penchutundi (adi nijamaina revenue lever).
  */
 function studentup_resource_hints( $hints, $relation_type ) {
-	if ( 'preconnect' === $relation_type ) {
-		$hints[] = array( 'href' => 'https://pagead2.googlesyndication.com', 'crossorigin' => 'anonymous' );
-		$hints[] = array( 'href' => 'https://googleads.g.doubleclick.net', 'crossorigin' => 'anonymous' );
-		$hints[] = 'https://www.googletagmanager.com';
-		$hints[] = 'https://www.google-analytics.com';
+	// Do not open third-party connections before approval/measurement is
+	// configured. An unused preconnect can itself cost mobile startup time.
+	$ads_client = function_exists( 'studentup_adsense_client' )
+		? (string) studentup_adsense_client() : '';
+	$ga4_id = (string) studentup_opt( 'ga4_id', '' );
+	if ( 'preconnect' === $relation_type && ( $ads_client || $ga4_id ) ) {
+		if ( $ads_client ) {
+			$hints[] = array( 'href' => 'https://pagead2.googlesyndication.com', 'crossorigin' => 'anonymous' );
+			$hints[] = array( 'href' => 'https://googleads.g.doubleclick.net', 'crossorigin' => 'anonymous' );
+		}
+		if ( $ga4_id ) {
+			$hints[] = 'https://www.googletagmanager.com';
+			$hints[] = 'https://www.google-analytics.com';
+		}
 	}
-	if ( 'dns-prefetch' === $relation_type ) {
-		$hints[] = 'https://fonts.gstatic.com';
-	}
+	// No hosted font is enqueued by the theme, so fonts.gstatic.com would be an
+	// unused connection. Keep dns-prefetch empty rather than paying that cost.
 	return $hints;
 }
 add_filter( 'wp_resource_hints', 'studentup_resource_hints', 10, 2 );

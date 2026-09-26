@@ -92,6 +92,7 @@
       b = btns[i];
       on = isSaved(b.getAttribute("data-id"));
       b.setAttribute("aria-pressed", on ? "true" : "false");
+      b.setAttribute("aria-label", on ? (I18N.savedLabel || "Remove from saved") : (I18N.saveLabel || "Save this post for later"));
       b.classList.toggle("on", on);
       txt = b.querySelector(".su-save-txt");
       if (txt) { txt.textContent = on ? (I18N.saved || "Saved") : (I18N.save || "Save"); }
@@ -302,6 +303,12 @@
     if (document.body) { pushRecent(); }
     renderAll();
     wire();
+    /* Back/forward cache and another open tab can change the list without a
+     * full reload. Repaint the count, buttons and drawer when the reader returns. */
+    window.addEventListener("pageshow", renderAll);
+    window.addEventListener("storage", function (e) {
+      if (!e.key || e.key === KEY || e.key === RKEY) { renderAll(); }
+    });
     if (!ok && I18N.nomore) { toast(I18N.nomore); }
   }
 

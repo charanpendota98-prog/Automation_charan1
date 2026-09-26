@@ -162,7 +162,7 @@ class ApprovalBot:
     def _run_source_pipeline(self, chat_id: str, url: str) -> None:
         from . import pipeline
         try:
-            mock = not config.GEMINI_API_KEY
+            mock = not config.gemini_configured()
             result = pipeline.create_from_source(url, mock=mock)
             # v86: pin-gate block = error DICT (exception kaadu!) — silent
             # success kakunda user ki honest message (live-mode hole).
@@ -243,6 +243,20 @@ class ApprovalBot:
 
     def do_publish(self, cb: dict, post_id: int) -> None:
         try:
+            # Capture the featured image and excerpt before/after promotion so
+            # the public channel can show the same polished card as direct
+            # pipeline publishing. Older WP installs may not expose embeds;
+            # the text-only fallback remains safe.
+            snapshot = {}
+            try:
+                resp = self.wp._request(
+                    "GET", f"posts/{post_id}",
+                    params={"context": "view", "_embed": "1"},
+                )
+                if resp.status_code == 200:
+                    snapshot = resp.json()
+            except Exception:  # noqa: BLE001 — channel media is best-effort
+                log.debug("Could not read featured media before channel push", exc_info=True)
             data = self._wp_post_status(post_id, "publish")
             link = data.get("link", "")
             title = (data.get("title") or {}).get("rendered", f"post {post_id}")
@@ -256,14 +270,29 @@ class ApprovalBot:
                 log.debug("block skip: %s", exc)
             try:
                 if config.TELEGRAM_CHANNEL_CHAT_ID:
-                    self.tg("sendMessage", {
-                        "chat_id": config.TELEGRAM_CHANNEL_CHAT_ID,
-                        "parse_mode": "HTML",
-                        "text": (f"🆕 <b>{notifier.esc(title)}</b>\n\n"
-                                 f"🔗 {notifier.esc(link)}"),
-                    })
-            except Exception as exc:  # noqa: BLE001 — best-effort (silent kaadu)
-                log.debug("block skip: %s", exc)
+                    embedded = snapshot.get("_embedded") or {}
+                    media = (embedded.get("wp:featuredmedia") or [{}])[0]
+                    image_url = media.get("source_url", "")
+                    if not image_url and snapshot.get("featured_media"):
+                        media_resp = self.wp._request(
+                            "GET", f"media/{int(snapshot['featured_media'])}",
+                            params={"_fields": "source_url"},
+                        )
+                        if media_resp.status_code == 200:
+                            image_url = media_resp.json().get("source_url", "")
+                    channel_title = (snapshot.get("title") or {}).get("rendered", title)
+                    channel_article = {
+                        "title": channel_title,
+                        "category": "Daily Quiz" if "daily quiz" in channel_title.lower() else "",
+                        "meta_description": (snapshot.get("excerpt") or {}).get("rendered", ""),
+                    }
+                    notifier.channel_post(
+                        channel_article,
+                        {"status": "publish", "link": link, "id": post_id},
+                        image_url=image_url,
+                    )
+            except Exception as exc:  # noqa: BLE001 — public channel is best-effort
+                log.debug("Channel broadcast skipped: %s", exc)
             self._finish(
                 cb,
                 f"🚀 <b>PUBLISHED ✔</b>\n\n<b>{notifier.esc(title)}</b>\n🔗 {notifier.esc(link)}",
@@ -293,7 +322,7 @@ class ApprovalBot:
         try:
             urls = [extra_url] if extra_url else None
             result = pipeline.update_post(post_id, new_source_urls=urls,
-                                          mock=not config.GEMINI_API_KEY)
+                                          mock=not config.gemini_configured())
             # v86: pin-gate error dict ayina "ayyindi ✔" cheppakudadu!
             if isinstance(result, dict) and result.get("error"):
                 self.tg("sendMessage", {

@@ -4,6 +4,8 @@
 **Ee file = mee haath tho cheyyalsina ANNI — exact order, exact commands.**
 Bot automatic ga chesthunna varam rework cheyakapovadu — idi mee 15-min/day ritual matrame.
 
+> **2026-09-25 inventory note:** the repository currently contains **99/99 test-suite files**. This is an inventory count only; it does not claim that production credentials, live integrations, or Google rankings are already complete.
+
 ---
 
 ## PART 0 — ONE-TIME SETUP (Day 1 · ~90 min)
@@ -299,7 +301,7 @@ PIN-TO-PIN GATE (autoblog/post_gate.py) — publish ki mundu 47 checks:
   CERTIFICATE    : output/certificates/<date>-<slug>.md + .json (prathi post ki proof)
 GOOGLE VISIBILITY (autoblog/trends.py):
   · Google Trends daily RSS (IN) — ET parser + regex fallback (unbad prefix feeds)
-  · Google Suggest (autocomplete) — seeds: 17 pillars nunchi
+  · Google Suggest (autocomplete) — seeds: 18 pillars nunchi
   · Niche filter (TS/AP students) + demand score (0-100)
   · Topic queue: output/trend_queue.json (dedupe 3 rojulu · consume/next_topics)
   · radar_run lo 4x/day automatic (network lekapote silent skip)
@@ -334,6 +336,9 @@ GATE (pipeline) : rm100 → LLM refine (RM_REFINE_ROUNDS=2, RM_TARGET=100) → r
 WEBSITE OPTIONS : WP Admin → StudentUp (tabs: Ads · Socials · Content · Advanced)
                   REST /wp-json/studentup/v1/options (GET public · POST manage_options)
                   bot --push-theme-data lo 'options' block (socials/adsense/flags)
+SUCCESS STORIES  : `SUCCESS_STORY_FORM.md` → owner-controlled Google Form → private CSV;
+                  `python run.py --success-stories private/export.csv` creates a review-only
+                  manifest (max 3 valid TS/AP stories per ISO week; never auto-publishes).
 THEME 100x      : inc/options.php (admin+REST) · inc/toc.php (auto TOC) ·
                   inc/schema.php (Organization/WebSite/SearchAction/Breadcrumb) ·
                   inc/author-box.php (E-E-A-T + last updated) · inc/pwa.php
@@ -358,10 +363,13 @@ PROBLEM  : WordPress REST default ga custom meta accept cheyyadu → bot rank_ma
            (silent mistake — ee roju pattukunna gap)
 FIX 1    : theme inc/seo-bridge.php — 10 keys REST ki register (show_in_rest +
            edit_post auth). Theme activate unte bot meta writes land avutayi.
-FIX 2    : WordPressClient.verify_meta() — publish/update tarvata check:
-           focus keyword/title/description land ayyaya? Ledu ante Telegram ⚠️ WAR +
-           log + result lo seo_meta_missing (fix pointer: seo-bridge)
-FIX 3    : UPDATE path lo kuda verify (purana posts refresh lo kuda same check)
+FIX 2    : WordPressClient.verify_rankmath_meta() — core REST read tarvata
+           StudentUp bridge readback tho **all generated rank_math_* keys** land ayyaya?
+           Focus/secondary keyword string, title, description, social, robots and canonical
+           missing aithe Telegram ⚠️ WAR + log + result lo seo_meta_missing.
+FIX 3    : UPDATE path lo kuda write + bridge readback verify (purana posts refresh lo kuda same check)
+           `wordpress-plugin/studentup-seo-bridge.zip` standalone fallback ga activate cheyandi;
+           local preflight score ni Rank Math UI score ani eppudu claim cheyyadu.
 POST EDIT: bot existing posts ni edit chestundi —
            · python run.py --update <id> [--update-source URL]  (manual)
            · auto_refresh (roju purana posts kotha research tho refresh)
@@ -471,7 +479,7 @@ GRID     : TS/AP ప్రభుత్వ ఉద్యోగాలు modati car
 BOT      : python run.py --breaking-feed              (radar → feed + Telegram flow alage)
            python run.py --breaking-from file.json    (offline/approved list)
            radar run lo auto hook: news_radar sweep → breaking.publish()
-HONESTY  : feed lo radar (Google News తెలుగు + 180 official sources) verified items
+HONESTY  : feed lo radar (Google News తెలుగు + 258 curated source queries) verified items
            matrame · item lekapote site "కొత్త verified బ్రేకింగ్ అప్డేట్‌లు లేవు" +
            "రాడార్ ప్రతి 6 గంటలకు చెక్ చేస్తుంది" ani cheptundi — fake/clickbait ledu
 TESTS    : tests/v59_test.py = 12 checks · run.py --test-all 45/45 · jsdom 138/138
@@ -489,10 +497,10 @@ CODE     : config CATEGORIES + priority 4 · pipeline rule (LIST MODATI — "గ
            ఉద్యోగాలు" → Abroad, Central kaadu) · Gemini CATEGORY_SEEDS ·
            14 sources (eMigrate/MEA/IELTS/Study abroad/Canada/UK…), 4 daily
 SITE     : nav dropdown + chip "విదేశీ ఉద్యోగాలు" + mobile link + #grid card
-           tiles: 17 content categories · 180 official sources · 12,344 keywords
+           tiles: 18 content pillars · 258 curated source queries · 12,344 keywords
 KEYWORDS : top_post ENTITIES 188 → 203 (+15 abroad: Gulf/eMigrate/IELTS/PTE/Canada…)
            universe 10,682 → 12,344 (510 abroad keywords) · exam-mechanics intents skip
-TOP_POST : LIVE_CATEGORIES lo 17 pillars (mundu 12 matrame — 5 pillars
+TOP_POST : LIVE_CATEGORIES lo 18 pillars (mundu 12 matrame — expanded coverage
            "Online Education" ki map ayyevi!) + abroad intent filter
 ADVISOR  : Tier-1 gap unte — 'విదేశీ ఉద్యోగాలు (Abroad Jobs)' pillar posts cheyyamani cheptundi
 CLASSIFY : "Dubai jobs", "IELTS exam date", "గల్ఫ్ ఉద్యోగాలు", "Canada work visa" → Abroad Jobs
@@ -863,7 +871,7 @@ search · mobile lo app-laga install · colorful premium look, text/background c
 
 WHAT CHANGED
   Site copy  : బ్రేకింగ్ టికర్ + section + nav/mobile links + JS + CSS — public sitenunchi poyayi.
-               Hero proof-stats (12,344 keywords · 180 sources · 59 districts) mariyu topbar/footer
+               Hero proof-stats (12,344 keywords · 258 curated source queries · 59 districts) mariyu topbar/footer
                district lines teesesaam. "నమూనా/DEMO" maatalu public pages/theme nunchi clean.
   Filters    : Homepage `.qrow` chips — అన్నీ · 10వ తరగతి · ఇంటర్ (10+2) · ఐటీఐ · డిప్లొమా · డిగ్రీ ·
                పీజీ · బీటెక్ · ⏳ 7 రోజుల్లో ముగిసేవి. `applyFilter()` qual + search + category ni
@@ -1903,7 +1911,7 @@ tests/v96_test.py          # 17 checks
 ENDUKU (nijamaina gaps)
 ```
 GAP-1 job mela / district jobs / university results / daily CA queries grid lo levu
-      FIX: 180 sources + 221 entities (12,344 keywords) — counts guardian lo lock
+      FIX: 258 curated source queries + 221 entities (12,344 keywords) — counts guardian lo lock
 GAP-2 join buttons post chivara mattrame (chala mandi akkadi varaku scroll cheyyaru)
       FIX: mid-article strip — idempotent · empty-safe · theme dedupe guard
 GAP-3 ad refresh: timer/auto-reload = AdSense INVALID TRAFFIC (ban risk)
@@ -2736,6 +2744,6 @@ tokens and generic secret patterns scan chestundi. Secrets chat lo/store cheyyak
 
 ```
 python tests/v116_test.py
-python run.py --test-all       # 96/96
+python run.py --test-all       # 99 test-suite files (historical v116 pins may require refresh)
 ```
 

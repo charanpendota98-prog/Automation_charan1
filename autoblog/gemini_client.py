@@ -1,8 +1,9 @@
-"""Gemini API client — generates Telugu blog articles via REST (no SDK).
+"""StudentUp AI client — generates Telugu content through REST APIs.
 
-Uses the generateContent REST endpoint with a strict JSON response schema.
-Automatically falls back to older model names if the primary one 404s,
-and retries with backoff on rate limits.
+Gemini uses Google's native generateContent endpoint. Groq, OpenRouter,
+Cerebras, Together, Mistral, OpenAI, and custom gateways use the common
+OpenAI-compatible chat-completions contract. All providers go through the
+same JSON parser, retry/key rotation, and downstream evidence gates.
 """
 
 import json
@@ -40,7 +41,12 @@ RESPONSE_SCHEMA = {
                 "org_name": {"type": "STRING"},
                 "org_url": {"type": "STRING"},
                 "identifier": {"type": "STRING"},
+                "vacancies": {"type": "INTEGER"},
+                "qualification": {"type": "STRING"},
+                "eligibility": {"type": "STRING"},
+                "application_fee": {"type": "STRING"},
                 "apply_end": {"type": "STRING"},
+                "exam_date": {"type": "STRING"},
                 "salary_min": {"type": "INTEGER"},
                 "salary_max": {"type": "INTEGER"},
                 "location": {"type": "STRING"},
@@ -211,6 +217,19 @@ CONTENT TYPE: RESULT / MERIT LIST
   cut-off/merit-list meaning, revaluation or objection route, supplementary next step and helpdesk.
 - Never predict marks, rank, cut-off or release time. Clearly label a pending Result as pending.
 """
+    if any(x in value for x in ("supplementary", "supply exam", "advanced supplementary",
+                                "exam date", "coming soon", "application fee", "last date")):
+        return """
+CONTENT TYPE: EXAM / SUPPLEMENTARY EXAM UPDATE
+- First state whether the exam, fee payment or notification is OPEN, CLOSED, RELEASED,
+  NOT RELEASED or only EXPECTED. Use the official board/exam authority notice.
+- Give exact Exam Date, fee by category, fee-payment Last Date, application Last Date,
+  hall-ticket status, required documents, official Direct Link and helpdesk only when verified.
+- Use useful student-question H2s where applicable: “Fee entha?”, “Last date eppudu?”,
+  “Exam eppudu?” and “Apply ela cheyali?”. If a value is missing, answer “not announced”.
+- Separate confirmed dates from a tentative/coming-soon update. Never convert an expected date,
+  fee or last date into a fact; if the official source is silent, say so clearly.
+"""
     if any(x in value for x in ("success story", "selected candidate", "ranker", "topper",
                                 "inspiring journey")):
         return """
@@ -269,7 +288,7 @@ ALSO RETURN:
 - tags: 5 to 8 tags, mix of Telugu and English keywords.
 - banner_text: short ENGLISH text (max 6 words) suitable for a featured image banner, e.g. "Scholarships 2026 Apply Online".
 - focus_keyword: ONE main SEO keyword phrase (Telugu + English mix). It must appear: in the title, in the FIRST paragraph, in at least 2 <h2> headings, and naturally 5-8 times in the body (density ~1%).
-- secondary_keywords: 3-5 related keyword phrases people also search (mix Telugu/English).
+- secondary_keywords: 5-8 related keyword phrases people also search (mix Telugu/English; use only natural, topic-relevant phrases).
 - seo_title: SEO title with focus keyword at the START, under 60 characters, include the year and a power word (Complete/Guide/Best) and a number if natural.
 - quick_answer: 40-60 word direct answer in Telugu summarizing the article (featured snippet bait). Must contain the focus keyword.
 - faq: 4-6 objects with "question" and "answer" string fields — "People Also Ask" style questions (Telugu) with short 2-3 sentence answers.
@@ -291,14 +310,19 @@ SOURCE CONTENT:
 ============================================================================
 
 STRICT ORIGINALITY RULES (copyright safe — very important):
-- Do NOT copy any sentence, phrase structure, or paragraph from the source.
-- Use ONLY the FACTS/information from the source (scheme names, eligibility, process, numbers).
-- Everything must be freshly written by you in a completely different structure and wording.
+- Do NOT copy any sentence, phrase structure, paragraph, title hook, or section order from the source.
+- Use ONLY the FACTS/information from the source (scheme names, eligibility, process, numbers); separate facts from the source's expression before writing.
+- First plan a new reader journey for StudentUp, then write it. Do not translate, lightly paraphrase, or mechanically walk through the source paragraph by paragraph.
+- Everything must be freshly written by you in a completely different structure and wording, with a distinct opening and distinct H2/H3 phrasing.
 - Write it as if you are an independent expert explaining the topic from scratch.
+- When the facts support it, aim for 700-1000 useful words; never repeat a fact or add generic text just to hit a length target.
+- The published article must read as StudentUp's own article. Do not mention the reference website, source site, automation, AI, evidence score, editorial workflow or "source-backed draft" in the article body.
+- Do not add a byline/review-pending line, reading-time badge, methodology block, or "Best Guide" title suffix.
 
 IMPROVE & EXPAND (advanced content — very important):
 - ADD extra valuable sections the source may not have: detailed step-by-step process, required documents list, common mistakes to avoid, pro tips, comparison table, extra background context.
 - Make it complete only where the source and official context support it; do not inflate the article to beat a word count.
+- For exam/supplementary updates, use question-led H2s such as “Fee entha?”, “Last date eppudu?”, “Exam eppudu?” and “Apply ela cheyali?” only when the source supports the answer; otherwise say “not announced”.
 - LANGUAGE: easy spoken Telugu + familiar ENGLISH-script labels (Notification, Eligibility, Age Limit, Application Fee, Important Dates, Selection Process, Apply Online, Official Website, Documents, Direct Link). Never use formal/pure translated Telugu or transliterate these standard terms.
 
 ACCURACY RULES:
@@ -333,14 +357,20 @@ CONTENT:
 =======================================================================
 {extra_sources_block}
 STRICT ORIGINALITY RULES (copyright safe — very important):
-- Do NOT copy any sentence/phrase from ANY source. Facts only, fresh original writing.
-- Write as an independent expert explaining the topic from scratch.
+- Do NOT copy any sentence, phrase, title hook, section order, or distinctive structure from ANY source. Facts only, fresh original writing.
+- First build an independent outline around the reader's decision or next step; do not merge or translate the source paragraphs in order.
+- Write as an independent expert explaining the topic from scratch, with a distinct opening and your own H2/H3 wording.
+- When the evidence supports it, aim for 700-1000 useful words; never pad, repeat facts, or add generic SEO prose to reach a count.
+- The final post must sound like StudentUp's own blog. Never print source names, source counts, automation/AI notes, evidence confidence, editorial workflow, "Sources checked", "source-backed draft" or review-pending labels in the article.
 - If sources CONFLICT on a number/date, use the most repeated/official value and phrase it as "notification prakaram" (as per notification).
+- Do not add a byline, reading-time badge, methodology block, generic "Best Guide" suffix, or unrelated related-topic links.
 
 RESEARCH AND VALUE STRATEGY (very important):
 - Start from the PRIMARY source's facts, then add only useful, source-backed context that helps a reader act safely (eligibility, fee details, selection stages, documents, dates mentioned).
+- Inspect every supplied research source before drafting. Build a private fact matrix for status, fee, last date, exam date, eligibility, documents, links, result/syllabus and missing values; do not silently ignore source 2, 3 or 4.
 - Resolve conflicts by naming the official source and flagging uncertainty; never silently choose a convenient number or deadline.
 - Include overview, eligibility, benefits/salary, application steps, documents, fee, selection process, common mistakes, and a comparison table only when each section is genuinely useful.
+- For exam updates, use student-language question H2s such as “Fee entha?”, “Last date eppudu?”, “Exam eppudu?” and “Apply ela cheyali?” when that fact is relevant. If the official source is silent, say “not announced” instead of creating a fake answer.
 - Include salary/fee/stipend/loan/cost figures only when verified and relevant. Never add commercial details to attract ads, inflate word count, or target high CPC.
 - Prefer concise, complete answers over a fixed word count. Do not add generic introductions, conclusions, repeated summaries, motivation, share/comment requests, or SEO padding.
 - LANGUAGE: easy spoken Telugu + familiar ENGLISH-script labels (Notification, Eligibility, Age Limit, Application Fee, Important Dates, Selection Process, Apply Online, Official Website, Vacancy, Documents, Direct Link). Write for ordinary students/parents, not highly educated readers; avoid formal/pure Telugu.
@@ -354,13 +384,58 @@ ALSO RETURN (same JSON schema):
 - title: 50-75 chars, focus keyword at start, year {year}, power word + number if natural.
 - slug (English kebab-case), meta_description (140-160 chars, keyword included), tags (6-8), banner_text (English, max 6 words).
 - focus_keyword: main keyword — in title, first para, 2+ h2s, ~1% density.
-- secondary_keywords: 3-5 related search phrases (Telugu+English).
+- secondary_keywords: 5-8 related search phrases (Telugu+English; only natural topic-relevant phrases).
 - seo_title: keyword at start, under 60 chars, year + power word + number.
 - quick_answer: 40-60 word Telugu direct answer (featured snippet bait) with keyword.
 - faq: 5-6 objects with "question" and "answer" string fields — People-Also-Ask style.
 - external_links: 1-3 real official portals with Telugu anchor text.
 
 Return ONLY valid JSON."""
+
+
+_EVIDENCE_TERMS = (
+    "fee", "application", "last date", "deadline", "exam date", "important dates",
+    "eligibility", "age limit", "vacancy", "salary", "stipend", "documents",
+    "apply", "notification", "result", "syllabus", "hall ticket", "ఫీజు",
+    "చివరి తేదీ", "పరీక్ష తేదీ", "అర్హత", "వయస్సు", "ఖాళీలు", "పత్రాలు",
+    "దరఖాస్తు", "ఫలితాలు", "హాల్ టికెట్",
+)
+
+
+def _evidence_excerpt(text: str, limit: int = 5000) -> str:
+    """Keep the source's facts, not just its first screenful, in the prompt.
+
+    Fees and deadlines frequently appear below a long introduction or inside a
+    closing table. A plain ``text[:3000]`` silently discarded those facts even
+    though the fetch and private evidence ledger had them. This bounded excerpt
+    keeps the beginning, end, and small windows around applicant-intent terms,
+    so prompt size stays predictable without making the source shallow.
+    """
+    text = " ".join(str(text or "").split())
+    if len(text) <= limit:
+        return text
+    import re as _re
+
+    snippets = []
+    lower = text.lower()
+    for term in _EVIDENCE_TERMS:
+        start = lower.find(term.lower())
+        if start < 0:
+            continue
+        left = max(0, start - 260)
+        right = min(len(text), start + len(term) + 620)
+        snippets.append(text[left:right])
+        if len(snippets) >= 8:
+            break
+    parts = [text[:1700], *snippets, text[-900:]]
+    out, seen = [], set()
+    for part in parts:
+        part = _re.sub(r"\s+", " ", part).strip()
+        if part and part not in seen:
+            seen.add(part)
+            out.append(part)
+    joined = "\n[... source excerpt continues ...]\n".join(out)
+    return joined[:limit]
 
 
 def _format_extra_sources(extras) -> str:
@@ -372,13 +447,13 @@ def _format_extra_sources(extras) -> str:
             f"--------------- RESEARCH SOURCE {i} ---------------\n"
             f"URL: {s.url} | SITE: {s.site_name}\n"
             f"TITLE: {s.title}\n"
-            f"CONTENT:\n{s.text[:3000]}\n"
+            f"CONTENT:\n{_evidence_excerpt(s.text)}\n"
         )
     return (
         "=======================================================================\n"
         "ADDITIONAL EVIDENCE SOURCES (use for corroboration and gap checking):\n"
         + "\n".join(blocks)
-        + "======================================================================="
+        + "\n======================================================================="
     )
 
 
@@ -438,8 +513,8 @@ Return ONLY valid JSON."""
 
 def generate_listicle(topic: str, recent_titles: List[str], year: int) -> Dict:
     """Trending listicle article (Top 10 jobs lanti stories)."""
-    if not config.GEMINI_API_KEY:
-        raise GeminiError("GEMINI_API_KEY not set")
+    if not config.gemini_configured():
+        raise GeminiError("No AI provider key configured")
     avoid_block = ""
     if recent_titles:
         sample = "\n".join(f"- {t}" for t in recent_titles[:30])
@@ -493,8 +568,8 @@ def generate_top_post(blueprint: Dict, year: int = 0) -> Dict:
     Blueprint ni prompt ga istham — MODEL facts invent cheyyakudadu;
     structure/on-page plan matrame blueprint nunchi vastundi.
     """
-    if not config.GEMINI_API_KEY and not getattr(config, "GEMINI_API_KEYS", []):
-        raise GeminiError("GEMINI_API_KEY not set")
+    if not config.gemini_configured():
+        raise GeminiError("No AI provider key configured")
     from . import top_post as _tp
 
     prompt = TOP_POST_PROMPT_TEMPLATE.format(blueprint=_tp.gemini_brief(blueprint))
@@ -545,8 +620,8 @@ def generate_quiz(topic: str, topic_te: str, level: int, n: int,
                   year: int) -> Dict:
     """Bilingual exam-grade MCQ set. Returns normalized quiz dict.
     Raises GeminiError after retries (validation feedback appended)."""
-    if not config.GEMINI_API_KEY and not _api_keys():
-        raise GeminiError("GEMINI_API_KEY not set")
+    if not config.gemini_configured():
+        raise GeminiError("No AI provider key configured")
     prompt = QUIZ_PROMPT_TEMPLATE.format(
         topic=topic, topic_te=topic_te, level=level, n=n, year=year,
         level_name=QUIZ_LEVEL_NAMES.get(level, "Mixed"),
@@ -554,35 +629,38 @@ def generate_quiz(topic: str, topic_te: str, level: int, n: int,
     )
     last_err: Optional[Exception] = None
     for attempt in range(1, config.GEMINI_MAX_RETRIES + 1):
-        for model in _models():
-            for key in _usable_keys():
-                try:
-                    raw = _call_model(model, prompt, key)
-                    quiz = _parse_json(raw)
-                    problems = validate_quiz_shape(quiz, n)
-                    if problems:
-                        raise GeminiError("VALIDATION: " + "; ".join(problems[:4]))
-                    _bump_key(key)
-                    quiz = normalize_quiz_shape(quiz, n)
-                    quiz["model"] = model
-                    return quiz
-                except GeminiError as exc:
-                    msg = str(exc)
-                    if msg.startswith("MODEL_NOT_FOUND"):
-                        break
-                    if msg.startswith(("QUOTA_KEY", "BAD_KEY")):
-                        _mark_key_dead(key, msg.split(":")[0])
+        for provider in _provider_order():
+            for model in _provider_models(provider):
+                model_ref = _model_ref(provider, model)
+                for key in _provider_keys(provider):
+                    try:
+                        raw = _call_model(model_ref, prompt, key)
+                        quiz = _parse_json(raw)
+                        problems = validate_quiz_shape(quiz, n)
+                        if problems:
+                            raise GeminiError("VALIDATION: " + "; ".join(problems[:4]))
+                        _bump_provider_key(provider, key)
+                        quiz = normalize_quiz_shape(quiz, n)
+                        quiz["model"] = model
+                        quiz["provider"] = provider
+                        return quiz
+                    except GeminiError as exc:
+                        msg = str(exc)
+                        if msg.startswith("MODEL_NOT_FOUND"):
+                            break
+                        if msg.startswith(("QUOTA_KEY", "BAD_KEY")):
+                            _mark_provider_key_dead(provider, key, msg.split(":")[0])
+                            last_err = exc
+                            continue
                         last_err = exc
-                        continue
-                    last_err = exc
-                    if msg.startswith("VALIDATION") and attempt < config.GEMINI_MAX_RETRIES:
-                        # feedback loop: tell the model exactly what to fix
-                        prompt += ("\n\nPREVIOUS OUTPUT PROBLEMS (fix ALL — "
-                                   + msg[11:200] + "). Return the FULL corrected JSON.")
-                    break
-                except (json.JSONDecodeError, ValueError) as exc:
-                    last_err = GeminiError(f"Quiz JSON parse failed: {exc}")
-                    break
+                        if msg.startswith("VALIDATION") and attempt < config.GEMINI_MAX_RETRIES:
+                            # feedback loop: tell the model exactly what to fix
+                            prompt += ("\n\nPREVIOUS OUTPUT PROBLEMS (fix ALL — "
+                                       + msg[11:200] + "). Return the FULL corrected JSON.")
+                        break
+                    except (json.JSONDecodeError, ValueError) as exc:
+                        last_err = GeminiError(f"Quiz JSON parse failed: {exc}")
+                        break
         if attempt < config.GEMINI_MAX_RETRIES:
             time.sleep(min(30, 5 * (2 ** (attempt - 1))))
     raise GeminiError(f"Quiz generation failed: {last_err}")
@@ -610,8 +688,8 @@ def generate_update(
     year: int,
 ) -> Dict:
     """Published article + kotha research -> improved version (same URL)."""
-    if not config.GEMINI_API_KEY:
-        raise GeminiError("GEMINI_API_KEY not set")
+    if not config.gemini_configured():
+        raise GeminiError("No AI provider key configured")
     prompt = UPDATE_PROMPT_TEMPLATE.format(
         title=existing_title,
         focus_keyword=focus_keyword or "(unknown)",
@@ -633,9 +711,92 @@ def _models() -> List[str]:
     return models
 
 
+# OpenAI-compatible provider support --------------------------------------
+# A model reference is prefixed only for non-Gemini providers so the existing
+# three-argument _call_model test/mocking contract remains intact.
+_COMPATIBLE_PROVIDERS = {"groq", "openrouter", "cerebras", "together", "mistral", "openai", "custom"}
+
+
+def _provider_order() -> List[str]:
+    """Return configured providers in primary-then-fallback order.
+
+    A provider with no key is skipped. Configured providers not explicitly
+    listed are appended, so adding a new provider key is not silently ignored.
+    """
+    requested = [getattr(config, "AI_PROVIDER", "gemini")] + list(
+        getattr(config, "AI_FALLBACK_PROVIDERS", []) or []
+    )
+    requested += list(getattr(config, "configured_ai_providers", lambda: [])())
+    result = []
+    for provider in requested:
+        name = str(provider or "").strip().lower()
+        if not name or name in result:
+            continue
+        if name == "gemini" or name in _COMPATIBLE_PROVIDERS:
+            # Keep the no-key Gemini path for offline unit-test mocks, but do
+            # not make an unconfigured Gemini call before a real fallback key.
+            if config.ai_provider_configured(name) or (
+                name == "gemini" and not config.ai_configured()
+            ):
+                result.append(name)
+    return result
+
+
+def _provider_models(provider: str) -> List[str]:
+    if provider == "gemini":
+        return _models()
+    prefix = provider.upper()
+    primary = str(getattr(config, f"{prefix}_MODEL", "") or "").strip()
+    fallbacks = list(getattr(config, f"{prefix}_FALLBACK_MODELS", []) or [])
+    models = [m for m in [primary] + fallbacks if m]
+    return list(dict.fromkeys(models))
+
+
+def _provider_keys(provider: str) -> List[Optional[str]]:
+    if provider == "gemini":
+        return _usable_keys()
+    # The provider is selected only when it has a key. Keep the helper
+    # forgiving for tests and custom runtime integrations.
+    return _usable_external_keys(provider)
+
+
+def _model_ref(provider: str, model: str) -> str:
+    return model if provider == "gemini" else f"{provider}::{model}"
+
+
+def _split_model_ref(model_ref: str):
+    if "::" in model_ref:
+        provider, model = model_ref.split("::", 1)
+        return provider, model
+    return "gemini", model_ref
+
+
+def _bump_provider_key(provider: str, key: Optional[str]) -> None:
+    if provider == "gemini":
+        _bump_key(key or "")
+        return
+    _bump_external_key(provider, key or "")
+
+
+def _mark_provider_key_dead(provider: str, key: Optional[str], reason: str) -> None:
+    if provider == "gemini":
+        _mark_key_dead(key or "", reason)
+        return
+    _mark_external_key_dead(provider, key or "", reason)
+
+
 # Rank Math writing rules — prathi prompt ki append (article write chesetappude
 # score perugutundi: keyword placement, numbers, short paras, link anchors)
 WRITING_RULES = """
+
+SENIOR EDITORIAL STANDARD (emulate the judgement of a top newsroom editor with 20+ years of publishing experience):
+- Write with calm authority, precise language and genuine reader empathy; never sound like an AI template, ad copy or a translated press release.
+- Decide the reader's single next action before writing. Lead with the answer, then give evidence, caveats, steps and a practical decision path.
+- Separate verified fact, reasonable explanation and unknown information. If evidence is missing, say so plainly instead of filling the gap from memory.
+- Give every section a job: answer a question, prevent a mistake, explain a term, compare options or help the reader complete a task. Delete anything that does none of these.
+- Prefer specific, useful detail over hype: who it is for, what changes, what to prepare, what can go wrong and where to verify it.
+- Use an honest headline and a strong opening promise; do not use fake urgency, guaranteed outcomes, exaggerated salary or clickbait punctuation.
+- Edit once for structure, once for factual clarity and once for natural Telugu rhythm. The final copy must feel written for StudentUp readers, not assembled from source paragraphs.
 
 RANK MATH WRITING RULES (follow exactly):
 - Put the focus keyword in the FIRST HALF of the title and include a NUMBER (year/vacancies/count).
@@ -649,6 +810,11 @@ NO-COPY RULE (absolute — copyright + Google safety):
 - Vere website/article content nunchi SENTENCES, paragraph structure, headings order copy cheyakudadu.
 - FACTS (names, numbers, dates, process) matrame teesukuni — 100% mana own words lo, mana structure lo ravadam.
 - Source ki idi "rewrite" kaadu — idi "fresh expert article on the same facts". Duplicate-content penalty endukuadu.
+
+PUBLIC ARTICLE VOICE:
+- Article ni StudentUp tana readers kosam rasina normal blog laga rayandi; source website, competitor website, automation, AI, evidence score, editorial workflow, "source-backed draft", "Sources checked", reading time or review-pending text ni content lo mention cheyakandi.
+- Byline ni article body lo inject cheyakandi. Title ki "Best Guide" / "— Best Guide" lanti artificial suffix vadakandi.
+- Related links ante same topic/entity ki nijanga panikoche pages matrame; broad category lo unna unrelated jobs ni list cheyakandi.
 
 10X CONTENT STRATEGY (top publisher standard — beat every competitor):
 - Competitors ichina information ANNI + inka ekkuva ivvali: common mistakes section, pro tips, real numbers (pay matrix levels, fees, stipends — well-known values matrame), minimum 2 tables (info table + comparison table).
@@ -694,16 +860,16 @@ EXACT keys (spellings marakudadu — bot idi parse chestundi):
   "meta_description": "140-160 chars Telugu summary with focus keyword",
   "content_html": "FULL article HTML here (h2/h3/p/ul/ol/li/table/a only). THIS key holds the article body — 'content'/'html'/'body' vaddu, 'content_html' matrame.",
   "focus_keyword": "ONE exact search phrase",
-  "secondary_keywords": ["related phrase 1", "related phrase 2", "related phrase 3"],
+  "secondary_keywords": ["related phrase 1", "related phrase 2", "related phrase 3", "related phrase 4", "related phrase 5"],
   "seo_title": "keyword-first title under 60 chars",
   "tags": ["tag1", "tag2", "tag3", "tag4", "tag5"],
   "banner_text": "ENGLISH banner max 6 words",
   "quick_answer": "40-60 word Telugu direct answer with focus keyword",
   "faq": [{"question": "Telugu question?", "answer": "2-3 sentence Telugu answer."}],
   "external_links": [{"url": "https://official-portal.gov.in", "text": "Telugu anchor"}],
-  "recruitment": {"org_name": "ORG (ONLY if source states)", "org_url": "https://...", "apply_end": "YYYY-MM-DD or empty", "location": "city/state or empty"}
+  "recruitment": {"org_name": "ORG (ONLY if source states)", "org_url": "https://...", "vacancies": 0, "qualification": "ONLY if source states", "eligibility": "ONLY if source states", "application_fee": "ONLY if source states", "apply_end": "YYYY-MM-DD or empty", "exam_date": "YYYY-MM-DD or empty", "location": "city/state or empty"}
 }
-Rules: content_html KHALI vaddu (1500+ words HTML). faq 4+ items. recruitment facts source lo LEKAPOTE {"org_name": "", "apply_end": ""} — GUESS cheyyakundu.
+Rules: content_html KHALI vaddu (600+ useful words when the topic supports it). Do not pad, repeat or invent facts for length. faq 4+ items. Every recruitment number, qualification, fee and date must be copied only from supplied evidence; if absent use 0/empty and write that it is not announced in the article — GUESS cheyyakundu.
 """
 
 def _key_tag(key: str) -> str:
@@ -783,7 +949,79 @@ def _mark_key_dead(key: str, reason: str) -> None:
     log.warning("Gemini key ..%s marked for cooldown today (%s)", kh, reason[:60])
 
 
+def _external_key_tag(provider: str, key: str) -> str:
+    import hashlib
+
+    return hashlib.sha1(f"{provider}:{key or 'none'}".encode()).hexdigest()[:8]
+
+
+def _usable_external_keys(provider: str) -> List[Optional[str]]:
+    """Rotate compatible-provider keys and cool down keys after 401/429."""
+    keys = list(config.ai_provider_keys(provider))
+    if len(keys) <= 1:
+        return keys or [None]
+    from datetime import date
+
+    from . import state
+
+    today = date.today().isoformat()
+    out = []
+    for key in keys:
+        tag = _external_key_tag(provider, key)
+        try:
+            if state.meta_get(config.STATE_PATH, f"aikey:dead:{tag}:{today}"):
+                continue
+            count = int(state.meta_get(config.STATE_PATH, f"aikey:cnt:{tag}:{today}") or 0)
+            out.append((count, key))
+        except Exception:
+            out.append((0, key))
+    if not out:
+        return keys
+    out.sort(key=lambda pair: pair[0])
+    return [key for _, key in out]
+
+
+def _bump_external_key(provider: str, key: str) -> None:
+    if not key:
+        return
+    from datetime import date
+
+    from . import state
+
+    tag = _external_key_tag(provider, key)
+    try:
+        name = f"aikey:cnt:{tag}:{date.today().isoformat()}"
+        count = int(state.meta_get(config.STATE_PATH, name) or 0)
+        state.meta_set(config.STATE_PATH, name, str(count + 1))
+    except Exception as exc:  # best-effort usage accounting
+        log.debug("external provider key counter skipped: %s", exc)
+
+
+def _mark_external_key_dead(provider: str, key: str, reason: str) -> None:
+    if not key:
+        return
+    from datetime import date
+
+    from . import state
+
+    tag = _external_key_tag(provider, key)
+    try:
+        state.meta_set(
+            config.STATE_PATH,
+            f"aikey:dead:{tag}:{date.today().isoformat()}",
+            reason[:80],
+        )
+    except Exception as exc:  # best-effort cooldown
+        log.debug("external provider cooldown skipped: %s", exc)
+    log.warning("%s key ..%s marked for cooldown today (%s)", provider, tag, reason[:60])
+
+
 def _call_model(model: str, prompt: str, key: Optional[str] = None) -> str:
+    provider, actual_model = _split_model_ref(model)
+    if provider != "gemini":
+        return _call_compatible_model(provider, actual_model, prompt, key)
+
+    model = actual_model
     key = key or config.GEMINI_API_KEY
     # v17.1: Telugu JSON 8192 tokens lo truncate avtundi — 2.5 models ki
     # 32k + thinking OFF; 2.0/1.5 flash max output 8192 (clamp — leda 400)
@@ -806,7 +1044,7 @@ def _call_model(model: str, prompt: str, key: Optional[str] = None) -> str:
         "contents": [{"role": "user", "parts": [{"text": prompt}]}],
         "generationConfig": gen_config,
     }
-    url = API_URL.format(model=model)
+    url = f"{config.GEMINI_API_BASE.rstrip('/')}/models/{model}:generateContent"
     resp = requests.post(
         url,
         params={"key": key},
@@ -843,53 +1081,147 @@ def _call_model(model: str, prompt: str, key: Optional[str] = None) -> str:
         raise GeminiError(f"Empty response (finishReason={finish}): {str(data)[:200]}") from exc
 
 
+def _call_compatible_model(
+    provider: str,
+    model: str,
+    prompt: str,
+    key: Optional[str],
+    allow_response_format: bool = True,
+) -> str:
+    """Call a Groq/OpenRouter-style chat-completions endpoint.
+
+    The prompt already asks for strict JSON. ``response_format`` is sent when
+    possible, then removed once for gateways that implement chat completions
+    but do not implement JSON mode. This keeps provider support broad without
+    weakening the parser or the evidence gates downstream.
+    """
+    base = str(getattr(config, f"{provider.upper()}_API_BASE", "") or "").rstrip("/")
+    if not base:
+        raise GeminiError(f"PROVIDER_CONFIG:{provider}:API base missing")
+    if not key:
+        raise GeminiError(f"BAD_KEY:{provider}:empty")
+
+    max_tokens = min(
+        int(getattr(config, "AI_MAX_OUTPUT_TOKENS", 8192) or 8192),
+        32768,
+    )
+    payload = {
+        "model": model,
+        "messages": [{"role": "user", "content": prompt}],
+        "temperature": 0.95,
+        "max_tokens": max_tokens,
+    }
+    if allow_response_format:
+        payload["response_format"] = {"type": "json_object"}
+    headers = {"Authorization": f"Bearer {key}", "Content-Type": "application/json"}
+    if provider == "openrouter":
+        # Optional attribution headers are accepted by OpenRouter and harmless
+        # for local tests; they are not used as authentication.
+        headers["HTTP-Referer"] = getattr(config, "WP_SITE", "https://studentup.in")
+        headers["X-Title"] = "StudentUp Auto-Blogger"
+
+    url = f"{base}/chat/completions"
+    try:
+        resp = requests.post(
+            url, headers=headers, json=payload, timeout=config.HTTP_TIMEOUT
+        )
+    except requests.RequestException as exc:
+        raise GeminiError(f"RETRYABLE:network:{exc}") from exc
+
+    body = (getattr(resp, "text", "") or "")[:600]
+    lower = body.lower()
+    if resp.status_code == 400 and allow_response_format and any(
+        word in lower for word in ("response_format", "json mode", "json_object", "unsupported")
+    ):
+        return _call_compatible_model(
+            provider, model, prompt, key, allow_response_format=False
+        )
+    if resp.status_code == 429 or resp.status_code == 402:
+        raise GeminiError(f"QUOTA_KEY:{_key_tag(key)}:{resp.status_code}")
+    if resp.status_code in (401, 403):
+        if "quota" in lower or "credit" in lower or "limit" in lower:
+            raise GeminiError(f"QUOTA_KEY:{_key_tag(key)}:{resp.status_code}")
+        raise GeminiError(f"BAD_KEY:{_key_tag(key)}:{resp.status_code}")
+    if resp.status_code == 404 or (
+        resp.status_code == 400 and any(word in lower for word in ("model", "not found", "does not exist"))
+    ):
+        raise GeminiError(f"MODEL_NOT_FOUND:{provider}:{model}")
+    if resp.status_code >= 500:
+        raise GeminiError(f"RETRYABLE:{resp.status_code}:{body}")
+    if resp.status_code != 200:
+        raise GeminiError(f"HTTP {resp.status_code}: {body}")
+
+    try:
+        data = resp.json()
+        choice = data["choices"][0]
+        message = choice.get("message", {})
+        content = message.get("content", "")
+        if isinstance(content, list):
+            content = "".join(
+                part.get("text", "") if isinstance(part, dict) else str(part)
+                for part in content
+            )
+        if not content:
+            raise KeyError("choices[0].message.content")
+        if choice.get("finish_reason") == "length":
+            raise GeminiError("TRUNCATED:MAX_TOKENS (compatible output cut)")
+        return str(content)
+    except GeminiError:
+        raise
+    except (ValueError, KeyError, IndexError, TypeError) as exc:
+        raise GeminiError(f"Unexpected compatible API response: {body}") from exc
+
+
 def _generate_core(prompt: str, category: str = "", source=None,
                    strict_category: bool = False) -> Dict:
     """v18 core: keys × models loop, v17.1 adaptive truncation retry."""
-    models = _models()
     last_err: Optional[Exception] = None
     shorten = False
     for attempt in range(1, config.GEMINI_MAX_RETRIES + 1):
-        for model in models:
-            for key in _usable_keys():
-                try:
-                    raw = _call_model(model, prompt, key)
-                    article = _parse_json(raw)
-                    for field in ("title", "slug", "meta_description", "content_html"):
-                        if not article.get(field):
-                            raise GeminiError(f"Empty field in response: {field}")
-                    article["tags"] = [str(t).strip() for t in
-                                       article.get("tags", []) if str(t).strip()][:8]
-                    if strict_category:
-                        article["category"] = category or "Online Education"
-                    else:
-                        article["category"] = (category
-                                               or article.get("category", "Education News"))
-                    article["model"] = model
-                    if source is not None:
-                        article["source_url"] = source.url
-                        article["source_title"] = source.title
-                    _bump_key(key)
-                    return article
-                except GeminiError as exc:
-                    msg = str(exc)
-                    if msg.startswith("MODEL_NOT_FOUND"):
-                        log.warning("Model %s unavailable, trying fallback...", model)
-                        break  # ee model ki keys varapadam prakasam ledu
-                    if msg.startswith(("QUOTA_KEY", "BAD_KEY")):
-                        _mark_key_dead(key, msg.split(":")[0])
+        for provider in _provider_order():
+            models = _provider_models(provider)
+            for model in models:
+                model_ref = _model_ref(provider, model)
+                for key in _provider_keys(provider):
+                    try:
+                        raw = _call_model(model_ref, prompt, key)
+                        article = _parse_json(raw)
+                        for field in ("title", "slug", "meta_description", "content_html"):
+                            if not article.get(field):
+                                raise GeminiError(f"Empty field in response: {field}")
+                        article["tags"] = [str(t).strip() for t in
+                                           article.get("tags", []) if str(t).strip()][:8]
+                        if strict_category:
+                            article["category"] = category or "Online Education"
+                        else:
+                            article["category"] = (category
+                                                   or article.get("category", "Education News"))
+                        article["model"] = model
+                        article["provider"] = provider
+                        if source is not None:
+                            article["source_url"] = source.url
+                            article["source_title"] = source.title
+                        _bump_provider_key(provider, key)
+                        return article
+                    except GeminiError as exc:
+                        msg = str(exc)
+                        if msg.startswith("MODEL_NOT_FOUND"):
+                            log.warning("%s model %s unavailable, trying fallback...", provider, model)
+                            break  # this model will not work with another key
+                        if msg.startswith(("QUOTA_KEY", "BAD_KEY")):
+                            _mark_provider_key_dead(provider, key, msg.split(":")[0])
+                            last_err = exc
+                            continue  # next key/provider
                         last_err = exc
-                        continue  # next key!
-                    last_err = exc
-                    if msg.startswith("TRUNCATED"):
-                        shorten = True
-                    break  # retryable -> next attempt
-                except (json.JSONDecodeError, ValueError) as exc:
-                    last_err = GeminiError(f"JSON parse failed: {exc}")
-                    if any(k in str(exc) for k in
-                           ("Unterminated", "Expecting", "Out of range")):
-                        shorten = True
-                    break
+                        if msg.startswith("TRUNCATED"):
+                            shorten = True
+                        break  # retryable/validation -> next attempt
+                    except (json.JSONDecodeError, ValueError) as exc:
+                        last_err = GeminiError(f"JSON parse failed: {exc}")
+                        if any(k in str(exc) for k in
+                               ("Unterminated", "Expecting", "Out of range")):
+                            shorten = True
+                        break
         if shorten and "LENGTH OVERRIDE" not in prompt:
             prompt += (
                 "\n\nLENGTH OVERRIDE (output token limit davvindi — vinipistu): "
@@ -902,8 +1234,10 @@ def _generate_core(prompt: str, category: str = "", source=None,
             time.sleep(min(45, 5 * (2 ** (attempt - 1))))
     hint = ""
     if isinstance(last_err, GeminiError) and str(last_err).startswith(("QUOTA", "BAD_KEY")):
-        hint = (" — GEMINI_API_KEYS lo inka keys add cheyandi "
-                "(free tier quota ayyipoyindi; .env lo comma tho separator)")
+        hint = (
+            " — configured AI provider keys exhausted; add another key or "
+            "provider in AI_FALLBACK_PROVIDERS"
+        )
     raise GeminiError(f"All attempts failed: {last_err}{hint}")
 
 
@@ -980,8 +1314,8 @@ def generate_article(
     trend_topic: Google Trends nunchi vachina trending topic (optional) —
     aa topic meede article rastundi (fresh trending content).
     """
-    if not config.GEMINI_API_KEY:
-        raise GeminiError("GEMINI_API_KEY not set")
+    if not config.gemini_configured():
+        raise GeminiError("No AI provider key configured")
 
     avoid_block = ""
     if recent_titles:
@@ -1029,10 +1363,15 @@ CONTENT (HTML):
 {content}
 ==============================================
 
-MUST FIX (item-by-item — Rank Math real checks):
+MUST FIX (item-by-item — Rank Math and evidence checks):
 {fixes}
 
+VERIFIED SOURCE EVIDENCE (use only this evidence; do not infer beyond it):
+{source_evidence}
+
 REWRITE RULES:
+- Emulate a senior newsroom editor: calm authority, sharp structure, precise wording, reader empathy and no AI/template voice. Every paragraph must earn its place.
+- Keep the draft's verified facts, but rewrite any repaired section in a fresh StudentUp voice; never copy a source-like sentence or preserve a source paragraph order.
 - Keep language easy spoken Telugu + familiar English labels (Eligibility, Age Limit, Fee, Important Dates, Selection Process, Apply Online, Official Website). Avoid pure/formal Telugu and explain unfamiliar terms simply.
 - Title 40-60 chars: focus keyword FIRST words + year + number + power word (Complete/Best/Easy/Top).
 - meta_description 110-156 chars, focus keyword THO start.
@@ -1041,15 +1380,19 @@ REWRITE RULES:
 - Prathi paragraph 2-3 sentences (120 words eravaddu). 300+ words unna section ki kotha <h2> add cheyandi.
 - Sentences lo connectives 30%+ (kaani/అందువల్ల/మరోవైపు/అలాగే/చివరగా).
 - Table (+1 ayna good), FAQ 3+ questions — maintain cheyandi.
-- Facts marchakundu — ADD missing value (fees, eligibility, steps) only well-known info.
-- recruitment object (org_name/apply_end/salary) unte correct ga maintain cheyandi — dates GUESS cheyyakundu.
+- Facts marchakundu. Never add a missing fee, eligibility, vacancy, date, salary or step from memory; remove unsupported claims or write that the source does not state it.
+- recruitment object (org_name/apply_end/salary) unte source evidence tho matrame maintain cheyandi — dates GUESS cheyyakundu.
 Return ONLY valid JSON (same schema)."""
 
 
-def refine_article(article: Dict, fixes: List[str]) -> Dict:
-    """v18: Rank Math gate fix round — same topic, corrected draft."""
-    if not config.GEMINI_API_KEY and not getattr(config, "GEMINI_API_KEYS", []):
-        raise GeminiError("GEMINI_API_KEY not set")
+def refine_article(
+    article: Dict,
+    fixes: List[str],
+    source_evidence: str = "",
+) -> Dict:
+    """Correct SEO/evidence issues without inventing facts."""
+    if not config.gemini_configured():
+        raise GeminiError("No AI provider key configured")
     prompt = REFINE_PROMPT_TEMPLATE.format(
         title=article.get("title", ""),
         kw=article.get("focus_keyword", ""),
@@ -1057,6 +1400,7 @@ def refine_article(article: Dict, fixes: List[str]) -> Dict:
         # v85: 12000 → lengthy posts sections LLM chudakunda poyayi
         content=(article.get("content_html") or "")[:20000],
         fixes="\n".join(f"- {f}" for f in fixes[:12]),
+        source_evidence=(source_evidence or "No extra source evidence supplied; remove any unsupported claim.")[:12000],
     )
     improved = _generate_core(prompt, article.get("category", ""),
                               strict_category=True)
@@ -1079,8 +1423,8 @@ def generate_article_from_source(
     source-backed context and fact checking; the model must not copy or
     mechanically combine competitor pages.
     """
-    if not config.GEMINI_API_KEY:
-        raise GeminiError("GEMINI_API_KEY not set")
+    if not config.gemini_configured():
+        raise GeminiError("No AI provider key configured")
 
     avoid_block = ""
     if recent_titles:

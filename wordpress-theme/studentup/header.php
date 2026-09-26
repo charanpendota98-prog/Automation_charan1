@@ -33,7 +33,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<?php else : ?>
 			<a class="logo" href="<?php echo esc_url( home_url( '/' ) ); ?>">
 				<span class="mark" aria-hidden="true">S</span>
-				<span class="brand"><?php bloginfo( 'name' ); ?><small><?php bloginfo( 'description' ); ?></small></span>
+				<span class="brand"><?php bloginfo( 'name' ); ?></span>
 			</a>
 		<?php endif; ?>
 
@@ -83,10 +83,12 @@ studentup_breaking_ticker();
 ?>
 
 <div class="mbackdrop" id="mbackdrop" aria-hidden="true"></div>
-<div class="mpanel" id="mpanel" role="dialog" aria-label="Site menu">
+<div class="mpanel" id="mpanel" role="dialog" aria-label="Site menu" aria-modal="true" aria-hidden="true">
+	<div class="mpanel-head"><strong>StudentUp</strong><button type="button" id="mpanelclose" aria-label="Close menu">✕</button></div>
 	<div class="mlabel">Explore</div>
 	<a href="<?php echo esc_url( home_url( '/' ) ); ?>">🏠 Home</a>
 	<a href="<?php echo esc_url( home_url( '/?s=' ) ); ?>">🔍 Search</a>
+	<a class="su-mobile-board-link" href="<?php echo esc_url( studentup_opportunity_board_url() ); ?>">📋 Latest active jobs</a>
 	<?php if ( function_exists( 'studentup_saved_on' ) && studentup_saved_on() ) : ?>
 		<a href="#" class="su-msaved" data-su-saved-open>🔖 <?php echo esc_html__( 'Saved', 'studentup' ); ?></a>
 	<?php endif; ?>

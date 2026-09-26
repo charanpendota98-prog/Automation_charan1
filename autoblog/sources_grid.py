@@ -1,8 +1,8 @@
-"""v58/v96: Official Sources Grid — 180 curated sources, ZERO misses.
+"""v58/v96/v117/v118: Official Sources Grid — 250+ curated sources.
 
 Official first (SSC/UPSC/TSPSC/APPSC/NEET...), private+software+walkins next.
-Prathi source = Google News query. 17 daily hot-list sources prathi radar
-run lo check (4x/day); bavita rotation lo (RADAR_SOURCES_PER_run/run). Kotha
+Prathi source = Google News query. Daily hot-list sources prathi radar run lo
+check (4x/day); migata rotation lo (RADAR_SOURCES_PER_RUN/run). Kotha
 edu-relevant items → sources_queue.txt (news_radar._queue_url).
 """
 
@@ -60,6 +60,23 @@ _S = [
     ("CUET UG", "CUET UG 2026", "Online Education", False),
     ("NTA Exams", "NTA exam 2026", "Hall Tickets", False),
     ("AICTE", "AICTE 2026", "Scholarships", False),
+    # ---- Additional first-party national authorities ----
+    ("NTA UGC NET", "NTA UGC NET notification 2026", "Central Govt Jobs", False),
+    ("CTET", "CTET notification 2026 official", "Central Govt Jobs", False),
+    ("RRB Official", "site:rrbcdg.gov.in railway recruitment 2026", "Central Govt Jobs", False),
+    ("EPFO", "EPFO recruitment 2026 official", "Central Govt Jobs", False),
+    ("ESIC", "ESIC recruitment 2026 official", "Central Govt Jobs", False),
+    ("SEBI", "SEBI Grade A recruitment 2026", "Central Govt Jobs", False),
+    ("CWC", "Central Water Commission recruitment 2026", "Central Govt Jobs", False),
+    ("DGT Apprenticeship", "DGT apprenticeship India 2026 official", "Internships", True),
+    ("Navodaya Vidyalaya", "Navodaya Vidyalaya admission 2027 JNVST official", "Online Education", True),
+    ("Navodaya Class 6", "JNVST Class 6 admission 2027 notification", "Online Education", False),
+    ("Navodaya Class 9", "JNVST Class 9 lateral entry admission 2027", "Online Education", False),
+    ("Sainik Schools", "AISSEE Sainik School admission 2027 official", "Online Education", False),
+    ("NMMS Scholarship", "NMMS scholarship examination 2026 official", "Scholarships", True),
+    ("KGBV Admissions", "KGBV girls admission Telangana Andhra official", "Online Education", False),
+    ("Model Schools", "model school admission Telangana Andhra 2026 official", "Online Education", False),
+    ("RTE Admissions", "RTE school admission Telangana Andhra 2026", "Online Education", False),
     # ---- Telangana ----
     ("TSPSC", "TSPSC notification 2026", "TS Govt Jobs", True),
     ("TGPSC Gurukul", "TGPSC Gurukul teacher recruitment", "TS Govt Jobs", True),
@@ -70,6 +87,8 @@ _S = [
     ("DOST Telangana", "DOST Telangana counselling 2026", "Online Education", False),
     ("Telangana ePASS", "Telangana ePASS scholarship", "Scholarships", False),
     ("BIE Telangana Inter", "Telangana intermediate results 2026", "Results", False),
+    ("TS Inter Supplementary", "TSBIE intermediate supplementary exam fee last date 2026 official", "Upcoming Exams", True),
+    ("TS SSC Advanced Supplementary", "Telangana SSC advanced supplementary exam fee last date 2026 official", "Upcoming Exams", False),
     ("TS SSC Board", "Telangana SSC results 2026", "Results", False),
     ("Osmania University", "Osmania University 2026", "Online Education", False),
     ("JNTUH", "JNTU Hyderabad results 2026", "Results", False),
@@ -81,6 +100,11 @@ _S = [
     ("TS LAWCET PGETCET", "TS LAWCET PGETCET 2026", "Online Education", False),
     ("Telangana Forest", "Telangana forest recruitment", "TS Govt Jobs", False),
     ("Telangana Universities", "Telangana university recruitment 2026", "TS Govt Jobs", False),
+    ("TGPSC Group Exams", "TGPSC Group 1 Group 2 notification 2026", "TS Govt Jobs", True),
+    ("Telangana Medical Board", "Telangana medical health recruitment 2026 official", "TS Govt Jobs", False),
+    ("Telangana State Govt Orders", "site:telangana.gov.in education recruitment notification", "TS Govt Jobs", False),
+    ("Kakatiya University", "Kakatiya University admissions results 2026", "Online Education", False),
+    ("BRAOU", "BRAOU admission results 2026 official", "Online Education", False),
     # ---- Andhra Pradesh ----
     ("APPSC", "APPSC notification 2026", "AP Govt Jobs", True),
     ("AP DSC Teachers", "AP DSC school teacher 2026", "AP Govt Jobs", True),
@@ -90,6 +114,8 @@ _S = [
     ("DOST Andhra", "AP DOST counselling 2026", "Online Education", False),
     ("Jnanabhumi AP", "Jnanabhumi scholarship 2026", "Scholarships", False),
     ("BIE AP Inter", "AP intermediate results 2026", "Results", False),
+    ("AP Inter Supplementary", "BIEAP intermediate supplementary exam fee last date 2026 official", "Upcoming Exams", True),
+    ("AP SSC Advanced Supplementary", "Andhra Pradesh SSC advanced supplementary exam fee last date 2026 official", "Upcoming Exams", False),
     ("AP SSC Board", "AP SSC results 2026", "Results", False),
     ("AP ePASS", "AP ePASS scholarship", "Scholarships", False),
     ("AP Police", "AP police SI constable 2026", "AP Govt Jobs", False),
@@ -98,12 +124,31 @@ _S = [
     ("Grama Sachivalayam AP", "AP grama sachivalayam ward secretary", "AP Govt Jobs", False),
     ("AP Forest", "AP forest department recruitment", "AP Govt Jobs", False),
     ("AP Universities", "Andhra University SV University recruitment", "AP Govt Jobs", False),
+    ("AP Medical Services", "APMSRB medical recruitment 2026 official", "AP Govt Jobs", False),
+    ("AP Government Orders", "site:ap.gov.in education recruitment notification", "AP Govt Jobs", False),
+    ("Andhra University Admissions", "Andhra University admissions results 2026", "Online Education", False),
+    ("JNTUK Admissions", "JNTUK admissions results 2026 official", "Online Education", False),
     ("AP ICET LAWCET", "AP ICET LAWCET 2026", "Online Education", False),
     # ---- Scholarships ----
     ("NSP Scholarship", "NSP scholarship apply 2026", "Scholarships", True),
     ("PM YASASVI", "PM YASASVI scholarship 2026", "Scholarships", False),
     ("AICTE Pragati Saksham", "AICTE Pragati Saksham 2026", "Scholarships", False),
     ("PM Internship", "PM Internship scheme 2026", "Internships", False),
+    # ---- Government schemes and applicant support ----
+    ("PM Kisan", "PM Kisan installment status official 2026", "Current Affairs", True),
+    ("PM Vishwakarma", "PM Vishwakarma scheme eligibility registration 2026", "Current Affairs", False),
+    ("Mudra Yojana", "PM Mudra loan scheme women youth 2026 official", "Current Affairs", False),
+    ("Women Welfare Schemes", "women welfare scheme Telangana Andhra government 2026", "Current Affairs", True),
+    ("SHG Women Schemes", "self help group women scheme Telangana Andhra 2026", "Current Affairs", False),
+    ("Girl Child Schemes", "girl child education scheme scholarship India 2026", "Scholarships", False),
+    ("Rythu Bharosa", "Rythu Bharosa Telangana farmer scheme official 2026", "Current Affairs", True),
+    ("AP Rythu Support", "Andhra Pradesh farmer welfare scheme official 2026", "Current Affairs", True),
+    ("Kalyana Lakshmi", "Kalyana Lakshmi Shaadi Mubarak scheme Telangana 2026", "Current Affairs", False),
+    ("Aasara Pension", "Telangana Aasara pension scheme latest official", "Current Affairs", False),
+    ("Amma Vodi", "AP Amma Vodi scheme latest official 2026", "Current Affairs", False),
+    ("Vidya Deevena", "Jagananna Vidya Deevena scholarship latest official", "Scholarships", False),
+    ("Skill India", "Skill India PMKVY training registration official 2026", "Internships", False),
+    ("Employment Exchange", "Telangana Andhra employment exchange registration update", "Private Jobs", False),
     # ---- Telugu/private job publishers (discovery only; official notice wins) ----
     ("Adda247 Telugu Jobs", "site:adda247.com/te jobs notification Telugu", "Central Govt Jobs", True),
     ("Eenadu Pratibha Jobs", "site:pratibha.eenadu.net government jobs notification", "Central Govt Jobs", True),
@@ -254,6 +299,12 @@ _S = [
     ("Telangana Current Affairs", "Telangana current affairs today scheme GO", "Current Affairs", False),
     ("AP Current Affairs", "Andhra Pradesh current affairs today scheme GO", "Current Affairs", False),
     ("Budget & Student Schemes", "union budget state budget student scheme allocation 2026", "Current Affairs", False),
+    ("Daily Govt Notifications", "government notification today India Telangana Andhra students", "Current Affairs", True),
+    ("Daily Education News", "education news today Telangana Andhra official", "Current Affairs", True),
+    ("Daily Employment News", "employment news today government jobs India official", "Current Affairs", True),
+    ("Daily Welfare Updates", "welfare scheme update today Telangana Andhra official", "Current Affairs", True),
+    ("Women Current Affairs", "women safety welfare employment news Telangana Andhra", "Current Affairs", False),
+    ("Farmer Current Affairs", "farmer agriculture scheme news Telangana Andhra official", "Current Affairs", False),
     # ---- Private / BPO local hiring ----
     ("BPO Voice Process Jobs", "BPO voice process hiring Hyderabad Vijayawada freshers", "Private Jobs", False),
     ("Retail & Field Jobs", "retail field sales executive hiring Telangana Andhra freshers", "Private Jobs", False),
@@ -293,9 +344,9 @@ def radar_sources(per_run: int = None) -> list:
             log.debug("grid fetch fail (%s): %s", s["name"], exc)
             continue
         for it in items:
-            if not news_radar._edu_relevant(it["title"]):
+            if not news_radar._edu_relevant(it["title"], s["cat"]):
                 continue
-            if news_radar._queue_url(it["link"]):
+            if news_radar._queue_url(it["link"], title=it["title"]):
                 new_items.append({"title": it["title"], "link": it["link"],
                                   "source_name": s["name"],
                                   "category_hint": s["cat"]})
