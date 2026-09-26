@@ -12,6 +12,11 @@ studentup.in {
 	encode gzip zstd
 
 	root * /opt/studentup/preview
+
+	# Versioned/static assets can be cached aggressively; HTML stays fresh so
+	# new jobs/results appear immediately after a deploy.
+	@static_assets path *.css *.js *.webp *.avif *.jpg *.jpeg *.png *.svg *.ico *.woff2
+	header @static_assets Cache-Control "public, max-age=604800"
 	file_server
 
 	header {

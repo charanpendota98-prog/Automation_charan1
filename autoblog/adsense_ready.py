@@ -138,15 +138,14 @@ def _check_content(rows: List[dict]) -> None:
           else "published posts: count teleedu (state.db read fail)"),
          "roju posts publish cheyandi (radar + top-post engine) — 20+ substantive posts tarvata apply cheyandi"
          if db_ok else "python run.py --status (state.db check)")
-    # depth gate config
-    depth_ok = False
-    gate = _read(ROOT / "autoblog" / "post_gate.py")
-    m = re.search(r"words\s*>=\s*(\d+)", gate)
-    if m:
-        depth_ok = int(m.group(1)) >= MIN_WORDS_RECOMMENDED
+    # Depth is a quality floor, not a fixed word-count race. Rank Math's
+    # regular-post recommendation is configurable; forcing 900 words on a
+    # short but complete notice would create filler and hurt people-first value.
+    configured_floor = int(getattr(config, "RM_MIN_WORDS", 600) or 600)
+    depth_ok = configured_floor >= 600
     _row(rows, "CONTENT", "depth_gate", depth_ok,
-         f"writing gate min words: {m.group(1) if m else '?'} (recommended ≥{MIN_WORDS_RECOMMENDED})",
-         "post_gate.py lo word floor penchandi")
+         f"useful-word floor: {configured_floor} (900+ only when the topic supports it)",
+         "RM_MIN_WORDS must be at least 600; never pad a complete notice")
     # originality gate
     orig = _read(ROOT / "autoblog" / "config.py")
     mo = re.search(r"(?:PUBLISH_)?ORIGINALITY_MIN\s*=\s*float\([^)]*?([0-9.]+)['\"]?\s*\)", orig)

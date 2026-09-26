@@ -53,7 +53,7 @@ NICHE_WORDS = (
     "telangana", "andhra", "hyderabad", "vijayawada", "visakhapatnam", "warangal",
 )
 
-# Suggest expansion seeds — mana 17 pillars nunchi (student searches)
+# Suggest expansion seeds — mana 18 pillars nunchi (student searches)
 DEFAULT_SEEDS = (
     "tspsc group 2 notification",
     "ap dsc 2026",

@@ -86,6 +86,24 @@ function studentup_author_box() {
 				<?php if ( ! empty( $soc['whatsapp'] ) ) : ?>
 					<span class="su-a-soc wa"><?php echo studentup_social_icon( 'whatsapp', 14 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> <a href="<?php echo esc_url( $soc['whatsapp'] ); ?>" target="_blank" rel="noopener">WhatsApp</a></span>
 				<?php endif; ?>
+				<?php if ( ! empty( $soc['linkedin'] ) ) : ?>
+					<span class="su-a-soc li"><?php echo studentup_social_icon( 'link', 14 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> <a href="<?php echo esc_url( $soc['linkedin'] ); ?>" target="_blank" rel="noopener">LinkedIn editorial profile</a></span>
+				<?php endif; ?>
+				<?php
+				$su_profiles = array(
+					'facebook'  => 'Facebook page',
+					'x'         => 'X profile',
+					'pinterest' => 'Pinterest',
+					'reddit'    => 'Reddit',
+					'quora'     => 'Quora',
+				);
+				foreach ( $su_profiles as $su_key => $su_label ) :
+					if ( empty( $soc[ $su_key ] ) ) {
+						continue;
+					}
+					?>
+					<span class="su-a-soc <?php echo esc_attr( 'su-a-' . $su_key ); ?>"><a href="<?php echo esc_url( $soc[ $su_key ] ); ?>" target="_blank" rel="noopener"><?php echo esc_html( $su_label ); ?></a></span>
+				<?php endforeach; ?>
 				<?php if ( $email ) : ?>
 					<span>✉️ Report mistakes:
 						<a href="mailto:<?php echo esc_attr( $email ); ?>"><?php echo esc_html( $email ); ?></a></span>
