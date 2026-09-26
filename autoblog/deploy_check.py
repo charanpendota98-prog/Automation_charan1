@@ -106,7 +106,9 @@ def check_imports() -> Dict:
         sys.path.insert(0, str(ROOT))
     mods = ["autoblog.config", "autoblog.main", "autoblog.pipeline",
             "autoblog.approval_bot", "autoblog.guardian", "autoblog.readiness",
-            "autoblog.wordpress_client", "autoblog.quiz_engine"]
+            "autoblog.wordpress_client", "autoblog.quiz_engine",
+            "autoblog.source_monitor", "autoblog.opportunity_monitor",
+            "autoblog.live_validation"]
     bad = []
     for mod in mods:
         try:

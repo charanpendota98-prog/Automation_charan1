@@ -171,6 +171,36 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
         except Exception:
             log.exception("Source freshness monitor failed (regular posting continues)")
 
+    # v125: lifecycle scan for active opportunities. It only probes public URLs
+    # and writes a private review queue; it never changes a post or hides a
+    # deadline automatically. This keeps temporary official-site outages from
+    # becoming destructive edits.
+    opportunity_monitor_key = f"opportunity-monitor:{today.isoformat()}"
+    if (getattr(config, "OPPORTUNITY_MONITOR_ENABLED", True)
+            and now_hour >= getattr(config, "OPPORTUNITY_MONITOR_HOUR", 6)
+            and not state.meta_get(config.STATE_PATH, opportunity_monitor_key)):
+        try:
+            from . import opportunity_monitor as _opportunity_monitor
+
+            lifecycle_result = _opportunity_monitor.scan(notify=True)
+            state.meta_set(
+                config.STATE_PATH,
+                opportunity_monitor_key,
+                json.dumps({
+                    "posts": lifecycle_result.get("posts", 0),
+                    "issues": len(lifecycle_result.get("issues", [])),
+                    "errors": len(lifecycle_result.get("errors", [])),
+                }),
+            )
+            log.info(
+                "OPPORTUNITY MONITOR ✔ posts=%s issues=%s errors=%s",
+                lifecycle_result.get("posts", 0),
+                len(lifecycle_result.get("issues", [])),
+                len(lifecycle_result.get("errors", [])),
+            )
+        except Exception:
+            log.exception("Opportunity lifecycle monitor failed (regular posting continues)")
+
     # --- bulk queue mode: --process-queue N (N URLs ippude process) ---------
     if process_queue:
         done = 0
@@ -1697,6 +1727,8 @@ def main() -> int:
                         help="deployment health check — anni dependencies verify")
     parser.add_argument("--production-audit", action="store_true",
                         help="v30: production safety, consent, ads, plugins, theme, and legal audit")
+    parser.add_argument("--live-validation", nargs="?", const="", default=None, metavar="SITE",
+                        help="read-only live HTTP/REST/auth validation; SITE optional, defaults to WP_SITE")
     parser.add_argument("--service-center", action="store_true",
                         help="v31: preview/publish Student Internet Center services page")
     parser.add_argument("--content-audit", action="store_true",
@@ -1786,6 +1818,8 @@ def main() -> int:
                              "refresh lo dateModified fake bump avutunda?")
     parser.add_argument("--source-monitor", action="store_true",
                         help="read-only: detect changed official sources and alert owner")
+    parser.add_argument("--opportunity-monitor", action="store_true",
+                        help="read-only: probe official/application links and build an expiry review queue")
     parser.add_argument("--verify-keyword", default="",
                         help="v97: oka focus keyword ki LIVE demand verify "
                              "(Google Autocomplete — dummy list kaadu)")
@@ -1969,6 +2003,10 @@ def main() -> int:
         from . import source_monitor as _sm
 
         return _sm.run_cli(notify=True)
+    if getattr(args, "opportunity_monitor", False):
+        from . import opportunity_monitor as _om
+
+        return _om.run_cli(notify=True)
     if args.gsc_refresh:
         from . import gsc_refresh as _gr
 
@@ -1981,6 +2019,10 @@ def main() -> int:
         from . import production_audit
 
         return production_audit.run()
+    if args.live_validation is not None:
+        from . import live_validation
+
+        return live_validation.run_cli(args.live_validation)
     if args.service_center:
         return service_center_setup(dry=args.dry_run, force=args.force)
     if args.content_audit:

@@ -19,6 +19,8 @@
   var MAX = parseInt(D.max, 10) || 60;
   var KEY = D.store || "studentup_saved_v1";
   var RKEY = D.recent || "studentup_recent_v1";
+  var SYNC = D.sync || {};
+  var syncTimer = null;
   var ok = true;                       /* storage usable aa? */
 
   /* ---------- storage (every access guarded) ---------- */
@@ -46,6 +48,58 @@
 
   function saved() { return read(KEY); }
   function recent() { return read(RKEY); }
+
+  /* Optional cross-device sync for a logged-in WordPress reader. Guests keep
+   * the privacy-safe local-only path; no email, fingerprint or ad identity is
+   * sent. The server endpoint validates same-site URLs and caps the list. */
+  function syncToServer() {
+    if (!SYNC.enabled || !SYNC.endpoint || !window.fetch) { return; }
+    clearTimeout(syncTimer);
+    syncTimer = setTimeout(function () {
+      try {
+        window.fetch(SYNC.endpoint, {
+          method: "POST",
+          credentials: "same-origin",
+          headers: {"Content-Type": "application/json", "X-WP-Nonce": SYNC.nonce || ""},
+          body: JSON.stringify({items: saved()})
+        }).catch(function () {});
+      } catch (e) {}
+    }, 250);
+  }
+
+  function mergeRemote(remote) {
+    if (!Array.isArray(remote)) { return; }
+    var local = saved(), merged = [], seen = {}, i, row, id;
+    /* Remote entries first preserve the account's existing list on a new
+     * device; local entries then add this device's unsynced selections. */
+    for (i = 0; i < remote.length; i += 1) {
+      row = remote[i] || {}; id = String(row.id || "");
+      if (!id || seen[id]) { continue; }
+      seen[id] = true; merged.push(row);
+    }
+    for (i = 0; i < local.length; i += 1) {
+      row = local[i] || {}; id = String(row.id || "");
+      if (!id || seen[id]) { continue; }
+      seen[id] = true; merged.push(row);
+    }
+    write(KEY, merged.slice(0, MAX));
+    renderAll();
+    syncToServer();
+  }
+
+  function loadRemote() {
+    if (!SYNC.enabled || !SYNC.endpoint || !window.fetch) { return; }
+    try {
+      window.fetch(SYNC.endpoint, {
+        credentials: "same-origin",
+        headers: {"X-WP-Nonce": SYNC.nonce || ""}
+      }).then(function (response) {
+        return response.ok ? response.json() : null;
+      }).then(function (data) {
+        if (data && Array.isArray(data.items)) { mergeRemote(data.items); }
+      }).catch(function () {});
+    } catch (e) {}
+  }
 
   function isSaved(id) {
     var list = saved(), want = String(id), i;
@@ -111,7 +165,7 @@
 
     var m = document.createElement("span");
     m.className = "su-saved-meta";
-    m.textContent = row.cat || "";
+    m.textContent = (row.cat || "") + (row.date ? " · Deadline " + row.date : "");
 
     a.appendChild(t);
     a.appendChild(m);
@@ -195,6 +249,7 @@
     if (found > -1) {
       list.splice(found, 1);
       write(KEY, list);
+      syncToServer();
       toast(I18N.removed || "Removed");
     } else {
       list.push({
@@ -202,10 +257,12 @@
         title: btn.getAttribute("data-title") || "",
         url: btn.getAttribute("data-url") || "",
         cat: btn.getAttribute("data-cat") || "",
+        date: btn.getAttribute("data-date") || "",
         ts: Date.now()
       });
       while (list.length > MAX) { list.shift(); }   /* FIFO cap — storage bloat ledu */
       write(KEY, list);
+      syncToServer();
       toast(ok ? (I18N.savedmsg || "Saved") : (I18N.nomore || ""));
     }
     renderAll();
@@ -217,6 +274,7 @@
       if (String(list[i].id) !== want) { out.push(list[i]); }
     }
     write(KEY, out);
+    syncToServer();
     renderAll();
   }
 
@@ -278,6 +336,7 @@
         e.preventDefault();
         if (window.confirm(I18N.confirm || "Remove all?")) {
           write(KEY, []);
+          syncToServer();
           renderAll();
           toast(I18N.cleared || "Cleared");
         }
@@ -303,6 +362,7 @@
     if (document.body) { pushRecent(); }
     renderAll();
     wire();
+    loadRemote();
     /* Back/forward cache and another open tab can change the list without a
      * full reload. Repaint the count, buttons and drawer when the reader returns. */
     window.addEventListener("pageshow", renderAll);

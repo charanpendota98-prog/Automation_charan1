@@ -632,6 +632,58 @@ redirects, changes ads or modifies content.
 
 **Proof:** `--test-all` **92/92**.
 
+### v126 — LIVE VALIDATION (NO CLAIMS WITHOUT OBSERVATION)
+
+Before activating a staging/production site, run a read-only check against the
+real public origin:
+
+```bash
+python run.py --live-validation https://staging.example.com
+# or use WP_SITE from .env
+python run.py --live-validation
+```
+
+It checks the homepage, robots, sitemap, `/latest-jobs/`, `llms.txt`, policy
+pages, WordPress REST namespaces, and—when Application Password credentials are
+configured—authenticated REST readback of published opportunity metadata. It
+writes `logs/live-validation.json`. Network failure is reported as **unknown**,
+not as success. It does not activate a theme, install plugins, edit posts, or
+claim Rank Math 100, indexing, ranking, AI recommendation or revenue.
+
+### v125 — OPPORTUNITY LIFECYCLE REVIEW QUEUE
+
+Published job and scholarship notices now have a separate, bounded lifecycle
+scan. It probes the registered official source/application metadata and keeps
+an owner-review queue for:
+
+- HTTP 404/410 and other source failures (temporary 403/429 is not treated as a
+  confirmed dead notice);
+- redirects to a replacement page, HTML/PDF or PDF/HTML type changes;
+- missing validated official application links;
+- verified deadlines that are near or have passed.
+
+It does **not** delete, hide, rewrite or change a WordPress post automatically.
+A temporary outage must never destroy an article or manufacture a new deadline.
+
+```bash
+python run.py --opportunity-monitor
+```
+
+Daily scheduler controls:
+
+```env
+OPPORTUNITY_MONITOR_ENABLED=1
+OPPORTUNITY_MONITOR_HOUR=6
+OPPORTUNITY_MONITOR_MAX_POSTS=180
+OPPORTUNITY_MONITOR_NEAR_DAYS=3
+OPPORTUNITY_MONITOR_STATE=logs/opportunity-monitor.json
+```
+
+The JSON queue is private runtime state and only new findings are sent to the
+owner review chat. Re-running the scan is idempotent and does not spam the same
+open finding. Editorial staff can verify the official notice, update the post
+through the existing evidence gate, or close the queue item manually.
+
 ### v111 — CORRECTION + UPDATE TRANSPARENCY LEDGER
 
 Prathi successful old-post update ki tamper-evident correction record save avutundi:
@@ -2539,6 +2591,8 @@ replace an image-capable model.
 | `SOURCE_PREFLIGHT_REQUIRED` | `1` | Block source-derived drafts when evidence/claim checks fail |
 | `SHORTLINK_ENABLED` / `SHORTLINK_PROVIDER` | `0` / `wordpress` | First-party readable circulation links |
 | `SOURCE_MONITOR_ENABLED` / `SOURCE_MONITOR_HOUR` | `1` / `6` | Daily read-only source-change alert; never auto-edits posts |
+| `OPPORTUNITY_MONITOR_ENABLED` / `OPPORTUNITY_MONITOR_HOUR` | `1` / `6` | Dead-link/PDF/status/expiry review queue; never auto-edits posts |
+| `OPPORTUNITY_MONITOR_NEAR_DAYS` | `3` | Alert window for a verified upcoming deadline |
 
 Marpali te: `.env` edit chesi scheduler ni restart cheyandi: `sudo systemctl restart studentup-autoblog.timer`
 

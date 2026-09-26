@@ -45,9 +45,10 @@ inc/breaking.php     feed (option → transient file → honest empty) + REST pu
 inc/ads.php          AdSense unit + house ads (SPONSORED label, rel=sponsored)
 inc/template.php     cards, breadcrumbs (Rank Math compat), menu fallback
 assets/js/studentup.js  dark mode, mobile panel, chips filter, qualification filter, live search
-assets/js/studentup-saved.js  privacy-safe saved posts and recently read items
-assets/js/studentup-tools.js  local compare drawer, calendar reminder export, print/PDF action
-inc/student-tools.php        no-login student utilities; no private reader data leaves the browser
+assets/js/studentup-saved.js  privacy-safe saved posts, deadlines and recently read items
+assets/js/studentup-tools.js  compare drawer, calendar reminder export, print/PDF action
+inc/student-tools.php        no-login student utilities; optional logged-in saved sync only
+inc/opportunities.php         active board, expiry-safe sections, official links and student actions
 theme.json           block editor colors/Typography (navy/blue/orange)
 ```
 
@@ -68,6 +69,8 @@ theme.json           block editor colors/Typography (navy/blue/orange)
 | యాప్గా ఇన్స్టాల్ (PWA) | `inc/pwa.php` + `assets/js/studentup-pwa.js` | service worker (`?studentup_sw=1`) + install prompt; Android/iPhone rendu |
 | Closing-soon badge | `studentup_last_date` meta → "⏳ closing in N days" | ✅ bot `recruitment.apply_end` nunchi |
 | Active opportunity finder | Browser-only title/category/deadline filters | ✅ no tracking or API request |
+| Saved opportunities | localStorage for guests; same-site REST/user-meta sync for logged-in readers | ✅ opt-in; no email/ad identity collected |
+| Compare + reminders | deadline-aware compare table and downloadable `.ics` calendar event | ✅ unknown dates never create reminders |
 | Source trust/update metadata | `studentup_source_url`, qualification, updated date | ✅ same-source update + visible board context |
 | Breaking section | `inc/breaking.php` | ⚙️ default **OFF** (`StudentUp → కంటెంట్ → breaking_enabled`) |
 

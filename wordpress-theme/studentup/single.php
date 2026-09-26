@@ -62,6 +62,9 @@ get_header();
 				<?php if ( function_exists( 'studentup_tool_buttons' ) ) : ?>
 					<?php echo wp_kses_post( studentup_tool_buttons( 0, 'single' ) ); ?>
 				<?php endif; ?>
+				<?php if ( function_exists( 'studentup_source_verification_notice' ) ) : ?>
+					<?php echo wp_kses_post( studentup_source_verification_notice( get_the_ID() ) ); ?>
+				<?php endif; ?>
 
 				<?php echo function_exists( 'studentup_expired_notice' ) ? wp_kses_post( studentup_expired_notice() ) : ''; ?>
 

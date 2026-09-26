@@ -52,6 +52,24 @@ function studentup_opportunity_days_left( $last_date ) {
 	return (int) floor( ( $end - $today ) / DAY_IN_SECONDS );
 }
 
+function studentup_source_verification_notice( $post_id = 0 ) {
+	$post_id      = $post_id ? (int) $post_id : (int) get_the_ID();
+	$source_url   = trim( (string) get_post_meta( $post_id, 'studentup_source_url', true ) );
+	$checked      = trim( (string) get_post_meta( $post_id, 'studentup_source_checked', true ) );
+	$application  = trim( (string) get_post_meta( $post_id, 'studentup_apply_url', true ) );
+	if ( ! wp_http_validate_url( $source_url ) ) {
+		return '';
+	}
+	$checked_stamp = preg_match( '/^20\d{2}-\d{2}-\d{2}$/', $checked ) ? strtotime( $checked . ' 12:00:00' ) : false;
+	$html = '<div class="su-source-trust" role="note"><strong>Source verification</strong> · ';
+	$html .= $checked_stamp ? esc_html( 'Checked ' . wp_date( 'd M Y', $checked_stamp ) ) : esc_html__( 'Official source registered; check the notice before applying.', 'studentup' );
+	$html .= ' · <a href="' . esc_url( $source_url ) . '" target="_blank" rel="noopener noreferrer">Open official source</a>';
+	if ( wp_http_validate_url( $application ) ) {
+		$html .= ' · <a href="' . esc_url( $application ) . '" target="_blank" rel="noopener noreferrer">Official application</a>';
+	}
+	return $html . '</div>';
+}
+
 function studentup_opportunity_category_slugs( $post_id ) {
 	return array_map( 'sanitize_key', wp_list_pluck( (array) get_the_category( $post_id ), 'slug' ) );
 }
@@ -152,6 +170,14 @@ function studentup_opportunity_board_posts( $limit = 180 ) {
 		if ( ! wp_http_validate_url( $apply_url ) ) {
 			$apply_url = '';
 		}
+		$source_url = trim( (string) get_post_meta( $post->ID, 'studentup_source_url', true ) );
+		if ( ! wp_http_validate_url( $source_url ) ) {
+			$source_url = '';
+		}
+		$source_checked = trim( (string) get_post_meta( $post->ID, 'studentup_source_checked', true ) );
+		if ( ! preg_match( '/^20\d{2}-\d{2}-\d{2}$/', $source_checked ) ) {
+			$source_checked = '';
+		}
 		$out[] = array(
 			'id'         => (int) $post->ID,
 			'title'      => get_the_title( $post->ID ),
@@ -161,6 +187,8 @@ function studentup_opportunity_board_posts( $limit = 180 ) {
 			'section'    => $section,
 			'qualification' => trim( (string) get_post_meta( $post->ID, 'studentup_qual', true ) ),
 			'apply_url'  => $apply_url,
+			'source_url' => $source_url,
+			'source_checked' => $source_checked,
 			'date'       => get_the_date( 'c', $post->ID ),
 			'updated'    => get_the_modified_date( 'c', $post->ID ),
 			'thumbnail'  => get_the_post_thumbnail_url( $post->ID, 'studentup-card' ),
@@ -190,7 +218,7 @@ function studentup_opportunity_render_card( $row ) {
 	$days_value = null === $days ? 'unknown' : (string) $days;
 	$updated    = ! empty( $row['updated'] ) ? strtotime( $row['updated'] ) : false;
 	?>
-	<article class="su-op-card" data-su-op-card data-su-op-title="<?php echo esc_attr( mb_strtolower( wp_strip_all_tags( $row['title'] ) ) ); ?>" data-su-op-section="<?php echo esc_attr( $row['section'] ); ?>" data-su-op-days="<?php echo esc_attr( $days_value ); ?>">
+	<article class="su-op-card" data-su-op-card data-su-op-title="<?php echo esc_attr( mb_strtolower( wp_strip_all_tags( $row['title'] ) ) ); ?>" data-su-op-section="<?php echo esc_attr( $row['section'] ); ?>" data-su-op-qual="<?php echo esc_attr( mb_strtolower( (string) $row['qualification'] ) ); ?>" data-su-op-days="<?php echo esc_attr( $days_value ); ?>">
 		<div class="su-op-card-copy">
 			<h3><a href="<?php echo esc_url( $row['link'] ); ?>"><?php echo esc_html( $row['title'] ); ?></a></h3>
 			<?php if ( ! empty( $row['qualification'] ) ) : ?>
@@ -210,11 +238,20 @@ function studentup_opportunity_render_card( $row ) {
 			<?php if ( $updated ) : ?>
 				<p class="su-op-updated">Updated <?php echo esc_html( wp_date( 'd M Y', $updated ) ); ?></p>
 			<?php endif; ?>
+			<?php if ( ! empty( $row['source_url'] ) ) : ?>
+				<p class="su-op-source">✓ Source checked<?php echo ! empty( $row['source_checked'] ) ? ' ' . esc_html( wp_date( 'd M Y', strtotime( $row['source_checked'] . ' 12:00:00' ) ) ) : ''; ?> · <a href="<?php echo esc_url( $row['source_url'] ); ?>" target="_blank" rel="noopener noreferrer">Official source</a></p>
+			<?php endif; ?>
 		</div>
 		<div class="su-op-actions">
 			<a class="su-op-open" href="<?php echo esc_url( $row['link'] ); ?>" aria-label="Open <?php echo esc_attr( $row['title'] ); ?>">Details&nbsp;→</a>
 			<?php if ( ! empty( $row['apply_url'] ) ) : ?>
 				<a class="su-op-apply" href="<?php echo esc_url( $row['apply_url'] ); ?>" target="_blank" rel="noopener noreferrer" aria-label="Open official application link for <?php echo esc_attr( $row['title'] ); ?>">Official Apply</a>
+			<?php endif; ?>
+			<?php if ( function_exists( 'studentup_save_button' ) ) : ?>
+				<?php echo wp_kses_post( studentup_save_button( $row['id'], 'su-save-opportunity' ) ); ?>
+			<?php endif; ?>
+			<?php if ( function_exists( 'studentup_tool_buttons' ) ) : ?>
+				<?php echo wp_kses_post( studentup_tool_buttons( $row['id'], 'card' ) ); ?>
 			<?php endif; ?>
 		</div>
 	</article>

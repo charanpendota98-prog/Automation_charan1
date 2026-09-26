@@ -145,6 +145,14 @@ SOURCE_MONITOR_ENABLED = _get("SOURCE_MONITOR_ENABLED", "1") not in ("0", "false
 SOURCE_MONITOR_MAX_POSTS = int(_get("SOURCE_MONITOR_MAX_POSTS", "120"))
 SOURCE_MONITOR_HOUR = int(_get("SOURCE_MONITOR_HOUR", "6") or 6)
 SOURCE_MONITOR_STATE = Path(_get("SOURCE_MONITOR_STATE", str(BASE_DIR / "logs" / "source-monitor.json")))
+# Published opportunity lifecycle checks. This is a bounded, read-only review
+# queue: dead links, redirects, PDF/HTML replacements and expiry are never
+# silently written back to WordPress.
+OPPORTUNITY_MONITOR_ENABLED = _get("OPPORTUNITY_MONITOR_ENABLED", "1") not in ("0", "false", "no")
+OPPORTUNITY_MONITOR_MAX_POSTS = int(_get("OPPORTUNITY_MONITOR_MAX_POSTS", "180"))
+OPPORTUNITY_MONITOR_HOUR = int(_get("OPPORTUNITY_MONITOR_HOUR", "6") or 6)
+OPPORTUNITY_MONITOR_NEAR_DAYS = int(_get("OPPORTUNITY_MONITOR_NEAR_DAYS", "3") or 3)
+OPPORTUNITY_MONITOR_STATE = Path(_get("OPPORTUNITY_MONITOR_STATE", str(BASE_DIR / "logs" / "opportunity-monitor.json")))
 # Repetition/filler audit is separate from Rank Math and blocks low-value prose.
 CONTENT_QUALITY_BLOCK = _get("CONTENT_QUALITY_BLOCK", "1") not in ("0", "false", "no")
 # Public posts should read like StudentUp's own editorial work. Provenance,

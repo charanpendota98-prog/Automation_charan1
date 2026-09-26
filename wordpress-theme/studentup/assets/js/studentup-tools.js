@@ -60,9 +60,10 @@
     if (old) old.remove();
     var html = '<div class="su-compare-modal" id="su-compare-modal" role="dialog" aria-modal="true" aria-labelledby="su-compare-title">' +
       '<div class="su-compare-card"><div class="su-compare-head"><h2 id="su-compare-title">Compare selected posts</h2><button type="button" data-su-compare-modal-close aria-label="Close">✕</button></div>' +
-      '<div class="su-compare-table-wrap"><table class="su-compare-table"><thead><tr><th>Post</th><th>Category</th><th>Open</th></tr></thead><tbody>';
+      '<div class="su-compare-table-wrap"><table class="su-compare-table"><thead><tr><th>Post</th><th>Category</th><th>Deadline</th><th>Links</th></tr></thead><tbody>';
     list.forEach(function (row) {
-      html += '<tr><th scope="row">' + esc(row.title) + '</th><td>' + esc(row.cat || "—") + '</td><td><a href="' + esc(row.url) + '">Read post →</a></td></tr>';
+      var apply = row.apply ? ' · <a href="' + esc(row.apply) + '" target="_blank" rel="noopener noreferrer">Official apply</a>' : '';
+      html += '<tr><th scope="row">' + esc(row.title) + '</th><td>' + esc(row.cat || "—") + '</td><td>' + esc(row.date || "Not announced") + '</td><td><a href="' + esc(row.url) + '">Read post →</a>' + apply + '</td></tr>';
     });
     html += '</tbody></table></div><p class="su-compare-note">Compare only the information shown in each article. Confirm dates, fees and eligibility in the official notification.</p></div></div>';
     document.body.insertAdjacentHTML("beforeend", html);
@@ -80,7 +81,7 @@
     if (i !== -1) { list.splice(i, 1); }
     else {
       if (list.length >= max) { window.alert(I.limit || "Compare up to three posts."); return; }
-      list.push({id: id, title: button.getAttribute("data-title") || "Post", url: button.getAttribute("data-url") || "", cat: button.getAttribute("data-cat") || ""});
+      list.push({id: id, title: button.getAttribute("data-title") || "Post", url: button.getAttribute("data-url") || "", cat: button.getAttribute("data-cat") || "", date: button.getAttribute("data-date") || "", apply: button.getAttribute("data-apply") || ""});
     }
     write(); render(); show(list.length > 0);
   }

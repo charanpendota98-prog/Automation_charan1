@@ -71,6 +71,85 @@ function studentup_saved_max() {
  * @param string $class   Extra CSS class (card lo compact variant).
  * @return string HTML (escaped) — empty string if feature OFF.
  */
+function studentup_saved_sync_item( $raw ) {
+	if ( ! is_array( $raw ) ) {
+		return null;
+	}
+	$id    = isset( $raw['id'] ) ? absint( $raw['id'] ) : 0;
+	$url   = isset( $raw['url'] ) ? esc_url_raw( $raw['url'] ) : '';
+	$host  = wp_parse_url( home_url( '/' ), PHP_URL_HOST );
+	$u_host = wp_parse_url( $url, PHP_URL_HOST );
+	$date  = isset( $raw['date'] ) ? sanitize_text_field( (string) $raw['date'] ) : '';
+	if ( ! $id || ! $url || ! $u_host || strtolower( (string) $u_host ) !== strtolower( (string) $host ) ) {
+		return null;
+	}
+	if ( $date && ! preg_match( '/^20\d{2}-\d{2}-\d{2}$/', $date ) ) {
+		$date = '';
+	}
+	return array(
+		'id'    => $id,
+		'title' => substr( sanitize_text_field( (string) ( $raw['title'] ?? '' ) ), 0, 180 ),
+		'url'   => $url,
+		'cat'   => substr( sanitize_text_field( (string) ( $raw['cat'] ?? '' ) ), 0, 80 ),
+		'date'  => $date,
+		'ts'    => isset( $raw['ts'] ) ? absint( $raw['ts'] ) : time(),
+	);
+}
+
+function studentup_saved_sync_user_items( $items ) {
+	$out  = array();
+	$seen = array();
+	foreach ( (array) $items as $raw ) {
+		$item = studentup_saved_sync_item( $raw );
+		if ( ! $item || isset( $seen[ $item['id'] ] ) ) {
+			continue;
+		}
+		$seen[ $item['id'] ] = true;
+		$out[] = $item;
+		if ( count( $out ) >= studentup_saved_max() ) {
+			break;
+		}
+	}
+	return $out;
+}
+
+function studentup_saved_sync_permission() {
+	return is_user_logged_in() ? true : new WP_Error( 'studentup_login_required', 'Sign in to sync saved posts.', array( 'status' => 401 ) );
+}
+
+function studentup_saved_sync_get() {
+	return new WP_REST_Response( array(
+		'ok'    => true,
+		'items' => studentup_saved_sync_user_items( get_user_meta( get_current_user_id(), 'studentup_saved_items', true ) ),
+	), 200 );
+}
+
+function studentup_saved_sync_put( WP_REST_Request $request ) {
+	$items = studentup_saved_sync_user_items( $request->get_param( 'items' ) );
+	update_user_meta( get_current_user_id(), 'studentup_saved_items', $items );
+	return new WP_REST_Response( array( 'ok' => true, 'items' => $items ), 200 );
+}
+
+function studentup_saved_sync_routes() {
+	register_rest_route(
+		'studentup/v1',
+		'/saved',
+		array(
+			array(
+				'methods'             => WP_REST_Server::READABLE,
+				'callback'            => 'studentup_saved_sync_get',
+				'permission_callback' => 'studentup_saved_sync_permission',
+			),
+			array(
+				'methods'             => WP_REST_Server::CREATABLE,
+				'callback'            => 'studentup_saved_sync_put',
+				'permission_callback' => 'studentup_saved_sync_permission',
+			),
+		)
+	);
+}
+add_action( 'rest_api_init', 'studentup_saved_sync_routes' );
+
 function studentup_save_button( $post_id = 0, $class = '' ) {
 	if ( ! studentup_saved_on() ) {
 		return '';
@@ -82,6 +161,7 @@ function studentup_save_button( $post_id = 0, $class = '' ) {
 	$title = wp_strip_all_tags( get_the_title( $post_id ) );
 	$cats  = get_the_category( $post_id );
 	$cat   = $cats ? $cats[0]->name : '';
+	$date  = function_exists( 'studentup_tools_date' ) ? studentup_tools_date( $post_id ) : '';
 
 	$classes = 'su-save-btn';
 	if ( $class ) {
@@ -89,12 +169,13 @@ function studentup_save_button( $post_id = 0, $class = '' ) {
 	}
 
 	return sprintf(
-		'<button type="button" class="%1$s" data-su-save data-id="%2$d" data-title="%3$s" data-url="%4$s" data-cat="%5$s" aria-pressed="false" aria-label="%6$s"><span class="su-save-ico" aria-hidden="true">🔖</span><span class="su-save-txt">%7$s</span></button>',
+		'<button type="button" class="%1$s" data-su-save data-id="%2$d" data-title="%3$s" data-url="%4$s" data-cat="%5$s" data-date="%6$s" aria-pressed="false" aria-label="%7$s"><span class="su-save-ico" aria-hidden="true">🔖</span><span class="su-save-txt">%8$s</span></button>',
 		esc_attr( $classes ),
 		$post_id,
 		esc_attr( $title ),
 		esc_url( get_permalink( $post_id ) ),
 		esc_attr( $cat ),
+		esc_attr( $date ),
 		esc_attr__( 'Save this post for later', 'studentup' ),
 		esc_html__( 'Save', 'studentup' )
 	);
@@ -198,10 +279,15 @@ function studentup_saved_assets() {
 		'studentup-saved',
 		'STUDENTUP_SAVED',
 		array(
-			'store'  => STUDENTUP_SAVED_STORE,
-			'recent' => STUDENTUP_SAVED_RECENT,
-			'max'    => studentup_saved_max(),
-			'i18n'   => array(
+		'store'  => STUDENTUP_SAVED_STORE,
+		'recent' => STUDENTUP_SAVED_RECENT,
+		'max'    => studentup_saved_max(),
+		'sync'   => array(
+			'enabled'  => is_user_logged_in(),
+			'endpoint' => is_user_logged_in() ? esc_url_raw( rest_url( 'studentup/v1/saved' ) ) : '',
+			'nonce'    => is_user_logged_in() ? wp_create_nonce( 'wp_rest' ) : '',
+		),
+		'i18n'   => array(
 				'save'    => __( 'Save', 'studentup' ),
 				'saved'   => __( 'Saved', 'studentup' ),
 				'saveLabel' => __( 'Save this post for later', 'studentup' ),

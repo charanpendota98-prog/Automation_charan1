@@ -43,6 +43,7 @@ $total = count( $rows );
 			<div class="su-op-filter-grid">
 				<label><span>Search title</span><input type="search" data-su-op-search placeholder="Try SSC, software, scholarship…" autocomplete="off" /></label>
 				<label><span>Category</span><select data-su-op-section-filter><option value="">All categories</option><?php foreach ( $sections as $key => $section ) : ?><option value="<?php echo esc_attr( $key ); ?>"><?php echo esc_html( $section['label'] ); ?></option><?php endforeach; ?></select></label>
+				<label><span>Qualification</span><select data-su-op-qualification><option value="">Any qualification</option><option value="10th">10th</option><option value="inter">Inter / 10+2</option><option value="iti">ITI / Diploma</option><option value="degree">Degree</option><option value="pg">PG</option></select></label>
 				<label><span>Deadline</span><select data-su-op-deadline><option value="">Any deadline</option><option value="7">Closing in 7 days</option><option value="30">Closing in 30 days</option><option value="unknown">Date not announced</option></select></label>
 			</div>
 			<p class="su-op-filter-note">Search and filters run in your browser. Open the article and confirm the official notification before applying.</p>
