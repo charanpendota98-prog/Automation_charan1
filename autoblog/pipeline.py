@@ -128,8 +128,8 @@ _RULE_GENERIC = {"job", "jobs", "vacancy", "vacancies", "posts", "notification",
 _CENTRAL_SIGNALS = (
     "ssc", "upsc", "rrb", "railway", "ibps", "sbi po", "sbi clerk",
     "india post", "agniveer", "drdo", "isro", "esic", "epfo", "lic",
-    "air force", "airforce", "army", "navy", "coast guard", "defence",
-    "central government", "central govt", "కేంద్ర ప్రభుత్వం", "కేంద్ర ఉద్యోగ",
+    "air force", "airforce", "army", "army public school", "navy", "coast guard", "defence",
+    "fddi", "central government", "central govt", "కేంద్ర ప్రభుత్వం", "కేంద్ర ఉద్యోగ",
 )
 _TS_SIGNALS = (
     "tspsc", "telangana", "ts police", "tg police", "ts genco", "tstransco",
@@ -189,7 +189,7 @@ def classify_category(title: str, text: str = "") -> str:
     - exam status (calendar, result, hall ticket) and scholarships outrank a
       broad jobs label where that is the reader's real task.
     """
-    blob = re.sub(r"\\s+", " ", f"{title} {title} {text[:900]}".lower()).strip()
+    blob = re.sub(r"\s+", " ", f"{title} {title} {text[:900]}".lower()).strip()
     has_job = _has_any(blob, _JOB_CONTEXT)
     has_software = _has_any(blob, _SOFTWARE_SIGNALS)
     has_central = _has_any(blob, _CENTRAL_SIGNALS)
@@ -218,7 +218,7 @@ def classify_category(title: str, text: str = "") -> str:
     if _has_any(blob, ("outsourcing", "contract basis", "contractual", "outsourced",
                        "guest faculty", "honorarium", "అవుట్‌సోర్సింగ్", "కాంట్రాక్ట్")):
         return "Outsourcing Jobs"
-    if _has_any(blob, ("walk-in", "walk in", "walkin", "direct interview", "వాక్-ఇన్")):
+    if _has_any(blob, ("walk-in", "walk in", "walkin", "direct interview", "job mela", "job fair", "employment fair", "వాక్-ఇన్")):
         return "Walkin Jobs"
     if _has_any(blob, ("part time", "part-time", "work from home", "freelance",
                        "data entry", "online tutor")):
@@ -298,6 +298,45 @@ def classify_category(title: str, text: str = "") -> str:
     return best
 
 
+def classify_source_category(url: str, title: str = "", text: str = "") -> str:
+    """Classify a URL-backed article using domain signals before model labels.
+
+    Official TS/AP/central domains are stronger evidence than a generic word
+    such as ``notification``. Aggregator URLs fall back to the title/body
+    classifier, so a third-party post is never called government merely because
+    its publisher is a jobs blog. This is also used when a Telegram URL is
+    supplied directly by the owner.
+    """
+    parsed = urlparse(str(url or ""))
+    host = (parsed.netloc or "").lower().replace("www.", "")
+    path = (parsed.path or "").lower().replace("-", " ").replace("_", " ")
+    url_blob = f"{host} {path}"
+    body_blob = f"{title} {text[:1800]}".lower()
+    has_job = _has_any(body_blob + " " + url_blob, _JOB_CONTEXT)
+
+    # Specific non-job portals must win before broad government signals.
+    if any(x in url_blob for x in ("scholarships.gov.in", "nsp.gov.in", "telanganaepass",
+                                   "jnanabhumi", "epass.cgg.gov.in")):
+        return "Scholarships"
+    if any(x in url_blob for x in ("tspsc.gov.in", "tgpsc.gov.in", "tgdsc",
+                                   "tslprb", "tgprb", "tsgenco", "tstransco",
+                                   "telangana.gov.in")) and has_job:
+        return "TS Govt Jobs"
+    if any(x in url_blob for x in ("psc.ap.gov.in", "ap.gov.in", "apprb",
+                                   "apcfss", "apsrtc", "aptransco")) and has_job:
+        return "AP Govt Jobs"
+    if any(x in url_blob for x in ("ssc.gov.in", "upsc.gov.in", "rrb", "indianrailways",
+                                   "indiapost.gov.in", "drdo.gov.in", "isro.gov.in",
+                                   "fddiindia.com", "fddi.gov.in", "ncs.gov.in")) and has_job:
+        return "Central Govt Jobs"
+    if _has_any(url_blob, ("job mela", "job fair", "walk in", "walkin")):
+        return "Walkin Jobs"
+    if _has_any(url_blob, ("infor.com", "careers.", "jobs.", "tcs.com", "infosys.com",
+                           "wipro.com", "cognizant.com", "accenture.com")) and has_job:
+        return "Software Jobs" if _has_any(body_blob, _SOFTWARE_SIGNALS) else "Private Jobs"
+    return classify_category(f"{title} {url}", text)
+
+
 def reconcile_category(article: Dict) -> Dict:
     """Repair a model/category mismatch before taxonomy terms are created.
 
@@ -310,7 +349,8 @@ def reconcile_category(article: Dict) -> Dict:
     proposed = str(article.get("category") or "").strip()
     probe = " ".join(str(article.get(k) or "") for k in
                      ("title", "focus_keyword", "source_title"))
-    inferred = classify_category(probe)
+    inferred = classify_source_category(str(article.get("source_url") or ""), probe,
+                                        str(article.get("content_html") or ""))
     if not proposed:
         article["category"] = inferred
         return article
@@ -877,6 +917,15 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
         log.debug("publish_article skip: %s", exc)
 
     # --- featured image (alt text lo focus keyword) ---
+    # Keep a private prompt manifest for an optional image-capable model. The
+    # current deterministic Pillow renderer remains the safe default; an AI
+    # model may create the visual background, but exact verified text/facts are
+    # always rendered after generation and never trusted from the image model.
+    try:
+        from .thumbnail_prompt import build_prompt as _thumbnail_prompt
+        article["_thumbnail_prompt"] = _thumbnail_prompt(article)
+    except Exception:
+        log.debug("thumbnail prompt manifest unavailable", exc_info=True)
     image_path = Path(config.OUTPUT_DIR / "images" / f"{article['slug']}.webp")
     media_id = None
     if config.IMAGE_ENABLED:
@@ -1355,7 +1404,7 @@ def create_from_source(url: str, mock: bool = False, category: str = "",
                 "<h2>Process</h2><ol><li>Step one</li><li>Step two</li></ol>"
                 "<h2>FAQ</h2><h3>Question?</h3><p>Answer</p>"
             ),
-            "category": category or classify_category(src.title, src.text),
+            "category": category or classify_source_category(url, src.title, src.text),
             "model": "mock",
             "focus_keyword": f"test guide {generation_year}",
             "seo_title": f"Test Guide {generation_year} – Complete Details",
@@ -1385,8 +1434,8 @@ def create_from_source(url: str, mock: bool = False, category: str = "",
             # Never trust the model's broad fallback (often Central Govt Jobs
             # for a software notification). Reclassify from the source title +
             # generated title with the canonical intent rules.
-            article["category"] = classify_category(
-                f"{src.title} {article.get('title', '')}", src.text)
+            article["category"] = classify_source_category(
+                url, f"{src.title} {article.get('title', '')}", src.text)
         # --- originality guard: 70% kante takkuva aite OKKO regenerate ---
         source_texts = [src.text] + [e.text for e in extras]
         if notebooklm_brief:
@@ -1506,6 +1555,10 @@ def create_from_source(url: str, mock: bool = False, category: str = "",
             "NotebookLM and rerun with --notebooklm-brief <cited-brief.md>")
 
     # --- QA data (notification + trust box kosam) ---
+    # Preserve the exact owner-supplied URL for source-aware classification and
+    # private provenance; it is never rendered as a raw source dump.
+    article.setdefault("source_url", url)
+    article.setdefault("source_title", src.title)
     article["_source_texts"] = [src.text] + [e.text for e in extras]
     article["_deep_sources"] = [src] + extras  # v44: full objects (tiering)
     article["_target_year"] = target_year
@@ -1883,7 +1936,7 @@ def create_listicle(topic: str = "", mock: bool = False) -> Dict:
                                              state.today_count(config.STATE_PATH, date.today()))
     else:
         if not config.GEMINI_API_KEY:
-            raise ValueError("GEMINI_API_KEY ledu — listicle generate avvaledu")
+            raise ValueError("AI provider key ledu — listicle generate avvaledu")
         recent = state.recent_titles(config.STATE_PATH, limit=30)
         article = gemini_client.generate_listicle(idea, recent, date.today().year)
 
@@ -1943,7 +1996,7 @@ def create_quiz(topic: str = "", level: int = 0, questions: int = 0,
         quiz = quiz_engine.mock_quiz(topic_en, topic_te, lvl, n, now_day)
     else:
         if not (config.GEMINI_API_KEY or getattr(config, "GEMINI_API_KEYS", [])):
-            raise ValueError("GEMINI_API_KEY ledu — quiz generate avvaledu")
+            raise ValueError("AI provider key ledu — quiz generate avvaledu")
         recent = state.recent_titles(config.STATE_PATH, limit=20)
         quiz = gemini_client.generate_quiz(topic_en, topic_te, lvl, n,
                                            now_day.year)

@@ -7,6 +7,7 @@ variables too.
 
 import os
 from pathlib import Path
+from typing import List
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -52,6 +53,20 @@ TELEGRAM_CHAT_ID = _get("TELEGRAM_CHAT_ID", "")  # empty = /start tho auto-regis
 # example -1001234... ; channel lo bot admin ga add cheyandi)
 TELEGRAM_CHANNEL_CHAT_ID = _get("TELEGRAM_CHANNEL_CHAT_ID", "")
 TELEGRAM_API_BASE = _get("TELEGRAM_API_BASE", "https://api.telegram.org")
+# Daily forward-ready list: owner chat only, never auto-published to the
+# public channel. The live WordPress board itself updates on every request.
+OPPORTUNITY_DIGEST_ENABLED = _get("OPPORTUNITY_DIGEST_ENABLED", "1") not in ("0", "false", "no")
+OPPORTUNITY_DIGEST_HOUR = int(_get("OPPORTUNITY_DIGEST_HOUR", "8") or 8)
+OPPORTUNITY_DIGEST_PER_SECTION = int(_get("OPPORTUNITY_DIGEST_PER_SECTION", "6") or 6)
+# Optional Bitly/Short.io/is.gd adapter for owner-forwarded StudentUp links.
+# Disabled by default until the owner configures a provider. Failure always
+# falls back to a native StudentUp link; no dead short link is ever sent.
+SHORTLINK_ENABLED = _get("SHORTLINK_ENABLED", "0") not in ("0", "false", "no")
+SHORTLINK_PROVIDER = _get("SHORTLINK_PROVIDER", "wordpress").strip().lower()
+SHORTLINK_API_TOKEN = _get("SHORTLINK_API_TOKEN", "").strip()
+SHORTLINK_DOMAIN = _get("SHORTLINK_DOMAIN", "").strip()
+SHORTLINK_TIMEOUT = int(_get("SHORTLINK_TIMEOUT", "12") or 12)
+SHORTLINK_CACHE = Path(_get("SHORTLINK_CACHE", str(BASE_DIR / "logs" / "shortlinks.json")))
 # IndexNow instant indexing (Bing/Yandex) — key file site root lo host cheyandi
 INDEXNOW_KEY = _get("INDEXNOW_KEY", "")
 # Upload ayyaka local featured image file ni delete (disk full avvakunda)
@@ -181,27 +196,128 @@ KEYWORD_DAILY_QUEUE = int(_get("KEYWORD_DAILY_QUEUE", "4"))
 # custom autocomplete seeds (comma); empty = top exams auto
 KEYWORD_SUGGEST_SEEDS = _get("KEYWORD_SUGGEST_SEEDS", "")
 
-# --- Gemini AI -----------------------------------------------------------
-GEMINI_API_BASE = _get("GEMINI_API_BASE",
-                       "https://generativelanguage.googleapis.com/v1beta")
+# --- AI providers --------------------------------------------------------
+# Gemini remains the default, but article/quiz generation can fail over to
+# OpenAI-compatible APIs.  Keep keys in .env or the server secret store only;
+# never commit them or paste them into Telegram.
+AI_PROVIDER = _get("AI_PROVIDER", "gemini").strip().lower()
+AI_FALLBACK_PROVIDERS = [
+    p.strip().lower()
+    for p in _get(
+        "AI_FALLBACK_PROVIDERS",
+        "groq,openrouter,cerebras,together,mistral,openai,custom",
+    ).split(",")
+    if p.strip()
+]
+AI_MAX_OUTPUT_TOKENS = int(_get("AI_MAX_OUTPUT_TOKENS", "8192"))
+
+# Gemini (native Google generateContent API)
+GEMINI_API_BASE = _get(
+    "GEMINI_API_BASE", "https://generativelanguage.googleapis.com/v1beta"
+)
 GEMINI_API_KEY = _get("GEMINI_API_KEY", "")
 GEMINI_MODEL = _get("GEMINI_MODEL", "gemini-2.5-flash")
 GEMINI_FALLBACK_MODELS = [
     m.strip()
-    for m in _get("GEMINI_FALLBACK_MODELS", "gemini-2.0-flash,gemini-1.5-flash").split(",")
+    for m in _get(
+        "GEMINI_FALLBACK_MODELS", "gemini-2.0-flash,gemini-1.5-flash"
+    ).split(",")
     if m.strip()
 ]
 GEMINI_MAX_RETRIES = int(_get("GEMINI_MAX_RETRIES", "3"))
 # v17.1: Telugu JSON 8192 tokens lo truncate avveti — big cap + env tunable
 GEMINI_MAX_OUTPUT_TOKENS = int(_get("GEMINI_MAX_OUTPUT_TOKENS", "32768"))
 # v18: Multiple Gemini keys — 429 quota rotation (comma-separated okka line)
-GEMINI_API_KEYS = [k.strip() for k in _get("GEMINI_API_KEYS", "").split(",")
-                   if k.strip()]
+GEMINI_API_KEYS = [
+    k.strip() for k in _get("GEMINI_API_KEYS", "").split(",") if k.strip()
+]
+
+# OpenAI-compatible providers. Models are deliberately environment-overridable
+# because free-tier model names and availability change frequently.
+GROQ_API_BASE = _get("GROQ_API_BASE", "https://api.groq.com/openai/v1").rstrip("/")
+GROQ_API_KEY = _get("GROQ_API_KEY", "")
+GROQ_API_KEYS = [k.strip() for k in _get("GROQ_API_KEYS", "").split(",") if k.strip()]
+GROQ_MODEL = _get("GROQ_MODEL", "llama-3.3-70b-versatile")
+GROQ_FALLBACK_MODELS = [m.strip() for m in _get("GROQ_FALLBACK_MODELS", "").split(",") if m.strip()]
+
+OPENROUTER_API_BASE = _get("OPENROUTER_API_BASE", "https://openrouter.ai/api/v1").rstrip("/")
+OPENROUTER_API_KEY = _get("OPENROUTER_API_KEY", "")
+OPENROUTER_API_KEYS = [k.strip() for k in _get("OPENROUTER_API_KEYS", "").split(",") if k.strip()]
+OPENROUTER_MODEL = _get("OPENROUTER_MODEL", "openrouter/free")
+OPENROUTER_FALLBACK_MODELS = [m.strip() for m in _get("OPENROUTER_FALLBACK_MODELS", "").split(",") if m.strip()]
+
+CEREBRAS_API_BASE = _get("CEREBRAS_API_BASE", "https://api.cerebras.ai/v1").rstrip("/")
+CEREBRAS_API_KEY = _get("CEREBRAS_API_KEY", "")
+CEREBRAS_API_KEYS = [k.strip() for k in _get("CEREBRAS_API_KEYS", "").split(",") if k.strip()]
+CEREBRAS_MODEL = _get("CEREBRAS_MODEL", "llama-3.3-70b")
+CEREBRAS_FALLBACK_MODELS = [m.strip() for m in _get("CEREBRAS_FALLBACK_MODELS", "").split(",") if m.strip()]
+
+TOGETHER_API_BASE = _get("TOGETHER_API_BASE", "https://api.together.xyz/v1").rstrip("/")
+TOGETHER_API_KEY = _get("TOGETHER_API_KEY", "")
+TOGETHER_API_KEYS = [k.strip() for k in _get("TOGETHER_API_KEYS", "").split(",") if k.strip()]
+TOGETHER_MODEL = _get("TOGETHER_MODEL", "meta-llama/Llama-3.3-70B-Instruct-Turbo")
+TOGETHER_FALLBACK_MODELS = [m.strip() for m in _get("TOGETHER_FALLBACK_MODELS", "").split(",") if m.strip()]
+
+MISTRAL_API_BASE = _get("MISTRAL_API_BASE", "https://api.mistral.ai/v1").rstrip("/")
+MISTRAL_API_KEY = _get("MISTRAL_API_KEY", "")
+MISTRAL_API_KEYS = [k.strip() for k in _get("MISTRAL_API_KEYS", "").split(",") if k.strip()]
+MISTRAL_MODEL = _get("MISTRAL_MODEL", "mistral-small-latest")
+MISTRAL_FALLBACK_MODELS = [m.strip() for m in _get("MISTRAL_FALLBACK_MODELS", "").split(",") if m.strip()]
+
+# Generic custom OpenAI-compatible endpoint: useful for any other provider
+# without another code change (e.g. a self-hosted gateway).
+OPENAI_API_BASE = _get("OPENAI_API_BASE", "https://api.openai.com/v1").rstrip("/")
+OPENAI_API_KEY = _get("OPENAI_API_KEY", "")
+OPENAI_API_KEYS = [k.strip() for k in _get("OPENAI_API_KEYS", "").split(",") if k.strip()]
+OPENAI_MODEL = _get("OPENAI_MODEL", "gpt-4o-mini")
+OPENAI_FALLBACK_MODELS = [m.strip() for m in _get("OPENAI_FALLBACK_MODELS", "").split(",") if m.strip()]
+
+CUSTOM_API_BASE = _get("CUSTOM_API_BASE", "").rstrip("/")
+CUSTOM_API_KEY = _get("CUSTOM_API_KEY", "")
+CUSTOM_API_KEYS = [k.strip() for k in _get("CUSTOM_API_KEYS", "").split(",") if k.strip()]
+CUSTOM_MODEL = _get("CUSTOM_MODEL", "")
+CUSTOM_FALLBACK_MODELS = [m.strip() for m in _get("CUSTOM_FALLBACK_MODELS", "").split(",") if m.strip()]
+
+
+_PROVIDER_NAMES = ("gemini", "groq", "openrouter", "cerebras", "together", "mistral", "openai", "custom")
+
+
+def ai_provider_keys(provider: str) -> List[str]:
+    """Return the primary key plus optional rotated keys for a provider."""
+    name = (provider or "").strip().lower()
+    prefix = name.upper()
+    primary = globals().get(f"{prefix}_API_KEY", "")
+    extras = globals().get(f"{prefix}_API_KEYS", []) or []
+    keys = list(extras)
+    if primary and primary not in keys:
+        keys.insert(0, primary)
+    placeholders = {
+        "your_gemini_api_key", "key2_here", "key3_here", "key4_here",
+        "your_api_key", "your_provider_key",
+    }
+    return [
+        str(k).strip()
+        for k in keys
+        if str(k).strip() and str(k).strip().lower() not in placeholders
+    ]
+
+
+def ai_provider_configured(provider: str) -> bool:
+    return bool(ai_provider_keys(provider))
+
+
+def configured_ai_providers() -> List[str]:
+    return [p for p in _PROVIDER_NAMES if ai_provider_configured(p)]
+
+
+def ai_configured() -> bool:
+    """Whether at least one configured provider can serve draft generation."""
+    return bool(configured_ai_providers())
 
 
 def gemini_configured() -> bool:
-    """Whether at least one configured model key can serve draft generation."""
-    return bool(GEMINI_API_KEY or GEMINI_API_KEYS)
+    """Backward-compatible name used by older code; now means any AI provider."""
+    return ai_configured()
 
 
 GEMINI_RPD_PER_KEY = int(_get("GEMINI_RPD_PER_KEY", "1400"))

@@ -283,6 +283,35 @@ def daily_digest(count: int, last_posts: list) -> None:
         send_whatsapp(plain)
 
 
+def send_opportunity_digest() -> bool:
+    """Send the owner a compact, forward-ready active-opportunities list.
+
+    It targets the review chat, not the public channel. The owner can forward
+    it when useful; published article channel cards remain handled separately
+    by ``channel_post`` after approval.
+    """
+    if not config.TELEGRAM_BOT_TOKEN:
+        return False
+    try:
+        from .opportunity_digest import render_digest_messages
+        from .wordpress_client import WordPressClient
+
+        wp = WordPressClient()
+        rows = wp.published_opportunities()
+        messages = render_digest_messages(
+            config.WP_SITE, rows,
+            per_section=getattr(config, "OPPORTUNITY_DIGEST_PER_SECTION", 6),
+        )
+        if not messages:
+            log.info("Opportunity digest skipped — no active classified posts")
+            return False
+        results = [send_telegram(message) for message in messages]
+        return all(results)
+    except Exception:
+        log.exception("Opportunity digest failed")
+        return False
+
+
 def notify_updated_post(article: dict, result: dict) -> None:
     """Post update notification (content refresh)."""
     if not (config.TELEGRAM_BOT_TOKEN or config.WHATSAPP_CALLMEBOT_URL):

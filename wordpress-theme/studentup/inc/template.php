@@ -201,7 +201,9 @@ function studentup_menu_fallback() {
 	/**
 	 * "More" — page links unte mattrame (404 eppudu ledu).
 	 */
-	$more = array();
+	$more = array(
+		array( 'label' => 'Latest active jobs', 'url' => studentup_opportunity_board_url(), 'desc' => 'Dates unna active notices only' ),
+	);
 	$pages = array(
 		array( 'slug' => 'saved',   'label' => 'Saved posts', 'desc' => 'Padhukoni tarvata chudandi' ),
 		array( 'slug' => 'contact', 'label' => 'Contact',     'desc' => 'Corrections · suggestions' ),

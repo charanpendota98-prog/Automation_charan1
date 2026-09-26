@@ -129,6 +129,19 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
     except Exception as exc:  # noqa: BLE001 — best-effort (silent kaadu)
         log.debug("run skip: %s", exc)
 
+    # v121: once per IST day, send the owner a forward-ready active list. The
+    # public /latest-jobs/ board is live and independently hides expired items.
+    digest_key = f"opportunity-digest:{today.isoformat()}"
+    if (getattr(config, "OPPORTUNITY_DIGEST_ENABLED", True)
+            and now_hour >= getattr(config, "OPPORTUNITY_DIGEST_HOUR", 8)
+            and not state.meta_get(config.STATE_PATH, digest_key)):
+        try:
+            if notifier.send_opportunity_digest():
+                state.meta_set(config.STATE_PATH, digest_key, "1")
+                log.info("OPPORTUNITY DIGEST ✔ active list sent to owner chat")
+        except Exception:
+            log.exception("Opportunity digest failed (regular posting continues)")
+
     # --- bulk queue mode: --process-queue N (N URLs ippude process) ---------
     if process_queue:
         done = 0
@@ -191,7 +204,7 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
     # --- explicit source URL mode (--url / Telegram) -----------------------
     if source_url:
         if not mock and not config.gemini_configured():
-            log.error("GEMINI_API_KEY set kavali! .env file lo key pettandi.")
+            log.error("AI provider key set kavali! .env lo Gemini/Groq/other provider key pettandi.")
             return 2
         brief = ""
         if notebooklm_brief_file:
@@ -352,7 +365,7 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
                 and not state.meta_get(config.STATE_PATH,
                                        f"quizdate:{today.isoformat()}")):
             if not mock and not config.gemini_configured():
-                log.warning("QUIZ skip — GEMINI_API_KEY ledu")
+                log.warning("QUIZ skip — AI provider key ledu")
             else:
                 try:
                     result = pipeline.create_quiz(mock=mock)
@@ -402,7 +415,7 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
             log.info("Listicle slot (%d/%d today) — trending story mode",
                      lcount + 1, config.LISTICLES_PER_DAY)
             if not mock and not config.gemini_configured():
-                log.error("GEMINI_API_KEY ledu — listicle skip")
+                log.error("AI provider key ledu — listicle skip")
             else:
                 try:
                     result = pipeline.create_listicle(mock=mock)
@@ -421,7 +434,7 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
             # Keep the URL in sources_queue.txt. A missing model key is an
             # environment/setup issue, not a failed opportunity; deleting it
             # here made the bot appear to do nothing and lost review work.
-            log.error("GEMINI_API_KEY ledu — URL pending ga preserve chesanu")
+            log.error("AI provider key ledu — URL pending ga preserve chesanu")
             state.mark_source_retry(config.STATE_PATH, queued)
             state.record_radar_event(
                 config.STATE_PATH, "draft_deferred", queued,
@@ -463,7 +476,7 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
     log.info("Category selected: %s%s", cat, " (forced)" if category else "")
 
     if not mock and not config.gemini_configured():
-        log.error("GEMINI_API_KEY set kavali! .env file lo key pettandi.")
+        log.error("AI provider key set kavali! .env lo Gemini/Groq/other provider key pettandi.")
         return 2
 
     # --- Google Trends trending topic (roju 1 post trend meeda) ---
@@ -740,18 +753,35 @@ def doctor() -> int:
     print("  DOCTOR — Deployment Health Check")
     print("=" * 62)
 
-    # 1) Gemini key + live validation
+    # 1) AI provider key + live validation
     def _gemini():
-        key = config.GEMINI_API_KEY or (config.GEMINI_API_KEYS[0]
-                                        if config.GEMINI_API_KEYS else "")
-        if not key:
-            raise RuntimeError("GEMINI_API_KEY ledu (.env)")
-        r = _rq.get(f"{config.GEMINI_API_BASE}/models",
-                    params={"key": key}, timeout=15)
-        if r.status_code != 200:
-            raise RuntimeError(f"API {r.status_code} — key invalid?")
-        n = len(r.json().get("models", []))
-        return f"key valid, {n} models (model={config.GEMINI_MODEL})"
+        providers = gemini_client._provider_order()
+        if not providers:
+            raise RuntimeError("AI provider key ledu (.env)")
+        provider = providers[0]
+        key = config.ai_provider_keys(provider)[0]
+        if provider == "gemini":
+            r = _rq.get(
+                f"{config.GEMINI_API_BASE}/models",
+                params={"key": key},
+                timeout=15,
+            )
+            if r.status_code != 200:
+                raise RuntimeError(f"Gemini API {r.status_code} — key invalid?")
+            n = len(r.json().get("models", []))
+            return f"Gemini key valid, {n} models (model={config.GEMINI_MODEL})"
+        base = str(getattr(config, f"{provider.upper()}_API_BASE", "")).rstrip("/")
+        r = _rq.get(
+            f"{base}/models",
+            headers={"Authorization": f"Bearer {key}"},
+            timeout=15,
+        )
+        if r.status_code not in (200, 404, 405):
+            raise RuntimeError(f"{provider} API {r.status_code} — key invalid?")
+        # Some compatible gateways do not expose GET /models; generation will
+        # still validate the configured model via the normal fallback path.
+        model = getattr(config, f"{provider.upper()}_MODEL", "")
+        return f"{provider} key configured (model={model})"
     check("Gemini API", _gemini)
 
     # 2) WordPress REST + auth
@@ -1075,7 +1105,7 @@ def radar_run(process_posts: bool = True) -> int:
         print("  (posts processing skip — --dry-run mode)")
         return 0
     if not config.gemini_configured():
-        print("  GEMINI_API_KEY ledu — queue fill ayyindi, posts skip")
+        print("  AI provider key ledu — queue fill ayyindi, posts skip")
         return 0
 
     n = min(config.RADAR_POSTS_PER_DAY, d + g + w + kw_queued)

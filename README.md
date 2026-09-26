@@ -43,7 +43,7 @@
 ## 🎯 v18–v19: Honest RankMath Gate + Multi-Key + Google Playbook Adoption
 - **v18 — Rank Math STRICT gate:** real panel checks (capped /100 — no inflation),
   auto-refine round when < 90, TOC/list truncation, mobile clamp CSS, crop-safe
-  thumbnails, multi-key Gemini rotation (429-proof: `GEMINI_API_KEYS=k2,k3` +
+  thumbnails, multi-provider/key rotation (429-proof: `AI_FALLBACK_PROVIDERS=groq,openrouter` +
   per-key RPD cap + dead-key day cooldown), near-copy HARD FLOOR (skip < 72%).
 - **v19 — top-site playbook adoption:**
   - **Google Jobs:** `JobPosting` JSON-LD auto-emitted on notification posts —
@@ -2037,11 +2037,20 @@ python tests/v41_site_audit_test.py    # 15 sections: checks → fixers → gate
 
 ## Setup Guide (Telugu)
 
-### Step 1: Gemini API key (FREE) teyali
+### Step 1: AI provider API key (FREE tier option)
+
+Gemini is the default and is the simplest path:
 
 1. `https://aistudio.google.com` open cheyandi (Google account tho login)
 2. **"Get API key"** → **"Create API key"** click cheyandi
 3. Key copy chesi save cheyandi (`AIza...` tho start avtundi)
+4. `.env` lo `GEMINI_API_KEY=...` pettandi.
+
+Gemini quota alternative ga Groq/OpenRouter/Cerebras/Together/Mistral key
+pettavachu. `.env.example` lo corresponding `*_API_KEY`, `*_MODEL` and
+`AI_FALLBACK_PROVIDERS` examples unnayi. Provider free-tier limits and model
+names change avvachu; current dashboard lo verify chesi exact model override
+cheyandi. Keys ni Git/Telegram lo paste cheyakandi.
 
 ### Step 2: WordPress Application Password create cheyali
 
@@ -2479,12 +2488,45 @@ tail -f log/autoblog.log
 
 ## Configuration (`.env`)
 
+### AI provider fallback
+
+The content and quiz client defaults to Gemini, but it now supports a provider
+chain. `AI_PROVIDER` is tried first; then `AI_FALLBACK_PROVIDERS` and any other
+provider with a configured key are tried. A 429/quota or invalid-key response
+rotates to the next key/provider, while model-not-found responses move to the
+next configured model. Every provider still returns through the same JSON
+parser and the existing source/evidence gates; changing providers does not
+permit unsupported dates, fees, vacancies, salaries or URLs.
+
+```dotenv
+AI_PROVIDER=gemini
+AI_FALLBACK_PROVIDERS=groq,openrouter,cerebras,together,mistral,openai,custom
+GEMINI_API_KEY=...
+GROQ_API_KEY=...
+GROQ_MODEL=llama-3.3-70b-versatile
+OPENROUTER_API_KEY=...
+OPENROUTER_MODEL=openrouter/free
+```
+
+Supported adapters are Gemini native plus Groq, OpenRouter, Cerebras, Together,
+Mistral, OpenAI, and any custom OpenAI-compatible endpoint. Provider free tiers,
+model names, rate limits and eligibility can change, so use the provider's
+current dashboard and override `*_MODEL` when needed. Do not paste keys into
+Git, Telegram, WordPress, screenshots or article content. Free keys are an
+availability fallback, not a guarantee of daily output. Thumbnail generation
+still uses the local deterministic Pillow renderer; text-only providers do not
+replace an image-capable model.
+
 | Variable | Default | Description |
 |---|---|---|
 | `WP_SITE` | `https://studentup.in` | Site URL |
 | `WP_USERNAME` | — | WordPress admin username |
 | `WP_APP_PASSWORD` | — | Application Password (Step 2) |
-| `GEMINI_API_KEY` | — | Gemini API key (Step 1) |
+| `AI_PROVIDER` / `AI_FALLBACK_PROVIDERS` | `gemini` / provider list | Primary and fallback AI adapters |
+| `GEMINI_API_KEY` / `GEMINI_API_KEYS` | — | Gemini key(s), comma-separated rotation |
+| `GROQ_API_KEY` / `OPENROUTER_API_KEY` | — | Optional compatible-provider alternatives |
+| `CEREBRAS_API_KEY`, `TOGETHER_API_KEY`, `MISTRAL_API_KEY` | — | Optional compatible-provider alternatives |
+| `*_MODEL` / `*_API_BASE` | provider defaults | Override changing model names or custom gateways |
 | `DEFAULT_POST_STATUS` | `draft` | `draft` = Telegram review flow · `publish` = direct live |
 | `TELEGRAM_BOT_TOKEN` | — | @BotFather token — buttons tho review messages |
 | `TELEGRAM_CHAT_ID` | auto | `/start` cheythe bot automatic ga register avtundi |

@@ -261,14 +261,14 @@ def check_env_readiness() -> tuple:
     """Warn-only: mee .env lo em set cheyyali (deploy gate)."""
     have = []
     miss = []
-    for flag, label in ((config.GEMINI_API_KEY or getattr(config, "GEMINI_API_KEYS", []), "Gemini"),
+    for flag, label in ((config.ai_configured(), "Gemini/AI provider"),
                         (config.WP_APP_PASSWORD, "WP creds"),
                         (config.TELEGRAM_BOT_TOKEN, "Telegram")):
         (have if flag else miss).append(label)
     if miss:
         return False, "set avvaledu: " + ", ".join(miss) + f" (set: {', '.join(have) or '—'})", \
             ".env lo owner creds pettandi (GO_LIVE_CHECKLIST.md PART A)"
-    return True, "Gemini · WP · Telegram anni set", ""
+    return True, "Gemini/AI provider · WP · Telegram anni set", ""
 
 
 # (id, fn, warn_only) — warn_only = mee pani (owner creds), system break kaadu

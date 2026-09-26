@@ -1,8 +1,9 @@
-"""Gemini API client — generates Telugu blog articles via REST (no SDK).
+"""StudentUp AI client — generates Telugu content through REST APIs.
 
-Uses the generateContent REST endpoint with a strict JSON response schema.
-Automatically falls back to older model names if the primary one 404s,
-and retries with backoff on rate limits.
+Gemini uses Google's native generateContent endpoint. Groq, OpenRouter,
+Cerebras, Together, Mistral, OpenAI, and custom gateways use the common
+OpenAI-compatible chat-completions contract. All providers go through the
+same JSON parser, retry/key rotation, and downstream evidence gates.
 """
 
 import json
@@ -513,7 +514,7 @@ Return ONLY valid JSON."""
 def generate_listicle(topic: str, recent_titles: List[str], year: int) -> Dict:
     """Trending listicle article (Top 10 jobs lanti stories)."""
     if not config.gemini_configured():
-        raise GeminiError("GEMINI_API_KEY not set")
+        raise GeminiError("No AI provider key configured")
     avoid_block = ""
     if recent_titles:
         sample = "\n".join(f"- {t}" for t in recent_titles[:30])
@@ -568,7 +569,7 @@ def generate_top_post(blueprint: Dict, year: int = 0) -> Dict:
     structure/on-page plan matrame blueprint nunchi vastundi.
     """
     if not config.gemini_configured():
-        raise GeminiError("GEMINI_API_KEY not set")
+        raise GeminiError("No AI provider key configured")
     from . import top_post as _tp
 
     prompt = TOP_POST_PROMPT_TEMPLATE.format(blueprint=_tp.gemini_brief(blueprint))
@@ -620,7 +621,7 @@ def generate_quiz(topic: str, topic_te: str, level: int, n: int,
     """Bilingual exam-grade MCQ set. Returns normalized quiz dict.
     Raises GeminiError after retries (validation feedback appended)."""
     if not config.gemini_configured():
-        raise GeminiError("GEMINI_API_KEY not set")
+        raise GeminiError("No AI provider key configured")
     prompt = QUIZ_PROMPT_TEMPLATE.format(
         topic=topic, topic_te=topic_te, level=level, n=n, year=year,
         level_name=QUIZ_LEVEL_NAMES.get(level, "Mixed"),
@@ -628,35 +629,38 @@ def generate_quiz(topic: str, topic_te: str, level: int, n: int,
     )
     last_err: Optional[Exception] = None
     for attempt in range(1, config.GEMINI_MAX_RETRIES + 1):
-        for model in _models():
-            for key in _usable_keys():
-                try:
-                    raw = _call_model(model, prompt, key)
-                    quiz = _parse_json(raw)
-                    problems = validate_quiz_shape(quiz, n)
-                    if problems:
-                        raise GeminiError("VALIDATION: " + "; ".join(problems[:4]))
-                    _bump_key(key)
-                    quiz = normalize_quiz_shape(quiz, n)
-                    quiz["model"] = model
-                    return quiz
-                except GeminiError as exc:
-                    msg = str(exc)
-                    if msg.startswith("MODEL_NOT_FOUND"):
-                        break
-                    if msg.startswith(("QUOTA_KEY", "BAD_KEY")):
-                        _mark_key_dead(key, msg.split(":")[0])
+        for provider in _provider_order():
+            for model in _provider_models(provider):
+                model_ref = _model_ref(provider, model)
+                for key in _provider_keys(provider):
+                    try:
+                        raw = _call_model(model_ref, prompt, key)
+                        quiz = _parse_json(raw)
+                        problems = validate_quiz_shape(quiz, n)
+                        if problems:
+                            raise GeminiError("VALIDATION: " + "; ".join(problems[:4]))
+                        _bump_provider_key(provider, key)
+                        quiz = normalize_quiz_shape(quiz, n)
+                        quiz["model"] = model
+                        quiz["provider"] = provider
+                        return quiz
+                    except GeminiError as exc:
+                        msg = str(exc)
+                        if msg.startswith("MODEL_NOT_FOUND"):
+                            break
+                        if msg.startswith(("QUOTA_KEY", "BAD_KEY")):
+                            _mark_provider_key_dead(provider, key, msg.split(":")[0])
+                            last_err = exc
+                            continue
                         last_err = exc
-                        continue
-                    last_err = exc
-                    if msg.startswith("VALIDATION") and attempt < config.GEMINI_MAX_RETRIES:
-                        # feedback loop: tell the model exactly what to fix
-                        prompt += ("\n\nPREVIOUS OUTPUT PROBLEMS (fix ALL — "
-                                   + msg[11:200] + "). Return the FULL corrected JSON.")
-                    break
-                except (json.JSONDecodeError, ValueError) as exc:
-                    last_err = GeminiError(f"Quiz JSON parse failed: {exc}")
-                    break
+                        if msg.startswith("VALIDATION") and attempt < config.GEMINI_MAX_RETRIES:
+                            # feedback loop: tell the model exactly what to fix
+                            prompt += ("\n\nPREVIOUS OUTPUT PROBLEMS (fix ALL — "
+                                       + msg[11:200] + "). Return the FULL corrected JSON.")
+                        break
+                    except (json.JSONDecodeError, ValueError) as exc:
+                        last_err = GeminiError(f"Quiz JSON parse failed: {exc}")
+                        break
         if attempt < config.GEMINI_MAX_RETRIES:
             time.sleep(min(30, 5 * (2 ** (attempt - 1))))
     raise GeminiError(f"Quiz generation failed: {last_err}")
@@ -685,7 +689,7 @@ def generate_update(
 ) -> Dict:
     """Published article + kotha research -> improved version (same URL)."""
     if not config.gemini_configured():
-        raise GeminiError("GEMINI_API_KEY not set")
+        raise GeminiError("No AI provider key configured")
     prompt = UPDATE_PROMPT_TEMPLATE.format(
         title=existing_title,
         focus_keyword=focus_keyword or "(unknown)",
@@ -705,6 +709,80 @@ def _models() -> List[str]:
         m for m in config.GEMINI_FALLBACK_MODELS if m != config.GEMINI_MODEL
     ]
     return models
+
+
+# OpenAI-compatible provider support --------------------------------------
+# A model reference is prefixed only for non-Gemini providers so the existing
+# three-argument _call_model test/mocking contract remains intact.
+_COMPATIBLE_PROVIDERS = {"groq", "openrouter", "cerebras", "together", "mistral", "openai", "custom"}
+
+
+def _provider_order() -> List[str]:
+    """Return configured providers in primary-then-fallback order.
+
+    A provider with no key is skipped. Configured providers not explicitly
+    listed are appended, so adding a new provider key is not silently ignored.
+    """
+    requested = [getattr(config, "AI_PROVIDER", "gemini")] + list(
+        getattr(config, "AI_FALLBACK_PROVIDERS", []) or []
+    )
+    requested += list(getattr(config, "configured_ai_providers", lambda: [])())
+    result = []
+    for provider in requested:
+        name = str(provider or "").strip().lower()
+        if not name or name in result:
+            continue
+        if name == "gemini" or name in _COMPATIBLE_PROVIDERS:
+            # Keep the no-key Gemini path for offline unit-test mocks, but do
+            # not make an unconfigured Gemini call before a real fallback key.
+            if config.ai_provider_configured(name) or (
+                name == "gemini" and not config.ai_configured()
+            ):
+                result.append(name)
+    return result
+
+
+def _provider_models(provider: str) -> List[str]:
+    if provider == "gemini":
+        return _models()
+    prefix = provider.upper()
+    primary = str(getattr(config, f"{prefix}_MODEL", "") or "").strip()
+    fallbacks = list(getattr(config, f"{prefix}_FALLBACK_MODELS", []) or [])
+    models = [m for m in [primary] + fallbacks if m]
+    return list(dict.fromkeys(models))
+
+
+def _provider_keys(provider: str) -> List[Optional[str]]:
+    if provider == "gemini":
+        return _usable_keys()
+    # The provider is selected only when it has a key. Keep the helper
+    # forgiving for tests and custom runtime integrations.
+    return _usable_external_keys(provider)
+
+
+def _model_ref(provider: str, model: str) -> str:
+    return model if provider == "gemini" else f"{provider}::{model}"
+
+
+def _split_model_ref(model_ref: str):
+    if "::" in model_ref:
+        provider, model = model_ref.split("::", 1)
+        return provider, model
+    return "gemini", model_ref
+
+
+def _bump_provider_key(provider: str, key: Optional[str]) -> None:
+    if provider == "gemini":
+        _bump_key(key or "")
+        return
+    _bump_external_key(provider, key or "")
+
+
+def _mark_provider_key_dead(provider: str, key: Optional[str], reason: str) -> None:
+    if provider == "gemini":
+        _mark_key_dead(key or "", reason)
+        return
+    _mark_external_key_dead(provider, key or "", reason)
 
 
 # Rank Math writing rules — prathi prompt ki append (article write chesetappude
@@ -871,7 +949,79 @@ def _mark_key_dead(key: str, reason: str) -> None:
     log.warning("Gemini key ..%s marked for cooldown today (%s)", kh, reason[:60])
 
 
+def _external_key_tag(provider: str, key: str) -> str:
+    import hashlib
+
+    return hashlib.sha1(f"{provider}:{key or 'none'}".encode()).hexdigest()[:8]
+
+
+def _usable_external_keys(provider: str) -> List[Optional[str]]:
+    """Rotate compatible-provider keys and cool down keys after 401/429."""
+    keys = list(config.ai_provider_keys(provider))
+    if len(keys) <= 1:
+        return keys or [None]
+    from datetime import date
+
+    from . import state
+
+    today = date.today().isoformat()
+    out = []
+    for key in keys:
+        tag = _external_key_tag(provider, key)
+        try:
+            if state.meta_get(config.STATE_PATH, f"aikey:dead:{tag}:{today}"):
+                continue
+            count = int(state.meta_get(config.STATE_PATH, f"aikey:cnt:{tag}:{today}") or 0)
+            out.append((count, key))
+        except Exception:
+            out.append((0, key))
+    if not out:
+        return keys
+    out.sort(key=lambda pair: pair[0])
+    return [key for _, key in out]
+
+
+def _bump_external_key(provider: str, key: str) -> None:
+    if not key:
+        return
+    from datetime import date
+
+    from . import state
+
+    tag = _external_key_tag(provider, key)
+    try:
+        name = f"aikey:cnt:{tag}:{date.today().isoformat()}"
+        count = int(state.meta_get(config.STATE_PATH, name) or 0)
+        state.meta_set(config.STATE_PATH, name, str(count + 1))
+    except Exception as exc:  # best-effort usage accounting
+        log.debug("external provider key counter skipped: %s", exc)
+
+
+def _mark_external_key_dead(provider: str, key: str, reason: str) -> None:
+    if not key:
+        return
+    from datetime import date
+
+    from . import state
+
+    tag = _external_key_tag(provider, key)
+    try:
+        state.meta_set(
+            config.STATE_PATH,
+            f"aikey:dead:{tag}:{date.today().isoformat()}",
+            reason[:80],
+        )
+    except Exception as exc:  # best-effort cooldown
+        log.debug("external provider cooldown skipped: %s", exc)
+    log.warning("%s key ..%s marked for cooldown today (%s)", provider, tag, reason[:60])
+
+
 def _call_model(model: str, prompt: str, key: Optional[str] = None) -> str:
+    provider, actual_model = _split_model_ref(model)
+    if provider != "gemini":
+        return _call_compatible_model(provider, actual_model, prompt, key)
+
+    model = actual_model
     key = key or config.GEMINI_API_KEY
     # v17.1: Telugu JSON 8192 tokens lo truncate avtundi — 2.5 models ki
     # 32k + thinking OFF; 2.0/1.5 flash max output 8192 (clamp — leda 400)
@@ -894,7 +1044,7 @@ def _call_model(model: str, prompt: str, key: Optional[str] = None) -> str:
         "contents": [{"role": "user", "parts": [{"text": prompt}]}],
         "generationConfig": gen_config,
     }
-    url = API_URL.format(model=model)
+    url = f"{config.GEMINI_API_BASE.rstrip('/')}/models/{model}:generateContent"
     resp = requests.post(
         url,
         params={"key": key},
@@ -931,53 +1081,147 @@ def _call_model(model: str, prompt: str, key: Optional[str] = None) -> str:
         raise GeminiError(f"Empty response (finishReason={finish}): {str(data)[:200]}") from exc
 
 
+def _call_compatible_model(
+    provider: str,
+    model: str,
+    prompt: str,
+    key: Optional[str],
+    allow_response_format: bool = True,
+) -> str:
+    """Call a Groq/OpenRouter-style chat-completions endpoint.
+
+    The prompt already asks for strict JSON. ``response_format`` is sent when
+    possible, then removed once for gateways that implement chat completions
+    but do not implement JSON mode. This keeps provider support broad without
+    weakening the parser or the evidence gates downstream.
+    """
+    base = str(getattr(config, f"{provider.upper()}_API_BASE", "") or "").rstrip("/")
+    if not base:
+        raise GeminiError(f"PROVIDER_CONFIG:{provider}:API base missing")
+    if not key:
+        raise GeminiError(f"BAD_KEY:{provider}:empty")
+
+    max_tokens = min(
+        int(getattr(config, "AI_MAX_OUTPUT_TOKENS", 8192) or 8192),
+        32768,
+    )
+    payload = {
+        "model": model,
+        "messages": [{"role": "user", "content": prompt}],
+        "temperature": 0.95,
+        "max_tokens": max_tokens,
+    }
+    if allow_response_format:
+        payload["response_format"] = {"type": "json_object"}
+    headers = {"Authorization": f"Bearer {key}", "Content-Type": "application/json"}
+    if provider == "openrouter":
+        # Optional attribution headers are accepted by OpenRouter and harmless
+        # for local tests; they are not used as authentication.
+        headers["HTTP-Referer"] = getattr(config, "WP_SITE", "https://studentup.in")
+        headers["X-Title"] = "StudentUp Auto-Blogger"
+
+    url = f"{base}/chat/completions"
+    try:
+        resp = requests.post(
+            url, headers=headers, json=payload, timeout=config.HTTP_TIMEOUT
+        )
+    except requests.RequestException as exc:
+        raise GeminiError(f"RETRYABLE:network:{exc}") from exc
+
+    body = (getattr(resp, "text", "") or "")[:600]
+    lower = body.lower()
+    if resp.status_code == 400 and allow_response_format and any(
+        word in lower for word in ("response_format", "json mode", "json_object", "unsupported")
+    ):
+        return _call_compatible_model(
+            provider, model, prompt, key, allow_response_format=False
+        )
+    if resp.status_code == 429 or resp.status_code == 402:
+        raise GeminiError(f"QUOTA_KEY:{_key_tag(key)}:{resp.status_code}")
+    if resp.status_code in (401, 403):
+        if "quota" in lower or "credit" in lower or "limit" in lower:
+            raise GeminiError(f"QUOTA_KEY:{_key_tag(key)}:{resp.status_code}")
+        raise GeminiError(f"BAD_KEY:{_key_tag(key)}:{resp.status_code}")
+    if resp.status_code == 404 or (
+        resp.status_code == 400 and any(word in lower for word in ("model", "not found", "does not exist"))
+    ):
+        raise GeminiError(f"MODEL_NOT_FOUND:{provider}:{model}")
+    if resp.status_code >= 500:
+        raise GeminiError(f"RETRYABLE:{resp.status_code}:{body}")
+    if resp.status_code != 200:
+        raise GeminiError(f"HTTP {resp.status_code}: {body}")
+
+    try:
+        data = resp.json()
+        choice = data["choices"][0]
+        message = choice.get("message", {})
+        content = message.get("content", "")
+        if isinstance(content, list):
+            content = "".join(
+                part.get("text", "") if isinstance(part, dict) else str(part)
+                for part in content
+            )
+        if not content:
+            raise KeyError("choices[0].message.content")
+        if choice.get("finish_reason") == "length":
+            raise GeminiError("TRUNCATED:MAX_TOKENS (compatible output cut)")
+        return str(content)
+    except GeminiError:
+        raise
+    except (ValueError, KeyError, IndexError, TypeError) as exc:
+        raise GeminiError(f"Unexpected compatible API response: {body}") from exc
+
+
 def _generate_core(prompt: str, category: str = "", source=None,
                    strict_category: bool = False) -> Dict:
     """v18 core: keys × models loop, v17.1 adaptive truncation retry."""
-    models = _models()
     last_err: Optional[Exception] = None
     shorten = False
     for attempt in range(1, config.GEMINI_MAX_RETRIES + 1):
-        for model in models:
-            for key in _usable_keys():
-                try:
-                    raw = _call_model(model, prompt, key)
-                    article = _parse_json(raw)
-                    for field in ("title", "slug", "meta_description", "content_html"):
-                        if not article.get(field):
-                            raise GeminiError(f"Empty field in response: {field}")
-                    article["tags"] = [str(t).strip() for t in
-                                       article.get("tags", []) if str(t).strip()][:8]
-                    if strict_category:
-                        article["category"] = category or "Online Education"
-                    else:
-                        article["category"] = (category
-                                               or article.get("category", "Education News"))
-                    article["model"] = model
-                    if source is not None:
-                        article["source_url"] = source.url
-                        article["source_title"] = source.title
-                    _bump_key(key)
-                    return article
-                except GeminiError as exc:
-                    msg = str(exc)
-                    if msg.startswith("MODEL_NOT_FOUND"):
-                        log.warning("Model %s unavailable, trying fallback...", model)
-                        break  # ee model ki keys varapadam prakasam ledu
-                    if msg.startswith(("QUOTA_KEY", "BAD_KEY")):
-                        _mark_key_dead(key, msg.split(":")[0])
+        for provider in _provider_order():
+            models = _provider_models(provider)
+            for model in models:
+                model_ref = _model_ref(provider, model)
+                for key in _provider_keys(provider):
+                    try:
+                        raw = _call_model(model_ref, prompt, key)
+                        article = _parse_json(raw)
+                        for field in ("title", "slug", "meta_description", "content_html"):
+                            if not article.get(field):
+                                raise GeminiError(f"Empty field in response: {field}")
+                        article["tags"] = [str(t).strip() for t in
+                                           article.get("tags", []) if str(t).strip()][:8]
+                        if strict_category:
+                            article["category"] = category or "Online Education"
+                        else:
+                            article["category"] = (category
+                                                   or article.get("category", "Education News"))
+                        article["model"] = model
+                        article["provider"] = provider
+                        if source is not None:
+                            article["source_url"] = source.url
+                            article["source_title"] = source.title
+                        _bump_provider_key(provider, key)
+                        return article
+                    except GeminiError as exc:
+                        msg = str(exc)
+                        if msg.startswith("MODEL_NOT_FOUND"):
+                            log.warning("%s model %s unavailable, trying fallback...", provider, model)
+                            break  # this model will not work with another key
+                        if msg.startswith(("QUOTA_KEY", "BAD_KEY")):
+                            _mark_provider_key_dead(provider, key, msg.split(":")[0])
+                            last_err = exc
+                            continue  # next key/provider
                         last_err = exc
-                        continue  # next key!
-                    last_err = exc
-                    if msg.startswith("TRUNCATED"):
-                        shorten = True
-                    break  # retryable -> next attempt
-                except (json.JSONDecodeError, ValueError) as exc:
-                    last_err = GeminiError(f"JSON parse failed: {exc}")
-                    if any(k in str(exc) for k in
-                           ("Unterminated", "Expecting", "Out of range")):
-                        shorten = True
-                    break
+                        if msg.startswith("TRUNCATED"):
+                            shorten = True
+                        break  # retryable/validation -> next attempt
+                    except (json.JSONDecodeError, ValueError) as exc:
+                        last_err = GeminiError(f"JSON parse failed: {exc}")
+                        if any(k in str(exc) for k in
+                               ("Unterminated", "Expecting", "Out of range")):
+                            shorten = True
+                        break
         if shorten and "LENGTH OVERRIDE" not in prompt:
             prompt += (
                 "\n\nLENGTH OVERRIDE (output token limit davvindi — vinipistu): "
@@ -990,8 +1234,10 @@ def _generate_core(prompt: str, category: str = "", source=None,
             time.sleep(min(45, 5 * (2 ** (attempt - 1))))
     hint = ""
     if isinstance(last_err, GeminiError) and str(last_err).startswith(("QUOTA", "BAD_KEY")):
-        hint = (" — GEMINI_API_KEYS lo inka keys add cheyandi "
-                "(free tier quota ayyipoyindi; .env lo comma tho separator)")
+        hint = (
+            " — configured AI provider keys exhausted; add another key or "
+            "provider in AI_FALLBACK_PROVIDERS"
+        )
     raise GeminiError(f"All attempts failed: {last_err}{hint}")
 
 
@@ -1069,7 +1315,7 @@ def generate_article(
     aa topic meede article rastundi (fresh trending content).
     """
     if not config.gemini_configured():
-        raise GeminiError("GEMINI_API_KEY not set")
+        raise GeminiError("No AI provider key configured")
 
     avoid_block = ""
     if recent_titles:
@@ -1146,7 +1392,7 @@ def refine_article(
 ) -> Dict:
     """Correct SEO/evidence issues without inventing facts."""
     if not config.gemini_configured():
-        raise GeminiError("GEMINI_API_KEY not set")
+        raise GeminiError("No AI provider key configured")
     prompt = REFINE_PROMPT_TEMPLATE.format(
         title=article.get("title", ""),
         kw=article.get("focus_keyword", ""),
@@ -1178,7 +1424,7 @@ def generate_article_from_source(
     mechanically combine competitor pages.
     """
     if not config.gemini_configured():
-        raise GeminiError("GEMINI_API_KEY not set")
+        raise GeminiError("No AI provider key configured")
 
     avoid_block = ""
     if recent_titles:

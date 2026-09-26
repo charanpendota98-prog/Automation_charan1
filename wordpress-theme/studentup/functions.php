@@ -43,6 +43,8 @@ require_once get_template_directory() . '/inc/upnext.php';    // v96: Up Next se
 require_once get_template_directory() . '/inc/share.php';     // v98: viral share engine (in-content share bar + native sheet)
 require_once get_template_directory() . '/inc/success-stories.php'; // v117: consented TS/AP story intake CTA
 require_once get_template_directory() . '/inc/student-tools.php'; // v120: compare, reminders and print/PDF utility layer
+require_once get_template_directory() . '/inc/opportunities.php'; // v121: live active list, expiry-safe sections and job board
+require_once get_template_directory() . '/inc/shortlinks.php'; // v122: first-party /slug redirects + click counts
 
 /**
  * "Most searched by students" — order okkate source (bot lo autoblog/breaking.py

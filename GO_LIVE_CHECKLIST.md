@@ -168,7 +168,7 @@ Detail docs: `DEPLOY_MILESWEB.md` (cPanel steps) · `DEPLOY_ORACLE_CLOUD.md` (VM
         `python run.py --index-status`.
       · Manual submit eppudaina: `python run.py --index-now https://studentup.in/<slug>/`.
       (Signing ki `cryptography` leda `openssl` — rendu lekapote automatic skip, publish aagadu.)
-- [ ] **3. Gemini API key** — aistudio.google.com → API key (free tier chaalu).
+- [ ] **3. AI provider key** — Gemini (recommended) or a configured Groq/OpenRouter/Cerebras/Together/Mistral/custom OpenAI-compatible key; set `AI_PROVIDER` and `AI_FALLBACK_PROVIDERS`.
 - [ ] **4. Telegram bot** — @BotFather → token + mee chat id (@userinfobot).
 - [ ] **5. Oracle Cloud** (recommended) — Always Free VM (2 OCPU/12GB) + SSH key.
 
@@ -176,7 +176,7 @@ Ee 5 tarvata → `.env` file lo pettandi (`.env.example` nunchi copy):
 
 ```bash
 cp .env.example .env
-# WP_USERNAME, WP_APP_PASSWORD, GEMINI_API_KEY, TELEGRAM_BOT_TOKEN,
+# WP_USERNAME, WP_APP_PASSWORD, AI_PROVIDER key(s), TELEGRAM_BOT_TOKEN,
 # TELEGRAM_CHAT_ID, SITE_URL, ADSENSE_APPROVED=0 (approval tarvata 1),
 # HOUSE_AD_ENABLED=1
 python run.py --production-audit     # 3 blockers → 0 avvali

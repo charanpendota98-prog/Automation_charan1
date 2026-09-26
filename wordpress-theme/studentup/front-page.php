@@ -57,6 +57,7 @@ get_header();
 				<h2>Latest opportunities</h2>
 				<p>Filter by qualification — Telangana · Andhra Pradesh · Central</p>
 			</div>
+			<a class="su-board-link" href="<?php echo esc_url( studentup_opportunity_board_url() ); ?>">All active sections →</a>
 		</div>
 
 		<?php

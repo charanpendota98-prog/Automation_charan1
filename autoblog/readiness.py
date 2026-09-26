@@ -565,7 +565,7 @@ def c_owner_pending() -> List[dict]:
                  "GO_LIVE_CHECKLIST.md PART B step 1"),
         _pending("WordPress + theme install", "WP + studentup-theme.zip activate",
                  "GO_LIVE_CHECKLIST.md PART B step 2 + tools/build_wp_theme.py"),
-        _pending("Gemini API key", ".env GEMINI_API_KEYS (aistudio.google.com)",
+        _pending("Gemini/AI provider key", ".env AI_PROVIDER + provider API key(s)",
                  "GO_LIVE_CHECKLIST.md PART B step 3"),
         _pending("Telegram bot token", ".env TELEGRAM_BOT_TOKEN + chat id",
                  "GO_LIVE_CHECKLIST.md PART B step 4"),

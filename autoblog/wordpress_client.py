@@ -74,6 +74,54 @@ class WordPressClient:
         except Exception:
             return 0
 
+    def published_opportunities(self, max_pages: int = 2, per_page: int = 100) -> List[Dict]:
+        """Read published posts for the deadline-aware owner digest.
+
+        This is read-only. The theme performs the same expiry check live for
+        the public board; the bot copy is only a compact forwarding message.
+        """
+        rows: List[Dict] = []
+        posts = []
+        for page in range(1, max(1, int(max_pages)) + 1):
+            r = self._request("GET", "posts", params={
+                "status": "publish", "per_page": min(100, max(1, int(per_page))),
+                "page": page, "orderby": "date", "order": "desc",
+                "_fields": "id,link,title,date,categories,meta",
+            })
+            if not r.ok:
+                break
+            batch = r.json() if isinstance(r.json(), list) else []
+            posts.extend(batch)
+            if len(batch) < min(100, max(1, int(per_page))):
+                break
+        ids = sorted({int(cid) for post in posts for cid in (post.get("categories") or []) if str(cid).isdigit()})
+        category_names: Dict[int, Dict[str, str]] = {}
+        if ids:
+            r = self._request("GET", "categories", params={
+                "include": ",".join(str(i) for i in ids), "per_page": 100,
+                "_fields": "id,slug,name",
+            })
+            if r.ok:
+                for term in (r.json() if isinstance(r.json(), list) else []):
+                    category_names[int(term.get("id", 0))] = {
+                        "slug": str(term.get("slug") or ""),
+                        "name": str(term.get("name") or ""),
+                    }
+        for post in posts:
+            title = post.get("title") or {}
+            meta = post.get("meta") or {}
+            cats = [category_names.get(int(cid), {}) for cid in (post.get("categories") or [])]
+            rows.append({
+                "id": post.get("id"),
+                "link": post.get("link", ""),
+                "title": title.get("rendered", "") if isinstance(title, dict) else str(title),
+                "date": post.get("date", ""),
+                "category_slugs": [c.get("slug", "") for c in cats if c.get("slug")],
+                "category_names": [c.get("name", "") for c in cats if c.get("name")],
+                "last_date": meta.get("studentup_last_date", "") if isinstance(meta, dict) else "",
+            })
+        return rows
+
     def search_posts(self, term: str, per_page: int = 10) -> List[Dict]:
         """Published posts matching term (hub pages kosam)."""
         try:
