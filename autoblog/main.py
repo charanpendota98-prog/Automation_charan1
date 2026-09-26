@@ -61,6 +61,29 @@ def _safe_slug(slug: str, fallback_title: str) -> str:
     return slug
 
 
+def success_story_review(csv_path: str, output_path: str = "") -> int:
+    """Private Google Forms CSV → consent/evidence review manifest.
+
+    This command never calls WordPress and never publishes. The CSV and
+    manifest must remain outside public web roots; the owner controls deletion.
+    """
+    from . import success_story_intake
+
+    source = Path(csv_path).expanduser()
+    target = Path(output_path or config.SUCCESS_STORY_QUEUE).expanduser()
+    try:
+        rows = success_story_intake.load_csv(source)
+        manifest = success_story_intake.write_manifest(rows, target)
+    except Exception as exc:  # noqa: BLE001
+        print(f"❌ success-story review failed: {exc}")
+        return 1
+    print("VERIFIED SUCCESS STORIES — PRIVATE REVIEW ONLY")
+    print(f"  selected: {len(manifest['selected'])} · deferred/rejected: {len(manifest['rejected'])}")
+    print(f"  weekly cap: {config.SUCCESS_STORY_WEEKLY_MAX} · manifest: {target}")
+    print("  ⚠️  Human evidence, consent and photo-rights review required; nothing was published.")
+    return 0
+
+
 def generate_one(category: str, mock: bool, mock_index: int = 0,
                  trend_topic: str = "") -> dict:
     """Generate an article with duplicate-avoidance retries."""
@@ -106,6 +129,78 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
     except Exception as exc:  # noqa: BLE001 — best-effort (silent kaadu)
         log.debug("run skip: %s", exc)
 
+    # v121: once per IST day, send the owner a forward-ready active list. The
+    # public /latest-jobs/ board is live and independently hides expired items.
+    digest_key = f"opportunity-digest:{today.isoformat()}"
+    if (getattr(config, "OPPORTUNITY_DIGEST_ENABLED", True)
+            and now_hour >= getattr(config, "OPPORTUNITY_DIGEST_HOUR", 8)
+            and not state.meta_get(config.STATE_PATH, digest_key)):
+        try:
+            if notifier.send_opportunity_digest():
+                state.meta_set(config.STATE_PATH, digest_key, "1")
+                log.info("OPPORTUNITY DIGEST ✔ active list sent to owner chat")
+        except Exception:
+            log.exception("Opportunity digest failed (regular posting continues)")
+
+    # v124: once-per-day read-only official-source freshness scan. A changed
+    # notice is alerted for owner review; the scheduler never edits content by
+    # itself, so dates/fees/status still pass through the full update gate.
+    source_monitor_key = f"source-monitor:{today.isoformat()}"
+    if (getattr(config, "SOURCE_MONITOR_ENABLED", True)
+            and now_hour >= getattr(config, "SOURCE_MONITOR_HOUR", 6)
+            and not state.meta_get(config.STATE_PATH, source_monitor_key)):
+        try:
+            from . import source_monitor as _source_monitor
+
+            monitor_result = _source_monitor.scan(notify=True)
+            state.meta_set(
+                config.STATE_PATH,
+                source_monitor_key,
+                json.dumps({
+                    "scanned": monitor_result.get("scanned", 0),
+                    "changed": len(monitor_result.get("changed", [])),
+                    "errors": len(monitor_result.get("errors", [])),
+                }),
+            )
+            log.info(
+                "SOURCE MONITOR ✔ scanned=%s changed=%s errors=%s",
+                monitor_result.get("scanned", 0),
+                len(monitor_result.get("changed", [])),
+                len(monitor_result.get("errors", [])),
+            )
+        except Exception:
+            log.exception("Source freshness monitor failed (regular posting continues)")
+
+    # v125: lifecycle scan for active opportunities. It only probes public URLs
+    # and writes a private review queue; it never changes a post or hides a
+    # deadline automatically. This keeps temporary official-site outages from
+    # becoming destructive edits.
+    opportunity_monitor_key = f"opportunity-monitor:{today.isoformat()}"
+    if (getattr(config, "OPPORTUNITY_MONITOR_ENABLED", True)
+            and now_hour >= getattr(config, "OPPORTUNITY_MONITOR_HOUR", 6)
+            and not state.meta_get(config.STATE_PATH, opportunity_monitor_key)):
+        try:
+            from . import opportunity_monitor as _opportunity_monitor
+
+            lifecycle_result = _opportunity_monitor.scan(notify=True)
+            state.meta_set(
+                config.STATE_PATH,
+                opportunity_monitor_key,
+                json.dumps({
+                    "posts": lifecycle_result.get("posts", 0),
+                    "issues": len(lifecycle_result.get("issues", [])),
+                    "errors": len(lifecycle_result.get("errors", [])),
+                }),
+            )
+            log.info(
+                "OPPORTUNITY MONITOR ✔ posts=%s issues=%s errors=%s",
+                lifecycle_result.get("posts", 0),
+                len(lifecycle_result.get("issues", [])),
+                len(lifecycle_result.get("errors", [])),
+            )
+        except Exception:
+            log.exception("Opportunity lifecycle monitor failed (regular posting continues)")
+
     # --- bulk queue mode: --process-queue N (N URLs ippude process) ---------
     if process_queue:
         done = 0
@@ -114,14 +209,27 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
             if not url:
                 log.info("Queue empty — %d URLs process ayyayi", done)
                 break
+            completed = False
+            failure_type = "draft_failed"
+            failure_details = ""
             try:
                 result = pipeline.create_from_source(url, mock=mock, category=category)
                 log.info("QUEUE POST ✔ %s -> %s", url[:60], result["link"])
                 done += 1
+                completed = True
             except Exception as exc:
-                log.error("Queue URL failed (%s): %s — skip", url[:60], exc)
+                failure_details = str(exc)
+                low = failure_details.lower()
+                if any(word in low for word in ("fetch", "http ", "timeout", "connection")):
+                    failure_type = "fetch_failure"
+                elif any(word in low for word in ("stale", "expired", "deadline passed")):
+                    failure_type = "stale_notice"
+                log.error("Queue URL failed (%s): %s — retryable; keep opportunity open", url[:60], exc)
             finally:
-                sources.mark_done_and_clean(url)
+                sources.mark_done_and_clean(
+                    url, completed=completed, failure_type=failure_type,
+                    details=failure_details,
+                )
         return 0
 
     # --- manual listicle mode (--listicle "Top 10 ...") ---------------------
@@ -154,8 +262,8 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
 
     # --- explicit source URL mode (--url / Telegram) -----------------------
     if source_url:
-        if not mock and not config.GEMINI_API_KEY:
-            log.error("GEMINI_API_KEY set kavali! .env file lo key pettandi.")
+        if not mock and not config.gemini_configured():
+            log.error("AI provider key set kavali! .env lo Gemini/Groq/other provider key pettandi.")
             return 2
         brief = ""
         if notebooklm_brief_file:
@@ -315,22 +423,35 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
                 and now_hour >= config.QUIZ_HOUR
                 and not state.meta_get(config.STATE_PATH,
                                        f"quizdate:{today.isoformat()}")):
-            if not mock and not config.GEMINI_API_KEY \
-                    and not getattr(config, "GEMINI_API_KEYS", []):
-                log.warning("QUIZ skip — GEMINI_API_KEY ledu")
-            else:
+            # A missing provider must not turn the promised daily review slot
+            # into a silent no-op. The deterministic bank is explicitly a
+            # sample/review quiz; create_quiz() hard-locks it to WordPress
+            # `draft`, so this fallback can never publish unreviewed copy.
+            quiz_mock = bool(mock)
+            if not quiz_mock and not config.gemini_configured():
+                if getattr(config, "QUIZ_SAMPLE_FALLBACK", True):
+                    quiz_mock = True
+                    log.warning("QUIZ: AI provider unavailable — creating deterministic sample draft")
+                else:
+                    log.warning("QUIZ skip — AI provider key ledu")
+            if quiz_mock or config.gemini_configured():
                 try:
-                    result = pipeline.create_quiz(mock=mock)
+                    result = pipeline.create_quiz(mock=quiz_mock)
                     state.meta_set(config.STATE_PATH,
                                    f"quizdate:{today.isoformat()}", "1")
-                    log.info("DAILY QUIZ READY ✔ %s (status=%s)",
-                             result["link"], result["status"])
+                    log.info("DAILY QUIZ REVIEW DRAFT READY ✔ %s (status=%s%s)",
+                             result["link"], result["status"],
+                             ", sample" if quiz_mock else "")
                     return 0
                 except ValueError as exc:
-                    # already generated today (manual --quiz) — mark & move on
-                    state.meta_set(config.STATE_PATH,
-                                   f"quizdate:{today.isoformat()}", "1")
-                    log.info("Daily quiz already done: %s", exc)
+                    # Only the idempotency guard consumes today's slot. Other
+                    # validation/provider errors should be retried next run.
+                    if "already generated today:" in str(exc).lower():
+                        state.meta_set(config.STATE_PATH,
+                                       f"quizdate:{today.isoformat()}", "1")
+                        log.info("Daily quiz already done: %s", exc)
+                    else:
+                        log.warning("Daily quiz draft failed — retry next run: %s", exc)
                 except Exception:
                     log.exception("Daily quiz failed — regular posting continues")
         # --- v15/v16: Breaking-News Radar — every RADAR_INTERVAL_HOURS ---
@@ -366,8 +487,8 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
                 and not getattr(config, "AUTO_SOURCE_ONLY", True)):
             log.info("Listicle slot (%d/%d today) — trending story mode",
                      lcount + 1, config.LISTICLES_PER_DAY)
-            if not mock and not config.GEMINI_API_KEY:
-                log.error("GEMINI_API_KEY ledu — listicle skip")
+            if not mock and not config.gemini_configured():
+                log.error("AI provider key ledu — listicle skip")
             else:
                 try:
                     result = pipeline.create_listicle(mock=mock)
@@ -382,20 +503,40 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
     queued = sources.pending_from_queue()
     if queued:
         log.info("Sources queue lo URL dorikindi — original rewrite mode: %s", queued)
-        if not mock and not config.GEMINI_API_KEY:
-            log.error("GEMINI_API_KEY ledu — ee URL skip chesi mark chestanu")
-            sources.mark_done_and_clean(queued)
+        if not mock and not config.gemini_configured():
+            # Keep the URL in sources_queue.txt. A missing model key is an
+            # environment/setup issue, not a failed opportunity; deleting it
+            # here made the bot appear to do nothing and lost review work.
+            log.error("AI provider key ledu — URL pending ga preserve chesanu")
+            state.mark_source_retry(config.STATE_PATH, queued)
+            state.record_radar_event(
+                config.STATE_PATH, "draft_deferred", queued,
+                details="GEMINI_API_KEY unavailable; source remains pending",
+            )
         else:
+            completed = False
+            failure_type = "draft_failed"
+            failure_details = ""
             try:
                 result = pipeline.create_from_source(
                     queued, mock=mock, category=category, force_draft=True)
                 log.info("SOURCE POST READY ✔ %s (status=%s)", result["link"], result["status"])
+                completed = True
                 return 0
             except Exception as exc:
-                log.error("Queue URL failed (%s) — mark chesi normal post ki veltanu: %s",
+                failure_details = str(exc)
+                low = failure_details.lower()
+                if any(word in low for word in ("fetch", "http ", "timeout", "connection")):
+                    failure_type = "fetch_failure"
+                elif any(word in low for word in ("stale", "expired", "deadline passed")):
+                    failure_type = "stale_notice"
+                log.error("Queue URL failed (%s) — retryable; normal flow continues: %s",
                           queued, exc)
             finally:
-                sources.mark_done_and_clean(queued)
+                sources.mark_done_and_clean(
+                    queued, completed=completed, failure_type=failure_type,
+                    details=failure_details,
+                )
 
     # Source-first automation: if radar found nothing trustworthy, wait for the
     # next sweep. Never fill a scheduled slot with an evidence-free AI topic.
@@ -407,8 +548,8 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
     cat = category or topic_engine.pick_category(config.STATE_PATH)
     log.info("Category selected: %s%s", cat, " (forced)" if category else "")
 
-    if not mock and not config.GEMINI_API_KEY:
-        log.error("GEMINI_API_KEY set kavali! .env file lo key pettandi.")
+    if not mock and not config.gemini_configured():
+        log.error("AI provider key set kavali! .env lo Gemini/Groq/other provider key pettandi.")
         return 2
 
     # --- Google Trends trending topic (roju 1 post trend meeda) ---
@@ -514,6 +655,30 @@ def show_status() -> int:
     print(f"Today        : {today}  (now {_now().strftime('%H:%M')})")
     print(f"Today plan   : {plan}  -> posts done: {state.today_count(config.STATE_PATH, today)}")
     print(f"Total posts  : {summary['total']}")
+    # Radar is intentionally observable: skipped mirrors, stale notices and
+    # fetch failures stay in SQLite instead of vanishing from scheduler logs.
+    try:
+        from collections import Counter
+        from . import sources as _sources
+
+        queue_lines = (_sources.queue_file_path().read_text(encoding="utf-8").splitlines()
+                       if _sources.queue_file_path().exists() else [])
+        pending = [u for u in queue_lines if u.strip() and u.strip().startswith("http")
+                   and not state.source_done(config.STATE_PATH, u.strip())]
+        event_counts = Counter(e["event_type"] for e in state.recent_radar_events(
+            config.STATE_PATH, limit=500))
+        source_counts = state.source_status_counts(config.STATE_PATH)
+        print(f"Radar queue : {len(pending)} pending review source(s) · "
+              f"queued={source_counts.get('queued', 0)} · "
+              f"retry={source_counts.get('retry', 0)}")
+        print("Radar audit : " + ", ".join(
+            f"{name}={event_counts[name]}" for name in (
+                "queued", "duplicate_opportunity", "duplicate_url", "stale_notice",
+                "fetch_failure", "validation_blocked", "draft_failed", "draft_deferred",
+                "draft_ready") if event_counts[name]
+        ) or "no events")
+    except Exception as exc:  # noqa: BLE001 — status must remain useful
+        log.debug("Radar status unavailable: %s", exc)
     avgs = state.avg_scores(config.STATE_PATH)
     if avgs["n"]:
         print(f"Quality      : avg QA {avgs['qa']}/100 · avg originality {avgs['orig']}%"
@@ -661,16 +826,35 @@ def doctor() -> int:
     print("  DOCTOR — Deployment Health Check")
     print("=" * 62)
 
-    # 1) Gemini key + live validation
+    # 1) AI provider key + live validation
     def _gemini():
-        if not config.GEMINI_API_KEY:
-            raise RuntimeError("GEMINI_API_KEY ledu (.env)")
-        r = _rq.get(f"{config.GEMINI_API_BASE}/models",
-                    params={"key": config.GEMINI_API_KEY}, timeout=15)
-        if r.status_code != 200:
-            raise RuntimeError(f"API {r.status_code} — key invalid?")
-        n = len(r.json().get("models", []))
-        return f"key valid, {n} models (model={config.GEMINI_MODEL})"
+        providers = gemini_client._provider_order()
+        if not providers:
+            raise RuntimeError("AI provider key ledu (.env)")
+        provider = providers[0]
+        key = config.ai_provider_keys(provider)[0]
+        if provider == "gemini":
+            r = _rq.get(
+                f"{config.GEMINI_API_BASE}/models",
+                params={"key": key},
+                timeout=15,
+            )
+            if r.status_code != 200:
+                raise RuntimeError(f"Gemini API {r.status_code} — key invalid?")
+            n = len(r.json().get("models", []))
+            return f"Gemini key valid, {n} models (model={config.GEMINI_MODEL})"
+        base = str(getattr(config, f"{provider.upper()}_API_BASE", "")).rstrip("/")
+        r = _rq.get(
+            f"{base}/models",
+            headers={"Authorization": f"Bearer {key}"},
+            timeout=15,
+        )
+        if r.status_code not in (200, 404, 405):
+            raise RuntimeError(f"{provider} API {r.status_code} — key invalid?")
+        # Some compatible gateways do not expose GET /models; generation will
+        # still validate the configured model via the normal fallback path.
+        model = getattr(config, f"{provider.upper()}_MODEL", "")
+        return f"{provider} key configured (model={model})"
     check("Gemini API", _gemini)
 
     # 2) WordPress REST + auth
@@ -811,7 +995,8 @@ def rm100_run() -> int:
     res = rm100.apply(art)
     checks = validator.rankmath_strict(art, art.get("content_html", "")).get("checks", [])
     print("=" * 70)
-    print("  🎯 RANK MATH 100 ENGINE — proof (deterministic fixes, LLM ledu)")
+    print("  🎯 RANK MATH LOCAL PRE-FLIGHT — deterministic checks only")
+    print("  ⚠️  This is NOT the live Rank Math plugin score. Use --live-seo POST_ID for WordPress readback.")
     print("=" * 70)
     print(f"  score: {res['before']}/100  →  {res['after']}/100"
           f"   ({len(checks)} on-page tests)")
@@ -875,7 +1060,7 @@ def guardian_run(notify: bool = False, quiet: bool = False) -> int:
 def breaking_feed_run(from_file: str = "") -> int:
     """v59: బ్రేకింగ్ న్యూస్ feed build — site ticker + section ki.
 
-    Default: radar sweep (district + 180 official sources) → verified items
+    Default: radar sweep (district + 258 curated source queries) → verified items
     matrame → preview/data/breaking.json. `--breaking-from FILE` tho offline
     (test/approved list) nunchi kuda generate cheyochu.
     """
@@ -898,6 +1083,9 @@ def breaking_feed_run(from_file: str = "") -> int:
     else:
         from . import news_radar
 
+        # `--breaking-feed` is a standalone CLI path; initialize SQLite before
+        # the radar reads its rotation/meta tables.
+        state.init(config.STATE_PATH)
         summary = news_radar.run_radar()
         raw = summary.get("items", [])
         if not summary.get("enabled", True):
@@ -990,8 +1178,8 @@ def radar_run(process_posts: bool = True) -> int:
     if not process_posts:
         print("  (posts processing skip — --dry-run mode)")
         return 0
-    if not config.GEMINI_API_KEY:
-        print("  GEMINI_API_KEY ledu — queue fill ayyindi, posts skip")
+    if not config.gemini_configured():
+        print("  AI provider key ledu — queue fill ayyindi, posts skip")
         return 0
 
     n = min(config.RADAR_POSTS_PER_DAY, d + g + w + kw_queued)
@@ -1029,14 +1217,28 @@ def radar_run(process_posts: bool = True) -> int:
         url = sources.pending_from_queue()
         if not url:
             break
+        completed = False
+        failure_type = "draft_failed"
+        details = ""
         try:
             result = pipeline.create_from_source(url, force_draft=True)
             done += 1
+            completed = True
             print(f"  VERIFIED DRAFT ✔ {result['link']}")
         except Exception as exc:
-            log.error("radar URL failed (%s): %s — skip", url[:60], exc)
+            details = str(exc)
+            low = details.lower()
+            if any(word in low for word in ("fetch", "http ", "timeout", "connection")):
+                failure_type = "fetch_failure"
+            elif any(word in low for word in ("stale", "expired", "deadline passed")):
+                failure_type = "stale_notice"
+            elif any(word in low for word in ("conflict", "unsupported", "preflight", "evidence", "validation")):
+                failure_type = "validation_blocked"
+            log.error("radar URL failed (%s): %s — retryable", url[:60], exc)
         finally:
-            sources.mark_done_and_clean(url)
+            sources.mark_done_and_clean(
+                url, completed=completed, failure_type=failure_type, details=details
+            )
     print(f"  Radar posts created: {done}")
     return 0
 
@@ -1540,6 +1742,10 @@ def main() -> int:
                         help="deployment health check — anni dependencies verify")
     parser.add_argument("--production-audit", action="store_true",
                         help="v30: production safety, consent, ads, plugins, theme, and legal audit")
+    parser.add_argument("--live-validation", nargs="?", const="", default=None, metavar="SITE",
+                        help="read-only live HTTP/REST/auth validation; SITE optional, defaults to WP_SITE")
+    parser.add_argument("--live-seo", type=int, default=0, metavar="POST_ID",
+                        help="read-only real Rank Math score + rendered SEO audit for one live post")
     parser.add_argument("--service-center", action="store_true",
                         help="v31: preview/publish Student Internet Center services page")
     parser.add_argument("--content-audit", action="store_true",
@@ -1627,6 +1833,10 @@ def main() -> int:
     parser.add_argument("--freshness-audit", action="store_true",
                         help="v101: 'deceptive freshness' guard status — "
                              "refresh lo dateModified fake bump avutunda?")
+    parser.add_argument("--source-monitor", action="store_true",
+                        help="read-only: detect changed official sources and alert owner")
+    parser.add_argument("--opportunity-monitor", action="store_true",
+                        help="read-only: probe official/application links and build an expiry review queue")
     parser.add_argument("--verify-keyword", default="",
                         help="v97: oka focus keyword ki LIVE demand verify "
                              "(Google Autocomplete — dummy list kaadu)")
@@ -1672,7 +1882,7 @@ def main() -> int:
     parser.add_argument("--trends-queue", action="store_true",
                         help="v65: --trends tho paatu Suggest capture + topic queue")
     parser.add_argument("--rm100", action="store_true",
-                        help="Rank Math 100 engine proof (imperfect draft → 100 breakdown)")
+                        help="local Rank Math pre-flight only; live plugin score requires --live-seo POST_ID")
     parser.add_argument("--readiness", action="store_true",
                         help="v62: TOP WEBSITE READINESS — content/SEO/ads/automation/site score")
     parser.add_argument("--push-theme-data", action="store_true",
@@ -1708,6 +1918,10 @@ def main() -> int:
                              "the site-wide Auto Ads loader widget")
     parser.add_argument("--ensure-adsense", action="store_true",
                         help="AdSense approval: mandatory pages auto-create + full checklist")
+    parser.add_argument("--success-stories", default="", metavar="CSV",
+                        help="v117: private Google Forms CSV → consent/evidence review manifest (never publishes)")
+    parser.add_argument("--success-stories-out", default="", metavar="JSON",
+                        help="v117: private output path (default SUCCESS_STORY_QUEUE)")
     parser.add_argument("--keywords", action="store_true",
                         help="keyword dominance engine: matrix + coverage + autocomplete")
     parser.add_argument("--polish", action="store_true",
@@ -1802,6 +2016,14 @@ def main() -> int:
         from . import freshness as _fr
 
         return _fr.run_cli()
+    if getattr(args, "source_monitor", False):
+        from . import source_monitor as _sm
+
+        return _sm.run_cli(notify=True)
+    if getattr(args, "opportunity_monitor", False):
+        from . import opportunity_monitor as _om
+
+        return _om.run_cli(notify=True)
     if args.gsc_refresh:
         from . import gsc_refresh as _gr
 
@@ -1814,6 +2036,14 @@ def main() -> int:
         from . import production_audit
 
         return production_audit.run()
+    if args.live_validation is not None:
+        from . import live_validation
+
+        return live_validation.run_cli(args.live_validation)
+    if args.live_seo:
+        from . import live_seo
+
+        return live_seo.run_cli(args.live_seo)
     if args.service_center:
         return service_center_setup(dry=args.dry_run, force=args.force)
     if args.content_audit:
@@ -1957,6 +2187,9 @@ def main() -> int:
         from . import adsense_ready
 
         return adsense_ready.run()
+
+    if args.success_stories:
+        return success_story_review(args.success_stories, args.success_stories_out)
 
     if args.adsense_kit:
         from . import site_setup

@@ -3,7 +3,7 @@
 Two parts:
 1) SERVER-SIDE (this file): Gemini generates bilingual (Telugu+English)
    question sets -> we build a safe HTML quiz block + SEO answer key +
-   Quiz JSON-LD -> published as a normal WP post (category "Daily Quiz").
+   Quiz JSON-LD -> saved as a normal review-first WP post (category "Daily Quiz").
 2) SITE-WIDE (widget): the interactive exam UI (timer, question palette,
    negative marking, streaks, explanations, WhatsApp share) ships as ONE
    <style>+<script> text-widget — installed like design_kit, idempotent.

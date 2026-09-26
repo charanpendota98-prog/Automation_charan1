@@ -10,4 +10,18 @@ Disallow: /keyword-universe-top200.csv
 User-agent: Mediapartners-Google
 Allow: /
 
+# Public AI/search crawlers may read canonical editorial pages.
+# Private evidence, drafts and internal artifacts remain outside public paths.
+User-agent: GPTBot
+Allow: /
+User-agent: OAI-SearchBot
+Allow: /
+User-agent: Google-Extended
+Allow: /
+User-agent: ClaudeBot
+Allow: /
+User-agent: PerplexityBot
+Allow: /
+
 Sitemap: https://studentup.in/sitemap.xml
+Sitemap: https://studentup.in/news-sitemap.xml

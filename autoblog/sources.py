@@ -9,6 +9,7 @@ import json
 import logging
 import re
 from dataclasses import dataclass, field
+from datetime import datetime, timezone
 from io import BytesIO
 from typing import List, Optional
 from urllib.parse import urljoin, urlparse
@@ -28,7 +29,13 @@ BLOCKED_HOSTS = ("facebook.com", "twitter.com", "x.com", "instagram.com")
 OFFICIAL_SUFFIX = (".gov.in", ".nic.in", ".gov", ".edu", ".ac.in", ".edu.in")
 OFFICIAL_HOSTS = ("tspsc.gov.in", "appsc.gov.in", "upsc.gov.in", "ssc.gov.in",
                   "ibps.in", "rrbcdg.gov.in", "nta.ac.in", "scholarships.gov.in",
-                  "nsdl.co.in", "cbse.gov.in", "bie.ap.gov.in", "bse.telangana.gov.in")
+                  "nsdl.co.in", "cbse.gov.in", "bie.ap.gov.in", "bse.telangana.gov.in",
+                  "nta.ac.in", "ugcnet.nta.ac.in", "ctet.nic.in", "rrbcdg.gov.in",
+                  "epfindia.gov.in", "esic.gov.in", "sebi.gov.in", "dgt.gov.in",
+                  "education.gov.in", "apmsrb.ap.gov.in", "telangana.gov.in",
+                  "ap.gov.in", "osmania.ac.in", "jntuh.ac.in", "jntuk.ac.in",
+                  "jntuk.edu.in", "andhrauniversity.edu.in", "braou.ac.in",
+                  "kakatiya.ac.in")
 
 
 @dataclass
@@ -43,6 +50,13 @@ class SourceArticle:
     updated_date: str = ""
     # v77: source page lopala unna useful outbound links (official-first rank).
     outbound: List[str] = field(default_factory=list)
+    # Keep anchor text too: official apply/notification links must be mapped
+    # from evidence, never invented by the model.
+    outbound_links: List[dict] = field(default_factory=list)
+    canonical_url: str = ""
+    content_type: str = ""
+    status_code: int = 200
+    fetched_at: str = ""
 
 
 def is_valid_source_url(url: str) -> bool:
@@ -54,7 +68,37 @@ def is_valid_source_url(url: str) -> bool:
         return False
 
 
-def _extract_pdf(url: str, content: bytes) -> SourceArticle:
+def _source_link_record(url: str, source_url: str, anchor_text: str = "",
+                        verification_status: str = "present_in_source_text") -> dict:
+    host = urlparse(url).netloc.lower().replace("www.", "")
+    return {
+        "url": url,
+        "exact_url": url,
+        "text": re.sub(r"\s+", " ", anchor_text or "")[:180],
+        "anchor_text": re.sub(r"\s+", " ", anchor_text or "")[:180],
+        "source_url": source_url,
+        "canonical_url": url,
+        "final_url": "",
+        "domain_class": ("official_explicit" if host in OFFICIAL_HOSTS else
+                          "official_suffix" if is_official_domain(host) else "external"),
+        "link_type": _link_type(anchor_text, url) if "_link_type" in globals() else "unknown",
+        "verification_status": verification_status,
+    }
+
+
+def _text_urls(text: str) -> List[str]:
+    """Exact public URLs visible in extracted HTML/PDF text."""
+    out, seen = [], set()
+    for match in re.findall(r"https?://[^\s<>\"']+", text or "", re.I):
+        value = match.rstrip(".,;:)]}")
+        if is_valid_source_url(value) and value not in seen:
+            seen.add(value)
+            out.append(value)
+    return out[:60]
+
+
+def _extract_pdf(url: str, content: bytes, canonical_url: str = "",
+                 status_code: int = 200) -> SourceArticle:
     """Extract text from public notification PDFs without storing the file."""
     try:
         from pypdf import PdfReader
@@ -76,13 +120,20 @@ def _extract_pdf(url: str, content: bytes) -> SourceArticle:
     title = re.sub(r"[_+%20-]+", " ", filename.rsplit(".", 1)[0]).strip() or url
     date_match = re.search(r"(?:dated?|date)\D{0,12}(\d{1,2}[^\n]{0,20}20\d{2})",
                            extracted, re.I)
+    clipped = extracted[:MAX_SOURCE_CHARS]
     return SourceArticle(
         url=url,
         title=title,
         site_name=urlparse(url).netloc,
-        text=extracted[:MAX_SOURCE_CHARS],
+        text=clipped,
         meta_description="Public PDF notification; verify the cited page before publishing.",
         published_date=date_match.group(1).strip() if date_match else "",
+        outbound_links=[_source_link_record(found, url, "PDF source URL")
+                        for found in _text_urls(clipped)],
+        canonical_url=canonical_url or url,
+        content_type="application/pdf",
+        status_code=int(status_code),
+        fetched_at=datetime.now(timezone.utc).isoformat(),
     )
 
 
@@ -120,7 +171,8 @@ def fetch_source(url: str, retries: int = 2) -> SourceArticle:
 
     ctype = resp.headers.get("content-type", "").lower()
     if "pdf" in ctype or urlparse(url).path.lower().endswith(".pdf"):
-        return _extract_pdf(url, resp.content)
+        return _extract_pdf(url, resp.content, canonical_url=str(resp.url or url),
+                            status_code=resp.status_code)
 
     # encoding fix: chala Indian sites wrong charset declare chestayi
     if not resp.encoding or resp.encoding.lower() == "iso-8859-1":
@@ -129,13 +181,21 @@ def fetch_source(url: str, retries: int = 2) -> SourceArticle:
         raise ValueError(f"Not an HTML page: {ctype[:60]}")
 
     soup = BeautifulSoup(resp.text, "html.parser")
+    canonical_tag = soup.find("link", rel=lambda value: value and "canonical" in value)
+    canonical_url = urljoin(url, canonical_tag.get("href", "").strip()) if canonical_tag and canonical_tag.get("href") else str(resp.url or url)
     # v85: decompose MUNDU JSON-LD backup (JS-site fallback kosam).
     jsonld_backup = _jsonld_article_text(soup)
     for tag in soup(["script", "style", "nav", "header", "footer", "aside",
                      "form", "iframe", "noscript", "button", "svg"]):
         tag.decompose()
 
-    src = SourceArticle(url=url)
+    src = SourceArticle(
+        url=url,
+        canonical_url=canonical_url,
+        content_type=ctype.split(";", 1)[0].strip().lower(),
+        status_code=int(resp.status_code),
+        fetched_at=datetime.now(timezone.utc).isoformat(),
+    )
 
     # title: og:title > twitter:title > <title> > first h1
     og = soup.find("meta", attrs={"property": "og:title"})
@@ -208,7 +268,12 @@ def fetch_source(url: str, retries: int = 2) -> SourceArticle:
     if not src.text:
         raise ValueError("Source article lo text dorakaledu (JavaScript site ayi untundi)")
     # v77: related useful links — content lopala unna outbound (official-first).
-    src.outbound = rank_outbound(_page_links(container, url), url)
+    src.outbound_links = _page_link_records(container, url)
+    known = {item.get("exact_url") or item.get("url") for item in src.outbound_links}
+    for found in _text_urls(src.text):
+        if found not in known:
+            src.outbound_links.append(_source_link_record(found, url, "URL in source text"))
+    src.outbound = rank_outbound([item["url"] for item in src.outbound_links], url)
     return src
 
 
@@ -239,19 +304,63 @@ def _jsonld_article_text(soup) -> str:
     return "\n".join(out)
 
 
-def _page_links(container, base_url: str) -> List[str]:
-    """Content-area <a href> — boilerplate (nav/footer) mundhe decompose ayindi."""
+def _link_type(anchor_text: str, url: str) -> str:
+    """Infer purpose only from observable label/path; unknown stays unknown."""
+    haystack = f"{anchor_text} {url}".lower()
+    patterns = (
+        ("application", r"apply|application|registration|online form|career|careers|jobs|สมัคร|దరఖాస్తు"),
+        ("official_notice", r"notification|notice|advertisement| भर्ती|విజ్ఞప్తి|circular|pdf"),
+        ("result", r"result|merit|selection list|shortlist|ఫలిత"),
+        ("admit_card", r"admit|hall ticket|call letter| प्रवेश पत्र|హాల్ టికెట్"),
+        ("syllabus", r"syllabus|scheme|exam pattern|సిలబస్"),
+        ("fee_payment", r"fee|payment|challan|pay now|ఫీజు"),
+        ("contact", r"contact|helpdesk|helpline|support|సంప్రదించ"),
+        ("organization", r"official website|department|board|university|about us|home"),
+    )
+    for kind, pattern in patterns:
+        if re.search(pattern, haystack, re.I):
+            return kind
+    return "unknown"
+
+
+def _page_link_records(container, base_url: str) -> List[dict]:
+    """Content-area links with anchor text and auditable source provenance.
+
+    Boilerplate was removed before this helper runs. Anchor text is evidence
+    for mapping an official Apply/Notification URL; the model is never allowed
+    to create an arbitrary path merely because a host looks official.
+    """
     out, seen = [], set()
-    for a in container.find_all("a", href=True):
-        href = (a.get("href") or "").strip()
+    for anchor in container.find_all("a", href=True):
+        href = (anchor.get("href") or "").strip()
         if not href or href.startswith(("#", "javascript:", "mailto:", "tel:")):
             continue
-        absu = urljoin(base_url, href).split("#")[0]
-        if not is_valid_source_url(absu) or absu in seen:
+        absolute = urljoin(base_url, href).split("#")[0]
+        if not is_valid_source_url(absolute) or absolute in seen:
             continue
-        seen.add(absu)
-        out.append(absu)
+        seen.add(absolute)
+        text = re.sub(r"\s+", " ", anchor.get_text(" ", strip=True))[:180]
+        host = urlparse(absolute).netloc.lower().replace("www.", "")
+        out.append({
+            "url": absolute,
+            "exact_url": absolute,
+            "text": text,
+            "anchor_text": text,
+            "source_url": base_url,
+            "canonical_url": absolute,
+            "final_url": "",
+            "domain_class": "official_explicit" if host in OFFICIAL_HOSTS else (
+                "official_suffix" if is_official_domain(host) else "external"),
+            "link_type": _link_type(text, absolute),
+            "verification_status": "present_in_source_html",
+            "rel": list(anchor.get("rel") or [])[:8],
+        })
     return out[:60]
+
+
+def _page_links(container, base_url: str) -> List[str]:
+    """Backward-compatible URL-only view of content-area links."""
+    return [item["url"] for item in _page_link_records(container, base_url)]
 
 
 def is_official_domain(netloc_or_url: str) -> bool:
@@ -266,7 +375,7 @@ def _official_score(netloc: str) -> int:
     host = (netloc or "").lower().replace("www.", "")
     if host in OFFICIAL_HOSTS:
         return 3
-    if host.endswith(OFFICIAL_SUFFIX):
+    if host.endswith(OFFICIAL_SUFFIX) or host in {suffix.lstrip(".") for suffix in OFFICIAL_SUFFIX}:
         return 2
     if host.endswith((".org", ".info")):
         return 1
@@ -309,14 +418,51 @@ def pending_from_queue() -> Optional[str]:
     for line in path.read_text(encoding="utf-8").splitlines():
         url = line.strip()
         if url and url.startswith("http") and not state.source_done(config.STATE_PATH, url):
+            try:
+                state.mark_source_queued(config.STATE_PATH, url)
+            except Exception:
+                pass
             return url
     return None
 
 
-def mark_done_and_clean(url: str) -> None:
-    from . import state
+def mark_done_and_clean(
+    url: str,
+    completed: bool = True,
+    failure_type: str = "draft_failed",
+    details: str = "",
+) -> None:
+    """Remove a queue URL and finalize its source/opportunity state.
 
-    state.mark_source_done(config.STATE_PATH, url)
+    Failed drafts are retryable, and their outcome is retained in the radar
+    audit table rather than silently disappearing from the queue.
+    """
+    from . import state
+    import hashlib
+
+    if completed:
+        state.mark_source_done(config.STATE_PATH, url)
+        try:
+            state.record_radar_event(config.STATE_PATH, "draft_ready", url,
+                                     details="draft created after source preflight")
+        except Exception:
+            pass
+    else:
+        state.mark_source_retry(config.STATE_PATH, url)
+        try:
+            state.record_radar_event(config.STATE_PATH, failure_type, url,
+                                     details=details)
+        except Exception:
+            pass
+        url_key = "radar:url:" + hashlib.md5((url or "").encode("utf-8")).hexdigest()[:16]
+        ref_key = url_key + ":opportunity"
+        opportunity_key = state.meta_get(config.STATE_PATH, ref_key)
+        for key in (url_key, ref_key, opportunity_key):
+            if key:
+                try:
+                    state.meta_delete(config.STATE_PATH, key)
+                except Exception:
+                    pass
     path = queue_file_path()
     if path.exists():
         lines = [l for l in path.read_text(encoding="utf-8").splitlines()
