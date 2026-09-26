@@ -78,6 +78,10 @@ function studentup_ga4_head() {
 	if ( '' !== $gsc ) {
 		echo '<meta name="google-site-verification" content="' . esc_attr( $gsc ) . '">' . "\n";
 	}
+	$bing = trim( (string) studentup_opt( 'bing_verify', '' ) );
+	if ( '' !== $bing ) {
+		echo '<meta name="msvalidate.01" content="' . esc_attr( $bing ) . '">' . "\n";
+	}
 	$ga4 = trim( (string) studentup_opt( 'ga4_id', '' ) );
 	if ( '' === $ga4 || ! preg_match( '/^G-[A-Z0-9]{6,}$/', $ga4 ) ) {
 		return;

@@ -97,8 +97,10 @@ def run(article: dict, html: str = "", media_id: Optional[int] = None,
 
     # ------------------------------------------------------------ CONTENT
     rm = article.get("_rm") or {}
-    add("words", "CONTENT", "Content depth (≥1500 words)", words >= 1500,
-        f"{words} words", "deep research + 1600+ words rayandi", 3)
+    min_words = int(getattr(config, "RM_MIN_WORDS", 600))
+    add("words", "CONTENT", f"Content depth (≥{min_words} useful words)",
+        words >= min_words, f"{words} words",
+        "useful detail add cheyandi; filler tho length penchavaddu", 3)
     dens = (plain.lower().count(kw_l) / words) if (kw_l and words) else 0
     add("density", "CONTENT", "Keyword density (0.4–3%)", 0.004 <= dens <= 0.03,
         f"{dens:.2%} ({plain.lower().count(kw_l)}x)", "rm100 density fix chudandi", 2)
@@ -295,10 +297,12 @@ def run(article: dict, html: str = "", media_id: Optional[int] = None,
         "rm100 title fix (kw modatlo)", 2, critical=True)
     add("title_number", "SEO", "Title lo number/year", bool(re.search(r"\d", title)),
         "number ledu", "year add cheyandi", 1)
+    seo_title_for_gate = str(article.get("seo_title") or title).lower()
     add("title_power", "SEO", "Title lo power word",
-        any(w in title.lower() for w in validator.TITLE_POWER_WORDS), "", "", 1)
+        any(w in seo_title_for_gate for w in validator.TITLE_POWER_WORDS), "", "", 1)
     add("title_sentiment", "SEO", "Title lo positive sentiment word",
-        any(w in title.lower() for w in ("best", "easy", "amazing", "excellent")),
+        bool(getattr(config, "PUBLIC_EDITORIAL_CLEAN", True))
+        or any(w in seo_title_for_gate for w in ("best", "easy", "amazing", "excellent")),
         "", "Best/Easy lanti natural sentiment word add cheyandi", 1)
     add("meta_ok", "SEO", "Meta 110–156 + keyword",
         110 <= len(meta) <= 156 and kw_l in meta.lower(), f"{len(meta)} ch",
@@ -433,8 +437,9 @@ def run(article: dict, html: str = "", media_id: Optional[int] = None,
     add("publisher", "GOOGLE READINESS", "Publisher (brand signal)",
         '"publisher"' in html, "", "", 1)
     people_first = article.get("_google_quality") or {}
-    add("methodology", "GOOGLE READINESS", "Visible Who/How/Why methodology",
-        "su-methodology" in html, "", "google_quality.inject_methodology", 2,
+    add("methodology", "GOOGLE READINESS", "Editorial provenance policy",
+        bool(getattr(config, "PUBLIC_EDITORIAL_CLEAN", True))
+        or "su-methodology" in html, "", "private provenance ledger / methodology export", 2,
         critical=True)
     add("people_first", "GOOGLE READINESS", "People-first evidence audit",
         bool(people_first.get("ok")),

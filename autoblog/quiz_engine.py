@@ -3,7 +3,7 @@
 Two parts:
 1) SERVER-SIDE (this file): Gemini generates bilingual (Telugu+English)
    question sets -> we build a safe HTML quiz block + SEO answer key +
-   Quiz JSON-LD -> published as a normal WP post (category "Daily Quiz").
+   Quiz JSON-LD -> saved as a normal review-first WP post (category "Daily Quiz").
 2) SITE-WIDE (widget): the interactive exam UI (timer, question palette,
    negative marking, streaks, explanations, WhatsApp share) ships as ONE
    <style>+<script> text-widget — installed like design_kit, idempotent.
@@ -213,6 +213,47 @@ MOCK_BANK = [
      "ఆయుష్మాన్ భారత్ కార్డులు ఏ పోర్టల్ ద్వారా వస్తాయి?",
      ["pmjay.gov.in", "passportindia.gov.in", "scholarships.gov.in", "irdai.gov.in"], 0,
      "PM-JAY (Ayushman Bharat) ki pmjay.gov.in — ₹5 lakh health cover per family."),
+    ("Find the next number: 2, 5, 11, 23, ?",
+     "తదుపరి సంఖ్యను కనుగొనండి: 2, 5, 11, 23, ?",
+     ["35", "47", "46", "49"], 1,
+     "Each number is multiplied by 2 and then 1 is added: 23 × 2 + 1 = 47."),
+    ("If 5 workers finish a task in 12 days, how many worker-days does it require?",
+     "5 మంది కార్మికులు ఒక పనిని 12 రోజుల్లో చేస్తే worker-days ఎన్ని?",
+     ["17", "60", "72", "120"], 1,
+     "Worker-days = workers × days = 5 × 12 = 60. This is a basic work-and-time check."),
+    ("A shop gives 10% off a Rs.500 item. What is the sale price?",
+     "రూ.500 వస్తువుపై 10% తగ్గింపు ఉంటే అమ్మకపు ధర ఎంత?",
+     ["Rs.450", "Rs.490", "Rs.400", "Rs.550"], 0,
+     "Ten percent of ₹500 is ₹50, so the sale price is ₹500 − ₹50 = ₹450."),
+    ("A is taller than B, and B is taller than C. Who is the shortest?",
+     "A కంటే B పొట్టి, B కంటే C పొట్టి. ఎవరు అందరికంటే పొట్టి?",
+     ["A", "B", "C", "Cannot say"], 2,
+     "The order is A > B > C in height, so C is the shortest."),
+    ("Choose the correctly spelled word.",
+     "సరైన spelling ఉన్న పదాన్ని ఎంచుకోండి.",
+     ["Accomodation", "Accommodation", "Acommodation", "Accommadation"], 1,
+     "Accommodation has two c letters and two m letters: accommodation."),
+    ("Choose the closest meaning of 'accurate'.",
+     "'Accurate' అనే పదానికి దగ్గర అర్థం ఏది?",
+     ["Exact", "Late", "Difficult", "Careless"], 0,
+     "Accurate means correct or exact. This is a common English aptitude vocabulary check."),
+    ("Choose the correct sentence.",
+     "సరైన వాక్యాన్ని ఎంచుకోండి.",
+     ["She go to college daily.", "She goes to college daily.",
+      "She going college daily.", "She gone to college daily."], 1,
+     "With she, he or it in the simple present, the verb normally takes s: She goes."),
+    ("The average of 10, 20 and 30 is?",
+     "10, 20, 30 సగటు ఎంత?",
+     ["15", "20", "25", "30"], 1,
+     "Average = (10 + 20 + 30) ÷ 3 = 20."),
+    ("A person walks north, then turns right. Which direction are they facing?",
+     "ఒక వ్యక్తి ఉత్తరం వైపు నడిచి కుడివైపు తిరిగితే ఏ దిశను చూస్తారు?",
+     ["West", "South", "East", "North"], 2,
+     "When facing north, a right turn points east. This is a basic direction-reasoning question."),
+    ("If CAT is coded as DBU, how is DOG coded using the same rule?",
+     "CAT ను DBU గా code చేస్తే అదే నియమంతో DOG ఎలా ఉంటుంది?",
+     ["EPH", "CNE", "EOG", "DPH"], 0,
+     "Every letter moves one step forward: D→E, O→P, G→H, giving EPH."),
 ]
 
 

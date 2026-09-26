@@ -86,6 +86,9 @@ $label = $terms ? $terms[0]->name : 'Update';
 				?>
 				<a class="su-readmore" href="<?php the_permalink(); ?>"><?php echo esc_html__( 'Read more', 'studentup' ) . ' →'; ?></a>
 				<?php echo studentup_save_button( 0, 'su-save-card' ); // v92: 🔖 save-for-later (escaped in helper) ?>
+				<?php if ( function_exists( 'studentup_tool_buttons' ) ) : ?>
+					<?php echo wp_kses_post( studentup_tool_buttons( 0, 'card' ) ); ?>
+				<?php endif; ?>
 			</div>
 		</div>
 	</article>
@@ -150,7 +153,7 @@ function studentup_menu_fallback() {
 	$groups = array(
 		array(
 			'label' => 'Jobs',
-			'items' => array( 'ts-jobs', 'ap-jobs', 'central-jobs', 'private-jobs', 'walkin-jobs', 'software-jobs' ),
+			'items' => array( 'ts-jobs', 'ap-jobs', 'central-jobs', 'private-jobs', 'walkin-jobs', 'software-jobs', 'success-stories' ),
 		),
 	);
 	$top = array( 'hall-tickets', 'results', 'current-affairs' );
@@ -198,7 +201,17 @@ function studentup_menu_fallback() {
 	/**
 	 * "More" — page links unte mattrame (404 eppudu ledu).
 	 */
-	$more = array();
+	$more = array(
+		array( 'label' => 'Latest active jobs', 'url' => studentup_opportunity_board_url(), 'desc' => 'Dates unna active notices only' ),
+	);
+	$success_term = $term_of( 'success-stories' );
+	if ( $success_term && isset( $label_of['success-stories'] ) ) {
+		$more[] = array(
+			'label' => $label_of['success-stories']['label'],
+			'url'   => get_category_link( $success_term ),
+			'desc'  => $label_of['success-stories']['hint'],
+		);
+	}
 	$pages = array(
 		array( 'slug' => 'saved',   'label' => 'Saved posts', 'desc' => 'Padhukoni tarvata chudandi' ),
 		array( 'slug' => 'contact', 'label' => 'Contact',     'desc' => 'Corrections · suggestions' ),

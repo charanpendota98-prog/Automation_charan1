@@ -18,8 +18,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<div class="footer-grid">
 			<div>
 				<h4><?php bloginfo( 'name' ); ?></h4>
-				<p><?php echo esc_html( get_bloginfo( 'description' ) ); ?></p>
-				<p>✅ Every post is verified against official sources. Spotted a mistake? Tell us at <a href="mailto:<?php echo esc_attr( studentup_contact_email() ); ?>"><?php echo esc_html( studentup_contact_email() ); ?></a></p>
+				<p>Jobs, scholarships, results and exam updates for students.</p>
+				<p>✅ Spotted a mistake? Tell us at <a href="mailto:<?php echo esc_attr( studentup_contact_email() ); ?>"><?php echo esc_html( studentup_contact_email() ); ?></a></p>
 			</div>
 			<div>
 				<h4>Categories</h4>
@@ -102,14 +102,14 @@ if ( studentup_opt( 'sticky_ad', '0' ) ) :
 <?php endif; ?>
 
 <?php
-// v72.1: App DOWNLOAD — button prathi visit lo kanipistundi (mobile first).
+// v72.1: Web-app install — native APK claim cheyyakunda, browser-provided install flow.
 // Click: Android/Chrome lo install prompt, iPhone/desktop lo device-wise steps.
 if ( studentup_opt( 'pwa', '1' ) && studentup_opt( 'install_prompt', '1' ) ) :
 	?>
-	<button type="button" class="installbtn" id="installbtn">⬇️ Download App <span class="ibadge">FREE</span></button>
-	<div class="installsheet" id="installhint" hidden role="dialog" aria-labelledby="isheet-title">
-		<h3 id="isheet-title">Install StudentUp as an app</h3>
-		<p class="isub">Open it with one tap · pages you visited stay available offline.</p>
+	<button type="button" class="installbtn" id="installbtn" aria-controls="installhint" aria-expanded="false">⬇️ Install app <span class="ibadge">WEB APP</span></button>
+	<div class="installsheet" id="installhint" hidden role="dialog" aria-modal="true" aria-labelledby="isheet-title">
+		<h3 id="isheet-title">Install StudentUp as a web app</h3>
+		<p class="isub">One-tap access · visited pages can stay available offline. No native APK download is required.</p>
 		<ol id="isteps">
 			<li><b>Android (Chrome):</b> ⋮ Menu → <b>Install app</b> / <b>Add to Home screen</b></li>
 			<li><b>iPhone (Safari):</b> <b>Share</b> ⬆️ → <b>Add to Home Screen</b> → Add</li>
