@@ -33,12 +33,19 @@
   var menuBtn = document.getElementById("menubtn");
   var panel = document.getElementById("mpanel");
   var backdrop = document.getElementById("mbackdrop");
+  var panelClose = document.getElementById("mpanelclose");
   function setMenu(open) {
     if (!panel) return;
     panel.classList.toggle("open", open);
+    panel.setAttribute("aria-hidden", open ? "false" : "true");
     if (backdrop) backdrop.classList.toggle("show", open);
     document.body.classList.toggle("mlock", open);
-    if (menuBtn) menuBtn.setAttribute("aria-expanded", open ? "true" : "false");
+    if (menuBtn) {
+      menuBtn.setAttribute("aria-expanded", open ? "true" : "false");
+      menuBtn.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+      menuBtn.textContent = open ? "✕" : "☰";
+    }
+    if (open && panelClose) { panelClose.focus(); }
   }
   if (menuBtn) {
     menuBtn.addEventListener("click", function () {
@@ -46,8 +53,9 @@
     });
   }
   if (backdrop) backdrop.addEventListener("click", function () { setMenu(false); });
+  if (panelClose) panelClose.addEventListener("click", function () { setMenu(false); if (menuBtn) menuBtn.focus(); });
   document.addEventListener("keydown", function (e) {
-    if (e.key === "Escape") setMenu(false);
+    if (e.key === "Escape") { setMenu(false); if (menuBtn) menuBtn.focus(); }
   });
   if (panel) {
     panel.addEventListener("click", function (e) {

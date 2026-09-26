@@ -19,6 +19,8 @@ $su_author = get_queried_object();
 $su_id     = $su_author instanceof WP_User ? (int) $su_author->ID : (int) get_the_author_meta( 'ID' );
 $su_name   = $su_author instanceof WP_User ? $su_author->display_name : get_the_author_meta( 'display_name', $su_id );
 $su_bio    = $su_author instanceof WP_User ? $su_author->description : get_the_author_meta( 'description', $su_id );
+$su_name   = $su_name ?: 'Charan Pendota';
+$su_bio    = $su_bio ?: 'Charan Pendota is a content writer and digital marketing editor with 6+ years of experience in content writing. At StudentUp, he focuses on clear, source-backed education and career information for Telangana and Andhra Pradesh students.';
 $su_url    = $su_author instanceof WP_User ? $su_author->user_url : get_the_author_meta( 'user_url', $su_id );
 $su_count  = $su_id ? (int) count_user_posts( $su_id, 'post', true ) : 0;
 ?>

@@ -121,6 +121,10 @@ function studentup_ago( $iso ) {
  * Ticker (renders only when there is a feed — hidden when empty).
  */
 function studentup_breaking_ticker() {
+	// v126: all scrolling bars are retired from the public surface.
+	// Keep the hook for compatibility with older templates; the regular
+	// Breaking section remains available separately when explicitly enabled.
+	return;
 	if ( ! studentup_breaking_enabled() ) {
 		return;   // v72: default OFF (turn it on in WP admin → StudentUp → Content)
 	}
@@ -194,6 +198,16 @@ function studentup_latest_ticker_items( $max = 12 ) {
 	$max    = max( 1, (int) $max );
 	$cached = get_transient( 'su_latest_ticker' );
 	if ( is_array( $cached ) ) {
+		$cached = array_values(
+			array_filter(
+				$cached,
+				static function ( $item ) {
+					$title = isset( $item['title'] ) ? wp_strip_all_tags( (string) $item['title'] ) : '';
+					$link  = isset( $item['link'] ) ? (string) $item['link'] : '';
+					return $link && 'guide' !== sanitize_title( $title );
+				}
+			)
+		);
 		return array_slice( $cached, 0, $max );
 	}
 	$q     = new WP_Query(
@@ -207,12 +221,17 @@ function studentup_latest_ticker_items( $max = 12 ) {
 	);
 	$items = array();
 	foreach ( (array) $q->posts as $p ) {
-		$link = get_permalink( $p );
-		if ( ! $link ) {
+		$link  = get_permalink( $p );
+		$title = wp_strip_all_tags( (string) get_the_title( $p ) );
+		$slug  = (string) get_post_field( 'post_name', $p );
+		/* A generic placeholder/guide is not a useful Latest Jobs item. Keep
+		 * the ticker focused on real student opportunities and avoid showing a
+		 * low-value "Guide" card above the homepage on mobile. */
+		if ( ! $link || 'guide' === sanitize_title( $title ) || 'guide' === $slug ) {
 			continue;
 		}
 		$items[] = array(
-			'title' => get_the_title( $p ),
+			'title' => $title,
 			'link'  => $link,
 			'time'  => get_post_time( DATE_W3C, false, $p ),
 		);
@@ -238,6 +257,8 @@ add_action( 'save_post', 'studentup_latest_ticker_flush', 30 );
  * Render the marquee — home page mattrame (post pages lo reading ki distraction vaddu).
  */
 function studentup_latest_ticker() {
+	// v127: owner-enabled latest jobs strip restored — same compact, useful bar
+	// as the approved reference design. It is still homepage-only and cached.
 	if ( ! is_front_page() || '0' === (string) studentup_opt( 'latest_ticker', '1' ) ) {
 		return;
 	}
@@ -252,9 +273,10 @@ function studentup_latest_ticker() {
 	foreach ( array( 0, 1 ) as $dup ) {   // duplicate set — seamless 50% loop
 		foreach ( $items as $it ) {
 			printf(
-				'<a href="%s"%s>%s <span class="tsrc">%s</span></a>',
+				'<a href="%s"%s aria-label="%s" title="Open article">%s <span class="tsrc">%s</span></a>',
 				esc_url( $it['link'] ),
 				$dup ? ' aria-hidden="true" tabindex="-1"' : '',
+				esc_attr( 'Open article: ' . wp_strip_all_tags( (string) $it['title'] ) ),
 				esc_html( $it['title'] ),
 				esc_html( studentup_ago( $it['time'] ) )
 			);

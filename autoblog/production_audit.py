@@ -46,11 +46,10 @@ def local_checks() -> List[Dict]:
     _add(rows, "PASS" if config.WP_USERNAME and config.WP_APP_PASSWORD else "FAIL",
          "WordPress credentials", "Application Password configured" if
          config.WP_USERNAME and config.WP_APP_PASSWORD else "WP_USERNAME/WP_APP_PASSWORD missing")
-    keys = list(getattr(config, "GEMINI_API_KEYS", []) or [])
-    if config.GEMINI_API_KEY and config.GEMINI_API_KEY not in keys:
-        keys.insert(0, config.GEMINI_API_KEY)
-    _add(rows, "PASS" if keys else "FAIL", "Gemini key rotation",
-         f"{len(keys)} key(s) configured" if keys else "no Gemini key")
+    providers = config.configured_ai_providers()
+    key_count = sum(len(config.ai_provider_keys(provider)) for provider in providers)
+    _add(rows, "PASS" if providers else "FAIL", "Gemini/AI key rotation",
+         f"{key_count} key(s) across {', '.join(providers)}" if providers else "no AI provider key")
     _add(rows, "PASS" if config.FACT_STRICT else "FAIL", "Fact guard",
          "dates/counts must match source" if config.FACT_STRICT else "FACT_STRICT=0 is unsafe")
     _add(rows, "PASS" if config.ORIG_HARD_FLOOR >= 72 else "FAIL",

@@ -97,6 +97,74 @@ function studentup_house_ads() {
 }
 
 /**
+ * Featured paid partner ad — owner-editable from StudentUp → Ads & monetisation.
+ *
+ * This is intentionally separate from the bot-managed house-ad JSON: an owner can
+ * upload a real partner image in the Media Library and change the campaign without
+ * touching a template. It is shown only in the homepage mid slot when enabled.
+ *
+ * @return array<string,string>
+ */
+function studentup_featured_partner_ad() {
+	if ( '1' !== (string) studentup_opt( 'partner_ad_enabled', '0' ) ) {
+		return array();
+	}
+	$link  = esc_url_raw( (string) studentup_opt( 'partner_ad_link', '' ) );
+	$title = wp_strip_all_tags( (string) studentup_opt( 'partner_ad_title', '' ) );
+	if ( ! $link || ! $title || ! preg_match( '#^https?://#i', $link ) ) {
+		return array();
+	}
+	$image = esc_url_raw( (string) studentup_opt( 'partner_ad_image_url', '' ) );
+	if ( $image && ! preg_match( '#^https?://#i', $image ) ) {
+		$image = '';
+	}
+	return array(
+		'name'        => wp_strip_all_tags( (string) studentup_opt( 'partner_ad_name', '' ) ),
+		'title'       => $title,
+		'description' => wp_strip_all_tags( (string) studentup_opt( 'partner_ad_description', '' ) ),
+		'image'       => $image,
+		'link'        => $link,
+		'cta'         => wp_strip_all_tags( (string) studentup_opt( 'partner_ad_cta', 'View details →' ) ) ?: 'View details →',
+	);
+}
+
+/**
+ * Render the featured partner in the exact homepage mid-ad position.
+ *
+ * @param string $place ad slot name.
+ * @return bool whether an ad was rendered.
+ */
+function studentup_render_featured_partner_ad( $place ) {
+	if ( 'mid' !== $place || ! is_front_page() ) {
+		return false;
+	}
+	$ad = studentup_featured_partner_ad();
+	if ( ! $ad ) {
+		return false;
+	}
+	studentup_ad_count( true );
+	echo '<div class="su-ad-reserved su-partner-ad-reserved" style="min-height:320px" data-su-height="320">';
+	echo '<aside class="su-ad su-ad-partner" aria-label="Sponsored college partner content">';
+	echo '<div class="su-ad-kicker">SPONSORED · COLLEGE PARTNER</div>';
+	if ( $ad['image'] ) {
+		echo '<a class="su-ad-partner-media" href="' . esc_url( $ad['link'] ) . '" target="_blank" rel="sponsored nofollow noopener">';
+		echo '<img src="' . esc_url( $ad['image'] ) . '" alt="' . esc_attr( $ad['name'] ? $ad['name'] . ' — ' . $ad['title'] : $ad['title'] ) . '" loading="lazy" decoding="async">';
+		echo '</a>';
+	}
+	if ( $ad['name'] ) {
+		echo '<div class="su-ad-partner-name">' . esc_html( $ad['name'] ) . '</div>';
+	}
+	echo '<h3 class="su-ad-title">' . esc_html( $ad['title'] ) . '</h3>';
+	if ( $ad['description'] ) {
+		echo '<p class="su-ad-desc">' . esc_html( $ad['description'] ) . '</p>';
+	}
+	echo '<a class="su-ad-cta" href="' . esc_url( $ad['link'] ) . '" target="_blank" rel="sponsored nofollow noopener">' . esc_html( $ad['cta'] ) . '</a>';
+	echo '<div class="su-ad-disc">Advertisement — no editorial responsibility for this content; official notification links appear only in the main content.</div>';
+	echo '</aside></div>';
+	return true;
+}
+
+/**
  * House house ads lo day-rotation (deterministic).
  *
  * @param array $ads ads list.
@@ -174,6 +242,11 @@ function studentup_ad( $place = 'mid' ) {
 	$max = $max > 0 ? $max : 4;
 	if ( studentup_ad_count() >= $max ) {
 		return; // density cap — AdSense safe + UX
+	}
+	// A manually configured paid partner takes this homepage slot before AdSense
+	// or rotating house ads, so the campaign appears exactly where the owner chose.
+	if ( studentup_render_featured_partner_ad( $place ) ) {
+		return;
 	}
 	$client = studentup_adsense_client();
 	// v82: place 'leaderboard' → option 'adsense_slot_top_leaderboard'

@@ -1,7 +1,7 @@
 /* StudentUp PWA / App download (v72.1)
  * Enti chestundi:
  *   1) service worker register (query URL → root scope) — repeat visits fast + offline page
- *   2) "⬇️ Download App" button — prathi visit lo kanipistundi (standalone lo hide)
+ *   2) "⬇️ Install app" button — browser web-app flow (standalone lo hide)
  *      · Android/Chrome: beforeinstallprompt prompt
  *      · iPhone/desktop: device-wise steps sheet (Share → Add to Home Screen)
  *   3) install ayyaka button hide
@@ -16,6 +16,7 @@
   var closeBtn = document.getElementById("installclose");
   var steps = document.getElementById("isteps");
   var deferred = null;
+  var originalSteps = [];
   var standalone = (window.matchMedia &&
     window.matchMedia("(display-mode: standalone)").matches) ||
     window.navigator.standalone === true;
@@ -49,8 +50,13 @@
     if (!sheet) return;
     if (steps) moved(Array.prototype.slice.call(steps.children));
     sheet.hidden = false;
+    if (btn) btn.setAttribute("aria-expanded", "true");
+    if (closeBtn) closeBtn.focus();
   }
-  function closeSheet() { if (sheet) sheet.hidden = true; }
+  function closeSheet() {
+    if (sheet) sheet.hidden = true;
+    if (btn) btn.setAttribute("aria-expanded", "false");
+  }
 
   window.addEventListener("beforeinstallprompt", function (e) {
     e.preventDefault();

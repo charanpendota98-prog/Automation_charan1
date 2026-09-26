@@ -162,7 +162,10 @@ def validate_article(article: Dict, final_html: str = "") -> Dict:
         score += add(0.008 <= density <= 0.025, 5,
                      f"keyword density out of range ({density:.3f})")
 
-    score += add(words >= 1500, 10, f"word count takkuva ({words} < 1500)")
+    from . import config as _cfg
+    min_words = int(getattr(_cfg, "RM_MIN_WORDS", 600))
+    score += add(words >= min_words, 10,
+                 f"word count takkuva ({words} < {min_words})")
     score += add("<table" in html, 5, "table ledu (snippet eligibility)")
     score += add(len(article.get("faq") or []) >= 3, 10, "FAQ 3+ kavali")
     score += add(bool(article.get("external_links")), 4, "external links ledu")
@@ -181,8 +184,8 @@ def validate_article(article: Dict, final_html: str = "") -> Dict:
                  8, "meta description length/keyword problem")
     score += add(5 <= len(article.get("tags") or []) <= 8, 4, "tags 5-8 kavali")
     score += add(bool(article.get("quick_answer")), 5, "quick_answer ledu (snippet bait)")
-    score += add(len(article.get("secondary_keywords") or []) >= 3, 4,
-                 "secondary keywords 3+ kavali")
+    score += add(5 <= len(article.get("secondary_keywords") or []) <= 10, 4,
+                 "secondary keywords 5-10 kavali")
     # Rank Math readability: prathi paragraph 160 words kanna takkuva
     para_words = [len(strip_tags(m).split()) for m in re.findall(r"<p>(.*?)</p>", html, flags=re.S)]
     long_paras = sum(1 for w_ in para_words if w_ > 160)
@@ -229,19 +232,22 @@ def rankmath_strict(article: Dict, final_html: str = "") -> Dict:
     check("focus-keyword", bool(kw), 4,
           "focus_keyword set cheyandi (exact search phrase)")
     if kw:
-        tl = title.lower()
+        # Rank Math evaluates the SEO title field. The visible H1 remains a
+        # natural article title; seo_title may carry a concise power word.
+        seo_title = (article.get("seo_title") or title).strip()
+        tl = seo_title.lower()
         check("kw-in-title", kw_l in tl, 10, "title lo focus keyword undali")
         _pos = tl.find(kw_l)
         check("kw-title-start", _pos != -1
               and _pos <= max(0, len(tl) // 2 - len(kw_l)), 5,
               "focus keyword TITLE MODALO (first half) vundali")
-        check("title-length", 40 <= len(title) <= 62, 5,
-              f"title {len(title)} chars — 40-60 chars madhya pettandi")
-        check("title-number", bool(re.search(r"\d", title)), 5,
+        check("title-length", 40 <= len(seo_title) <= 62, 5,
+              f"title {len(seo_title)} chars — 40-60 chars madhya pettandi")
+        check("title-number", bool(re.search(r"\d", seo_title)), 5,
               "title lo number (year / vacancy count) undali")
         check("title-power-word",
               any(w in tl for w in TITLE_POWER_WORDS), 4,
-              "title lo power word add (Best/Top/Easy/Complete/Free)")
+              "title lo power word add (Complete/Guide/Top/Easy)")
         md = meta.lower()
         check("kw-in-meta", kw_l in md, 8, "meta description lo focus keyword undali")
         check("meta-length", 110 <= len(meta) <= 160, 4,
@@ -269,8 +275,10 @@ def rankmath_strict(article: Dict, final_html: str = "") -> Dict:
         _alts = " ".join(re.findall(r'alt="([^"]*)"', " ".join(_imgs))).lower()
         check("kw-in-img-alt", bool(kw) and kw_l in _alts, 4,
               "image alt lo focus keyword pettandi (seo.attach_inline_image)")
-    check("content-length", words >= 1500, 8,
-          f"content {words} words — 1500+ rayandi")
+    from . import config as _cfg
+    min_words = int(getattr(_cfg, "RM_MIN_WORDS", 600))
+    check("content-length", words >= min_words, 8,
+          f"content {words} words — {min_words}+ useful words rayandi; filler vaddu")
     # v83: engine-generated boxes (takeaways/TOC) <li> ni skip — check
     # content STEPS kosam (takeaway summary = step kaadu; self-fail fix).
     li_html = re.sub(r'<div class="su-takeaways".*?</ul>\s*</div>', "",

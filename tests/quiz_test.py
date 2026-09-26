@@ -227,6 +227,7 @@ def t9_pipeline_mock():
         res = pipeline.create_quiz(topic="", mock=True)
         assert res["id"] == 123
         assert captured["article_type"] == "quiz"
+        assert captured["_force_status"] == "draft", "daily quiz must be review-first"
         assert captured["category"] == config.QUIZ_CATEGORY
         assert quiz_engine.QUIZ_START in captured["content_html"]
         assert "Answer Key" in captured["content_html"]
