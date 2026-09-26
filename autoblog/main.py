@@ -1755,6 +1755,8 @@ def main() -> int:
     parser.add_argument("--freshness-audit", action="store_true",
                         help="v101: 'deceptive freshness' guard status — "
                              "refresh lo dateModified fake bump avutunda?")
+    parser.add_argument("--source-monitor", action="store_true",
+                        help="read-only: detect changed official sources and alert owner")
     parser.add_argument("--verify-keyword", default="",
                         help="v97: oka focus keyword ki LIVE demand verify "
                              "(Google Autocomplete — dummy list kaadu)")
@@ -1934,6 +1936,10 @@ def main() -> int:
         from . import freshness as _fr
 
         return _fr.run_cli()
+    if getattr(args, "source_monitor", False):
+        from . import source_monitor as _sm
+
+        return _sm.run_cli(notify=True)
     if args.gsc_refresh:
         from . import gsc_refresh as _gr
 

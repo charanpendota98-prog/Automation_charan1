@@ -139,6 +139,11 @@ SOURCE_AUDIT_BLOCK = _get("SOURCE_AUDIT_BLOCK", "1") not in ("0", "false", "no")
 # Source-derived posts are not even saved as drafts until the fetched source
 # set, official evidence, numeric/date facts and claim ledger pass preflight.
 SOURCE_PREFLIGHT_REQUIRED = _get("SOURCE_PREFLIGHT_REQUIRED", "1") not in ("0", "false", "no")
+# Read-only official-source freshness monitor. It alerts the owner when a
+# source-backed published post's source text changes; it never auto-edits copy.
+SOURCE_MONITOR_ENABLED = _get("SOURCE_MONITOR_ENABLED", "1") not in ("0", "false", "no")
+SOURCE_MONITOR_MAX_POSTS = int(_get("SOURCE_MONITOR_MAX_POSTS", "120"))
+SOURCE_MONITOR_STATE = Path(_get("SOURCE_MONITOR_STATE", str(BASE_DIR / "logs" / "source-monitor.json")))
 # Repetition/filler audit is separate from Rank Math and blocks low-value prose.
 CONTENT_QUALITY_BLOCK = _get("CONTENT_QUALITY_BLOCK", "1") not in ("0", "false", "no")
 # Public posts should read like StudentUp's own editorial work. Provenance,

@@ -86,7 +86,7 @@ class WordPressClient:
             r = self._request("GET", "posts", params={
                 "status": "publish", "per_page": min(100, max(1, int(per_page))),
                 "page": page, "orderby": "date", "order": "desc",
-                "_fields": "id,link,title,date,categories,meta",
+                "_fields": "id,link,title,date,modified,categories,meta",
             })
             if not r.ok:
                 break
@@ -116,9 +116,12 @@ class WordPressClient:
                 "link": post.get("link", ""),
                 "title": title.get("rendered", "") if isinstance(title, dict) else str(title),
                 "date": post.get("date", ""),
+                "modified": post.get("modified", ""),
                 "category_slugs": [c.get("slug", "") for c in cats if c.get("slug")],
                 "category_names": [c.get("name", "") for c in cats if c.get("name")],
                 "last_date": meta.get("studentup_last_date", "") if isinstance(meta, dict) else "",
+                "source_url": meta.get("studentup_source_url", "") if isinstance(meta, dict) else "",
+                "source_checked": meta.get("studentup_source_checked", "") if isinstance(meta, dict) else "",
             })
         return rows
 
