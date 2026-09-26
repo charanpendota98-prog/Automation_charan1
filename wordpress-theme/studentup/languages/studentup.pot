@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: StudentUp 1.9.9\n"
 "Report-Msgid-Bugs-To: https://studentup.in/\n"
-"POT-Creation-Date: 2026-09-26 15:48+0000\n"
+"POT-Creation-Date: 2026-09-26 18:26+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -31,7 +31,7 @@ msgstr ""
 msgid "Add this post to compare"
 msgstr ""
 
-#: inc/student-tools.php:96
+#: inc/student-tools.php:105
 msgid "Added"
 msgstr ""
 
@@ -81,7 +81,7 @@ msgid "Comments are closed."
 msgstr ""
 
 #: inc/student-tools.php:49
-#: inc/student-tools.php:95
+#: inc/student-tools.php:104
 msgid "Compare"
 msgstr ""
 
@@ -89,7 +89,7 @@ msgstr ""
 msgid "Compare posts"
 msgstr ""
 
-#: inc/student-tools.php:97
+#: inc/student-tools.php:106
 msgid "Compare up to three posts."
 msgstr ""
 
@@ -169,7 +169,7 @@ msgstr ""
 msgid "Newer comments"
 msgstr ""
 
-#: inc/student-tools.php:99
+#: inc/student-tools.php:108
 msgid "No confirmed date is available for this post."
 msgstr ""
 
@@ -250,7 +250,7 @@ msgstr ""
 msgid "Recently read"
 msgstr ""
 
-#: inc/student-tools.php:98
+#: inc/student-tools.php:107
 msgid "Reminder file downloaded. Add it to your calendar."
 msgstr ""
 
@@ -292,7 +292,7 @@ msgstr ""
 msgid "Saved posts"
 msgstr ""
 
-#: inc/student-tools.php:100
+#: inc/student-tools.php:109
 msgid "Select at least two posts to compare."
 msgstr ""
 

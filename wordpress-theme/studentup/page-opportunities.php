@@ -19,7 +19,7 @@ foreach ( $rows as $row ) {
 }
 $total = count( $rows );
 ?>
-<main id="main" class="su-op-board-page">
+<main id="main" class="su-op-board-page" data-su-opportunities data-su-op-total="<?php echo esc_attr( $total ); ?>">
 	<div class="wrap">
 		<nav class="su-breadcrumbs" aria-label="Breadcrumb">
 			<a href="<?php echo esc_url( home_url( '/' ) ); ?>">Home</a><span aria-hidden="true">›</span><span>Latest active opportunities</span>
@@ -35,6 +35,19 @@ $total = count( $rows );
 		<div class="su-op-notice" role="note">
 			✅ This list updates from published StudentUp posts. Verified last dates are shown, expired notices are hidden automatically, and an unavailable date is shown as <strong>Not announced</strong> — never guessed.
 		</div>
+		<section class="su-op-filters" aria-labelledby="su-op-filter-title">
+			<div class="su-op-filter-heading">
+				<h2 id="su-op-filter-title">Find the right opportunity</h2>
+				<span data-su-op-results aria-live="polite"><?php echo esc_html( number_format_i18n( $total ) . ' active updates' ); ?></span>
+			</div>
+			<div class="su-op-filter-grid">
+				<label><span>Search title</span><input type="search" data-su-op-search placeholder="Try SSC, software, scholarship…" autocomplete="off" /></label>
+				<label><span>Category</span><select data-su-op-section-filter><option value="">All categories</option><?php foreach ( $sections as $key => $section ) : ?><option value="<?php echo esc_attr( $key ); ?>"><?php echo esc_html( $section['label'] ); ?></option><?php endforeach; ?></select></label>
+				<label><span>Deadline</span><select data-su-op-deadline><option value="">Any deadline</option><option value="7">Closing in 7 days</option><option value="30">Closing in 30 days</option><option value="unknown">Date not announced</option></select></label>
+			</div>
+			<p class="su-op-filter-note">Search and filters run in your browser. Open the article and confirm the official notification before applying.</p>
+		</section>
+		<div class="su-op-no-results" data-su-op-no-results hidden>No matching active opportunities found. Try another keyword or category.</div>
 		<div class="su-op-jump" aria-label="Opportunity sections">
 			<?php foreach ( $sections as $key => $section ) : ?>
 				<?php if ( empty( $groups[ $key ] ) ) { continue; } ?>

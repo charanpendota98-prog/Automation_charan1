@@ -235,7 +235,10 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
  * REST lo meta write allow (bot 'studentup_qual' + 'studentup_last_date' pampistundi).
  */
 function studentup_register_qual_meta() {
-	$keys = array( 'studentup_qual', 'studentup_last_date', 'studentup_apply_url' );
+	$keys = array(
+		'studentup_qual', 'studentup_last_date', 'studentup_apply_url',
+		'studentup_source_url', 'studentup_source_urls', 'studentup_source_checked',
+	);
 	foreach ( $keys as $key ) {
 		register_post_meta(
 			'post',

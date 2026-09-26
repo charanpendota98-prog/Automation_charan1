@@ -49,6 +49,24 @@ def _save_provenance(article: Dict) -> None:
         }, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
+def _source_identity_meta(article: Dict) -> Dict[str, str]:
+    """Small registered WP meta used for duplicate/update detection.
+
+    Raw evidence stays private. Only normalized URLs, a check date and count
+    are exposed so a future source update can locate the same article safely.
+    """
+    urls = [str(url).strip() for url in (article.get("_source_urls") or []) if str(url).strip()]
+    primary = str(article.get("source_url") or (urls[0] if urls else "")).strip()
+    if not primary and not urls:
+        return {}
+    out = {"studentup_source_checked": date.today().isoformat()}
+    if primary:
+        out["studentup_source_url"] = primary
+    if urls:
+        out["studentup_source_urls"] = json.dumps(urls[:6], ensure_ascii=False)
+    return out
+
+
 # ---------------------------------------------------------------- auto category
 
 CATEGORY_RULES = [
@@ -1017,6 +1035,15 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
                 log.info("v72 qual tag → %s", qual.describe(article))
         except Exception:  # noqa: BLE001 — tag fail publish aapadu (theme kuda auto detects)
             log.exception("v72 qual tag skip (publish safe)")
+    # Source identity is registered even when Rank Math metadata is disabled;
+    # it powers safe in-place updates and source freshness checks.
+    source_meta = _source_identity_meta(article)
+    if source_meta:
+        if meta is None:
+            meta = {}
+        meta.update(source_meta)
+        article["_source_identity"] = dict(source_meta)
+
     # --- v77 ORIGINALITY: donor sources vs final article (REAL copy %, not claim) ---
     try:
         _srcs = []
@@ -1349,6 +1376,18 @@ def create_from_source(url: str, mock: bool = False, category: str = "",
     """
     if not sources.is_valid_source_url(url):
         raise ValueError("URL valid kadu (http/https link ivvandi)")
+
+    # Same-notification protection: if the official source was already stored
+    # on a StudentUp post, refresh that post in place. A failed live lookup is
+    # non-destructive and falls back to the normal source-backed draft path.
+    if getattr(config, "AUTO_UPDATE_SAME_SOURCE", True) and not mock:
+        try:
+            existing = WordPressClient().find_post_by_source_url(url)
+            if existing and existing.get("id"):
+                log.info("Existing source match post %s — update in place, no duplicate", existing["id"])
+                return update_post(int(existing["id"]), new_source_urls=[url], mock=False)
+        except Exception as exc:  # noqa: BLE001 — source lookup must not lose work
+            log.warning("Existing-source lookup unavailable; normal draft path continues: %s", exc)
 
     if state.source_done(config.STATE_PATH, url):
         raise ValueError("Ee URL already process chesayi — duplicate!")
@@ -1839,6 +1878,13 @@ def update_post(post_id: int, new_source_urls=None, mock: bool = False) -> Dict:
             slug=article.get("slug", ""),
         )
         article["_rankmath_meta"] = dict(meta)
+
+    source_meta = _source_identity_meta(article)
+    if source_meta:
+        if meta is None:
+            meta = {}
+        meta.update(source_meta)
+        article["_source_identity"] = dict(source_meta)
 
     try:  # v65: update ki kuda certificate (evidence)
         gate = post_gate.run(article, final_html)

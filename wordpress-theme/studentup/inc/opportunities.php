@@ -148,6 +148,10 @@ function studentup_opportunity_board_posts( $limit = 180 ) {
 		if ( '' === $section ) {
 			continue;
 		}
+		$apply_url = trim( (string) get_post_meta( $post->ID, 'studentup_apply_url', true ) );
+		if ( ! wp_http_validate_url( $apply_url ) ) {
+			$apply_url = '';
+		}
 		$out[] = array(
 			'id'         => (int) $post->ID,
 			'title'      => get_the_title( $post->ID ),
@@ -155,7 +159,10 @@ function studentup_opportunity_board_posts( $limit = 180 ) {
 			'last_date'  => $last,
 			'days_left'  => studentup_opportunity_days_left( $last ),
 			'section'    => $section,
+			'qualification' => trim( (string) get_post_meta( $post->ID, 'studentup_qual', true ) ),
+			'apply_url'  => $apply_url,
 			'date'       => get_the_date( 'c', $post->ID ),
+			'updated'    => get_the_modified_date( 'c', $post->ID ),
 			'thumbnail'  => get_the_post_thumbnail_url( $post->ID, 'studentup-card' ),
 		);
 	}
@@ -179,11 +186,16 @@ function studentup_opportunity_board_url() {
 }
 
 function studentup_opportunity_render_card( $row ) {
-	$days = $row['days_left'];
+	$days       = $row['days_left'];
+	$days_value = null === $days ? 'unknown' : (string) $days;
+	$updated    = ! empty( $row['updated'] ) ? strtotime( $row['updated'] ) : false;
 	?>
-	<article class="su-op-card">
+	<article class="su-op-card" data-su-op-card data-su-op-title="<?php echo esc_attr( mb_strtolower( wp_strip_all_tags( $row['title'] ) ) ); ?>" data-su-op-section="<?php echo esc_attr( $row['section'] ); ?>" data-su-op-days="<?php echo esc_attr( $days_value ); ?>">
 		<div class="su-op-card-copy">
 			<h3><a href="<?php echo esc_url( $row['link'] ); ?>"><?php echo esc_html( $row['title'] ); ?></a></h3>
+			<?php if ( ! empty( $row['qualification'] ) ) : ?>
+				<p class="su-op-qual">🎓 <?php echo esc_html( $row['qualification'] ); ?></p>
+			<?php endif; ?>
 			<?php if ( '' !== $row['last_date'] ) : ?>
 				<?php $date_class = 'su-op-date' . ( ( null !== $days && $days <= 7 ) ? ' is-soon' : '' ); ?>
 				<p class="<?php echo esc_attr( $date_class ); ?>">
@@ -195,8 +207,16 @@ function studentup_opportunity_render_card( $row ) {
 			<?php else : ?>
 				<p class="su-op-date is-unknown">🗓️ Last date: <strong>Not announced</strong></p>
 			<?php endif; ?>
+			<?php if ( $updated ) : ?>
+				<p class="su-op-updated">Updated <?php echo esc_html( wp_date( 'd M Y', $updated ) ); ?></p>
+			<?php endif; ?>
 		</div>
-		<a class="su-op-open" href="<?php echo esc_url( $row['link'] ); ?>" aria-label="Open <?php echo esc_attr( $row['title'] ); ?>">Open&nbsp;→</a>
+		<div class="su-op-actions">
+			<a class="su-op-open" href="<?php echo esc_url( $row['link'] ); ?>" aria-label="Open <?php echo esc_attr( $row['title'] ); ?>">Details&nbsp;→</a>
+			<?php if ( ! empty( $row['apply_url'] ) ) : ?>
+				<a class="su-op-apply" href="<?php echo esc_url( $row['apply_url'] ); ?>" target="_blank" rel="noopener noreferrer" aria-label="Open official application link for <?php echo esc_attr( $row['title'] ); ?>">Official Apply</a>
+			<?php endif; ?>
+		</div>
 	</article>
 	<?php
 }

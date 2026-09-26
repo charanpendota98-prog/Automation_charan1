@@ -85,6 +85,15 @@ function studentup_tools_assets() {
 		STUDENTUP_VERSION,
 		true
 	);
+	if ( get_query_var( 'studentup_opportunities' ) ) {
+		wp_enqueue_script(
+			'studentup-opportunities',
+			get_template_directory_uri() . '/assets/js/studentup-opportunities.js',
+			array( 'studentup-tools' ),
+			STUDENTUP_VERSION,
+			true
+		);
+	}
 	wp_localize_script(
 		'studentup-tools',
 		'STUDENTUP_TOOLS',

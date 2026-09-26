@@ -80,6 +80,10 @@ LISTICLES_PER_DAY = int(_get("LISTICLES_PER_DAY", "1"))
 AUTO_REFRESH_PER_DAY = int(_get("AUTO_REFRESH_PER_DAY", "1"))
 AUTO_REFRESH_MIN_AGE_DAYS = int(_get("AUTO_REFRESH_MIN_AGE_DAYS", "30"))
 AUTO_REFRESH_HOUR = int(_get("AUTO_REFRESH_HOUR", "21"))
+# Same official source → refresh the existing post in place, not a duplicate.
+# A failed lookup never deletes the incoming source; normal draft generation
+# remains the safe fallback.
+AUTO_UPDATE_SAME_SOURCE = _get("AUTO_UPDATE_SAME_SOURCE", "1") not in ("0", "false", "no")
 # v101 DECEPTIVE-FRESHNESS GUARD (Google Aug-2026 spam update).
 # Refresh lo content ee % kanna takkuva marithe dateModified bump KAADU —
 # "dateModified bumped with no real change" = named spam signal.

@@ -122,6 +122,48 @@ class WordPressClient:
             })
         return rows
 
+    def find_post_by_source_url(self, source_url: str, max_pages: int = 5) -> Optional[Dict]:
+        """Find an existing post carrying the same verified source URL.
+
+        Source identity is stored in registered post meta. This deliberately
+        scans a bounded set of posts instead of relying on a plugin-specific
+        ``meta_query`` REST parameter, so it works on a plain WordPress install.
+        """
+        needle = str(source_url or "").strip().rstrip("/")
+        if not needle:
+            return None
+        for status in ("publish", "draft", "pending", "private"):
+            for page in range(1, max(1, int(max_pages)) + 1):
+                resp = self._request("GET", "posts", params={
+                    "status": status, "page": page, "per_page": 100,
+                    "orderby": "date", "order": "desc",
+                    "_fields": "id,link,slug,status,title,meta",
+                })
+                if not resp.ok:
+                    break
+                batch = resp.json() if isinstance(resp.json(), list) else []
+                for post in batch:
+                    meta = post.get("meta") or {}
+                    values = [meta.get("studentup_source_url", "")]
+                    extra = meta.get("studentup_source_urls", []) or []
+                    if isinstance(extra, str):
+                        try:
+                            import json
+                            extra = json.loads(extra)
+                        except (TypeError, ValueError):
+                            extra = [extra]
+                    if isinstance(extra, list):
+                        values.extend(extra)
+                    if any(str(value).strip().rstrip("/") == needle for value in values):
+                        return {
+                            "id": post.get("id"), "link": post.get("link", ""),
+                            "slug": post.get("slug", ""), "status": post.get("status", status),
+                            "title": post.get("title", {}), "meta": meta,
+                        }
+                if len(batch) < 100:
+                    break
+        return None
+
     def search_posts(self, term: str, per_page: int = 10) -> List[Dict]:
         """Published posts matching term (hub pages kosam)."""
         try:

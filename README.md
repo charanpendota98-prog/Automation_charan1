@@ -2535,6 +2535,9 @@ replace an image-capable model.
 | `ACTIVE_HOUR_START` / `ACTIVE_HOUR_END` | `6` / `22` | Posting window (24h IST) |
 | `CATEGORIES` | 8 categories | Site sections |
 | `IMAGE_ENABLED` | `1` | Featured image generation on/off |
+| `AUTO_UPDATE_SAME_SOURCE` | `1` | Match the same official source and refresh the existing post in place |
+| `SOURCE_PREFLIGHT_REQUIRED` | `1` | Block source-derived drafts when evidence/claim checks fail |
+| `SHORTLINK_ENABLED` / `SHORTLINK_PROVIDER` | `0` / `wordpress` | First-party readable circulation links |
 
 Marpali te: `.env` edit chesi scheduler ni restart cheyandi: `sudo systemctl restart studentup-autoblog.timer`
 

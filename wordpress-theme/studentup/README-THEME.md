@@ -67,6 +67,8 @@ theme.json           block editor colors/Typography (navy/blue/orange)
 | Menu pakkana search | `header.php` + `assets/js/studentup.js` | 🔍 button + `/` shortcut |
 | యాప్గా ఇన్స్టాల్ (PWA) | `inc/pwa.php` + `assets/js/studentup-pwa.js` | service worker (`?studentup_sw=1`) + install prompt; Android/iPhone rendu |
 | Closing-soon badge | `studentup_last_date` meta → "⏳ closing in N days" | ✅ bot `recruitment.apply_end` nunchi |
+| Active opportunity finder | Browser-only title/category/deadline filters | ✅ no tracking or API request |
+| Source trust/update metadata | `studentup_source_url`, qualification, updated date | ✅ same-source update + visible board context |
 | Breaking section | `inc/breaking.php` | ⚙️ default **OFF** (`StudentUp → కంటెంట్ → breaking_enabled`) |
 
 CLI: `wp studentup-qual-backfill --limit=500` (purana posts ki tags).
