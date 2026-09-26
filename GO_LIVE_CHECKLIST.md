@@ -131,9 +131,10 @@ Detail docs: `DEPLOY_MILESWEB.md` (cPanel steps) · `DEPLOY_ORACLE_CLOUD.md` (VM
       theme ni update cheyyakapothe `wordpress-plugin/studentup-seo-bridge.zip` ni Plugins → Add New → Upload → Activate cheyandi.
       Bot post create/update tarvata focus/title/description/social/robots/canonical fields ni
       authenticated bridge GET tho verify chestundi; bridge missing aithe live promotion aagipothundi.
-      **Actual Rank Math gate:** `RM_REQUIRE_LIVE_SCORE=1` default; direct live promotion ki
-      WordPress nunchi numeric `rank_math_seo_score=100` readback compulsory. Local
-      pre-flight score ni Rank Math 100 ani count cheyyadu. Staging post ki
+      **Actual Rank Math gate:** `RM_REQUIRE_LIVE_SCORE=1` default; system `RM_TARGET=100`
+      ki try chestundi, while `RM_LIVE_MIN_SCORE=80` real WordPress score minimum ga
+      allow chestundi. Numeric 80–99 pass ayina Rank Math 100 ani report cheyyadu.
+      Local pre-flight score ni plugin score ani count cheyyadu. Staging post ki
       `python run.py --live-seo POST_ID` run chesi actual stored score + rendered HTML audit chudandi.
       **v68**: IndexNow key file ni **theme ne serve chestundi** (`/<key>.key`) — cPanel lo
       upload cheyyalsina pani ledu. Key: `python run.py --index-key-gen` → `.env` →

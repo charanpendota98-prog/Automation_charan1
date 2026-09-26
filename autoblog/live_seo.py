@@ -58,6 +58,8 @@ def _check(name: str, ok: bool, detail: str, points: int) -> Dict:
 
 def _public_checks(post: Dict, html: str, final_url: str, fields: Dict) -> list:
     soup = BeautifulSoup(html or "", "html.parser")
+    tag_ids = post.get("tags") or []
+    category_ids = post.get("categories") or []
     plain = " ".join(soup.get_text(" ", strip=True).split())
     keyword = _keyword(_field(fields, "rank_math_focus_keyword"))
     keyword_low = keyword.casefold()
@@ -96,6 +98,8 @@ def _public_checks(post: Dict, html: str, final_url: str, fields: Dict) -> list:
         _check("Single H1", bool(h1), "present" if h1 else "missing", 5),
         _check("Keyword in first paragraph", bool(keyword and keyword_low in first_para.casefold()), "observed" if keyword else "not testable", 5),
         _check("Relevant internal link", bool(internal_links), f"{len(internal_links)} same-site links", 5),
+        _check("Category taxonomy", bool(category_ids), f"{len(category_ids)} category id(s)", 3),
+        _check("Keyword/tag taxonomy", bool(tag_ids), f"{len(tag_ids)} tag id(s); relevance still needs editorial review", 3),
         _check("Readable article content", len(plain.split()) >= 300, f"{len(plain.split())} rendered words", 6),
     ]
 
@@ -110,6 +114,8 @@ def audit(post_id: int, wp: Optional[WordPressClient] = None) -> Dict:
             "post_id": int(post_id), "status": "unknown",
             "error": f"WordPress post read failed: {type(exc).__name__}: {str(exc)[:180]}",
             "rank_math_actual_score": None, "rank_math_actual_100": False,
+            "rank_math_live_min_score": int(getattr(config, "RM_LIVE_MIN_SCORE", 80) or 80),
+            "rank_math_target_met": False,
             "public_seo_coverage": None, "checks": [],
         }
     link = str(post.get("link") or "").strip()
@@ -122,6 +128,8 @@ def audit(post_id: int, wp: Optional[WordPressClient] = None) -> Dict:
             "post_id": int(post_id), "link": link, "status": "review",
             "error": f"Public URL HTTP {public.get('status', 0)}; {public.get('error', '')}".strip(),
             "rank_math_actual_score": actual_score, "rank_math_actual_100": actual_score == 100,
+            "rank_math_live_min_score": int(getattr(config, "RM_LIVE_MIN_SCORE", 80) or 80),
+            "rank_math_target_met": actual_score is not None and actual_score >= int(getattr(config, "RM_LIVE_MIN_SCORE", 80) or 80),
             "public_seo_coverage": None, "checks": [], "fields_present": sorted(k for k, v in fields.items() if str(v).strip()),
         }
     checks = _public_checks(post, public.get("html", ""), public.get("final_url", link), fields)
@@ -131,10 +139,16 @@ def audit(post_id: int, wp: Optional[WordPressClient] = None) -> Dict:
     rankmath_fields_ok = all(_field(fields, key) for key in (
         "rank_math_focus_keyword", "rank_math_title", "rank_math_description",
     ))
+    live_min = int(getattr(config, "RM_LIVE_MIN_SCORE", 80) or 80)
+    coverage_min = float(getattr(config, "LIVE_SEO_MIN_COVERAGE", 80) or 80)
+    target_met = actual_score is not None and actual_score >= live_min
     return {
-        "post_id": int(post_id), "link": link, "status": "pass" if actual_score == 100 and coverage == 100 and rankmath_fields_ok else "review",
+        "post_id": int(post_id), "link": link,
+        "status": "pass" if target_met and coverage >= coverage_min and rankmath_fields_ok else "review",
         "rank_math_actual_score": actual_score,
         "rank_math_actual_100": actual_score == 100,
+        "rank_math_live_min_score": live_min,
+        "rank_math_target_met": target_met,
         "rank_math_score_source": state.get("score_note", "WordPress SEO bridge readback"),
         "rank_math_fields_ok": rankmath_fields_ok,
         "public_seo_coverage": coverage,
@@ -158,6 +172,7 @@ def run_cli(post_id: int) -> int:
     print("=" * 76)
     print(f"  post: {post_id}")
     print(f"  Rank Math stored score: {report.get('rank_math_actual_score')!r}  (only WordPress value is accepted)")
+    print(f"  Live minimum: {report.get('rank_math_live_min_score', 80)} · minimum met: {'YES' if report.get('rank_math_target_met') else 'NO / UNKNOWN'}")
     print(f"  Rank Math actual 100: {'YES' if report.get('rank_math_actual_100') else 'NO / UNKNOWN'}")
     print(f"  Public SEO coverage: {report.get('public_seo_coverage')!r}  (independent HTML audit, not Rank Math)")
     for row in report.get("checks", []):

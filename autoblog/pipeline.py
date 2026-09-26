@@ -1157,11 +1157,13 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
                     result["rank_math_ui_score"] = live_score
                     article["_rank_math_state"] = live_rankmath
                     require_live = getattr(config, "RM_REQUIRE_LIVE_SCORE", True)
-                    if require_live and live_score != int(getattr(config, "RM_TARGET", 100) or 100):
+                    live_min = int(getattr(config, "RM_LIVE_MIN_SCORE", 80) or 80)
+                    if require_live and (live_score is None or live_score < live_min):
                         result["rank_math_live_verified"] = False
+                        result["rank_math_live_min_score"] = live_min
                         result["live_publish_blocked_reason"] = (
-                            "Actual WordPress Rank Math score unavailable or below target: "
-                            f"{live_score!r} (target {getattr(config, 'RM_TARGET', 100)})"
+                            "Actual WordPress Rank Math score unavailable or below live minimum: "
+                            f"{live_score!r} (minimum {live_min}; target {getattr(config, 'RM_TARGET', 100)})"
                         )
                         log.error("Live publish blocked: %s", result["live_publish_blocked_reason"])
                         try:
@@ -1173,6 +1175,7 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
                             log.debug("Rank Math block notification failed", exc_info=True)
                     else:
                         result["rank_math_live_verified"] = True
+                        result["rank_math_live_min_score"] = int(getattr(config, "RM_LIVE_MIN_SCORE", 80) or 80)
                         result.update(wp.set_post_status(result["id"], "publish"))
                         log.info("SEO + actual Rank Math score verified; draft promoted to publish ✔ (id=%s)",
                                  result["id"])
@@ -1980,15 +1983,18 @@ def update_post(post_id: int, new_source_urls=None, mock: bool = False) -> Dict:
     try:
         live_rankmath = wp.read_rankmath_state(post_id)
         result["rank_math_ui_score"] = live_rankmath.get("rank_math_ui_score")
+        live_min = int(getattr(config, "RM_LIVE_MIN_SCORE", 80) or 80)
+        result["rank_math_live_min_score"] = live_min
         result["rank_math_live_verified"] = (
             not getattr(config, "RM_REQUIRE_LIVE_SCORE", True)
-            or result["rank_math_ui_score"] == int(getattr(config, "RM_TARGET", 100) or 100)
+            or (result["rank_math_ui_score"] is not None and result["rank_math_ui_score"] >= live_min)
         )
         article["_rank_math_state"] = live_rankmath
         if not result["rank_math_live_verified"]:
             result["live_publish_blocked_reason"] = (
                 "Actual WordPress Rank Math score after update is "
-                f"{result['rank_math_ui_score']!r}; target is {getattr(config, 'RM_TARGET', 100)}"
+                f"{result['rank_math_ui_score']!r}; live minimum is {live_min}, "
+                f"target is {getattr(config, 'RM_TARGET', 100)}"
             )
             log.error("Update SEO verification warning: %s", result["live_publish_blocked_reason"])
             try:

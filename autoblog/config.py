@@ -344,6 +344,11 @@ RM_TARGET = int(_get("RM_TARGET", "100"))   # v64: 100 target (Rank Math)
 # Direct live publishing requires the actual score read back from WordPress.
 # Missing Rank Math/plugin readback stays a draft; no local estimate can unlock it.
 RM_REQUIRE_LIVE_SCORE = _get("RM_REQUIRE_LIVE_SCORE", "1") not in ("0", "false", "no")
+# Practical live threshold: aim for 100, accept only real Rank Math scores
+# >=80 for owner-approved publishing. Missing score never passes.
+RM_LIVE_MIN_SCORE = max(0, min(100, int(_get("RM_LIVE_MIN_SCORE", "80") or 80)))
+# Independent rendered-HTML audit threshold; this is not a Rank Math score.
+LIVE_SEO_MIN_COVERAGE = max(0, min(100, float(_get("LIVE_SEO_MIN_COVERAGE", "80") or 80)))
 # Rank Math's regular-post content check is a 600-word recommendation. Keep
 # this separate from the optional long-form/top-post quality target so the bot
 # does not add filler merely to satisfy an internal 1500-word rule.

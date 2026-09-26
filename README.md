@@ -635,10 +635,11 @@ redirects, changes ads or modifies content.
 ### v127 — REAL RANK MATH + RENDERED SEO VERIFICATION
 
 The local Rank Math preflight is only a draft-quality check. It is **not** the
-Rank Math plugin score. Direct live publishing now stages the post as a draft
-and requires the actual score read back from WordPress/Rank Math to equal
-`RM_TARGET` (default `100`). If the plugin, theme bridge or score readback is
-missing, the post stays a draft and the owner is alerted.
+Rank Math plugin score. Direct live publishing stages the post as a draft and
+requires the actual score read back from WordPress/Rank Math to meet
+`RM_LIVE_MIN_SCORE` (default `80`). The system still aims for `RM_TARGET=100`
+and reports exact 100 separately. If the plugin, theme bridge or score readback
+is missing, the post stays a draft and the owner is alerted.
 
 Verify one real post after staging:
 
@@ -654,7 +655,9 @@ internal links and readable content; it is explicitly **not** Rank Math and is
 not a Google score. No score is written or assumed.
 
 `rank_math_actual_100: true` is reported only when WordPress returns numeric
-`100`. No live WordPress access means `unknown`, never `100`.
+`100`. A post can pass the publishing minimum at a real `80–99`, but it is
+never described as Rank Math 100. No live WordPress access means `unknown`,
+never `100`.
 
 ### v126 — LIVE VALIDATION (NO CLAIMS WITHOUT OBSERVATION)
 
@@ -1890,7 +1893,7 @@ lekapote `KeyError` → publish path **crash**. Ippudu safe int conversion + reg
 |---|---|---|
 | 1 | **Rank Math 100 engine** | `rm100.apply()` — title (kw modatlo + year + power word + 40-62 ch) · meta 110-156 · slug tokens · lede lo kw · **auto TOC + anchor ids** · 2+ H2s lo kw · density 7-15 · facts table · FAQ · external+internal links · Telugu connectives 30% · paragraph split |
 | 2 | **Proof command** | `python run.py --rm100` → imperfect draft **33/100 → 100/100** (21 on-page tests okkokaటి ✅) |
-| 3 | **Gate + score** | pipeline: rm100 → LLM refine (`RM_REFINE_ROUNDS=2`, `RM_TARGET=100`) → rm100 malli → final score **WP meta `rank_math_seo_score`** + Telegram lo chupistundi |
+| 3 | **Gate + score** | pipeline: local preflight/refine (`RM_REFINE_ROUNDS=2`, `RM_TARGET=100`) → actual WP `rank_math_seo_score` readback; real 80+ meets the live minimum, exact 100 is reported separately |
 | 4 | **Website options page** | WP Admin → **StudentUp** menu (tabs: Ads · Socials · Content · Advanced) + REST `/wp-json/studentup/v1/options` (bot sync) |
 | 5 | **Theme 100x** | auto **TOC** · **JSON-LD schema** (Organization/WebSite/SearchAction/Breadcrumb) · **E-E-A-T author box** + last-updated · **PWA** manifest + theme-color + preconnect · sticky bottom ad · copy-link · reading progress |
 | 6 | **PHP syntax gate** | `tools/php_lint.js` (**node php-parser · real PHP 8**) — build_wp_theme.py hard gate. Ee gate pettaka **site break chese 10 bugs** pattukunnamu (template files lo `?>` miss → white screen!) |
@@ -2615,7 +2618,8 @@ replace an image-capable model.
 | `SOURCE_PREFLIGHT_REQUIRED` | `1` | Block source-derived drafts when evidence/claim checks fail |
 | `SHORTLINK_ENABLED` / `SHORTLINK_PROVIDER` | `0` / `wordpress` | First-party readable circulation links |
 | `SOURCE_MONITOR_ENABLED` / `SOURCE_MONITOR_HOUR` | `1` / `6` | Daily read-only source-change alert; never auto-edits posts |
-| `RM_TARGET` / `RM_REQUIRE_LIVE_SCORE` | `100` / `1` | Direct live promotion requires actual WordPress Rank Math score; unavailable stays draft |
+| `RM_TARGET` / `RM_LIVE_MIN_SCORE` | `100` / `80` | Aim for actual Rank Math 100; real 80+ may pass live minimum; unavailable stays draft |
+| `RM_REQUIRE_LIVE_SCORE` | `1` | Require real WordPress Rank Math readback; never unlock with a local estimate |
 | `OPPORTUNITY_MONITOR_ENABLED` / `OPPORTUNITY_MONITOR_HOUR` | `1` / `6` | Dead-link/PDF/status/expiry review queue; never auto-edits posts |
 | `OPPORTUNITY_MONITOR_NEAR_DAYS` | `3` | Alert window for a verified upcoming deadline |
 
