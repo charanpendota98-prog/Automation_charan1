@@ -64,6 +64,11 @@ function studentup_option_fields() {
 				'social_instagram' => array( 'Instagram', 'text', 'studentup.in', 'instagram.com/<idi>' ),
 				'social_linkedin'  => array( 'LinkedIn editorial profile', 'text', '', 'Full https://www.linkedin.com/in/... URL or profile username' ),
 				'social_youtube'   => array( 'YouTube', 'text', '@studentupin', 'youtube.com/<idi>' ),
+				'social_facebook'  => array( 'Facebook Page', 'text', '', 'Full https://www.facebook.com/... page URL or username' ),
+				'social_x'         => array( 'X (Twitter)', 'text', '', 'Full https://x.com/... profile URL or username' ),
+				'social_pinterest' => array( 'Pinterest', 'text', '', 'Full https://www.pinterest.com/... profile URL or username' ),
+				'social_reddit'    => array( 'Reddit profile/community', 'text', '', 'Full https://www.reddit.com/... URL; do not automate posting' ),
+				'social_quora'     => array( 'Quora profile', 'text', '', 'Full https://www.quora.com/profile/... URL; do not automate posting' ),
 			),
 		),
 		'content' => array(
@@ -106,7 +111,8 @@ function studentup_option_fields() {
 				'indexnow_key' => array( 'IndexNow key (hex, 8+ chars)', 'text', '', 'Bot nimpustundi — /<key>.key file automatic ga serve avutundi (Bing/Yandex instant indexing)' ),
 				'redirects_json' => array( '301 redirects (JSON)', 'textarea', '', 'v80: {"/old-url/": "/new-url/"} — slug marina old links 404 kakunda 301 (chain/loop safe, relative paths only)' ),
 				'ga4_id' => array( 'GA4 Measurement ID', 'text', '', 'v80: G-XXXXXXXXXX — consent-aware analytics (EEA regions lo consent varaku hold, India lo direct)' ),
-				'gsc_verify' => array( 'Search Console verification', 'text', '', 'v80: GSC → Settings → Ownership verification → HTML tag content value (meta tag auto)' ),
+				'gsc_verify'  => array( 'Search Console verification', 'text', '', 'v80: GSC → Settings → Ownership verification → HTML tag content value (meta tag auto)' ),
+				'bing_verify' => array( 'Bing Webmaster verification', 'text', '', 'Bing Webmaster Tools → Verification → HTML meta tag content value' ),
 			),
 		),
 	);
@@ -273,6 +279,11 @@ function studentup_rest_get_options() {
 				'instagram' => studentup_opt( 'social_instagram', 'studentup.in' ),
 				'linkedin'  => studentup_opt( 'social_linkedin', '' ),
 				'youtube'   => studentup_opt( 'social_youtube', '@studentupin' ),
+				'facebook'  => studentup_opt( 'social_facebook', '' ),
+				'x'         => studentup_opt( 'social_x', '' ),
+				'pinterest' => studentup_opt( 'social_pinterest', '' ),
+				'reddit'    => studentup_opt( 'social_reddit', '' ),
+				'quora'     => studentup_opt( 'social_quora', '' ),
 			),
 			'adsense_on'  => (bool) studentup_opt( 'adsense_client', '' ),
 			'sticky_ad'   => (bool) studentup_opt( 'sticky_ad', '0' ),
@@ -354,6 +365,21 @@ function studentup_social_links() {
 	}
 	$yt  = (string) studentup_opt( 'social_youtube', '@studentupin' );
 	$ytu = 0 === strpos( $yt, 'http' ) ? $yt : 'https://www.youtube.com/' . ( 0 === strpos( $yt, '@' ) ? $yt : '@' . $yt );
+	$profile = static function ( $raw, $base, $prefix = '' ) {
+		$raw = trim( (string) $raw );
+		if ( '' === $raw ) {
+			return '';
+		}
+		if ( preg_match( '#^https?://#i', $raw ) ) {
+			return esc_url_raw( $raw );
+		}
+		return esc_url_raw( $base . $prefix . ltrim( $raw, '@/ ' ) );
+	};
+	$facebook  = $profile( studentup_opt( 'social_facebook', '' ), 'https://www.facebook.com/' );
+	$x_profile = $profile( studentup_opt( 'social_x', '' ), 'https://x.com/' );
+	$pinterest = $profile( studentup_opt( 'social_pinterest', '' ), 'https://www.pinterest.com/' );
+	$reddit    = $profile( studentup_opt( 'social_reddit', '' ), 'https://www.reddit.com/', 'u/' );
+	$quora     = $profile( studentup_opt( 'social_quora', '' ), 'https://www.quora.com/profile/' );
 
 	/*
 	 * v93 FIX (nijamaina bug): ippati varaku idi `https://t.me/<username>` ne
@@ -376,6 +402,11 @@ function studentup_social_links() {
 		'instagram' => 'https://www.instagram.com/' . $ig . '/',
 		'linkedin'  => $liu,
 		'youtube'   => $ytu,
+		'facebook'  => $facebook,
+		'x'         => $x_profile,
+		'pinterest' => $pinterest,
+		'reddit'    => $reddit,
+		'quora'     => $quora,
 	);
 }
 

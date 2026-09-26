@@ -83,12 +83,24 @@ def _public_checks(post: Dict, html: str, final_url: str, fields: Dict) -> list:
     first_para = content.find("p").get_text(" ", strip=True) if content and content.find("p") else ""
     internal_links = [a.get("href", "") for a in soup.find_all("a", href=True)
                       if urlparse(a.get("href", "")).netloc in ("", urlparse(final_url).netloc)]
+    url_path = urlparse(final_url).path.casefold()
+    keyword_tokens = [token for token in re.findall(r"[a-z0-9]+", keyword_low)
+                      if len(token) > 2]
+    headings = [node.get_text(" ", strip=True).casefold()
+                for node in soup.find_all(["h2", "h3"])]
+    images = soup.find_all("img")
+    alt_values = [str(node.get("alt") or "").strip().casefold() for node in images]
+    author_observed = bool(
+        soup.select_one("[itemprop='author'], .su-author, .su-author-meta")
+        or '"author"' in jsonld_text
+    )
 
     return [
         _check("Public HTTP response", True, "public HTML was fetched", 5),
         _check("Rank Math focus keyword stored", bool(keyword), "present" if keyword else "missing", 10),
         _check("Public title", bool(title), f"{len(title)} characters" if title else "missing", 8),
         _check("Keyword in public title", bool(keyword and keyword_low in title.casefold()), "observed" if keyword else "not testable", 10),
+        _check("Keyword in public URL", bool(keyword_tokens) and all(token in url_path for token in keyword_tokens), url_path or "missing", 7),
         _check("Meta description", 110 <= len(description) <= 170, f"{len(description)} characters", 10),
         _check("Keyword in meta description", bool(keyword and keyword_low in description.casefold()), "observed" if keyword else "not testable", 8),
         _check("Canonical", bool(canonical and canonical.startswith(("http://", "https://"))), "present" if canonical else "missing", 8),
@@ -97,6 +109,9 @@ def _public_checks(post: Dict, html: str, final_url: str, fields: Dict) -> list:
         _check("Breadcrumb schema", "breadcrumb" in jsonld_text, "BreadcrumbList observed" if "breadcrumb" in jsonld_text else "not observed", 5),
         _check("Single H1", bool(h1), "present" if h1 else "missing", 5),
         _check("Keyword in first paragraph", bool(keyword and keyword_low in first_para.casefold()), "observed" if keyword else "not testable", 5),
+        _check("Keyword in H2/H3", bool(keyword and any(keyword_low in heading for heading in headings)), f"{len(headings)} H2/H3 headings", 6),
+        _check("Image alt text", bool(images and all(alt_values) and keyword and any(keyword_low in alt for alt in alt_values)), f"{len(images)} image(s) with alt text", 6),
+        _check("Author / E-E-A-T surface", author_observed, "author/byline observed" if author_observed else "author surface missing", 5),
         _check("Relevant internal link", bool(internal_links), f"{len(internal_links)} same-site links", 5),
         _check("Category taxonomy", bool(category_ids), f"{len(category_ids)} category id(s)", 3),
         _check("Keyword/tag taxonomy", bool(tag_ids), f"{len(tag_ids)} tag id(s); relevance still needs editorial review", 3),
