@@ -524,8 +524,8 @@ def _rankmath_gate(article: dict, category: str) -> dict:
     target = int(getattr(config, "RM_TARGET", 100) or 100)
     rounds = int(getattr(config, "RM_REFINE_ROUNDS", 2) or 0)
     strict = analyze_rm(article)
-    if not (config.GEMINI_API_KEY or getattr(config, "GEMINI_API_KEYS", [])):
-        # key ledu → LLM refine ledu; deterministic rm100 score mattrame
+    if not config.ai_configured():
+        # AI provider key ledu → LLM refine ledu; deterministic rm100 score mattrame
         article["_rm"] = strict
         return article
     for rnd in range(1, rounds + 1):
@@ -1935,7 +1935,7 @@ def create_listicle(topic: str = "", mock: bool = False) -> Dict:
         article = topic_engine.mock_listicle(idea,
                                              state.today_count(config.STATE_PATH, date.today()))
     else:
-        if not config.GEMINI_API_KEY:
+        if not config.ai_configured():
             raise ValueError("AI provider key ledu — listicle generate avvaledu")
         recent = state.recent_titles(config.STATE_PATH, limit=30)
         article = gemini_client.generate_listicle(idea, recent, date.today().year)
@@ -1995,7 +1995,7 @@ def create_quiz(topic: str = "", level: int = 0, questions: int = 0,
     if mock:
         quiz = quiz_engine.mock_quiz(topic_en, topic_te, lvl, n, now_day)
     else:
-        if not (config.GEMINI_API_KEY or getattr(config, "GEMINI_API_KEYS", [])):
+        if not config.ai_configured():
             raise ValueError("AI provider key ledu — quiz generate avvaledu")
         recent = state.recent_titles(config.STATE_PATH, limit=20)
         quiz = gemini_client.generate_quiz(topic_en, topic_te, lvl, n,
