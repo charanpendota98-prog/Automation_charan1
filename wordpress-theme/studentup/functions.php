@@ -78,9 +78,9 @@ function studentup_most_used() {
  */
 function studentup_cat_aliases() {
 	return array(
-		'ts-jobs'         => array( 'ts-govt-jobs', 'telangana-govt-jobs', 'ts-jobs' ),
-		'ap-jobs'         => array( 'ap-govt-jobs', 'ap-jobs' ),
-		'central-jobs'    => array( 'central-govt-jobs', 'central-jobs', 'central' ),
+		'ts-jobs'         => array( 'ts-govt-jobs', 'telangana-govt-jobs', 'ts-jobs', 'ts-government-jobs' ),
+		'ap-jobs'         => array( 'ap-govt-jobs', 'ap-jobs', 'ap-government-jobs' ),
+		'central-jobs'    => array( 'central-govt-jobs', 'central-jobs', 'central', 'central-government-jobs' ),
 		'hall-tickets'    => array( 'hall-tickets', 'hallticket', 'hall-ticket' ),
 		'results'         => array( 'results' ),
 		'walkin-jobs'     => array( 'walkin-jobs', 'walkin', 'walk-in-jobs' ),
@@ -113,6 +113,66 @@ function studentup_used_term( $slug ) {
 	}
 	return null;
 }
+
+/**
+ * Seed the categories the bot and homepage expect when the theme is activated.
+ *
+ * This is deliberately idempotent and alias-aware: if an existing site already
+ * has `ts-jobs`, the theme does not create a second `ts-govt-jobs` archive.
+ * The admin-init retry covers a theme update where WordPress does not fire the
+ * activation hook again. It never creates posts or changes existing terms.
+ */
+function studentup_seed_categories() {
+	$version = '2026-09-category-seed-1';
+	if ( $version === (string) get_option( 'studentup_category_seed_version', '' ) ) {
+		return;
+	}
+	$seed = array(
+		'ts-jobs'         => array( 'TS Govt Jobs', 'ts-govt-jobs' ),
+		'ap-jobs'         => array( 'AP Govt Jobs', 'ap-govt-jobs' ),
+		'central-jobs'    => array( 'Central Govt Jobs', 'central-govt-jobs' ),
+		'hall-tickets'    => array( 'Hall Tickets', 'hall-tickets' ),
+		'results'         => array( 'Results', 'results' ),
+		'walkin-jobs'     => array( 'Walkin Jobs', 'walkin-jobs' ),
+		'software-jobs'   => array( 'Software Jobs', 'software-jobs' ),
+		'success-stories' => array( 'Success Stories', 'success-stories' ),
+		'private-jobs'    => array( 'Private Jobs', 'private-jobs' ),
+		'current-affairs' => array( 'Current Affairs', 'current-affairs' ),
+		'scholarships'    => array( 'Scholarships', 'scholarships' ),
+		'part-time-jobs'  => array( 'Part Time Jobs', 'part-time-jobs' ),
+		'outsourcing-jobs'=> array( 'Outsourcing Jobs', 'outsourcing-jobs' ),
+		'internships'     => array( 'Internships', 'internships' ),
+		'online-education'=> array( 'Online Education', 'online-education' ),
+		'exam-tips'       => array( 'Exam Tips', 'exam-tips' ),
+		'upcoming-exams'  => array( 'Upcoming Exams', 'upcoming-exams' ),
+		'abroad-jobs'     => array( 'Abroad Jobs', 'abroad-jobs' ),
+		'daily-quiz'      => array( 'Daily Quiz', 'daily-quiz' ),
+	);
+	$aliases = studentup_cat_aliases();
+	$failed  = false;
+	foreach ( $seed as $theme_slug => $item ) {
+		$candidates = isset( $aliases[ $theme_slug ] ) ? $aliases[ $theme_slug ] : array( $item[1] );
+		$found      = false;
+		foreach ( $candidates as $candidate ) {
+			if ( get_category_by_slug( $candidate ) ) {
+				$found = true;
+				break;
+			}
+		}
+		if ( $found || get_category_by_slug( sanitize_title( $item[0] ) ) ) {
+			continue;
+		}
+		$result = wp_insert_term( $item[0], 'category', array( 'slug' => $item[1] ) );
+		if ( is_wp_error( $result ) ) {
+			$failed = true;
+		}
+	}
+	if ( ! $failed ) {
+		update_option( 'studentup_category_seed_version', $version, false );
+	}
+}
+add_action( 'after_switch_theme', 'studentup_seed_categories' );
+add_action( 'admin_init', 'studentup_seed_categories' );
 
 /**
  * Reverse map — live category slug → theme chip slug.

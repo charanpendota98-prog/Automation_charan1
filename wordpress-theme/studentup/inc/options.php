@@ -113,6 +113,7 @@ function studentup_option_fields() {
 				'ga4_id' => array( 'GA4 Measurement ID', 'text', '', 'v80: G-XXXXXXXXXX — consent-aware analytics (EEA regions lo consent varaku hold, India lo direct)' ),
 				'gsc_verify'  => array( 'Search Console verification', 'text', '', 'v80: GSC → Settings → Ownership verification → HTML tag content value (meta tag auto)' ),
 				'bing_verify' => array( 'Bing Webmaster verification', 'text', '', 'Bing Webmaster Tools → Verification → HTML meta tag content value' ),
+				'category_seed_version' => array( 'Category seed version (managed)', 'text', '', 'Managed automatically when StudentUp creates missing canonical categories; do not edit unless re-seeding is required.' ),
 			),
 		),
 	);

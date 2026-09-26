@@ -25,6 +25,9 @@ def test_success_stories_is_after_software_in_all_surfaces():
         'data-goto-cat="success-stories" data-count-cat="success-stories"')
     assert 'data-cat="success-stories"' in preview
     assert "🏆" in preview
+    assert "function studentup_seed_categories" in functions
+    assert "after_switch_theme" in functions and "admin_init" in functions
+    assert "studentup_category_seed_version" in functions
 
 
 def test_breaking_surface_is_honest_and_motion_safe():
