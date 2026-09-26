@@ -142,6 +142,35 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
         except Exception:
             log.exception("Opportunity digest failed (regular posting continues)")
 
+    # v124: once-per-day read-only official-source freshness scan. A changed
+    # notice is alerted for owner review; the scheduler never edits content by
+    # itself, so dates/fees/status still pass through the full update gate.
+    source_monitor_key = f"source-monitor:{today.isoformat()}"
+    if (getattr(config, "SOURCE_MONITOR_ENABLED", True)
+            and now_hour >= getattr(config, "SOURCE_MONITOR_HOUR", 6)
+            and not state.meta_get(config.STATE_PATH, source_monitor_key)):
+        try:
+            from . import source_monitor as _source_monitor
+
+            monitor_result = _source_monitor.scan(notify=True)
+            state.meta_set(
+                config.STATE_PATH,
+                source_monitor_key,
+                json.dumps({
+                    "scanned": monitor_result.get("scanned", 0),
+                    "changed": len(monitor_result.get("changed", [])),
+                    "errors": len(monitor_result.get("errors", [])),
+                }),
+            )
+            log.info(
+                "SOURCE MONITOR ✔ scanned=%s changed=%s errors=%s",
+                monitor_result.get("scanned", 0),
+                len(monitor_result.get("changed", [])),
+                len(monitor_result.get("errors", [])),
+            )
+        except Exception:
+            log.exception("Source freshness monitor failed (regular posting continues)")
+
     # --- bulk queue mode: --process-queue N (N URLs ippude process) ---------
     if process_queue:
         done = 0

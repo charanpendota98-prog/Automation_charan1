@@ -2538,7 +2538,7 @@ replace an image-capable model.
 | `AUTO_UPDATE_SAME_SOURCE` | `1` | Match the same official source and refresh the existing post in place |
 | `SOURCE_PREFLIGHT_REQUIRED` | `1` | Block source-derived drafts when evidence/claim checks fail |
 | `SHORTLINK_ENABLED` / `SHORTLINK_PROVIDER` | `0` / `wordpress` | First-party readable circulation links |
-| `SOURCE_MONITOR_ENABLED` | `1` | Alert owner when a stored official source changes; never auto-edits posts |
+| `SOURCE_MONITOR_ENABLED` / `SOURCE_MONITOR_HOUR` | `1` / `6` | Daily read-only source-change alert; never auto-edits posts |
 
 Marpali te: `.env` edit chesi scheduler ni restart cheyandi: `sudo systemctl restart studentup-autoblog.timer`
 

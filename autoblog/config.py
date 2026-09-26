@@ -143,6 +143,7 @@ SOURCE_PREFLIGHT_REQUIRED = _get("SOURCE_PREFLIGHT_REQUIRED", "1") not in ("0", 
 # source-backed published post's source text changes; it never auto-edits copy.
 SOURCE_MONITOR_ENABLED = _get("SOURCE_MONITOR_ENABLED", "1") not in ("0", "false", "no")
 SOURCE_MONITOR_MAX_POSTS = int(_get("SOURCE_MONITOR_MAX_POSTS", "120"))
+SOURCE_MONITOR_HOUR = int(_get("SOURCE_MONITOR_HOUR", "6") or 6)
 SOURCE_MONITOR_STATE = Path(_get("SOURCE_MONITOR_STATE", str(BASE_DIR / "logs" / "source-monitor.json")))
 # Repetition/filler audit is separate from Rank Math and blocks low-value prose.
 CONTENT_QUALITY_BLOCK = _get("CONTENT_QUALITY_BLOCK", "1") not in ("0", "false", "no")
