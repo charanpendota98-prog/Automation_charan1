@@ -6,28 +6,30 @@ verify chestundi).
 
 ---
 
-## 1) PILLARS — 17 categories (TS + AP students kosam)
+## 1) PILLARS — 18 categories (TS + AP students kosam)
 
 | # | Pillar | Enduku | Priority tickets | Official sources |
 |---|--------|--------|------------------|------------------|
-| 1 | **TS Govt Jobs** | TSPSC, TS Police, Gurukul, GENCO/TRANSCO | 4 | 10 |
-| 2 | **AP Govt Jobs** | APPSC, AP Police, APSRTC, DSC, Sachivalayam | 3 | 8 |
-| 3 | **Central Govt Jobs** | SSC, UPSC, RRB, IBPS, SBI, Defence | 4 | 33 |
-| 4 | **Outsourcing Jobs** ⭐new | TS/AP outsourcing, CRC, contract basis, guest faculty | 3 | 8 |
-| 5 | **Walkin Jobs** | walk-in drives, direct interviews | 0 | 5 |
-| 6 | **Private Jobs** | TCS/Infosys/Wipro fresher drives | 2 | 1 |
-| 7 | **Software Jobs** | dev/analyst roles, off-campus | 2 | 14 |
+| 1 | **TS Govt Jobs** | TSPSC, TS Police, Gurukul, GENCO/TRANSCO | 4 | 15 |
+| 2 | **AP Govt Jobs** | APPSC, AP Police, APSRTC, DSC, Sachivalayam | 3 | 14 |
+| 3 | **Central Govt Jobs** | SSC, UPSC, RRB, IBPS, SBI, Defence | 4 | 53 |
+| 4 | **Outsourcing Jobs** ⭐ | TS/AP outsourcing, CRC, contract basis, guest faculty | 3 | 13 |
+| 5 | **Walkin Jobs** | walk-in drives, direct interviews | 0 | 13 |
+| 6 | **Private Jobs** | TCS/Infosys/Wipro fresher drives | 2 | 9 |
+| 7 | **Software Jobs** | developer/data/QA/DevOps roles, off-campus | 2 | 14 |
 | 8 | **Part Time Jobs** | WFH, freelance, data entry (scam checks) | 0 | 2 |
-| 9 | **Scholarships** | NSP, Jnanabhumi, fee reimbursement | 3 | 7 |
-| 10 | **Upcoming Exams** ⭐new | exam calendar, tentative schedules | 4 | 6 |
-| 11 | **Current Affairs** ⭐new | daily current affairs (PIB/govt releases) | 3 | 6 |
-| 12 | **Exam Tips** ⭐new | preparation strategy, previous papers | 2 | 4 |
-| 13 | **Hall Tickets** | admit cards, exam-day rules | 0 | 1 |
-| 14 | **Results** | board/competitive results, answer keys | 3 | 5 |
-| 15 | **Internships** | internships, training programs | 0 | 4 |
-| 16 | **Online Education** | admissions, counselling, online degrees | 0 | 15 |
+| 9 | **Scholarships** | NSP, Jnanabhumi, fee reimbursement | 3 | 10 |
+| 10 | **Upcoming Exams** ⭐ | exam calendar, supplementary exams, fee/last dates | 4 | 10 |
+| 11 | **Current Affairs** ⭐ | daily current affairs (PIB/govt releases) | 3 | 26 |
+| 12 | **Exam Tips** ⭐ | preparation strategy, previous papers | 2 | 4 |
+| 13 | **Hall Tickets** | admit cards, exam-day rules | 0 | 4 |
+| 14 | **Results** | board/competitive results, answer keys | 3 | 15 |
+| 15 | **Internships** | internships, training programs | 0 | 6 |
+| 16 | **Online Education** | admissions, counselling, online degrees | 0 | 32 |
+| 17 | **Abroad Jobs** | Gulf/overseas jobs, visa-safe guidance | 4 | 14 |
+| 18 | **Success Stories** | verified achiever lessons only | 0 | 4 |
 
-**Total: 143 official-source queries · 12,344 keywords (221 అంశాలు)**, 4×/day check (daily hot-list + rotation).
+**Total: 258 curated-source queries · 12,344 keywords (221 అంశాలు)**, 4×/day check (daily hot-list + rotation).
 Kotha pillar ki source ledu anukunte: `autoblog/sources_grid.py` lo add cheyandi —
 `tests/v50_test.py::test_official_source_grid_covers_every_pillar` ventane fail avutundi.
 
@@ -37,7 +39,7 @@ Gulf/abroad jobs, visa, IELTS/PTE, study abroad, NRI guidance · roju 1–2 post
 ## 2) ROJU PLAN (daily rhythm)
 
 ```
-06:00  RADAR run      → 180 sources check → edu-relevant items → topic queue
+06:00  RADAR run      → 258 curated source queries (57 daily + rotation) → edu-relevant items → topic queue
 07:00  DEEP run       → top queued topic: multi-source facts + cross-verify
        (NotebookLM brief optional — unte inka strong)
 08:00  DRAFTS         → 3-5 drafts (pillars rotate: jobs → scholarships →
@@ -117,4 +119,4 @@ Console / AdSense account lo ne vastayi.
 Posting rhythm idi follow avvali: breaking/exam-mechanics items (ఫలితాలు · హాల్ టికెట్లు ·
 గడువు) ki **priority** — avi students ekkuvaga vethikevi.
 
-*Last updated: v73 (2026-09-18, v72 qualification engine + English-UI copy pass) — 17 pillars · jobs auto-tagged by qualification (10th · 10+2 · ITI · Diploma · Degree · PG · B.Tech) · 57/57 test suites · 162/162 runtime checks · theme v1.7.1 (App download + qualification sections)*
+*Last updated: 2026-09-25 — 18 pillars · 258 curated-source queries (57 daily + rotation) · supplementary-exam and Success Stories review coverage · WordPress drafts + Telegram/human approval*

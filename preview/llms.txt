@@ -1,0 +1,41 @@
+# StudentUp.in
+
+> Telugu + English public information for Telangana and Andhra Pradesh students, job seekers, applicants and families.
+> StudentUp publishes original, source-checked explainers for jobs, recruitment, scholarships, exams, results, admissions and government schemes.
+
+## Editorial standards
+
+- Prefer official notifications and government portals; cross-check important facts before publishing.
+- Do not treat a missing date, vacancy, fee, salary or eligibility detail as confirmed.
+- Canonical article pages contain the current reader-facing answer and official links.
+- If an article conflicts with the official notification, the official notification wins.
+
+## Main sections
+
+- [Home](https://studentup.in/)
+- [Telangana Government Jobs](https://studentup.in/category/ts-govt-jobs/)
+- [Andhra Pradesh Government Jobs](https://studentup.in/category/ap-govt-jobs/)
+- [Central Government Jobs](https://studentup.in/category/central-govt-jobs/)
+- [Software Jobs](https://studentup.in/category/software-jobs/)
+- [Private Jobs](https://studentup.in/category/private-jobs/)
+- [Part-Time Jobs](https://studentup.in/category/part-time-jobs/)
+- [Walk-in Jobs](https://studentup.in/category/walkin-jobs/)
+- [Outsourcing Jobs](https://studentup.in/category/outsourcing-jobs/)
+- [Abroad Jobs](https://studentup.in/category/abroad-jobs/)
+- [Scholarships](https://studentup.in/category/scholarships/)
+- [Internships and Apprenticeships](https://studentup.in/category/internships/)
+- [Hall Tickets](https://studentup.in/category/hall-tickets/)
+- [Results](https://studentup.in/category/results/)
+- [Upcoming Exams](https://studentup.in/category/upcoming-exams/)
+- [Exam Tips](https://studentup.in/category/exam-tips/)
+- [Online Education](https://studentup.in/category/online-education/)
+- [Current Affairs](https://studentup.in/category/current-affairs/)
+- [Success Stories](https://studentup.in/category/success-stories/)
+- [About Us](https://studentup.in/about-us/)
+- [Editorial Policy](https://studentup.in/editorial-policy/)
+- [Corrections and Contact](https://studentup.in/contact/)
+
+## Machine-readable feeds
+
+- [XML Sitemap](https://studentup.in/sitemap.xml)
+- [News Sitemap](https://studentup.in/news-sitemap.xml)

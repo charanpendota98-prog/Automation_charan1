@@ -410,13 +410,18 @@ def check_posts(data: Dict, today: Optional[datetime] = None) -> List[Dict]:
         cat_govt = [c for c in cat_names if any(h in c.lower() for h in GOVT_HINTS)]
         private_hit = next((e for e in PRIVATE_EMPLOYERS if e in low), "")
         if private_hit and cat_govt:
-            private_cat = next((c for c in data["categories"]
-                                if c["name"] in ("Private Jobs", "Software Jobs")), None)
+            # Use the same classifier as publishing: a TCS developer belongs
+            # in Software Jobs, while a TCS sales/operations opening belongs in
+            # Private Jobs. Never repair both to a generic private bucket.
+            suggested = guess_category(title, data["categories"])
+            private_cat = suggested if suggested and suggested.get("name") in (
+                "Private Jobs", "Software Jobs") else next(
+                    (c for c in data["categories"] if c["name"] == "Private Jobs"), None)
             out.append(finding(
                 "wrong_category_govt_private", "high", "post",
                 f"Private employer ('{private_hit}') ni '{cat_govt[0]}' category lo pettaru",
                 f"slug={slug} categories={cat_names}",
-                "Category 'Private Jobs' ki marchandi (search intent tappu avutundi)",
+                f"Category '{private_cat['name'] if private_cat else 'Private Jobs'}' ki marchandi (search intent tappu avutundi)",
                 bool(private_cat), "set_categories",
                 {"id": pid, "add": [private_cat["id"]] if private_cat else [],
                  "remove": cat_ids}, pid, title, slug, link))
@@ -530,25 +535,26 @@ def stale_dates_note(plain: str, today: Optional[datetime] = None,
 
 
 def guess_category(title: str, categories: Iterable[Dict]) -> Optional[Dict]:
-    """Title nunchi category guess (deterministic keywords)."""
-    t = (title or "").lower()
-    tops = {"scholarship": "Scholarships", "epass": "Scholarships",
-            "nsp": "Scholarships", "fellowship": "Scholarships",
-            "internship": "Internships", "walk-in": "Walkin Jobs",
-            "walkin": "Walkin Jobs", "hall ticket": "Hall Tickets",
-            "admit card": "Hall Tickets", "result": "Results",
-            "syllabus": "Results", "software": "Software Jobs",
-            "developer": "Software Jobs", "part time": "Part Time Jobs",
-            "part-time": "Part Time Jobs", "degree": "Online Education",
-            "online": "Online Education", "tspsc": "TS Govt Jobs",
-            "ts ": "TS Govt Jobs", "appsc": "AP Govt Jobs", "ap ": "AP Govt Jobs",
-            "ssc": "Central Govt Jobs", "upsc": "Central Govt Jobs",
-            "railway": "Central Govt Jobs", "rrb": "Central Govt Jobs"}
-    for needle, cat_name in tops.items():
-        if needle in t:
-            for c in categories:
-                if c["name"].lower() == cat_name.lower() or cat_name.lower() in c["name"].lower():
-                    return c
+    """Use the same canonical classifier as the publishing pipeline.
+
+    The audit must not have a second, older keyword map: that is how a
+    Software Jobs post can be proposed for Central Govt Jobs during repair.
+    """
+    from .pipeline import classify_category
+
+    cat_name = classify_category(title or "")
+    available = list(categories)
+    for c in available:
+        name = str(c.get("name") or "")
+        if name.lower() == cat_name.lower():
+            return c
+    # Existing sites sometimes have a harmless slug/name variation. Resolve
+    # that only after an exact canonical-name attempt.
+    wanted = re.sub(r"[^a-z0-9]+", "-", cat_name.lower()).strip("-")
+    for c in available:
+        slug = str(c.get("slug") or "").lower().strip()
+        if slug == wanted or slug.replace("-", " ") == cat_name.lower():
+            return c
     return None
 
 

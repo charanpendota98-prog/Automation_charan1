@@ -61,6 +61,12 @@ TIER1_HOSTS = {
     "accenture.com", "careers.capgemini.com", "careers.ibm.com",
     "careers.deloitte.com", "careers.hcltech.com", "careers.techmahindra.com",
     "careers.zoho.com", "zoho.com",
+    # Additional first-party education, employment and state portals.
+    "nta.ac.in", "ugcnet.nta.ac.in", "ctet.nic.in", "rrbcdg.gov.in",
+    "epfindia.gov.in", "esic.gov.in", "sebi.gov.in", "dgt.gov.in",
+    "education.gov.in", "apmsrb.ap.gov.in", "telangana.gov.in", "ap.gov.in",
+    "osmania.ac.in", "jntuh.ac.in", "jntuk.edu.in", "andhrauniversity.edu.in",
+    "braou.ac.in", "kakatiya.ac.in",
 }
 TIER2_HOSTS = {
     "tv9telugu.com", "tv9.com", "sakti.com", "telusuko.io", "abplive.com",
@@ -529,6 +535,18 @@ def audit_source_set(article: Dict) -> Dict:
             url = source.get("url", "") if isinstance(source, dict) else getattr(source, "url", "")
             if url:
                 urls.append(url)
+    # A URL in a search result is not evidence. Every source used for a strict
+    # post must have meaningful extracted text; otherwise the model may be
+    # filling gaps from memory or guessing.
+    empty_sources = []
+    for source in raw:
+        text = source.get("text", "") if isinstance(source, dict) else getattr(source, "text", "")
+        url = source.get("url", "") if isinstance(source, dict) else getattr(source, "url", "")
+        # A result URL alone is not evidence. A useful excerpt/page capture
+        # must contain enough text for fact checking; short snippets stay in
+        # the private research record but cannot satisfy the live-source gate.
+        if len((text or "").split()) < 40:
+            empty_sources.append(_domain(url) or url or "unknown")
     has_sources = bool(article.get("source_url") or urls)
     require_all = bool(getattr(config, "SOURCE_REQUIRED_ALL", True))
     applicable = has_sources or (require_all and article.get("article_type") != "quiz")
@@ -552,6 +570,8 @@ def audit_source_set(article: Dict) -> Dict:
     flags: List[str] = []
     if applicable and len(domains) < min_sources:
         flags.append(f"SOURCES {len(domains)}/{min_sources} independent domains")
+    if applicable and empty_sources:
+        flags.append("SOURCE-TEXT-INCOMPLETE " + ", ".join(empty_sources[:3]))
     if applicable and len(official) < min_official:
         flags.append(f"OFFICIAL-SOURCES {len(official)}/{min_official}")
     if applicable and not report:
@@ -568,6 +588,7 @@ def audit_source_set(article: Dict) -> Dict:
         "applicable": applicable,
         "ok": not flags,
         "source_count": len(urls),
+        "source_text_incomplete": empty_sources,
         "independent_domains": len(domains),
         "domains": domains,
         "official_count": len(official),

@@ -10,7 +10,10 @@ adsense_kit.json
 design_kit.json
 images/
 log/
+logs/
+logs
 output/
+output
 quiz_kit.json
 service_center.db
 service_center.db-journal
