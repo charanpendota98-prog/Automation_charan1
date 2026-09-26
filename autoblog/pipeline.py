@@ -1148,9 +1148,34 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
             else:
                 log.info("Rank Math meta verified ✔ (id=%s)", result["id"])
                 if stage_for_seo:
-                    result.update(wp.set_post_status(result["id"], "publish"))
-                    log.info("SEO-verified draft promoted to publish ✔ (id=%s)",
-                             result["id"])
+                    # The local validator is only a preflight. A live post is
+                    # promoted only when WordPress/Rank Math returns its real
+                    # stored score, and that value is exactly the configured
+                    # target. Missing bridge/plugin readback remains draft.
+                    live_rankmath = wp.read_rankmath_state(result["id"])
+                    live_score = live_rankmath.get("rank_math_ui_score")
+                    result["rank_math_ui_score"] = live_score
+                    article["_rank_math_state"] = live_rankmath
+                    require_live = getattr(config, "RM_REQUIRE_LIVE_SCORE", True)
+                    if require_live and live_score != int(getattr(config, "RM_TARGET", 100) or 100):
+                        result["rank_math_live_verified"] = False
+                        result["live_publish_blocked_reason"] = (
+                            "Actual WordPress Rank Math score unavailable or below target: "
+                            f"{live_score!r} (target {getattr(config, 'RM_TARGET', 100)})"
+                        )
+                        log.error("Live publish blocked: %s", result["live_publish_blocked_reason"])
+                        try:
+                            notifier.send_telegram(
+                                "⚠️ <b>LIVE PUBLISH BLOCKED</b> — Rank Math actual score was "
+                                f"<b>{live_score!r}</b>, not the target. Draft remains in WordPress."
+                            )
+                        except Exception:  # noqa: BLE001 — notification cannot unlock a post
+                            log.debug("Rank Math block notification failed", exc_info=True)
+                    else:
+                        result["rank_math_live_verified"] = True
+                        result.update(wp.set_post_status(result["id"], "publish"))
+                        log.info("SEO + actual Rank Math score verified; draft promoted to publish ✔ (id=%s)",
+                                 result["id"])
         except Exception:
             # In two-phase mode the post is still a draft, so a bridge/readback
             # failure is safe and cannot trigger the public-channel notification.
@@ -1949,6 +1974,34 @@ def update_post(post_id: int, new_source_urls=None, mock: bool = False) -> Dict:
                 log.warning("UPDATE %s: Rank Math meta missing %s", post_id, missing)
         except Exception:
             log.exception("update meta verify skip (safe)")
+    # Existing published URLs are preserved, but their final Rank Math state is
+    # still read from WordPress after the update. A local SEO estimate can never
+    # turn this into a "100" claim.
+    try:
+        live_rankmath = wp.read_rankmath_state(post_id)
+        result["rank_math_ui_score"] = live_rankmath.get("rank_math_ui_score")
+        result["rank_math_live_verified"] = (
+            not getattr(config, "RM_REQUIRE_LIVE_SCORE", True)
+            or result["rank_math_ui_score"] == int(getattr(config, "RM_TARGET", 100) or 100)
+        )
+        article["_rank_math_state"] = live_rankmath
+        if not result["rank_math_live_verified"]:
+            result["live_publish_blocked_reason"] = (
+                "Actual WordPress Rank Math score after update is "
+                f"{result['rank_math_ui_score']!r}; target is {getattr(config, 'RM_TARGET', 100)}"
+            )
+            log.error("Update SEO verification warning: %s", result["live_publish_blocked_reason"])
+            try:
+                notifier.send_telegram(
+                    "⚠️ <b>UPDATED POST NEEDS SEO REVIEW</b> — actual Rank Math score is "
+                    f"<b>{result['rank_math_ui_score']!r}</b>; no 100 claim was made."
+                )
+            except Exception:  # noqa: BLE001
+                log.debug("Rank Math update warning notification failed", exc_info=True)
+    except Exception:
+        result["rank_math_live_verified"] = False
+        result["live_publish_blocked_reason"] = "Actual WordPress Rank Math readback unavailable"
+        log.exception("update Rank Math read-only state unavailable")
     article["source_url"] = None
     try:
         state.record_refresh(config.STATE_PATH, post_id)

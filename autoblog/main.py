@@ -981,7 +981,8 @@ def rm100_run() -> int:
     res = rm100.apply(art)
     checks = validator.rankmath_strict(art, art.get("content_html", "")).get("checks", [])
     print("=" * 70)
-    print("  🎯 RANK MATH 100 ENGINE — proof (deterministic fixes, LLM ledu)")
+    print("  🎯 RANK MATH LOCAL PRE-FLIGHT — deterministic checks only")
+    print("  ⚠️  This is NOT the live Rank Math plugin score. Use --live-seo POST_ID for WordPress readback.")
     print("=" * 70)
     print(f"  score: {res['before']}/100  →  {res['after']}/100"
           f"   ({len(checks)} on-page tests)")
@@ -1729,6 +1730,8 @@ def main() -> int:
                         help="v30: production safety, consent, ads, plugins, theme, and legal audit")
     parser.add_argument("--live-validation", nargs="?", const="", default=None, metavar="SITE",
                         help="read-only live HTTP/REST/auth validation; SITE optional, defaults to WP_SITE")
+    parser.add_argument("--live-seo", type=int, default=0, metavar="POST_ID",
+                        help="read-only real Rank Math score + rendered SEO audit for one live post")
     parser.add_argument("--service-center", action="store_true",
                         help="v31: preview/publish Student Internet Center services page")
     parser.add_argument("--content-audit", action="store_true",
@@ -1865,7 +1868,7 @@ def main() -> int:
     parser.add_argument("--trends-queue", action="store_true",
                         help="v65: --trends tho paatu Suggest capture + topic queue")
     parser.add_argument("--rm100", action="store_true",
-                        help="Rank Math 100 engine proof (imperfect draft → 100 breakdown)")
+                        help="local Rank Math pre-flight only; live plugin score requires --live-seo POST_ID")
     parser.add_argument("--readiness", action="store_true",
                         help="v62: TOP WEBSITE READINESS — content/SEO/ads/automation/site score")
     parser.add_argument("--push-theme-data", action="store_true",
@@ -2023,6 +2026,10 @@ def main() -> int:
         from . import live_validation
 
         return live_validation.run_cli(args.live_validation)
+    if args.live_seo:
+        from . import live_seo
+
+        return live_seo.run_cli(args.live_seo)
     if args.service_center:
         return service_center_setup(dry=args.dry_run, force=args.force)
     if args.content_audit:

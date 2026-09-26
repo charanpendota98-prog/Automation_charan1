@@ -108,7 +108,7 @@ def check_imports() -> Dict:
             "autoblog.approval_bot", "autoblog.guardian", "autoblog.readiness",
             "autoblog.wordpress_client", "autoblog.quiz_engine",
             "autoblog.source_monitor", "autoblog.opportunity_monitor",
-            "autoblog.live_validation"]
+            "autoblog.live_validation", "autoblog.live_seo"]
     bad = []
     for mod in mods:
         try:

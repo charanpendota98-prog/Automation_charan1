@@ -341,6 +341,9 @@ def gemini_configured() -> bool:
 GEMINI_RPD_PER_KEY = int(_get("GEMINI_RPD_PER_KEY", "1400"))
 # v18: Rank Math STRICT gate (real panel checks) — target + refine rounds
 RM_TARGET = int(_get("RM_TARGET", "100"))   # v64: 100 target (Rank Math)
+# Direct live publishing requires the actual score read back from WordPress.
+# Missing Rank Math/plugin readback stays a draft; no local estimate can unlock it.
+RM_REQUIRE_LIVE_SCORE = _get("RM_REQUIRE_LIVE_SCORE", "1") not in ("0", "false", "no")
 # Rank Math's regular-post content check is a 600-word recommendation. Keep
 # this separate from the optional long-form/top-post quality target so the bot
 # does not add filler merely to satisfy an internal 1500-word rule.

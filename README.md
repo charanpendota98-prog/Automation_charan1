@@ -632,6 +632,30 @@ redirects, changes ads or modifies content.
 
 **Proof:** `--test-all` **92/92**.
 
+### v127 — REAL RANK MATH + RENDERED SEO VERIFICATION
+
+The local Rank Math preflight is only a draft-quality check. It is **not** the
+Rank Math plugin score. Direct live publishing now stages the post as a draft
+and requires the actual score read back from WordPress/Rank Math to equal
+`RM_TARGET` (default `100`). If the plugin, theme bridge or score readback is
+missing, the post stays a draft and the owner is alerted.
+
+Verify one real post after staging:
+
+```bash
+python run.py --live-seo POST_ID
+```
+
+This command reads the WordPress SEO bridge and fetches the rendered public
+HTML. It reports the real stored Rank Math score separately from an independent
+rendered-HTML SEO coverage audit. The latter checks title, meta description,
+canonical, Open Graph, Article/Breadcrumb JSON-LD, H1, focus-keyword placement,
+internal links and readable content; it is explicitly **not** Rank Math and is
+not a Google score. No score is written or assumed.
+
+`rank_math_actual_100: true` is reported only when WordPress returns numeric
+`100`. No live WordPress access means `unknown`, never `100`.
+
 ### v126 — LIVE VALIDATION (NO CLAIMS WITHOUT OBSERVATION)
 
 Before activating a staging/production site, run a read-only check against the
@@ -2591,6 +2615,7 @@ replace an image-capable model.
 | `SOURCE_PREFLIGHT_REQUIRED` | `1` | Block source-derived drafts when evidence/claim checks fail |
 | `SHORTLINK_ENABLED` / `SHORTLINK_PROVIDER` | `0` / `wordpress` | First-party readable circulation links |
 | `SOURCE_MONITOR_ENABLED` / `SOURCE_MONITOR_HOUR` | `1` / `6` | Daily read-only source-change alert; never auto-edits posts |
+| `RM_TARGET` / `RM_REQUIRE_LIVE_SCORE` | `100` / `1` | Direct live promotion requires actual WordPress Rank Math score; unavailable stays draft |
 | `OPPORTUNITY_MONITOR_ENABLED` / `OPPORTUNITY_MONITOR_HOUR` | `1` / `6` | Dead-link/PDF/status/expiry review queue; never auto-edits posts |
 | `OPPORTUNITY_MONITOR_NEAR_DAYS` | `3` | Alert window for a verified upcoming deadline |
 
