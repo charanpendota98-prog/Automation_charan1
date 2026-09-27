@@ -1,7 +1,7 @@
 # studentup.in Auto-Blogger 🤖
 
 
-> **Verified counts (theme v1.9.19 build):** test suites **109/109** files · jsdom runtime **164/164** checks · PHP lint **58/58** files · theme audit **0/0** · code audit **0/0**.
+> **Verified counts (theme v1.9.19 build):** test suites **109/109** files · jsdom runtime **165/165** checks · PHP lint **58/58** files · theme audit **0/0** · code audit **0/0**.
 24/7 automatic blog posting system for **studentup.in** (WordPress) — runs on your Oracle Cloud instance.
 
 - **AI content:** Google Gemini (free tier) generates Telugu + English mix articles
@@ -558,7 +558,7 @@ score + blockers + fix lines + JSON artifact.
 **GAP-6 CLS/INP:** content images ki `width/height` ledu (layout shift) + mobile taps ki
 ~300ms delay. Fix: image dims filter + `touch-action: manipulation`.
 
-**Proof:** `--test-all` **74/74** (v94_test.py kotha: 13 checks) · jsdom **164/164** ·
+**Proof:** `--test-all` **74/74** (v94_test.py kotha: 13 checks) · jsdom **165/165** ·
 saved-engine **53/53** · readiness **100/100** · php-lint **38/38** · theme **1.9.5**.
 AdSense readiness score: **97%** (1 blocker = posts volume — live publishing tho mattrame).
 
@@ -1268,7 +1268,7 @@ kavali (usage rules · copyright + correction route · ad disclosure · third-pa
 "as is" information · liability limits · governing law India/Telangana · contact).
 `tools/build_policy_pages.py` lo TERMS + nav + sitemap; footer lo 6వ policy link.
 
-**Proof:** `--test-all` **76/76** (v95_test.py: 13 checks) · jsdom **164/164** ·
+**Proof:** `--test-all` **76/76** (v95_test.py: 13 checks) · jsdom **165/165** ·
 saved-engine **53/53** · pin gate **100/100 · 68/68** · readiness **100/100** ·
 php-lint **38/38** · theme **1.9.6**.
 
@@ -1315,7 +1315,7 @@ anni correct + complete (`Z` closed paths) + brand gradients
 hover lift (reduced-motion safe) · footer safe space · toast reposition.
 
 **Proof:** `--test-all` **73/73** (v93_test.py kotha: 12 checks) · jsdom
-**164/164** · saved-engine **53/53** · readiness **100/100** · php-lint **37/37** ·
+**165/165** · saved-engine **53/53** · readiness **100/100** · php-lint **37/37** ·
 theme **1.9.4**.
 
 ### v92 — SAVED / READER RETENTION (theme 1.9.3)
@@ -1347,7 +1347,7 @@ clear + cancel, XSS payload, /saved/ grid, reading history, FIFO cap,
 blocked-storage fallback.
 
 **Proof:** `--test-all` **72/72** (v92_test.py kotha: 11 checks) · jsdom
-**164/164** · saved-engine **53/53** · readiness **100/100** ·
+**165/165** · saved-engine **53/53** · readiness **100/100** ·
 php-lint **37/37** · theme **1.9.3**.
 
 ### v91 — TELEGRAM TOOLS (theme 1.9.2) + v90 — NOTIFICATIONS (theme 1.9.1)
@@ -1379,7 +1379,7 @@ theme `inc/telegram.php`:
   (cron-safe).
 
 **Proof:** `--test-all` **71/71** (v90_test.py kotha: 8 checks ·
-v91_test.py kotha: 10 checks) · jsdom **164/164** · readiness **100/100** ·
+v91_test.py kotha: 10 checks) · jsdom **165/165** · readiness **100/100** ·
 php-lint **36/36** · theme **1.9.2**.
 
 ### v89 — PREMIUM HOMEPAGE (theme 1.9.0: Central fix + live search + ticker + brand icons)
@@ -1410,7 +1410,7 @@ no-JS safe) + **SSC · 10th** wording + SSC GD/MTS/CHSL keywords · laptop
 **3×3 strip + 3-col grid + menu scroll/no-wrap + current-page pill**.
 
 **Proof:** `--test-all` **69/69** (v89_test.py kotha: 10 checks) ·
-jsdom **164/164** · readiness **100/100** · theme-audit **0/0** · theme **1.9.0**.
+jsdom **165/165** · readiness **100/100** · theme-audit **0/0** · theme **1.9.0**.
 
 ### v87 — FIX-ALL ROUND (update e2e + quiz + banners → 7 real fixes)
 
@@ -1426,7 +1426,7 @@ hard-break · 3-line footer overlap → auto-shrink fit · empty focus_keyword
 → title-derived fallback · auto-refresh owner summary (cron silent fix).
 
 **Proof:** `--test-all` **68/68** (v87_test.py kotha: 7 checks) ·
-jsdom **164/164** · readiness **100/100** · theme-audit **0/0** · theme **1.7.2**.
+jsdom **165/165** · readiness **100/100** · theme-audit **0/0** · theme **1.7.2**.
 
 ### v86 — PROFESSIONAL POST AUDIT (final post e2e → 6 real fixes)
 
@@ -1442,7 +1442,7 @@ content) — engine block remove, JSON-LD intact · pin-gate error-dict silent
 success — source + update paths rendu ki honest ⛔ message.
 
 **Proof:** `--test-all` **67/67** (v86_test.py kotha: 6 checks, e2e tho) ·
-jsdom **164/164** · readiness **100/100** · theme-audit **0/0** · theme **1.7.2**.
+jsdom **165/165** · readiness **100/100** · theme-audit **0/0** · theme **1.7.2**.
 
 ### v85 — AUTO-BLOG PREP DEEP AUDIT (any URL + any length → 9 real fixes)
 
@@ -1460,7 +1460,7 @@ context 20000 + **anti-truncation guard** (<70% = reject) · slug ASCII-only
 (pipeline thread + honest error message) · v84 test registration miss.
 
 **Proof:** `--test-all` **66/66** (v85_test.py kotha: 9 checks) · jsdom
-**164/164** · readiness **100/100** · theme-audit **0/0** · theme **1.7.2**.
+**165/165** · readiness **100/100** · theme-audit **0/0** · theme **1.7.2**.
 
 ### v84 — FULL BUG HUNT (money + ads + approvals → 11 real fixes)
 
@@ -1477,7 +1477,7 @@ truncate · date-archive noindex + Yoast/AIOSEO stand-down · **DOUBLE TOC fix**
 (rm100+enhance rendu — live posts lo 2 boxes!) · update_post rm100 re-run.
 
 **Proof:** `--test-all` **65/65** (v84_test.py kotha: 13 checks) · jsdom
-**164/164** · readiness **100/100** · theme-audit **0/0** · theme **1.7.2**.
+**165/165** · readiness **100/100** · theme-audit **0/0** · theme **1.7.2**.
 
 ### v83 — rm100 TRUE-100 (self-contradiction fix)
 
@@ -1502,7 +1502,7 @@ cron.log rotation · approval callbacks fail-closed + auto-claim loud warning ·
 restore + regression pin (v82_test.py).
 
 **Proof:** `--test-all` **64/64** (v82_test.py kotha: 9 checks) · jsdom
-**164/164** · readiness **100/100** · theme-audit **0/0** · theme **1.7.2**.
+**165/165** · readiness **100/100** · theme-audit **0/0** · theme **1.7.2**.
 
 ### v81 — ULTIMATE SPEC GAP CLOSE (99 sections verify → 8 real gaps fix)
 
@@ -1531,7 +1531,7 @@ accounts/infra — roadmap; daily quiz + analysis live) · server page-cache
 (hosting) · CSP header (break risk) · GSC-data dashboard (needs OAuth/API).
 
 **Proof:** `--test-all` **63/63** (v81_test.py kotha: 10 checks) · jsdom
-**164/164** · readiness **100/100** · php-lint **34/34** · theme **1.7.2**.
+**165/165** · readiness **100/100** · php-lint **34/34** · theme **1.7.2**.
 
 ### v80 — MASTER PROMPT GAP CLOSE (50 phases verify → 7 real gaps fix)
 
@@ -1567,7 +1567,7 @@ paste · backups · CDN · actual GSC/GA4 monitoring · restore test.
 master prompt custom-stack assume chesindi, manadi WP stack.
 
 **Proof:** `--test-all` **62/62** (v80_test.py kotha: 12 checks) · jsdom
-**164/164** · readiness **100/100** · theme **1.7.2**.
+**165/165** · readiness **100/100** · theme **1.7.2**.
 
 ### v79 — AUTHOR + MID-ARTICLE JOIN + MISS-AUDIT CLOSE
 
@@ -1586,7 +1586,7 @@ share · trust · author · tags · prev/next · comments · related · last-dat
 badge · qual labels. Join links 100% option-driven (hardcode ledu — no dummy).
 
 **Proof:** `--test-all` **61/61** (v79_test.py kotha: 10 checks) · jsdom
-**164/164** · readiness **100/100** · php-lint **32/32** · theme **1.7.2**.
+**165/165** · readiness **100/100** · php-lint **32/32** · theme **1.7.2**.
 
 ### v78 — TOP-BLOG PERFECTION PASS ("edo final kaadu — best vache varaku")
 
@@ -1615,7 +1615,7 @@ probe — numbers kindha (same thin input, no FAQ, 1 tag):
 | 6 | **Many sources** | `RESEARCH_MAX_SOURCES` 3→**5** (+ v77 official-outbound = deepest gather) |
 | 7 | **Neat text** | Para split 120→100, chunks ~90→~70 words (wall-of-text break, meaning safe) |
 | 8 | **Theme CSS** | `.su-lede` + `.su-faq` cards + dark mode + table zebra (mundu levu — live ugly fix) |
-| 9 | **Proof** | `--test-all` **60/60** (v78_test.py kotha: 10 checks) · jsdom **164/164** · readiness **100/100** · theme **1.7.2** |
+| 9 | **Proof** | `--test-all` **60/60** (v78_test.py kotha: 10 checks) · jsdom **165/165** · readiness **100/100** · theme **1.7.2** |
 
 Verify chesina REAL (no dummy): NotebookLM brief-file merge + validation
 (`create_from_source --notebooklm-brief`, bad brief = hard reject); category
@@ -1637,7 +1637,7 @@ self-measured (honest note undi), kaani v77 lo **copy-detection REAL**
 | 4 | **Smart ad rotation** | Theme hour-base (24 fresh chances/day) + slot offset (oke page lo vere ads) + no-repeat; AdSense auto-refresh ledu (policy) — proof test |
 | 5 | **Networks kit** | `AD_NETWORKS_APPLICATION_KIT.md` — naa review: AdSense first → Ezoic second → Journey/Monumetric milestones + apply checklist (code flips ready) |
 | 6 | **Ads = 100% auto (proof)** | Auto-head gated (option + ca-pub regex) · in-article auto ON · density cap · consent gate · house fallback — manual placing ZERO |
-| 7 | **Proof** | `--test-all` **59/59** (v77_test.py kotha: 10 checks) · jsdom **164/164** · readiness **100/100** · php-lint **32/32** · theme **1.7.2** |
+| 7 | **Proof** | `--test-all` **59/59** (v77_test.py kotha: 10 checks) · jsdom **165/165** · readiness **100/100** · php-lint **32/32** · theme **1.7.2** |
 
 Honest (repeat): Google ranking/traffic/approval/revenue = Google + accounts +
 time. v77 = copy-paste IMPOSSIBLE-proof + deepest gather + fastest re-index path.
@@ -1655,7 +1655,7 @@ Preview + WP theme rendu (parity) — filtering engine same (v72 intact).
 | 2 | **Theme parity** | `qual_bar()` → form GET + select + noscript button; counts server-side; `closing` option kotha (server-side support mundhe undi); JS reload-lekunda filter + ?qual= state sync bug fix |
 | 3 | **Live-exam final proof** | Product surfaces lo `live-exam` 0 (v74 removal hold — automated test); quiz = practice matrame (6 questions, exam conduct kaadu) |
 | 4 | **UI sodi clean** | In-feed ad dup text fix ("Your brand" okasari); tel: 10-digit intact; poll/quiz distinct blocks |
-| 5 | **Proof** | `--test-all` **58/58** (v76_test.py kotha: 10 checks) · jsdom **164/164** (same count, dropdown mechanics) · readiness **100/100** · php-lint **32/32** · theme **1.7.2** |
+| 5 | **Proof** | `--test-all` **58/58** (v76_test.py kotha: 10 checks) · jsdom **165/165** (same count, dropdown mechanics) · readiness **100/100** · php-lint **32/32** · theme **1.7.2** |
 
 ### v75 — CONTACT FINAL (+91 ledu) + PUBLISH SAFETY + DUMMY PURGE
 
@@ -1670,7 +1670,7 @@ untundi (kanipinchadu). Theme auto-normalize chestundi — owner 10-digit /
 | 2 | **Mock publish block** | `--mock` ante auto dry-run (`main.run` + `top_post_run`) — thin test stubs WordPress ki eppudu vellavu |
 | 3 | **Dummy purge** | Demo inventory ads `active:false` (fake ads live posts loki ravu) · dead `#exam` house ad → `#jobs` · theme sync inactive/dead-link promos filter |
 | 4 | **Bug hunt** | `THEME_PATH` dead code · `uplift` import shadow · dead vars · guardian ads count honest (live/total) · v59 time-bomb + `.venv` hardcodes fix |
-| 5 | **Proof** | `--test-all` **56/56** (v75_test.py kotha: 10 checks) · jsdom **164/164** · readiness **100/100** · guardian · parity **0/0** · code audit **0/0** · theme audit **0/0** · php-lint **32/32** · theme **1.7.2** |
+| 5 | **Proof** | `--test-all` **56/56** (v75_test.py kotha: 10 checks) · jsdom **165/165** · readiness **100/100** · guardian · parity **0/0** · code audit **0/0** · theme audit **0/0** · php-lint **32/32** · theme **1.7.2** |
 
 ### v74 — LIVE EXAM REMOVAL + CRON-ONLY BOT ("live exam avasaram ledu")
 
@@ -1687,7 +1687,7 @@ bot ippudu cron-only (servers/ports levu) — shared hosting lo anni pani chesta
 | 5 | **Deploy simplified** | Bot timer + watchdog (website + bot-freshness + disk/TLS) + Docker loop + `crontab.example`; Caddyfile ippudu **static site** kosam (proxy ledu) |
 | 6 | **Theme 1.7.2** | `exam_url` + `api_base` options · header exam buttons · dead `?studentup_exam=1` PWA shortcut poyayi; shortcuts = Jobs · Qualification · Results · Quiz |
 | 7 | **Fresh-clone proof** | `php-parser` ippudu declared dep + CI lo node install (mundu fresh clone lo 8 suites fail ayyevi — env trap, ippudu ledu) |
-| 8 | **Proof** | `--test-all` **56/56** · jsdom **164/164** · readiness **100/100** · guardian · parity **0/0** · code audit **0/0** · theme audit **0/0** · php-lint **32/32** · theme **1.7.2** |
+| 8 | **Proof** | `--test-all` **56/56** · jsdom **165/165** · readiness **100/100** · guardian · parity **0/0** · code audit **0/0** · theme audit **0/0** · php-lint **32/32** · theme **1.7.2** |
 
 MilesWeb answer (honest): WordPress site + bot cron + Telegram approvals + static
 quiz/question — **anni MilesWeb premium shared lo run avutayi** (details:

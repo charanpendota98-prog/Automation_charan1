@@ -47,7 +47,7 @@ def test_config_flags():
 def test_most_used_order():
     cats = breaking.most_used_cats()
     assert cats == ["ts-jobs", "ap-jobs", "central-jobs", "hallticket", "results", "walkin",
-                    "software", "private", "current"], cats
+                    "software", "success-stories", "private", "current"], cats
     for m in breaking.most_used():
         assert m["cat"] and m["label"] and m["icon"] and m["hint"], m
         # v73: English UI — labels + hints English (site/bot parity)
@@ -160,7 +160,8 @@ def test_site_first_look_wiring():
     used = re.findall(r'<a class="usedcard[^"]*" href="#jobs" data-goto-cat="([a-z-]+)" '
                       r'data-count-cat="[a-z-]+">', html)
     assert used == breaking.most_used_cats(), used
-    assert html.count('data-ucount=') == len(breaking.most_used())
+    # v134: the per-tile update-count badge was removed — it covered the tile text.
+    assert 'data-ucount=' not in html and 'class="ucount"' not in html
     # v72 first-look blocks
     assert 'id="searchbtn"' in html and 'id="searchpanel"' in html and 'id="qtop"' in html
     assert 'id="qualsel"' in html and 'value="10th"' in html and 'id="qcount"' in html
@@ -210,7 +211,7 @@ def test_menu_order_perfect():
                      nav, re.S).group(1)
     cats = re.findall(r'data-goto-cat="([a-z-]+)"', drop)
     assert cats == ["ts-jobs", "ap-jobs", "central-jobs", "private", "walkin",
-                    "software", "outsourcing", "parttime", "abroad"], cats
+                    "software", "success-stories", "outsourcing", "parttime", "abroad"], cats
 
     mp_start = html.index('<div class="mpanel"')
     mp = html[mp_start:html.index('<div id="top">', mp_start)]
@@ -218,14 +219,14 @@ def test_menu_order_perfect():
     assert mp.index(">Search<") < mp.index("Hall Tickets") < mp.index("Most searched by students")
     assert "బ్రేకింగ్" not in mp and "Breaking" not in mp
     mp_used = re.findall(r'data-goto-cat="([a-z-]+)"', mp)
-    assert mp_used[2:11] == breaking.most_used_cats(), mp_used[:13]
+    assert mp_used[2:12] == breaking.most_used_cats(), mp_used[:14]
 
 
 def test_grid_student_first_order():
     html = INDEX.read_text(encoding="utf-8")
     zone = html.split('id="grid"')[1].split('id="nores"')[0]
     cats = re.findall(r'<article class="news" data-state="[^"]*" data-cat="([^"]+)"', zone)
-    assert len(cats) == 14, len(cats)
+    assert len(cats) == 15, len(cats)
     assert "ts-jobs" in cats[0] and ("ts-jobs" in cats[1] or "ap-jobs" in cats[1])
     assert "ap-jobs" in cats[2]
     assert cats.index([c for c in cats if "results" in c][0]) < cats.index(

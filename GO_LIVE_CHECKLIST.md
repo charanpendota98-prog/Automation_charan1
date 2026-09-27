@@ -1,7 +1,7 @@
 # GO-LIVE CHECKLIST (v60) — deploy cheyocha? Enti migilindi?
 
 
-> **Verified counts (theme v1.9.19 build):** test suites **109/109** files · jsdom runtime **164/164** checks · PHP lint **58/58** files · theme audit **0/0** · code audit **0/0**.
+> **Verified counts (theme v1.9.19 build):** test suites **109/109** files · jsdom runtime **165/165** checks · PHP lint **58/58** files · theme audit **0/0** · code audit **0/0**.
 **Short answer: CODE ready ✅ · DEPLOY ready ✅ · 5 panulu MEE accounts lo cheyyali ⏳.**
 Ee doc = okka page lo motham. Kramam ga cheyyandi.
 
@@ -96,7 +96,7 @@ Detail docs: `DEPLOY_MILESWEB.md` (cPanel steps) · `DEPLOY_ORACLE_CLOUD.md` (VM
 | Site guardian | **`python run.py --guardian`** — site/UI/SEO/ads/feed/storage/theme 12 checks (11 ok · 1 owner-pending) |
 | Readiness score | **`python run.py --readiness`** — **100/100** · 27/27 system checks · 10 owner-pending |
 | Production check | **11/11** pass (`python run.py --production-audit`) |
-| Browser runtime | **164/164** checks (`node tests/runtime/jsdom_runtime_test.js`) |
+| Browser runtime | **165/165** checks (`node tests/runtime/jsdom_runtime_test.js`) |
 | Public surface | developer/proof text **ledu** — `python run.py --guardian` → `counts_sync` · dev archive `docs/design-archive/` (website meeda serve avvadu) |
 | Business deal | no public rate card — prices live in `autoblog/rate_card.py`, print with `python run.py --rate-card` and negotiate personally |
 | Contact routes | set `SOCIAL_WHATSAPP` + `SOCIAL_TELEGRAM` in `.env` → `python run.py --push-theme-data` (site WhatsApp boxes + rail follow it) |
@@ -124,8 +124,8 @@ Detail docs: `DEPLOY_MILESWEB.md` (cPanel steps) · `DEPLOY_ORACLE_CLOUD.md` (VM
       → WordPress install + SSL (Let's Encrypt) ON.
 - [ ] **2. WordPress setup** — Rank Math; theme install (**v74**: theme **1.7.2** —
       `python tools/build_wp_theme.py` → zip → Appearance → Themes → Upload → Activate);
-      **zip:** 74 files · 777 KB · theme **1.9.19** · sha256
-      `4ef687afe633b926c713f07fc34e67fefdf0c8b21a2b93156d0f9d9cfff380f9`
+      **zip:** 74 files · 778 KB · theme **1.9.20** · sha256
+      `2c67c94c013316dd2777aa6d5acde0c114c7215abf43ca9bff30d4ad667b2df6`
       (`sha256sum wordpress-theme/studentup-theme.zip` — upload chesina zip ide ani verify cheyandi;
       build ippudu **reproducible** — same content ⇒ same sha)
       `wp-admin → Users → Application Passwords` → app password create cheyyandi.
@@ -274,7 +274,7 @@ Detail: `python tools/revenue_estimate.py --views 10k`
 Clickbait titles · fake clicks · popups · "Google tricks" · ad ni content laaga dhaachadam ·
 job guarantee promises (advertisers kuda). Ivi AdSense ban + trust damage.
 
-*Last updated: v91 (2026-09-20) · 71/71 suites · 164/164 runtime · 11/11 production checks · theme v1.9.2 · v90 notifications + v91 Telegram tools*
-*Last updated: v92 (2026-09-22) · 72/72 suites · 53/53 saved-engine · 164/164 runtime · 11/11 production checks · theme v1.9.3 · v92 saved / reader retention*
-*Last updated: v93 (2026-09-22) · 73/73 suites · 53/53 saved-engine · 164/164 runtime · 11/11 production checks · theme v1.9.4 · v93 top-website UI pass (menu · icons · collisions)*
+*Last updated: v91 (2026-09-20) · 71/71 suites · 165/165 runtime · 11/11 production checks · theme v1.9.2 · v90 notifications + v91 Telegram tools*
+*Last updated: v92 (2026-09-22) · 72/72 suites · 53/53 saved-engine · 165/165 runtime · 11/11 production checks · theme v1.9.3 · v92 saved / reader retention*
+*Last updated: v93 (2026-09-22) · 73/73 suites · 53/53 saved-engine · 165/165 runtime · 11/11 production checks · theme v1.9.4 · v93 top-website UI pass (menu · icons · collisions)*
 *Last updated: 2026-09-25 · 99 test-suite files · readiness 97/100 (PHP parser pending) · pin gate wired · 53/53 saved-engine · theme v1.9.9 · source-backed draft/review flow*

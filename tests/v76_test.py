@@ -11,7 +11,7 @@ Checks (offline only):
   * preview: select#qualsel + 9 options order + label + qcount (chips levu)
   * preview JS: change filter + live counts + ?qual= deep-link + URL sync
   * preview CSS: .qualsel shipped · .qchip poyindi
-  * jsdom 164/164 (behavioral — dropdown tho kuda green)
+  * jsdom 165/165 (behavioral — dropdown tho kuda green)
   * theme: qual_bar form+select+noscript+closing+counts · JS wiring + state sync
   * theme CSS + php-lint + zip fresh + qualsel zip lo
   * bot pins: guardian/readiness qualsel needles (chips pins poyayi)
@@ -81,7 +81,7 @@ def test_jsdom_still_green():
                           cwd=ROOT / "tests" / "runtime")
     out = (proc.stdout or "") + (proc.stderr or "")
     assert proc.returncode == 0, out[-400:]
-    assert "164/164 checks passed" in out, out[-200:]
+    assert "165/165 checks passed" in out, out[-200:]
     assert "check count drift" not in out
 
 
@@ -168,14 +168,14 @@ def test_docs_v76():
     assert "109/109" in go_live
     for name, txt in (("README", readme), ("MANUAL", manual),
                       ("GO_LIVE", go_live)):
-        assert "164/164" in txt, f"{name} lo jsdom claim poyindi"
+        assert "165/165" in txt, f"{name} lo jsdom claim poyindi"
 
 
 TESTS = [
     ("preview dropdown markup (9 options + label)", test_preview_dropdown_markup),
     ("preview dropdown JS (counts + ?qual= + URL)", test_preview_dropdown_js),
     ("preview CSS (.qualsel, chips gone)", test_preview_dropdown_css),
-    ("jsdom 164/164 behavioral", test_jsdom_still_green),
+    ("jsdom 165/165 behavioral", test_jsdom_still_green),
     ("theme dropdown + JS parity", test_theme_dropdown_markup_and_js),
     ("theme lint + zip fresh", test_theme_lint_and_zip),
     ("bot pins moved to qualsel", test_bot_pins_use_qualsel),

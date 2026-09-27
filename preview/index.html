@@ -595,19 +595,9 @@
       .usedcard .ucount{display:none !important}
     }
     /* v60: verified breaking surface; no headline is rendered for an empty feed */
-    .breaking{margin:18px 0 4px;background:var(--card);border:1px solid var(--line);border-left:4px solid var(--red);border-radius:15px;padding:14px 16px;animation:breaking-in .35s ease both}
-    .breakinghead{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
-    .breakinghead h2{font-size:17px;margin:0;color:var(--navy);display:flex;align-items:center;gap:7px}
-    .brkicon{font-size:16px;color:var(--red)}
     .brkbadge{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);font-weight:700}
-    .brkdot{width:9px;height:9px;border-radius:50%;background:var(--red);animation:brk-pulse 1.5s ease-in-out infinite}
-    .breakingempty{color:var(--muted);font-size:12.5px;margin:10px 0 3px}
-    .breakingsource{color:var(--muted);font-size:11px;margin:0}
     @keyframes breaking-in{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
     @keyframes brk-pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.45;transform:scale(.82)}}
-    body.dark .breakinghead h2{color:#e7f0ff}
-    body.dark .breaking{border-left-color:#ef6b6b}
-    @media(prefers-reduced-motion:reduce){.breaking,.brkdot{animation:none}}
   </style>
 </head>
 <body>
@@ -699,31 +689,22 @@
     <div class="wrap">
       <div class="usedhead"><b>Most searched by students</b><span>One tap to the sections TS &amp; AP students open most</span></div>
       <div class="usedgrid">
-        <a class="usedcard hot" href="#jobs" data-goto-cat="ts-jobs" data-count-cat="ts-jobs"><span class="ui" aria-hidden="true">🏛</span><div><b>TS Government Jobs</b><small>TSPSC · Police · Gurukul</small></div><em class="ucount" data-ucount="ts-jobs">—</em></a>
-        <a class="usedcard hot" href="#jobs" data-goto-cat="ap-jobs" data-count-cat="ap-jobs"><span class="ui" aria-hidden="true">🏛</span><div><b>AP Government Jobs</b><small>APPSC · Police · DSC · Secretariat</small></div><em class="ucount" data-ucount="ap-jobs">—</em></a>
-        <a class="usedcard hot" href="#jobs" data-goto-cat="central-jobs" data-count-cat="central-jobs"><span class="ui" aria-hidden="true">🇮🇳</span><div><b>Central Govt Jobs</b><small>SSC · UPSC · Railways · Banks</small></div><em class="ucount" data-ucount="central-jobs">—</em></a>
-        <a class="usedcard" href="#jobs" data-goto-cat="hallticket" data-count-cat="hallticket"><span class="ui" aria-hidden="true">🎫</span><div><b>Hall Tickets</b><small>Admit card · key instructions</small></div><em class="ucount" data-ucount="hallticket">—</em></a>
-        <a class="usedcard" href="#jobs" data-goto-cat="results" data-count-cat="results"><span class="ui" aria-hidden="true">📄</span><div><b>Results</b><small>Board · competitive exams · keys</small></div><em class="ucount" data-ucount="results">—</em></a>
-        <a class="usedcard" href="#jobs" data-goto-cat="walkin" data-count-cat="walkin"><span class="ui" aria-hidden="true">🚶</span><div><b>Walk-in Interviews</b><small>This week's drives · venues</small></div><em class="ucount" data-ucount="walkin">—</em></a>
-        <a class="usedcard" href="#jobs" data-goto-cat="software" data-count-cat="software"><span class="ui" aria-hidden="true">💻</span><div><b>Software Jobs</b><small>IT · developer · fresher</small></div><em class="ucount" data-ucount="software">—</em></a>
-        <a class="usedcard" href="#jobs" data-goto-cat="success-stories" data-count-cat="success-stories"><span class="ui" aria-hidden="true">🏆</span><div><b>Success Stories</b><small>Verified journeys · lessons</small></div><em class="ucount" data-ucount="success-stories">Soon</em></a>
-        <a class="usedcard" href="#jobs" data-goto-cat="private" data-count-cat="private"><span class="ui" aria-hidden="true">🏢</span><div><b>Private Jobs</b><small>TCS · Infosys · Off-campus</small></div><em class="ucount" data-ucount="private">—</em></a>
-        <a class="usedcard" href="#jobs" data-goto-cat="current" data-count-cat="current"><span class="ui" aria-hidden="true">📰</span><div><b>Current Affairs</b><small>Daily GK · for exams</small></div><em class="ucount" data-ucount="current">—</em></a>
+        <a class="usedcard hot" href="#jobs" data-goto-cat="ts-jobs" data-count-cat="ts-jobs"><span class="ui" aria-hidden="true">🏛</span><div><b>TS Government Jobs</b><small>TSPSC · Police · Gurukul</small></div></a>
+        <a class="usedcard hot" href="#jobs" data-goto-cat="ap-jobs" data-count-cat="ap-jobs"><span class="ui" aria-hidden="true">🏛</span><div><b>AP Government Jobs</b><small>APPSC · Police · DSC · Secretariat</small></div></a>
+        <a class="usedcard hot" href="#jobs" data-goto-cat="central-jobs" data-count-cat="central-jobs"><span class="ui" aria-hidden="true">🇮🇳</span><div><b>Central Govt Jobs</b><small>SSC · UPSC · Railways · Banks</small></div></a>
+        <a class="usedcard" href="#jobs" data-goto-cat="hallticket" data-count-cat="hallticket"><span class="ui" aria-hidden="true">🎫</span><div><b>Hall Tickets</b><small>Admit card · key instructions</small></div></a>
+        <a class="usedcard" href="#jobs" data-goto-cat="results" data-count-cat="results"><span class="ui" aria-hidden="true">📄</span><div><b>Results</b><small>Board · competitive exams · keys</small></div></a>
+        <a class="usedcard" href="#jobs" data-goto-cat="walkin" data-count-cat="walkin"><span class="ui" aria-hidden="true">🚶</span><div><b>Walk-in Interviews</b><small>This week's drives · venues</small></div></a>
+        <a class="usedcard" href="#jobs" data-goto-cat="software" data-count-cat="software"><span class="ui" aria-hidden="true">💻</span><div><b>Software Jobs</b><small>IT · developer · fresher</small></div></a>
+        <a class="usedcard" href="#jobs" data-goto-cat="success-stories" data-count-cat="success-stories"><span class="ui" aria-hidden="true">🏆</span><div><b>Success Stories</b><small>Verified journeys · lessons</small></div></a>
+        <a class="usedcard" href="#jobs" data-goto-cat="private" data-count-cat="private"><span class="ui" aria-hidden="true">🏢</span><div><b>Private Jobs</b><small>TCS · Infosys · Off-campus</small></div></a>
+        <a class="usedcard" href="#jobs" data-goto-cat="current" data-count-cat="current"><span class="ui" aria-hidden="true">📰</span><div><b>Current Affairs</b><small>Daily GK · for exams</small></div></a>
       </div>
     </div>
   </section>
 
   <!-- v60: honest breaking-news surface; it stays empty until a verified feed item arrives -->
-  <section class="breaking" id="breaking" aria-labelledby="preview-breaking-title" data-breaking-state="empty">
-    <div class="wrap">
-      <div class="breakinghead">
-        <h2 id="preview-breaking-title"><span class="brkicon" aria-hidden="true">⚡</span> Breaking News</h2>
-        <span class="brkbadge"><span class="brkdot" aria-hidden="true"></span> Live source check</span>
-      </div>
-      <p class="breakingempty">No new verified updates right now. Official announcements appear here only after the source and date are checked.</p>
-      <p class="breakingsource">Preview state · Empty verified fixture · Live items appear only after the next successful source check</p>
-    </div>
-  </section>
+  
 
   <!-- v46: mobile menu panel (top-right hamburger) -->
   <div class="mbackdrop" id="mbackdrop" aria-hidden="true"></div>
@@ -884,6 +865,15 @@
             <h3>TGRTC &amp; APSRTC నియామకం: దరఖాస్తు తేదీలు &amp; అర్హత</h3>
             <p>రోడ్డు రవాణా సిబ్బంది నోటిఫికేషన్‌లు — డ్రైవర్, కండక్టర్, మెకానికల్ విభాగాలు వివరంగా.</p>
             <div class="newsfoot"><span data-days-ago="4">Updated 4 days ago</span><b>Read guide →</b></div>
+          </div>
+        </article>
+        <article class="news" data-state="ts ap" data-cat="success-stories" data-text="success story constable selection preparation timetable telangana andhra student journey" data-qual="degree" data-last="2026-12-31">
+          <div class="thumb t5"><span>సక్సెస్ స్టోరీ<br>కానిస్టేబుల్ ఎంపిక</span></div>
+          <div class="newsbody">
+            <div class="tagrow"><span class="tag">విజయగాథలు</span><span class="statechip multi">TS + AP</span></div>
+            <h3>రోజుకి 6 గంటలు: కానిస్టేబుల్ ఉద్యోగం సాధించిన విద్యార్థి ప్రణాళిక</h3>
+            <p>ఎంత చదివారు, ఏ పుస్తకాలు, ఎలా టైమ్‌టేబుల్ వేసుకున్నారు — verified student journey.</p>
+            <div class="newsfoot"><span data-days-ago="2">Updated 2 days ago</span><b>Read story →</b></div>
           </div>
         </article>
         <article class="news" data-state="ap" data-cat="ap-jobs" data-text="appsc group 1 group 2 andhra pradesh state service cutoff trend preparation" data-qual="degree pg" data-last="2026-11-05">
@@ -1662,16 +1652,6 @@
   show(); restartCycle();
 })();
 
-/* ============ v59: most searched by students — live counts ============ */
-    (function(){
-      var cards=document.querySelectorAll("#grid .news");
-      function catCount(cat){var n=0;Array.prototype.forEach.call(cards,function(c){
-        if((" "+(c.getAttribute("data-cat")||"")+" ").indexOf(" "+cat+" ")>-1)n++;});return n;}
-      Array.prototype.forEach.call(document.querySelectorAll("[data-ucount]"),function(el){
-        var n=catCount(el.getAttribute("data-ucount"));
-        el.textContent=n?(n===1?"1 update":n+" updates"):"Soon";
-      });
-    })();
 
 </script>
 </body>

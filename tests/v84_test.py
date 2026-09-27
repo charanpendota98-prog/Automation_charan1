@@ -242,7 +242,7 @@ def test_docs_v84():
     _suites = len(list((ROOT / "tests").glob("*_test.py")))
     assert f"{_suites}/{_suites}" in go_live
     for name, txt in (("README", readme), ("MANUAL", manual)):
-        assert "164/164" in txt, f"{name} lo jsdom claim poyindi"
+        assert "165/165" in txt, f"{name} lo jsdom claim poyindi"
     print("  docs: README v84 + MANUAL PART 42 + 65/65 ✔")
 
 

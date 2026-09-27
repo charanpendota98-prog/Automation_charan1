@@ -204,6 +204,12 @@ function studentup_ads_allowed( $place = '' ) {
 	if ( is_admin() || is_feed() || is_404() || is_search() || is_attachment() ) {
 		return false;
 	}
+	// v134: never stack two sticky layers. When the apply bar is on screen the
+	// anchor ad is skipped — the reader keeps a clean conversion CTA and we stay
+	// inside the "no obstructive interstitial" rule.
+	if ( 'anchor' === $place && function_exists( 'studentup_apply_active' ) && studentup_apply_active() ) {
+		return false;
+	}
 	if ( is_page() ) {
 		$slug   = (string) get_post_field( 'post_name', get_queried_object_id() );
 		$policy = array( 'privacy-policy', 'about-us', 'contact-us',
@@ -354,6 +360,49 @@ function studentup_inject_in_article_ad( $content ) {
 	}
 	$out = $parts[0] . '</p>' . $parts[1] . '</p>' . $parts[2] . '</p>'
 		. '<!--su-ad-anchor-mid-->' . $ad . $parts[3];
-	return $out;
+	return studentup_inject_deep_ad( $out );
+}
+
+/**
+ * v134: second in-article slot for long reads.
+ *
+ * Long notifications (10+ paragraphs) lose revenue with a single mid slot: the
+ * reader scrolls far past it. A second unit is placed around the 70% mark, but
+ * only when the article is genuinely long, the density cap still has room and
+ * the two units stay at least four paragraphs apart — so it never turns into an
+ * ad wall.
+ *
+ * @param string $content Post content HTML (mid ad already injected).
+ * @return string Content with the deep slot when it is allowed.
+ */
+function studentup_inject_deep_ad( $content ) {
+	if ( '0' === (string) studentup_opt( 'deep_ad', '1' ) ) {
+		return $content;
+	}
+	if ( false !== strpos( $content, 'su-ad-anchor-deep' ) ) {
+		return $content;
+	}
+	$max = (int) studentup_opt( 'max_ads', '4' );
+	if ( studentup_ad_count() >= max( 1, $max ) ) {
+		return $content;
+	}
+	$parts = explode( '</p>', $content );
+	$total = count( $parts ) - 1;
+	if ( $total < 10 ) {
+		return $content;   // short post → one in-article unit is enough
+	}
+	$at = (int) floor( $total * 0.7 );
+	if ( $at < 7 ) {
+		return $content;   // keep a 4-paragraph gap from the mid slot
+	}
+	ob_start();
+	studentup_ad( 'mid' );
+	$ad = trim( (string) ob_get_clean() );
+	if ( '' === $ad ) {
+		return $content;
+	}
+	$head = implode( '</p>', array_slice( $parts, 0, $at ) ) . '</p>';
+	$tail = implode( '</p>', array_slice( $parts, $at ) );
+	return $head . '<!--su-ad-anchor-deep-->' . $ad . $tail;
 }
 add_filter( 'the_content', 'studentup_inject_in_article_ad', 20 );

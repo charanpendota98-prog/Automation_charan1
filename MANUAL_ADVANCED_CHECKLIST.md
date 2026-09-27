@@ -1,6 +1,6 @@
 # 📋 MANUAL ADVANCED CHECKLIST — "Nenu manual ga em em cheyali"
 ### Website advanced ga run avvali · Posts ANI-PERFECT · Mistakes leku · Deep analyse + NotebookLM
-> **Verified counts (theme v1.9.19 build):** test suites **109/109** files · jsdom runtime **164/164** checks · PHP lint **58/58** files · theme audit **0/0** · code audit **0/0**.
+> **Verified counts (theme v1.9.19 build):** test suites **109/109** files · jsdom runtime **165/165** checks · PHP lint **58/58** files · theme audit **0/0** · code audit **0/0**.
 
 
 **Ee file = mee haath tho cheyyalsina ANNI — exact order, exact commands.**
@@ -161,7 +161,7 @@ Message lo reason undi — exact ga fix cheyandi:
 ## ⚠️ Honest note
 Perfect = **machine gates + human 5-min verify**. Gates mistakes ramigadu (conflicts/stale/dates/originality), kaani official numbers mee mata tho final check — AdSense/Google/reputation thartham lo idi matrame safety.
 
-*Last updated: v81 (2026-09-19) — ULTIMATE SPEC GAP CLOSE (qual-noindex · rich tags · mobile tables · webp · orphans · health widget · search-track · HSTS): 63/63 suites · 164/164 runtime · readiness 100/100 · code audit 0/0 · parity 0/0 · theme audit 0/0 · theme v1.7.2*
+*Last updated: v81 (2026-09-19) — ULTIMATE SPEC GAP CLOSE (qual-noindex · rich tags · mobile tables · webp · orphans · health widget · search-track · HSTS): 63/63 suites · 165/165 runtime · readiness 100/100 · code audit 0/0 · parity 0/0 · theme audit 0/0 · theme v1.7.2*
 
 ## PART 26 — v67: DEEP AUDIT (expert/BA) + TOP-THEME HARDENING + 6/6 REVENUE SLOTS
 
@@ -431,7 +431,7 @@ FILES   : front-page (home order) · header (menu+టికర్) · footer (so
           inc/template (cards · proof tiles · countdown · breadcrumbs)
 SPEED   : external JS library ledu (1 CSS + 1 JS) · lazy images · CLS-safe ad slots
 NIJAM   : theme = mee design; WP plugins (Rank Math · AdSense) vaalla pani vaalle chestayi.
-TESTS   : tests/v61_test.py = 14 checks · run.py --test-all 56/56 · jsdom 164/164
+TESTS   : tests/v61_test.py = 14 checks · run.py --test-all 56/56 · jsdom 165/165
 ```
 
 ---
@@ -902,7 +902,7 @@ HOW IT STAYS AUTOMATIC
 VERIFY
 ```
 python run.py --test-all                     # 56/56 suites
-node tests/runtime/jsdom_runtime_test.js     # 164/164 browser checks
+node tests/runtime/jsdom_runtime_test.js     # 165/165 browser checks
 python run.py --readiness                    # 100/100 · python run.py --guardian
 python tools/parity_audit.py                 # PIN-TO-PIN · python tools/code_audit.py
 node tools/php_lint.js                       # 32/32 PHP files · python tools/build_wp_theme.py
@@ -966,7 +966,7 @@ BOT
 VERIFY (v72.1)
 ```
 python run.py --test-all                     # 56/56 suites
-node tests/runtime/jsdom_runtime_test.js     # 164/164 browser checks
+node tests/runtime/jsdom_runtime_test.js     # 165/165 browser checks
 python tests/v72_test.py                     # 27 checks (v72 + v72.1)
 python run.py --readiness                    # 100/100 · python run.py --guardian
 python tools/parity_audit.py                 # PIN-TO-PIN · python tools/code_audit.py # 0/0
@@ -1020,7 +1020,7 @@ config.py / .env.example : POST_DEADLINE_TITLE / POST_DEADLINE_ISO poyayi
 VERIFY (v73)
 ```
 python run.py --test-all                     # 56/56 suites (v73_test.py kotha: 9 checks)
-node tests/runtime/jsdom_runtime_test.js     # 164/164 browser checks (English UI + countdown removal)
+node tests/runtime/jsdom_runtime_test.js     # 165/165 browser checks (English UI + countdown removal)
 python run.py --readiness                    # 100/100 · python run.py --guardian
 python tools/parity_audit.py                 # PIN-TO-PIN · python tools/code_audit.py # 0/0
 node tools/php_lint.js                       # 32/32 · python tools/build_wp_theme.py (zip rebuild LAST)
@@ -1080,7 +1080,7 @@ package-lock    : php-parser entry add (lock stale undindi)
 VERIFY (v75)
 ```
 python run.py --test-all                     # 56/56 suites (v75_test.py kotha: 10 checks)
-node tests/runtime/jsdom_runtime_test.js     # 164/164 browser checks
+node tests/runtime/jsdom_runtime_test.js     # 165/165 browser checks
 python run.py --readiness                    # 100/100 · python run.py --guardian # 14/15 (creds pending)
 node tools/php_lint.js                       # 32/32 · python tools/build_wp_theme.py (zip rebuild LAST)
 python run.py --mock --force                 # auto dry-run ON + DRY-RUN saved (publish ledu)
@@ -1122,7 +1122,7 @@ v72_test  : option order + label + JS needles (TESTS REBASE pattern)
 v59_test  : qualsel + value="10th" + qcount
 readiness : c_first_look qualsel needles (preview + theme)
 guardian  : UI_BLOCKS qualsel needle
-jsdom     : qual block select mechanics (setQual helper) — ok() count SAME (164/164)
+jsdom     : qual block select mechanics (setQual helper) — ok() count SAME (165/165)
 v75_test  : suites 57 → 58
 ```
 
@@ -1136,7 +1136,7 @@ manifest shortcuts = Jobs · Qualification · Results · Quiz (exam ledu)
 VERIFY (v76)
 ```
 python run.py --test-all                     # 58/58 suites (v76_test.py kotha: 10 checks)
-node tests/runtime/jsdom_runtime_test.js     # 164/164 browser checks (dropdown mechanics)
+node tests/runtime/jsdom_runtime_test.js     # 165/165 browser checks (dropdown mechanics)
 node tools/php_lint.js                       # 32/32 · python tools/build_wp_theme.py (zip rebuild LAST)
 python run.py --readiness                    # 100/100 · python run.py --guardian
 ```
@@ -1397,7 +1397,7 @@ re-export REGRESSION: tools/ad_network_plan.NETWORKS (v56 pin)
 VERIFY (v82)
 ```
 python run.py --test-all                     # 64/64 suites (v82_test.py kotha: 9 checks)
-node tests/runtime/jsdom_runtime_test.js     # 164/164 browser checks
+node tests/runtime/jsdom_runtime_test.js     # 165/165 browser checks
 python tools/build_wp_theme.py               # zip LAST (ads.php changes!)
 python run.py --readiness                    # 100/100
 python -m pyflakes autoblog tools tests      # 0 findings
@@ -1438,7 +1438,7 @@ ALSO (v83, no suite bump): rm100 TRUE-100 — takeaways/TOC self-fail fix
 VERIFY (v84)
 ```
 python run.py --test-all                     # 65/65 suites (v84_test.py kotha: 13 checks)
-node tests/runtime/jsdom_runtime_test.js     # 164/164 browser checks
+node tests/runtime/jsdom_runtime_test.js     # 165/165 browser checks
 python tools/build_wp_theme.py               # zip LAST (ads/options/pwa/perf/bridge changes!)
 python run.py --readiness                    # 100/100
 python -m pyflakes autoblog tools tests run.py  # 0 findings
@@ -1473,7 +1473,7 @@ VERIFY (v85)
 ```
 python tests/v85_test.py                     # 9/9 checks
 python run.py --test-all                     # 66/66 suites
-node tests/runtime/jsdom_runtime_test.js     # 164/164 browser checks
+node tests/runtime/jsdom_runtime_test.js     # 165/165 browser checks
 python run.py --readiness                    # 100/100
 python -m pyflakes autoblog tools tests run.py  # 0 findings
 ```
@@ -1507,7 +1507,7 @@ VERIFY (v86)
 ```
 python tests/v86_test.py                     # 6/6 checks (e2e FakeWP/Src/TG)
 python run.py --test-all                     # 67/67 suites
-node tests/runtime/jsdom_runtime_test.js     # 164/164 browser checks
+node tests/runtime/jsdom_runtime_test.js     # 165/165 browser checks
 python run.py --readiness                    # 100/100
 python -m pyflakes autoblog tools tests run.py  # 0 findings
 ```
@@ -1541,7 +1541,7 @@ VERIFY (v87)
 ```
 python tests/v87_test.py                     # 7/7 checks
 python run.py --test-all                     # 68/68 suites
-node tests/runtime/jsdom_runtime_test.js     # 164/164 browser checks
+node tests/runtime/jsdom_runtime_test.js     # 165/165 browser checks
 python run.py --readiness                    # 100/100
 python -m pyflakes autoblog tools tests run.py  # 0 findings
 ```
@@ -1587,7 +1587,7 @@ VERIFY (v89)
 ```
 python tests/v89_test.py                     # 10/10 checks
 python run.py --test-all                     # 69/69 suites
-node tests/runtime/jsdom_runtime_test.js     # 164/164 browser checks
+node tests/runtime/jsdom_runtime_test.js     # 165/165 browser checks
 python run.py --readiness                    # 100/100
 python -m pyflakes autoblog tools tests run.py  # 0 findings
 ```
@@ -1631,7 +1631,7 @@ VERIFY (v90)
 ```
 python tests/v90_test.py                     # 8/8 checks
 python run.py --test-all                     # 71/71 suites
-node tests/runtime/jsdom_runtime_test.js     # 164/164 browser checks
+node tests/runtime/jsdom_runtime_test.js     # 165/165 browser checks
 node tools/php_lint.js                       # 36/36 files OK
 python run.py --readiness                    # 100/100
 ```
@@ -1680,7 +1680,7 @@ VERIFY (v91)
 python tests/v91_test.py                     # 10/10 checks
 python tests/v90_test.py                     # 8/8 checks (bridge intact)
 python run.py --test-all                     # 71/71 suites
-node tests/runtime/jsdom_runtime_test.js     # 164/164 browser checks
+node tests/runtime/jsdom_runtime_test.js     # 165/165 browser checks
 node tools/php_lint.js                       # 36/36 files OK
 python run.py --readiness                    # 100/100
 python -m pyflakes autoblog tools tests run.py  # 0 findings
@@ -1722,7 +1722,7 @@ VERIFY (v92)
 python tests/v92_test.py                     # 11/11 checks
 node tests/runtime/saved_runtime_test.js     # 53/53 real behaviour checks
 python run.py --test-all                     # 72/72 suites
-node tests/runtime/jsdom_runtime_test.js     # 164/164 browser checks
+node tests/runtime/jsdom_runtime_test.js     # 165/165 browser checks
 node tools/php_lint.js                       # 37/37 files OK
 python run.py --readiness                    # 100/100
 python tools/theme_audit.py                  # 0 errors
@@ -1769,7 +1769,7 @@ VERIFY (v93)
 ```
 python tests/v93_test.py                     # 12/12 checks (menu · icons · collisions)
 python run.py --test-all                     # 73/73 suites
-node tests/runtime/jsdom_runtime_test.js     # 164/164 browser checks
+node tests/runtime/jsdom_runtime_test.js     # 165/165 browser checks
 node tests/runtime/saved_runtime_test.js     # 53/53 saved engine
 node tools/php_lint.js                       # 37/37 files OK
 python run.py --readiness                    # 100/100
@@ -1827,7 +1827,7 @@ VERIFY (v94)
 python tests/v94_test.py                     # 13/13 checks
 python run.py --adsense-ready                # 97% · blockers chudu
 python run.py --test-all                     # 74/74 suites
-node tests/runtime/jsdom_runtime_test.js     # 164/164
+node tests/runtime/jsdom_runtime_test.js     # 165/165
 node tools/php_lint.js                       # 38/38 files OK
 python run.py --readiness                    # 100/100
 ```

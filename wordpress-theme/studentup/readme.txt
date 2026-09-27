@@ -2,7 +2,7 @@
 Contributors: studentup
 Requires at least: 6.0
 Tested up to: 6.7
-Stable tag: 1.9.19
+Stable tag: 1.9.20
 Requires PHP: 7.4
 Version: 1.9.17
 License: GNU General Public License v2 or later
@@ -47,6 +47,9 @@ The theme ships a REST bridge (`inc/seo-bridge.php`). Use an account with `manag
 user tho App Password ivvandi (Administrator role).
 
 == Changelog ==
+
+= 1.9.20 =
+* v134: Second in-article ad slot for long posts, anchor ad no longer stacks with the apply bar, preview update-count badges removed.
 
 = 1.9.19 =
 * v133: One-click first-run setup (categories, policy pages, header/mobile/footer menus, permalinks) + full job meta registered for REST publishing.

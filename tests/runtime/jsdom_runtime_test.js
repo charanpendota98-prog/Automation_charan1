@@ -12,7 +12,7 @@ const html = fs.readFileSync(PAGE, "utf8");
 
 /* v71: total check count — docs (README/MANUAL/GO_LIVE) claim this number and
  * tools/parity_audit.py P8 reads it, so a silent drift cannot slip through. */
-const EXPECTED_CHECKS = 164;
+const EXPECTED_CHECKS = 165;
 
 const passed = [];
 const failed = [];
@@ -80,8 +80,16 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
   // v51: expected counts derived from data-state/data-cat so adding cards
   // (new pillars) never breaks the suite.
   const has = (card, attr, val) => (" " + (card.getAttribute(attr) || "") + " ").indexOf(" " + val + " ") > -1;
-  const expectState = st => cards.filter(c => has(c, "data-state", st)).length;
-  const expectCat = cat => cards.filter(c => has(c, "data-cat", cat)).length;
+  // v134: cards whose last date has passed are hidden by design, so every
+  // expectation counts live cards only.
+  const today = new Date().toISOString().slice(0, 10);
+  const isLive = c => {
+    const last = c.getAttribute("data-last");
+    return !last || last >= today;
+  };
+  const liveCards = cards.filter(isLive);
+  const expectState = st => liveCards.filter(c => has(c, "data-state", st)).length;
+  const expectCat = cat => liveCards.filter(c => has(c, "data-cat", cat)).length;
 
   click('.tab[data-state="ts"]');
   click('.tab[data-state="all"]');
@@ -94,7 +102,7 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
   click('.tab[data-state="central"]');
   ok("Central filter -> all central cards", visible() === expectState("central"), "visible=" + visible());
   click('.tab[data-state="all"]');
-  ok("All filter -> every card visible", visible() === cards.length, "visible=" + visible() + "/" + cards.length);
+  ok("All filter -> every live card visible", visible() === liveCards.length, "visible=" + visible() + "/" + liveCards.length);
   click('.tab[data-state="ts"]');
   ok("active class follows clicks",
      document.querySelector('.tab[data-state="ts"]').classList.contains("active") &&
@@ -111,14 +119,14 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
   click('.tab[data-state="all"]');
   q.value = "";
   q.dispatchEvent(new window.Event("input", { bubbles: true }));
-  ok("clear search -> every card back", visible() === cards.length, "visible=" + visible());
+  ok("clear search -> every live card back", visible() === liveCards.length, "visible=" + visible());
   q.value = "zzqx123notfound";
   q.dispatchEvent(new window.Event("input", { bubbles: true }));
   ok("no-match -> #nores shown, 0 cards",
      nores.style.display !== "none" && visible() === 0, "nores=" + nores.style.display + " visible=" + visible());
   q.value = "";
   q.dispatchEvent(new window.Event("input", { bubbles: true }));
-  ok("clear -> cards restored", visible() === cards.length);
+  ok("clear -> live cards restored", visible() === liveCards.length);
 
   /* ---------- daily quiz ---------- */
   const qboxes = Array.from(document.querySelectorAll("#qwrap .qbox"));
@@ -347,9 +355,9 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
   const jobsDrop = document.querySelector(".has-drop .drop");
   const jobsItems = jobsDrop ? Array.from(jobsDrop.querySelectorAll("a")) : [];
   const jobsCats = jobsItems.map(a => a.getAttribute("data-goto-cat")).filter(Boolean);
-  ok("ఉద్యోగాలు dropdown: 9 category links (+ విదేశీ/గల్ఫ్ pillar)",
-     jobsCats.length === 9, "cats=" + jobsCats.join(","));
-  for (const want of ["ts-jobs", "ap-jobs", "central-jobs", "abroad", "walkin", "software", "private", "outsourcing", "parttime"]) {
+  ok("jobs dropdown: 10 category links (incl. success stories + abroad pillar)",
+     jobsCats.length === 10, "cats=" + jobsCats.join(","));
+  for (const want of ["ts-jobs", "ap-jobs", "central-jobs", "abroad", "walkin", "software", "private", "outsourcing", "parttime", "success-stories"]) {
     ok("jobs menu has " + want, jobsCats.indexOf(want) > -1);
   }
   const examDrop = document.querySelectorAll(".has-drop .drop")[1];
@@ -364,7 +372,7 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
      !!document.querySelector('.nav > a[data-goto-cat="results"]'));
   const chips = Array.from(document.querySelectorAll(".chip[data-cat]"));
   const chipCats = chips.map(c => c.getAttribute("data-cat"));
-  ok("category chip row present with 16 filters (all + 15 pillars)", chips.length === 16, "chips=" + chips.length);
+  ok("category chip row present with 17 filters (all + 16 pillars)", chips.length === 17, "chips=" + chips.length);
   const articleCats = new Set();
   Array.from(document.querySelectorAll("#grid .news")).forEach(n =>
     (n.getAttribute("data-cat") || "").split(" ").forEach(c => c && articleCats.add(c)));
@@ -484,15 +492,15 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
   /* ---------- v72: ఎక్కువగా వెతికేవి + పర్ఫెక్ట్ మెనూ ---------- */
   const usedTiles = Array.from(document.querySelectorAll(".usedgrid .usedcard"));
   const usedCats = usedTiles.map(a => a.getAttribute("data-goto-cat"));
-  ok("v59/v89 most-used strip: 9 tiles, TS/AP/Central mundu (student order)",
-     usedTiles.length === 9 && JSON.stringify(usedCats) === JSON.stringify(
-       ["ts-jobs","ap-jobs","central-jobs","hallticket","results","walkin","software","private","current"]),
+  ok("v59/v89/v134 most-used strip: 10 tiles, TS/AP/Central mundu (student order)",
+     usedTiles.length === 10 && JSON.stringify(usedCats) === JSON.stringify(
+       ["ts-jobs","ap-jobs","central-jobs","hallticket","results","walkin","software","success-stories","private","current"]),
      usedCats.join(","));
-  const firstCount = document.querySelector(".usedgrid .ucount");
-  ok("v59 most-used tiles: filter deep-link + live count (— kaadu)",
-     usedTiles.every(a => /#jobs/.test(a.getAttribute("href"))) &&
-     !!firstCount && !/—/.test(firstCount.textContent),
-     "count=" + (firstCount ? firstCount.textContent : "none"));
+  // v134: update-count badges removed by design — they covered the tile text.
+  const anyCount = document.querySelector(".usedgrid .ucount, [data-ucount]");
+  ok("v134 most-used tiles: filter deep-link, no update-count badge",
+     usedTiles.every(a => /#jobs/.test(a.getAttribute("href"))) && !anyCount,
+     anyCount ? "badge inka undi" : "clean");
   const navCats = Array.from(document.querySelectorAll(".nav > a, .nav > .has-drop > a"))
     .map(a => a.textContent.replace(/▾/g, "").trim());
   ok("v72 perfect menu order (Home · Jobs · Hall Tickets · Results · Scholarships · Current Affairs · Exams · More)",

@@ -288,7 +288,7 @@ def test_docs_v77():
         assert needle in kit, f"kit needle ledu: {needle}"
     for name, txt in (("README", readme), ("MANUAL", manual),
                       ("GO_LIVE", go_live)):
-        assert "164/164" in txt, f"{name} lo jsdom claim poyindi"
+        assert "165/165" in txt, f"{name} lo jsdom claim poyindi"
     print("  docs: README v77 + MANUAL PART 36 + 71/71 + kit ✔")
 
 

@@ -95,9 +95,10 @@ def test_functions_setup():
 def test_most_used_order_matches_site():
     f = read("functions.php")
     slugs = re.findall(r"'slug' => '([a-z-]+)', 'label' => '([^']+)'", f)
-    assert len(slugs) == 9, slugs
+    assert len(slugs) == 10, slugs
     assert [s for s, _ in slugs] == ["ts-jobs", "ap-jobs", "central-jobs", "hall-tickets",
-                                     "results", "walkin-jobs", "software-jobs", "private-jobs",
+                                     "results", "walkin-jobs", "software-jobs",
+                                     "success-stories", "private-jobs",
                                      "current-affairs"], slugs
     labels = [l for _, l in slugs]
     # v73: English UI — theme + bot labels English (order/slugs same)

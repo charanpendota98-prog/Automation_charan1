@@ -249,7 +249,7 @@ def test_docs_v78():
     assert "109/109" in go_live
     for name, txt in (("README", readme), ("MANUAL", manual),
                       ("GO_LIVE", go_live)):
-        assert "164/164" in txt, f"{name} lo jsdom claim poyindi"
+        assert "165/165" in txt, f"{name} lo jsdom claim poyindi"
     print("  docs: README v78 + MANUAL PART 37 + 71/71 ✔")
 
 
