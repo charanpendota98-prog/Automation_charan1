@@ -195,11 +195,25 @@
   <button type="button" id="su-bnav-search"><span>🔍</span>Search</button>
 </nav>
 
+<div class="su-cmdk" id="su-cmdk" hidden role="dialog" aria-modal="true" aria-label="Quick search">
+  <div class="su-cmdk-box">
+    <div class="su-cmdk-top"><span aria-hidden="true">⌘</span>
+      <input type="search" id="su-cmdk-input" placeholder="Search jobs, results, scholarships… (Esc to close)" aria-label="Quick search"><kbd>Esc</kbd></div>
+    <div class="su-cmdk-list" id="su-cmdk-list" role="listbox" data-su-cmdk-links='[
+      {"i":"💼","t":"Latest government jobs","u":"#"},{"i":"🎓","t":"Scholarships","u":"#"},
+      {"i":"📢","t":"Results","u":"#"},{"i":"🧠","t":"Daily quiz","u":"#daily-quiz"},
+      {"i":"🤖","t":"AI job match","u":"#job-match"},{"i":"💰","t":"Salary calculator","u":"#salary-calculator"},
+      {"i":"🗓️","t":"Job calendar","u":"#job-calendar"}]'></div>
+    <div class="su-cmdk-foot"><span>↑↓ navigate · ↵ open</span><span>Ctrl/⌘ + K</span></div>
+  </div>
+</div>
+
 <footer class="footer"><div class="wrap"><div class="footer-bottom"><span>© 2026 StudentUp — design preview (static). Live theme: wordpress-theme/studentup.</span></div></div></footer>
 
 <script>window.STUDENTUP={home:"#",rest:"",i18n:{}};</script>
 <script src="../../wordpress-theme/studentup/assets/js/studentup-premium.js"></script>
 <script src="../../wordpress-theme/studentup/assets/js/studentup-smart.js"></script>
+<script src="../../wordpress-theme/studentup/assets/js/studentup-cmdk.js"></script>
 <script>
 document.getElementById("theme").addEventListener("click",function(){document.body.classList.toggle("dark");});
 </script>

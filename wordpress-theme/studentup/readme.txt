@@ -2,9 +2,9 @@
 Contributors: studentup
 Requires at least: 6.0
 Tested up to: 6.7
-Stable tag: 1.9.13
+Stable tag: 1.9.14
 Requires PHP: 7.4
-Version: 1.9.13
+Version: 1.9.14
 License: GNU General Public License v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Tags: news, education, blog, custom-logo, custom-menu, featured-images, translation-ready, right-sidebar, block-styles, wide-blocks
@@ -47,6 +47,12 @@ The theme ships a REST bridge (`inc/seo-bridge.php`). Use an account with `manag
 user tho App Password ivvandi (Administrator role).
 
 == Changelog ==
+
+= 1.9.14 (2026-09-27, v127 instant navigation + command palette) =
+* Browser-native Speculation Rules prerender/prefetch with conservative exclusions (admin, login, nonce, external and nofollow links are never speculated).
+* Cross-document View Transitions for app-like page changes; disabled automatically for reduced-motion readers.
+* Command palette on Ctrl/Cmd + K: live REST search plus jumps to jobs, scholarships, results, quiz, AI match, salary calculator and calendar, fully keyboard navigable.
+* "Picked for you" homepage rail built from the reader's own browsing history in localStorage, with a one-click clear button and no server-side profiling.
 
 = 1.9.13 (2026-09-27, v126 editor job-data box + compare page) =
 * New "StudentUp job data" editor box: last date, salary, vacancies, age range, qualification tags, apply URL and verified source date — strict validation means an invalid date or URL is dropped instead of stored.

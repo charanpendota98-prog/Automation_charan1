@@ -52,6 +52,7 @@ get_header();
 	studentup_daily_quiz();        // v123: real daily quiz (colorful rotating ring)
 	studentup_scholarship_strip(); // v123: scholarships spotlight
 	studentup_alerts_card();       // v123: notification / WhatsApp / Telegram alerts
+	studentup_for_you();           // v127: reader history rail (localStorage only)
 	studentup_job_calendar();      // v124: last-date calendar (repeat visits)
 	studentup_salary_calc();       // v124: in-hand salary calculator
 	?>

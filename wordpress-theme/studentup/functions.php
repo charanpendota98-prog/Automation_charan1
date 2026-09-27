@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'STUDENTUP_VERSION', '1.9.13' );  // v126 job data box + compare page + LCP polish; v125 ItemList schema + urgency chips + in-feed slot; v124 smart layer (AI job match · eligibility · salary · calendar); v123 premium UI (hero · hot jobs · daily quiz · alerts · bottom nav); v120: LCP assets + student compare/reminder/print utilities
+define( 'STUDENTUP_VERSION', '1.9.14' );  // v127 instant nav (speculation rules · view transitions) + ⌘K palette + For You; v126 job data box + compare page + LCP polish; v125 ItemList schema + urgency chips + in-feed slot; v124 smart layer (AI job match · eligibility · salary · calendar); v123 premium UI (hero · hot jobs · daily quiz · alerts · bottom nav); v120: LCP assets + student compare/reminder/print utilities
 
 require_once get_template_directory() . '/inc/options.php';
 require_once get_template_directory() . '/inc/qual-filter.php';  // v72: 10th/Inter/Degree/PG filter (auto tags)
@@ -45,6 +45,7 @@ require_once get_template_directory() . '/inc/success-stories.php'; // v117: con
 require_once get_template_directory() . '/inc/student-tools.php'; // v120: compare, reminders and print/PDF utility layer
 require_once get_template_directory() . '/inc/opportunities.php'; // v121: live active list, expiry-safe sections and job board
 require_once get_template_directory() . '/inc/premium.php'; // v123: hero, hot jobs, scholarships, alerts, bottom nav
+require_once get_template_directory() . '/inc/speed.php';       // v127: speculation rules, view transitions, command palette
 require_once get_template_directory() . '/inc/jobmeta.php';     // v126: admin job data box
 require_once get_template_directory() . '/inc/compare-page.php'; // v126: compare table page/shortcode
 require_once get_template_directory() . '/inc/smart.php';   // v124: AI job match, eligibility, salary calc, calendar
@@ -241,6 +242,8 @@ function studentup_assets() {
 	wp_enqueue_style( 'studentup-premium', get_template_directory_uri() . '/assets/css/premium.css', array( 'studentup' ), STUDENTUP_VERSION );
 	wp_enqueue_script( 'studentup', get_template_directory_uri() . '/assets/js/studentup.js', array(), STUDENTUP_VERSION, true );
 	wp_enqueue_script( 'studentup-premium', get_template_directory_uri() . '/assets/js/studentup-premium.js', array( 'studentup' ), STUDENTUP_VERSION, true );
+	// v127: command palette + reading history rail — site anta (chinna file).
+	wp_enqueue_script( 'studentup-cmdk', get_template_directory_uri() . '/assets/js/studentup-cmdk.js', array( 'studentup' ), STUDENTUP_VERSION, true );
 	if ( is_front_page() || is_home() ) {
 		// v124: smart tools homepage lo mattrame — article pages fast ga untayi.
 		wp_enqueue_script( 'studentup-smart', get_template_directory_uri() . '/assets/js/studentup-smart.js', array( 'studentup-premium' ), STUDENTUP_VERSION, true );
