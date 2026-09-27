@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'STUDENTUP_VERSION', '1.9.10' );  // v123 premium UI (hero · hot jobs · daily quiz · alerts · bottom nav); v120: LCP assets + student compare/reminder/print utilities
+define( 'STUDENTUP_VERSION', '1.9.11' );  // v124 smart layer (AI job match · eligibility · salary · calendar); v123 premium UI (hero · hot jobs · daily quiz · alerts · bottom nav); v120: LCP assets + student compare/reminder/print utilities
 
 require_once get_template_directory() . '/inc/options.php';
 require_once get_template_directory() . '/inc/qual-filter.php';  // v72: 10th/Inter/Degree/PG filter (auto tags)
@@ -45,6 +45,7 @@ require_once get_template_directory() . '/inc/success-stories.php'; // v117: con
 require_once get_template_directory() . '/inc/student-tools.php'; // v120: compare, reminders and print/PDF utility layer
 require_once get_template_directory() . '/inc/opportunities.php'; // v121: live active list, expiry-safe sections and job board
 require_once get_template_directory() . '/inc/premium.php'; // v123: hero, hot jobs, scholarships, alerts, bottom nav
+require_once get_template_directory() . '/inc/smart.php';   // v124: AI job match, eligibility, salary calc, calendar
 require_once get_template_directory() . '/inc/quiz.php';    // v123: real daily quiz
 require_once get_template_directory() . '/inc/shortlinks.php'; // v122: first-party /slug redirects + click counts
 
@@ -238,6 +239,10 @@ function studentup_assets() {
 	wp_enqueue_style( 'studentup-premium', get_template_directory_uri() . '/assets/css/premium.css', array( 'studentup' ), STUDENTUP_VERSION );
 	wp_enqueue_script( 'studentup', get_template_directory_uri() . '/assets/js/studentup.js', array(), STUDENTUP_VERSION, true );
 	wp_enqueue_script( 'studentup-premium', get_template_directory_uri() . '/assets/js/studentup-premium.js', array( 'studentup' ), STUDENTUP_VERSION, true );
+	if ( is_front_page() || is_home() ) {
+		// v124: smart tools homepage lo mattrame — article pages fast ga untayi.
+		wp_enqueue_script( 'studentup-smart', get_template_directory_uri() . '/assets/js/studentup-smart.js', array( 'studentup-premium' ), STUDENTUP_VERSION, true );
+	}
 	// v72: PWA install prompt (app-laga install) — pwa option ON unte mattrame
 	if ( studentup_opt( 'pwa', '1' ) ) {
 		wp_enqueue_script( 'studentup-pwa', get_template_directory_uri() . '/assets/js/studentup-pwa.js', array( 'studentup' ), STUDENTUP_VERSION, true );

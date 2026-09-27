@@ -51,6 +51,13 @@
       <a class="su-hact su-t-sky" href="#"><span>📢</span>Results</a>
       <a class="su-hact su-t-mint" href="#"><span>🎫</span>Hall Tickets</a>
     </div>
+    <div class="su-trend"><span class="su-trend-tag">⚡ Trending today</span><div class="su-trend-list">
+      <a href="#">TSPSC Group-2 hall tickets released</a><a href="#">SSC MTS last date Oct 5</a>
+      <a href="#">AP DSC notification out</a><a href="#">NSP scholarship renewal open</a></div></div>
+    <div class="su-statebar" data-su-state-bar><span>📍 Your state:</span>
+      <button type="button" data-su-state="ts">Telangana</button>
+      <button type="button" data-su-state="ap">Andhra Pradesh</button>
+      <button type="button" data-su-state="central">All India</button></div>
     <ul class="su-hero-stats">
       <li><b>1,248</b><span>Updates published</span></li>
       <li><b>17</b><span>Added in 24 hours</span></li>
@@ -80,6 +87,49 @@
         <div class="su-hot-meta"><span class="su-pill su-pill-amber">📅 Oct 18</span><span class="su-pill su-pill-green">💰 ₹31,500</span></div>
         <a class="su-hot-apply" href="#">Apply / Details →</a></div></article>
     </div>
+  </section>
+
+
+  <section class="su-finder" id="job-match">
+    <div class="su-finder-head">
+      <div><p class="su-finder-kick">🤖 AI JOB MATCH · ELIGIBILITY CHECKER</p>
+      <h2>Mee qualification, state, age — eligible jobs instant ga</h2></div>
+      <span class="su-finder-count" data-su-finder-count></span>
+    </div>
+    <form class="su-finder-form" onsubmit="return false" data-su-finder='[
+      {"id":1,"title":"SSC MTS Recruitment 2026 — 8,326 posts","link":"#","img":"","qual":["10th"],"state":"central","last":"2026-10-05","days":8,"pay":"₹35,000","vac":"8326","amin":18,"amax":27,"apply":"","date":"2026-09-26"},
+      {"id":2,"title":"TSPSC Group-2 — 783 vacancies","link":"#","img":"","qual":["degree"],"state":"ts","last":"2026-10-14","days":17,"pay":"₹42,300","vac":"783","amin":18,"amax":44,"apply":"","date":"2026-09-25"},
+      {"id":3,"title":"AP Police Constable 2026","link":"#","img":"","qual":["inter"],"state":"ap","last":"2026-10-18","days":21,"pay":"₹31,500","vac":"6100","amin":18,"amax":25,"apply":"","date":"2026-09-24"},
+      {"id":4,"title":"RRB NTPC graduate level 2026","link":"#","img":"","qual":["degree"],"state":"central","last":"2026-10-09","days":12,"pay":"₹29,200","vac":"11558","amin":18,"amax":33,"apply":"","date":"2026-09-23"}]'>
+      <label>Qualification<select data-su-f-qual><option value="">Any qualification</option><option value="10th">SSC · 10th</option><option value="inter">Inter (10+2)</option><option value="degree">Degree</option><option value="pg">PG</option></select></label>
+      <label>State<select data-su-f-state><option value="">All India</option><option value="ts">Telangana</option><option value="ap">Andhra Pradesh</option><option value="central">Central / All India</option></select></label>
+      <label>Your age<input type="number" placeholder="e.g. 25" data-su-f-age></label>
+      <label>Show<select data-su-f-sort><option value="last">Closing soon first</option><option value="new">Newest first</option></select></label>
+      <button type="button" class="su-finder-reset" data-su-f-reset>↺ Reset</button>
+    </form>
+    <div class="su-finder-results" data-su-finder-results></div>
+    <p class="su-finder-note">Eligibility is a guide — official notification lo confirm cheyandi.</p>
+  </section>
+
+  <section class="su-cal" id="job-calendar">
+    <div class="su-cal-head"><h2>🗓️ Job calendar — last dates</h2><span>October 2026 onwards</span></div>
+    <ol class="su-cal-list">
+      <li><span class="su-cal-date"><b>5</b><small>Oct</small></span><a href="#">SSC MTS Recruitment 2026</a><em class="su-cal-left">8 days left</em></li>
+      <li><span class="su-cal-date"><b>9</b><small>Oct</small></span><a href="#">RRB NTPC graduate level</a><em class="su-cal-left">12 days left</em></li>
+      <li><span class="su-cal-date"><b>14</b><small>Oct</small></span><a href="#">TSPSC Group-2</a><em class="su-cal-left">17 days left</em></li>
+    </ol>
+  </section>
+
+  <section class="su-calc" id="salary-calculator">
+    <div class="su-calc-head"><h2>💰 In-hand salary calculator</h2><p>Basic pay + DA + HRA + TA − deductions. Formula open ga undi.</p></div>
+    <form class="su-calc-form" onsubmit="return false">
+      <label>Basic pay (₹)<input type="number" value="25500" data-su-c-basic></label>
+      <label>DA %<input type="number" value="50" data-su-c-da></label>
+      <label>HRA %<input type="number" value="18" data-su-c-hra></label>
+      <label>TA (₹)<input type="number" value="1800" data-su-c-ta></label>
+      <label>Deductions (₹)<input type="number" value="3200" data-su-c-ded></label>
+    </form>
+    <div class="su-calc-out" data-su-calc-out></div>
   </section>
 
   <section class="su-quiz" id="daily-quiz">
@@ -149,6 +199,7 @@
 
 <script>window.STUDENTUP={home:"#",rest:"",i18n:{}};</script>
 <script src="../../wordpress-theme/studentup/assets/js/studentup-premium.js"></script>
+<script src="../../wordpress-theme/studentup/assets/js/studentup-smart.js"></script>
 <script>
 document.getElementById("theme").addEventListener("click",function(){document.body.classList.toggle("dark");});
 </script>

@@ -47,9 +47,12 @@ get_header();
 <div class="wrap">
 	<?php
 	studentup_hot_jobs( 10 );      // v123: TOP 10 HOT JOBS TODAY
+	studentup_job_finder();        // v124: AI job match + eligibility checker
 	studentup_daily_quiz();        // v123: real daily quiz (colorful rotating ring)
 	studentup_scholarship_strip(); // v123: scholarships spotlight
 	studentup_alerts_card();       // v123: notification / WhatsApp / Telegram alerts
+	studentup_job_calendar();      // v124: last-date calendar (repeat visits)
+	studentup_salary_calc();       // v124: in-hand salary calculator
 	?>
 </div>
 

@@ -2,9 +2,9 @@
 Contributors: studentup
 Requires at least: 6.0
 Tested up to: 6.7
-Stable tag: 1.9.10
+Stable tag: 1.9.11
 Requires PHP: 7.4
-Version: 1.9.10
+Version: 1.9.11
 License: GNU General Public License v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Tags: news, education, blog, custom-logo, custom-menu, featured-images, translation-ready, right-sidebar, block-styles, wide-blocks
@@ -47,6 +47,13 @@ The theme ships a REST bridge (`inc/seo-bridge.php`). Use an account with `manag
 user tho App Password ivvandi (Administrator role).
 
 == Changelog ==
+
+= 1.9.11 (2026-09-27, v124 smart layer) =
+* AI Job Match + Eligibility Checker: qualification, state and age filters return matching updates instantly in the browser, with an honest "age limit not published" state when the notification data is missing.
+* In-hand salary calculator with an open formula (basic + DA + HRA + TA − deductions) and a clearly labelled estimate disclaimer.
+* Job calendar listing the next confirmed last dates with days-left chips; undated posts are never given a guessed deadline.
+* Trending Today strip under the hero and a state-first homepage switch (Telangana / Andhra Pradesh / All India) stored only in the reader's browser.
+* Hot job cards now read the real `studentup_last_date` and `studentup_salary` meta instead of placeholder keys.
 
 = 1.9.10 (2026-09-27, v123 premium homepage + real daily quiz) =
 * Premium hero: brand line, live search bar and 🔥 Latest Govt Jobs · 🎓 Scholarships · 📢 Results · 🎫 Hall Tickets quick actions.

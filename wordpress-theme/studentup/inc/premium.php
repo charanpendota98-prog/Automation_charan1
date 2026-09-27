@@ -80,6 +80,15 @@ function studentup_hero_premium() {
 				<?php endforeach; ?>
 			</div>
 
+			<?php
+			if ( function_exists( 'studentup_trending_today' ) ) {
+				studentup_trending_today();   // v124: Trending Today strip
+			}
+			if ( function_exists( 'studentup_state_switch' ) ) {
+				studentup_state_switch();     // v124: state-first dynamic homepage
+			}
+			?>
+
 			<ul class="su-hero-stats">
 				<li><b><?php echo esc_html( number_format_i18n( $posts_count ) ); ?></b><span>Updates published</span></li>
 				<li><b><?php echo esc_html( number_format_i18n( $today ) ); ?></b><span>Added in 24 hours</span></li>

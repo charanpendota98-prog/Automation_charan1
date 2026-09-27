@@ -281,3 +281,109 @@ a:focus-visible,button:focus-visible{outline:3px solid rgba(124,58,237,.45);outl
   .su-quiz-ring,.su-hero-orb,.su-live-dot{animation:none}
   .su-hotcard:hover,.news:hover,.su-hact:hover,.su-scard:hover{transform:none}
 }
+
+/* ===========================================================
+   v124 SMART LAYER — AI job match · eligibility · salary calc ·
+   job calendar · trending today · state-first homepage
+   =========================================================== */
+
+/* Trending today (hero kinda) */
+.su-trend{display:flex;align-items:center;gap:10px;margin:16px auto 0;max-width:900px;padding:8px 12px;
+  border-radius:999px;background:var(--card);border:1px solid var(--line);overflow:hidden}
+.su-trend-tag{flex:0 0 auto;font-size:11px;font-weight:900;color:#fff;background:var(--su-grad);padding:5px 11px;border-radius:999px}
+.su-trend-list{display:flex;gap:16px;overflow-x:auto;scrollbar-width:none;white-space:nowrap}
+.su-trend-list::-webkit-scrollbar{display:none}
+.su-trend-list a{font-size:12.5px;font-weight:700;color:var(--ink)}
+.su-trend-list a:hover{color:var(--su-g2)}
+
+/* State switcher */
+.su-statebar{display:flex;align-items:center;justify-content:center;gap:7px;flex-wrap:wrap;margin:14px 0 0;font-size:12px;color:var(--muted);font-weight:800}
+.su-statebar button{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;
+  padding:7px 14px;font:inherit;font-size:12px;font-weight:800;cursor:pointer}
+.su-statebar button.on{background:var(--su-grad);color:#fff;border-color:transparent;box-shadow:0 8px 18px rgba(124,58,237,.28)}
+
+/* AI job match */
+.su-finder{margin:28px 0 8px;padding:18px;border-radius:var(--su-radius);background:var(--card);
+  border:1px solid rgba(124,58,237,.2);box-shadow:0 12px 30px rgba(31,26,92,.07)}
+.su-finder-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.su-finder-kick{margin:0 0 4px;font-size:11px;font-weight:900;letter-spacing:.08em;color:var(--su-g2)}
+.su-finder-head h2{margin:0;font-size:20px;color:var(--navy)}
+body.dark .su-finder-head h2{color:#eaf2ff}
+.su-finder-count{flex:0 0 auto;padding:7px 13px;border-radius:999px;background:rgba(124,58,237,.12);
+  color:var(--su-g2);font-size:12px;font-weight:900}
+.su-finder-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;align-items:end}
+.su-finder-form label{display:grid;gap:5px;font-size:11px;font-weight:900;color:var(--muted)}
+.su-finder-form select,.su-finder-form input{min-height:42px;padding:9px 11px;border:1px solid var(--line);
+  border-radius:12px;background:var(--soft);color:var(--ink);font:inherit;font-size:13px}
+.su-finder-form select:focus,.su-finder-form input:focus{outline:3px solid rgba(124,58,237,.25);border-color:var(--su-g2)}
+.su-finder-reset{min-height:42px;border:1px solid var(--line);border-radius:12px;background:var(--soft);
+  color:var(--ink);font:inherit;font-size:12.5px;font-weight:800;cursor:pointer}
+.su-finder-reset:hover{border-color:var(--su-g2);color:var(--su-g2)}
+.su-finder-results{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:12px;margin-top:16px}
+.su-fcard{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:16px;overflow:hidden;
+  background:var(--card);box-shadow:0 8px 20px rgba(31,26,92,.06);transition:transform .16s,box-shadow .16s}
+.su-fcard:hover{transform:translateY(-3px);box-shadow:var(--su-shadow)}
+.su-fthumb img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block}
+.su-fbody{display:flex;flex-direction:column;gap:8px;padding:12px 13px 13px;flex:1 1 auto}
+.su-fbody h3{margin:0;font-size:14px;line-height:1.45}
+.su-fbody h3 a{color:var(--ink)}
+.su-fbody h3 a:hover{color:var(--su-g2)}
+.su-fmeta{display:flex;flex-wrap:wrap;gap:6px}
+.su-pill-hot{background:rgba(239,68,68,.15);color:#a02121}
+body.dark .su-pill-hot{color:#ffb3b3}
+.su-elig{display:inline-block;padding:6px 10px;border-radius:10px;font-size:11.5px;font-weight:800;line-height:1.4}
+.su-elig.yes{background:rgba(16,185,129,.15);color:#0b6b4b}
+.su-elig.no{background:rgba(239,68,68,.14);color:#a02121}
+.su-elig.may{background:rgba(245,158,11,.15);color:#9a5b00}
+body.dark .su-elig.yes{color:#8ff0c6}body.dark .su-elig.no{color:#ffb3b3}body.dark .su-elig.may{color:#ffc88a}
+.su-frow{display:flex;gap:8px;align-items:center;margin-top:auto}
+.su-frow .su-hot-apply{flex:1 1 auto}
+.su-finder-empty{margin:16px 0 0;padding:16px;border:1px dashed var(--line);border-radius:14px;color:var(--muted);text-align:center;font-size:13px}
+.su-finder-note{margin:14px 0 0;font-size:11.5px;color:var(--muted);line-height:1.6}
+
+/* Salary calculator */
+.su-calc{margin:26px 0 8px;padding:18px;border-radius:var(--su-radius);border:1px solid var(--line);
+  background:linear-gradient(135deg,rgba(16,185,129,.08),rgba(14,165,233,.08))}
+.su-calc-head h2{margin:0 0 4px;font-size:20px;color:var(--navy)}
+body.dark .su-calc-head h2{color:#eaf2ff}
+.su-calc-head p{margin:0 0 14px;font-size:12.5px;color:var(--muted)}
+.su-calc-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+.su-calc-form label{display:grid;gap:5px;font-size:11px;font-weight:900;color:var(--muted)}
+.su-calc-form input{min-height:42px;padding:9px 11px;border:1px solid var(--line);border-radius:12px;
+  background:var(--card);color:var(--ink);font:inherit;font-size:13px}
+.su-calc-out{margin-top:15px;display:grid;gap:12px}
+.su-calc-big{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+  padding:14px 16px;border-radius:16px;background:linear-gradient(135deg,#10b981,#0ea5e9);color:#fff}
+.su-calc-big span{font-size:12.5px;font-weight:800;opacity:.95}
+.su-calc-big b{font-size:26px}
+.su-calc-rows{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:7px}
+.su-calc-rows li{display:flex;justify-content:space-between;gap:10px;padding:9px 12px;border-radius:11px;
+  background:var(--card);border:1px solid var(--line);font-size:12.5px;color:var(--muted);font-weight:700}
+.su-calc-rows b{color:var(--ink)}
+.su-calc-note{margin:0;font-size:11.5px;color:var(--muted)}
+
+/* Job calendar */
+.su-cal{margin:26px 0 8px;padding:18px;border-radius:var(--su-radius);border:1px solid var(--line);background:var(--card)}
+.su-cal-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.su-cal-head h2{margin:0;font-size:20px;color:var(--navy)}
+body.dark .su-cal-head h2{color:#eaf2ff}
+.su-cal-head span{font-size:12px;font-weight:800;color:var(--muted)}
+.su-cal-list{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.su-cal-list li{display:flex;align-items:center;gap:12px;padding:9px 11px;border-radius:13px;
+  border:1px solid var(--line);background:var(--soft)}
+.su-cal-date{flex:0 0 auto;display:grid;place-items:center;width:46px;padding:5px 0;border-radius:11px;
+  background:var(--su-grad);color:#fff;line-height:1.1}
+.su-cal-date b{font-size:16px}
+.su-cal-date small{font-size:10px;text-transform:uppercase;opacity:.9}
+.su-cal-list a{flex:1 1 auto;font-size:13px;font-weight:700;color:var(--ink);line-height:1.45;overflow-wrap:anywhere}
+.su-cal-list a:hover{color:var(--su-g2)}
+.su-cal-left{flex:0 0 auto;font-size:11px;font-weight:900;color:#0b6b4b;background:rgba(16,185,129,.15);
+  padding:5px 10px;border-radius:999px;font-style:normal}
+.su-cal-left.hot{color:#a02121;background:rgba(239,68,68,.15)}
+body.dark .su-cal-left{color:#8ff0c6}body.dark .su-cal-left.hot{color:#ffb3b3}
+@media(max-width:600px){
+  .su-finder,.su-calc,.su-cal{padding:14px}
+  .su-finder-head h2,.su-calc-head h2,.su-cal-head h2{font-size:17px}
+  .su-calc-big b{font-size:22px}
+  .su-trend{border-radius:16px}
+}
