@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'STUDENTUP_VERSION', '1.9.11' );  // v124 smart layer (AI job match · eligibility · salary · calendar); v123 premium UI (hero · hot jobs · daily quiz · alerts · bottom nav); v120: LCP assets + student compare/reminder/print utilities
+define( 'STUDENTUP_VERSION', '1.9.12' );  // v125 ItemList schema + urgency chips + in-feed slot; v124 smart layer (AI job match · eligibility · salary · calendar); v123 premium UI (hero · hot jobs · daily quiz · alerts · bottom nav); v120: LCP assets + student compare/reminder/print utilities
 
 require_once get_template_directory() . '/inc/options.php';
 require_once get_template_directory() . '/inc/qual-filter.php';  // v72: 10th/Inter/Degree/PG filter (auto tags)

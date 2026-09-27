@@ -282,3 +282,40 @@ function studentup_state_switch() {
 	</div>
 	<?php
 }
+
+/**
+ * v125: homepage ItemList JSON-LD — Google ki "ee page lo em unnayi" ani clear
+ * signal (Discover + rich result eligibility). Real published posts matrame;
+ * fake ratings/salary markup eppudu ledu.
+ */
+function studentup_home_itemlist_schema() {
+	if ( ! is_front_page() || ! studentup_opt( 'schema', '1' ) ) {
+		return;
+	}
+	$rows = array_slice( studentup_smart_dataset( 10 ), 0, 10 );
+	if ( ! $rows ) {
+		return;
+	}
+	$items = array();
+	foreach ( $rows as $i => $row ) {
+		$items[] = array(
+			'@type'    => 'ListItem',
+			'position' => $i + 1,
+			'url'      => $row['link'],
+			'name'     => $row['title'],
+		);
+	}
+	$data = array(
+		'@context'        => 'https://schema.org',
+		'@type'           => 'ItemList',
+		'@id'             => home_url( '/#latest-updates' ),
+		'name'            => 'Latest jobs, results and scholarship updates',
+		'itemListOrder'   => 'https://schema.org/ItemListOrderDescending',
+		'numberOfItems'   => count( $items ),
+		'itemListElement' => $items,
+	);
+	echo '<script type="application/ld+json">'
+		. wp_json_encode( $data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES )
+		. '</script>' . "\n";
+}
+add_action( 'wp_head', 'studentup_home_itemlist_schema', 6 );

@@ -158,6 +158,9 @@ function studentup_hot_jobs( $limit = 10 ) {
 							<?php if ( $pay ) : ?>
 								<span class="su-pill su-pill-green">💰 <?php echo esc_html( $pay ); ?></span>
 							<?php endif; ?>
+							<?php if ( null !== $left && $left >= 0 && $left <= 10 ) : ?>
+								<span class="su-pill su-pill-hot">⏳ <?php echo esc_html( 0 === $left ? 'Last day' : $left . 'd left' ); ?></span>
+							<?php endif; ?>
 						</div>
 						<a class="su-hot-apply" href="<?php the_permalink(); ?>">Apply / Details →</a>
 					</div>

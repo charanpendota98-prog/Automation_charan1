@@ -2,9 +2,9 @@
 Contributors: studentup
 Requires at least: 6.0
 Tested up to: 6.7
-Stable tag: 1.9.11
+Stable tag: 1.9.12
 Requires PHP: 7.4
-Version: 1.9.11
+Version: 1.9.12
 License: GNU General Public License v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Tags: news, education, blog, custom-logo, custom-menu, featured-images, translation-ready, right-sidebar, block-styles, wide-blocks
@@ -47,6 +47,11 @@ The theme ships a REST bridge (`inc/seo-bridge.php`). Use an account with `manag
 user tho App Password ivvandi (Administrator role).
 
 == Changelog ==
+
+= 1.9.12 (2026-09-27, v125 SEO + CTR finish) =
+* Homepage ItemList JSON-LD built only from published posts — clearer Discover/rich-result signals with no invented ratings or salary markup.
+* Urgency chips ("3d left" / "Last day") on hot job cards when a confirmed last date exists; undated posts stay silent.
+* Extra high-viewability in-feed ad position after the AI job match block, still inside the existing per-page ad density cap.
 
 = 1.9.11 (2026-09-27, v124 smart layer) =
 * AI Job Match + Eligibility Checker: qualification, state and age filters return matching updates instantly in the browser, with an honest "age limit not published" state when the notification data is missing.
