@@ -1,5 +1,7 @@
 # GO-LIVE CHECKLIST (v60) — deploy cheyocha? Enti migilindi?
 
+
+> **Verified counts (theme v1.9.17 build):** test suites **109/109** files · jsdom runtime **164/164** checks · PHP lint **56/56** files · theme audit **0/0** · code audit **0/0**.
 **Short answer: CODE ready ✅ · DEPLOY ready ✅ · 5 panulu MEE accounts lo cheyyali ⏳.**
 Ee doc = okka page lo motham. Kramam ga cheyyandi.
 

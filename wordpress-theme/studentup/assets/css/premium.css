@@ -473,3 +473,26 @@ body.dark .su-cal-left{color:#8ff0c6}body.dark .su-cal-left.hot{color:#ffb3b3}
 .su-story-next{right:10px}.su-story-prev{left:10px}
 .su-story-next:hover,.su-story-prev:hover{background:rgba(255,255,255,.4);color:#fff}
 @media(max-width:600px){.su-story-in h3{font-size:17px}}
+
+/* ===========================================================
+   v130 RENDER BUDGET — long homepage ni fast ga uncha:
+   below-fold heavy sections browser render ni skip chestundi
+   (content-visibility), kaani scroll/anchor/Ctrl+F pani chestundi
+   (contain-intrinsic-size tho placeholder height reserve → CLS 0).
+   Search engines DOM ni full ga chaduvutayi — SEO impact ledu.
+   =========================================================== */
+.su-hot,.su-stories,.su-finder,.su-quiz,.su-schol,.su-alerts,.su-foryou,.su-cal,.su-calc,.su-cmp{
+  content-visibility:auto}
+.su-hot{contain-intrinsic-size:auto 420px}
+.su-stories{contain-intrinsic-size:auto 600px}
+.su-finder{contain-intrinsic-size:auto 640px}
+.su-quiz{contain-intrinsic-size:auto 700px}
+.su-schol{contain-intrinsic-size:auto 260px}
+.su-alerts{contain-intrinsic-size:auto 200px}
+.su-foryou{contain-intrinsic-size:auto 300px}
+.su-cal{contain-intrinsic-size:auto 560px}
+.su-calc{contain-intrinsic-size:auto 480px}
+.su-cmp{contain-intrinsic-size:auto 520px}
+/* Hero + first rail eppudu immediate render (LCP ki content-visibility vaddu) */
+.su-hero{content-visibility:visible}
+@media print{.su-hot,.su-stories,.su-finder,.su-quiz,.su-schol,.su-alerts,.su-foryou,.su-cal,.su-calc,.su-cmp{content-visibility:visible}}

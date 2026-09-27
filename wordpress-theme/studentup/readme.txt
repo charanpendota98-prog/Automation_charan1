@@ -2,9 +2,9 @@
 Contributors: studentup
 Requires at least: 6.0
 Tested up to: 6.7
-Stable tag: 1.9.16
+Stable tag: 1.9.17
 Requires PHP: 7.4
-Version: 1.9.16
+Version: 1.9.17
 License: GNU General Public License v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Tags: news, education, blog, custom-logo, custom-menu, featured-images, translation-ready, right-sidebar, block-styles, wide-blocks
@@ -47,6 +47,10 @@ The theme ships a REST bridge (`inc/seo-bridge.php`). Use an account with `manag
 user tho App Password ivvandi (Administrator role).
 
 == Changelog ==
+
+= 1.9.17 (2026-09-27, v130 render budget) =
+* Below-the-fold homepage sections now use content-visibility with reserved intrinsic sizes, so long pages paint faster without any layout shift; the hero and first rail always render immediately for a clean LCP.
+* Printing and search-engine crawling are unaffected — the markup is always present in the DOM.
 
 = 1.9.16 (2026-09-27, v129 auto social cards + quick stories) =
 * Automatic 1200x630 branded share card for posts without a featured image, rendered with GD, cached in uploads and served from a /studentup-card/<id>/ endpoint; when GD or a system font is unavailable the feature turns itself off instead of shipping a broken image.
