@@ -2,9 +2,9 @@
 Contributors: studentup
 Requires at least: 6.0
 Tested up to: 6.7
-Stable tag: 1.9.12
+Stable tag: 1.9.13
 Requires PHP: 7.4
-Version: 1.9.12
+Version: 1.9.13
 License: GNU General Public License v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Tags: news, education, blog, custom-logo, custom-menu, featured-images, translation-ready, right-sidebar, block-styles, wide-blocks
@@ -47,6 +47,12 @@ The theme ships a REST bridge (`inc/seo-bridge.php`). Use an account with `manag
 user tho App Password ivvandi (Administrator role).
 
 == Changelog ==
+
+= 1.9.13 (2026-09-27, v126 editor job-data box + compare page) =
+* New "StudentUp job data" editor box: last date, salary, vacancies, age range, qualification tags, apply URL and verified source date — strict validation means an invalid date or URL is dropped instead of stored.
+* Posts list shows a job-data completeness column so missing card, eligibility and calendar data is obvious at a glance.
+* Compare page template plus a `[studentup_compare]` shortcode: side-by-side salary, age, qualification, vacancies and last date from published posts only, with "—" wherever a detail is not yet confirmed.
+* First hot-job card image now loads eagerly with high fetch priority for a faster LCP; the rest stay lazy.
 
 = 1.9.12 (2026-09-27, v125 SEO + CTR finish) =
 * Homepage ItemList JSON-LD built only from published posts — clearer Discover/rich-result signals with no invented ratings or salary markup.

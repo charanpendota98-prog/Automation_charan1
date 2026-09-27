@@ -145,7 +145,15 @@ function studentup_hot_jobs( $limit = 10 ) {
 				<article class="su-hotcard">
 					<a class="su-hot-thumb" href="<?php the_permalink(); ?>">
 						<?php if ( has_post_thumbnail() ) : ?>
-							<?php the_post_thumbnail( 'studentup-card', array( 'loading' => 'lazy', 'alt' => esc_attr( get_the_title() ) ) ); ?>
+							<?php
+							// v126 LCP: modati card image eager + high priority (Discover/CWV).
+							the_post_thumbnail(
+								'studentup-card',
+								1 === $n
+									? array( 'loading' => 'eager', 'fetchpriority' => 'high', 'decoding' => 'async', 'alt' => esc_attr( get_the_title() ) )
+									: array( 'loading' => 'lazy', 'decoding' => 'async', 'alt' => esc_attr( get_the_title() ) )
+							);
+							?>
 						<?php else : ?>
 							<span class="su-hot-ph" aria-hidden="true">🎯</span>
 						<?php endif; ?>
