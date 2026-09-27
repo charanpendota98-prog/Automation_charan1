@@ -238,6 +238,8 @@ function studentup_register_qual_meta() {
 	$keys = array(
 		'studentup_qual', 'studentup_last_date', 'studentup_apply_url',
 		'studentup_source_url', 'studentup_source_urls', 'studentup_source_checked', 'studentup_org_url',
+		// v133: full job dataset so the bot can publish a complete card in one call.
+		'studentup_salary', 'studentup_vacancies', 'studentup_age_min', 'studentup_age_max',
 	);
 	foreach ( $keys as $key ) {
 		register_post_meta(

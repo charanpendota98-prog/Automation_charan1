@@ -66,7 +66,7 @@ def sync_docs(ver: str, write: bool) -> int:
     doc = ROOT / "GO_LIVE_CHECKLIST.md"
     src = doc.read_text(encoding="utf-8")
     new = re.sub(
-        r"\*\*v\d+ zip:\*\* \d+ files · \d+ KB · theme \*\*[0-9.]+\*\* · sha256\n(\s*)`[0-9a-f]{64}`",
+        r"\*\*(?:v\d+ )?zip:\*\* \d+ files · \d+ KB · theme \*\*[0-9.]+\*\* · sha256\n(\s*)`[0-9a-f]{64}`",
         lambda m: (f"**zip:** {files} files · {size_kb} KB · theme **{ver}** · sha256\n"
                    f"{m.group(1)}`{sha}`"),
         src,
