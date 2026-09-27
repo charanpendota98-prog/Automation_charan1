@@ -105,6 +105,8 @@ function studentup_option_fields() {
 				'job_calendar'  => array( 'Job calendar (last dates)', 'check', '1', 'v124: next 12 deadlines with days-left chips' ),
 				'trending_today'=> array( 'Trending today strip (hero)', 'check', '1', 'v124: latest 6 headlines, hero kinda scrolling strip' ),
 				'state_first'   => array( 'State-first dynamic homepage', 'check', '1', 'v124: reader TS/AP/All-India select cheste aa state sections mundu vastayi (localStorage, cache-safe)' ),
+				'auto_og'       => array( 'Auto branded social card (featured image lenappudu)', 'check', '1', 'v129: 1200×630 gradient card automatic — WhatsApp/Telegram/Discover share lo khali card raakoodadu. Server lo GD + font unte matrame; lekapote silently OFF.' ),
+				'stories'       => array( 'Quick story cards (swipe)', 'check', '1', 'v129: Web-Stories laga full-screen swipe cards, CSS-only — mobile engagement + Discover surface' ),
 				'instant_nav'   => array( 'Instant navigation (Speculation Rules + View Transitions)', 'check', '1', 'v127: browser-native prerender on hover + smooth cross-page transitions. Admin/login/external links eppudu prerender kaavu.' ),
 				'command_palette'=> array( 'Command palette (Ctrl / ⌘ + K search)', 'check', '1', 'v127: power-user quick search + jump to jobs, scholarships, quiz, calculator' ),
 				'for_you'       => array( '"Picked for you" rail (reader history)', 'check', '1', 'v127: reader browser lo chusina posts batti — localStorage matrame, server ki data ledu' ),

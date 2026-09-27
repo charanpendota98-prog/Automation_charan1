@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'STUDENTUP_VERSION', '1.9.15' );  // v128 go-live score dashboard; v127 instant nav (speculation rules · view transitions) + ⌘K palette + For You; v126 job data box + compare page + LCP polish; v125 ItemList schema + urgency chips + in-feed slot; v124 smart layer (AI job match · eligibility · salary · calendar); v123 premium UI (hero · hot jobs · daily quiz · alerts · bottom nav); v120: LCP assets + student compare/reminder/print utilities
+define( 'STUDENTUP_VERSION', '1.9.16' );  // v129 auto social cards + quick stories; v128 go-live score dashboard; v127 instant nav (speculation rules · view transitions) + ⌘K palette + For You; v126 job data box + compare page + LCP polish; v125 ItemList schema + urgency chips + in-feed slot; v124 smart layer (AI job match · eligibility · salary · calendar); v123 premium UI (hero · hot jobs · daily quiz · alerts · bottom nav); v120: LCP assets + student compare/reminder/print utilities
 
 require_once get_template_directory() . '/inc/options.php';
 require_once get_template_directory() . '/inc/qual-filter.php';  // v72: 10th/Inter/Degree/PG filter (auto tags)
@@ -45,6 +45,8 @@ require_once get_template_directory() . '/inc/success-stories.php'; // v117: con
 require_once get_template_directory() . '/inc/student-tools.php'; // v120: compare, reminders and print/PDF utility layer
 require_once get_template_directory() . '/inc/opportunities.php'; // v121: live active list, expiry-safe sections and job board
 require_once get_template_directory() . '/inc/premium.php'; // v123: hero, hot jobs, scholarships, alerts, bottom nav
+require_once get_template_directory() . '/inc/ogimage.php';     // v129: auto branded social card
+require_once get_template_directory() . '/inc/stories.php';     // v129: quick story cards
 require_once get_template_directory() . '/inc/score.php';       // v128: go-live score (AdSense/Discover readiness)
 require_once get_template_directory() . '/inc/speed.php';       // v127: speculation rules, view transitions, command palette
 require_once get_template_directory() . '/inc/jobmeta.php';     // v126: admin job data box

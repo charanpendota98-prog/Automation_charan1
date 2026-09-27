@@ -2,9 +2,9 @@
 Contributors: studentup
 Requires at least: 6.0
 Tested up to: 6.7
-Stable tag: 1.9.15
+Stable tag: 1.9.16
 Requires PHP: 7.4
-Version: 1.9.15
+Version: 1.9.16
 License: GNU General Public License v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Tags: news, education, blog, custom-logo, custom-menu, featured-images, translation-ready, right-sidebar, block-styles, wide-blocks
@@ -47,6 +47,11 @@ The theme ships a REST bridge (`inc/seo-bridge.php`). Use an account with `manag
 user tho App Password ivvandi (Administrator role).
 
 == Changelog ==
+
+= 1.9.16 (2026-09-27, v129 auto social cards + quick stories) =
+* Automatic 1200x630 branded share card for posts without a featured image, rendered with GD, cached in uploads and served from a /studentup-card/<id>/ endpoint; when GD or a system font is unavailable the feature turns itself off instead of shipping a broken image.
+* A real featured image always wins over the generated card, and og:image output is skipped when Rank Math or Yoast already provides it.
+* Quick story cards: CSS-only full-screen swipe cards with progress bars, deadline, salary and vacancy chips plus prev/next controls, available on the homepage and via a [studentup_stories] shortcode.
 
 = 1.9.15 (2026-09-27, v128 go-live score) =
 * New Appearance → StudentUp Score page and dashboard widget: weighted, live checks for HTTPS, indexing, permalinks, content depth, the six policy pages, logo/site icon, menus, featured images, job data, social links, Search Console, GA4 and the AdSense publisher ID.
