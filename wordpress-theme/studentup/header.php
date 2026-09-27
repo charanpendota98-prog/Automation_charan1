@@ -92,6 +92,15 @@ studentup_breaking_ticker();
 	<?php if ( function_exists( 'studentup_saved_on' ) && studentup_saved_on() ) : ?>
 		<a href="#" class="su-msaved" data-su-saved-open>🔖 <?php echo esc_html__( 'Saved', 'studentup' ); ?></a>
 	<?php endif; ?>
+	<a href="<?php echo esc_url( home_url( '/#daily-quiz' ) ); ?>">🧠 Daily Quiz</a>
+	<a href="<?php echo esc_url( home_url( '/#alerts' ) ); ?>">🔔 Instant alerts</a>
+	<?php
+	// v123: Scholarships mobile menu lo eppudu kanipinchali.
+	$su_schol = studentup_used_term( 'scholarships' );
+	if ( $su_schol ) :
+		?>
+		<a href="<?php echo esc_url( get_category_link( $su_schol ) ); ?>">🎓 Scholarships</a>
+	<?php endif; ?>
 	<div class="mlabel">Most searched by students</div>
 	<?php foreach ( studentup_most_used() as $m ) : ?>
 		<?php

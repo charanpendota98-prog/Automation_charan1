@@ -292,13 +292,15 @@
   var rail = document.getElementById("surail"), railTab = document.getElementById("sutab"),
       railClose = document.getElementById("suclose");
   if (rail && railTab) {
-    var SU_SHOW = 9000, SU_CYCLE = 120000, SU_HOVER = 3500, suHideT = null, suCycleT = null;
+    var SU_AUTOHIDE = false, SU_SHOW = 9000, SU_CYCLE = 120000, SU_HOVER = 3500, suHideT = null, suCycleT = null;
     var suShow = function () {
       clearTimeout(suHideT);
       rail.classList.remove("su-out");
       rail.removeAttribute("aria-hidden");
       railTab.classList.remove("on");
-      suHideT = setTimeout(suHide, SU_SHOW);
+      /* v123: rail eppudu right-middle lo kanipistundi. User ✕ click cheste
+         mattrame hide — auto-hide ledu (phone lo icons ravatledu ane problem fix). */
+      if (SU_AUTOHIDE) suHideT = setTimeout(suHide, SU_SHOW);
     };
     var suHide = function () {
       clearTimeout(suHideT);
@@ -317,11 +319,11 @@
       railClose.addEventListener("click", function () { suHide(); suRestart(); });
     }
     railTab.addEventListener("click", function () { suShow(); suRestart(); });
-    document.addEventListener("keydown", function (e) { if (e.key === "Escape") suHide(); });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape") { suHide(); suRestart(); } });
     rail.addEventListener("mouseenter", function () { clearTimeout(suHideT); });
-    rail.addEventListener("mouseleave", function () { clearTimeout(suHideT); suHideT = setTimeout(suHide, SU_HOVER); });
+    rail.addEventListener("mouseleave", function () { clearTimeout(suHideT); if (SU_AUTOHIDE) suHideT = setTimeout(suHide, SU_HOVER); });
     rail.addEventListener("focusin", function () { clearTimeout(suHideT); });
-    rail.addEventListener("focusout", function () { clearTimeout(suHideT); suHideT = setTimeout(suHide, SU_HOVER); });
+    rail.addEventListener("focusout", function () { clearTimeout(suHideT); if (SU_AUTOHIDE) suHideT = setTimeout(suHide, SU_HOVER); });
     suShow();
     suRestart();
   }

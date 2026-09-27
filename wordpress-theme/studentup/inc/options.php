@@ -92,6 +92,17 @@ function studentup_option_fields() {
 				'saved_max' => array( 'Saved posts limit (per browser)', 'text', '60', 'v92: localStorage cap (5–200). Limit dhatithe purani vi FIFO ga drop avutayi — browser storage bloat avvadu' ),
 			),
 		),
+		'homepage' => array(
+			'title'  => 'Homepage (v123 premium)',
+			'fields' => array(
+				'hero_premium'  => array( 'Premium hero (search + quick actions)', 'check', '1', 'v123: LOGO · search bar · 🔥 Latest Govt Jobs · 🎓 Scholarships · 📢 Results · 🎫 Hall Tickets' ),
+				'hot_jobs'      => array( 'TOP 10 hot jobs today (card rail)', 'check', '1', 'v123: image + last date + salary + apply — Netflix style swipe rail' ),
+				'daily_quiz'    => array( 'Daily Quiz block (colorful ring)', 'check', '1', 'v123: roju 5 questions, instant score, date-wise rotation' ),
+				'scholar_strip' => array( 'Scholarships spotlight strip', 'check', '1', 'v123: Scholarships category lo latest 4 + "see all" link' ),
+				'alerts_card'   => array( 'Instant alerts card (browser notifications)', 'check', '1', 'v123: reader permission ichaka kotha post ki notification vastundi (WhatsApp/Telegram buttons kuda)' ),
+				'bottom_nav'    => array( 'Mobile floating bottom navigation', 'check', '1', 'v123: 🏠 Home · 💼 Jobs · 🎓 Scholarships · 🔔 Alerts · 🔍 Search' ),
+			),
+		),
 		'advanced' => array(
 			'title'  => 'Advanced',
 			'fields' => array(

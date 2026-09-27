@@ -156,12 +156,17 @@ function studentup_menu_fallback() {
 			'items' => array( 'ts-jobs', 'ap-jobs', 'central-jobs', 'private-jobs', 'walkin-jobs', 'software-jobs', 'success-stories' ),
 		),
 	);
-	$top = array( 'hall-tickets', 'results', 'current-affairs' );
+	// v123: Scholarships + Daily Quiz menu lo eppudu kanipinchali (user request).
+	$top = array( 'scholarships', 'hall-tickets', 'results', 'current-affairs', 'daily-quiz' );
 
 	$label_of = array();
 	foreach ( studentup_most_used() as $m ) {
 		$label_of[ $m['slug'] ] = $m;
 	}
+	// v123: most_used lo leni, kaani menu lo kavalsina sections.
+	$label_of['scholarships'] = array( 'slug' => 'scholarships', 'label' => 'Scholarships', 'icon' => '🎓', 'hint' => 'Central · state · private' );
+	$label_of['daily-quiz']   = array( 'slug' => 'daily-quiz', 'label' => 'Daily Quiz', 'icon' => '🧠', 'hint' => 'Roju 5 questions' );
+	$label_of['internships']  = array( 'slug' => 'internships', 'label' => 'Internships', 'icon' => '🧪', 'hint' => 'Stipend · remote · college' );
 
 	$menu = array();
 
@@ -203,7 +208,13 @@ function studentup_menu_fallback() {
 	 */
 	$more = array(
 		array( 'label' => 'Latest active jobs', 'url' => studentup_opportunity_board_url(), 'desc' => 'Dates unna active notices only' ),
+		array( 'label' => 'Daily Quiz', 'url' => $home . '#daily-quiz', 'desc' => 'Today\'s 5 questions' ),
+		array( 'label' => 'Instant alerts', 'url' => $home . '#alerts', 'desc' => 'Notification · WhatsApp · Telegram' ),
 	);
+	$intern_term = $term_of( 'internships' );
+	if ( $intern_term ) {
+		$more[] = array( 'label' => 'Internships', 'url' => get_category_link( $intern_term ), 'desc' => 'Stipend · remote · college' );
+	}
 	$success_term = $term_of( 'success-stories' );
 	if ( $success_term && isset( $label_of['success-stories'] ) ) {
 		$more[] = array(

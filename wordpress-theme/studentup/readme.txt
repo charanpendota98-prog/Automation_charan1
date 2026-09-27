@@ -2,9 +2,9 @@
 Contributors: studentup
 Requires at least: 6.0
 Tested up to: 6.7
-Stable tag: 1.9.9
+Stable tag: 1.9.10
 Requires PHP: 7.4
-Version: 1.9.9
+Version: 1.9.10
 License: GNU General Public License v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Tags: news, education, blog, custom-logo, custom-menu, featured-images, translation-ready, right-sidebar, block-styles, wide-blocks
@@ -47,6 +47,16 @@ The theme ships a REST bridge (`inc/seo-bridge.php`). Use an account with `manag
 user tho App Password ivvandi (Administrator role).
 
 == Changelog ==
+
+= 1.9.10 (2026-09-27, v123 premium homepage + real daily quiz) =
+* Premium hero: brand line, live search bar and 🔥 Latest Govt Jobs · 🎓 Scholarships · 📢 Results · 🎫 Hall Tickets quick actions.
+* TOP 10 hot jobs today — swipeable Netflix-style cards with last date, salary and apply link.
+* Real Daily Quiz block: five date-rotated questions, instant scoring, explanation for each answer and a colourful rotating ring.
+* Scholarships spotlight strip plus Scholarships and Daily Quiz in the header, mobile menu and bottom navigation.
+* Instant alerts card — reader-approved browser notifications for new posts, with WhatsApp and Telegram fallbacks.
+* Social rail is now pinned to the right edge, vertically centred, on phones as well as laptops; it no longer auto-hides.
+* Category tiles drop the "N updates" badge so the title and hint text always stay readable.
+* New homepage options group (hero, hot jobs, daily quiz, scholarships, alerts, bottom navigation) — every block can be switched off.
 
 = 1.9.9 (2026-09-25, v120 student utility layer + v119 performance hardening) =
 * Compare up to three posts locally without an account or reader profile.

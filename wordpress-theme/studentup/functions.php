@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'STUDENTUP_VERSION', '1.9.9' );  // v120: LCP assets + student compare/reminder/print utilities
+define( 'STUDENTUP_VERSION', '1.9.10' );  // v123 premium UI (hero · hot jobs · daily quiz · alerts · bottom nav); v120: LCP assets + student compare/reminder/print utilities
 
 require_once get_template_directory() . '/inc/options.php';
 require_once get_template_directory() . '/inc/qual-filter.php';  // v72: 10th/Inter/Degree/PG filter (auto tags)
@@ -44,6 +44,8 @@ require_once get_template_directory() . '/inc/share.php';     // v98: viral shar
 require_once get_template_directory() . '/inc/success-stories.php'; // v117: consented TS/AP story intake CTA
 require_once get_template_directory() . '/inc/student-tools.php'; // v120: compare, reminders and print/PDF utility layer
 require_once get_template_directory() . '/inc/opportunities.php'; // v121: live active list, expiry-safe sections and job board
+require_once get_template_directory() . '/inc/premium.php'; // v123: hero, hot jobs, scholarships, alerts, bottom nav
+require_once get_template_directory() . '/inc/quiz.php';    // v123: real daily quiz
 require_once get_template_directory() . '/inc/shortlinks.php'; // v122: first-party /slug redirects + click counts
 
 /**
@@ -88,6 +90,11 @@ function studentup_cat_aliases() {
 		'success-stories' => array( 'success-stories', 'success-story' ),
 		'private-jobs'    => array( 'private-jobs', 'private' ),
 		'current-affairs' => array( 'current-affairs', 'current' ),
+		'scholarships'    => array( 'scholarships', 'scholarship', 'scholarships-2026' ),
+		'daily-quiz'      => array( 'daily-quiz', 'quiz', 'daily-quiz-gk' ),
+		'internships'     => array( 'internships', 'internship' ),
+		'admissions'      => array( 'admissions', 'admission', 'online-education' ),
+		'upcoming-exams'  => array( 'upcoming-exams', 'exam-calendar' ),
 	);
 }
 
@@ -227,7 +234,10 @@ add_action( 'after_setup_theme', 'studentup_setup' );
  */
 function studentup_assets() {
 	wp_enqueue_style( 'studentup', get_stylesheet_uri(), array(), STUDENTUP_VERSION );
+	// v123: premium layer — style.css tarvata load (overrides work).
+	wp_enqueue_style( 'studentup-premium', get_template_directory_uri() . '/assets/css/premium.css', array( 'studentup' ), STUDENTUP_VERSION );
 	wp_enqueue_script( 'studentup', get_template_directory_uri() . '/assets/js/studentup.js', array(), STUDENTUP_VERSION, true );
+	wp_enqueue_script( 'studentup-premium', get_template_directory_uri() . '/assets/js/studentup-premium.js', array( 'studentup' ), STUDENTUP_VERSION, true );
 	// v72: PWA install prompt (app-laga install) — pwa option ON unte mattrame
 	if ( studentup_opt( 'pwa', '1' ) ) {
 		wp_enqueue_script( 'studentup-pwa', get_template_directory_uri() . '/assets/js/studentup-pwa.js', array( 'studentup' ), STUDENTUP_VERSION, true );
@@ -237,6 +247,7 @@ function studentup_assets() {
 		'STUDENTUP',
 		array(
 			'home'     => esc_url_raw( home_url( '/' ) ),
+			'icon'     => esc_url_raw( (string) get_site_icon_url( 192 ) ),   // v123: notification icon
 			'rest'     => esc_url_raw( rest_url( 'wp/v2/' ) ),   // v89: live search endpoint
 			'aliases'  => studentup_cat_aliases(),               // v89: chip ↔ live-slug map
 			'chips'    => true,

@@ -15,6 +15,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 get_header();
 ?>
 
+<?php studentup_hero_premium(); // v123: premium hero (search + quick actions) ?>
+
 <?php studentup_latest_ticker(); // v89: latest jobs scrolling — click cheste aa post open avutundi. ?>
 
 <section class="usedwrap" aria-label="Most searched by students">
@@ -30,19 +32,26 @@ get_header();
 				if ( ! $term ) {
 					continue;
 				}
-				$count   = (int) $term->count;
-				$hot     = ( $i < 3 ) ? ' hot' : '';         // v89: TS · AP · Central top-3 highlight
-				$badge   = $count ? number_format_i18n( $count ) . ' updates' : 'Soon';
+				// v123: "1 update / 2 updates" badge tesesamu — card lo text ki full chotu.
+				$hot = ( $i < 3 ) ? ' hot' : '';             // v89: TS · AP · Central top-3 highlight
 				?>
 				<a class="usedcard<?php echo esc_attr( $hot ); ?>" href="<?php echo esc_url( get_category_link( $term ) ); ?>">
 					<span class="ui" aria-hidden="true"><?php echo esc_html( $m['icon'] ); ?></span>
 					<div><b><?php echo esc_html( $m['label'] ); ?></b><small><?php echo esc_html( $m['hint'] ); ?></small></div>
-					<em class="ucount"><?php echo esc_html( $badge ); ?></em>
 				</a>
 			<?php endforeach; ?>
 		</div>
 	</div>
 </section>
+
+<div class="wrap">
+	<?php
+	studentup_hot_jobs( 10 );      // v123: TOP 10 HOT JOBS TODAY
+	studentup_daily_quiz();        // v123: real daily quiz (colorful rotating ring)
+	studentup_scholarship_strip(); // v123: scholarships spotlight
+	studentup_alerts_card();       // v123: notification / WhatsApp / Telegram alerts
+	?>
+</div>
 
 <div class="wrap"><?php studentup_ad( 'leaderboard' ); ?></div>
 
