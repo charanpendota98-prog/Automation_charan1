@@ -2,9 +2,9 @@
 Contributors: studentup
 Requires at least: 6.0
 Tested up to: 6.7
-Stable tag: 1.9.14
+Stable tag: 1.9.15
 Requires PHP: 7.4
-Version: 1.9.14
+Version: 1.9.15
 License: GNU General Public License v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Tags: news, education, blog, custom-logo, custom-menu, featured-images, translation-ready, right-sidebar, block-styles, wide-blocks
@@ -47,6 +47,10 @@ The theme ships a REST bridge (`inc/seo-bridge.php`). Use an account with `manag
 user tho App Password ivvandi (Administrator role).
 
 == Changelog ==
+
+= 1.9.15 (2026-09-27, v128 go-live score) =
+* New Appearance → StudentUp Score page and dashboard widget: weighted, live checks for HTTPS, indexing, permalinks, content depth, the six policy pages, logo/site icon, menus, featured images, job data, social links, Search Console, GA4 and the AdSense publisher ID.
+* Every check reads real site data and prints the exact fix step; nothing is hardcoded as passing.
 
 = 1.9.14 (2026-09-27, v127 instant navigation + command palette) =
 * Browser-native Speculation Rules prerender/prefetch with conservative exclusions (admin, login, nonce, external and nofollow links are never speculated).
