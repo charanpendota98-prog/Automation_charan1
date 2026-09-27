@@ -2,7 +2,7 @@
 Contributors: studentup
 Requires at least: 6.0
 Tested up to: 6.7
-Stable tag: 1.9.17
+Stable tag: 1.9.18
 Requires PHP: 7.4
 Version: 1.9.17
 License: GNU General Public License v2 or later
@@ -47,6 +47,9 @@ The theme ships a REST bridge (`inc/seo-bridge.php`). Use an account with `manag
 user tho App Password ivvandi (Administrator role).
 
 == Changelog ==
+
+= 1.9.18 =
+* v131: Sticky apply bar on job posts (deadline countdown + Apply online CTA) and JobPosting JSON-LD from job meta.
 
 = 1.9.17 (2026-09-27, v130 render budget) =
 * Below-the-fold homepage sections now use content-visibility with reserved intrinsic sizes, so long pages paint faster without any layout shift; the hero and first rail always render immediately for a clean LCP.

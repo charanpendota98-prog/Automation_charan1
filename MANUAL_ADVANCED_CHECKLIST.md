@@ -429,7 +429,7 @@ FILES   : front-page (home order) · header (menu+టికర్) · footer (so
           inc/template (cards · proof tiles · countdown · breadcrumbs)
 SPEED   : external JS library ledu (1 CSS + 1 JS) · lazy images · CLS-safe ad slots
 NIJAM   : theme = mee design; WP plugins (Rank Math · AdSense) vaalla pani vaalle chestayi.
-TESTS   : tests/v61_test.py = 14 checks · run.py --test-all 56/56 · jsdom 164/164
+TESTS   : tests/v61_test.py = 14 checks · run.py --test-all 57/57 · jsdom 164/164
 ```
 
 ---
@@ -899,7 +899,7 @@ HOW IT STAYS AUTOMATIC
 
 VERIFY
 ```
-python run.py --test-all                     # 56/56 suites
+python run.py --test-all                     # 57/57 suites
 node tests/runtime/jsdom_runtime_test.js     # 164/164 browser checks
 python run.py --readiness                    # 100/100 · python run.py --guardian
 python tools/parity_audit.py                 # PIN-TO-PIN · python tools/code_audit.py
@@ -963,7 +963,7 @@ BOT
 
 VERIFY (v72.1)
 ```
-python run.py --test-all                     # 56/56 suites
+python run.py --test-all                     # 57/57 suites
 node tests/runtime/jsdom_runtime_test.js     # 164/164 browser checks
 python tests/v72_test.py                     # 27 checks (v72 + v72.1)
 python run.py --readiness                    # 100/100 · python run.py --guardian
@@ -1017,7 +1017,7 @@ config.py / .env.example : POST_DEADLINE_TITLE / POST_DEADLINE_ISO poyayi
 
 VERIFY (v73)
 ```
-python run.py --test-all                     # 56/56 suites (v73_test.py kotha: 9 checks)
+python run.py --test-all                     # 57/57 suites (v73_test.py kotha: 9 checks)
 node tests/runtime/jsdom_runtime_test.js     # 164/164 browser checks (English UI + countdown removal)
 python run.py --readiness                    # 100/100 · python run.py --guardian
 python tools/parity_audit.py                 # PIN-TO-PIN · python tools/code_audit.py # 0/0

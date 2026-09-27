@@ -1,7 +1,7 @@
 # studentup.in Auto-Blogger 🤖
 
 
-> **Verified counts (theme v1.9.17 build):** test suites **109/109** files · jsdom runtime **164/164** checks · PHP lint **56/56** files · theme audit **0/0** · code audit **0/0**.
+> **Verified counts (theme v1.9.17 build):** test suites **109/109** files · jsdom runtime **164/164** checks · PHP lint **57/57** files · theme audit **0/0** · code audit **0/0**.
 24/7 automatic blog posting system for **studentup.in** (WordPress) — runs on your Oracle Cloud instance.
 
 - **AI content:** Google Gemini (free tier) generates Telugu + English mix articles
@@ -1687,7 +1687,7 @@ bot ippudu cron-only (servers/ports levu) — shared hosting lo anni pani chesta
 | 5 | **Deploy simplified** | Bot timer + watchdog (website + bot-freshness + disk/TLS) + Docker loop + `crontab.example`; Caddyfile ippudu **static site** kosam (proxy ledu) |
 | 6 | **Theme 1.7.2** | `exam_url` + `api_base` options · header exam buttons · dead `?studentup_exam=1` PWA shortcut poyayi; shortcuts = Jobs · Qualification · Results · Quiz |
 | 7 | **Fresh-clone proof** | `php-parser` ippudu declared dep + CI lo node install (mundu fresh clone lo 8 suites fail ayyevi — env trap, ippudu ledu) |
-| 8 | **Proof** | `--test-all` **56/56** · jsdom **164/164** · readiness **100/100** · guardian · parity **0/0** · code audit **0/0** · theme audit **0/0** · php-lint **32/32** · theme **1.7.2** |
+| 8 | **Proof** | `--test-all` **57/57** · jsdom **164/164** · readiness **100/100** · guardian · parity **0/0** · code audit **0/0** · theme audit **0/0** · php-lint **32/32** · theme **1.7.2** |
 
 MilesWeb answer (honest): WordPress site + bot cron + Telegram approvals + static
 quiz/question — **anni MilesWeb premium shared lo run avutayi** (details:

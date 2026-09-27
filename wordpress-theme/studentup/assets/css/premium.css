@@ -496,3 +496,34 @@ body.dark .su-cal-left{color:#8ff0c6}body.dark .su-cal-left.hot{color:#ffb3b3}
 /* Hero + first rail eppudu immediate render (LCP ki content-visibility vaddu) */
 .su-hero{content-visibility:visible}
 @media print{.su-hot,.su-stories,.su-finder,.su-quiz,.su-schol,.su-alerts,.su-foryou,.su-cal,.su-calc,.su-cmp{content-visibility:visible}}
+
+/* ==========================================================================
+   v131 — apply conversion bar (single job posts)
+   ========================================================================== */
+.su-applybar{position:fixed;left:0;right:0;bottom:0;z-index:70;
+  padding:8px 10px calc(8px + env(safe-area-inset-bottom));
+  background:rgba(255,255,255,.96);backdrop-filter:saturate(1.4) blur(10px);
+  border-top:1px solid rgba(79,70,229,.18);box-shadow:0 -8px 26px rgba(15,23,42,.14)}
+.su-applybar-in{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:12px}
+.su-applybar-meta{min-width:0;flex:1}
+.su-applybar-title{display:block;font-size:13px;line-height:1.25;color:#0f172a;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.su-applybar-sub{display:flex;gap:6px;flex-wrap:wrap;margin-top:3px}
+.su-applychip,.su-applyfact{font-size:10.5px;font-weight:700;border-radius:999px;padding:2px 8px}
+.su-applychip{background:linear-gradient(135deg,var(--su-g1),var(--su-g2));color:#fff}
+.su-applybar--urgent .su-applychip{background:linear-gradient(135deg,#f43f5e,var(--su-amber));
+  animation:su-applypulse 1.6s ease-in-out infinite}
+.su-applybar--closed .su-applychip{background:#64748b}
+.su-applyfact{background:rgba(79,70,229,.10);color:#4338ca}
+.su-applybtn{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;
+  min-height:44px;padding:0 20px;border-radius:12px;font-size:14px;font-weight:800;
+  color:#fff;text-decoration:none;background:var(--su-grad);
+  box-shadow:0 8px 20px rgba(124,58,237,.34)}
+.su-applybtn:hover{filter:brightness(1.06)}
+.su-applybtn--ghost{background:#eef2ff;color:#3730a3;box-shadow:none}
+@keyframes su-applypulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+body.su-has-applybar .su-bnav{bottom:calc(64px + env(safe-area-inset-bottom))}
+body.su-has-applybar{padding-bottom:70px}
+@media (max-width:480px){.su-applybar-title{font-size:12px}.su-applybtn{padding:0 14px;font-size:13px}}
+@media print{.su-applybar{display:none}}
+@media (prefers-reduced-motion:reduce){.su-applybar--urgent .su-applychip{animation:none}}
