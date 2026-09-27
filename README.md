@@ -1,7 +1,7 @@
 # studentup.in Auto-Blogger 🤖
 
 
-> **Verified counts (theme v1.9.17 build):** test suites **109/109** files · jsdom runtime **164/164** checks · PHP lint **57/57** files · theme audit **0/0** · code audit **0/0**.
+> **Verified counts (theme v1.9.18 build):** test suites **109/109** files · jsdom runtime **164/164** checks · PHP lint **57/57** files · theme audit **0/0** · code audit **0/0**.
 24/7 automatic blog posting system for **studentup.in** (WordPress) — runs on your Oracle Cloud instance.
 
 - **AI content:** Google Gemini (free tier) generates Telugu + English mix articles
@@ -1670,7 +1670,7 @@ untundi (kanipinchadu). Theme auto-normalize chestundi — owner 10-digit /
 | 2 | **Mock publish block** | `--mock` ante auto dry-run (`main.run` + `top_post_run`) — thin test stubs WordPress ki eppudu vellavu |
 | 3 | **Dummy purge** | Demo inventory ads `active:false` (fake ads live posts loki ravu) · dead `#exam` house ad → `#jobs` · theme sync inactive/dead-link promos filter |
 | 4 | **Bug hunt** | `THEME_PATH` dead code · `uplift` import shadow · dead vars · guardian ads count honest (live/total) · v59 time-bomb + `.venv` hardcodes fix |
-| 5 | **Proof** | `--test-all` **57/57** (v75_test.py kotha: 10 checks) · jsdom **164/164** · readiness **100/100** · guardian · parity **0/0** · code audit **0/0** · theme audit **0/0** · php-lint **32/32** · theme **1.7.2** |
+| 5 | **Proof** | `--test-all` **56/56** (v75_test.py kotha: 10 checks) · jsdom **164/164** · readiness **100/100** · guardian · parity **0/0** · code audit **0/0** · theme audit **0/0** · php-lint **32/32** · theme **1.7.2** |
 
 ### v74 — LIVE EXAM REMOVAL + CRON-ONLY BOT ("live exam avasaram ledu")
 
@@ -1687,7 +1687,7 @@ bot ippudu cron-only (servers/ports levu) — shared hosting lo anni pani chesta
 | 5 | **Deploy simplified** | Bot timer + watchdog (website + bot-freshness + disk/TLS) + Docker loop + `crontab.example`; Caddyfile ippudu **static site** kosam (proxy ledu) |
 | 6 | **Theme 1.7.2** | `exam_url` + `api_base` options · header exam buttons · dead `?studentup_exam=1` PWA shortcut poyayi; shortcuts = Jobs · Qualification · Results · Quiz |
 | 7 | **Fresh-clone proof** | `php-parser` ippudu declared dep + CI lo node install (mundu fresh clone lo 8 suites fail ayyevi — env trap, ippudu ledu) |
-| 8 | **Proof** | `--test-all` **57/57** · jsdom **164/164** · readiness **100/100** · guardian · parity **0/0** · code audit **0/0** · theme audit **0/0** · php-lint **32/32** · theme **1.7.2** |
+| 8 | **Proof** | `--test-all` **56/56** · jsdom **164/164** · readiness **100/100** · guardian · parity **0/0** · code audit **0/0** · theme audit **0/0** · php-lint **32/32** · theme **1.7.2** |
 
 MilesWeb answer (honest): WordPress site + bot cron + Telegram approvals + static
 quiz/question — **anni MilesWeb premium shared lo run avutayi** (details:
@@ -1707,7 +1707,7 @@ headings/labels) — Telugu mattrame job/article content lo.
 | 4 | **6 policy pages English** | about · contact · advertise · privacy · disclaimer · editorial-policy — 0 Telugu chars, `lang="en"`, og:locale en_IN, ld+json inLanguage en-IN. |
 | 5 | **WP theme English** | 27 files lo 5,284 Telugu chars → 0 (detection keywords block `studentup_qual_keywords()` mattrame Telugu ga undi — posts Telugu headline nunchi tag cheyyadaniki avasaram). Bot `MOST_USED` labels/hints kuda English (site/bot parity). |
 | 6 | **Scope (mee choice)** | UI/labels/headings English; job/article content (post titles, summaries, quiz questions) Telugu — avi notifications nunchi vastayi. |
-| 7 | **Proof** | `--test-all` **57/57** · jsdom **162/162** · readiness **100/100 (28/28)** · guardian **14/15** · parity **0/0** · code audit **0/0** · php-lint **32/32** · theme **1.7.1** (copy/UI pass — version same) |
+| 7 | **Proof** | `--test-all` **56/56** · jsdom **162/162** · readiness **100/100 (28/28)** · guardian **14/15** · parity **0/0** · code audit **0/0** · php-lint **32/32** · theme **1.7.1** (copy/UI pass — version same) |
 
 **Language rule (ippudu):** website UI antha English; Telugu mattrame post/article content lo
 (job titles, summaries, quiz questions). Internal reports/docs Telugu-English mix lo unnayi (owner kosam).
@@ -1745,7 +1745,7 @@ app-laga install (PWA) · colorful premium look, text/background contrast eppudu
 | 9 | **Contrast + neatness** | Brand gradient (text gradient safe-fallback tho), beige/blue chip tones, dark-mode overrides, `overflow-wrap` + flex-wrap rules — mobile lo text overlap ledu, contrast eppudu safe. |
 | 10 | **Theme v1.7.0** | New: `inc/qual-filter.php` · `assets/js/studentup-pwa.js` · header search. Version parity: `style.css` ↔ `STUDENTUP_VERSION` ↔ `readme.txt` Stable tag. |
 | 11 | **Slug parity (bot ↔ theme)** | Python `qual.QUALS` ↔ PHP `studentup_qual_terms()` — test ee rendu list ni compare chestundi, so filter chips eppudu match avutayi. |
-| 12 | **Proof** (v72.1 tarvata) | `--test-all` **57/57** · jsdom **162/162** · readiness **100/100 (28/28)** · guardian **14/15** (1 warn-only owner env) · code audit **0/0** · parity **0/0** · theme audit **0/0** · php-lint **32/32** · zip **41 files 642 KB** |
+| 12 | **Proof** (v72.1 tarvata) | `--test-all` **56/56** · jsdom **162/162** · readiness **100/100 (28/28)** · guardian **14/15** (1 warn-only owner env) · code audit **0/0** · parity **0/0** · theme audit **0/0** · php-lint **32/32** · zip **41 files 642 KB** |
 
 **Language rule (v72.1 → v73 update):** v73 lo website UI **antha English** (menus · chips · buttons ·
 notes · footer · policy pages); Telugu mattrame job/article content lo (post titles, summaries, quiz

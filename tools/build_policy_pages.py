@@ -319,6 +319,11 @@ PRIVACY = """
   house or partner placements are clearly labelled. When AdSense is active, Google and its partners may
   use cookies for personalised or non-personalised advertising based on your choices and visits to this
   or other websites.</p>
+  <p>Third-party vendors, including Google, use cookies to serve ads based on a user's prior visits to
+  this website or other websites. Google's use of advertising cookies enables it and its partners to
+  serve ads to users based on their visit to this and/or other sites on the internet. Users may opt out
+  of personalised advertising by visiting Google Ads Settings, or opt out of a third-party vendor's use
+  of cookies for personalised advertising at aboutads.info/choices.</p>
   <p>Manage choices at <a href="https://www.google.com/settings/ads" rel="nofollow noopener" target="_blank">Google Ads Settings</a>
   or <a href="https://www.aboutads.info/choices/" rel="nofollow noopener" target="_blank">aboutads.info/choices</a>.
   Where required, a consent message is shown before advertising cookies are used.</p>

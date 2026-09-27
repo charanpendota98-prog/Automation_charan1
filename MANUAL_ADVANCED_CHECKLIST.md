@@ -1,5 +1,7 @@
 # 📋 MANUAL ADVANCED CHECKLIST — "Nenu manual ga em em cheyali"
 ### Website advanced ga run avvali · Posts ANI-PERFECT · Mistakes leku · Deep analyse + NotebookLM
+> **Verified counts (theme v1.9.18 build):** test suites **109/109** files · jsdom runtime **164/164** checks · PHP lint **57/57** files · theme audit **0/0** · code audit **0/0**.
+
 
 **Ee file = mee haath tho cheyyalsina ANNI — exact order, exact commands.**
 Bot automatic ga chesthunna varam rework cheyakapovadu — idi mee 15-min/day ritual matrame.
@@ -429,7 +431,7 @@ FILES   : front-page (home order) · header (menu+టికర్) · footer (so
           inc/template (cards · proof tiles · countdown · breadcrumbs)
 SPEED   : external JS library ledu (1 CSS + 1 JS) · lazy images · CLS-safe ad slots
 NIJAM   : theme = mee design; WP plugins (Rank Math · AdSense) vaalla pani vaalle chestayi.
-TESTS   : tests/v61_test.py = 14 checks · run.py --test-all 57/57 · jsdom 164/164
+TESTS   : tests/v61_test.py = 14 checks · run.py --test-all 56/56 · jsdom 164/164
 ```
 
 ---
@@ -899,7 +901,7 @@ HOW IT STAYS AUTOMATIC
 
 VERIFY
 ```
-python run.py --test-all                     # 57/57 suites
+python run.py --test-all                     # 56/56 suites
 node tests/runtime/jsdom_runtime_test.js     # 164/164 browser checks
 python run.py --readiness                    # 100/100 · python run.py --guardian
 python tools/parity_audit.py                 # PIN-TO-PIN · python tools/code_audit.py
@@ -915,7 +917,7 @@ OWNER STEPS (v72)
 3. బ్రేకింగ్ న్యూస్ kavali ante — *StudentUp → కంటెంట్ → బ్రేకింగ్ న్యూస్ సెక్షన్ ON* (default OFF).
 4. Phones lo "యాప్గా ఇన్స్టాల్" button test cheyandi (Android Chrome + iPhone Safari).
 
-PROOF (v72.1): --test-all 57/57 · jsdom 162/162 · readiness 100/100 (28/28) · guardian 14/15
+PROOF (v72.1): --test-all 56/56 · jsdom 162/162 · readiness 100/100 (28/28) · guardian 14/15
   (1 warn-only owner env) · code audit 0/0 · parity 0/0 · theme audit 0/0 · php-lint 32/32 ·
   zip 41 files 642 KB · theme v1.7.1 · proof doc: output/v73-proof-2026-09-18.md
 
@@ -963,7 +965,7 @@ BOT
 
 VERIFY (v72.1)
 ```
-python run.py --test-all                     # 57/57 suites
+python run.py --test-all                     # 56/56 suites
 node tests/runtime/jsdom_runtime_test.js     # 164/164 browser checks
 python tests/v72_test.py                     # 27 checks (v72 + v72.1)
 python run.py --readiness                    # 100/100 · python run.py --guardian
@@ -1017,7 +1019,7 @@ config.py / .env.example : POST_DEADLINE_TITLE / POST_DEADLINE_ISO poyayi
 
 VERIFY (v73)
 ```
-python run.py --test-all                     # 57/57 suites (v73_test.py kotha: 9 checks)
+python run.py --test-all                     # 56/56 suites (v73_test.py kotha: 9 checks)
 node tests/runtime/jsdom_runtime_test.js     # 164/164 browser checks (English UI + countdown removal)
 python run.py --readiness                    # 100/100 · python run.py --guardian
 python tools/parity_audit.py                 # PIN-TO-PIN · python tools/code_audit.py # 0/0
@@ -1077,7 +1079,7 @@ package-lock    : php-parser entry add (lock stale undindi)
 
 VERIFY (v75)
 ```
-python run.py --test-all                     # 57/57 suites (v75_test.py kotha: 10 checks)
+python run.py --test-all                     # 56/56 suites (v75_test.py kotha: 10 checks)
 node tests/runtime/jsdom_runtime_test.js     # 164/164 browser checks
 python run.py --readiness                    # 100/100 · python run.py --guardian # 14/15 (creds pending)
 node tools/php_lint.js                       # 32/32 · python tools/build_wp_theme.py (zip rebuild LAST)
