@@ -1,7 +1,7 @@
 # studentup.in Auto-Blogger 🤖
 
 
-> **Verified counts (theme v1.9.19 build):** test suites **109/109** files · jsdom runtime **171/171** checks · PHP lint **60/60** files · theme audit **0/0** · code audit **0/0**.
+> **Verified counts (theme v1.9.20 build):** test suites **110/110** files · jsdom runtime **171/171** checks · PHP lint **60/60** files · theme audit **0/0** · code audit **0/0**.
 24/7 automatic blog posting system for **studentup.in** (WordPress) — runs on your Oracle Cloud instance.
 
 - **AI content:** Google Gemini (free tier) generates Telugu + English mix articles
@@ -629,6 +629,33 @@ runs Telegram noise create cheyyavu. Telegram credentials lekunte no-op and
 clear status. Content/ads/publish automatic ga touch cheyyadu.
 
 **Proof:** `--test-all` **93/93**.
+
+### v148 — DAILY QUIZ DRAFT (BOT) + UP-NEXT RECIRCULATION
+
+Roju okasari run cheste, aa roju quiz WordPress lo **draft** ga ready avutundi.
+Bot eppudu publish cheyyadu — meeru chadivi, correct ayyaka meere Publish nokkali.
+
+```bash
+python run.py --daily-quiz-dry     # today's plan matrame chupistundi (WordPress ni touch cheyyadu)
+python run.py --daily-quiz         # today's quiz ni DRAFT ga WordPress lo create chestundi
+```
+
+- `status` hard-coded `draft` — `DEFAULT_POST_STATUS` maarina kuda live post avvadu.
+- Idempotent: ade roju malli run cheste duplicate raadu (`skipped`).
+- Gemini key lekapoyina offline bank nunchi paper vastundi.
+- Weekday topic rotation + date seed → rendu rojulu okate paper raadu.
+
+Cron (Linux) / Task Scheduler (Windows) lo daily 6 AM:
+
+```
+0 6 * * * cd /path/to/repo && python run.py --daily-quiz >> logs/daily-quiz.log 2>&1
+```
+
+Theme side: `studentup_up_next()` — reader article lo **70%** chadivaka okka
+"Up next" card slide avutundi (dismiss button tho, session lo gurthu pettukuntundi).
+Pages/session penchi session RPM penchutundi; pop-up kaadu, auto-redirect kaadu.
+Appearance → StudentUp lo `up_next` toggle tho off cheyyochu.
+
 
 ### v112 — UNIFIED EDITORIAL CONTROL CENTER
 

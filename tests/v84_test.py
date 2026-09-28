@@ -239,8 +239,8 @@ def test_docs_v84():
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
     manual = (ROOT / "MANUAL_ADVANCED_CHECKLIST.md").read_text(encoding="utf-8")
     go_live = (ROOT / "GO_LIVE_CHECKLIST.md").read_text(encoding="utf-8")
-    assert "### v84" in readme and "109/109" in readme
-    assert "PART 42" in manual and "v84" in manual and "109/109" in manual
+    assert "### v84" in readme and "110/110" in readme
+    assert "PART 42" in manual and "v84" in manual and "110/110" in manual
     _suites = len(list((ROOT / "tests").glob("*_test.py")))
     assert f"{_suites}/{_suites}" in go_live
     for name, txt in (("README", readme), ("MANUAL", manual)):

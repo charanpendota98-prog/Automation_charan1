@@ -1744,6 +1744,10 @@ def main() -> int:
                         help="v109: mobile PageSpeed/CWV/accessibility/SEO audit")
     parser.add_argument("--corrections-audit", action="store_true",
                         help="v111: verify tamper-evident update/correction ledger")
+    parser.add_argument("--daily-quiz", action="store_true",
+                        help="v148: prepare today's quiz as a WordPress DRAFT (never publishes)")
+    parser.add_argument("--daily-quiz-dry", action="store_true",
+                        help="v148: show today's quiz plan without touching WordPress")
     parser.add_argument("--control-center", action="store_true",
                         help="v112: unified read-only editorial/SEO safety action queue")
     parser.add_argument("--ops-alert", action="store_true",
@@ -1992,6 +1996,11 @@ def main() -> int:
                         help="v26: install/update site-wide quiz engine "
                              "(CSS+JS footer widget) — quiz UI, timers, scoring")
     args = parser.parse_args()
+
+    if args.daily_quiz or args.daily_quiz_dry:
+        from . import daily_quiz as _dq
+
+        return _dq.run_cli(dry=args.daily_quiz_dry)
 
     _setup_logging()
 

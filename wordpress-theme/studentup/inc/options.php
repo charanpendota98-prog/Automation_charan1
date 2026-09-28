@@ -44,6 +44,7 @@ function studentup_option_fields() {
 				'in_article_ad'  => array( 'In-article ad (content 3rd para tarvata)', 'check', '1', 'Highest-CTR placement — AdSense/ house ad (density cap + lazy tho)' ),
 				'news_schema' => array( 'NewsArticle schema (Discover / Google News)', 'check', '1', 'v141: SEO plugin unte or bot Article schema unte auto-skip — duplicate vaddu' ),
 				'updated_stamp' => array( 'Show "Updated on" line', 'check', '1', 'v144: publish tarvata nijam ga edit chesthene chuputundi (fake freshness ledu)' ),
+				'up_next' => array( 'Up next card (after 70% read)', 'check', '1', 'v148: dismissible next-post card — pages/session penchutundi, pop-up kaadu' ),
 				'helpful_box' => array( '"Was this helpful?" box', 'check', '1', 'v144: vote reader browser lo ne — public counter ledu, fake numbers ledu' ),
 				'jobs_table' => array( 'Latest jobs table (homepage)', 'check', '1', 'v142: scannable rows — post, qualification, last date, apply link (meta nunchi, invent cheyyadu)' ),
 				'closing_week' => array( 'Deadline radar (closing this week)', 'check', '1', 'v146: su_last_date meta nunchi next 7 days lo close ayye posts — live days-left pills' ),

@@ -15,7 +15,7 @@ Checks:
     single.php + card call-site, options field declared, style.css rules
   * REAL behaviour: node tests/runtime/saved_runtime_test.js (jsdom) — 53 checks
   * version parity 1.9.20 (php · css · stable) + readme changelog entries
-  * suite pins (v75–v81 → "suites == 109") + docs 72/72 claims
+  * suite pins (v75–v81 → "suites == 110") + docs 72/72 claims
   * zip: saved.php + studentup-saved.js packed, theme version 1.9.20
 
 Run: python tests/v92_test.py   (also via python run.py --test-all)
@@ -35,7 +35,7 @@ sys.path.insert(0, str(ROOT))
 
 THEME = ROOT / "wordpress-theme" / "studentup"
 ZIP = ROOT / "wordpress-theme" / "studentup-theme.zip"
-SUITES_EXPECTED = 109  # v95 tho
+SUITES_EXPECTED = 110  # v95 tho
 
 
 def read(rel: Path | str) -> str:

@@ -146,4 +146,6 @@ get_header();
 	</div>
 </main>
 <?php
+studentup_up_next();
+
 get_footer();

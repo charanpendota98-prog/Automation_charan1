@@ -169,3 +169,87 @@ function studentup_closing_week( $days = 7 ) {
 	<?php
 	wp_reset_postdata();
 }
+
+/**
+ * v148: "Up next" recirculation card.
+ *
+ * Slides in once the reader has genuinely read ~70% of the article and offers
+ * the single most relevant next post. More pages per session is the honest way
+ * to lift session RPM - no auto-redirects, no pop-ups over the content, no
+ * counting a view the reader did not ask for. It is dismissible and the choice
+ * is remembered in the reader's own browser for the rest of the visit.
+ */
+function studentup_up_next() {
+	if ( ! is_single() || '1' !== studentup_opt( 'up_next', '1' ) ) {
+		return;
+	}
+
+	$terms = wp_get_post_terms( get_the_ID(), 'category', array( 'fields' => 'ids' ) );
+	$args  = array(
+		'post_type'           => 'post',
+		'posts_per_page'      => 1,
+		'post__not_in'        => array( get_the_ID() ),
+		'ignore_sticky_posts' => true,
+		'no_found_rows'       => true,
+	);
+	if ( ! is_wp_error( $terms ) && $terms ) {
+		$args['category__in'] = $terms;
+	}
+
+	$q = new WP_Query(
+		array_merge(
+			$args,
+			array( 'no_found_rows' => true ) // shared hosting: no SELECT FOUND_ROWS()
+		)
+	);
+	if ( ! $q->have_posts() ) {
+		wp_reset_postdata();
+		return;
+	}
+	$q->the_post();
+	$title = get_the_title();
+	$link  = get_permalink();
+	$thumb = get_the_post_thumbnail_url( get_the_ID(), 'thumbnail' );
+	wp_reset_postdata();
+	?>
+	<aside class="su-upnext" id="su-upnext" hidden aria-label="<?php esc_attr_e( 'Up next', 'studentup' ); ?>">
+		<button type="button" class="su-upnext-x" id="su-upnext-x" aria-label="<?php esc_attr_e( 'Close', 'studentup' ); ?>">×</button>
+		<span class="su-upnext-tag"><?php esc_html_e( 'Up next', 'studentup' ); ?></span>
+		<a class="su-upnext-link" href="<?php echo esc_url( $link ); ?>">
+			<?php if ( $thumb ) : ?>
+				<img src="<?php echo esc_url( $thumb ); ?>" width="64" height="64" alt="" loading="lazy" decoding="async">
+			<?php endif; ?>
+			<span><?php echo esc_html( $title ); ?></span>
+		</a>
+	</aside>
+	<script>
+	(function () {
+		var box = document.getElementById('su-upnext');
+		if (!box) { return; }
+		var KEY = 'su-upnext-off';
+		try { if (sessionStorage.getItem(KEY) === '1') { return; } } catch (e) {}
+		var shown = false;
+		function check() {
+			if (shown) { return; }
+			var h = document.documentElement.scrollHeight - window.innerHeight;
+			if (h <= 0) { return; }
+			if ((window.scrollY || window.pageYOffset) / h < 0.7) { return; }
+			shown = true;
+			box.hidden = false;
+			requestAnimationFrame(function () { box.classList.add('su-upnext-on'); });
+			window.removeEventListener('scroll', check);
+		}
+		window.addEventListener('scroll', check, { passive: true });
+		check();
+		var x = document.getElementById('su-upnext-x');
+		if (x) {
+			x.addEventListener('click', function () {
+				box.classList.remove('su-upnext-on');
+				box.hidden = true;
+				try { sessionStorage.setItem(KEY, '1'); } catch (e) {}
+			});
+		}
+	})();
+	</script>
+	<?php
+}
