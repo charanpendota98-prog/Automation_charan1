@@ -97,3 +97,55 @@ function studentup_breadcrumb_items() {
 	}
 	return $items;
 }
+
+/**
+ * NewsArticle schema for single posts (Google News / Discover eligibility).
+ *
+ * v141: only emitted when nothing else already describes the article — if Rank
+ * Math (or another SEO plugin) is active it owns the Article graph and a second
+ * one would be a duplicate. The bot's in-content Article/FAQ schema is also
+ * detected, so a post never carries two competing article nodes.
+ *
+ * @return void
+ */
+function studentup_newsarticle_schema() {
+	if ( is_admin() || is_feed() || ! is_singular( 'post' ) ) {
+		return;
+	}
+	if ( ! studentup_opt( 'news_schema', '1' ) ) {
+		return;
+	}
+	if ( class_exists( 'RankMath' ) || defined( 'WPSEO_VERSION' ) || defined( 'SEOPRESS_VERSION' ) ) {
+		return; // SEO plugin already emits the article graph.
+	}
+	$post_id = get_the_ID();
+	$content = (string) get_post_field( 'post_content', $post_id );
+	if ( false !== strpos( $content, '"@type": "Article"' ) || false !== strpos( $content, '"@type":"Article"' ) ) {
+		return; // bot already shipped the Article node inside the content
+	}
+	$image = get_the_post_thumbnail_url( $post_id, 'full' );
+	$data  = array(
+		'@context'         => 'https://schema.org',
+		'@type'            => 'NewsArticle',
+		'@id'              => get_permalink( $post_id ) . '#newsarticle',
+		'headline'         => wp_trim_words( get_the_title( $post_id ), 20, '' ),
+		'description'      => wp_strip_all_tags( get_the_excerpt( $post_id ) ),
+		'datePublished'    => get_the_date( DATE_W3C, $post_id ),
+		'dateModified'     => get_the_modified_date( DATE_W3C, $post_id ),
+		'inLanguage'       => get_bloginfo( 'language' ),
+		'mainEntityOfPage' => get_permalink( $post_id ),
+		'author'           => array(
+			'@type' => 'Person',
+			'name'  => get_the_author_meta( 'display_name', (int) get_post_field( 'post_author', $post_id ) ),
+			'url'   => get_author_posts_url( (int) get_post_field( 'post_author', $post_id ) ),
+		),
+		'publisher'        => array( '@id' => home_url( '/' ) . '#org' ),
+	);
+	if ( $image ) {
+		$data['image'] = array( $image );
+	}
+	echo '<script type="application/ld+json">'
+		. wp_json_encode( $data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES )
+		. '</script>' . "\n";
+}
+add_action( 'wp_head', 'studentup_newsarticle_schema', 7 );
