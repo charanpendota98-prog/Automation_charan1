@@ -106,7 +106,10 @@ get_header();
 			if ( $su_q->have_posts() ) :
 				while ( $su_q->have_posts() ) :
 					$su_q->the_post();
-					if ( 4 === $su_i ) {
+					// v140: two in-feed slots (4th + 10th card). The density cap in
+					// studentup_ad() still decides whether the second one renders,
+					// so this raises viewable impressions without breaking policy.
+					if ( 4 === $su_i || 10 === $su_i ) {
 						studentup_ad( 'in-feed' );
 					}
 					studentup_card( $su_i );
@@ -118,6 +121,8 @@ get_header();
 			<?php endif; ?>
 		</div>
 		<p class="nores" id="nores">Nothing for this filter — open the "All" tab and try again.</p>
+
+		<?php studentup_popular_searches(); // v140: long-tail internal links ?>
 
 		<?php studentup_ad( 'mid' ); ?>
 

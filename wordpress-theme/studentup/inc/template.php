@@ -72,6 +72,13 @@ $label = $terms ? $terms[0]->name : 'Update';
 		<div class="newsbody">
 			<div class="tagrow">
 				<span class="tag"><?php echo esc_html( $label ); ?></span>
+				<?php
+				// v140: honest freshness tag — only for posts actually published
+				// in the last 24 hours. No fake "HOT" on an old notification.
+				if ( ( time() - (int) get_post_time( 'U', true ) ) < DAY_IN_SECONDS ) {
+					echo '<span class="su-fresh">' . esc_html__( 'NEW', 'studentup' ) . '</span>';
+				}
+				?>
 				<?php studentup_qual_chip(); ?>
 				<time class="statechip" datetime="<?php echo esc_attr( get_the_date( DATE_W3C ) ); ?>"><?php echo esc_html( studentup_ago( get_the_date( DATE_W3C ) ) ); ?></time>
 			</div>

@@ -1139,3 +1139,21 @@ body.dark .su-tool-btn,body.dark .su-tool-primary,body.dark .su-tool-muted,body.
 .newsfoot .su-readmore:hover,.newsfoot .su-readmore:focus-visible{gap:9px;background:rgba(79,70,229,.15);transform:translateY(-1px)}
 body.dark .newsfoot .su-readmore{color:#c7b6ff;background:rgba(124,58,237,.18);border-color:rgba(124,58,237,.35)}
 @media (prefers-reduced-motion:reduce){.newsfoot .su-readmore{transition:none}}
+
+/* v140: freshness tag (published < 24h) — scannability + CTR */
+.su-fresh{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:999px;
+  background:linear-gradient(135deg,#f43f5e,#f97316);color:#fff;font-size:10.5px;font-weight:900;
+  letter-spacing:.06em;box-shadow:0 4px 12px rgba(244,63,94,.3)}
+
+/* v140: popular searches strip — long-tail internal links */
+.su-popsearch{margin:26px 0 6px;padding:18px 16px;border:1px solid var(--line);border-radius:18px;
+  background:linear-gradient(135deg,rgba(79,70,229,.05),rgba(236,72,153,.04))}
+.su-popsearch-title{margin:0 0 12px;font-size:15px;letter-spacing:-.01em}
+.su-popsearch-list{display:flex;flex-wrap:wrap;gap:8px;margin:0;padding:0;list-style:none}
+.su-pop{display:inline-flex;align-items:center;gap:6px;padding:7px 13px;border-radius:999px;
+  background:#fff;border:1px solid var(--line);font-size:12.5px;font-weight:700;text-decoration:none;
+  color:var(--navy);transition:transform .16s,border-color .16s}
+.su-pop:hover,.su-pop:focus-visible{transform:translateY(-1px);border-color:rgba(79,70,229,.45);color:#4f46e5}
+.su-pop-cat{background:linear-gradient(135deg,rgba(79,70,229,.10),rgba(236,72,153,.08));font-weight:800}
+body.dark .su-pop{background:#132339;color:#dbe7fb;border-color:#24364f}
+@media (prefers-reduced-motion:reduce){.su-pop{transition:none}}

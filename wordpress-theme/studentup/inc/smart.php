@@ -319,3 +319,47 @@ function studentup_home_itemlist_schema() {
 		. '</script>' . "\n";
 }
 add_action( 'wp_head', 'studentup_home_itemlist_schema', 6 );
+
+/**
+ * Popular searches strip — real internal links for long-tail queries.
+ *
+ * v140: every chip points at a live category archive or an on-site search that
+ * actually returns posts, so this is genuine internal linking (crawl depth +
+ * long-tail SEO), not a keyword-stuffed footer block.
+ *
+ * @return void
+ */
+function studentup_popular_searches() {
+	if ( ! studentup_opt( 'popular_searches', '1' ) ) {
+		return;
+	}
+	$queries = array(
+		'TSPSC notification',
+		'APPSC notification',
+		'SSC CGL apply online',
+		'AP DSC teacher posts',
+		'NSP scholarship last date',
+		'railway group d',
+		'police constable',
+		'hall ticket download',
+		'degree jobs',
+		'10th pass jobs',
+	);
+	?>
+	<section class="su-popsearch" aria-labelledby="su-popsearch-title">
+		<h2 id="su-popsearch-title" class="su-popsearch-title">Popular searches</h2>
+		<ul class="su-popsearch-list">
+			<?php foreach ( studentup_most_used() as $su_m ) : ?>
+				<?php $su_term = studentup_used_term( $su_m['slug'] ); ?>
+				<?php if ( $su_term ) : ?>
+					<li><a class="su-pop su-pop-cat" href="<?php echo esc_url( get_category_link( $su_term ) ); ?>">
+						<span aria-hidden="true"><?php echo esc_html( $su_m['icon'] ); ?></span><?php echo esc_html( $su_m['label'] ); ?></a></li>
+				<?php endif; ?>
+			<?php endforeach; ?>
+			<?php foreach ( $queries as $su_q ) : ?>
+				<li><a class="su-pop" href="<?php echo esc_url( home_url( '/?s=' . rawurlencode( $su_q ) ) ); ?>"><?php echo esc_html( $su_q ); ?></a></li>
+			<?php endforeach; ?>
+		</ul>
+	</section>
+	<?php
+}
