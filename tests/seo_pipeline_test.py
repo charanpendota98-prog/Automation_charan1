@@ -12,6 +12,7 @@ import json
 import re
 import sys
 import threading
+import pytest
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
 
@@ -177,6 +178,50 @@ def test_source_fetch():
     return url, srv
 
 
+# v136: these two checks were written for the sequential main() runner. Real
+# pytest fixtures spin up the same fake WP/Telegram/source servers so the suite
+# collects and runs them instead of erroring on missing fixtures.
+@pytest.fixture(scope="module")
+def wp_base():
+    db = Path("/tmp/test_seo_pipeline_fx.db")
+    db.unlink(missing_ok=True)
+    state.init(db)
+    wp_srv = HTTPServer(("127.0.0.1", 0), FakeWP)
+    tg_srv = HTTPServer(("127.0.0.1", 0), FakeTelegram)
+    for s in (wp_srv, tg_srv):
+        threading.Thread(target=s.serve_forever, daemon=True).start()
+    base = f"http://127.0.0.1:{wp_srv.server_address[1]}"
+    old = (config.STATE_PATH, config.WP_SITE, config.TELEGRAM_BOT_TOKEN,
+           config.TELEGRAM_CHAT_ID, config.TELEGRAM_API_BASE, config.OUTPUT_DIR)
+    config.STATE_PATH, config.WP_SITE = db, base
+    config.TELEGRAM_BOT_TOKEN, config.TELEGRAM_CHAT_ID = "TEST", "555"
+    config.TELEGRAM_API_BASE = f"http://127.0.0.1:{tg_srv.server_address[1]}"
+    config.OUTPUT_DIR = Path("/tmp/test_output_images_fx")
+    try:
+        yield base
+    finally:
+        (config.STATE_PATH, config.WP_SITE, config.TELEGRAM_BOT_TOKEN,
+         config.TELEGRAM_CHAT_ID, config.TELEGRAM_API_BASE,
+         config.OUTPUT_DIR) = old
+        for s in (wp_srv, tg_srv):
+            s.shutdown()
+        db.unlink(missing_ok=True)
+
+
+@pytest.fixture(scope="module")
+def wp(wp_base):
+    return wp_base
+
+
+@pytest.fixture(scope="module")
+def url(wp_base):
+    src_url, src_srv = test_source_fetch()
+    try:
+        yield src_url
+    finally:
+        src_srv.shutdown()
+
+
 def test_full_pipeline(url, wp_base):
     db = config.STATE_PATH
     pl = __import__("autoblog.pipeline", fromlist=["pipeline"])
@@ -202,7 +247,13 @@ def test_full_pipeline(url, wp_base):
     # (Bing Copilot / Perplexity / AI Overviews) schema ni vadutundi.
     assert "FAQPage" in content, "real FAQ unte FAQPage emit avvali (AI retrieval)"
     assert "https://studentup.in/prev-post/" in content  # internal link added
-    assert "https://www.gov.in" in content                # external link added
+    # v136: the fake source is a localhost fixture, not a .gov.in site, so the
+    # honest output is an official-links block pointing back at that source —
+    # never an invented government URL.
+    # The fixture source is a localhost page, not an official .gov.in notice,
+    # so no external "official link" may be invented. What must always ship is
+    # the honest provenance line.
+    assert "su-source" in content, "provenance line ledu"
     assert payload["featured_media"] == 88
     # telegram draft message with buttons + source url shown
     draft_msgs = [m for m in tg_sent if "NEW DRAFT" in m["text"]]

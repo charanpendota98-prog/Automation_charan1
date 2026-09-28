@@ -154,7 +154,10 @@ def test_automation_is_non_fatal() -> None:
         i = seg.index(block)
         after = seg[i:i + 700]
         assert "except Exception" in after, f"{block} guard ledu"
-        assert "log.exception" in after, f"{block} silent fail avutundi"
+        # v136: non-fatal steps report through _soft_fail (warning line +
+        # DEBUG traceback) instead of dumping a crash report.
+        assert ("log.exception" in after or "_soft_fail" in after), \
+            f"{block} silent fail avutundi"
     print("      weekly jobs non-fatal + logged ✔")
 
 

@@ -22,6 +22,19 @@ from . import config, gemini_client, image_gen, notifier, pipeline, sources, sta
 
 log = logging.getLogger("autoblog")
 
+def _soft_fail(message: str) -> None:
+    """Log a non-fatal step failure without dumping a crash traceback.
+
+    v136: these steps are optional (monitors, digests, weekly rebuilds). A
+    network hiccup must read as a warning line; the traceback stays at DEBUG
+    for anyone actually debugging.
+    """
+    exc = sys.exc_info()[1]
+    log.warning("%s (%s: %s)", message, type(exc).__name__, exc)
+    log.debug("%s traceback", message, exc_info=True)
+
+
+
 KOLKATA_OFFSET = timezone(timedelta(hours=5, minutes=30))
 
 
@@ -140,7 +153,7 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
                 state.meta_set(config.STATE_PATH, digest_key, "1")
                 log.info("OPPORTUNITY DIGEST ✔ active list sent to owner chat")
         except Exception:
-            log.exception("Opportunity digest failed (regular posting continues)")
+            _soft_fail("Opportunity digest failed (regular posting continues)")
 
     # v124: once-per-day read-only official-source freshness scan. A changed
     # notice is alerted for owner review; the scheduler never edits content by
@@ -168,8 +181,12 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
                 len(monitor_result.get("changed", [])),
                 len(monitor_result.get("errors", [])),
             )
-        except Exception:
-            log.exception("Source freshness monitor failed (regular posting continues)")
+        except Exception as exc:  # noqa: BLE001
+            # v136: a network/TLS hiccup in the optional monitor is a warning,
+            # not a crash report. Full traceback stays available at DEBUG.
+            log.warning("Source freshness monitor failed (%s: %s) — regular "
+                        "posting continues", type(exc).__name__, exc)
+            log.debug("source monitor traceback", exc_info=True)
 
     # v125: lifecycle scan for active opportunities. It only probes public URLs
     # and writes a private review queue; it never changes a post or hides a
@@ -199,7 +216,7 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
                 len(lifecycle_result.get("errors", [])),
             )
         except Exception:
-            log.exception("Opportunity lifecycle monitor failed (regular posting continues)")
+            _soft_fail("Opportunity lifecycle monitor failed (regular posting continues)")
 
     # --- bulk queue mode: --process-queue N (N URLs ippude process) ---------
     if process_queue:
@@ -293,7 +310,7 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
                 n = len(_hubs.rebuild_hubs())
                 log.info("WEEKLY HUBS: %d pages refreshed", n)
             except Exception:
-                log.exception("Weekly hub rebuild failed (non-fatal)")
+                _soft_fail("Weekly hub rebuild failed (non-fatal)")
             # v100: district hubs (v96) + link graph (v99) ee weekly slot lo ne
             # automatic ga run avvali. Ivi ippati varaku CLI-only — ante owner
             # manual ga gurtu pettukoni run cheyyali. Adi jaragadu (nenu
@@ -308,7 +325,7 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
                     log.info("WEEKLY DISTRICT HUBS: %d/%d pages (thin-guard %d)",
                              made, len(rows), len(rows) - made)
                 except Exception:
-                    log.exception("Weekly district hubs failed (non-fatal)")
+                    _soft_fail("Weekly district hubs failed (non-fatal)")
             if getattr(config, "LINK_GRAPH_AUTO", True):
                 try:
                     from . import link_graph as _lg
@@ -319,7 +336,7 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
                              "%d links added", rep.get("orphans", 0),
                              rep.get("weak", 0), rep.get("applied", 0))
                 except Exception:
-                    log.exception("Weekly link graph failed (non-fatal)")
+                    _soft_fail("Weekly link graph failed (non-fatal)")
         # v114: daily GSC sync + deduplicated control-center alert. This is
         # maintenance only; credentials/network failure never stops posting.
         if (getattr(config, "GSC_AUTO_SYNC", True)
@@ -344,7 +361,7 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
                 _ops.check_and_alert(send=True)
                 log.info("DAILY OPS ALERT CHECK ✔")
             except Exception:
-                log.exception("Daily ops alert failed (non-fatal)")
+                _soft_fail("Daily ops alert failed (non-fatal)")
             finally:
                 state.meta_set(config.STATE_PATH, f"opsalert:{today.isoformat()}", "1")
 
@@ -365,7 +382,7 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
                 pipeline.auto_refresh(limit=config.AUTO_REFRESH_PER_DAY)
                 state.meta_set(config.STATE_PATH, f"autorefresh:{today.isoformat()}", "1")
             except Exception:
-                log.exception("Daily auto-refresh failed")
+                _soft_fail("Daily auto-refresh failed")
         # --- v59: బ్రేకింగ్ న్యూస్ feed — radar sweep tarvata site ticker fresh ---
         if (getattr(config, "BREAKING_ENABLED", True)
                 and now_hour >= getattr(config, "RADAR_HOUR", 7)
@@ -384,9 +401,9 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
                     log.info("WP THEME SYNC %s — %s", "✔" if _tres.get("ok") else "skip",
                              _tres.get("reason") or _tres.get("updated"))
                 except Exception:
-                    log.exception("wp theme sync failed (non-fatal)")
+                    _soft_fail("wp theme sync failed (non-fatal)")
             except Exception:
-                log.exception("breaking feed failed (non-fatal)")
+                _soft_fail("breaking feed failed (non-fatal)")
         # --- v60: SITE GUARDIAN — roju okkasari system motham check + report ---
         if (getattr(config, "GUARDIAN_ENABLED", True)
                 and now_hour >= getattr(config, "GUARDIAN_HOUR", 20)
@@ -402,7 +419,7 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
                     if not _r["ok"] and not _r.get("warn_only"):
                         log.warning("GUARDIAN ❌ %s: %s (%s)", _r["id"], _r["detail"], _r["fix"])
             except Exception:
-                log.exception("site guardian failed (non-fatal)")
+                _soft_fail("site guardian failed (non-fatal)")
         # --- v57: AD ADVISOR — roju okkasari: e network ki eppudu apply cheyyali ---
         if (getattr(config, "AD_ADVISOR_ENABLED", True)
                 and now_hour >= getattr(config, "AD_ADVISOR_HOUR", 10)
@@ -417,7 +434,7 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
                 for _k in _res["new_milestones"]:
                     log.info("AD ADVISOR milestone: %s — Telegram alert pampindi", _k)
             except Exception:
-                log.exception("Ad advisor failed (non-fatal)")
+                _soft_fail("Ad advisor failed (non-fatal)")
         # --- v26: Daily Quiz slot — roju okati, QUIZ_HOUR tarvata ---
         if (config.QUIZ_ENABLED
                 and now_hour >= config.QUIZ_HOUR
@@ -453,7 +470,7 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
                     else:
                         log.warning("Daily quiz draft failed — retry next run: %s", exc)
                 except Exception:
-                    log.exception("Daily quiz failed — regular posting continues")
+                    _soft_fail("Daily quiz failed — regular posting continues")
         # --- v15/v16: Breaking-News Radar — every RADAR_INTERVAL_HOURS ---
         if (config.RADAR_ENABLED
                 and (now_hour - config.RADAR_HOUR) % max(1, config.RADAR_INTERVAL_HOURS) == 0
@@ -465,7 +482,7 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
             try:
                 radar_run()
             except Exception:
-                log.exception("RADAR run failed — regular posting continues")
+                _soft_fail("RADAR run failed — regular posting continues")
         if now_hour not in plan:
             log.info("Hour %02d:00 not in today's plan %s — nothing to do.", now_hour, plan)
             return 0
@@ -497,7 +514,7 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
                              result["link"], result["status"])
                     return 0
                 except Exception:
-                    log.exception("Listicle failed — normal post ki veltanu")
+                    _soft_fail("Listicle failed — normal post ki veltanu")
 
     # --- source queue check (sources_queue.txt lo URLs unnaye priority) ----
     queued = sources.pending_from_queue()
@@ -562,7 +579,7 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
                 state.meta_set(config.STATE_PATH, f"trend:{today}", trend_topic)
                 log.info("🔥 Google Trends topic: %s", trend_topic)
         except Exception:
-            log.exception("Trends fetch error (continue normal topic)")
+            _soft_fail("Trends fetch error (continue normal topic)")
 
     mock_index = state.today_count(config.STATE_PATH, today)
     article = generate_one(cat, mock, mock_index, trend_topic=trend_topic)
@@ -638,7 +655,7 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
                 notifier.daily_digest(count, summary.get("last", []))
                 state.meta_set(config.STATE_PATH, digest_key, "1")
             except Exception:
-                log.exception("Daily digest failed")
+                _soft_fail("Daily digest failed")
     return 0
 
 
@@ -800,7 +817,7 @@ def gsc_opportunities(csv_path: str) -> int:
             print(f"  ✅ Queue boost: {len(boost)} GSC terms saved"
                   f" + {n} queue line(s) top ki move ayayi")
     except Exception:
-        log.exception("Queue boost apply failed (non-fatal)")
+        _soft_fail("Queue boost apply failed (non-fatal)")
     print("=" * 70)
     return 0
 

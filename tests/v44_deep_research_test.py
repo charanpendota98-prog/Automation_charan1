@@ -262,11 +262,21 @@ def test_pipeline_integration_shim():
     assert "_deep" not in article2
 
 
+_FILLER = ("The notification explains eligibility, age limits, application fee, "
+           "selection stages and the official apply-online window in detail. "
+           "Candidates should read the official notice before applying. ") * 6
+
+
 def test_source_set_and_reader_quality():
     sources = [
-        _sa("https://upsc.gov.in/x", "Official", "Last date to apply is 15 October 2026."),
-        _sa("https://thehindu.com/x", "Report", "Last date to apply is 15 October 2026."),
-        _sa("https://example.org/x", "Guide", "Eligibility details and documents."),
+        # Full-length extracts: the audit flags SOURCE-TEXT-INCOMPLETE when a
+        # "source" is only a headline-sized snippet, which is correct behaviour.
+        _sa("https://upsc.gov.in/x", "Official",
+            "Last date to apply is 15 October 2026. " + _FILLER),
+        _sa("https://thehindu.com/x", "Report",
+            "Last date to apply is 15 October 2026. " + _FILLER),
+        _sa("https://example.org/x", "Guide",
+            "Eligibility details and documents. " + _FILLER),
     ]
     report = dr.build_report("UPSC 2026", sources, target_year=2026)
     article = {"source_url": sources[0].url, "_deep_sources": sources,

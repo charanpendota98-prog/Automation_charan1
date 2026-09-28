@@ -80,12 +80,14 @@ def test_central_everywhere() -> None:
     assert [l for _, l in slugs] == [m["label"] for m in breaking.most_used()], \
         "theme/bot most-used labels desync"
     html = read(ROOT / "preview" / "index.html")
-    assert html.count('data-ucount=') == len(breaking.most_used()) == 9
+    # v134/v136: 10 tiles (success stories pillar) and no update-count badge.
+    assert len(breaking.most_used()) == 10
+    assert 'data-ucount=' not in html
     assert 'data-goto-cat="central-jobs"' in html
     grd = read(ROOT / "autoblog" / "guardian.py")
-    assert "len(used) != 9" in grd, "guardian 9-tile pin update avvaledu"
+    assert "len(used) != 10" in grd, "guardian 10-tile pin update avvaledu"
     js = read(ROOT / "tests" / "runtime" / "jsdom_runtime_test.js")
-    assert 'usedTiles.length === 9' in js and '"central-jobs","hallticket"' in js
+    assert 'usedTiles.length === 10' in js and '"central-jobs","hallticket"' in js
     print("  Central: theme + bot + preview + jsdom + guardian ✔")
 
 

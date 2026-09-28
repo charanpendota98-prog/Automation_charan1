@@ -544,7 +544,7 @@ def _transition_ratio(html: str) -> tuple:
     """Checker (validator.rankmath_strict) laage kolichi — (sents, withtr, ratio)."""
     plain = validator.strip_tags(html)
     ss = [x for x in re.split(r"[.!?\u0964]\s", plain) if len(x.split()) >= 4]
-    t = sum(1 for x in ss if any(k in x for k in validator.TRANSITION_MARKS))
+    t = sum(1 for x in ss if validator.has_transition(x))
     return len(ss), t, (t / len(ss) if ss else 0.0)
 
 

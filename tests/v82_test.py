@@ -154,8 +154,14 @@ def test_rm100_reaches_100() -> None:
     a.update({"title": "AP DSC TRT 2026 Notification — 6,100 Teacher Posts",
               "focus_keyword": "AP DSC TRT 2026", "content_html": html})
     r = rm100.optimize(a, target=100)
-    assert r["reached"] and r["score"] == 100, \
-        f"100 reach avvaledu: {r['score']}"
+    # v136: `fix_transitions` deliberately refuses to prefix sentences with
+    # connectives just to move a readability counter (that produced robotic
+    # Telugu). So a Tinglish body can legitimately stop short of 100 — the
+    # engine must still fix everything it CAN fix honestly.
+    from autoblog import validator as _v
+    issues = _v.rankmath_strict(a, a["content_html"])["issues"]
+    assert r["score"] >= 95, f"score too low: {r['score']}"
+    assert set(issues) <= {"transition-words"}, issues
     print(f"  rm100 TRUE 100: {r['before']}→{r['score']} ✔")
 
 

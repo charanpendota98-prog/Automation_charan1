@@ -211,6 +211,20 @@ TRANSITION_MARKS = ("\u0c15\u0c3e\u0c28\u0c40", "\u0c05\u0c28\u0c4d\u0c26\u0c41\
                     "\u0c1a\u0c3f\u0c35\u0c30\u0c17\u0c3e", "\u0c09\u0c26\u0c3e\u0c39\u0c30\u0c23\u0c15\u0c41",
                     "\u0c05\u0c32\u0c3e\u0c17\u0c47", "\u0c15\u0c3e\u0c2c\u0c1f\u0c4d\u0c1f\u0c3f", "\u0c05\u0c2f\u0c3f\u0c24\u0c47")
 
+# v136: the site writes Tinglish too, so a romanized connective is a real
+# transition word for a Telugu reader even though it is not in Telugu script.
+TRANSITION_MARKS_ROMAN = ("alage", "andhuvalla", "anduvalla", "kabatti", "kaani",
+                          "malli", "marovaipu", "chivaraga", "ika", "appudu",
+                          "however", "therefore", "also", "finally", "moreover")
+
+
+def has_transition(sentence: str) -> bool:
+    """True if a sentence carries a Telugu or romanized-Telugu connective."""
+    low = (sentence or "").lower()
+    return (any(t in sentence for t in TRANSITION_MARKS)
+            or any(re.search(r"\b" + t + r"\b", low) for t in TRANSITION_MARKS_ROMAN))
+
+
 
 def rankmath_strict(article: Dict, final_html: str = "") -> Dict:
     """Rank Math content-analysis checks — honest score + actionable fixes."""
@@ -299,7 +313,7 @@ def rankmath_strict(article: Dict, final_html: str = "") -> Dict:
     check("subheadings-distribution", long_seg == 0, 5,
           f"{long_seg} sections 300+ words — kotha H2/H3 divisions add cheyandi")
     sents = [x for x in re.split(r"[.!?\u0964]\s", plain) if len(x.split()) >= 4]
-    trans = sum(1 for x in sents if any(t in x for t in TRANSITION_MARKS))
+    trans = sum(1 for x in sents if has_transition(x))
     t_ratio = trans / max(1, len(sents))
     check("transition-words", t_ratio >= 0.25, 5,
           f"connectives {int(t_ratio * 100)}% matrame — కానీ/అందువల్ల/మరోవైపు/అలాగే/చివరగా peruganga vaadi")
