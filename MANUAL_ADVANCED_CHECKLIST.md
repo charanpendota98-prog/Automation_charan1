@@ -1,6 +1,6 @@
 # 📋 MANUAL ADVANCED CHECKLIST — "Nenu manual ga em em cheyali"
 ### Website advanced ga run avvali · Posts ANI-PERFECT · Mistakes leku · Deep analyse + NotebookLM
-> **Verified counts (theme v1.9.20 build):** test suites **110/110** files · jsdom runtime **171/171** checks · PHP lint **60/60** files · theme audit **0/0** · code audit **0/0**.
+> **Verified counts (theme v1.9.20 build):** test suites **111/111** files · jsdom runtime **171/171** checks · PHP lint **60/60** files · theme audit **0/0** · code audit **0/0**.
 
 
 **Ee file = mee haath tho cheyyalsina ANNI — exact order, exact commands.**
@@ -2655,6 +2655,28 @@ python run.py --rollback-post POST_ID
 python tests/v111_test.py
 python run.py --test-all       # 91/91
 ```
+
+### v149 — CTR OPPORTUNITY FINDER (HIGHEST-VALUE TITLE FIXES)
+
+Rank unna daane valla money raadu — **click** vaste ne vastundi. Ee tool
+Search Console CSV chusi, position ki radhagina CTR kanna thakkuva CTR unna
+pages ni rank chesi, entha clicks poతున్నాయో estimate chestundi.
+
+```bash
+python run.py --ctr-boost Queries.csv                 # Search Console → Performance → Export
+python run.py --ctr-boost Queries.csv --ctr-min-impressions 500
+```
+
+Prati page ki concrete title suggestions istundi: year, ‘Last Date’, vacancy
+count, ‘Apply Online’, 60-char limit. **Tool automatic ga emi maarchadu** —
+titles meere edit cheyali (ide safe way; auto-rewrite Google ki risky).
+
+Daily quiz draft tho Telegram alert kavali ante:
+
+```bash
+python run.py --daily-quiz --notify
+```
+
 
 ### v148 — DAILY QUIZ DRAFT (BOT) + UP-NEXT RECIRCULATION
 

@@ -112,3 +112,12 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
+
+def test_daily_quiz_notify_is_optional_and_safe():
+    import inspect
+    from autoblog import daily_quiz as dq
+    src = inspect.getsource(dq.run_cli)
+    assert "notify" in src and "send_telegram" in src
+    assert "except Exception" in src, "alert fail ayina draft fail avvakoodadu"
+    print("      telegram alert optional + non-fatal ✔")

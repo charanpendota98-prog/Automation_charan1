@@ -1744,6 +1744,12 @@ def main() -> int:
                         help="v109: mobile PageSpeed/CWV/accessibility/SEO audit")
     parser.add_argument("--corrections-audit", action="store_true",
                         help="v111: verify tamper-evident update/correction ledger")
+    parser.add_argument("--ctr-boost", nargs="?", const="", default=None, metavar="CSV",
+                        help="v149: Search Console CSV nunchi low-CTR pages + title suggestions (edit cheyyadu)")
+    parser.add_argument("--ctr-min-impressions", type=int, default=200,
+                        help="v149: CTR boost lo minimum impressions (default 200)")
+    parser.add_argument("--notify", action="store_true",
+                        help="v149: command finish ayyaka Telegram alert pampu (--daily-quiz tho)")
     parser.add_argument("--daily-quiz", action="store_true",
                         help="v148: prepare today's quiz as a WordPress DRAFT (never publishes)")
     parser.add_argument("--daily-quiz-dry", action="store_true",
@@ -1997,10 +2003,14 @@ def main() -> int:
                              "(CSS+JS footer widget) — quiz UI, timers, scoring")
     args = parser.parse_args()
 
+    if args.ctr_boost is not None:
+        from . import ctr_boost as _cb
+
+        return _cb.run_cli(args.ctr_boost, args.ctr_min_impressions)
     if args.daily_quiz or args.daily_quiz_dry:
         from . import daily_quiz as _dq
 
-        return _dq.run_cli(dry=args.daily_quiz_dry)
+        return _dq.run_cli(dry=args.daily_quiz_dry, notify=args.notify)
 
     _setup_logging()
 

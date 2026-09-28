@@ -125,7 +125,7 @@ def run(wp=None, day: Optional[date] = None, dry: bool = False) -> Dict:
     return result
 
 
-def run_cli(dry: bool = False) -> int:
+def run_cli(dry: bool = False, notify: bool = False) -> int:
     """Print a short, honest report of the daily quiz draft."""
     wp = None
     if not dry:
@@ -151,6 +151,18 @@ def run_cli(dry: bool = False) -> int:
         print(f"  ⚠ {problem}")
     if report["action"] == "created":
         print("  ✅ Draft ready — open WordPress, read it once, then press Publish.")
+        if notify:
+            try:
+                from . import notifier
+                sent = notifier.send_telegram(
+                    "📝 <b>Daily quiz draft ready</b>\n"
+                    f"{report['title']}\n"
+                    f"{report['questions']} questions · status: draft\n"
+                    "WordPress lo chadivi Publish nokkandi."
+                )
+                print("  ✅ Telegram alert sent." if sent else "  ⚠ Telegram alert pampaledu (token/chat id check cheyandi).")
+            except Exception as exc:  # noqa: BLE001 — alerting must never fail the draft
+                print(f"  ⚠ Telegram alert skipped: {exc}")
     elif report["action"] == "skipped":
         print("  ✅ Today's quiz draft already exists — nothing duplicated.")
     return 0 if report["action"] in {"created", "skipped", "dry-run"} else 1

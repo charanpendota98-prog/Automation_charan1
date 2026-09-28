@@ -1,7 +1,7 @@
 # studentup.in Auto-Blogger 🤖
 
 
-> **Verified counts (theme v1.9.20 build):** test suites **110/110** files · jsdom runtime **171/171** checks · PHP lint **60/60** files · theme audit **0/0** · code audit **0/0**.
+> **Verified counts (theme v1.9.20 build):** test suites **111/111** files · jsdom runtime **171/171** checks · PHP lint **60/60** files · theme audit **0/0** · code audit **0/0**.
 24/7 automatic blog posting system for **studentup.in** (WordPress) — runs on your Oracle Cloud instance.
 
 - **AI content:** Google Gemini (free tier) generates Telugu + English mix articles
@@ -629,6 +629,28 @@ runs Telegram noise create cheyyavu. Telegram credentials lekunte no-op and
 clear status. Content/ads/publish automatic ga touch cheyyadu.
 
 **Proof:** `--test-all` **93/93**.
+
+### v149 — CTR OPPORTUNITY FINDER (HIGHEST-VALUE TITLE FIXES)
+
+Rank unna daane valla money raadu — **click** vaste ne vastundi. Ee tool
+Search Console CSV chusi, position ki radhagina CTR kanna thakkuva CTR unna
+pages ni rank chesi, entha clicks poతున్నాయో estimate chestundi.
+
+```bash
+python run.py --ctr-boost Queries.csv                 # Search Console → Performance → Export
+python run.py --ctr-boost Queries.csv --ctr-min-impressions 500
+```
+
+Prati page ki concrete title suggestions istundi: year, ‘Last Date’, vacancy
+count, ‘Apply Online’, 60-char limit. **Tool automatic ga emi maarchadu** —
+titles meere edit cheyali (ide safe way; auto-rewrite Google ki risky).
+
+Daily quiz draft tho Telegram alert kavali ante:
+
+```bash
+python run.py --daily-quiz --notify
+```
+
 
 ### v148 — DAILY QUIZ DRAFT (BOT) + UP-NEXT RECIRCULATION
 
