@@ -1182,3 +1182,19 @@ body.dark .su-pop{background:#132339;color:#dbe7fb;border-color:#24364f}
 body.dark .su-jobtable{background:#0f1c2e}
 body.dark .su-jt-title a{color:#e8f0ff}
 body.dark .su-jt tbody tr:nth-child(even){background:rgba(124,58,237,.10)}
+
+/* v144: freshness stamp + helpfulness box */
+.su-updated{display:inline-flex;align-items:center;gap:7px;margin:0 0 14px;padding:6px 13px;border-radius:999px;
+  background:rgba(22,163,74,.10);border:1px solid rgba(22,163,74,.25);color:#15803d;font-size:12.5px;font-weight:800}
+body.dark .su-updated{background:rgba(34,197,94,.14);color:#86efac;border-color:rgba(34,197,94,.3)}
+.su-helpful{margin:26px 0;padding:18px 16px;border:1px solid var(--line);border-radius:18px;
+  background:linear-gradient(135deg,rgba(79,70,229,.05),rgba(16,185,129,.05));text-align:center}
+.su-helpful h2{margin:0 0 12px;font-size:16px}
+.su-helpful-btns{display:flex;flex-wrap:wrap;justify-content:center;gap:10px}
+.su-help-btn{padding:10px 18px;border-radius:999px;border:1px solid var(--line);background:#fff;
+  font-weight:800;font-size:13px;cursor:pointer;transition:transform .16s,border-color .16s}
+.su-help-btn:hover{transform:translateY(-1px);border-color:rgba(79,70,229,.45)}
+.su-help-btn[aria-pressed="true"]{background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;border-color:transparent}
+.su-helpful-note{margin:12px 0 0;font-size:12px;color:var(--muted)}
+body.dark .su-help-btn{background:#132339;color:#dbe7fb;border-color:#24364f}
+@media (prefers-reduced-motion:reduce){.su-help-btn{transition:none}}

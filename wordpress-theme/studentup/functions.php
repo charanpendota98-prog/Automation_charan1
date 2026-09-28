@@ -20,6 +20,7 @@ require_once get_template_directory() . '/inc/breaking.php';
 require_once get_template_directory() . '/inc/ads.php';
 require_once get_template_directory() . '/inc/template.php';
 require_once get_template_directory() . '/inc/jobtable.php'; // v142: FreeJobAlert-style scannable table
+require_once get_template_directory() . '/inc/engage.php'; // v144: freshness stamp + helpful box
 require_once get_template_directory() . '/inc/seo-bridge.php';
 require_once get_template_directory() . '/inc/toc.php';
 require_once get_template_directory() . '/inc/schema.php';
