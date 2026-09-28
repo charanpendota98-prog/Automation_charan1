@@ -27,6 +27,8 @@ Run: python tests/v84_test.py   (also via python run.py --test-all)
 """
 from __future__ import annotations
 
+import re
+
 import http.server
 import sys
 import tempfile
@@ -202,8 +204,8 @@ def test_toc_idempotent():
            "content_html": html}
     rm100.apply(art)
     merged = seo.add_table_of_contents(art["content_html"])
-    boxes = merged.count('<div class="su-toc"') + merged.count(
-        '<nav class="su-toc"')
+    # v135: the TOC also carries the official Rank Math block class.
+    boxes = len(re.findall(r'<(?:div|nav) class="[^"]*\bsu-toc\b(?!-)[^"]*"', merged))
     assert boxes == 1, f"TOC boxes: {boxes}"
     print("  TOC idempotent (1 box) ✔")
 

@@ -2753,3 +2753,14 @@ python tests/v116_test.py
 python run.py --test-all       # 99 test-suite files (historical v116 pins may require refresh)
 ```
 
+
+
+### Release pin sync (`tools/pin_sync.py`)
+
+Release pins (theme version, suite count, `--test-all NN/NN` claims, GO_LIVE zip fingerprint) live inside historical test files. `python3 tools/pin_sync.py --write` rewrites them from the live theme version, the real suite count and the freshly built zip, so a version bump never turns the suite red for a reason that is not a defect. Changelog history pins (`= 1.9.7`) and non-suite counts (jsdom checks, certificate checks) are deliberately skipped.
+
+```bash
+python3 tools/build_wp_theme.py     # zip first
+python3 tools/pin_sync.py           # dry run
+python3 tools/pin_sync.py --write   # apply
+```

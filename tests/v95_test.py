@@ -30,7 +30,7 @@ Ee suite v95 lo fix ayyina **nijamaina gaps** ni regression ga kāpādutundi:
 
 Checks (13): contextual_links API/safety · attach_inline_image API/safety · enhance()
 wiring · config knob · validator parity checks · rm100 slug trim · post_gate
-`content_image` (68/68 certificate) · pipeline wiring · terms page (builder ·
+`content_image` (73/73 certificate) · pipeline wiring · terms page (builder ·
 nav · sitemap · footer) · version parity 1.9.20 · suite pins 75 · zip packaged.
 
 Run: python tests/v95_test.py   (also via python run.py --test-all)
@@ -217,7 +217,7 @@ def test_post_gate_content_image() -> None:
     assert "content_image" in rows, "post_gate lo content_image check ledu"
     assert rows["content_image"]["ok"] is True, rows["content_image"]["detail"]
     txt = post_gate.certificate_text(res)
-    assert "68/68" in txt, "certificate 68/68 kaadu"
+    assert "73/73" in txt, "certificate 73/73 kaadu"
     assert "100/100" in txt, "certificate 100/100 kaadu"
     print(f"      content_image gate · certificate {res['score']}/100 · "
           f"{res['passed']}/{res['total']} checks ✔")

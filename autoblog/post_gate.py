@@ -98,8 +98,14 @@ def run(article: dict, html: str = "", media_id: Optional[int] = None,
     # ------------------------------------------------------------ CONTENT
     rm = article.get("_rm") or {}
     min_words = int(getattr(config, "RM_MIN_WORDS", 600))
+    # v135: "useful" ante length matrame kaadu — repeated filler ("word word
+    # word ...") length target ni cheat cheyyagaladu. Unique-word ratio tho
+    # thin-but-long content ni pattukuntam (nijamaina article ~0.3+ untundi).
+    tokens = [t for t in re.findall(r"[\w\u0C00-\u0C7F]+", plain.lower()) if len(t) > 1]
+    uniq_ratio = (len(set(tokens)) / len(tokens)) if tokens else 0.0
     add("words", "CONTENT", f"Content depth (≥{min_words} useful words)",
-        words >= min_words, f"{words} words",
+        words >= min_words and uniq_ratio >= 0.08,
+        f"{words} words · {uniq_ratio:.0%} unique",
         "useful detail add cheyandi; filler tho length penchavaddu", 3)
     dens = (plain.lower().count(kw_l) / words) if (kw_l and words) else 0
     add("density", "CONTENT", "Keyword density (0.4–3%)", 0.004 <= dens <= 0.03,

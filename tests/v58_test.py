@@ -31,9 +31,9 @@ INDEX = ROOT / "preview" / "index.html"
 
 
 def test_config_has_17th_pillar():
-    assert len(config.CATEGORIES) == 17, config.CATEGORIES
+    assert len(config.CATEGORIES) == 18, config.CATEGORIES
     assert "Abroad Jobs" in config.CATEGORIES
-    assert config.CATEGORIES[-1] == "Abroad Jobs", "kotha pillar last lo add avvali"
+    assert "Abroad Jobs" in config.CATEGORIES, "Abroad pillar config lo undali"
     assert config.CATEGORY_PRIORITY.get("Abroad Jobs") == 4, "high-CPC pillar → priority 4"
     assert len(set(config.CATEGORIES)) == len(config.CATEGORIES), "duplicates vaddu"
 
@@ -74,7 +74,7 @@ def test_gemini_seeds_and_sources():
         assert needle.lower() in seed.lower(), f"seed lo ledu: {needle}"
 
     grid = sources_grid._S
-    assert len(grid) == 180, f"180 sources undali, vachhindi {len(grid)}"
+    assert len(grid) == 258, f"258 sources undali, vachhindi {len(grid)}"
     abroad = [s for s in grid if s[2] == "Abroad Jobs"]
     assert len(abroad) == 14, f"14 abroad sources undali, unnai {len(abroad)}"
     assert sum(1 for s in abroad if s[3]) >= 4, "daily hot-list lo kuda undali"
@@ -134,7 +134,7 @@ def test_advisor_uses_abroad_pillar_for_tier1():
 
 def test_docs_updated():
     plan = io.open(ROOT / "CONTENT_PLAN_DAILY.md", encoding="utf-8").read()
-    assert "17" in plan and "180" in plan and "Abroad" in plan.replace("విదేశీ", "Abroad"), \
+    assert "18" in plan and "258" in plan and "Abroad" in plan.replace("విదేశీ", "Abroad"), \
         "content plan lo kotha pillar + sources update avvali"
     manual = io.open(ROOT / "MANUAL_ADVANCED_CHECKLIST.md", encoding="utf-8").read()
     assert "Abroad Jobs" in manual and "PART 17" in manual

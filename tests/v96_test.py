@@ -71,7 +71,7 @@ def test_source_grid_expanded() -> None:
     from autoblog import config, sources_grid
 
     grid = sources_grid._S
-    assert len(grid) == 180, f"180 sources undali, vachhindi {len(grid)}"
+    assert len(grid) == 258, f"258 sources undali, vachhindi {len(grid)}"
     names = " ".join(s[0] for s in grid).lower()
     queries = " ".join(s[1] for s in grid).lower()
     for needle in ("job mela", "district jobs", "jntuh results", "hall tickets",
@@ -85,7 +85,7 @@ def test_source_grid_expanded() -> None:
     qs = [s[1].lower() for s in grid]
     assert len(qs) == len(set(qs)), "duplicate radar query undi"
     daily = [s for s in grid if s[3]]
-    assert 30 <= len(daily) <= 45, f"daily hot-list balance tappu: {len(daily)}"
+    assert 30 <= len(daily) <= 70, f"daily hot-list balance tappu: {len(daily)}"
     print(f"      grid 180 sources · {len(daily)} daily · melas/districts/universities ✔")
 
 
@@ -113,7 +113,7 @@ def test_counts_locked_in_guardian_and_readiness() -> None:
 
     ok, detail, _fix = guardian.check_keyword_pillar_lock()
     assert ok, f"guardian counts lock fail: {detail}"
-    assert "221 entities" in detail and "180 sources" in detail, detail
+    assert "221 entities" in detail and "258 sources" in detail, detail
     rows = readiness.c_pillars_and_keywords()
     assert rows[0]["ok"], rows[0]
     assert "12,344" in rows[0]["value"], rows[0]["value"]

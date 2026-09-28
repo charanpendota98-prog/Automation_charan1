@@ -288,7 +288,9 @@ def fix_toc(article: dict, html: str) -> str:
     # accessible StudentUp markup inside it, so one TOC serves both readers and
     # the official Content Readability check (no duplicate plugin TOC needed).
     toc = ('<!-- wp:rank-math/toc-block {"title":"Table of Contents"} -->'
-           '<div class="' + TOC_MARK + '" '
+           # v135: ship the official Rank Math block class too, so the plugin
+           # (and the post gate) recognise this as the canonical TOC block.
+           '<div class="wp-block-rank-math-toc-block ' + TOC_MARK + '" '
            'role="navigation" aria-label="Table of Contents">'
            '<div class="su-toc-title">విషయ సూచిక (Table of Contents)</div><ol>'
            + "".join(items[:12]) + "</ol></div>"
