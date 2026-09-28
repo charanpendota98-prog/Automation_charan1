@@ -42,7 +42,7 @@ function studentup_option_fields() {
 				'ads_txt'        => array( 'ads.txt content', 'textarea', '', 'Site root /ads.txt ga serve avutundi (AdSense approval tarvata publisher id line)' ),
 				'deep_ad'       => array( 'Second in-article ad (long posts only)', 'check', '1', 'v134: 10+ paragraphs unna posts lo 70% mark daggara 2nd slot — density cap + 4 para gap tho policy-safe' ),
 				'in_article_ad'  => array( 'In-article ad (content 3rd para tarvata)', 'check', '1', 'Highest-CTR placement — AdSense/ house ad (density cap + lazy tho)' ),
-				'max_ads'        => array( 'Page ki max ads (density cap)', 'text', '4', '4-5 safe (AdSense + UX). Ekkuva = policy risk' ),
+				'max_ads'        => array( 'Page ki max ads (density cap)', 'text', '5', '4-5 safe (AdSense + UX). Ekkuva = policy risk' ),
 				'lazy_ads'       => array( 'Lazy ads (below-fold) ON', 'check', '1', 'Viewability + CLS — AdSense RPM ki manchi' ),
 				'ads_on_policy'  => array( 'Legal pages lo ads (privacy/about)', 'check', '0', 'Default OFF (AdSense policy safe)' ),
 				'sticky_ad'      => array( 'Sticky bottom ad ON', 'check', '0', 'Mobile lo kindha fixed ad (house/AdSense anchor)' ),

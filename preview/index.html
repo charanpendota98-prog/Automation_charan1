@@ -598,7 +598,16 @@
     .brkbadge{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);font-weight:700}
     @keyframes breaking-in{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
     @keyframes brk-pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.45;transform:scale(.82)}}
-  </style>
+  
+  /* v139: read-more CTA — real link, pill hover, arrow slide (CTR) */
+  .newsfoot .su-readmore{margin-left:auto;display:inline-flex;align-items:center;gap:4px;
+    padding:6px 12px;border-radius:999px;font-weight:900;font-size:12px;text-decoration:none;
+    color:#4f46e5;background:rgba(79,70,229,.08);border:1px solid rgba(79,70,229,.18);
+    transition:gap .16s,background .16s,transform .16s}
+  .newsfoot .su-readmore:hover,.newsfoot .su-readmore:focus-visible{gap:9px;background:rgba(79,70,229,.15);transform:translateY(-1px)}
+  body.dark .newsfoot .su-readmore{color:#c7b6ff;background:rgba(124,58,237,.18);border-color:rgba(124,58,237,.35)}
+  @media (prefers-reduced-motion:reduce){.newsfoot .su-readmore{transition:none}}
+</style>
   <style id="su-premium-css">
 /* ===========================================================
    StudentUp v123 — PREMIUM layer
@@ -1405,7 +1414,7 @@ body.su-has-applybar{padding-bottom:70px}
             <div class="tagrow"><span class="tag">తెలంగాణ ప్రభుత్వ ఉద్యోగాలు</span><span class="statechip ts">TS</span></div>
             <h3>TSPSC గ్రూప్ 2 2026: నోటిఫికేషన్, అర్హత &amp; సిలబస్</h3>
             <p>ఎలా దరఖాస్తు చేయాలి, ఫీజు ఎంత, వయో మినహాయింపు నియమాలు — పూర్తి వివరాలు.</p>
-            <div class="newsfoot"><span data-days-ago="0">Updated today</span><b>Read guide →</b></div>
+            <div class="newsfoot"><span data-days-ago="0">Updated today</span><a class="su-readmore" href="posts/upsc-junior-assistant-2026.html">Read guide →</a></div>
           </div>
         </article>
         <article class="news" data-state="ts" data-cat="ts-jobs walkin" data-text="ts dsc telangana school teacher recruitment vacancies walk in interview updates" data-qual="inter degree" data-last="2026-09-28">
@@ -1414,7 +1423,7 @@ body.su-has-applybar{padding-bottom:70px}
             <div class="tagrow"><span class="tag">తెలంగాణ ప్రభుత్వ ఉద్యోగాలు</span><span class="statechip ts">TS</span></div>
             <h3>TS DSC: ఉపాధ్యాయ నియామక అప్డేట్‌లు &amp; అధికారిక లింకులు</h3>
             <p>DSC నోటిఫికేషన్‌లు, వాక్-ఇన్ తేదీలు, అర్హత — అధికారిక మూలాలతో మాత్రమే ట్రాక్ చేస్తాము.</p>
-            <div class="newsfoot"><span data-days-ago="2">Updated 2 days ago</span><b>Read guide →</b></div>
+            <div class="newsfoot"><span data-days-ago="2">Updated 2 days ago</span><a class="su-readmore" href="posts/upsc-junior-assistant-2026.html">Read guide →</a></div>
           </div>
         </article>
         <article class="news" data-state="ts ap" data-cat="ts-jobs ap-jobs" data-text="tgrtc apsrtc road transport staff recruitment apply eligibility" data-qual="10th inter iti" data-last="2026-09-30">
@@ -1423,7 +1432,7 @@ body.su-has-applybar{padding-bottom:70px}
             <div class="tagrow"><span class="tag">రాష్ట్ర ఉద్యోగాలు</span><span class="statechip multi">TS + AP</span></div>
             <h3>TGRTC &amp; APSRTC నియామకం: దరఖాస్తు తేదీలు &amp; అర్హత</h3>
             <p>రోడ్డు రవాణా సిబ్బంది నోటిఫికేషన్‌లు — డ్రైవర్, కండక్టర్, మెకానికల్ విభాగాలు వివరంగా.</p>
-            <div class="newsfoot"><span data-days-ago="4">Updated 4 days ago</span><b>Read guide →</b></div>
+            <div class="newsfoot"><span data-days-ago="4">Updated 4 days ago</span><a class="su-readmore" href="posts/upsc-junior-assistant-2026.html">Read guide →</a></div>
           </div>
         </article>
         <article class="news" data-state="ts ap" data-cat="success-stories" data-text="success story constable selection preparation timetable telangana andhra student journey" data-qual="degree" data-last="2026-12-31">
@@ -1432,7 +1441,7 @@ body.su-has-applybar{padding-bottom:70px}
             <div class="tagrow"><span class="tag">విజయగాథలు</span><span class="statechip multi">TS + AP</span></div>
             <h3>రోజుకి 6 గంటలు: కానిస్టేబుల్ ఉద్యోగం సాధించిన విద్యార్థి ప్రణాళిక</h3>
             <p>ఎంత చదివారు, ఏ పుస్తకాలు, ఎలా టైమ్‌టేబుల్ వేసుకున్నారు — verified student journey.</p>
-            <div class="newsfoot"><span data-days-ago="2">Updated 2 days ago</span><b>Read story →</b></div>
+            <div class="newsfoot"><span data-days-ago="2">Updated 2 days ago</span><a class="su-readmore" href="posts/upsc-junior-assistant-2026.html">Read story →</a></div>
           </div>
         </article>
         <article class="news" data-state="ap" data-cat="ap-jobs" data-text="appsc group 1 group 2 andhra pradesh state service cutoff trend preparation" data-qual="degree pg" data-last="2026-11-05">
@@ -1441,7 +1450,7 @@ body.su-has-applybar{padding-bottom:70px}
             <div class="tagrow"><span class="tag">ఆంధ్రప్రదేశ్ ప్రభుత్వ ఉద్యోగాలు</span><span class="statechip ap">AP</span></div>
             <h3>APPSC గ్రూప్ 1 &amp; గ్రూప్ 2: నోటిఫికేషన్‌లు &amp; కటాఫ్ ధోరణులు</h3>
             <p>ఆంధ్రప్రదేశ్ రాష్ట్ర సేవల పరీక్షల గత సంవత్సరాల కటాఫ్ విధానాలు + సన్నద్ధత ప్రణాళిక.</p>
-            <div class="newsfoot"><span data-days-ago="1">Updated yesterday</span><b>Read guide →</b></div>
+            <div class="newsfoot"><span data-days-ago="1">Updated yesterday</span><a class="su-readmore" href="posts/upsc-junior-assistant-2026.html">Read guide →</a></div>
           </div>
         </article>
         <article class="news" data-state="ts central" data-cat="hallticket upcoming" data-qual="all" data-text="hall ticket admit card download tspsc ssc exam day rules id proof reporting time hallticket">
@@ -1450,7 +1459,7 @@ body.su-has-applybar{padding-bottom:70px}
             <div class="tagrow"><span class="tag">Hall Tickets</span><span class="statechip">TS + IND</span></div>
             <h3>హాల్ టికెట్ డౌన్‌లోడ్: రిజిస్ట్రేషన్ నంబర్, పరీక్షా కేంద్రం &amp; ID ప్రూఫ్ చెక్‌లిస్ట్</h3>
             <p>అధికారిక పోర్టల్ నుండి మాత్రమే డౌన్‌లోడ్ చేయండి. రిపోర్టింగ్ టైమ్, అనుమతించిన వస్తువులు, స్క్రైబ్ నియమాలు ఇక్కడ.</p>
-            <div class="newsfoot"><span data-days-ago="1">Updated yesterday</span><b>Read guide →</b></div>
+            <div class="newsfoot"><span data-days-ago="1">Updated yesterday</span><a class="su-readmore" href="posts/upsc-junior-assistant-2026.html">Read guide →</a></div>
           </div>
         </article>
         <article class="news" data-state="ts ap" data-cat="results" data-qual="all" data-text="inter results board ts ap marks download revaluation dates district">
@@ -1459,7 +1468,7 @@ body.su-has-applybar{padding-bottom:70px}
             <div class="tagrow"><span class="tag">Results</span><span class="statechip multi">TS + AP</span></div>
             <h3>TS &amp; AP ఇంటర్/బోర్డు ఫలితాలు: తేదీలు, డౌన్‌లోడ్, రీవాల్యుయేషన్</h3>
             <p id="results">మార్కులు ఎలా డౌన్‌లోడ్ చేయాలి, రీవాల్యుయేషన్ ఫీజులు, ప్రక్రియ — జిల్లాల వారీగా అప్డేట్‌లు.</p>
-            <div class="newsfoot"><span data-days-ago="3">Updated 3 days ago</span><b>Read guide →</b></div>
+            <div class="newsfoot"><span data-days-ago="3">Updated 3 days ago</span><a class="su-readmore" href="posts/upsc-junior-assistant-2026.html">Read guide →</a></div>
           </div>
         </article>
         <article class="news" data-state="ts ap" data-cat="outsourcing walkin" data-text="outsourcing contract basis recruitment crc guest faculty honorarium ts ap walkin interview drive" data-qual="degree pg" data-last="2026-09-25">
@@ -1468,7 +1477,7 @@ body.su-has-applybar{padding-bottom:70px}
             <div class="tagrow"><span class="tag">Outsourcing</span><span class="statechip">TS + AP</span></div>
             <h3>అవుట్‌సోర్సింగ్ &amp; కాంట్రాక్ట్ ఉద్యోగాలు: CRC, గెస్ట్ ఫ్యాకల్టీ, హానరేరియం పోస్టులు</h3>
             <p>ఒప్పంద ప్రాతిపదిక నియామకాలు, జీతం నిబంధనలు, పునరుద్ధరణ విధానం, పత్రాల వెరిఫికేషన్ — అధికారిక నోటిఫికేషన్ ఆధారంగా.</p>
-            <div class="newsfoot"><span data-days-ago="0">Updated today</span><b>Read guide →</b></div>
+            <div class="newsfoot"><span data-days-ago="0">Updated today</span><a class="su-readmore" href="posts/upsc-junior-assistant-2026.html">Read guide →</a></div>
           </div>
         </article>
         <article class="news" data-state="central" data-cat="private software" data-qual="all" data-text="fresher resume ats interview preparation career guide cover letter">
@@ -1477,7 +1486,7 @@ body.su-has-applybar{padding-bottom:70px}
             <div class="tagrow"><span class="tag">కెరీర్ మార్గదర్శి</span><span class="statechip">IND</span></div>
             <h3>ఫ్రెషర్ రెజ్యూమే: ATS-ఫ్రెండ్లీ ఫార్మాట్ + టాప్ 20 ఇంటర్వ్యూ ప్రశ్నలు</h3>
             <p>రెజ్యూమేలో ఏమి చేర్చాలి, కవర్ లెటర్ చెక్‌లిస్ట్, HR టాప్ ప్రశ్నలు &amp; సమాధానాలు.</p>
-            <div class="newsfoot"><span data-days-ago="5">Updated 5 days ago</span><b>Read guide →</b></div>
+            <div class="newsfoot"><span data-days-ago="5">Updated 5 days ago</span><a class="su-readmore" href="posts/upsc-junior-assistant-2026.html">Read guide →</a></div>
           </div>
         </article>
         <article class="news" data-state="central" data-cat="central-jobs" data-text="ssc cgl 2026 apply online central government jobs guide eligibility fee" data-qual="degree" data-last="2026-10-10">
@@ -1486,7 +1495,7 @@ body.su-has-applybar{padding-bottom:70px}
             <div class="tagrow"><span class="tag">Central Jobs</span><span class="statechip">IND</span></div>
             <h3>SSC CGL 2026: అర్హత, ఫీజు &amp; దరఖాస్తు దశలు — పూర్తి మార్గదర్శి</h3>
             <p>పత్రాలు, ఎంపిక ప్రక్రియ, అధికారిక లింక్ సులభంగా వివరించాము. ఫేక్ పోర్టల్ నుండి నంబర్ 1 రక్షణ చర్యలు.</p>
-            <div class="newsfoot"><span data-days-ago="0">Updated today</span><b>Read guide →</b></div>
+            <div class="newsfoot"><span data-days-ago="0">Updated today</span><a class="su-readmore" href="posts/upsc-junior-assistant-2026.html">Read guide →</a></div>
           </div>
         </article>
         <article class="news" data-state="ts ap central" data-cat="abroad" data-text="abroad jobs gulf dubai saudi qatar visa ielts study abroad nri telugu students" data-qual="inter iti diploma degree" data-last="2026-12-01">
@@ -1495,7 +1504,7 @@ body.su-has-applybar{padding-bottom:70px}
             <div class="tagrow"><span class="tag">Jobs Abroad</span><span class="statechip">TS + AP + కేంద్ర</span></div>
             <h3>గల్ఫ్ &amp; విదేశీ ఉద్యోగాలు: నకిలీ ఏజెంట్ల మోసం తప్పించుకునే 7 నియమాలు</h3>
             <p>eMigrate నమోదు, ఒప్పంద పత్రం, వీసా రకం, ఫీజు రసీదు — ఇవి లేకుండా ఎవరికీ డబ్బు చెల్లించవద్దు. IELTS/స్టడీ అబ్రాడ్‌కు సర్టిఫికెట్ తనిఖీ కూడా.</p>
-            <div class="newsfoot"><span data-days-ago="0">Updated today</span><b>Read →</b></div>
+            <div class="newsfoot"><span data-days-ago="0">Updated today</span><a class="su-readmore" href="posts/upsc-junior-assistant-2026.html">Read →</a></div>
           </div>
         </article>
         <article class="news" data-state="ts central" data-cat="scholarship" data-text="nsp national scholarship portal yasasvi telangana scholarship documents checklist last date" data-qual="all" data-last="2026-10-31" id="scholarships">
@@ -1504,7 +1513,7 @@ body.su-has-applybar{padding-bottom:70px}
             <div class="tagrow"><span class="tag">Scholarships</span><span class="statechip multi">TS + CENTRAL</span></div>
             <h3>NSP + YASASVI స్కాలర్‌షిప్‌లు: పత్రాలు &amp; చివరి తేదీ చెక్‌లిస్ట్</h3>
             <p>కేంద్ర + తెలంగాణ రాష్ట్ర స్కాలర్‌షిప్‌లు — దరఖాస్తు తేదీలు, కేటగిరీ ధృవపత్రాలు, సాధారణ పొరపాట్లు తప్పించుకోవడం.</p>
-            <div class="newsfoot"><span data-days-ago="1">Updated yesterday</span><b>Read guide →</b></div>
+            <div class="newsfoot"><span data-days-ago="1">Updated yesterday</span><a class="su-readmore" href="posts/upsc-junior-assistant-2026.html">Read guide →</a></div>
           </div>
         </article>
         <article class="news" data-state="ts ap central" data-cat="current" data-text="daily current affairs pib government scheme appointments awards tspsc appsc exam current affairs" data-qual="all" data-last="2026-09-30">
@@ -1513,7 +1522,7 @@ body.su-has-applybar{padding-bottom:70px}
             <div class="tagrow"><span class="tag">Current Affairs</span><span class="statechip">TS + AP</span></div>
             <h3>రోజువారీ ప్రస్తుతాంశాలు: ప్రభుత్వ ప్రకటనల ఆధారంగా పరీక్షకు ముఖ్యమైన పాయింట్లు</h3>
             <p>PIB మరియు రాష్ట్ర ప్రభుత్వ ప్రకటనల నుండి మాత్రమే — ఊహలు, వదంతులు లేవు. ప్రతి పాయింట్‌కు అధికారిక మూల లింకు ఉంటుంది.</p>
-            <div class="newsfoot"><span data-days-ago="0">Updated today</span><b>Read →</b></div>
+            <div class="newsfoot"><span data-days-ago="0">Updated today</span><a class="su-readmore" href="posts/upsc-junior-assistant-2026.html">Read →</a></div>
           </div>
         </article>
         <article class="news" data-state="ts ap central" data-cat="examtips upcoming" data-qual="all" data-text="tspsc appsc exam preparation plan revision cycle previous papers mock test exam tips strategy">
@@ -1522,7 +1531,7 @@ body.su-has-applybar{padding-bottom:70px}
             <div class="tagrow"><span class="tag">Exam Tips</span><span class="statechip">TS + AP</span></div>
             <h3>90 రోజుల సన్నద్ధత ప్లాన్: సిలబస్ విభజన, రివిజన్ సైకిల్స్, మాజీ పేపర్‌ల సాధన</h3>
             <p>ఏ రోజు ఏ సబ్జెక్ట్, ఎన్ని గంటలు, ఎప్పుడు మాక్ టెస్ట్ — అన్నీ ఒక ప్లాన్‌లో — మీ వేగానికి సరిపోయేలా మార్చుకోండి.</p>
-            <div class="newsfoot"><span data-days-ago="2">2 days ago</span><b>View plan →</b></div>
+            <div class="newsfoot"><span data-days-ago="2">2 days ago</span><a class="su-readmore" href="posts/upsc-junior-assistant-2026.html">View plan →</a></div>
           </div>
         </article>
         <article class="news" data-state="ts ap" data-cat="parttime" data-qual="all" data-last="2026-09-29" data-text="part time jobs work from home freelance data entry internship scam check student">
@@ -1531,7 +1540,7 @@ body.su-has-applybar{padding-bottom:70px}
             <div class="tagrow"><span class="tag">Part-time</span><span class="statechip">TS + AP</span></div>
             <h3>పార్ట్-టైమ్ &amp; ఇంటర్న్‌షిప్: నిజమైన ఒప్పందం vs మోసం — 6 తనిఖీ ప్రశ్నలు</h3>
             <p>ముందు డబ్బు అడిగితే మోసం. ఒప్పంద పత్రం, సంస్థ నమోదు, చెల్లింపు విధానం — ఇవి చూసి నిర్ణయించుకోండి.</p>
-            <div class="newsfoot"><span data-days-ago="1">Updated yesterday</span><b>Read →</b></div>
+            <div class="newsfoot"><span data-days-ago="1">Updated yesterday</span><a class="su-readmore" href="posts/engineering-internships-2026.html">Read →</a></div>
           </div>
         </article>
       </div>

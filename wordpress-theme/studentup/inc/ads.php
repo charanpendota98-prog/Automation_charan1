@@ -244,8 +244,8 @@ function studentup_ad( $place = 'mid' ) {
 	if ( ! studentup_ads_allowed( $place ) ) {
 		return;
 	}
-	$max = (int) studentup_opt( 'max_ads', '4' );
-	$max = $max > 0 ? $max : 4;
+	$max = (int) studentup_opt( 'max_ads', '5' );
+	$max = $max > 0 ? $max : 5;
 	if ( studentup_ad_count() >= $max ) {
 		return; // density cap — AdSense safe + UX
 	}
@@ -344,7 +344,7 @@ function studentup_inject_in_article_ad( $content ) {
 	if ( ! studentup_ads_allowed( 'mid' ) ) {
 		return $content;
 	}
-	$max = (int) studentup_opt( 'max_ads', '4' );
+	$max = (int) studentup_opt( 'max_ads', '5' );
 	if ( studentup_ad_count() >= max( 1, $max ) ) {
 		return $content;
 	}
@@ -382,7 +382,7 @@ function studentup_inject_deep_ad( $content ) {
 	if ( false !== strpos( $content, 'su-ad-anchor-deep' ) ) {
 		return $content;
 	}
-	$max = (int) studentup_opt( 'max_ads', '4' );
+	$max = (int) studentup_opt( 'max_ads', '5' );
 	if ( studentup_ad_count() >= max( 1, $max ) ) {
 		return $content;
 	}
