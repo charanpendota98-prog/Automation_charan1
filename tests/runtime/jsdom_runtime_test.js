@@ -12,7 +12,7 @@ const html = fs.readFileSync(PAGE, "utf8");
 
 /* v71: total check count — docs (README/MANUAL/GO_LIVE) claim this number and
  * tools/parity_audit.py P8 reads it, so a silent drift cannot slip through. */
-const EXPECTED_CHECKS = 165;
+const EXPECTED_CHECKS = 166;
 
 const passed = [];
 const failed = [];
@@ -135,13 +135,17 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
   const prog = document.querySelectorAll("#qprog i");
   ok("progress has 6 markers, first on", prog.length === 6 && prog[0].classList.contains("on"));
 
-  const ANSWERS = [1, 0, 0, 2, 0, 2]; // from page QUIZ (verified by full-marks run below)
+  // v145: the quiz rotates daily, so the answer key is read from the page's
+  // own paper (window.SU_QUIZ) instead of a hard-coded array that would rot.
+  const ANSWERS = window.SU_QUIZ.map(q => q.a);
+  ok("daily quiz paper exposed (6 questions, rotates by IST day)",
+     Array.isArray(window.SU_QUIZ) && window.SU_QUIZ.length === 6);
   // correct-answer path
   ANSWERS.forEach((a, ix) => {
     document.querySelector('.opt[data-q="' + ix + '"][data-o="' + a + '"]').click();
   });
   ok("Q1 correct option marked .correct",
-     document.querySelector('.opt[data-q="0"][data-o="1"]').classList.contains("correct"));
+     document.querySelector('.opt[data-q="0"][data-o="' + ANSWERS[0] + '"]').classList.contains("correct"));
   // walk to the end via Next buttons
   for (let ix = 0; ix < 5; ix++) {
     document.querySelector('.next[data-q="' + ix + '"]').click();
@@ -153,7 +157,7 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
      document.getElementById("qscore").textContent === "6/6",
      document.getElementById("qscore").textContent);
   ok("best score persisted to localStorage",
-     window.localStorage.getItem("studentup-quiz-best") === "6");
+     window.localStorage.getItem(window.SU_QUIZ_KEY) === "6");
   ok("best label updated (ఉత్తమం: 6/6)",
      document.getElementById("qbest").textContent.indexOf("6/6") > -1);
   document.getElementById("qretry").click();
@@ -304,8 +308,8 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
   const poll = document.getElementById("poll");
   ok("daily question section present (Today's question)",
      !!poll && /Today's question/.test(poll.textContent));
-  ok("v74: static poll bank (7 questions, no fetch, no server)",
-     Array.isArray(window.POLL_BANK) && window.POLL_BANK.length === 7 &&
+  ok("v74/v145: static poll bank (19 questions, daily rotation, no fetch, no server)",
+     Array.isArray(window.POLL_BANK) && window.POLL_BANK.length === 19 &&
      window.POLL_BANK.every(q => q.o && q.o.length === 4 && q.a >= 0 && q.a < 4) &&
      !/\/poll\//.test(html));
   document.querySelector("#pollbox .poll-opt").click();

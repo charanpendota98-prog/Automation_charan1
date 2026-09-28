@@ -163,18 +163,72 @@
     });
   }
 
-  /* ---------------- Hot rail keyboard/drag niceties ---------------- */
+  /* ---------------- Hot rail: arrows + drag + keyboard + snap ------- */
   function rail() {
-    var r = document.querySelector(".su-hot-rail");
-    if (!r) return;
-    var down = false, x = 0, sl = 0;
-    r.addEventListener("pointerdown", function (e) { down = true; x = e.clientX; sl = r.scrollLeft; });
-    window.addEventListener("pointerup", function () { down = false; r.classList.remove("dragging"); });
-    r.addEventListener("pointermove", function (e) {
-      if (!down) return;
-      var d = e.clientX - x;
-      if (Math.abs(d) > 4) r.classList.add("dragging");
-      r.scrollLeft = sl - d;
+    var rails = document.querySelectorAll(".su-hot-rail");
+    Array.prototype.forEach.call(rails, function (r) {
+      var down = false, x = 0, sl = 0, moved = false;
+
+      /* pointer drag (mouse) — touch uses native momentum scrolling */
+      r.addEventListener("pointerdown", function (e) {
+        if (e.pointerType === "touch") return;
+        down = true; moved = false; x = e.clientX; sl = r.scrollLeft;
+      });
+      window.addEventListener("pointerup", function () {
+        down = false; r.classList.remove("dragging");
+      });
+      r.addEventListener("pointermove", function (e) {
+        if (!down) return;
+        var d = e.clientX - x;
+        if (Math.abs(d) > 4) { moved = true; r.classList.add("dragging"); }
+        r.scrollLeft = sl - d;
+      });
+      r.addEventListener("click", function (e) {
+        if (moved) { e.preventDefault(); moved = false; }
+      }, true);
+
+      /* keyboard: the rail is focusable, arrows move one card */
+      r.setAttribute("tabindex", "0");
+      r.setAttribute("role", "group");
+      r.addEventListener("keydown", function (e) {
+        if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+        e.preventDefault();
+        step(e.key === "ArrowRight" ? 1 : -1);
+      });
+
+      function cardWidth() {
+        var c = r.querySelector(".su-hotcard");
+        return c ? c.getBoundingClientRect().width + 14 : 260;
+      }
+      function step(dir) {
+        r.scrollBy({ left: dir * cardWidth(), behavior: "smooth" });
+      }
+
+      /* arrow buttons (added by JS so no-JS readers still get a plain scroller) */
+      var host = r.parentNode;
+      if (host && !host.querySelector(".su-rail-nav")) {
+        host.classList.add("su-rail-host");
+        ["prev", "next"].forEach(function (kind) {
+          var b = document.createElement("button");
+          b.type = "button";
+          b.className = "su-rail-nav su-rail-" + kind;
+          b.setAttribute("aria-label", kind === "prev" ? "Scroll left" : "Scroll right");
+          b.innerHTML = kind === "prev" ? "\u2039" : "\u203a";
+          b.addEventListener("click", function () { step(kind === "prev" ? -1 : 1); });
+          host.appendChild(b);
+        });
+      }
+
+      function edges() {
+        var max = r.scrollWidth - r.clientWidth - 2;
+        var p = host && host.querySelector(".su-rail-prev");
+        var n = host && host.querySelector(".su-rail-next");
+        if (p) p.hidden = r.scrollLeft <= 2;
+        if (n) n.hidden = r.scrollLeft >= max;
+      }
+      r.addEventListener("scroll", edges, { passive: true });
+      window.addEventListener("resize", edges);
+      edges();
     });
   }
 

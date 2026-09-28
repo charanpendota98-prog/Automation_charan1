@@ -652,6 +652,21 @@
   .thumb-img img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .35s ease}
   .news:hover .thumb-img img{transform:scale(1.045)}
   @media (prefers-reduced-motion:reduce){.thumb-img img{transition:none}.news:hover .thumb-img img{transform:none}}
+
+  /* v145: hot rail — smart scroll on phone + laptop, arrows on desktop */
+  .su-hot-rail{scroll-snap-type:x proximity;overscroll-behavior-x:contain;scroll-behavior:smooth;-webkit-overflow-scrolling:touch}
+  @media (max-width:640px){.su-hot-rail{grid-auto-columns:minmax(78vw,1fr);scroll-snap-type:x mandatory;padding-right:18px}}
+  @media (min-width:1000px){.su-hot-rail{padding-right:46px}}
+  .su-rail-host{position:relative}
+  .su-rail-nav{position:absolute;top:38%;z-index:5;width:40px;height:40px;border-radius:50%;border:1px solid var(--line);
+    background:var(--card);color:var(--navy);font-size:22px;line-height:1;cursor:pointer;display:grid;place-items:center;
+    box-shadow:0 10px 24px rgba(31,26,92,.18);transition:transform .16s,background .16s}
+  .su-rail-nav:hover{transform:scale(1.08);background:linear-gradient(135deg,#4f46e5,#ec4899);color:#fff;border-color:transparent}
+  .su-rail-prev{left:-6px}.su-rail-next{right:-6px}
+  .su-rail-nav[hidden]{display:none}
+  @media (max-width:640px){.su-rail-nav{display:none}}
+  body.dark .su-rail-nav{background:#132339;color:#e8f0ff;border-color:#24364f}
+  @media (prefers-reduced-motion:reduce){.su-hot-rail{scroll-behavior:auto}.su-rail-nav{transition:none}}
 </style>
   <style id="su-premium-css">
 /* ===========================================================
@@ -2236,17 +2251,52 @@ body.su-has-applybar{padding-bottom:70px}
     })();
 
     /* ---------- daily quiz ---------- */
-    var QUIZ=[
+    /* v145: 24-question bank → every day a different 6-question paper.
+       Day seed = IST date, so every reader sees the same quiz all day. */
+    var QUIZ_BANK=[
       {q:"తెలంగాణ రాష్ట్ర రాజధాని ఏది?",opts:["వరంగల్","హైదరాబాద్","అమరావతి","కర్నూలు"],a:1,why:"తెలంగాణ రాష్ట్ర రాజధాని హైదరాబాద్."},
       {q:"APPSC పూర్తి రూపం ఏమిటి?",opts:["ఆంధ్రప్రదేశ్ పబ్లిక్ సర్వీస్ కమిషన్","AP పబ్లిక్ సెక్టర్ కంపెనీ","ఆంధ్ర పోలీస్ & సర్వీస్ సెల్","AP ప్యానెల్ & షెడ్యూల్స్ కౌన్సిల్"],a:0,why:"APPSC = ఆంధ్రప్రదేశ్ పబ్లిక్ సర్వీస్ కమిషన్ (psc.ap.gov.in)."},
-      {q:"తెలంగాణలో ఎన్ని జిల్లాలు ఉన్నాయి?",opts:["33","26","45","59"],a:0,why:"తెలంగాణ 33 జిల్లాలు + ఆంధ్రప్రదేశ్ 26 జిల్లాలు = మొత్తం 59."},
-      {q:"“దక్షిణ గంగ” అని ఏ నదిని పిలుస్తారు?",opts:["కృష్ణా","కావేరి","గోదావరి","గంగ"],a:2,why:"గోదావరి నదిని “దక్షిణ గంగ” అంటారు — తెలంగాణ & ఆంధ్రప్రదేశ్ గుండా ప్రవహిస్తుంది."},
-      {q:"NSP (నేషనల్ స్కాలర్‌షిప్ పోర్టల్)లో ఏమి దరఖాస్తు చేయవచ్చు?",opts:["కేంద్ర + రాష్ట్ర స్కాలర్‌షిప్‌లు","బ్యాంక్ రుణాలు మాత్రమే","కళాశాల హాస్టళ్లు","లైబ్రరీ కార్డులు"],a:0,why:"NSPలో కేంద్ర + రాష్ట్ర స్కాలర్‌షిప్‌లు (ప్రీ-మెట్రిక్, పోస్ట్-మెట్రిక్, మెరిట్-కమ్-మీన్స్) దరఖాస్తు చేసుకోవచ్చు."},
-      {q:"2014 విభజనకు ముందు ఆంధ్రప్రదేశ్ రాజధాని ఏది?",opts:["అమరావతి","విజయవాడ","హైదరాబాద్","గుంటూరు"],a:2,why:"2014 వరకు ఉమ్మడి ఆంధ్రప్రదేశ్ రాజధాని హైదరాబాద్; విభజన తర్వాత అమరావతి."}
+      {q:"తెలంగాణలో ఎన్ని జిల్లాలు ఉన్నాయి?",opts:["33","26","45","59"],a:0,why:"తెలంగాణ 33 జిల్లాలు; ఆంధ్రప్రదేశ్ 26 జిల్లాలు."},
+      {q:"“దక్షిణ గంగ” అని ఏ నదిని పిలుస్తారు?",opts:["కృష్ణా","కావేరి","గోదావరి","గంగ"],a:2,why:"గోదావరి నదిని “దక్షిణ గంగ” అంటారు."},
+      {q:"NSP పోర్టల్‌లో ఏమి దరఖాస్తు చేయవచ్చు?",opts:["కేంద్ర + రాష్ట్ర స్కాలర్‌షిప్‌లు","బ్యాంక్ రుణాలు మాత్రమే","కళాశాల హాస్టళ్లు","లైబ్రరీ కార్డులు"],a:0,why:"NSP (scholarships.gov.in) లో కేంద్ర + రాష్ట్ర స్కాలర్‌షిప్‌లు."},
+      {q:"2014 విభజనకు ముందు ఉమ్మడి ఆంధ్రప్రదేశ్ రాజధాని?",opts:["అమరావతి","విజయవాడ","హైదరాబాద్","గుంటూరు"],a:2,why:"2014 వరకు హైదరాబాద్; విభజన తర్వాత అమరావతి."},
+      {q:"TSPSC ఏ ప్రభుత్వ ఉద్యోగాలకు పరీక్షలు నిర్వహిస్తుంది?",opts:["కేంద్ర ప్రభుత్వం","తెలంగాణ రాష్ట్ర ప్రభుత్వం","ప్రైవేట్ కంపెనీలు","బ్యాంకులు"],a:1,why:"TSPSC = తెలంగాణ స్టేట్ పబ్లిక్ సర్వీస్ కమిషన్ (tspsc.gov.in)."},
+      {q:"SSC CGL ఏ స్థాయి పోస్టుల కోసం?",opts:["Group B & C కేంద్ర పోస్టులు","కానిస్టేబుల్ పోస్టులు","ఉపాధ్యాయ పోస్టులు","బ్యాంక్ PO"],a:0,why:"SSC CGL కేంద్ర మంత్రిత్వ శాఖల్లో Group B & C పోస్టులకు."},
+      {q:"తెలంగాణ ఏర్పడిన తేదీ?",opts:["1 నవంబర్ 1956","2 జూన్ 2014","15 ఆగస్టు 1947","26 జనవరి 1950"],a:1,why:"2 జూన్ 2014 — భారతదేశపు 29వ రాష్ట్రం."},
+      {q:"IBPS ఏ రంగ నియామకాలు చేస్తుంది?",opts:["రైల్వే","బ్యాంకింగ్","రక్షణ","విద్య"],a:1,why:"IBPS = ఇన్‌స్టిట్యూట్ ఆఫ్ బ్యాంకింగ్ పర్సనల్ సెలక్షన్."},
+      {q:"RRB పరీక్షలు ఏ శాఖకు సంబంధించినవి?",opts:["రైల్వే","పోలీస్","పోస్టల్","అటవీ"],a:0,why:"RRB = రైల్వే రిక్రూట్‌మెంట్ బోర్డ్."},
+      {q:"UPSC సివిల్ సర్వీసెస్‌లో ఎన్ని దశలు ఉంటాయి?",opts:["ఒకటి","రెండు","మూడు","నాలుగు"],a:2,why:"ప్రిలిమ్స్, మెయిన్స్, ఇంటర్వ్యూ — మూడు దశలు."},
+      {q:"AP DSC ఏ పోస్టుల కోసం నిర్వహిస్తారు?",opts:["ఉపాధ్యాయ పోస్టులు","పోలీస్ పోస్టులు","రెవెన్యూ పోస్టులు","వైద్య పోస్టులు"],a:0,why:"DSC = డిస్ట్రిక్ట్ సెలక్షన్ కమిటీ — ఉపాధ్యాయ నియామకాలు."},
+      {q:"NEET ఏ కోర్సుల ప్రవేశానికి?",opts:["ఇంజనీరింగ్","మెడికల్","లా","మేనేజ్‌మెంట్"],a:1,why:"NEET = మెడికల్ (MBBS/BDS) ప్రవేశ పరీక్ష."},
+      {q:"JEE Main ఏ సంస్థ నిర్వహిస్తుంది?",opts:["NTA","UGC","AICTE","CBSE"],a:0,why:"నేషనల్ టెస్టింగ్ ఏజెన్సీ (NTA) JEE Main నిర్వహిస్తుంది."},
+      {q:"EAMCET ఇప్పుడు ఏ పేరుతో పిలుస్తారు (TS)?",opts:["TS EAPCET","TS ECET","TS PGECET","TS ICET"],a:0,why:"TS EAMCET → TS EAPCET గా పేరు మారింది."},
+      {q:"ప్రభుత్వ ఉద్యోగ దరఖాస్తుకు ఏ పోర్టల్ అధికారికం?",opts:["సంబంధిత శాఖ అధికారిక వెబ్‌సైట్","ఏదైనా జాబ్ యాప్","వాట్సాప్ లింక్","యూట్యూబ్ లింక్"],a:0,why:"ఎప్పుడూ అధికారిక వెబ్‌సైట్‌లోనే దరఖాస్తు చేయాలి — మోసాలు తప్పించుకోవచ్చు."},
+      {q:"హాల్ టికెట్ ఎక్కడ నుండి డౌన్‌లోడ్ చేయాలి?",opts:["అధికారిక పరీక్ష వెబ్‌సైట్","టెలిగ్రామ్ గ్రూప్","ఫేస్‌బుక్ పేజీ","ప్రైవేట్ యాప్"],a:0,why:"హాల్ టికెట్ ఎప్పుడూ అధికారిక వెబ్‌సైట్ నుండే."},
+      {q:"ఆంధ్రప్రదేశ్ ప్రస్తుత రాజధాని?",opts:["హైదరాబాద్","అమరావతి","విశాఖపట్నం","తిరుపతి"],a:1,why:"అమరావతి ఆంధ్రప్రదేశ్ రాజధాని."},
+      {q:"TGRTC/APSRTC ఏ రంగానికి చెందినవి?",opts:["రవాణా","విద్యుత్","నీటిపారుదల","వ్యవసాయం"],a:0,why:"రాష్ట్ర రోడ్డు రవాణా సంస్థలు."},
+      {q:"గ్రూప్-2 పరీక్షలో సాధారణంగా ఎన్ని దశలు?",opts:["ఒకటి","రెండు","నాలుగు","ఐదు"],a:1,why:"ప్రిలిమ్స్ + మెయిన్స్ — రెండు దశలు."},
+      {q:"స్కాలర్‌షిప్ దరఖాస్తుకు ఏది తప్పనిసరి?",opts:["ఆధార్ లింక్ బ్యాంక్ ఖాతా","క్రెడిట్ కార్డ్","పాస్‌పోర్ట్","డ్రైవింగ్ లైసెన్స్"],a:0,why:"DBT కోసం ఆధార్ లింక్ అయిన బ్యాంక్ ఖాతా అవసరం."},
+      {q:"ఏ సంస్థ బ్యాంక్ క్లర్క్ పరీక్ష నిర్వహిస్తుంది?",opts:["IBPS","SSC","UPSC","NTA"],a:0,why:"IBPS Clerk — పబ్లిక్ సెక్టార్ బ్యాంకుల క్లరికల్ నియామకాలు."},
+      {q:"ప్రభుత్వ ఉద్యోగానికి ఏ డాక్యుమెంట్ తప్పనిసరి?",opts:["కుల/ఆదాయ ధ్రువపత్రం (వర్తిస్తే)","సోషల్ మీడియా ఖాతా","క్లబ్ మెంబర్‌షిప్","జిమ్ కార్డ్"],a:0,why:"రిజర్వేషన్/ఫీజు రాయితీకి కుల/ఆదాయ ధ్రువపత్రాలు అవసరం."}
     ];
-    var BEST_KEY="studentup-quiz-best", wrap=document.getElementById("qwrap"), result=document.getElementById("qresult"),
+    /* IST day number — andariki same paper, roju kotha paper */
+    var _qn=new Date(Date.now()+(330+new Date().getTimezoneOffset())*60000);
+    var QUIZ_DAY=Math.floor(Date.UTC(_qn.getFullYear(),_qn.getMonth(),_qn.getDate())/86400000);
+    var QUIZ=(function(){
+      var out=[],used={},n=QUIZ_BANK.length;
+      for(var i=0;i<6;i++){
+        var ix=(QUIZ_DAY*6+i*7)%n, guard=0;
+        while(used[ix]&&guard<n){ix=(ix+1)%n;guard++;}
+        used[ix]=true; out.push(QUIZ_BANK[ix]);
+      }
+      return out;
+    })();
+    var BEST_KEY="studentup-quiz-best-"+QUIZ_DAY, wrap=document.getElementById("qwrap"), result=document.getElementById("qresult"),
         scoreEl=document.getElementById("qscore"), bestEl=document.getElementById("qbest"), msgEl=document.getElementById("qmsg"),
         prog=document.querySelectorAll("#qprog i"), cur=0, score=0, answered=0, done=false;
+    /* test hook: today's paper + its storage key (the runtime suite reads these
+       instead of hard-coding answers that change with every daily rotation) */
+    window.SU_QUIZ=QUIZ; window.SU_QUIZ_KEY=BEST_KEY;
     function bestLoad(){try{return parseInt(localStorage.getItem(BEST_KEY),10)||0;}catch(e){return 0;}}
     function render(){
       done=false;cur=0;score=0;answered=0;
@@ -2333,7 +2383,19 @@ body.su-has-applybar{padding-bottom:70px}
       {t:"APPSC stands for?",o:["Andhra Pradesh Public Service Commission","AP Police Service Cell","Andhra Pradesh Power Supply Company","AP Panel & Schedules Council"],a:0,w:"APPSC = Andhra Pradesh Public Service Commission (psc.ap.gov.in)."},
       {t:"The official portal for central scholarships (NSP) is?",o:["scholarships.gov.in","nsp.gov.in","myscholarship.in","scholarship.ap.gov.in"],a:0,w:"National Scholarship Portal = scholarships.gov.in — always apply on official portals only."},
       {t:"Which of these is a Navratna-level state power utility pair of Telangana?",o:["TSNPDCL & TSSPDCL","APEPDCL & APCPDCL","TGDISCOM & APDISCOM","TSGENCO & APGENCO"],a:0,w:"Telangana discoms: TSNPDCL (north) & TSSPDCL (south)."},
-      {t:"SSC CGL is conducted for recruitment to?",o:["Bank PO posts","Group B & C posts in central ministries","Police constable posts","Teaching posts"],a:1,w:"SSC CGL recruits Group B & C officers for central government ministries (ssc.gov.in)."}
+      {t:"SSC CGL is conducted for recruitment to?",o:["Bank PO posts","Group B & C posts in central ministries","Police constable posts","Teaching posts"],a:1,w:"SSC CGL recruits Group B & C officers for central government ministries (ssc.gov.in)."},
+      {t:"Which board conducts railway job recruitment in India?",o:["RRB","IBPS","NTA","UGC"],a:0,w:"RRB = Railway Recruitment Board — NTPC, Group D and ALP notifications come from it."},
+      {t:"How many stages does the UPSC Civil Services exam have?",o:["One","Two","Three","Four"],a:2,w:"Prelims, Mains and the Interview (Personality Test) — three stages."},
+      {t:"TS EAMCET is now officially called?",o:["TS EAPCET","TS ECET","TS ICET","TS PGECET"],a:0,w:"TS EAMCET was renamed TS EAPCET (Engineering, Agriculture & Pharmacy Common Entrance Test)."},
+      {t:"NEET is the entrance exam for which stream?",o:["Engineering","Medical","Law","Management"],a:1,w:"NEET-UG is the single entrance test for MBBS/BDS/AYUSH admissions in India."},
+      {t:"IBPS conducts recruitment mainly for?",o:["Banking","Railways","Defence","Forests"],a:0,w:"IBPS runs PO, Clerk and SO exams for public sector banks."},
+      {t:"Telangana was formed on which date?",o:["1 Nov 1956","2 June 2014","15 Aug 1947","26 Jan 1950"],a:1,w:"Telangana became India's 29th state on 2 June 2014."},
+      {t:"Where should you always download a hall ticket from?",o:["The official exam website","A Telegram group","A Facebook page","A private app"],a:0,w:"Only the official website — third-party copies are how most exam scams start."},
+      {t:"AP DSC notifications are for which posts?",o:["Teaching posts","Police posts","Revenue posts","Medical posts"],a:0,w:"DSC (District Selection Committee) handles government teacher recruitment."},
+      {t:"What is mandatory for a scholarship amount to reach you?",o:["An Aadhaar-linked bank account","A credit card","A passport","A driving licence"],a:0,w:"Scholarships are paid by DBT, so the bank account must be Aadhaar-seeded."},
+      {t:"Which exam is conducted by NTA?",o:["JEE Main","TSPSC Group 2","RRB NTPC","IBPS Clerk"],a:0,w:"The National Testing Agency conducts JEE Main, NEET-UG, CUET and UGC-NET."},
+      {t:"TSPSC recruits for which government?",o:["Telangana state government","Central government","Private companies","Banks"],a:0,w:"TSPSC (tspsc.gov.in) handles Telangana state government recruitment."},
+      {t:"A Group-2 exam usually has how many written stages?",o:["One","Two","Three","Five"],a:1,w:"Prelims followed by Mains — two written stages before certificate verification."}
     ];
     (function(){
       var box=document.getElementById("pollbox"); if(!box) return;
@@ -2425,6 +2487,37 @@ body.su-has-applybar{padding-bottom:70px}
       document.getElementById("jobs").scrollIntoView({behavior:"smooth", block:"start"}); }
     hq.form.addEventListener("submit", function(e){ e.preventDefault(); sync(); });
     hq.addEventListener("input", function(){ q.value = hq.value; q.dispatchEvent(new Event("input", {bubbles:true})); });
+  })();
+</script>
+<script>
+  /* v145: hot rail — drag, arrows, keyboard, edge-aware buttons */
+  (function(){
+    Array.prototype.forEach.call(document.querySelectorAll(".su-hot-rail"), function(r){
+      var down=false,x=0,sl=0,moved=false, host=r.parentNode;
+      r.addEventListener("pointerdown",function(e){ if(e.pointerType==="touch")return; down=true;moved=false;x=e.clientX;sl=r.scrollLeft; });
+      window.addEventListener("pointerup",function(){ down=false; r.classList.remove("dragging"); });
+      r.addEventListener("pointermove",function(e){ if(!down)return; var d=e.clientX-x;
+        if(Math.abs(d)>4){moved=true;r.classList.add("dragging");} r.scrollLeft=sl-d; });
+      r.addEventListener("click",function(e){ if(moved){e.preventDefault();moved=false;} },true);
+      r.setAttribute("tabindex","0"); r.setAttribute("role","group");
+      function cw(){ var c=r.querySelector(".su-hotcard"); return c?c.getBoundingClientRect().width+14:260; }
+      function step(d){ r.scrollBy({left:d*cw(),behavior:"smooth"}); }
+      r.addEventListener("keydown",function(e){
+        if(e.key!=="ArrowRight"&&e.key!=="ArrowLeft")return; e.preventDefault(); step(e.key==="ArrowRight"?1:-1); });
+      if(host && !host.querySelector(".su-rail-nav")){
+        host.classList.add("su-rail-host");
+        ["prev","next"].forEach(function(k){
+          var b=document.createElement("button"); b.type="button"; b.className="su-rail-nav su-rail-"+k;
+          b.setAttribute("aria-label",k==="prev"?"Scroll left":"Scroll right");
+          b.innerHTML=k==="prev"?"\u2039":"\u203a";
+          b.addEventListener("click",function(){ step(k==="prev"?-1:1); }); host.appendChild(b);
+        });
+      }
+      function edges(){ var max=r.scrollWidth-r.clientWidth-2;
+        var pv=host.querySelector(".su-rail-prev"), nx=host.querySelector(".su-rail-next");
+        if(pv)pv.hidden=r.scrollLeft<=2; if(nx)nx.hidden=r.scrollLeft>=max; }
+      r.addEventListener("scroll",edges,{passive:true}); window.addEventListener("resize",edges); edges();
+    });
   })();
 </script>
 </body>

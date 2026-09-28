@@ -39,7 +39,8 @@ def test_poll_bank_shape_and_rotation():
     assert m, "POLL_BANK ledu"
     bank = m.group(1)
     items = re.findall(r"\{t:\"(.*?)\",o:\[(.*?)\],a:(\d+),w:\"(.*?)\"\}", bank)
-    assert len(items) == 7, f"poll bank 7 undali, unnayi: {len(items)}"
+    # v145: bank 7 -> 19 so a question does not repeat within ~3 weeks
+    assert len(items) == 19, f"poll bank 19 undali, unnayi: {len(items)}"
     for t, opts, a, w in items:
         assert len(t) > 10 and len(w) > 10, "question/explanation chinnadi"
         assert not TE.search(t + opts + w), "poll bank English-only (v73 scope)"

@@ -101,13 +101,13 @@ def test_poll_bank_valid_and_english():
     m = re.search(r"var POLL_BANK=\[(.*?)\];", html, re.S)
     assert m, "POLL_BANK ledu"
     items = re.findall(r"\{t:\"(.*?)\",o:\[(.*?)\],a:(\d+),w:\"(.*?)\"\}", m.group(1))
-    assert len(items) == 7, len(items)
+    assert len(items) == 19, len(items)
     for t, opts, a, w in items:
         assert not TE.search(t + opts + w), "poll English-only (v73 scope)"
         assert len(re.findall(r"\"(.*?)\"", opts)) == 4
         assert 0 <= int(a) < 4
     assert "fetch(" not in html.split("var POLL_BANK=")[1].split("</script>")[0], "poll lo fetch undakoodadu"
-    print("  poll: 7 valid English questions · zero fetch ✔")
+    print("  poll: 19 valid English questions · zero fetch ✔")
 
 
 def test_theme_has_no_exam():
