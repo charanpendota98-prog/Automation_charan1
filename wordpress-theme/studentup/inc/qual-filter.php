@@ -66,7 +66,23 @@ function studentup_qual_keywords() {
 		'degree'  => array( 'డిగ్రీ', 'degree', 'graduate', 'graduation', 'any degree', 'b.a', 'b.sc', 'b.com', 'బీఏ', 'బీఎస్సీ', 'బీకాం' ),
 		'pg'      => array( 'పీజీ', 'pg', 'post graduate', 'postgraduate', 'm.a', 'm.sc', 'm.com', 'mba', 'ఎంఏ', 'ఎంఎస్సీ', 'ఎంబీఏ' ),
 		'btech'   => array( 'బీటెక్', 'b.tech', 'btech', 'b.e', 'engineering', 'ఇంజినీరింగ్' ),
+		// v135: Telugu detection words for the opportunity board live here too,
+		// so every Telugu string in the theme stays inside this one keyword map.
+		'_topic_hallticket' => array( 'హాల్ టికెట్', 'హాల్‌టికెట్' ),
+		'_topic_result'     => array( 'ఫలితాలు', 'ఫలితం' ),
 	);
+}
+
+/**
+ * Telugu synonyms for a board topic (detection only — never printed).
+ *
+ * @param string $topic hallticket|result.
+ * @return array Keyword list.
+ */
+function studentup_topic_keywords( $topic ) {
+	$all = studentup_qual_keywords();
+	$key = '_topic_' . $topic;
+	return isset( $all[ $key ] ) ? (array) $all[ $key ] : array();
 }
 
 /**

@@ -5,7 +5,7 @@
  *
  * Enduku: theme perfect ga unna, site data (policy pages, featured images,
  * job meta, social links, AdSense ids) missing aithe approval + CTR debba
- * tinipistundi. Ee page okka chupu lo "ఇంకా ఏం chesthe 100/100" ani cheptundi.
+ * tinipistundi. Ee page okka chupu lo "inka em chesthe 100/100" ani cheptundi.
  *
  * Anni checks live site data meeda — hardcoded "ok" eppudu ledu.
  *

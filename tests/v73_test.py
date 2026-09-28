@@ -151,6 +151,12 @@ def test_theme_telugu_only_in_detection_keywords():
             src = read(f)
             if f.name == "cta.php":
                 src = _strip_cta_telugu_brand(src)   # v89 allowed region
+            if f.name == "success-stories.php":
+                # v117 allowed region: the story-intake block speaks to Telugu
+                # students in their language by design (same rule as the v89
+                # CTA brand block). Everything outside it must stay English.
+                src = re.sub(r"<h2 id=\"su-success-intake-title\".*?</section>", "",
+                             src, flags=re.S)
             assert not TE.search(src), f"{f.relative_to(THEME)} lo Telugu undi"
 
 
