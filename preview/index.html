@@ -646,6 +646,12 @@
   .su-jt-more{background:rgba(79,70,229,.10);color:#4f46e5;border:1px solid rgba(79,70,229,.2)}
   body.dark .su-jobtable{background:#0f1c2e}
   body.dark .su-jt-title a{color:#e8f0ff}
+
+  /* v143: image-first cards — real cover image, zero CLS (width/height set) */
+  .thumb-img{display:block;padding:0;overflow:hidden;position:relative;aspect-ratio:16/9;border-radius:14px 14px 0 0}
+  .thumb-img img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .35s ease}
+  .news:hover .thumb-img img{transform:scale(1.045)}
+  @media (prefers-reduced-motion:reduce){.thumb-img img{transition:none}.news:hover .thumb-img img{transform:none}}
 </style>
   <style id="su-premium-css">
 /* ===========================================================
@@ -1448,7 +1454,7 @@ body.su-has-applybar{padding-bottom:70px}
         </aside>
 
         <article class="news" data-state="ts" data-cat="ts-jobs upcoming" data-text="tspsc group 2 2026 notification telangana state service eligibility syllabus" data-qual="degree pg" data-last="2026-10-15">
-          <div class="thumb t2"><span>TSPSC Group 2<br>నోటిఫికేషన్ మార్గదర్శి</span></div>
+          <a class="thumb thumb-img" href="posts/upsc-junior-assistant-2026.html" tabindex="-1" aria-hidden="true"><img src="assets/img/card-tspsc.jpg" width="800" height="446" loading="lazy" decoding="async" alt=""></a>
           <div class="newsbody">
             <div class="tagrow"><span class="tag">తెలంగాణ ప్రభుత్వ ఉద్యోగాలు</span><span class="su-fresh">NEW</span><span class="statechip ts">TS</span></div>
             <h3>TSPSC గ్రూప్ 2 2026: నోటిఫికేషన్, అర్హత &amp; సిలబస్</h3>
@@ -1484,7 +1490,7 @@ body.su-has-applybar{padding-bottom:70px}
           </div>
         </article>
         <article class="news" data-state="ap" data-cat="ap-jobs" data-text="appsc group 1 group 2 andhra pradesh state service cutoff trend preparation" data-qual="degree pg" data-last="2026-11-05">
-          <div class="thumb t3"><span>APPSC Group 1 &amp; 2<br>ఆంధ్రప్రదేశ్ రాష్ట్ర సేవలు</span></div>
+          <a class="thumb thumb-img" href="posts/upsc-junior-assistant-2026.html" tabindex="-1" aria-hidden="true"><img src="assets/img/card-results.jpg" width="800" height="446" loading="lazy" decoding="async" alt=""></a>
           <div class="newsbody">
             <div class="tagrow"><span class="tag">ఆంధ్రప్రదేశ్ ప్రభుత్వ ఉద్యోగాలు</span><span class="statechip ap">AP</span></div>
             <h3>APPSC గ్రూప్ 1 &amp; గ్రూప్ 2: నోటిఫికేషన్‌లు &amp; కటాఫ్ ధోరణులు</h3>
@@ -1493,7 +1499,7 @@ body.su-has-applybar{padding-bottom:70px}
           </div>
         </article>
         <article class="news" data-state="ts central" data-cat="hallticket upcoming" data-qual="all" data-text="hall ticket admit card download tspsc ssc exam day rules id proof reporting time hallticket">
-          <div class="thumb t2"><span>హాల్ టికెట్ 2026<br>డౌన్‌లోడ్ + నియమాలు</span></div>
+          <a class="thumb thumb-img" href="posts/upsc-junior-assistant-2026.html" tabindex="-1" aria-hidden="true"><img src="assets/img/card-walkin.jpg" width="800" height="446" loading="lazy" decoding="async" alt=""></a>
           <div class="newsbody">
             <div class="tagrow"><span class="tag">Hall Tickets</span><span class="statechip">TS + IND</span></div>
             <h3>హాల్ టికెట్ డౌన్‌లోడ్: రిజిస్ట్రేషన్ నంబర్, పరీక్షా కేంద్రం &amp; ID ప్రూఫ్ చెక్‌లిస్ట్</h3>
@@ -1605,6 +1611,83 @@ body.su-has-applybar{padding-bottom:70px}
       </section>
 
 
+
+
+      <!-- v143: Top hot jobs rail — same surface as theme studentup_hot_jobs() -->
+      <section class="su-hot" aria-label="Top hot jobs today">
+        <div class="su-hot-head">
+          <h2>🔥 Top 6 hot jobs today</h2>
+          <a href="#jobs">All active jobs →</a>
+        </div>
+        <div class="su-hot-rail">
+          <article class="su-hotcard">
+            <a class="su-hot-thumb" href="posts/upsc-junior-assistant-2026.html">
+              <img src="assets/img/card-tspsc.jpg" width="800" height="446" loading="eager" fetchpriority="high" decoding="async" alt="">
+              <span class="su-hot-rank">#1</span>
+            </a>
+            <div class="su-hot-body">
+              <h3><a href="posts/upsc-junior-assistant-2026.html">TSPSC Group 2 2026 — 783 posts</a></h3>
+              <div class="su-hot-meta"><span class="su-pill su-pill-amber">📅 Oct 15</span><span class="su-pill su-pill-green">🪪 783 posts</span><span class="su-pill su-pill-hot">⏳ 6d left</span></div>
+              <a class="su-hot-apply" href="posts/upsc-junior-assistant-2026.html">Apply / Details →</a>
+            </div>
+          </article>
+          <article class="su-hotcard">
+            <a class="su-hot-thumb" href="posts/upsc-junior-assistant-2026.html">
+              <img src="assets/img/card-results.jpg" width="800" height="446" loading="lazy" decoding="async" alt="">
+              <span class="su-hot-rank">#2</span>
+            </a>
+            <div class="su-hot-body">
+              <h3><a href="posts/upsc-junior-assistant-2026.html">AP DSC 2026 teacher recruitment</a></h3>
+              <div class="su-hot-meta"><span class="su-pill su-pill-amber">📅 Nov 5</span><span class="su-pill su-pill-green">🪪 6,100 posts</span></div>
+              <a class="su-hot-apply" href="posts/upsc-junior-assistant-2026.html">Apply / Details →</a>
+            </div>
+          </article>
+          <article class="su-hotcard">
+            <a class="su-hot-thumb" href="posts/upsc-junior-assistant-2026.html">
+              <img src="assets/img/card-walkin.jpg" width="800" height="446" loading="lazy" decoding="async" alt="">
+              <span class="su-hot-rank">#3</span>
+            </a>
+            <div class="su-hot-body">
+              <h3><a href="posts/upsc-junior-assistant-2026.html">TS Police Constable — hall ticket live</a></h3>
+              <div class="su-hot-meta"><span class="su-pill su-pill-amber">📅 Oct 2</span><span class="su-pill su-pill-hot">⏳ 2d left</span></div>
+              <a class="su-hot-apply" href="posts/upsc-junior-assistant-2026.html">Apply / Details →</a>
+            </div>
+          </article>
+          <article class="su-hotcard">
+            <a class="su-hot-thumb" href="posts/upsc-junior-assistant-2026.html">
+              <img src="assets/img/card-scholarship.jpg" width="800" height="446" loading="lazy" decoding="async" alt="">
+              <span class="su-hot-rank">#4</span>
+            </a>
+            <div class="su-hot-body">
+              <h3><a href="posts/upsc-junior-assistant-2026.html">NSP scholarship 2026 — last date</a></h3>
+              <div class="su-hot-meta"><span class="su-pill su-pill-amber">📅 Oct 31</span><span class="su-pill su-pill-green">🎓 Scholarship</span></div>
+              <a class="su-hot-apply" href="posts/upsc-junior-assistant-2026.html">Apply / Details →</a>
+            </div>
+          </article>
+          <article class="su-hotcard">
+            <a class="su-hot-thumb" href="posts/upsc-junior-assistant-2026.html">
+              <img src="assets/img/card-tspsc.jpg" width="800" height="446" loading="lazy" decoding="async" alt="">
+              <span class="su-hot-rank">#5</span>
+            </a>
+            <div class="su-hot-body">
+              <h3><a href="posts/upsc-junior-assistant-2026.html">SSC CGL 2026 — central govt jobs</a></h3>
+              <div class="su-hot-meta"><span class="su-pill su-pill-amber">📅 Oct 28</span><span class="su-pill su-pill-green">🪪 17,727 posts</span></div>
+              <a class="su-hot-apply" href="posts/upsc-junior-assistant-2026.html">Apply / Details →</a>
+            </div>
+          </article>
+          <article class="su-hotcard">
+            <a class="su-hot-thumb" href="posts/upsc-junior-assistant-2026.html">
+              <img src="assets/img/card-results.jpg" width="800" height="446" loading="lazy" decoding="async" alt="">
+              <span class="su-hot-rank">#6</span>
+            </a>
+            <div class="su-hot-body">
+              <h3><a href="posts/upsc-junior-assistant-2026.html">Railway Group D — 32,000 vacancies</a></h3>
+              <div class="su-hot-meta"><span class="su-pill su-pill-amber">📅 Nov 12</span><span class="su-pill su-pill-green">🪪 32,438 posts</span></div>
+              <a class="su-hot-apply" href="posts/upsc-junior-assistant-2026.html">Apply / Details →</a>
+            </div>
+          </article>
+        </div>
+      </section>
 
       <!-- v142: latest jobs table — same surface as theme studentup_jobs_table() -->
       <section class="su-jobtable" aria-labelledby="su-jobtable-title">
