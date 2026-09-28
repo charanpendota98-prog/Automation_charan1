@@ -133,6 +133,7 @@ function studentup_hot_jobs( $limit = 10 ) {
 			<h2>🔥 Top <?php echo esc_html( (int) $limit ); ?> hot jobs today</h2>
 			<a href="<?php echo esc_url( studentup_opportunity_board_url() ); ?>">All active jobs →</a>
 		</div>
+		<p class="su-rail-hint">👉 <?php esc_html_e( 'Swipe sideways for more', 'studentup' ); ?></p>
 		<div class="su-hot-rail">
 			<?php
 			$n = 0;

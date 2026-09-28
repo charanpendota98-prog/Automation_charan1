@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: StudentUp 1.9.20\n"
 "Report-Msgid-Bugs-To: https://studentup.in/\n"
-"POT-Creation-Date: 2026-09-28 09:57+0000\n"
+"POT-Creation-Date: 2026-09-28 10:53+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -12,11 +12,16 @@ msgstr ""
 "X-Generator: tools/build_pot.py\n"
 
 #: inc/apply.php:103
+#: inc/engage.php:156
 msgid "%d days left"
 msgstr ""
 
 #: author.php:43
 msgid "%s articles"
+msgstr ""
+
+#: inc/engage.php:153
+msgid "1 day left"
 msgstr ""
 
 #: inc/cta.php:76
@@ -82,6 +87,10 @@ msgstr ""
 
 #: inc/apply.php:95
 msgid "Closes today"
+msgstr ""
+
+#: inc/engage.php:134
+msgid "Closing this week"
 msgstr ""
 
 #: comments.php:67
@@ -173,11 +182,19 @@ msgstr ""
 msgid "Last date over"
 msgstr ""
 
+#: inc/engage.php:135
+msgid "Last dates from the official notifications"
+msgstr ""
+
+#: inc/engage.php:151
+msgid "Last day today"
+msgstr ""
+
 #: inc/breaking.php:286
 msgid "Latest Jobs"
 msgstr ""
 
-#: front-page.php:65
+#: front-page.php:66
 msgid "Latest student updates"
 msgstr ""
 
@@ -362,6 +379,10 @@ msgstr ""
 
 #: inc/editor.php:49
 msgid "StudentUp blocks"
+msgstr ""
+
+#: inc/premium.php:136
+msgid "Swipe sideways for more"
 msgstr ""
 
 #: inc/cta.php:47

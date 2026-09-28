@@ -46,6 +46,7 @@ function studentup_option_fields() {
 				'updated_stamp' => array( 'Show "Updated on" line', 'check', '1', 'v144: publish tarvata nijam ga edit chesthene chuputundi (fake freshness ledu)' ),
 				'helpful_box' => array( '"Was this helpful?" box', 'check', '1', 'v144: vote reader browser lo ne — public counter ledu, fake numbers ledu' ),
 				'jobs_table' => array( 'Latest jobs table (homepage)', 'check', '1', 'v142: scannable rows — post, qualification, last date, apply link (meta nunchi, invent cheyyadu)' ),
+				'closing_week' => array( 'Deadline radar (closing this week)', 'check', '1', 'v146: su_last_date meta nunchi next 7 days lo close ayye posts — live days-left pills' ),
 				'popular_searches' => array( 'Popular searches strip (homepage)', 'check', '1', 'v140: long-tail internal links — category archives + real on-site searches' ),
 				'max_ads'        => array( 'Page ki max ads (density cap)', 'text', '5', '4-5 safe (AdSense + UX). Ekkuva = policy risk' ),
 				'lazy_ads'       => array( 'Lazy ads (below-fold) ON', 'check', '1', 'Viewability + CLS — AdSense RPM ki manchi' ),

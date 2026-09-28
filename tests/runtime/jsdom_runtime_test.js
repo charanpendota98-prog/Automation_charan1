@@ -12,7 +12,7 @@ const html = fs.readFileSync(PAGE, "utf8");
 
 /* v71: total check count — docs (README/MANUAL/GO_LIVE) claim this number and
  * tools/parity_audit.py P8 reads it, so a silent drift cannot slip through. */
-const EXPECTED_CHECKS = 166;
+const EXPECTED_CHECKS = 168;
 
 const passed = [];
 const failed = [];
@@ -305,6 +305,18 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
   ok("policy links mobile panel lo nijamaina pages ki (broken #trust anchor ledu)",
      !/href="#trust"/.test(document.body.innerHTML) &&
      /pages\/editorial-policy\.html/.test(document.body.innerHTML));
+  /* v146: deadline radar + scrollable rail */
+  const radar = document.getElementById("suradar");
+  ok("v146: deadline radar built from real card last dates (or hidden when none)",
+     !!radar && (radar.hidden
+       ? document.querySelectorAll("#suradarlist li").length === 0
+       : document.querySelectorAll("#suradarlist .su-radar-item a[href]").length > 0));
+  const rail0 = document.querySelector(".su-hot-rail");
+  ok("v146: hot rail is a focusable horizontal scroller with arrow buttons",
+     !!rail0 && rail0.getAttribute("tabindex") === "0" &&
+     !!rail0.parentNode.querySelector(".su-rail-prev") &&
+     !!rail0.parentNode.querySelector(".su-rail-next"));
+
   const poll = document.getElementById("poll");
   ok("daily question section present (Today's question)",
      !!poll && /Today's question/.test(poll.textContent));

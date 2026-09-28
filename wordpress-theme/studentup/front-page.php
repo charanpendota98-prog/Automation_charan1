@@ -47,6 +47,7 @@ get_header();
 <div class="wrap">
 	<?php
 	studentup_hot_jobs( 10 );      // v123: TOP 10 HOT JOBS TODAY
+	studentup_closing_week( 7 ); // v146: closing-this-week radar (real su_last_date meta only)
 	studentup_job_finder();        // v124: AI job match + eligibility checker
 	studentup_ad( 'in-feed' );     // v125: high-viewability slot (cap: max_ads)
 	studentup_stories( 8 );        // v129: swipeable quick story cards

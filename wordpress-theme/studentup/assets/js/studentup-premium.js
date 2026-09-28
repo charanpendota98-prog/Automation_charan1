@@ -165,66 +165,77 @@
 
   /* ---------------- Hot rail: arrows + drag + keyboard + snap ------- */
   function rail() {
-    var rails = document.querySelectorAll(".su-hot-rail");
-    Array.prototype.forEach.call(rails, function (r) {
-      var down = false, x = 0, sl = 0, moved = false;
+    Array.prototype.forEach.call(document.querySelectorAll(".su-hot-rail"), function (r) {
+      var host = r.parentNode;
+      if (!host) return;
+      host.classList.add("su-rail-host");
+      r.setAttribute("tabindex", "0");
+      r.setAttribute("role", "group");
+      r.setAttribute("aria-label", "Scrollable cards - swipe or use arrow keys");
 
-      /* pointer drag (mouse) — touch uses native momentum scrolling */
+      function step() {
+        var c = r.firstElementChild;
+        return (c ? c.getBoundingClientRect().width : 260) + 14;
+      }
+      function go(dir) { r.scrollBy({ left: dir * step(), behavior: "smooth" }); }
+
+      /* pointer drag (mouse) - touch keeps native momentum scrolling */
+      var down = false, x0 = 0, sl = 0, moved = false;
       r.addEventListener("pointerdown", function (e) {
         if (e.pointerType === "touch") return;
-        down = true; moved = false; x = e.clientX; sl = r.scrollLeft;
+        down = true; moved = false; x0 = e.clientX; sl = r.scrollLeft;
       });
       window.addEventListener("pointerup", function () {
         down = false; r.classList.remove("dragging");
       });
       r.addEventListener("pointermove", function (e) {
         if (!down) return;
-        var d = e.clientX - x;
+        var d = e.clientX - x0;
         if (Math.abs(d) > 4) { moved = true; r.classList.add("dragging"); }
         r.scrollLeft = sl - d;
       });
       r.addEventListener("click", function (e) {
-        if (moved) { e.preventDefault(); moved = false; }
+        if (moved) { e.preventDefault(); e.stopPropagation(); moved = false; }
       }, true);
 
-      /* keyboard: the rail is focusable, arrows move one card */
-      r.setAttribute("tabindex", "0");
-      r.setAttribute("role", "group");
+      /* wheel: a vertical wheel/trackpad gesture over the rail scrolls it sideways,
+         but the page gets its scroll back once the rail hits an edge */
+      r.addEventListener("wheel", function (e) {
+        if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+        var max = r.scrollWidth - r.clientWidth;
+        if (max <= 0) return;
+        var next = r.scrollLeft + e.deltaY;
+        if (next < 0 || next > max) return;
+        e.preventDefault();
+        r.scrollLeft = next;
+      }, { passive: false });
+
       r.addEventListener("keydown", function (e) {
         if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
         e.preventDefault();
-        step(e.key === "ArrowRight" ? 1 : -1);
+        go(e.key === "ArrowRight" ? 1 : -1);
       });
 
-      function cardWidth() {
-        var c = r.querySelector(".su-hotcard");
-        return c ? c.getBoundingClientRect().width + 14 : 260;
-      }
-      function step(dir) {
-        r.scrollBy({ left: dir * cardWidth(), behavior: "smooth" });
-      }
-
-      /* arrow buttons (added by JS so no-JS readers still get a plain scroller) */
-      var host = r.parentNode;
-      if (host && !host.querySelector(".su-rail-nav")) {
-        host.classList.add("su-rail-host");
-        ["prev", "next"].forEach(function (kind) {
-          var b = document.createElement("button");
+      /* arrow buttons (JS-added so no-JS readers still get a plain scroller) */
+      var nav = {};
+      ["prev", "next"].forEach(function (kind) {
+        var b = host.querySelector(".su-rail-" + kind);
+        if (!b) {
+          b = document.createElement("button");
           b.type = "button";
           b.className = "su-rail-nav su-rail-" + kind;
           b.setAttribute("aria-label", kind === "prev" ? "Scroll left" : "Scroll right");
           b.innerHTML = kind === "prev" ? "\u2039" : "\u203a";
-          b.addEventListener("click", function () { step(kind === "prev" ? -1 : 1); });
           host.appendChild(b);
-        });
-      }
+        }
+        b.addEventListener("click", function () { go(kind === "prev" ? -1 : 1); });
+        nav[kind] = b;
+      });
 
       function edges() {
         var max = r.scrollWidth - r.clientWidth - 2;
-        var p = host && host.querySelector(".su-rail-prev");
-        var n = host && host.querySelector(".su-rail-next");
-        if (p) p.hidden = r.scrollLeft <= 2;
-        if (n) n.hidden = r.scrollLeft >= max;
+        nav.prev.disabled = r.scrollLeft <= 2;
+        nav.next.disabled = r.scrollLeft >= max;
       }
       r.addEventListener("scroll", edges, { passive: true });
       window.addEventListener("resize", edges);

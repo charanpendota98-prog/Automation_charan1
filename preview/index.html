@@ -653,20 +653,25 @@
   .news:hover .thumb-img img{transform:scale(1.045)}
   @media (prefers-reduced-motion:reduce){.thumb-img img{transition:none}.news:hover .thumb-img img{transform:none}}
 
-  /* v145: hot rail — smart scroll on phone + laptop, arrows on desktop */
-  .su-hot-rail{scroll-snap-type:x proximity;overscroll-behavior-x:contain;scroll-behavior:smooth;-webkit-overflow-scrolling:touch}
-  @media (max-width:640px){.su-hot-rail{grid-auto-columns:minmax(78vw,1fr);scroll-snap-type:x mandatory;padding-right:18px}}
-  @media (min-width:1000px){.su-hot-rail{padding-right:46px}}
-  .su-rail-host{position:relative}
-  .su-rail-nav{position:absolute;top:38%;z-index:5;width:40px;height:40px;border-radius:50%;border:1px solid var(--line);
-    background:var(--card);color:var(--navy);font-size:22px;line-height:1;cursor:pointer;display:grid;place-items:center;
-    box-shadow:0 10px 24px rgba(31,26,92,.18);transition:transform .16s,background .16s}
-  .su-rail-nav:hover{transform:scale(1.08);background:linear-gradient(135deg,#4f46e5,#ec4899);color:#fff;border-color:transparent}
-  .su-rail-prev{left:-6px}.su-rail-next{right:-6px}
-  .su-rail-nav[hidden]{display:none}
-  @media (max-width:640px){.su-rail-nav{display:none}}
-  body.dark .su-rail-nav{background:#132339;color:#e8f0ff;border-color:#24364f}
-  @media (prefers-reduced-motion:reduce){.su-hot-rail{scroll-behavior:auto}.su-rail-nav{transition:none}}
+
+/* v146: deadline radar — built from the real last dates already on the cards */
+.su-radar{margin:20px 0;padding:16px 18px;border-radius:18px;border:1px solid var(--line);
+  background:linear-gradient(135deg,rgba(79,70,229,.08),rgba(236,72,153,.08))}
+.su-radar[hidden]{display:none}
+.su-radar-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.su-radar-head h2{margin:0;font-size:19px;color:var(--navy)}
+body.dark .su-radar-head h2{color:#eaf2ff}
+.su-radar-sub{font-size:12px;opacity:.75}
+.su-radar-list{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.su-radar-item{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:9px 11px;border-radius:12px;
+  background:var(--card);border:1px solid var(--line)}
+.su-radar-item a{font-weight:700;font-size:14px;flex:1 1 200px;color:var(--ink)}
+.su-radar-item a:hover{color:var(--su-g2)}
+.su-radar-pill{font-size:11.5px;font-weight:900;padding:4px 10px;border-radius:999px;white-space:nowrap}
+.su-radar-red{background:#fee2e2;color:#b91c1c}
+.su-radar-amber{background:#fef3c7;color:#92400e}
+.su-radar-green{background:#dcfce7;color:#166534}
+.su-radar-date{font-size:12px;opacity:.7;font-weight:700}
 </style>
   <style id="su-premium-css">
 /* ===========================================================
@@ -823,11 +828,33 @@ body.dark .su-hero-title{color:#eaf2ff}
 .su-hot-head h2,.su-schol-head h2{margin:0;font-size:21px;color:var(--navy)}
 body.dark .su-hot-head h2,body.dark .su-schol-head h2{color:#eaf2ff}
 .su-hot-head a,.su-schol-head a{font-size:12.5px;font-weight:900;color:var(--su-g2)}
-.su-hot-rail{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(240px,1fr);gap:14px;overflow-x:auto;
-  padding:4px 2px 14px;scroll-snap-type:x mandatory;scrollbar-width:thin}
-.su-hot-rail.dragging{cursor:grabbing;user-select:none}
-.su-hot-rail::-webkit-scrollbar{height:7px}
-.su-hot-rail::-webkit-scrollbar-thumb{background:rgba(124,58,237,.35);border-radius:9px}
+/* v146: bulletproof horizontal rail — flex + fixed card width so the track
+   ALWAYS overflows (the old grid 1fr tracks shrank to fit = no scrollbar). */
+.su-hot-rail{display:flex;flex-wrap:nowrap;align-items:stretch;gap:14px;
+  width:100%;max-width:100%;min-width:0;overflow-x:scroll;overflow-y:hidden;
+  padding:4px 2px 14px;scroll-snap-type:x proximity;scroll-behavior:smooth;
+  overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;
+  touch-action:pan-x pan-y;scrollbar-width:thin;scrollbar-color:rgba(124,58,237,.45) transparent;cursor:grab}
+.su-hot-rail>*{flex:0 0 clamp(250px,26vw,292px);scroll-snap-align:start}
+@media (max-width:640px){.su-hot-rail>*{flex:0 0 80vw}.su-hot-rail{scroll-snap-type:x mandatory;padding-right:16px}}
+@media (min-width:1000px){.su-hot-rail{padding-right:46px}}
+.su-hot-rail.dragging{cursor:grabbing;user-select:none;scroll-behavior:auto}
+.su-hot-rail::-webkit-scrollbar{height:8px}
+.su-hot-rail::-webkit-scrollbar-track{background:rgba(124,58,237,.10);border-radius:9px}
+.su-hot-rail::-webkit-scrollbar-thumb{background:rgba(124,58,237,.42);border-radius:9px}
+.su-hot-rail::-webkit-scrollbar-thumb:hover{background:rgba(124,58,237,.65)}
+.su-rail-host{position:relative;min-width:0}
+.su-rail-nav{position:absolute;top:34%;z-index:6;width:42px;height:42px;border-radius:50%;border:1px solid var(--line);
+  background:var(--card);color:var(--navy);font-size:24px;line-height:1;cursor:pointer;display:grid;place-items:center;
+  box-shadow:0 10px 24px rgba(31,26,92,.20);transition:transform .16s,background .16s,opacity .16s}
+.su-rail-nav:hover{transform:scale(1.09);background:linear-gradient(135deg,#4f46e5,#ec4899);color:#fff;border-color:transparent}
+.su-rail-nav:disabled{opacity:.28;cursor:default;transform:none}
+.su-rail-prev{left:-8px}.su-rail-next{right:-8px}
+@media (max-width:860px){.su-rail-nav{display:none}}
+.su-rail-hint{display:none;font-size:11.5px;font-weight:800;color:var(--su-g2);margin:-6px 0 8px}
+@media (max-width:860px){.su-rail-hint{display:block}}
+body.dark .su-rail-nav{background:#132339;color:#e8f0ff;border-color:#24364f}
+@media (prefers-reduced-motion:reduce){.su-hot-rail{scroll-behavior:auto}.su-rail-nav{transition:none}}
 .su-hotcard{scroll-snap-align:start;display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);
   border-radius:var(--su-radius);overflow:hidden;box-shadow:0 10px 26px rgba(31,26,92,.08);transition:transform .18s,box-shadow .18s}
 .su-hotcard:hover{transform:translateY(-4px);box-shadow:var(--su-shadow)}
@@ -1629,11 +1656,20 @@ body.su-has-applybar{padding-bottom:70px}
 
 
       <!-- v143: Top hot jobs rail — same surface as theme studentup_hot_jobs() -->
+      <!-- v146: deadline radar — filled by JS from the cards' real data-last values -->
+      <section class="su-radar" id="suradar" aria-labelledby="su-radar-title" hidden>
+        <div class="su-radar-head">
+          <h2 id="su-radar-title">⏳ Closing soon</h2>
+          <span class="su-radar-sub">Last dates taken from the official notifications on this page</span>
+        </div>
+        <ul class="su-radar-list" id="suradarlist"></ul>
+      </section>
       <section class="su-hot" aria-label="Top hot jobs today">
         <div class="su-hot-head">
           <h2>🔥 Top 6 hot jobs today</h2>
           <a href="#jobs">All active jobs →</a>
         </div>
+        <p class="su-rail-hint">👉 Swipe sideways for more</p>
         <div class="su-hot-rail">
           <article class="su-hotcard">
             <a class="su-hot-thumb" href="posts/upsc-junior-assistant-2026.html">
@@ -2490,34 +2526,86 @@ body.su-has-applybar{padding-bottom:70px}
   })();
 </script>
 <script>
-  /* v145: hot rail — drag, arrows, keyboard, edge-aware buttons */
+  /* v146: rails scroll sideways on phone AND laptop.
+     - touch: native momentum + snap
+     - mouse: click-drag, wheel (vertical wheel becomes horizontal), arrows
+     - keyboard: focus the rail, ArrowLeft / ArrowRight */
   (function(){
     Array.prototype.forEach.call(document.querySelectorAll(".su-hot-rail"), function(r){
-      var down=false,x=0,sl=0,moved=false, host=r.parentNode;
-      r.addEventListener("pointerdown",function(e){ if(e.pointerType==="touch")return; down=true;moved=false;x=e.clientX;sl=r.scrollLeft; });
-      window.addEventListener("pointerup",function(){ down=false; r.classList.remove("dragging"); });
-      r.addEventListener("pointermove",function(e){ if(!down)return; var d=e.clientX-x;
-        if(Math.abs(d)>4){moved=true;r.classList.add("dragging");} r.scrollLeft=sl-d; });
-      r.addEventListener("click",function(e){ if(moved){e.preventDefault();moved=false;} },true);
+      var host=r.parentNode; if(!host) return;
+      host.classList.add("su-rail-host");
       r.setAttribute("tabindex","0"); r.setAttribute("role","group");
-      function cw(){ var c=r.querySelector(".su-hotcard"); return c?c.getBoundingClientRect().width+14:260; }
-      function step(d){ r.scrollBy({left:d*cw(),behavior:"smooth"}); }
+      r.setAttribute("aria-label","Scrollable cards — use arrow keys or swipe");
+      function step(){ var c=r.firstElementChild; return (c?c.getBoundingClientRect().width:260)+14; }
+      function go(d){ r.scrollBy({left:d*step(),behavior:"smooth"}); }
+      /* click-drag (mouse only; touch keeps native momentum) */
+      var down=false,x0=0,sl=0,moved=false;
+      r.addEventListener("pointerdown",function(e){
+        if(e.pointerType==="touch")return; down=true;moved=false;x0=e.clientX;sl=r.scrollLeft; });
+      window.addEventListener("pointerup",function(){ down=false;r.classList.remove("dragging"); });
+      r.addEventListener("pointermove",function(e){
+        if(!down)return; var d=e.clientX-x0;
+        if(Math.abs(d)>4){moved=true;r.classList.add("dragging");}
+        r.scrollLeft=sl-d; });
+      r.addEventListener("click",function(e){ if(moved){e.preventDefault();e.stopPropagation();moved=false;} },true);
+      /* wheel: trackpad/mouse wheel over the rail scrolls it sideways */
+      r.addEventListener("wheel",function(e){
+        var dx=Math.abs(e.deltaX), dy=Math.abs(e.deltaY);
+        if(dx>dy) return;                        /* real horizontal wheel: let it be */
+        var max=r.scrollWidth-r.clientWidth;
+        if(max<=0) return;
+        var next=r.scrollLeft+e.deltaY;
+        if(next<0||next>max) return;             /* at an edge: give the page its scroll back */
+        e.preventDefault(); r.scrollLeft=next;
+      },{passive:false});
       r.addEventListener("keydown",function(e){
-        if(e.key!=="ArrowRight"&&e.key!=="ArrowLeft")return; e.preventDefault(); step(e.key==="ArrowRight"?1:-1); });
-      if(host && !host.querySelector(".su-rail-nav")){
-        host.classList.add("su-rail-host");
-        ["prev","next"].forEach(function(k){
-          var b=document.createElement("button"); b.type="button"; b.className="su-rail-nav su-rail-"+k;
+        if(e.key!=="ArrowRight"&&e.key!=="ArrowLeft")return; e.preventDefault(); go(e.key==="ArrowRight"?1:-1); });
+      /* arrows */
+      var nav={};
+      ["prev","next"].forEach(function(k){
+        var b=host.querySelector(".su-rail-"+k);
+        if(!b){ b=document.createElement("button"); b.type="button"; b.className="su-rail-nav su-rail-"+k;
           b.setAttribute("aria-label",k==="prev"?"Scroll left":"Scroll right");
-          b.innerHTML=k==="prev"?"\u2039":"\u203a";
-          b.addEventListener("click",function(){ step(k==="prev"?-1:1); }); host.appendChild(b);
-        });
-      }
+          b.innerHTML=k==="prev"?"\u2039":"\u203a"; host.appendChild(b); }
+        b.addEventListener("click",function(){ go(k==="prev"?-1:1); }); nav[k]=b;
+      });
       function edges(){ var max=r.scrollWidth-r.clientWidth-2;
-        var pv=host.querySelector(".su-rail-prev"), nx=host.querySelector(".su-rail-next");
-        if(pv)pv.hidden=r.scrollLeft<=2; if(nx)nx.hidden=r.scrollLeft>=max; }
+        nav.prev.disabled=r.scrollLeft<=2; nav.next.disabled=r.scrollLeft>=max; }
       r.addEventListener("scroll",edges,{passive:true}); window.addEventListener("resize",edges); edges();
     });
+  })();
+</script>
+<script>
+  /* v146: deadline radar — it does not guess anything, it only re-surfaces the last dates
+     already published on the cards below, sorted by how soon they close. */
+  (function(){
+    var sec=document.getElementById("suradar"), list=document.getElementById("suradarlist");
+    if(!sec||!list) return;
+    var now=new Date(Date.now()+(330+new Date().getTimezoneOffset())*60000);
+    var today=Date.UTC(now.getFullYear(),now.getMonth(),now.getDate());
+    var MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    var rows=[];
+    Array.prototype.forEach.call(document.querySelectorAll(".news[data-last]"),function(a){
+      var d=a.getAttribute("data-last"); if(!/^\d{4}-\d{2}-\d{2}$/.test(d)) return;
+      var p=d.split("-"), t=Date.UTC(+p[0],+p[1]-1,+p[2]);
+      var left=Math.round((t-today)/86400000);
+      if(left<0||left>21) return;
+      var link=a.querySelector("h3 a,h2 a,a[href]"); if(!link) return;
+      rows.push({left:left,title:link.textContent.trim(),href:link.getAttribute("href"),
+                 label:(+p[2])+" "+MON[+p[1]-1]});
+    });
+    if(!rows.length) return;
+    rows.sort(function(a,b){return a.left-b.left;});
+    rows.slice(0,6).forEach(function(r){
+      var tone=r.left<=1?"su-radar-red":(r.left<=3?"su-radar-amber":"su-radar-green");
+      var txt=r.left===0?"Last day today":(r.left===1?"1 day left":r.left+" days left");
+      var li=document.createElement("li"); li.className="su-radar-item";
+      var pill=document.createElement("span"); pill.className="su-radar-pill "+tone; pill.textContent=txt;
+      var a=document.createElement("a"); a.href=r.href; a.textContent=r.title;
+      var tm=document.createElement("time"); tm.className="su-radar-date"; tm.textContent=r.label;
+      li.appendChild(pill); li.appendChild(a); li.appendChild(tm); list.appendChild(li);
+    });
+    sec.hidden=false;
   })();
 </script>
 </body>

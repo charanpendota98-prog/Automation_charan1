@@ -86,3 +86,86 @@ function studentup_helpful_box() {
 	</script>
 	<?php
 }
+
+/**
+ * v146: Deadline radar.
+ *
+ * Reads the `su_last_date` meta that the Job data box already stores and shows
+ * only the applications closing inside the next 7 days, newest deadline first.
+ * Nothing is invented: a post with no last date simply never appears here.
+ *
+ * @param int $days How far ahead to look (default 7 days).
+ */
+function studentup_closing_week( $days = 7 ) {
+	if ( '1' !== studentup_opt( 'closing_week', '1' ) ) {
+		return;
+	}
+
+	$today = current_time( 'Y-m-d' );
+	$until = gmdate( 'Y-m-d', strtotime( $today . ' +' . max( 1, (int) $days ) . ' days' ) );
+
+	$q = new WP_Query(
+		array(
+			'post_type'           => 'post',
+			'posts_per_page'      => 6,
+			'ignore_sticky_posts' => true,
+			'no_found_rows'       => true,
+			'meta_key'            => 'su_last_date',
+			'orderby'             => 'meta_value',
+			'order'               => 'ASC',
+			'meta_query'          => array(
+				array(
+					'key'     => 'su_last_date',
+					'value'   => array( $today, $until ),
+					'compare' => 'BETWEEN',
+					'type'    => 'DATE',
+				),
+			),
+		)
+	);
+
+	if ( ! $q->have_posts() ) {
+		wp_reset_postdata();
+		return;
+	}
+	?>
+	<section class="su-radar" aria-labelledby="su-radar-title">
+		<div class="su-radar-head">
+			<h2 id="su-radar-title">⏳ <?php esc_html_e( 'Closing this week', 'studentup' ); ?></h2>
+			<span class="su-radar-sub"><?php esc_html_e( 'Last dates from the official notifications', 'studentup' ); ?></span>
+		</div>
+		<ul class="su-radar-list">
+			<?php
+			while ( $q->have_posts() ) :
+				$q->the_post();
+				$last = get_post_meta( get_the_ID(), 'su_last_date', true );
+				$left = (int) floor( ( strtotime( $last ) - strtotime( $today ) ) / DAY_IN_SECONDS );
+				if ( $left <= 1 ) {
+					$tone = 'su-radar-red';
+				} elseif ( $left <= 3 ) {
+					$tone = 'su-radar-amber';
+				} else {
+					$tone = 'su-radar-green';
+				}
+				if ( 0 === $left ) {
+					$label = __( 'Last day today', 'studentup' );
+				} elseif ( 1 === $left ) {
+					$label = __( '1 day left', 'studentup' );
+				} else {
+					/* translators: %d: number of days left to apply. */
+					$label = sprintf( __( '%d days left', 'studentup' ), $left );
+				}
+				?>
+				<li class="su-radar-item">
+					<span class="su-radar-pill <?php echo esc_attr( $tone ); ?>"><?php echo esc_html( $label ); ?></span>
+					<a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
+					<time class="su-radar-date" datetime="<?php echo esc_attr( $last ); ?>">
+						<?php echo esc_html( date_i18n( 'd M', strtotime( $last ) ) ); ?>
+					</time>
+				</li>
+			<?php endwhile; ?>
+		</ul>
+	</section>
+	<?php
+	wp_reset_postdata();
+}
