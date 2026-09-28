@@ -43,6 +43,7 @@ function studentup_option_fields() {
 				'deep_ad'       => array( 'Second in-article ad (long posts only)', 'check', '1', 'v134: 10+ paragraphs unna posts lo 70% mark daggara 2nd slot — density cap + 4 para gap tho policy-safe' ),
 				'in_article_ad'  => array( 'In-article ad (content 3rd para tarvata)', 'check', '1', 'Highest-CTR placement — AdSense/ house ad (density cap + lazy tho)' ),
 				'news_schema' => array( 'NewsArticle schema (Discover / Google News)', 'check', '1', 'v141: SEO plugin unte or bot Article schema unte auto-skip — duplicate vaddu' ),
+				'jobs_table' => array( 'Latest jobs table (homepage)', 'check', '1', 'v142: scannable rows — post, qualification, last date, apply link (meta nunchi, invent cheyyadu)' ),
 				'popular_searches' => array( 'Popular searches strip (homepage)', 'check', '1', 'v140: long-tail internal links — category archives + real on-site searches' ),
 				'max_ads'        => array( 'Page ki max ads (density cap)', 'text', '5', '4-5 safe (AdSense + UX). Ekkuva = policy risk' ),
 				'lazy_ads'       => array( 'Lazy ads (below-fold) ON', 'check', '1', 'Viewability + CLS — AdSense RPM ki manchi' ),

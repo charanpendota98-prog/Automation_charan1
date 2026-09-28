@@ -1,7 +1,7 @@
 # GO-LIVE CHECKLIST (v60) — deploy cheyocha? Enti migilindi?
 
 
-> **Verified counts (theme v1.9.19 build):** test suites **109/109** files · jsdom runtime **165/165** checks · PHP lint **58/58** files · theme audit **0/0** · code audit **0/0**.
+> **Verified counts (theme v1.9.19 build):** test suites **109/109** files · jsdom runtime **165/165** checks · PHP lint **59/59** files · theme audit **0/0** · code audit **0/0**.
 **Short answer: CODE ready ✅ · DEPLOY ready ✅ · 5 panulu MEE accounts lo cheyyali ⏳.**
 Ee doc = okka page lo motham. Kramam ga cheyyandi.
 
@@ -124,8 +124,8 @@ Detail docs: `DEPLOY_MILESWEB.md` (cPanel steps) · `DEPLOY_ORACLE_CLOUD.md` (VM
       → WordPress install + SSL (Let's Encrypt) ON.
 - [ ] **2. WordPress setup** — Rank Math; theme install (**v74**: theme **1.7.2** —
       `python tools/build_wp_theme.py` → zip → Appearance → Themes → Upload → Activate);
-      **zip:** 74 files · 780 KB · theme **1.9.20** · sha256
-      `baf212063c1906686e248ff0f944bfa723c1524c35f5161940d46fea1b7e7632`
+      **zip:** 75 files · 782 KB · theme **1.9.20** · sha256
+      `8edb15c5023ee629eaad2fd7686406fda95af1c39dac9336103668e627f37bdf`
       (`sha256sum wordpress-theme/studentup-theme.zip` — upload chesina zip ide ani verify cheyandi;
       build ippudu **reproducible** — same content ⇒ same sha)
       `wp-admin → Users → Application Passwords` → app password create cheyyandi.

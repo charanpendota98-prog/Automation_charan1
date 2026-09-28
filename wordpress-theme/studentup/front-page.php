@@ -122,6 +122,8 @@ get_header();
 		</div>
 		<p class="nores" id="nores">Nothing for this filter — open the "All" tab and try again.</p>
 
+		<?php studentup_jobs_table( 12 ); // v142: scannable latest-jobs table ?>
+
 		<?php studentup_popular_searches(); // v140: long-tail internal links ?>
 
 		<?php studentup_ad( 'mid' ); ?>

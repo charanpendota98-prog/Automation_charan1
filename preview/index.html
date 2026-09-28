@@ -623,6 +623,29 @@
     background:linear-gradient(135deg,#f43f5e,#f97316);color:#fff;font-size:10.5px;font-weight:900;
     letter-spacing:.06em;box-shadow:0 4px 12px rgba(244,63,94,.3)}
   @media (prefers-reduced-motion:reduce){.su-pop{transition:none}}
+
+  /* v142: latest jobs table (mirrors theme style.css) */
+  .su-jobtable{margin:26px 0;border:1px solid var(--line);border-radius:18px;overflow:hidden;background:var(--card)}
+  .su-jt-head{padding:16px 16px 12px;background:linear-gradient(135deg,rgba(79,70,229,.08),rgba(236,72,153,.06))}
+  .su-jt-head h2{margin:0 0 4px;font-size:16px;letter-spacing:-.01em}
+  .su-jt-head p{margin:0;font-size:12px;color:var(--muted)}
+  .su-jt-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .su-jt{width:100%;border-collapse:collapse;min-width:560px;font-size:13.5px}
+  .su-jt thead th{position:sticky;top:0;background:#4f46e5;color:#fff;text-align:left;padding:10px 12px;
+    font-size:11.5px;letter-spacing:.05em;text-transform:uppercase}
+  .su-jt td{padding:11px 12px;border-top:1px solid var(--line);vertical-align:top}
+  .su-jt tbody tr:nth-child(even){background:rgba(79,70,229,.035)}
+  .su-jt tbody tr:hover{background:rgba(79,70,229,.08)}
+  .su-jt-title a{font-weight:800;color:var(--navy);text-decoration:none}
+  .su-jt-title a:hover{color:#4f46e5;text-decoration:underline}
+  .su-jt-cat{display:inline-block;margin-left:6px;padding:2px 8px;border-radius:999px;background:rgba(15,23,42,.06);
+    font-size:10.5px;font-weight:800;color:var(--muted)}
+  .su-jt-na{color:var(--muted);font-size:12px}
+  .su-jt-apply,.su-jt-more{display:inline-block;padding:6px 12px;border-radius:999px;font-weight:900;font-size:12px;text-decoration:none}
+  .su-jt-apply{background:linear-gradient(135deg,#16a34a,#22c55e);color:#fff}
+  .su-jt-more{background:rgba(79,70,229,.10);color:#4f46e5;border:1px solid rgba(79,70,229,.2)}
+  body.dark .su-jobtable{background:#0f1c2e}
+  body.dark .su-jt-title a{color:#e8f0ff}
 </style>
   <style id="su-premium-css">
 /* ===========================================================
@@ -1581,6 +1604,58 @@ body.su-has-applybar{padding-bottom:70px}
         </div>
       </section>
 
+
+
+      <!-- v142: latest jobs table — same surface as theme studentup_jobs_table() -->
+      <section class="su-jobtable" aria-labelledby="su-jobtable-title">
+        <div class="su-jt-head">
+          <h2 id="su-jobtable-title">Latest updates at a glance</h2>
+          <p>Last dates come from the official notification. Blank means the notice has no date yet — we leave it empty instead of guessing.</p>
+        </div>
+        <div class="su-jt-scroll">
+          <table class="su-jt">
+            <thead><tr><th scope="col">Post / notification</th><th scope="col">Qualification</th><th scope="col">Last date</th><th scope="col">Link</th></tr></thead>
+            <tbody>
+              <tr>
+                <td class="su-jt-title"><a href="posts/upsc-junior-assistant-2026.html">TSPSC గ్రూప్ 2 2026: నోటిఫికేషన్, అర్హత &amp; సిలబస్</a><span class="su-fresh">NEW</span><span class="su-jt-cat">TS Government Jobs</span></td>
+                <td>Degree · PG</td>
+                <td>2026-10-15</td>
+                <td><a class="su-jt-apply" href="posts/upsc-junior-assistant-2026.html">Apply →</a></td>
+              </tr>
+              <tr>
+                <td class="su-jt-title"><a href="posts/upsc-junior-assistant-2026.html">AP DSC 2026: టీచర్ పోస్టులు — దరఖాస్తు</a><span class="su-fresh">NEW</span><span class="su-jt-cat">AP Government Jobs</span></td>
+                <td>Degree · B.Ed</td>
+                <td>2026-11-05</td>
+                <td><a class="su-jt-apply" href="posts/upsc-junior-assistant-2026.html">Apply →</a></td>
+              </tr>
+              <tr>
+                <td class="su-jt-title"><a href="posts/upsc-junior-assistant-2026.html">SSC CGL 2026 — Central Govt Jobs</a><span class="su-jt-cat">Central Govt Jobs</span></td>
+                <td>Degree</td>
+                <td>2026-10-28</td>
+                <td><a class="su-jt-apply" href="posts/upsc-junior-assistant-2026.html">Apply →</a></td>
+              </tr>
+              <tr>
+                <td class="su-jt-title"><a href="posts/upsc-junior-assistant-2026.html">NSP స్కాలర్‌షిప్ 2026 — చివరి తేదీ</a><span class="su-jt-cat">Scholarships</span></td>
+                <td>Inter · Degree</td>
+                <td>2026-10-31</td>
+                <td><a class="su-jt-apply" href="posts/upsc-junior-assistant-2026.html">Apply →</a></td>
+              </tr>
+              <tr>
+                <td class="su-jt-title"><a href="posts/upsc-junior-assistant-2026.html">TS Police Constable — Hall Ticket</a><span class="su-jt-cat">Hall Tickets</span></td>
+                <td>SSC / 10th</td>
+                <td><span class="su-jt-na">Not announced</span></td>
+                <td><a class="su-jt-more" href="posts/upsc-junior-assistant-2026.html">Details →</a></td>
+              </tr>
+              <tr>
+                <td class="su-jt-title"><a href="posts/upsc-junior-assistant-2026.html">Railway Group D — Walk-in drives</a><span class="su-jt-cat">Walk-in Interviews</span></td>
+                <td>SSC / 10th · ITI</td>
+                <td>2026-10-20</td>
+                <td><a class="su-jt-apply" href="posts/upsc-junior-assistant-2026.html">Apply →</a></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
 
       <!-- v140: popular searches — long-tail internal links (same as theme studentup_popular_searches()) -->
       <section class="su-popsearch" aria-labelledby="su-popsearch-title">
