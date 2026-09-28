@@ -12,7 +12,7 @@ const html = fs.readFileSync(PAGE, "utf8");
 
 /* v71: total check count — docs (README/MANUAL/GO_LIVE) claim this number and
  * tools/parity_audit.py P8 reads it, so a silent drift cannot slip through. */
-const EXPECTED_CHECKS = 168;
+const EXPECTED_CHECKS = 171;
 
 const passed = [];
 const failed = [];
@@ -316,6 +316,24 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
      !!rail0 && rail0.getAttribute("tabindex") === "0" &&
      !!rail0.parentNode.querySelector(".su-rail-prev") &&
      !!rail0.parentNode.querySelector(".su-rail-next"));
+
+  /* v147: homepage tools */
+  document.getElementById("sufindbtn").click();
+  await sleep(20);
+  ok("v147: job finder returns matches for degree + Telangana",
+     /\d+ match/.test(document.getElementById("sufindout").textContent) &&
+     document.querySelectorAll("#sufindout li a[href]").length > 0);
+  document.getElementById("subasic").value = "30000";
+  document.getElementById("suda").value = "30";
+  document.getElementById("suhra").value = "10";
+  document.getElementById("sudeduct").value = "2000";
+  document.getElementById("sucalcbtn").click();
+  await sleep(20);
+  ok("v147: salary calculator maths (30000 +30% DA +10% HRA -2000 = 40,000)",
+     /Rs 40,000/.test(document.getElementById("sucalcout").textContent),
+     document.getElementById("sucalcout").textContent.slice(0, 40));
+  ok("v147: last-date calendar lists upcoming deadlines in order",
+     document.querySelectorAll("#sucallist .su-cal-item a[href]").length > 0);
 
   const poll = document.getElementById("poll");
   ok("daily question section present (Today's question)",

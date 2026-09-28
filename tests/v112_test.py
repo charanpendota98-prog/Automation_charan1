@@ -9,19 +9,21 @@ SUITES_EXPECTED=109
 
 def test_empty_center_is_safe():
  with tempfile.TemporaryDirectory() as d:
-  old=config.OUTPUT_DIR;config.OUTPUT_DIR=Path(d)
+  old=config.OUTPUT_DIR;oldstate=config.STATE_PATH
+  config.OUTPUT_DIR=Path(d);config.STATE_PATH=Path(d)/"state.db"   # isolate: no shared repo DB
   try:
    r=control_center.collect();assert r["version"]=="v112" and r["status"]=="healthy"
-  finally:config.OUTPUT_DIR=old
+  finally:config.OUTPUT_DIR=old;config.STATE_PATH=oldstate
  print("      empty control center reports healthy without network/writes ✔")
 
 def test_performance_action_queue():
  with tempfile.TemporaryDirectory() as d:
-  old=config.OUTPUT_DIR;config.OUTPUT_DIR=Path(d)
+  old=config.OUTPUT_DIR;oldstate=config.STATE_PATH
+  config.OUTPUT_DIR=Path(d);config.STATE_PATH=Path(d)/"state.db"   # isolate: no shared repo DB
   try:
    p=Path(d)/"performance_audits";p.mkdir();(p/"x.json").write_text('{"status":"review"}')
    r=control_center.collect();assert r["performance"]["review"]==1 and r["actions"]
-  finally:config.OUTPUT_DIR=old
+  finally:config.OUTPUT_DIR=old;config.STATE_PATH=oldstate
  print("      control center surfaces performance action ✔")
 
 def test_read_only_wiring():
