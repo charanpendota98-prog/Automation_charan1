@@ -262,10 +262,10 @@ CONTACT = """
     </div>
     <button type="submit" class="leadbtn" id="ld-submit">Open WhatsApp</button>
     <p class="leadmsg" id="ld-msg" role="status" aria-live="polite"></p>
-    <p class="leadnote">You control the final send. We do not sell your number. See the <a href="privacy.html">privacy policy</a>.</p>
+    <p class="leadnote">You control the final send — the form only opens WhatsApp with your text, nothing is stored on our server. We do not sell your number. See the <a href="privacy.html">privacy policy</a>.</p>
   </form>
 
-  <div class="note warn"><b>Fraud warning:</b> StudentUp will never ask for an OTP, password, bank details,
+  <div class="note warn"><b>Fraud warning:</b> StudentUp will never ask for an OTP, Aadhaar number, password, bank details,
   UPI PIN or an upfront fee to show an update. Report suspicious messages to <a href="mailto:{email}">{email}</a>.</div>
 """
 
@@ -313,6 +313,11 @@ PRIVACY = """
   Theme choice, saved posts, quiz scores and daily answers may stay in your browser. Optional saved-post
   account sync works only when enabled and logged in. You can block or delete cookies in your browser;
   some features may then stop working.</p>
+
+  <h2>Polls and quiz answers</h2>
+  <p>Poll votes, quiz scores and saved posts are kept in <strong>Your browser only</strong> (localStorage).
+  They are never tied to your identity and never counted by IP address, so clearing browser storage
+  simply resets them.</p>
 
   <h2>Google AdSense</h2>
   <p>Google AdSense is used only after approval, publisher configuration and consent setup. Until then,

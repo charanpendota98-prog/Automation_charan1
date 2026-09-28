@@ -43,7 +43,11 @@ def test_breaking_surface_is_honest_and_motion_safe():
     assert "def verify_candidates" in breaking and "build_items(verify_candidates(raw))" in breaking
     assert "prefers-reduced-motion:reduce" in css
     assert "@keyframes breaking-in" in css and "@keyframes breaking-item-in" in css
-    assert 'id="breaking"' in preview and "Live source check" in preview
+    # v136: the public preview no longer ships a ticker (v72 policy + owner
+    # request). The honest breaking surface lives in the theme and is opt-in
+    # (Appearance -> StudentUp -> "Breaking news section", default OFF).
+    assert 'id="breaking"' not in preview, "preview lo ticker inka undi"
+    assert "Verified source feed" in php
     assert fixture["items"] == []
     assert "invent" not in preview.lower()
 

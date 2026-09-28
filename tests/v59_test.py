@@ -64,17 +64,23 @@ def test_build_items_dedupe_and_guards():
     raw = [
         {"title": "TSPSC Group 2 హాల్ టికెట్ విడుదల - Eenadu",
          "link": "https://a.example.org/1", "pub": _pub_new,
-         "source_name": "Google News · తెలుగు"},
+         "source_name": "Google News · తెలుగు",
+         "verified": True, "source_verified": True},
         {"title": "TSPSC Group 2 హాల్ టికెట్ విడుదల - Eenadu",
-         "link": "https://a.example.org/1?utm=2", "pub": ""},          # dup title+link
-        {"title": "చిన్నది", "link": "https://a.example.org/2"},       # too short
-        {"title": "లింక్ లేని వార్త — పరీక్షల అప్డేట్", "link": "javascript:bad"},
+         "link": "https://a.example.org/1?utm=2", "pub": "",
+         "verified": True, "source_verified": True},                   # dup title+link
+        {"title": "చిన్నది", "link": "https://a.example.org/2",
+         "verified": True, "source_verified": True},                   # too short
+        {"title": "లింక్ లేని వార్త — పరీక్షల అప్డేట్", "link": "javascript:bad",
+         "verified": True, "source_verified": True},
         {"title": "a.example.org నుండి మూడో వార్త వివరాలు",
          "link": "https://a.example.org/3",
-         "pub": format_datetime(_now - timedelta(hours=2), usegmt=True)},
+         "pub": format_datetime(_now - timedelta(hours=2), usegmt=True),
+         "verified": True, "source_verified": True},
         {"title": "a.example.org నాలుగో వార్త వివరాలు",
          "link": "https://a.example.org/4",
-         "pub": format_datetime(_now - timedelta(hours=3), usegmt=True)},
+         "pub": format_datetime(_now - timedelta(hours=3), usegmt=True),
+         "verified": True, "source_verified": True},
     ]
     items = breaking.build_items(raw)
     titles = [i["title"] for i in items]
@@ -110,7 +116,8 @@ def test_write_read_feed_roundtrip():
     with tempfile.TemporaryDirectory() as tmp:
         path = Path(tmp) / "data" / "breaking.json"
         items = breaking.build_items([
-            {"title": "TSPSC హాల్ టికెట్ విడుదల అయ్యింది", "link": "https://b.example.org/1"}])
+            {"title": "TSPSC హాల్ టికెట్ విడుదల అయ్యింది", "link": "https://b.example.org/1",
+             "verified": True, "source_verified": True}])
         res = breaking.write_feed(items, path=path)
         assert Path(res["path"]).exists() and res["count"] == 1
         data = breaking.read_feed(path)
@@ -128,9 +135,11 @@ def test_feed_rolling_window():
     with tempfile.TemporaryDirectory() as tmp:
         path = Path(tmp) / "data" / "breaking.json"
         breaking.publish([{"title": "TSPSC హాల్ టికెట్ విడుదల అయ్యింది",
-                           "link": "https://r.example.org/1"}], path=path)
+                           "link": "https://r.example.org/1",
+                           "verified": True, "source_verified": True}], path=path)
         breaking.publish([{"title": "APPSC ఫలితాలు విడుదల అయ్యాయి",
-                           "link": "https://r.example.org/2"}], path=path)
+                           "link": "https://r.example.org/2",
+                           "verified": True, "source_verified": True}], path=path)
         assert breaking.read_feed(path)["count"] == 2, "puratana items feed nunchi poyayi"
         old = {"updated": "", "items": [{"title": "పాత వార్త శీర్షిక ఇక్కడ ఉంది",
                "link": "https://r.example.org/9", "tag": "current", "source": "radar",

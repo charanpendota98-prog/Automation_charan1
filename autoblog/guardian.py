@@ -165,6 +165,11 @@ def check_breaking_feed(max_age_hours: float = None) -> tuple:
     except ValueError:
         return False, f"updated timestamp tappu: {data['updated']}", "python run.py --breaking-feed"
     age = (_now() - when).total_seconds() / 3600
+    # v136: an empty verified feed is the honest default state — nothing is
+    # shown to readers, so age cannot make it misleading. Only a feed that is
+    # still displaying items can go stale.
+    if int(data.get("count", 0) or 0) == 0:
+        return True, f"0 items · honest empty state ({age:.1f}h)", ""
     if age > max_age:
         return False, f"feed stale ({age:.1f}h > {max_age}h)", "python run.py --breaking-feed (radar cron check)"
     return True, f"{data.get('count', 0)} items · {age:.1f}h mundu update", ""

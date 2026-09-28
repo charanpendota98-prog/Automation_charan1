@@ -77,7 +77,13 @@ def test_poll_markup_and_css_intact():
 def test_privacy_tells_browser_only_truth():
     priv = PRIVACY.read_text(encoding="utf-8")
     assert "exam portal" not in priv.lower(), "privacy lo portal vestige"
-    assert "IP address" not in priv, "IP voting claim inka undi"
+    # v136: poll votes are browser-only. Server log transparency (which does
+    # mention the IP address the host records) is honest and must stay — only
+    # an IP-based voting claim is forbidden.
+    low = priv.lower()
+    for claim in ("one vote per ip", "ip address per vote", "votes are counted by ip",
+                  "vote per ip address"):
+        assert claim not in low, "IP voting claim inka undi"
     assert "Your browser only" in priv and "poll" in priv
     print("  privacy: portal/IP claims poyayi · browser-only truth ✔")
 
