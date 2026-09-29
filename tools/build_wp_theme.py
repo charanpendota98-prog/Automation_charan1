@@ -19,6 +19,7 @@ import shutil
 import subprocess
 import sys
 import zipfile
+import sys as _sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -127,6 +128,9 @@ def package(out: Path) -> tuple[int, int]:
     return files, out.stat().st_size
 
 
+_sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description="StudentUp WP theme validate + zip")
     ap.add_argument("--out", default=str(DEFAULT_OUT))
@@ -135,6 +139,13 @@ def main(argv: list[str] | None = None) -> int:
     print("=" * 66)
     print("  🎨 STUDENTUP WORDPRESS THEME — validate + package (v61)")
     print("=" * 66)
+    # v152: ship minified CSS (render-blocking bytes tagginchadam)
+    try:
+        from minify_assets import build as _minify
+        _minify(quiet=True)
+        print("  ✅ CSS minified (style.min.css + premium.min.css)")
+    except Exception as exc:  # noqa: BLE001 — build must not die on minify
+        print(f"  ⚠ CSS minify skipped: {exc}")
     problems = validate()
     for p in problems:
         print("  ❌ " + p)

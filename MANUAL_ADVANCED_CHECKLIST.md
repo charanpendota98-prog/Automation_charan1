@@ -1,6 +1,6 @@
 # 📋 MANUAL ADVANCED CHECKLIST — "Nenu manual ga em em cheyali"
 ### Website advanced ga run avvali · Posts ANI-PERFECT · Mistakes leku · Deep analyse + NotebookLM
-> **Verified counts (theme v1.9.20 build):** test suites **112/112** files · jsdom runtime **174/174** checks · PHP lint **61/61** files · theme audit **0/0** · code audit **0/0**.
+> **Verified counts (theme v1.9.20 build):** test suites **113/113** files · jsdom runtime **174/174** checks · PHP lint **61/61** files · theme audit **0/0** · code audit **0/0**.
 
 
 **Ee file = mee haath tho cheyyalsina ANNI — exact order, exact commands.**
@@ -2655,6 +2655,23 @@ python run.py --rollback-post POST_ID
 python tests/v111_test.py
 python run.py --test-all       # 91/91
 ```
+
+### v152 — SPEED: MINIFIED CSS IN THE BUILD
+
+style.css + premium.css kalipi ~130 KB render-blocking CSS prati page lo
+vellevi — adi ippudu migilina biggest Core Web Vitals drag. Build ippudu
+`style.min.css` + `premium.min.css` generate chestundi, theme avi unte
+avi ne load chestundi:
+
+```bash
+python3 tools/minify_assets.py    # 130 KB → 118 KB (-10%), zip build lo auto run avutundi
+```
+
+- Strings (`content:" ("`), `url()` — touch cheyyadu (avi ne minifiers break chese chotu).
+- Rule count match kakapote build **aagipotundi** (silent CSS loss raakoodadu).
+- `.min.css` leకpote leda `SCRIPT_DEBUG` on unte → readable source CSS load avutundi.
+- JS ni intentional ga minify cheyyaledu — hand-rolled JS minifier production break chese risk; gzip/brotli server side aa pani chestundi.
+
 
 ### v151 — SAVED-JOB REMINDERS · RPM REPORT · SAVE AS PDF
 

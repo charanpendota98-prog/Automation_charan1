@@ -12,7 +12,7 @@ sys.path.insert(0, str(ROOT))
 
 from autoblog import config, gsc_refresh, state  # noqa: E402
 
-SUITES_EXPECTED = 112
+SUITES_EXPECTED = 113
 
 
 def _csv(path: Path) -> None:
@@ -119,7 +119,7 @@ def test_docs() -> None:
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
     manual = (ROOT / "MANUAL_ADVANCED_CHECKLIST.md").read_text(encoding="utf-8")
     assert "### v102" in readme and "PART 59" in manual
-    assert "112/112" in readme and "112/112" in manual
+    assert "113/113" in readme and "113/113" in manual
     print("      README v102 + PART 59 + 96/96 pinned ✔")
 
 

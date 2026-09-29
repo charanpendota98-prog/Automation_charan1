@@ -244,10 +244,30 @@ add_action( 'after_setup_theme', 'studentup_setup' );
 /**
  * Styles + scripts (no jQuery — speed).
  */
+/**
+ * v152: minified stylesheet URL when the build produced one.
+ *
+ * `tools/minify_assets.py` writes `*.min.css` next to each source. If the file
+ * is missing (dev checkout, manual edit) the readable source is used, so the
+ * theme can never end up with no stylesheet.
+ *
+ * @param string $rel Path relative to the theme root, e.g. 'assets/css/premium.css'.
+ * @return string Absolute URL to the best available file.
+ */
+function studentup_css_url( $rel ) {
+	$min = preg_replace( '/\.css$/', '.min.css', $rel );
+	if ( ! defined( 'SCRIPT_DEBUG' ) || ! SCRIPT_DEBUG ) {
+		if ( file_exists( get_template_directory() . '/' . $min ) ) {
+			return get_template_directory_uri() . '/' . $min;
+		}
+	}
+	return get_template_directory_uri() . '/' . $rel;
+}
+
 function studentup_assets() {
-	wp_enqueue_style( 'studentup', get_stylesheet_uri(), array(), STUDENTUP_VERSION );
+	wp_enqueue_style( 'studentup', studentup_css_url( 'style.css' ), array(), STUDENTUP_VERSION );
 	// v123: premium layer — style.css tarvata load (overrides work).
-	wp_enqueue_style( 'studentup-premium', get_template_directory_uri() . '/assets/css/premium.css', array( 'studentup' ), STUDENTUP_VERSION );
+	wp_enqueue_style( 'studentup-premium', studentup_css_url( 'assets/css/premium.css' ), array( 'studentup' ), STUDENTUP_VERSION );
 	wp_enqueue_script( 'studentup', get_template_directory_uri() . '/assets/js/studentup.js', array(), STUDENTUP_VERSION, true );
 	wp_enqueue_script( 'studentup-premium', get_template_directory_uri() . '/assets/js/studentup-premium.js', array( 'studentup' ), STUDENTUP_VERSION, true );
 	// v127: command palette + reading history rail — site anta (chinna file).
