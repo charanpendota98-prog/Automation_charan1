@@ -12,7 +12,7 @@ const html = fs.readFileSync(PAGE, "utf8");
 
 /* v71: total check count — docs (README/MANUAL/GO_LIVE) claim this number and
  * tools/parity_audit.py P8 reads it, so a silent drift cannot slip through. */
-const EXPECTED_CHECKS = 171;
+const EXPECTED_CHECKS = 174;
 
 const passed = [];
 const failed = [];
@@ -334,6 +334,23 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
      document.getElementById("sucalcout").textContent.slice(0, 40));
   ok("v147: last-date calendar lists upcoming deadlines in order",
      document.querySelectorAll("#sucallist .su-cal-item a[href]").length > 0);
+
+  /* v150: save-for-later (localStorage only) */
+  const firstSave = document.querySelector("#grid .news .su-save");
+  ok("v150: every card gets a Save button", !!firstSave &&
+     document.querySelectorAll("#grid .news .su-save").length ===
+     document.querySelectorAll("#grid .news").length);
+  firstSave.click();
+  await sleep(20);
+  ok("v150: saving marks the button and fills the saved panel from localStorage",
+     firstSave.getAttribute("aria-pressed") === "true" &&
+     document.querySelectorAll("#susavebody li a[href]").length === 1 &&
+     JSON.parse(window.localStorage.getItem("studentup-saved-v1") || "[]").length === 1);
+  firstSave.click();
+  await sleep(20);
+  ok("v150: un-saving clears it again (no server, no account)",
+     firstSave.getAttribute("aria-pressed") === "false" &&
+     JSON.parse(window.localStorage.getItem("studentup-saved-v1") || "[]").length === 0);
 
   const poll = document.getElementById("poll");
   ok("daily question section present (Today's question)",
@@ -657,9 +674,14 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
   }
 
   setQual("closing");
+  // v150: whole-day maths, same as the page. The old 23:59:59 + Math.round
+  // version drifted by a day around midnight and made this check flaky.
   const soonExpected = Array.from(document.querySelectorAll("#grid .news")).filter(c => {
-    const v = c.getAttribute("data-last"); if (!v) return false;
-    const left = Math.round((new Date(v + "T23:59:59") - new Date(new Date().setHours(0, 0, 0, 0))) / 86400000);
+    const v = c.getAttribute("data-last"); if (!/^\d{4}-\d{2}-\d{2}$/.test(v || "")) return false;
+    const p = v.split("-");
+    const now = new Date();
+    const left = Math.floor((Date.UTC(+p[0], +p[1] - 1, +p[2]) -
+                 Date.UTC(now.getFullYear(), now.getMonth(), now.getDate())) / 86400000);
     return left >= 0 && left <= 7;
   }).length;
   ok("v76 qualification filter: ⏳ 7 రోజుల్లో ముగిసేవి → closing-soon cards mattrame",

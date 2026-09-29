@@ -705,6 +705,34 @@ body.dark .su-tool select,body.dark .su-tool input{background:#0f1c2e;color:#e8f
   background:var(--su-grad);color:#fff}
 .su-cal-item a{flex:1 1 180px;font-size:13.5px;font-weight:700;color:var(--ink)}
 .su-salary-big{font-size:26px;font-weight:900;color:var(--su-g2)}
+
+/* v150: save-for-later + for-you rail (localStorage only, no accounts) */
+.su-save{display:inline-flex;align-items:center;gap:5px;border:1px solid var(--line);background:transparent;
+  color:var(--ink);font:inherit;font-size:11.5px;font-weight:800;padding:4px 10px;border-radius:999px;cursor:pointer;
+  transition:background .16s,border-color .16s,color .16s}
+.su-save:hover{border-color:transparent;background:linear-gradient(135deg,#4f46e5,#ec4899);color:#fff}
+.su-save[aria-pressed="true"]{background:#dcfce7;border-color:#86efac;color:#166534}
+.su-savebar{position:fixed;right:14px;bottom:132px;z-index:58}
+.su-savebtn{position:relative;width:46px;height:46px;border-radius:50%;border:1px solid var(--line);background:var(--card);
+  font-size:20px;cursor:pointer;box-shadow:0 12px 28px rgba(31,26,92,.20)}
+.su-savecount{position:absolute;top:-4px;right:-4px;min-width:19px;height:19px;border-radius:999px;
+  background:linear-gradient(135deg,#4f46e5,#ec4899);color:#fff;font-size:11px;font-weight:900;line-height:19px}
+.su-savepanel{position:fixed;right:14px;bottom:186px;z-index:59;width:min(320px,calc(100vw - 28px));max-height:52vh;
+  overflow:auto;padding:14px;border-radius:18px;border:1px solid var(--line);background:var(--card);
+  box-shadow:0 22px 48px rgba(31,26,92,.26)}
+.su-savepanel h3{margin:0 0 8px;font-size:15px}
+.su-savepanel ul{list-style:none;margin:0;padding:0;display:grid;gap:7px}
+.su-savepanel li{display:flex;gap:8px;align-items:center}
+.su-savepanel li a{flex:1;font-size:13px;font-weight:700;color:var(--ink)}
+.su-savepanel li button{border:0;background:transparent;cursor:pointer;opacity:.6;font-size:15px;color:inherit}
+.su-savepanel li button:hover{opacity:1}
+.su-save-empty{font-size:12.5px;opacity:.75;margin:0}
+.su-foryou{margin:22px 0}
+.su-foryou h2{margin:0 0 4px;font-size:19px;color:var(--navy)}
+body.dark .su-foryou h2{color:#eaf2ff}
+.su-foryou p.su-tool-sub{margin:0 0 10px;font-size:12.5px;opacity:.75}
+.su-foryou[hidden]{display:none}
+@media (max-width:640px){.su-savebar{bottom:120px;right:10px}.su-savepanel{bottom:172px;right:10px}}
 </style>
   <style id="su-premium-css">
 /* ===========================================================
@@ -1537,7 +1565,7 @@ body.su-has-applybar{padding-bottom:70px}
             <div class="newsfoot"><span data-days-ago="0">Updated today</span><a class="su-readmore" href="posts/upsc-junior-assistant-2026.html">Read guide →</a></div>
           </div>
         </article>
-        <article class="news" data-state="ts" data-cat="ts-jobs walkin" data-text="ts dsc telangana school teacher recruitment vacancies walk in interview updates" data-qual="inter degree" data-last="2026-09-28">
+        <article class="news" data-state="ts" data-cat="ts-jobs walkin" data-text="ts dsc telangana school teacher recruitment vacancies walk in interview updates" data-qual="inter degree" data-last="2026-10-06">
           <div class="thumb t5"><span>TS DSC<br>ఉపాధ్యాయ ఖాళీలు</span></div>
           <div class="newsbody">
             <div class="tagrow"><span class="tag">తెలంగాణ ప్రభుత్వ ఉద్యోగాలు</span><span class="statechip ts">TS</span></div>
@@ -1591,7 +1619,7 @@ body.su-has-applybar{padding-bottom:70px}
             <div class="newsfoot"><span data-days-ago="3">Updated 3 days ago</span><a class="su-readmore" href="posts/upsc-junior-assistant-2026.html">Read guide →</a></div>
           </div>
         </article>
-        <article class="news" data-state="ts ap" data-cat="outsourcing walkin" data-text="outsourcing contract basis recruitment crc guest faculty honorarium ts ap walkin interview drive" data-qual="degree pg" data-last="2026-09-25">
+        <article class="news" data-state="ts ap" data-cat="outsourcing walkin" data-text="outsourcing contract basis recruitment crc guest faculty honorarium ts ap walkin interview drive" data-qual="degree pg" data-last="2026-10-09">
           <div class="thumb t1"><span>Outsourcing<br>కాంట్రాక్ట్ ఉద్యోగాలు</span></div>
           <div class="newsbody">
             <div class="tagrow"><span class="tag">Outsourcing</span><span class="statechip">TS + AP</span></div>
@@ -1827,6 +1855,12 @@ body.su-has-applybar{padding-bottom:70px}
           <ul class="su-cal-list" id="sucallist"></ul>
         </section>
       </div>
+      <!-- v150: for-you rail (this browser's recently read posts) -->
+      <section class="su-foryou" id="suforyou" aria-labelledby="su-foryou-title" hidden>
+        <h2 id="su-foryou-title">👀 Because you read</h2>
+        <p class="su-tool-sub">Only this browser knows this list — no account, no tracking sent anywhere.</p>
+        <div class="su-hot-rail" id="suforyourail"></div>
+      </section>
       <section class="su-jobtable" aria-labelledby="su-jobtable-title">
         <div class="su-jt-head">
           <h2 id="su-jobtable-title">Latest updates at a glance</h2>
@@ -2146,9 +2180,14 @@ body.su-has-applybar{padding-bottom:70px}
         activeState="all", activeCat="all", activeQual="all";
     var TODAY=new Date(); TODAY.setHours(0,0,0,0);
     function daysLeft(c){
+      /* v150 fix: whole-day maths only. The old version used a 23:59:59 stamp
+         and Math.round, so a date that closed yesterday could round to -0 and
+         still count as live on the following morning. */
       var v=c.getAttribute("data-last"); if(!v) return null;
-      var d=new Date(v+"T23:59:59"); if(isNaN(d)) return null;
-      return Math.round((d-TODAY)/86400000);
+      var m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(v); if(!m) return null;
+      var d=Date.UTC(+m[1],+m[2]-1,+m[3]);
+      var t=Date.UTC(TODAY.getFullYear(),TODAY.getMonth(),TODAY.getDate());
+      return Math.floor((d-t)/86400000);
     }
     function decorate(c){
       var left=daysLeft(c), foot=c.querySelector(".newsfoot"); if(foot===null) return;
@@ -2770,6 +2809,96 @@ body.su-has-applybar{padding-bottom:70px}
           li.appendChild(d); li.appendChild(a); list.appendChild(li);
         });
       }
+    }
+  })();
+</script>
+<div class="su-savebar">
+  <button type="button" class="su-savebtn" id="susavebtn" aria-expanded="false" aria-controls="susavepanel" aria-label="Saved posts">🔖<span class="su-savecount" id="susavecount" hidden>0</span></button>
+</div>
+<div class="su-savepanel" id="susavepanel" role="dialog" aria-label="Saved posts" hidden>
+  <h3>🔖 Saved for later</h3>
+  <div id="susavebody"><p class="su-save-empty">Nothing saved yet. Tap 🔖 Save on any card.</p></div>
+</div>
+<script>
+  /* v150: save-for-later + "because you read" rail.
+     Everything lives in this browser's localStorage: no account, no server,
+     nothing sent anywhere. Clearing site data clears the lists. */
+  (function(){
+    var SKEY="studentup-saved-v1", VKEY="studentup-viewed-v1", MAX=20;
+    function read(k){ try{ return JSON.parse(localStorage.getItem(k)||"[]"); }catch(e){ return []; } }
+    function write(k,v){ try{ localStorage.setItem(k, JSON.stringify(v.slice(0,MAX))); }catch(e){} }
+
+    /* --- save buttons on every card --- */
+    var saved=read(SKEY);
+    function isSaved(u){ return saved.some(function(x){ return x.u===u; }); }
+    function paint(){
+      var n=saved.length, c=document.getElementById("susavecount");
+      if(c){ c.hidden=!n; c.textContent=n; }
+      var body=document.getElementById("susavebody");
+      if(!body) return;
+      if(!n){ body.innerHTML='<p class="su-save-empty">Nothing saved yet. Tap 🔖 Save on any card.</p>'; return; }
+      body.innerHTML=""; var ul=document.createElement("ul");
+      saved.forEach(function(item){
+        var li=document.createElement("li");
+        var a=document.createElement("a"); a.href=item.u; a.textContent=item.t;
+        var x=document.createElement("button"); x.type="button"; x.setAttribute("aria-label","Remove"); x.textContent="✕";
+        x.addEventListener("click",function(){ saved=saved.filter(function(s){return s.u!==item.u;}); write(SKEY,saved); sync(); });
+        li.appendChild(a); li.appendChild(x); ul.appendChild(li);
+      });
+      body.appendChild(ul);
+    }
+    function sync(){
+      paint();
+      Array.prototype.forEach.call(document.querySelectorAll(".su-save"),function(b){
+        var on=isSaved(b.getAttribute("data-url"));
+        b.setAttribute("aria-pressed", on?"true":"false");
+        b.querySelector(".su-save-txt").textContent = on ? "Saved" : "Save";
+      });
+    }
+    Array.prototype.forEach.call(document.querySelectorAll(".news"),function(card){
+      var link=card.querySelector("h3 a,h2 a,a[href]"); if(!link) return;
+      var meta=card.querySelector(".meta,.su-hot-meta,.pillrow") || card;
+      var b=document.createElement("button");
+      b.type="button"; b.className="su-save"; b.setAttribute("data-url",link.getAttribute("href"));
+      b.setAttribute("data-title",link.textContent.trim()); b.setAttribute("aria-pressed","false");
+      b.innerHTML='<span aria-hidden="true">🔖</span><span class="su-save-txt">Save</span>';
+      b.addEventListener("click",function(){
+        var u=b.getAttribute("data-url"), t=b.getAttribute("data-title");
+        if(isSaved(u)){ saved=saved.filter(function(s){return s.u!==u;}); }
+        else { saved.unshift({u:u,t:t}); }
+        write(SKEY,saved); sync();
+      });
+      meta.appendChild(b);
+    });
+    var sb=document.getElementById("susavebtn"), sp=document.getElementById("susavepanel");
+    if(sb&&sp){
+      sb.addEventListener("click",function(){
+        var open=sp.hidden; sp.hidden=!open; sb.setAttribute("aria-expanded",String(open));
+      });
+    }
+    sync();
+
+    /* --- because you read: remember opened posts, show them back --- */
+    var viewed=read(VKEY);
+    Array.prototype.forEach.call(document.querySelectorAll('a[href^="posts/"]'),function(a){
+      a.addEventListener("click",function(){
+        var u=a.getAttribute("href"), t=(a.textContent||"").trim();
+        if(!t) return;
+        viewed=viewed.filter(function(v){return v.u!==u;});
+        viewed.unshift({u:u,t:t}); write(VKEY,viewed);
+      });
+    });
+    var sec=document.getElementById("suforyou"), rail=document.getElementById("suforyourail");
+    if(sec&&rail&&viewed.length){
+      viewed.slice(0,8).forEach(function(v){
+        var card=document.createElement("article"); card.className="su-hotcard";
+        var body=document.createElement("div"); body.className="su-hot-body";
+        var h=document.createElement("h3"); var a=document.createElement("a");
+        a.href=v.u; a.textContent=v.t; h.appendChild(a);
+        var go=document.createElement("a"); go.className="su-hot-apply"; go.href=v.u; go.textContent="Read again →";
+        body.appendChild(h); body.appendChild(go); card.appendChild(body); rail.appendChild(card);
+      });
+      sec.hidden=false;
     }
   })();
 </script>

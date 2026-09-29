@@ -34,7 +34,7 @@ PLAIN_PIN_RE = re.compile(r'(?<!= )(?<![\d.])1\.9\.\d+(?![\d.])')
 CLAIM_RE = re.compile(r'"(\d+)/(\d+)"')
 # counts that are NOT the suite total and must never be rewritten:
 # 164 = jsdom checks, 68 = pin-gate certificate checks, 100/5/3 = ratios.
-CLAIM_SKIP = {171, 168, 166, 165, 100, 73, 5, 3}
+CLAIM_SKIP = {174, 172, 171, 168, 166, 165, 100, 73, 5, 3}
 
 
 def live_version() -> str:
