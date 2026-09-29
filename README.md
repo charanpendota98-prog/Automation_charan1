@@ -1,7 +1,7 @@
 # studentup.in Auto-Blogger 🤖
 
 
-> **Verified counts (theme v1.9.20 build):** test suites **118/118** files · jsdom runtime **177/177** checks · PHP lint **66/66** files · theme audit **0/0** · code audit **0/0**.
+> **Verified counts (theme v1.9.20 build):** test suites **119/119** files · jsdom runtime **177/177** checks · PHP lint **66/66** files · theme audit **0/0** · code audit **0/0**.
 24/7 automatic blog posting system for **studentup.in** (WordPress) — runs on your Oracle Cloud instance.
 
 - **AI content:** Google Gemini (free tier) generates Telugu + English mix articles
@@ -629,6 +629,26 @@ runs Telegram noise create cheyyavu. Telegram credentials lekunte no-op and
 clear status. Content/ads/publish automatic ga touch cheyyadu.
 
 **Proof:** `--test-all` **93/93**.
+
+### v160 — `--final-audit`: DEPLOY MUNDU OKATE COMMAND
+
+Repo lo chala auditors unnayi. Deploy mundu vatini okoti okoti gurthupettukoni
+run cheyyadam manishi chese pani kaadu — **okati marchipothe adi ne live lo bug**.
+
+```bash
+python run.py --final-audit
+```
+
+Okate run lo: pytest suites · theme audit · theme deep audit · CWV+a11y ·
+image weight · preview↔theme parity · PHP lint · theme zip build.
+
+Anni green ayithe ne **GO** antundi, zip path tho. Edaina fail ayithe **GO
+annadu** — e gate, enduku, and aa gate ni separate ga run cheyyadaniki exact
+command istundi. Score inflate cheyyadu; prati line nijamaina tool output tail.
+
+Note: ivi **repo-side** gates. Live PageSpeed, indexing, AdSense approval —
+avi site live ayyaka ne measure avutayi, ikkada claim cheyyam.
+
 
 ### v159 — REVENUE: UNFILLED AD SLOTS COLLAPSE + IMAGE WEIGHT AUDIT
 

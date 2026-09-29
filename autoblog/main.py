@@ -1744,6 +1744,8 @@ def main() -> int:
                         help="v109: mobile PageSpeed/CWV/accessibility/SEO audit")
     parser.add_argument("--corrections-audit", action="store_true",
                         help="v111: verify tamper-evident update/correction ledger")
+    parser.add_argument("--final-audit", action="store_true",
+                        help="v160: anni gates okate saari (deploy mundu)")
     parser.add_argument("--aeo", nargs="?", const="", default=None, metavar="HTML",
                         help="v158: AI Overview / featured-snippet readiness audit + HowTo schema")
     parser.add_argument("--rpm-report", nargs="?", const="", default=None, metavar="CSV",
@@ -2006,6 +2008,10 @@ def main() -> int:
                         help="v26: install/update site-wide quiz engine "
                              "(CSS+JS footer widget) — quiz UI, timers, scoring")
     args = parser.parse_args()
+
+    if args.final_audit:
+        from . import final_audit as _fa
+        return _fa.run_cli()
 
     if args.aeo is not None:
         from . import aeo as _aeo
