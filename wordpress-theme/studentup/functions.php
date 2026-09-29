@@ -25,6 +25,7 @@ require_once get_template_directory() . '/inc/remind.php'; // v151: saved-job de
 require_once get_template_directory() . '/inc/searchindex.php'; // v153: static instant search index
 require_once get_template_directory() . '/inc/autolink.php'; // v154: internal link engine
 require_once get_template_directory() . '/inc/personal.php'; // v156: personalised picks + calendar reminders
+require_once get_template_directory() . '/inc/keyfacts.php'; // v158: key-facts strip + HowTo schema
 require_once get_template_directory() . '/inc/seo-bridge.php';
 require_once get_template_directory() . '/inc/toc.php';
 require_once get_template_directory() . '/inc/schema.php';

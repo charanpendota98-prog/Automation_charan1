@@ -72,6 +72,7 @@ get_header();
 
 				<?php studentup_ad( 'mid' ); ?>
 
+				<?php studentup_keyfacts_box(); // v158 ?>
 				<div class="article-content"><?php the_content(); ?></div>
 
 				<div class="share" aria-label="Share">

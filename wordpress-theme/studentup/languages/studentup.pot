@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: StudentUp 1.9.20\n"
 "Report-Msgid-Bugs-To: https://studentup.in/\n"
-"POT-Creation-Date: 2026-09-29 03:11+0000\n"
+"POT-Creation-Date: 2026-09-29 03:34+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -195,6 +195,14 @@ msgstr ""
 msgid "Join WhatsApp"
 msgstr ""
 
+#: inc/keyfacts.php:64
+msgid "Key details"
+msgstr ""
+
+#: inc/keyfacts.php:28
+msgid "Last date"
+msgstr ""
+
 #: inc/apply.php:92
 msgid "Last date over"
 msgstr ""
@@ -304,6 +312,7 @@ msgstr ""
 msgid "Published articles: %d"
 msgstr ""
 
+#: inc/keyfacts.php:26
 #: inc/personal.php:34
 msgid "Qualification"
 msgstr ""
@@ -354,6 +363,10 @@ msgstr ""
 
 #: inc/personal.php:57
 msgid "Reset my choices"
+msgstr ""
+
+#: inc/keyfacts.php:27
+msgid "Salary"
 msgstr ""
 
 #: inc/saved.php:180
@@ -461,6 +474,10 @@ msgstr ""
 
 #: inc/engage.php:274
 msgid "Uses your browser print dialog - choose "Save as PDF"."
+msgstr ""
+
+#: inc/keyfacts.php:25
+msgid "Vacancies"
 msgstr ""
 
 #: inc/saved.php:219

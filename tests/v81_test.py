@@ -199,7 +199,7 @@ def test_hsts_option():
 
 def test_docs_v81():
     suites = len(list((ROOT / "tests").glob("*_test.py")))
-    assert suites == 116, f"suites {suites} (v116 tho 116 expect)"
+    assert suites == 117, f"suites {suites} (v116 tho 117 expect)"
     readme = read(ROOT / "README.md")
     manual = read(ROOT / "MANUAL_ADVANCED_CHECKLIST.md")
     go_live = read(ROOT / "GO_LIVE_CHECKLIST.md")

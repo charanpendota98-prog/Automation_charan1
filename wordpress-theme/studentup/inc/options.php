@@ -48,6 +48,7 @@ function studentup_option_fields() {
 				'remind_days' => array( 'Reminder window (days)', 'text', '3', 'v151: enni rojula mundu reminder chupinchali (1-14)' ),
 				'pdf_button' => array( 'Save as PDF button (posts)', 'check', '1', 'v151: browser print-to-PDF — server ki emi pampadu' ),
 				'personal_picks' => array( 'Your 5 today (personalised strip)', 'check', '1', 'v156: qualification+state profile browser lo ne — login ledu, server call ledu' ),
+				'keyfacts' => array( 'Key facts strip + HowTo schema', 'check', '1', 'v158: meta unte ne — 2 kanna thakkuva facts unte block raadu' ),
 				'calendar_button' => array( 'Add last date to calendar (.ics)', 'check', '1', 'v156: last date meta unte ne button vastundi; 1 roju mundu alarm' ),
 				'autolink' => array( 'Auto internal links in posts', 'check', '1', 'v154: article lopala related posts ki links — max 3, first mention only, headings/links lo touch cheyyadu' ),
 				'autolink_max' => array( 'Max auto links per post', 'text', '3', 'v154: 0-6 (ekkuva pedithe spam signal)' ),

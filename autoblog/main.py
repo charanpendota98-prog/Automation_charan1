@@ -1744,6 +1744,8 @@ def main() -> int:
                         help="v109: mobile PageSpeed/CWV/accessibility/SEO audit")
     parser.add_argument("--corrections-audit", action="store_true",
                         help="v111: verify tamper-evident update/correction ledger")
+    parser.add_argument("--aeo", nargs="?", const="", default=None, metavar="HTML",
+                        help="v158: AI Overview / featured-snippet readiness audit + HowTo schema")
     parser.add_argument("--rpm-report", nargs="?", const="", default=None, metavar="CSV",
                         help="v151: AdSense CSV nunchi page/slot RPM report + weak slots (read-only)")
     parser.add_argument("--ctr-boost", nargs="?", const="", default=None, metavar="CSV",
@@ -2004,6 +2006,10 @@ def main() -> int:
                         help="v26: install/update site-wide quiz engine "
                              "(CSS+JS footer widget) — quiz UI, timers, scoring")
     args = parser.parse_args()
+
+    if args.aeo is not None:
+        from . import aeo as _aeo
+        return _aeo.run_cli(args.aeo)
 
     if args.rpm_report is not None:
         from . import rpm_report as _rr
