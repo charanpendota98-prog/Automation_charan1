@@ -1,7 +1,7 @@
 # studentup.in Auto-Blogger 🤖
 
 
-> **Verified counts (theme v1.9.20 build):** test suites **121/121** files · jsdom runtime **177/177** checks · PHP lint **67/67** files · theme audit **0/0** · code audit **0/0**.
+> **Verified counts (theme v1.9.20 build):** test suites **122/122** files · jsdom runtime **177/177** checks · PHP lint **68/68** files · theme audit **0/0** · code audit **0/0**.
 24/7 automatic blog posting system for **studentup.in** (WordPress) — runs on your Oracle Cloud instance.
 
 - **AI content:** Google Gemini (free tier) generates Telugu + English mix articles
@@ -629,6 +629,39 @@ runs Telegram noise create cheyyavu. Telegram credentials lekunte no-op and
 clear status. Content/ads/publish automatic ga touch cheyyadu.
 
 **Proof:** `--test-all` **93/93**.
+
+### v163 — NIJAMAINA WEB PUSH (VAPID)
+
+Telegram/WhatsApp share links unnayi, kani avi reader **maname** click cheyyali.
+Web push veru: browser close chesina, phone lo direct notification velthundi.
+Return traffic ki top sites #1 lever idi — ippudu manaki kuda undi.
+
+```bash
+python run.py --push-keys                                  # okka sari
+python run.py --push-send "Title|https://site/post|body"   # andariki
+python run.py --push-send "..." --dry-run
+```
+
+**Theme** (`inc/webpush.php` + service worker lo `push` / `notificationclick`):
+- Subscriptions **sonta table** lo (vela rows ni `wp_options` lo pedithe prati
+  page load slow avutundi), endpoint meeda unique key
+- Subscribe endpoint: push service hosts matrame (Google/Mozilla/Microsoft/
+  Apple) — lekapothe ee endpoint ni open relay la vaadukovachu
+- Subscriber list `edit_posts` unna vaalaki matrame — bot application password
+  tho teesukuntundi
+- **Permission ni modati pageview lo adagam** — Chrome abusive-permission
+  penalty ki adi ne karanam. 2nd pageview taruvata, "No thanks" ante
+  **30 rojulu** malli adagadu
+- **VAPID public key lekapothe feature motham off** — half-working prompt
+  chupinchi reader permission waste cheyyadam cheddha
+- Notification click: already open tab unte adi focus, kotha tab spam kaadu
+
+**Bot** (`autoblog/webpush.py`): crypto nene raayaledu — VAPID ES256 signing
+ki `pywebpush`/`py-vapid` vaadutam, lekapothe exact install command cheptam.
+Half-baked crypto kanna clear error better. 410/404 vachina subscriptions
+"expired" ga report avutayi. **`push_keys.json` gitignore lo** — private key
+eppudu commit avvadu.
+
 
 ### v162 — SLOT LAB: AD SLOT A/B (RPM) MEASUREMENT
 

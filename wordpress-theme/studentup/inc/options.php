@@ -50,6 +50,8 @@ function studentup_option_fields() {
 				'remind_days' => array( 'Reminder window (days)', 'text', '3', 'v151: enni rojula mundu reminder chupinchali (1-14)' ),
 				'pdf_button' => array( 'Save as PDF button (posts)', 'check', '1', 'v151: browser print-to-PDF — server ki emi pampadu' ),
 				'personal_picks' => array( 'Your 5 today (personalised strip)', 'check', '1', 'v156: qualification+state profile browser lo ne — login ledu, server call ledu' ),
+				'webpush' => array( 'Web push notifications', 'check', '1', 'v163: VAPID public key pettaka ne pani chestundi (python run.py --push-keys)' ),
+				'push_public_key' => array( 'Web push: VAPID public key', 'text', '', 'v163: --push-keys output lo public key' ),
 				'slot_lab' => array( 'Slot lab: ad slot A/B test', 'check', '0', 'v162: B slot id set chesaka ne ON cheyandi — python run.py --slot-lab tho report' ),
 				'collapse_unfilled' => array( 'Collapse unfilled ad slots', 'check', '1', 'v159: AdSense fill cheyakapote blank gap teesestundi (CLS safe)' ),
 				'keyfacts' => array( 'Key facts strip + HowTo schema', 'check', '1', 'v158: meta unte ne — 2 kanna thakkuva facts unte block raadu' ),

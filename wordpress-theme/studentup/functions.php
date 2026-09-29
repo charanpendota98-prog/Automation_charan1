@@ -28,6 +28,7 @@ require_once get_template_directory() . '/inc/personal.php'; // v156: personalis
 require_once get_template_directory() . '/inc/keyfacts.php'; // v158: key-facts strip + HowTo schema
 require_once get_template_directory() . '/inc/adfill.php';  // v159: unfilled ad slot collapse
 require_once get_template_directory() . '/inc/slotlab.php'; // v162: ad slot A/B variant assignment
+require_once get_template_directory() . '/inc/webpush.php'; // v163: real web push (VAPID)
 require_once get_template_directory() . '/inc/seo-bridge.php';
 require_once get_template_directory() . '/inc/toc.php';
 require_once get_template_directory() . '/inc/schema.php';

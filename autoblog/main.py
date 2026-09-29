@@ -1744,6 +1744,10 @@ def main() -> int:
                         help="v109: mobile PageSpeed/CWV/accessibility/SEO audit")
     parser.add_argument("--corrections-audit", action="store_true",
                         help="v111: verify tamper-evident update/correction ledger")
+    parser.add_argument("--push-keys", action="store_true",
+                        help="v163: VAPID keypair generate (okka sari)")
+    parser.add_argument("--push-send", default="", metavar="MSG",
+                        help="v163: web push pampadam — \"Title|url|body\"")
     parser.add_argument("--slot-lab", nargs="?", const="", default=None, metavar="CSV",
                         help="v162: ad slot A/B (RPM) measurement — AdSense CSV nunchi")
     parser.add_argument("--factcheck", default=None, metavar="DRAFT",
@@ -2014,6 +2018,10 @@ def main() -> int:
                         help="v26: install/update site-wide quiz engine "
                              "(CSS+JS footer widget) — quiz UI, timers, scoring")
     args = parser.parse_args()
+
+    if args.push_keys or args.push_send:
+        from . import webpush as _wp
+        return _wp.run_cli(args.push_send, bool(args.dry_run), bool(args.push_keys))
 
     if args.slot_lab is not None:
         from . import slot_lab as _sl

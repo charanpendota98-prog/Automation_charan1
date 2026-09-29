@@ -30,3 +30,5 @@ logs/
 
 # v91: root-level npm install (jsdom/php-parser for tests) — runtime only
 /node_modules/
+# v163: VAPID private key — eppudu commit cheyyakudadu
+push_keys.json

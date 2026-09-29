@@ -136,6 +136,34 @@ function studentup_sw_js() {
 		. 'var OFFLINE=' . wp_json_encode( $offline ) . ';' . "\n"
 		. 'var SHELL=' . wp_json_encode( array( home_url( '/' ) ) ) . ';' . "\n"
 		. <<<'JSEOF'
+// v163: web push — bot pampina notification ni chupinchadam.
+self.addEventListener("push", function (e) {
+  var d = {};
+  try { d = e.data ? e.data.json() : {}; } catch (err) { d = {}; }
+  var title = d.title || "StudentUp";
+  e.waitUntil(self.registration.showNotification(title, {
+    body: d.body || "",
+    icon: d.icon || undefined,
+    badge: d.badge || undefined,
+    tag: d.tag || "studentup",
+    data: { url: d.url || "/" },
+    requireInteraction: false
+  }));
+});
+
+// Notification click -> aa post ki. Already open unna tab unte adi focus
+// chestam, kotha tab spam cheyyam.
+self.addEventListener("notificationclick", function (e) {
+  e.notification.close();
+  var url = (e.notification.data && e.notification.data.url) || "/";
+  e.waitUntil(clients.matchAll({ type: "window", includeUncontrolled: true }).then(function (list) {
+    for (var i = 0; i < list.length; i++) {
+      if (list[i].url === url && "focus" in list[i]) { return list[i].focus(); }
+    }
+    return clients.openWindow ? clients.openWindow(url) : null;
+  }));
+});
+
 self.addEventListener("install", function (e) {
   e.waitUntil(caches.open(VERSION).then(function (c) { return c.addAll(SHELL).catch(function () {}); })
     .then(function () { return self.skipWaiting(); }));
