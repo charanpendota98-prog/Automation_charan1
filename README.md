@@ -1,7 +1,7 @@
 # studentup.in Auto-Blogger 🤖
 
 
-> **Verified counts (theme v1.9.20 build):** test suites **114/114** files · jsdom runtime **174/174** checks · PHP lint **62/62** files · theme audit **0/0** · code audit **0/0**.
+> **Verified counts (theme v1.9.20 build):** test suites **115/115** files · jsdom runtime **177/177** checks · PHP lint **63/63** files · theme audit **0/0** · code audit **0/0**.
 24/7 automatic blog posting system for **studentup.in** (WordPress) — runs on your Oracle Cloud instance.
 
 - **AI content:** Google Gemini (free tier) generates Telugu + English mix articles
@@ -629,6 +629,28 @@ runs Telegram noise create cheyyavu. Telegram credentials lekunte no-op and
 clear status. Content/ads/publish automatic ga touch cheyyadu.
 
 **Proof:** `--test-all` **93/93**.
+
+### v154/v155 — INTERNAL LINK ENGINE + "YOUR 5 TODAY"
+
+**Auto internal links (theme).** Article lopala related posts ki links
+automatic ga padatayi — kaani hard brakes tho, endukante aggressive
+auto-linking Google ki spam signal:
+
+- max **3** links per post (`autolink_max`, 0–6),
+- okka post ki okate link, first mention matrame,
+- headings, existing links, `<code>`, `<pre>`, `<script>` lo touch cheyyadu,
+- **14 characters** kanna pedda exact title phrase unte ne link padutundi,
+- post tanaki tane link cheyyadu.
+
+Candidate list **v153 search index** nunchi ne vastundi — extra DB query zero.
+
+**"Your 5 today" (preview).** Reader okasari qualification + state cheppite,
+page lo unna openings ni score chesi **top 5** chupistundi: qualification match
++3, state +2, 7 rojula lopu closing +2. Prati row pakkana *enduku* aa list lo
+undo reason untundi (`your qualification · 3d left`). Profile antha browser
+localStorage lo — login ledu, server call ledu, "Reset my choices" tho delete.
+Closed jobs asalu list lo raavu.
+
 
 ### v153 — INSTANT SEARCH INDEX (SERVER LOAD ZERO, OFFLINE OK)
 

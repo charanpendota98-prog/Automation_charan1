@@ -12,7 +12,7 @@ const html = fs.readFileSync(PAGE, "utf8");
 
 /* v71: total check count — docs (README/MANUAL/GO_LIVE) claim this number and
  * tools/parity_audit.py P8 reads it, so a silent drift cannot slip through. */
-const EXPECTED_CHECKS = 174;
+const EXPECTED_CHECKS = 177;
 
 const passed = [];
 const failed = [];
@@ -351,6 +351,24 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
   ok("v150: un-saving clears it again (no server, no account)",
      firstSave.getAttribute("aria-pressed") === "false" &&
      JSON.parse(window.localStorage.getItem("studentup-saved-v1") || "[]").length === 0);
+
+  /* v155: personalised "your 5 today" */
+  document.getElementById("suyouqual").value = "degree";
+  document.getElementById("suyoustate").value = "ts";
+  document.getElementById("suyoubtn").click();
+  await sleep(20);
+  const youRows = document.querySelectorAll("#suyoulist li a[href]");
+  ok("v155: personalised list builds 1-5 ranked matches with a reason",
+     youRows.length >= 1 && youRows.length <= 5 &&
+     document.querySelectorAll("#suyoulist .su-you-why").length === youRows.length,
+     "rows=" + youRows.length);
+  ok("v155: profile saved in this browser only",
+     JSON.parse(window.localStorage.getItem("studentup-profile-v1") || "{}").q === "degree");
+  document.getElementById("suyoureset").click();
+  await sleep(20);
+  ok("v155: reset deletes the profile and the list",
+     !window.localStorage.getItem("studentup-profile-v1") &&
+     document.querySelectorAll("#suyoulist li").length === 0);
 
   const poll = document.getElementById("poll");
   ok("daily question section present (Today's question)",

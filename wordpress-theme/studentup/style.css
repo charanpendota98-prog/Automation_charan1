@@ -1257,3 +1257,7 @@ body.dark .su-help-btn{background:#132339;color:#dbe7fb;border-color:#24364f}
 	a[href]:after{content:" (" attr(href) ")";font-size:9pt;word-break:break-all}
 	.wrap,main{max-width:100%;margin:0;padding:0}
 }
+
+/* v154: auto internal links — normal link look, subtle underline */
+.su-autolink{text-decoration:underline;text-decoration-color:rgba(124,58,237,.45);text-underline-offset:2px}
+.su-autolink:hover{text-decoration-color:currentColor}

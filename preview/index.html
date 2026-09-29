@@ -733,6 +733,30 @@ body.dark .su-foryou h2{color:#eaf2ff}
 .su-foryou p.su-tool-sub{margin:0 0 10px;font-size:12.5px;opacity:.75}
 .su-foryou[hidden]{display:none}
 @media (max-width:640px){.su-savebar{bottom:120px;right:10px}.su-savepanel{bottom:172px;right:10px}}
+
+/* v155: personalised "your 5 today" strip */
+.su-you{margin:20px 0;padding:16px 18px;border-radius:18px;border:1px solid var(--line);
+  background:linear-gradient(135deg,rgba(16,185,129,.09),rgba(79,70,229,.09))}
+.su-you h2{margin:0 0 4px;font-size:19px;color:var(--navy)}
+body.dark .su-you h2{color:#eaf2ff}
+.su-you-sub{margin:0 0 11px;font-size:12.5px;opacity:.78}
+.su-you-form{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
+.su-you-form>div{flex:1 1 150px}
+.su-you-form label{display:block;font-size:11.5px;font-weight:800;margin-bottom:4px;opacity:.85}
+.su-you-form select{width:100%;padding:9px 11px;border-radius:11px;border:1px solid var(--line);
+  background:var(--card);color:var(--ink);font:inherit;font-size:14px}
+.su-you-form button{padding:10px 16px;border:0;border-radius:12px;background:var(--su-grad);color:#fff;
+  font-weight:900;cursor:pointer;font-size:13.5px}
+.su-you-list{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:8px}
+.su-you-list li{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:9px 11px;border-radius:12px;
+  background:var(--card);border:1px solid var(--line)}
+.su-you-list li a{flex:1 1 200px;font-weight:700;font-size:13.5px;color:var(--ink)}
+.su-you-list li a:hover{color:var(--su-g2)}
+.su-you-rank{min-width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:11.5px;
+  font-weight:900;background:var(--su-grad);color:#fff}
+.su-you-why{font-size:11px;opacity:.7;font-weight:700}
+.su-you-reset{margin-top:9px;border:0;background:transparent;font-size:11.5px;font-weight:800;
+  color:var(--su-g2);cursor:pointer;padding:0}
 </style>
   <style id="su-premium-css">
 /* ===========================================================
@@ -1724,6 +1748,35 @@ body.su-has-applybar{padding-bottom:70px}
           <span class="su-radar-sub">Last dates taken from the official notifications on this page</span>
         </div>
         <ul class="su-radar-list" id="suradarlist"></ul>
+      </section>
+      <!-- v155: personalised picks — profile stays in this browser only -->
+      <section class="su-you" id="suyou" aria-labelledby="su-you-title">
+        <h2 id="su-you-title">⭐ Your 5 today</h2>
+        <p class="su-you-sub">Tell us your qualification and state once. The list is built on this device — no login, nothing sent to a server.</p>
+        <div class="su-you-form">
+          <div>
+            <label for="suyouqual">Qualification</label>
+            <select id="suyouqual">
+              <option value="10th">10th class</option>
+              <option value="inter">Intermediate</option>
+              <option value="iti">ITI</option>
+              <option value="diploma">Diploma</option>
+              <option value="degree" selected>Degree</option>
+              <option value="pg">PG</option>
+            </select>
+          </div>
+          <div>
+            <label for="suyoustate">State</label>
+            <select id="suyoustate">
+              <option value="ts" selected>Telangana</option>
+              <option value="ap">Andhra Pradesh</option>
+              <option value="central">Central / All India</option>
+            </select>
+          </div>
+          <div style="flex:0 0 auto"><button type="button" id="suyoubtn">Build my list</button></div>
+        </div>
+        <ul class="su-you-list" id="suyoulist"></ul>
+        <button type="button" class="su-you-reset" id="suyoureset" hidden>Reset my choices</button>
       </section>
       <section class="su-hot" aria-label="Top hot jobs today">
         <div class="su-hot-head">
@@ -2899,6 +2952,80 @@ body.su-has-applybar{padding-bottom:70px}
         body.appendChild(h); body.appendChild(go); card.appendChild(body); rail.appendChild(card);
       });
       sec.hidden=false;
+    }
+  })();
+</script>
+<script>
+  /* v155: "your 5 today".
+     Ranks the openings already on this page against a profile the reader sets
+     once. The profile lives in this browser's localStorage: no account, no
+     server call, and "Reset my choices" deletes it. Scoring is explained on
+     every row so the reader can see why something is in the list. */
+  (function(){
+    var KEY="studentup-profile-v1";
+    var sec=document.getElementById("suyou"); if(!sec) return;
+    var qSel=document.getElementById("suyouqual"), sSel=document.getElementById("suyoustate"),
+        btn=document.getElementById("suyoubtn"), list=document.getElementById("suyoulist"),
+        reset=document.getElementById("suyoureset");
+
+    function load(){ try{ return JSON.parse(localStorage.getItem(KEY)||"null"); }catch(e){ return null; } }
+    function save(p){ try{ localStorage.setItem(KEY, JSON.stringify(p)); }catch(e){} }
+
+    function dayNum(){
+      var n=new Date(Date.now()+(330+new Date().getTimezoneOffset())*60000);
+      return Math.floor(Date.UTC(n.getFullYear(),n.getMonth(),n.getDate())/86400000);
+    }
+    function daysLeft(d){
+      if(!/^\d{4}-\d{2}-\d{2}$/.test(d||"")) return null;
+      var p=d.split("-");
+      return Math.floor(Date.UTC(+p[0],+p[1]-1,+p[2])/86400000)-dayNum();
+    }
+
+    function build(profile){
+      var rows=[];
+      Array.prototype.forEach.call(document.querySelectorAll("#grid .news"),function(c){
+        var link=c.querySelector("h3 a,h2 a,a[href]"); if(!link) return;
+        var left=daysLeft(c.getAttribute("data-last"));
+        if(left!==null&&left<0) return;                 /* closed vi chupinchamu */
+        var quals=(c.getAttribute("data-qual")||"").split(/\s+/);
+        var states=(c.getAttribute("data-state")||"").split(/\s+/);
+        var score=0, why=[];
+        if(quals.indexOf(profile.q)>-1){ score+=3; why.push("your qualification"); }
+        else if(quals.indexOf("all")>-1){ score+=1; }
+        if(states.indexOf(profile.s)>-1){ score+=2; why.push("your state"); }
+        else if(states.indexOf("central")>-1){ score+=1; why.push("all-India"); }
+        if(left!==null&&left<=7){ score+=2; why.push(left===0?"last day today":left+"d left"); }
+        if(score<=1) return;
+        rows.push({score:score,t:link.textContent.trim(),h:link.getAttribute("href"),
+                   why:why.slice(0,2).join(" · "),left:left===null?999:left});
+      });
+      rows.sort(function(a,b){ return (b.score-a.score)||(a.left-b.left); });
+      list.innerHTML="";
+      if(!rows.length){
+        var li=document.createElement("li");
+        li.textContent="Nothing matches that combination today — try Central / All India.";
+        list.appendChild(li); return;
+      }
+      rows.slice(0,5).forEach(function(r,i){
+        var li=document.createElement("li");
+        var rank=document.createElement("span"); rank.className="su-you-rank"; rank.textContent=i+1;
+        var a=document.createElement("a"); a.href=r.h; a.textContent=r.t;
+        var why=document.createElement("span"); why.className="su-you-why"; why.textContent=r.why;
+        li.appendChild(rank); li.appendChild(a); li.appendChild(why); list.appendChild(li);
+      });
+    }
+
+    btn.addEventListener("click",function(){
+      var p={q:qSel.value,s:sSel.value}; save(p); build(p); reset.hidden=false;
+    });
+    reset.addEventListener("click",function(){
+      try{ localStorage.removeItem(KEY); }catch(e){}
+      list.innerHTML=""; reset.hidden=true;
+    });
+
+    var saved=load();
+    if(saved&&saved.q&&saved.s){
+      qSel.value=saved.q; sSel.value=saved.s; build(saved); reset.hidden=false;
     }
   })();
 </script>

@@ -47,6 +47,8 @@ function studentup_option_fields() {
 				'saved_reminders' => array( 'Saved job reminders', 'check', '1', 'v151: save chesina job last date daggarapadithe reminder strip (localStorage only)' ),
 				'remind_days' => array( 'Reminder window (days)', 'text', '3', 'v151: enni rojula mundu reminder chupinchali (1-14)' ),
 				'pdf_button' => array( 'Save as PDF button (posts)', 'check', '1', 'v151: browser print-to-PDF — server ki emi pampadu' ),
+				'autolink' => array( 'Auto internal links in posts', 'check', '1', 'v154: article lopala related posts ki links — max 3, first mention only, headings/links lo touch cheyyadu' ),
+				'autolink_max' => array( 'Max auto links per post', 'text', '3', 'v154: 0-6 (ekkuva pedithe spam signal)' ),
 				'static_search' => array( 'Instant search index', 'check', '1', 'v153: /?su_index=1 lo chinna JSON index — search instant + offline, server load zero' ),
 				'index_limit' => array( 'Search index size (posts)', 'text', '300', 'v153: entha recent posts index lo undali (20-1000)' ),
 				'up_next' => array( 'Up next card (after 70% read)', 'check', '1', 'v148: dismissible next-post card — pages/session penchutundi, pop-up kaadu' ),
