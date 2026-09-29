@@ -1744,6 +1744,10 @@ def main() -> int:
                         help="v109: mobile PageSpeed/CWV/accessibility/SEO audit")
     parser.add_argument("--corrections-audit", action="store_true",
                         help="v111: verify tamper-evident update/correction ledger")
+    parser.add_argument("--revenue-plan", default="", metavar="GSC_CSV",
+                        help="v164: GSC + AdSense join — prioritised actions with Rs impact")
+    parser.add_argument("--adsense", default="", metavar="CSV",
+                        help="v164: --revenue-plan ki AdSense pages CSV")
     parser.add_argument("--push-keys", action="store_true",
                         help="v163: VAPID keypair generate (okka sari)")
     parser.add_argument("--push-send", default="", metavar="MSG",
@@ -2018,6 +2022,10 @@ def main() -> int:
                         help="v26: install/update site-wide quiz engine "
                              "(CSS+JS footer widget) — quiz UI, timers, scoring")
     args = parser.parse_args()
+
+    if args.revenue_plan:
+        from . import revenue_plan as _rp
+        return _rp.run_cli(args.revenue_plan, args.adsense)
 
     if args.push_keys or args.push_send:
         from . import webpush as _wp

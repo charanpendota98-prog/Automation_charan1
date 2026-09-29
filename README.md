@@ -1,7 +1,7 @@
 # studentup.in Auto-Blogger 🤖
 
 
-> **Verified counts (theme v1.9.20 build):** test suites **122/122** files · jsdom runtime **177/177** checks · PHP lint **68/68** files · theme audit **0/0** · code audit **0/0**.
+> **Verified counts (theme v1.9.20 build):** test suites **123/123** files · jsdom runtime **177/177** checks · PHP lint **68/68** files · theme audit **0/0** · code audit **0/0**.
 24/7 automatic blog posting system for **studentup.in** (WordPress) — runs on your Oracle Cloud instance.
 
 - **AI content:** Google Gemini (free tier) generates Telugu + English mix articles
@@ -629,6 +629,38 @@ runs Telegram noise create cheyyavu. Telegram credentials lekunte no-op and
 clear status. Content/ads/publish automatic ga touch cheyyadu.
 
 **Proof:** `--test-all` **93/93**.
+
+### v164 — REVENUE PLAN: OKATE PRIORITISED ACTION LIST (₹ TŌ)
+
+Reports chala unnayi. Kani owner ki kavalsindi report kaadu — **"reepu nenu emi
+cheyyali, danivalla enta vastundi"**.
+
+```bash
+python run.py --revenue-plan gsc.csv --adsense adsense.csv
+```
+
+GSC (page, clicks, impressions, position) + AdSense (page, pageviews, earnings)
+join chesi moodu rakala opportunities ni **₹ upside batti rank** chestundi:
+
+| | Emi | Fix |
+|---|---|---|
+| 🎯 CTR | impressions ekkuva, CTR position ki radaa takkuva | title/meta rewrite (`--ctr-boost`) |
+| 📈 PAGE2 | position 11–20 — page 2 lo kurchundi | content + internal links (`--link-graph`) |
+| 💰 RPM | pageviews ekkuva, RPM site average lo 60% lopu | ad layout (`--slot-lab`) |
+
+**Honest maths ee tool lo:**
+- CTR curve **mee sonta data nunchi calibrate** avutundi (position wise average).
+  3 pages kanna thakkuva unte aa position ki default — okka page meeda curve
+  marchadam noise.
+- **Oke URL ki CTR and PAGE2 rendu vasthe, pedda dhaani ne teesukuntam.** Fix
+  okate page kabatti rendu kalipithe total inflate avutundi — adi meeku tappu
+  plan ivvadam.
+- 300 impressions / 300 views lopu unna pages ki **advice ye raadu**.
+- GSC lo full URL, AdSense lo path untundi — path normalise chesi join chestam.
+
+Prati ₹ number **mee sonta numbers nunchi**. Benchmark ledu, "3x penchutundi"
+promise ledu. Data lekapothe plan ledu — adi ne cheptundi.
+
 
 ### v163 — NIJAMAINA WEB PUSH (VAPID)
 

@@ -5,7 +5,7 @@ import json,sys,tempfile
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT))
 from autoblog import config, corrections  # noqa: E402
-SUITES_EXPECTED=122
+SUITES_EXPECTED=123
 
 def test_record_and_chain():
  with tempfile.TemporaryDirectory() as d:
@@ -35,7 +35,7 @@ def test_pipeline_and_cli():
 
 def test_docs():
  r=(ROOT/"README.md").read_text(encoding="utf-8");m=(ROOT/"MANUAL_ADVANCED_CHECKLIST.md").read_text(encoding="utf-8")
- assert "### v111" in r and "PART 68" in m and "122/122" in r and "122/122" in m
+ assert "### v111" in r and "PART 68" in m and "123/123" in r and "123/123" in m
  print("      README v111 + PART 68 + 96/96 pinned ✔")
 TESTS=[("chain",test_record_and_chain),("tamper",test_tamper_detected),("wiring",test_pipeline_and_cli),("docs",test_docs)]
 def main():
