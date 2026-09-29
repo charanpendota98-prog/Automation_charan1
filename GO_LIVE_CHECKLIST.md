@@ -1,7 +1,7 @@
 # GO-LIVE CHECKLIST (v60) — deploy cheyocha? Enti migilindi?
 
 
-> **Verified counts (theme v1.9.20 build):** test suites **117/117** files · jsdom runtime **177/177** checks · PHP lint **65/65** files · theme audit **0/0** · code audit **0/0**.
+> **Verified counts (theme v1.9.20 build):** test suites **118/118** files · jsdom runtime **177/177** checks · PHP lint **66/66** files · theme audit **0/0** · code audit **0/0**.
 **Short answer: CODE ready ✅ · DEPLOY ready ✅ · 5 panulu MEE accounts lo cheyyali ⏳.**
 Ee doc = okka page lo motham. Kramam ga cheyyandi.
 
@@ -124,8 +124,8 @@ Detail docs: `DEPLOY_MILESWEB.md` (cPanel steps) · `DEPLOY_ORACLE_CLOUD.md` (VM
       → WordPress install + SSL (Let's Encrypt) ON.
 - [ ] **2. WordPress setup** — Rank Math; theme install (**v74**: theme **1.7.2** —
       `python tools/build_wp_theme.py` → zip → Appearance → Themes → Upload → Activate);
-      **zip:** 83 files · 828 KB · theme **1.9.20** · sha256
-      `aca778db003c241e389d213cefc3c678604401fdf1f883ae411309c02ddb93b7`
+      **zip:** 84 files · 830 KB · theme **1.9.20** · sha256
+      `df147b7892fab0b50a5486bc3d0ad74430ceeb39a37ab0785d7b84820946e2de`
       (`sha256sum wordpress-theme/studentup-theme.zip` — upload chesina zip ide ani verify cheyandi;
       build ippudu **reproducible** — same content ⇒ same sha)
       `wp-admin → Users → Application Passwords` → app password create cheyyandi.
@@ -209,6 +209,7 @@ sudo systemctl status studentup-bot.timer su-watchdog.timer --no-pager
 python run.py --production-audit     # 0 blockers
 python3 tools/cwv_audit.py           # v157: CLS/LCP/a11y markup audit (0 errors undali)
 python run.py --aeo post.html        # v158: AI Overview / snippet readiness + HowTo schema
+python3 tools/image_weight_audit.py  # v159: image budget + oversize check (0 findings undali)
 python run.py --rpm-report Pages.csv  # v151: page/slot RPM + weak slots
 python run.py --ctr-boost Queries.csv # v149: low-CTR pages + title fixes
 python run.py --daily-quiz --notify  # v149: draft + Telegram alert

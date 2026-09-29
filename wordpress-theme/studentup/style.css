@@ -1297,3 +1297,7 @@ body.dark .su-help-btn{background:#132339;color:#dbe7fb;border-color:#24364f}
 .su-kf-l{font-size:.72rem;letter-spacing:.04em;text-transform:uppercase;opacity:.68}
 .su-kf-v{font-size:1rem;font-weight:800;overflow-wrap:anywhere}
 @media(max-width:480px){.su-keyfacts{grid-template-columns:repeat(2,1fr);padding:10px;gap:8px}.su-kf{padding:8px 10px}.su-kf-v{font-size:.94rem}}
+
+/* v159: unfilled ad slots collapse (blank gap teesestundi) */
+.su-ad-reserved.su-ad-empty{min-height:0!important;height:0;margin:0;padding:0;border:0;overflow:hidden;visibility:hidden}
+.su-ad-reserved.su-ad-filled{transition:min-height .18s ease}

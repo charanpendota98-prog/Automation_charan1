@@ -1,7 +1,7 @@
 # studentup.in Auto-Blogger 🤖
 
 
-> **Verified counts (theme v1.9.20 build):** test suites **117/117** files · jsdom runtime **177/177** checks · PHP lint **65/65** files · theme audit **0/0** · code audit **0/0**.
+> **Verified counts (theme v1.9.20 build):** test suites **118/118** files · jsdom runtime **177/177** checks · PHP lint **66/66** files · theme audit **0/0** · code audit **0/0**.
 24/7 automatic blog posting system for **studentup.in** (WordPress) — runs on your Oracle Cloud instance.
 
 - **AI content:** Google Gemini (free tier) generates Telugu + English mix articles
@@ -629,6 +629,29 @@ runs Telegram noise create cheyyavu. Telegram credentials lekunte no-op and
 clear status. Content/ads/publish automatic ga touch cheyyadu.
 
 **Proof:** `--test-all` **93/93**.
+
+### v159 — REVENUE: UNFILLED AD SLOTS COLLAPSE + IMAGE WEIGHT AUDIT
+
+**Blank ad gaps ippudu ledu.** Prati ad slot ki memu `min-height` reserve
+chestam (CLS ki correct). Kani AdSense aa slot ni **fill cheyakapote** — kotha
+sites lo chala common — aa space blank ga migilipoyedi. Ippudu AdSense ichhe
+`data-ad-status="unfilled"` chusi wrapper collapse avutundi
+(`inc/adfill.php`, option `collapse_unfilled`).
+
+Important: **reserve ad load ayye varaku alage untundi** — collapse anedi ad
+response taruvata ne, so CLS penalty raadu. Ad ni move cheyyam, refresh
+cheyyam, click prompt cheyyam — unfilled box ni matrame dachipettam (adi
+Google ye recommend chesedi). AdSense client set cheyakapote script ye raadu.
+
+**Image weight audit** — `python3 tools/image_weight_audit.py`
+Prati image ki size budget (hero 200 KB / card 120 KB / icon 30 KB), intrinsic
+width vs display width (2x dhaatithe wasted bytes), modern format, and page
+motham weight. Oke file ni page lo 3 sarlu vaadithe browser okka sari ne
+download chestundi — andhuke unique file per page ne lekka.
+
+Adi pattukunna nijam: card images `.jpg` ga unnayi. Webp ki marchanu →
+homepage image weight **137 KB → 102 KB (−26%)**, zero quality loss kanipinchadu.
+
 
 ### v158 — AEO PACK: AI OVERVIEWS, FEATURED SNIPPETS, HowTo SCHEMA
 
