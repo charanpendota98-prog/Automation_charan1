@@ -40,7 +40,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 THEME = ROOT / "wordpress-theme" / "studentup"
-SUITES_EXPECTED = 113  # v95 tho
+SUITES_EXPECTED = 114  # v95 tho
 
 
 def read(rel: Path | str) -> str:
@@ -181,7 +181,7 @@ def test_suite_pins_and_docs() -> None:
               "v79_test.py", "v80_test.py", "v81_test.py", "v89_test.py",
               "v91_test.py", "v92_test.py"):
         txt = read(ROOT / "tests" / f)
-        # v75–v91 literal pin (`suites == 113`) · v92 constant (`SUITES_EXPECTED = 113`)
+        # v75–v91 literal pin (`suites == 114`) · v92 constant (`SUITES_EXPECTED = 114`)
         assert (f"suites == {SUITES_EXPECTED}" in txt
                 or f"SUITES_EXPECTED = {SUITES_EXPECTED}" in txt), \
             f"{f} lo {SUITES_EXPECTED} pin ledu"

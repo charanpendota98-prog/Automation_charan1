@@ -72,8 +72,60 @@
 
     function setQuick() { items = quick.slice(0); idx = 0; paint(); }
 
+    /* v153: static index first.
+       One small JSON file is fetched once, kept in localStorage against the
+       theme version, and searched locally. That makes typing instant, keeps
+       working offline, and stops one REST query per keystroke hitting the
+       database. If the index is unavailable we fall back to the REST search. */
+    var INDEX_KEY = "su-search-index-v1";
+    var indexData = null, indexTried = false;
+
+    function cacheRead() {
+      try {
+        var raw = JSON.parse(localStorage.getItem(INDEX_KEY) || "null");
+        if (raw && raw.v && window.STUDENTUP && raw.v === STUDENTUP.indexVer) { return raw; }
+      } catch (e) {}
+      return null;
+    }
+
+    function loadIndex() {
+      if (indexTried || !(window.STUDENTUP && STUDENTUP.indexUrl)) { return; }
+      indexTried = true;
+      var cached = cacheRead();
+      if (cached) { indexData = cached; return; }
+      fetch(STUDENTUP.indexUrl, { credentials: "omit" })
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (data) {
+          if (!data || !data.items) { return; }
+          indexData = data;
+          try { localStorage.setItem(INDEX_KEY, JSON.stringify(data)); } catch (e) {}
+          if (lastQuery) { search(lastQuery); }
+        })
+        .catch(function () {});
+    }
+
+    function localHits(q) {
+      if (!indexData || !indexData.items) { return null; }
+      var needle = q.toLowerCase(), words = needle.split(/\s+/).filter(Boolean), out = [];
+      for (var i = 0; i < indexData.items.length && out.length < 8; i++) {
+        var it = indexData.items[i];
+        var hay = (it.t + " " + (it.c || "")).toLowerCase();
+        var ok = true;
+        for (var w = 0; w < words.length; w++) { if (hay.indexOf(words[w]) === -1) { ok = false; break; } }
+        if (ok) { out.push({ i: "📄", t: it.t, u: it.u }); }
+      }
+      return out;
+    }
+
     function search(q) {
-      if (!(window.STUDENTUP && STUDENTUP.rest)) return;
+      loadIndex();
+      var local = localHits(q);
+      if (local && local.length) { items = local; idx = 0; paint(); return; }
+      if (!(window.STUDENTUP && STUDENTUP.rest)) {
+        items = quick.filter(function (k) { return k.t.toLowerCase().indexOf(q.toLowerCase()) > -1; });
+        idx = 0; paint();
+        return;
+      }
       fetch(STUDENTUP.rest + "posts?per_page=6&_fields=title,link&search=" + encodeURIComponent(q), { credentials: "omit" })
         .then(function (r) { return r.ok ? r.json() : []; })
         .then(function (rows) {
@@ -84,11 +136,16 @@
           if (!items.length) items = quick.filter(function (k) { return k.t.toLowerCase().indexOf(q.toLowerCase()) > -1; });
           idx = 0; paint();
         })
-        .catch(function () {});
+        .catch(function () {
+          var fb = localHits(q);
+          items = (fb && fb.length) ? fb : quick.filter(function (k) { return k.t.toLowerCase().indexOf(q.toLowerCase()) > -1; });
+          idx = 0; paint();
+        });
     }
 
     function open() {
       root.hidden = false;
+      loadIndex();
       document.body.classList.add("mlock");
       setQuick();
       setTimeout(function () { input.focus(); input.select(); }, 20);

@@ -1,6 +1,6 @@
 # 📋 MANUAL ADVANCED CHECKLIST — "Nenu manual ga em em cheyali"
 ### Website advanced ga run avvali · Posts ANI-PERFECT · Mistakes leku · Deep analyse + NotebookLM
-> **Verified counts (theme v1.9.20 build):** test suites **113/113** files · jsdom runtime **174/174** checks · PHP lint **61/61** files · theme audit **0/0** · code audit **0/0**.
+> **Verified counts (theme v1.9.20 build):** test suites **114/114** files · jsdom runtime **174/174** checks · PHP lint **62/62** files · theme audit **0/0** · code audit **0/0**.
 
 
 **Ee file = mee haath tho cheyyalsina ANNI — exact order, exact commands.**
@@ -2655,6 +2655,23 @@ python run.py --rollback-post POST_ID
 python tests/v111_test.py
 python run.py --test-all       # 91/91
 ```
+
+### v153 — INSTANT SEARCH INDEX (SERVER LOAD ZERO, OFFLINE OK)
+
+Mundu command palette prati keystroke ki REST API ni kottedi — prati letter ki
+okka HTTP round trip + okka DB query, offline lo asalu pani cheyyedu.
+Ippudu theme chinna JSON index publish chestundi:
+
+- `/?su_index=1` → recent posts (title, link, category, date, last date) JSON,
+  transient lo cache, `X-Robots-Tag: noindex`.
+- Post save/delete/restore aithe index **automatic ga refresh** avutundi.
+- Browser aa index ni localStorage lo theme version tho cache chestundi →
+  typing **instant**, offline kuda search pani chestundi, server ki load **zero**.
+- Index lo match dorakakapote REST search fallback, adi kuda fail aithe
+  quick links — reader ki eppudu khali screen raadu.
+
+Options: `static_search` (on/off), `index_limit` (20–1000 posts, default 300).
+
 
 ### v152 — SPEED: MINIFIED CSS IN THE BUILD
 

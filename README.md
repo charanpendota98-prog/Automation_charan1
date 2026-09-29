@@ -1,7 +1,7 @@
 # studentup.in Auto-Blogger 🤖
 
 
-> **Verified counts (theme v1.9.20 build):** test suites **113/113** files · jsdom runtime **174/174** checks · PHP lint **61/61** files · theme audit **0/0** · code audit **0/0**.
+> **Verified counts (theme v1.9.20 build):** test suites **114/114** files · jsdom runtime **174/174** checks · PHP lint **62/62** files · theme audit **0/0** · code audit **0/0**.
 24/7 automatic blog posting system for **studentup.in** (WordPress) — runs on your Oracle Cloud instance.
 
 - **AI content:** Google Gemini (free tier) generates Telugu + English mix articles
@@ -629,6 +629,23 @@ runs Telegram noise create cheyyavu. Telegram credentials lekunte no-op and
 clear status. Content/ads/publish automatic ga touch cheyyadu.
 
 **Proof:** `--test-all` **93/93**.
+
+### v153 — INSTANT SEARCH INDEX (SERVER LOAD ZERO, OFFLINE OK)
+
+Mundu command palette prati keystroke ki REST API ni kottedi — prati letter ki
+okka HTTP round trip + okka DB query, offline lo asalu pani cheyyedu.
+Ippudu theme chinna JSON index publish chestundi:
+
+- `/?su_index=1` → recent posts (title, link, category, date, last date) JSON,
+  transient lo cache, `X-Robots-Tag: noindex`.
+- Post save/delete/restore aithe index **automatic ga refresh** avutundi.
+- Browser aa index ni localStorage lo theme version tho cache chestundi →
+  typing **instant**, offline kuda search pani chestundi, server ki load **zero**.
+- Index lo match dorakakapote REST search fallback, adi kuda fail aithe
+  quick links — reader ki eppudu khali screen raadu.
+
+Options: `static_search` (on/off), `index_limit` (20–1000 posts, default 300).
+
 
 ### v152 — SPEED: MINIFIED CSS IN THE BUILD
 

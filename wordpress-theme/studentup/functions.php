@@ -22,6 +22,7 @@ require_once get_template_directory() . '/inc/template.php';
 require_once get_template_directory() . '/inc/jobtable.php'; // v142: FreeJobAlert-style scannable table
 require_once get_template_directory() . '/inc/engage.php'; // v144: freshness stamp + helpful box
 require_once get_template_directory() . '/inc/remind.php'; // v151: saved-job deadline reminders
+require_once get_template_directory() . '/inc/searchindex.php'; // v153: static instant search index
 require_once get_template_directory() . '/inc/seo-bridge.php';
 require_once get_template_directory() . '/inc/toc.php';
 require_once get_template_directory() . '/inc/schema.php';
