@@ -1,6 +1,6 @@
 # 📋 MANUAL ADVANCED CHECKLIST — "Nenu manual ga em em cheyali"
 ### Website advanced ga run avvali · Posts ANI-PERFECT · Mistakes leku · Deep analyse + NotebookLM
-> **Verified counts (theme v1.9.20 build):** test suites **120/120** files · jsdom runtime **177/177** checks · PHP lint **66/66** files · theme audit **0/0** · code audit **0/0**.
+> **Verified counts (theme v1.9.20 build):** test suites **121/121** files · jsdom runtime **177/177** checks · PHP lint **67/67** files · theme audit **0/0** · code audit **0/0**.
 
 
 **Ee file = mee haath tho cheyyalsina ANNI — exact order, exact commands.**
@@ -2655,6 +2655,35 @@ python run.py --rollback-post POST_ID
 python tests/v111_test.py
 python run.py --test-all       # 91/91
 ```
+
+### v162 — SLOT LAB: AD SLOT A/B (RPM) MEASUREMENT
+
+`--rpm-report` cheptundi *ye page* earn chestondo. Slot lab cheptundi *ye slot
+configuration* earn chestondo — ade nijamaina revenue lever.
+
+**Setup**
+1. AdSense lo rendu units create cheyandi: `mid-A`, `mid-B` (heights/formats veru)
+2. Appearance → StudentUp → "Slot: mid — variant B" lo B id pettandi, `slot_lab` ON
+3. 7–10 rojulu run cheyandi — **madhyalo config marchakandi**, marithe data waste
+4. AdSense → Reports → Ad units → CSV export
+5. `python run.py --slot-lab adsense.csv`
+
+**Theme rules (deliberate)**
+- **B slot id ivvakapothe experiment ye ledu** — half traffic ni blank slot ki
+  pampadam revenue loss. Default OFF.
+- Variant **stable** — same visitor ki prati page same variant (refresh ki
+  marithe data garbage).
+- **Cookie ledu, IP ledu**, personal data store cheyyam → consent banner
+  avasaram lekunda pani chestundi.
+- Ad ni refresh/move cheyyadu — slot id matrame veru.
+
+**Report rules (idi ముఖ్యం)**
+Verdict ki minimum **10,000 impressions per variant**. Ala lekapothe
+`NEED_DATA` — inka enni impressions kavalo cheptundi. Chinna sample meeda
+winner declare cheyyadam ante **random noise ni strategy ga marchadam**.
+Impressions batti noise floor calculate chesi, lift adi kanna thakkuva unte
+`NO_WINNER`. 900 impressions meeda 10x "lift" kanipinchina accept cheyyadu.
+
 
 ### v161 — DRAFT ↔ SOURCE FACT CROSS-CHECK (`--factcheck`)
 

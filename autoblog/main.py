@@ -1744,6 +1744,8 @@ def main() -> int:
                         help="v109: mobile PageSpeed/CWV/accessibility/SEO audit")
     parser.add_argument("--corrections-audit", action="store_true",
                         help="v111: verify tamper-evident update/correction ledger")
+    parser.add_argument("--slot-lab", nargs="?", const="", default=None, metavar="CSV",
+                        help="v162: ad slot A/B (RPM) measurement — AdSense CSV nunchi")
     parser.add_argument("--factcheck", default=None, metavar="DRAFT",
                         help="v161: draft lo unna dates/fees/vacancies ni source tho cross-check")
     parser.add_argument("--against", default="", metavar="SOURCE",
@@ -2012,6 +2014,10 @@ def main() -> int:
                         help="v26: install/update site-wide quiz engine "
                              "(CSS+JS footer widget) — quiz UI, timers, scoring")
     args = parser.parse_args()
+
+    if args.slot_lab is not None:
+        from . import slot_lab as _sl
+        return _sl.run_cli(args.slot_lab)
 
     if args.factcheck:
         from . import factcheck as _fc

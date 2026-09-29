@@ -258,7 +258,14 @@ function studentup_ad( $place = 'mid' ) {
 	// v82: place 'leaderboard' → option 'adsense_slot_top_leaderboard'
 	// (mundu key mismatch valla leaderboard AdSense unit eppudu load ayyedi kaadu).
 	$slot_key = ( 'leaderboard' === $place ) ? 'top_leaderboard' : str_replace( '-', '_', $place );
-	$slot     = (string) get_option( 'studentup_adsense_slot_' . $slot_key, '' );
+	// v162: slot lab ON + B id set unte variant slot; lekapothe normal slot.
+	if ( function_exists( 'studentup_slot_for' ) ) {
+		list( $slot, $su_variant ) = studentup_slot_for( $slot_key );
+	} else {
+		$slot       = (string) get_option( 'studentup_adsense_slot_' . $slot_key, '' );
+		$su_variant = '';
+	}
+	unset( $su_variant );
 	$sizes  = array( 'leaderboard' => 110, 'in-feed' => 160, 'mid' => 250,
 		'sidebar' => 250, 'below-content' => 280, 'anchor' => 60 );
 	$height = isset( $sizes[ $place ] ) ? $sizes[ $place ] : 250;
