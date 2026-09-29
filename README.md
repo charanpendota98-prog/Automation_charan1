@@ -1,7 +1,7 @@
 # studentup.in Auto-Blogger 🤖
 
 
-> **Verified counts (theme v1.9.20 build):** test suites **115/115** files · jsdom runtime **177/177** checks · PHP lint **63/63** files · theme audit **0/0** · code audit **0/0**.
+> **Verified counts (theme v1.9.20 build):** test suites **115/115** files · jsdom runtime **177/177** checks · PHP lint **64/64** files · theme audit **0/0** · code audit **0/0**.
 24/7 automatic blog posting system for **studentup.in** (WordPress) — runs on your Oracle Cloud instance.
 
 - **AI content:** Google Gemini (free tier) generates Telugu + English mix articles
@@ -629,6 +629,22 @@ runs Telegram noise create cheyyavu. Telegram credentials lekunte no-op and
 clear status. Content/ads/publish automatic ga touch cheyyadu.
 
 **Proof:** `--test-all` **93/93**.
+
+### v156 — PERSONALISED PICKS IN THE THEME + CALENDAR REMINDERS (.ics)
+
+**"Your 5 today" ippudu theme lo kuda** (`inc/personal.php`). Homepage cards ki
+`data-su-card` + `data-state` (real category slugs nunchi — guess kaadu) add
+chesamu; reader qualification + state okasari set cheste JS ranking chestundi:
+qualification +3, state +2, 7 rojula lopu closing +2, closed jobs pూర్తిగా out.
+Profile browser localStorage lo matrame — login ledu, server call ledu,
+"Reset my choices" tho delete. Option: `personal_picks`.
+
+**🗓️ Add last date to my calendar (.ics).** Post page lo (and preview cards lo)
+button — `studentup_last_date` meta **unte ne** vastundi (date lekapote button
+raadu, emi guess cheyyadu). Browser lo ne `.ics` file generate avutundi,
+**1 roju mundu alarm** tho. Phone/Google calendar lo direct import.
+Option: `calendar_button`.
+
 
 ### v154/v155 — INTERNAL LINK ENGINE + "YOUR 5 TODAY"
 

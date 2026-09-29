@@ -757,6 +757,11 @@ body.dark .su-you h2{color:#eaf2ff}
 .su-you-why{font-size:11px;opacity:.7;font-weight:700}
 .su-you-reset{margin-top:9px;border:0;background:transparent;font-size:11.5px;font-weight:800;
   color:var(--su-g2);cursor:pointer;padding:0}
+
+/* v156: add-to-calendar buttons on cards with a real last date */
+.su-ics{display:inline-flex;align-items:center;gap:5px;border:1px solid var(--line);background:transparent;
+  color:var(--ink);font:inherit;font-size:11.5px;font-weight:800;padding:4px 10px;border-radius:999px;cursor:pointer}
+.su-ics:hover{border-color:transparent;background:linear-gradient(135deg,#4f46e5,#ec4899);color:#fff}
 </style>
   <style id="su-premium-css">
 /* ===========================================================
@@ -3027,6 +3032,43 @@ body.su-has-applybar{padding-bottom:70px}
     if(saved&&saved.q&&saved.s){
       qSel.value=saved.q; sSel.value=saved.s; build(saved); reset.hidden=false;
     }
+  })();
+</script>
+<script>
+  /* v156: add the last date to the reader's own calendar.
+     The .ics file is built in the browser from the date already on the card —
+     nothing is uploaded, and cards without a real last date get no button. */
+  (function(){
+    function ics(dateStr, title, url){
+      var d=dateStr.replace(/-/g,"");
+      var stamp=new Date().toISOString().replace(/[-:]/g,"").split(".")[0]+"Z";
+      function esc(s){ return String(s).replace(/([,;\\])/g,"\\$1").replace(/\n/g,"\\n"); }
+      return ["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//StudentUp//EN","CALSCALE:GREGORIAN","BEGIN:VEVENT",
+        "UID:"+d+"-"+Math.random().toString(36).slice(2)+"@studentup","DTSTAMP:"+stamp,
+        "DTSTART;VALUE=DATE:"+d,"DTEND;VALUE=DATE:"+d,
+        "SUMMARY:"+esc("Last date: "+title),"DESCRIPTION:"+esc(url),
+        "BEGIN:VALARM","TRIGGER:-P1D","ACTION:DISPLAY",
+        "DESCRIPTION:"+esc("Tomorrow is the last date: "+title),"END:VALARM",
+        "END:VEVENT","END:VCALENDAR"].join("\r\n");
+    }
+    Array.prototype.forEach.call(document.querySelectorAll(".news[data-last]"),function(card){
+      var d=card.getAttribute("data-last");
+      if(!/^\d{4}-\d{2}-\d{2}$/.test(d||"")) return;
+      var link=card.querySelector("h3 a,h2 a,a[href]"); if(!link) return;
+      var host=card.querySelector(".meta,.pillrow")||card;
+      var b=document.createElement("button");
+      b.type="button"; b.className="su-ics";
+      b.innerHTML='<span aria-hidden="true">🗓️</span><span>Remind me</span>';
+      b.setAttribute("aria-label","Add last date to my calendar");
+      b.addEventListener("click",function(){
+        var blob=new Blob([ics(d, link.textContent.trim(), link.href)],{type:"text/calendar;charset=utf-8"});
+        var a=document.createElement("a");
+        a.href=URL.createObjectURL(blob); a.download="last-date.ics";
+        document.body.appendChild(a); a.click();
+        setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); },500);
+      });
+      host.appendChild(b);
+    });
   })();
 </script>
 </body>

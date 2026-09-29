@@ -57,9 +57,26 @@ $label = $terms ? $terms[0]->name : 'Update';
 	<?php
 	$su_qual_raw = trim( (string) get_post_meta( get_the_ID(), 'studentup_qual', true ) );
 	$su_last_raw = trim( (string) get_post_meta( get_the_ID(), 'studentup_last_date', true ) );
+	// v156: state tags for the personalised strip - derived from the real
+	// category slugs, never guessed.
+	$su_states = array();
+	foreach ( (array) get_the_category() as $su_term ) {
+		$su_slug = isset( $su_term->slug ) ? $su_term->slug : '';
+		if ( false !== strpos( $su_slug, 'ts-' ) || false !== strpos( $su_slug, 'telangana' ) ) {
+			$su_states[] = 'ts';
+		}
+		if ( false !== strpos( $su_slug, 'ap-' ) || false !== strpos( $su_slug, 'andhra' ) ) {
+			$su_states[] = 'ap';
+		}
+		if ( false !== strpos( $su_slug, 'central' ) ) {
+			$su_states[] = 'central';
+		}
+	}
+	$su_states = implode( ' ', array_unique( $su_states ) );
 	?>
-	<article <?php post_class( 'news' ); ?> data-cat="<?php echo esc_attr( $cat ); ?>"
+	<article <?php post_class( 'news' ); ?> data-su-card data-cat="<?php echo esc_attr( $cat ); ?>"
 		data-qual="<?php echo esc_attr( $su_qual_raw ); ?>"
+		data-state="<?php echo esc_attr( $su_states ); ?>"
 		data-last="<?php echo esc_attr( $su_last_raw ); ?>"
 		data-text="<?php echo esc_attr( mb_strtolower( get_the_title() . ' ' . get_the_excerpt() ) ); ?>">
 		<?php if ( has_post_thumbnail() ) : ?>

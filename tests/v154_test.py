@@ -93,3 +93,29 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
+
+def test_theme_personal_strip_matches_preview_rules():
+    src = (THEME / "inc" / "personal.php").read_text(encoding="utf-8")
+    assert "studentup_personal_picks" in src and "studentup-profile-v1" in src
+    assert "fetch(" not in src and "wp_remote" not in src, "profile server ki vellakoodadu"
+    assert "removeItem" in src, "reset ledu"
+    assert "left < 0" in src, "closed jobs list lo raakoodadu"
+    fp = (THEME / "front-page.php").read_text(encoding="utf-8")
+    assert "studentup_personal_picks();" in fp
+    tpl = (THEME / "inc" / "template.php").read_text(encoding="utf-8")
+    assert "data-su-card" in tpl and 'data-state="' in tpl, "cards ki state/marker attributes ledu"
+    print("      theme personalised strip wired with local-only rules ✔")
+
+
+def test_calendar_button_needs_a_real_date():
+    src = (THEME / "inc" / "personal.php").read_text(encoding="utf-8")
+    assert "studentup_calendar_button" in src
+    assert "preg_match( '/^20\\d{2}-\\d{2}-\\d{2}$/', $last )" in src, "date lekapote button raakoodadu"
+    assert "BEGIN:VCALENDAR" in src and "TRIGGER:-P1D" in src, "1 roju mundu alarm ledu"
+    assert "text/calendar" in src
+    single = (THEME / "single.php").read_text(encoding="utf-8")
+    assert "studentup_calendar_button();" in single
+    html = PREVIEW.read_text(encoding="utf-8")
+    assert "su-ics" in html and "BEGIN:VCALENDAR" in html, "preview lo parity ledu"
+    print("      .ics reminder built in-browser, only with a real last date ✔")

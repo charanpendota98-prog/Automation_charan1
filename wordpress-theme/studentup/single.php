@@ -146,6 +146,7 @@ get_header();
 	</div>
 </main>
 <?php
+studentup_calendar_button();
 studentup_pdf_button();
 studentup_up_next();
 

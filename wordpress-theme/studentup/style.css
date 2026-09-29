@@ -1261,3 +1261,29 @@ body.dark .su-help-btn{background:#132339;color:#dbe7fb;border-color:#24364f}
 /* v154: auto internal links — normal link look, subtle underline */
 .su-autolink{text-decoration:underline;text-decoration-color:rgba(124,58,237,.45);text-underline-offset:2px}
 .su-autolink:hover{text-decoration-color:currentColor}
+
+/* v156: personalised picks + calendar button */
+.su-you{margin:22px 0;padding:16px 18px;border-radius:18px;border:1px solid var(--line,#e6e8f0);
+	background:linear-gradient(135deg,rgba(16,185,129,.09),rgba(79,70,229,.09))}
+.su-you h2{margin:0 0 4px;font-size:19px}
+.su-you-sub{margin:0 0 11px;font-size:12.5px;opacity:.78}
+.su-you-form{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
+.su-you-form>div{flex:1 1 150px}
+.su-you-form label{display:block;font-size:11.5px;font-weight:800;margin-bottom:4px;opacity:.85}
+.su-you-form select{width:100%;padding:9px 11px;border-radius:11px;border:1px solid var(--line,#e6e8f0);
+	background:var(--card,#fff);color:inherit;font:inherit;font-size:14px}
+.su-you-form button{padding:10px 16px;border:0;border-radius:12px;font-weight:900;cursor:pointer;font-size:13.5px;
+	background:linear-gradient(135deg,#4f46e5,#ec4899);color:#fff}
+.su-you-list{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:8px}
+.su-you-list li{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:9px 11px;border-radius:12px;
+	background:var(--card,#fff);border:1px solid var(--line,#e6e8f0)}
+.su-you-list li a{flex:1 1 200px;font-weight:700;font-size:13.5px}
+.su-you-rank{min-width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:11.5px;
+	font-weight:900;background:linear-gradient(135deg,#4f46e5,#ec4899);color:#fff}
+.su-you-why{font-size:11px;opacity:.7;font-weight:700}
+.su-you-reset{margin-top:9px;border:0;background:transparent;font-size:11.5px;font-weight:800;cursor:pointer;padding:0;color:#4f46e5}
+.su-cal-add{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:16px 0}
+.su-cal-btn{border:1px solid var(--line,#e6e8f0);background:var(--card,#fff);color:inherit;font:inherit;font-weight:800;
+	font-size:13px;padding:9px 14px;border-radius:12px;cursor:pointer}
+.su-cal-btn:hover{background:linear-gradient(135deg,#4f46e5,#ec4899);color:#fff;border-color:transparent}
+.su-cal-hint{font-size:11.5px;opacity:.7}
