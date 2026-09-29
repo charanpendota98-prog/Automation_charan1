@@ -15,7 +15,7 @@ sys.path.insert(0, str(ROOT))
 
 from autoblog import config, freshness  # noqa: E402
 
-SUITES_EXPECTED = 111
+SUITES_EXPECTED = 112
 
 
 def test_identical_skips_write() -> None:
@@ -107,7 +107,7 @@ def test_docs_are_pinned() -> None:
     manual = (ROOT / "MANUAL_ADVANCED_CHECKLIST.md").read_text(encoding="utf-8")
     assert "### v101" in readme
     assert "PART 58" in manual
-    assert "111/111" in readme and "111/111" in manual
+    assert "112/112" in readme and "112/112" in manual
     print("      README v101 + manual PART 58 + 96/96 pinned ✔")
 
 

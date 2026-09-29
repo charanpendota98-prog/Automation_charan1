@@ -253,3 +253,31 @@ function studentup_up_next() {
 	</script>
 	<?php
 }
+
+/**
+ * v151: "Save as PDF" for a notification.
+ *
+ * Students keep a copy of the key details before the official page changes.
+ * It uses the browser's own print-to-PDF - no server, no third-party service,
+ * no data leaves the device. The print stylesheet drops nav, ads and widgets
+ * so the sheet is just the article.
+ */
+function studentup_pdf_button() {
+	if ( ! is_single() || '1' !== studentup_opt( 'pdf_button', '1' ) ) {
+		return;
+	}
+	?>
+	<p class="su-pdf">
+		<button type="button" class="su-pdf-btn" id="su-pdf-btn">
+			📄 <?php esc_html_e( 'Save this notification as PDF', 'studentup' ); ?>
+		</button>
+		<span class="su-pdf-note"><?php esc_html_e( 'Uses your browser print dialog - choose "Save as PDF".', 'studentup' ); ?></span>
+	</p>
+	<script>
+	(function () {
+		var b = document.getElementById('su-pdf-btn');
+		if (b) { b.addEventListener('click', function () { window.print(); }); }
+	})();
+	</script>
+	<?php
+}

@@ -1744,6 +1744,8 @@ def main() -> int:
                         help="v109: mobile PageSpeed/CWV/accessibility/SEO audit")
     parser.add_argument("--corrections-audit", action="store_true",
                         help="v111: verify tamper-evident update/correction ledger")
+    parser.add_argument("--rpm-report", nargs="?", const="", default=None, metavar="CSV",
+                        help="v151: AdSense CSV nunchi page/slot RPM report + weak slots (read-only)")
     parser.add_argument("--ctr-boost", nargs="?", const="", default=None, metavar="CSV",
                         help="v149: Search Console CSV nunchi low-CTR pages + title suggestions (edit cheyyadu)")
     parser.add_argument("--ctr-min-impressions", type=int, default=200,
@@ -2003,6 +2005,10 @@ def main() -> int:
                              "(CSS+JS footer widget) — quiz UI, timers, scoring")
     args = parser.parse_args()
 
+    if args.rpm_report is not None:
+        from . import rpm_report as _rr
+
+        return _rr.run_cli(args.rpm_report)
     if args.ctr_boost is not None:
         from . import ctr_boost as _cb
 

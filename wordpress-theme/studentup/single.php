@@ -146,6 +146,7 @@ get_header();
 	</div>
 </main>
 <?php
+studentup_pdf_button();
 studentup_up_next();
 
 get_footer();

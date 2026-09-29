@@ -5,7 +5,7 @@ import sys,tempfile
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT))
 from autoblog import config, control_center  # noqa: E402
-SUITES_EXPECTED=111
+SUITES_EXPECTED=112
 
 def test_empty_center_is_safe():
  with tempfile.TemporaryDirectory() as d:
@@ -33,7 +33,7 @@ def test_read_only_wiring():
 
 def test_docs():
  r=(ROOT/"README.md").read_text(encoding="utf-8");m=(ROOT/"MANUAL_ADVANCED_CHECKLIST.md").read_text(encoding="utf-8")
- assert "### v112" in r and "PART 69" in m and "111/111" in r and "111/111" in m
+ assert "### v112" in r and "PART 69" in m and "112/112" in r and "112/112" in m
  print("      README v112 + PART 69 + 96/96 pinned ✔")
 TESTS=[("empty",test_empty_center_is_safe),("action",test_performance_action_queue),("wiring",test_read_only_wiring),("docs",test_docs)]
 def main():

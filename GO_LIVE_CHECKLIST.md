@@ -1,7 +1,7 @@
 # GO-LIVE CHECKLIST (v60) — deploy cheyocha? Enti migilindi?
 
 
-> **Verified counts (theme v1.9.20 build):** test suites **111/111** files · jsdom runtime **174/174** checks · PHP lint **60/60** files · theme audit **0/0** · code audit **0/0**.
+> **Verified counts (theme v1.9.20 build):** test suites **112/112** files · jsdom runtime **174/174** checks · PHP lint **61/61** files · theme audit **0/0** · code audit **0/0**.
 **Short answer: CODE ready ✅ · DEPLOY ready ✅ · 5 panulu MEE accounts lo cheyyali ⏳.**
 Ee doc = okka page lo motham. Kramam ga cheyyandi.
 
@@ -124,8 +124,8 @@ Detail docs: `DEPLOY_MILESWEB.md` (cPanel steps) · `DEPLOY_ORACLE_CLOUD.md` (VM
       → WordPress install + SSL (Let's Encrypt) ON.
 - [ ] **2. WordPress setup** — Rank Math; theme install (**v74**: theme **1.7.2** —
       `python tools/build_wp_theme.py` → zip → Appearance → Themes → Upload → Activate);
-      **zip:** 76 files · 788 KB · theme **1.9.20** · sha256
-      `1ce18aa760517a3d717022920e1473d1c8bcbac9c6bade0900e6a45c46f38396`
+      **zip:** 77 files · 791 KB · theme **1.9.20** · sha256
+      `dba4ae39a84529af5df65097d2223661f5a1a8209f7f9e66cd97e146e970096f`
       (`sha256sum wordpress-theme/studentup-theme.zip` — upload chesina zip ide ani verify cheyandi;
       build ippudu **reproducible** — same content ⇒ same sha)
       `wp-admin → Users → Application Passwords` → app password create cheyyandi.
@@ -207,6 +207,7 @@ sudo systemctl status studentup-bot.timer su-watchdog.timer --no-pager
 **3) Deploy tarvata verify**
 ```bash
 python run.py --production-audit     # 0 blockers
+python run.py --rpm-report Pages.csv  # v151: page/slot RPM + weak slots
 python run.py --ctr-boost Queries.csv # v149: low-CTR pages + title fixes
 python run.py --daily-quiz --notify  # v149: draft + Telegram alert
 python run.py --daily-quiz-dry       # v148: today's quiz plan

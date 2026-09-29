@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: StudentUp 1.9.20\n"
 "Report-Msgid-Bugs-To: https://studentup.in/\n"
-"POT-Creation-Date: 2026-09-29 01:46+0000\n"
+"POT-Creation-Date: 2026-09-29 02:02+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -121,6 +121,10 @@ msgstr ""
 
 #: inc/share.php:125
 msgid "Copy link"
+msgstr ""
+
+#: inc/remind.php:52
+msgid "Dismiss"
 msgstr ""
 
 #: inc/cta.php:54
@@ -308,6 +312,10 @@ msgstr ""
 msgid "Recently read"
 msgstr ""
 
+#: inc/remind.php:56
+msgid "Remind me in the browser too"
+msgstr ""
+
 #: inc/student-tools.php:111
 msgid "Reminder file downloaded. Add it to your calendar."
 msgstr ""
@@ -333,6 +341,10 @@ msgstr ""
 msgid "Save"
 msgstr ""
 
+#: inc/engage.php:272
+msgid "Save this notification as PDF"
+msgstr ""
+
 #: inc/saved.php:179
 #: inc/saved.php:293
 msgid "Save this post for later"
@@ -342,6 +354,10 @@ msgstr ""
 #: inc/saved.php:208
 #: inc/saved.php:292
 msgid "Saved"
+msgstr ""
+
+#: inc/remind.php:51
+msgid "Saved job reminders"
 msgstr ""
 
 #: header.php:56
@@ -413,6 +429,10 @@ msgstr ""
 
 #: inc/engage.php:35
 msgid "Updated on"
+msgstr ""
+
+#: inc/engage.php:274
+msgid "Uses your browser print dialog - choose "Save as PDF"."
 msgstr ""
 
 #: inc/saved.php:219

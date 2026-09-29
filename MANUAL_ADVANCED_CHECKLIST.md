@@ -1,6 +1,6 @@
 # 📋 MANUAL ADVANCED CHECKLIST — "Nenu manual ga em em cheyali"
 ### Website advanced ga run avvali · Posts ANI-PERFECT · Mistakes leku · Deep analyse + NotebookLM
-> **Verified counts (theme v1.9.20 build):** test suites **111/111** files · jsdom runtime **174/174** checks · PHP lint **60/60** files · theme audit **0/0** · code audit **0/0**.
+> **Verified counts (theme v1.9.20 build):** test suites **112/112** files · jsdom runtime **174/174** checks · PHP lint **61/61** files · theme audit **0/0** · code audit **0/0**.
 
 
 **Ee file = mee haath tho cheyyalsina ANNI — exact order, exact commands.**
@@ -2655,6 +2655,31 @@ python run.py --rollback-post POST_ID
 python tests/v111_test.py
 python run.py --test-all       # 91/91
 ```
+
+### v151 — SAVED-JOB REMINDERS · RPM REPORT · SAVE AS PDF
+
+**1. Saved-job reminders (theme).** Reader save chesina job last date 3 rojula lopu
+unte, chinna reminder strip vastundi (dismiss chesthe aa roju malli raadu).
+Browser notification kavalante *reader button nokkake* permission adugutundi —
+page open cheyyagane prompt raadu (adi Google/browser penalise chestundi).
+Data antha reader browser localStorage lo; server ki emi pampadu.
+Options: `saved_reminders`, `remind_days` (1–14).
+
+**2. RPM report (bot).** AdSense CSV ivvandi — site RPM, top earners, and
+**weak pages** (site RPM lo 50% kanna thakkuva, kaani traffic undi) chupistundi:
+
+```bash
+python run.py --rpm-report Pages.csv     # AdSense → Reports → Pages → Export
+```
+
+Weak pages ni average ki teeste entha extra vastundo estimate kuda istundi.
+Tool ad code ni **automatic ga marchadu** — ad count penchadam policy risk.
+
+**3. Save as PDF (theme).** Post pages lo 📄 button — browser print-to-PDF
+vaadutundi (server ledu, third-party service ledu). Print stylesheet nav, ads,
+widgets anni teesi, notification matrame clean ga print chestundi.
+Option: `pdf_button`.
+
 
 ### v149 — CTR OPPORTUNITY FINDER (HIGHEST-VALUE TITLE FIXES)
 
