@@ -81,7 +81,19 @@ $label = $terms ? $terms[0]->name : 'Update';
 		data-text="<?php echo esc_attr( mb_strtolower( get_the_title() . ' ' . get_the_excerpt() ) ); ?>">
 		<?php if ( has_post_thumbnail() ) : ?>
 			<a class="thumb <?php echo esc_attr( $tone ); ?>" href="<?php the_permalink(); ?>" aria-hidden="true" tabindex="-1">
-				<?php the_post_thumbnail( 'studentup-card', array( 'loading' => 'lazy', 'alt' => esc_attr( get_the_title() ) ) ); ?>
+				<?php
+				// v157 LCP: the first card image is usually the largest element
+				// above the fold, so it must NOT be lazy-loaded. Everything
+				// after it stays lazy.
+				$su_img_attr = array( 'alt' => esc_attr( get_the_title() ) );
+				if ( 0 === (int) $idx ) {
+					$su_img_attr['loading']       = 'eager';
+					$su_img_attr['fetchpriority'] = 'high';
+				} else {
+					$su_img_attr['loading'] = 'lazy';
+				}
+				the_post_thumbnail( 'studentup-card', $su_img_attr );
+				?>
 			</a>
 		<?php else : ?>
 			<a class="thumb <?php echo esc_attr( $tone ); ?>" href="<?php the_permalink(); ?>" aria-hidden="true" tabindex="-1"><?php echo esc_html( wp_trim_words( get_the_title(), 5, '…' ) ); ?></a>

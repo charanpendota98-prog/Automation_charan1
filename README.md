@@ -1,7 +1,7 @@
 # studentup.in Auto-Blogger 🤖
 
 
-> **Verified counts (theme v1.9.20 build):** test suites **115/115** files · jsdom runtime **177/177** checks · PHP lint **64/64** files · theme audit **0/0** · code audit **0/0**.
+> **Verified counts (theme v1.9.20 build):** test suites **116/116** files · jsdom runtime **177/177** checks · PHP lint **64/64** files · theme audit **0/0** · code audit **0/0**.
 24/7 automatic blog posting system for **studentup.in** (WordPress) — runs on your Oracle Cloud instance.
 
 - **AI content:** Google Gemini (free tier) generates Telugu + English mix articles
@@ -629,6 +629,32 @@ runs Telegram noise create cheyyavu. Telegram credentials lekunte no-op and
 clear status. Content/ads/publish automatic ga touch cheyyadu.
 
 **Proof:** `--test-all` **93/93**.
+
+### v157 — CWV + A11Y STATIC AUDITOR (and the LCP bug it caught)
+
+PageSpeed ni live site meeda ne run cheyagalam. Kani **bad CWV/a11y ki karanam
+ayye vishayalu** markup lo ne prove cheyyochu — andhuke ee auditor:
+
+```bash
+python3 tools/cwv_audit.py      # preview lo unna anni pages
+```
+
+Check cheseవి: `<img>`/`<iframe>` ki width+height (CLS), first image lazy aa
+(LCP), `<head>` lo render-blocking `<script>` (INP), alt text, button/link
+accessible name, form label, duplicate id, single `<h1>`, meta description,
+`font-display`.
+
+**Idi pattukunna nijamaina bug:** homepage first card image `loading="lazy"` ga
+undedi — adi LCP element, lazy pettadam vala LCP late avutundi. Ippudu theme lo
+(`$idx === 0`) and preview lo first image `loading="eager" fetchpriority="high"`,
+migilinavi lazy ne.
+
+Auditor lo rendu **false positives** kuda nene pattukoni sarichesanu:
+`aria-hidden="true" tabindex="-1"` unna decorative links and honeypot fields
+accessibility tree lo undavu — vaatiki name adagadam tappu.
+
+Ippudu: **preview 10 pages · errors 0 · warnings 0**.
+
 
 ### v156 — PERSONALISED PICKS IN THE THEME + CALENDAR REMINDERS (.ics)
 
