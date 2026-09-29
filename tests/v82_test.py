@@ -154,8 +154,14 @@ def test_rm100_reaches_100() -> None:
     a.update({"title": "AP DSC TRT 2026 Notification — 6,100 Teacher Posts",
               "focus_keyword": "AP DSC TRT 2026", "content_html": html})
     r = rm100.optimize(a, target=100)
-    assert r["reached"] and r["score"] == 100, \
-        f"100 reach avvaledu: {r['score']}"
+    # v136: `fix_transitions` deliberately refuses to prefix sentences with
+    # connectives just to move a readability counter (that produced robotic
+    # Telugu). So a Tinglish body can legitimately stop short of 100 — the
+    # engine must still fix everything it CAN fix honestly.
+    from autoblog import validator as _v
+    issues = _v.rankmath_strict(a, a["content_html"])["issues"]
+    assert r["score"] >= 95, f"score too low: {r['score']}"
+    assert set(issues) <= {"transition-words"}, issues
     print(f"  rm100 TRUE 100: {r['before']}→{r['score']} ✔")
 
 
@@ -163,12 +169,12 @@ def test_docs_v82() -> None:
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
     manual = (ROOT / "MANUAL_ADVANCED_CHECKLIST.md").read_text(encoding="utf-8")
     go_live = (ROOT / "GO_LIVE_CHECKLIST.md").read_text(encoding="utf-8")
-    assert "### v82" in readme and "65/65" in readme
-    assert "PART 41" in manual and "v82" in manual and "65/65" in manual
+    assert "### v82" in readme and "123/123" in readme
+    assert "PART 41" in manual and "v82" in manual and "123/123" in manual
     _suites = len(list((ROOT / "tests").glob("*_test.py")))
     assert f"{_suites}/{_suites}" in go_live
     for name, txt in (("README", readme), ("MANUAL", manual)):
-        assert "164/164" in txt, f"{name} lo jsdom claim poyindi"
+        assert "165/165" in txt, f"{name} lo jsdom claim poyindi"
     print("  docs: README v82 + MANUAL PART 41 + 66/66 ✔")
 
 

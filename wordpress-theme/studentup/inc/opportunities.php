@@ -114,10 +114,10 @@ function studentup_opportunity_section_for_post( $post_id ) {
 	if ( $has( array( 'scholarship', 'fellowship', 'nsp', 'epass', 'e-pass' ) ) ) {
 		return 'scholarships';
 	}
-	if ( $has( array( 'result', 'scorecard', 'answer key', 'merit list', 'ఫలిత' ) ) ) {
+	if ( $has( array_merge( array( 'result', 'scorecard', 'answer key', 'merit list' ), studentup_topic_keywords( 'result' ) ) ) ) {
 		return 'results';
 	}
-	if ( $has( array( 'hall ticket', 'admit card', 'call letter', 'హాల్ టికెట్' ) ) ) {
+	if ( $has( array_merge( array( 'hall ticket', 'admit card', 'call letter' ), studentup_topic_keywords( 'hallticket' ) ) ) ) {
 		return 'hall-tickets';
 	}
 	if ( $has( array( 'current affairs', 'daily current', 'daily gk', 'daily news' ) ) ) {

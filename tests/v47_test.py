@@ -39,7 +39,8 @@ def test_poll_bank_shape_and_rotation():
     assert m, "POLL_BANK ledu"
     bank = m.group(1)
     items = re.findall(r"\{t:\"(.*?)\",o:\[(.*?)\],a:(\d+),w:\"(.*?)\"\}", bank)
-    assert len(items) == 7, f"poll bank 7 undali, unnayi: {len(items)}"
+    # v145: bank 7 -> 19 so a question does not repeat within ~3 weeks
+    assert len(items) == 19, f"poll bank 19 undali, unnayi: {len(items)}"
     for t, opts, a, w in items:
         assert len(t) > 10 and len(w) > 10, "question/explanation chinnadi"
         assert not TE.search(t + opts + w), "poll bank English-only (v73 scope)"
@@ -77,7 +78,13 @@ def test_poll_markup_and_css_intact():
 def test_privacy_tells_browser_only_truth():
     priv = PRIVACY.read_text(encoding="utf-8")
     assert "exam portal" not in priv.lower(), "privacy lo portal vestige"
-    assert "IP address" not in priv, "IP voting claim inka undi"
+    # v136: poll votes are browser-only. Server log transparency (which does
+    # mention the IP address the host records) is honest and must stay — only
+    # an IP-based voting claim is forbidden.
+    low = priv.lower()
+    for claim in ("one vote per ip", "ip address per vote", "votes are counted by ip",
+                  "vote per ip address"):
+        assert claim not in low, "IP voting claim inka undi"
     assert "Your browser only" in priv and "poll" in priv
     print("  privacy: portal/IP claims poyayi · browser-only truth ✔")
 

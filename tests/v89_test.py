@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""v89 tests — PREMIUM HOMEPAGE (theme 1.9.0).
+"""v89 tests — PREMIUM HOMEPAGE (theme 1.9.20).
 
 User-reported bugs (screenshots):
   * TS/AP Govt Jobs cards+menu+chips asalu kanipinchaledu (slug mismatch:
@@ -21,8 +21,8 @@ Checks (offline source audits + bot imports):
   * Read more real permalink link
   * Telugu Internet-center block + perks + WhatsApp icon
   * animated custom qual dropdown (quadd) + SSC wording/keywords
-  * 1.9.2 parity + readme 1.9.0/1.9.1/1.9.2 changelog + suites 71 pins
-    (v91 update: theme 1.9.0 → 1.9.2 bump · 69 → 71 suites)
+  * 1.9.20 parity + readme 1.9.20/1.9.20/1.9.20 changelog + suites 71 pins
+    (v91 update: theme 1.9.20 → 1.9.20 bump · 69 → 71 suites)
 
 Run: python tests/v89_test.py   (also via python run.py --test-all)
 """
@@ -80,12 +80,14 @@ def test_central_everywhere() -> None:
     assert [l for _, l in slugs] == [m["label"] for m in breaking.most_used()], \
         "theme/bot most-used labels desync"
     html = read(ROOT / "preview" / "index.html")
-    assert html.count('data-ucount=') == len(breaking.most_used()) == 9
+    # v134/v136: 10 tiles (success stories pillar) and no update-count badge.
+    assert len(breaking.most_used()) == 10
+    assert 'data-ucount=' not in html
     assert 'data-goto-cat="central-jobs"' in html
     grd = read(ROOT / "autoblog" / "guardian.py")
-    assert "len(used) != 9" in grd, "guardian 9-tile pin update avvaledu"
+    assert "len(used) != 10" in grd, "guardian 10-tile pin update avvaledu"
     js = read(ROOT / "tests" / "runtime" / "jsdom_runtime_test.js")
-    assert 'usedTiles.length === 9' in js and '"central-jobs","hallticket"' in js
+    assert 'usedTiles.length === 10' in js and '"central-jobs","hallticket"' in js
     print("  Central: theme + bot + preview + jsdom + guardian ✔")
 
 
@@ -206,21 +208,21 @@ def test_layout_premium_css() -> None:
 
 
 def test_version_and_pins() -> None:
-    # v91: theme 1.9.2 (notify 1.9.1 + telegram tools 1.9.2) · suites 71
+    # v91: theme 1.9.20 (notify 1.9.20 + telegram tools 1.9.20) · suites 71
     php = re.search(r"STUDENTUP_VERSION',\s*'([^']+)'", read(THEME / "functions.php")).group(1)
     css = re.search(r"Version:\s*([0-9.]+)", read(THEME / "style.css")).group(1)
     stable = re.search(r"Stable tag:\s*([0-9.]+)", read(THEME / "readme.txt")).group(1)
-    assert php == css == stable == "1.9.8", f"parity tappu: {php}·{css}·{stable}"
+    assert php == css == stable == "1.9.20", f"parity tappu: {php}·{css}·{stable}"
     readme = read(THEME / "readme.txt")
     for entry in ("= 1.9.0", "= 1.9.1", "= 1.9.2", "= 1.9.3", "= 1.9.4", "= 1.9.5", "= 1.9.6", "= 1.9.7", "= 1.9.8"):
         assert entry in readme, f"readme changelog {entry} ledu"
     assert "Central Govt Jobs" in readme
     for f in ("v75_test.py", "v76_test.py", "v77_test.py", "v78_test.py",
               "v79_test.py", "v80_test.py", "v81_test.py"):
-        assert "suites == 96" in read(ROOT / "tests" / f), f + " (69→74 pin)"
+        assert "suites == 123" in read(ROOT / "tests" / f), f + " (69→74 pin)"
     suites = len(list((ROOT / "tests").glob("*_test.py")))
-    assert suites == 96, f"suites {suites} (v116 tho 96)"
-    print("  version parity 1.9.2 + suites pins 71 ✔")
+    assert suites == 123, f"suites {suites} (v116 tho 123)"
+    print("  version parity 1.9.20 + suites pins 71 ✔")
 
 
 TESTS = [

@@ -288,7 +288,9 @@ def fix_toc(article: dict, html: str) -> str:
     # accessible StudentUp markup inside it, so one TOC serves both readers and
     # the official Content Readability check (no duplicate plugin TOC needed).
     toc = ('<!-- wp:rank-math/toc-block {"title":"Table of Contents"} -->'
-           '<div class="' + TOC_MARK + '" '
+           # v135: ship the official Rank Math block class too, so the plugin
+           # (and the post gate) recognise this as the canonical TOC block.
+           '<div class="wp-block-rank-math-toc-block ' + TOC_MARK + '" '
            'role="navigation" aria-label="Table of Contents">'
            '<div class="su-toc-title">విషయ సూచిక (Table of Contents)</div><ol>'
            + "".join(items[:12]) + "</ol></div>"
@@ -542,7 +544,7 @@ def _transition_ratio(html: str) -> tuple:
     """Checker (validator.rankmath_strict) laage kolichi — (sents, withtr, ratio)."""
     plain = validator.strip_tags(html)
     ss = [x for x in re.split(r"[.!?\u0964]\s", plain) if len(x.split()) >= 4]
-    t = sum(1 for x in ss if any(k in x for k in validator.TRANSITION_MARKS))
+    t = sum(1 for x in ss if validator.has_transition(x))
     return len(ss), t, (t / len(ss) if ss else 0.0)
 
 

@@ -47,7 +47,7 @@ def test_config_flags():
 def test_most_used_order():
     cats = breaking.most_used_cats()
     assert cats == ["ts-jobs", "ap-jobs", "central-jobs", "hallticket", "results", "walkin",
-                    "software", "private", "current"], cats
+                    "software", "success-stories", "private", "current"], cats
     for m in breaking.most_used():
         assert m["cat"] and m["label"] and m["icon"] and m["hint"], m
         # v73: English UI — labels + hints English (site/bot parity)
@@ -64,17 +64,23 @@ def test_build_items_dedupe_and_guards():
     raw = [
         {"title": "TSPSC Group 2 హాల్ టికెట్ విడుదల - Eenadu",
          "link": "https://a.example.org/1", "pub": _pub_new,
-         "source_name": "Google News · తెలుగు"},
+         "source_name": "Google News · తెలుగు",
+         "verified": True, "source_verified": True},
         {"title": "TSPSC Group 2 హాల్ టికెట్ విడుదల - Eenadu",
-         "link": "https://a.example.org/1?utm=2", "pub": ""},          # dup title+link
-        {"title": "చిన్నది", "link": "https://a.example.org/2"},       # too short
-        {"title": "లింక్ లేని వార్త — పరీక్షల అప్డేట్", "link": "javascript:bad"},
+         "link": "https://a.example.org/1?utm=2", "pub": "",
+         "verified": True, "source_verified": True},                   # dup title+link
+        {"title": "చిన్నది", "link": "https://a.example.org/2",
+         "verified": True, "source_verified": True},                   # too short
+        {"title": "లింక్ లేని వార్త — పరీక్షల అప్డేట్", "link": "javascript:bad",
+         "verified": True, "source_verified": True},
         {"title": "a.example.org నుండి మూడో వార్త వివరాలు",
          "link": "https://a.example.org/3",
-         "pub": format_datetime(_now - timedelta(hours=2), usegmt=True)},
+         "pub": format_datetime(_now - timedelta(hours=2), usegmt=True),
+         "verified": True, "source_verified": True},
         {"title": "a.example.org నాలుగో వార్త వివరాలు",
          "link": "https://a.example.org/4",
-         "pub": format_datetime(_now - timedelta(hours=3), usegmt=True)},
+         "pub": format_datetime(_now - timedelta(hours=3), usegmt=True),
+         "verified": True, "source_verified": True},
     ]
     items = breaking.build_items(raw)
     titles = [i["title"] for i in items]
@@ -110,7 +116,8 @@ def test_write_read_feed_roundtrip():
     with tempfile.TemporaryDirectory() as tmp:
         path = Path(tmp) / "data" / "breaking.json"
         items = breaking.build_items([
-            {"title": "TSPSC హాల్ టికెట్ విడుదల అయ్యింది", "link": "https://b.example.org/1"}])
+            {"title": "TSPSC హాల్ టికెట్ విడుదల అయ్యింది", "link": "https://b.example.org/1",
+             "verified": True, "source_verified": True}])
         res = breaking.write_feed(items, path=path)
         assert Path(res["path"]).exists() and res["count"] == 1
         data = breaking.read_feed(path)
@@ -128,9 +135,11 @@ def test_feed_rolling_window():
     with tempfile.TemporaryDirectory() as tmp:
         path = Path(tmp) / "data" / "breaking.json"
         breaking.publish([{"title": "TSPSC హాల్ టికెట్ విడుదల అయ్యింది",
-                           "link": "https://r.example.org/1"}], path=path)
+                           "link": "https://r.example.org/1",
+                           "verified": True, "source_verified": True}], path=path)
         breaking.publish([{"title": "APPSC ఫలితాలు విడుదల అయ్యాయి",
-                           "link": "https://r.example.org/2"}], path=path)
+                           "link": "https://r.example.org/2",
+                           "verified": True, "source_verified": True}], path=path)
         assert breaking.read_feed(path)["count"] == 2, "puratana items feed nunchi poyayi"
         old = {"updated": "", "items": [{"title": "పాత వార్త శీర్షిక ఇక్కడ ఉంది",
                "link": "https://r.example.org/9", "tag": "current", "source": "radar",
@@ -160,7 +169,8 @@ def test_site_first_look_wiring():
     used = re.findall(r'<a class="usedcard[^"]*" href="#jobs" data-goto-cat="([a-z-]+)" '
                       r'data-count-cat="[a-z-]+">', html)
     assert used == breaking.most_used_cats(), used
-    assert html.count('data-ucount=') == len(breaking.most_used())
+    # v134: the per-tile update-count badge was removed — it covered the tile text.
+    assert 'data-ucount=' not in html and 'class="ucount"' not in html
     # v72 first-look blocks
     assert 'id="searchbtn"' in html and 'id="searchpanel"' in html and 'id="qtop"' in html
     assert 'id="qualsel"' in html and 'value="10th"' in html and 'id="qcount"' in html
@@ -210,7 +220,7 @@ def test_menu_order_perfect():
                      nav, re.S).group(1)
     cats = re.findall(r'data-goto-cat="([a-z-]+)"', drop)
     assert cats == ["ts-jobs", "ap-jobs", "central-jobs", "private", "walkin",
-                    "software", "outsourcing", "parttime", "abroad"], cats
+                    "software", "success-stories", "outsourcing", "parttime", "abroad"], cats
 
     mp_start = html.index('<div class="mpanel"')
     mp = html[mp_start:html.index('<div id="top">', mp_start)]
@@ -218,14 +228,14 @@ def test_menu_order_perfect():
     assert mp.index(">Search<") < mp.index("Hall Tickets") < mp.index("Most searched by students")
     assert "బ్రేకింగ్" not in mp and "Breaking" not in mp
     mp_used = re.findall(r'data-goto-cat="([a-z-]+)"', mp)
-    assert mp_used[2:11] == breaking.most_used_cats(), mp_used[:13]
+    assert mp_used[2:12] == breaking.most_used_cats(), mp_used[:14]
 
 
 def test_grid_student_first_order():
     html = INDEX.read_text(encoding="utf-8")
     zone = html.split('id="grid"')[1].split('id="nores"')[0]
     cats = re.findall(r'<article class="news" data-state="[^"]*" data-cat="([^"]+)"', zone)
-    assert len(cats) == 14, len(cats)
+    assert len(cats) == 15, len(cats)
     assert "ts-jobs" in cats[0] and ("ts-jobs" in cats[1] or "ap-jobs" in cats[1])
     assert "ap-jobs" in cats[2]
     assert cats.index([c for c in cats if "results" in c][0]) < cats.index(

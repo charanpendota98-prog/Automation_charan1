@@ -27,6 +27,8 @@ Run: python tests/v84_test.py   (also via python run.py --test-all)
 """
 from __future__ import annotations
 
+import re
+
 import http.server
 import sys
 import tempfile
@@ -202,8 +204,8 @@ def test_toc_idempotent():
            "content_html": html}
     rm100.apply(art)
     merged = seo.add_table_of_contents(art["content_html"])
-    boxes = merged.count('<div class="su-toc"') + merged.count(
-        '<nav class="su-toc"')
+    # v135: the TOC also carries the official Rank Math block class.
+    boxes = len(re.findall(r'<(?:div|nav) class="[^"]*\bsu-toc\b(?!-)[^"]*"', merged))
     assert boxes == 1, f"TOC boxes: {boxes}"
     print("  TOC idempotent (1 box) ✔")
 
@@ -237,12 +239,12 @@ def test_docs_v84():
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
     manual = (ROOT / "MANUAL_ADVANCED_CHECKLIST.md").read_text(encoding="utf-8")
     go_live = (ROOT / "GO_LIVE_CHECKLIST.md").read_text(encoding="utf-8")
-    assert "### v84" in readme and "65/65" in readme
-    assert "PART 42" in manual and "v84" in manual and "65/65" in manual
+    assert "### v84" in readme and "123/123" in readme
+    assert "PART 42" in manual and "v84" in manual and "123/123" in manual
     _suites = len(list((ROOT / "tests").glob("*_test.py")))
     assert f"{_suites}/{_suites}" in go_live
     for name, txt in (("README", readme), ("MANUAL", manual)):
-        assert "164/164" in txt, f"{name} lo jsdom claim poyindi"
+        assert "165/165" in txt, f"{name} lo jsdom claim poyindi"
     print("  docs: README v84 + MANUAL PART 42 + 65/65 ✔")
 
 

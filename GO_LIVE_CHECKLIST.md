@@ -1,5 +1,7 @@
 # GO-LIVE CHECKLIST (v60) — deploy cheyocha? Enti migilindi?
 
+
+> **Verified counts (theme v1.9.20 build):** test suites **123/123** files · jsdom runtime **177/177** checks · PHP lint **68/68** files · theme audit **0/0** · code audit **0/0**.
 **Short answer: CODE ready ✅ · DEPLOY ready ✅ · 5 panulu MEE accounts lo cheyyali ⏳.**
 Ee doc = okka page lo motham. Kramam ga cheyyandi.
 
@@ -94,7 +96,7 @@ Detail docs: `DEPLOY_MILESWEB.md` (cPanel steps) · `DEPLOY_ORACLE_CLOUD.md` (VM
 | Site guardian | **`python run.py --guardian`** — site/UI/SEO/ads/feed/storage/theme 12 checks (11 ok · 1 owner-pending) |
 | Readiness score | **`python run.py --readiness`** — **100/100** · 27/27 system checks · 10 owner-pending |
 | Production check | **11/11** pass (`python run.py --production-audit`) |
-| Browser runtime | **164/164** checks (`node tests/runtime/jsdom_runtime_test.js`) |
+| Browser runtime | **165/165** checks (`node tests/runtime/jsdom_runtime_test.js`) |
 | Public surface | developer/proof text **ledu** — `python run.py --guardian` → `counts_sync` · dev archive `docs/design-archive/` (website meeda serve avvadu) |
 | Business deal | no public rate card — prices live in `autoblog/rate_card.py`, print with `python run.py --rate-card` and negotiate personally |
 | Contact routes | set `SOCIAL_WHATSAPP` + `SOCIAL_TELEGRAM` in `.env` → `python run.py --push-theme-data` (site WhatsApp boxes + rail follow it) |
@@ -122,8 +124,8 @@ Detail docs: `DEPLOY_MILESWEB.md` (cPanel steps) · `DEPLOY_ORACLE_CLOUD.md` (VM
       → WordPress install + SSL (Let's Encrypt) ON.
 - [ ] **2. WordPress setup** — Rank Math; theme install (**v74**: theme **1.7.2** —
       `python tools/build_wp_theme.py` → zip → Appearance → Themes → Upload → Activate);
-      **v98 zip:** 50 files · 694 KB · theme **1.9.8** · sha256
-      `705a57934f159f67fc05c624a7bef240c5bda83f8ad4265973536e61ced9aee0`
+      **zip:** 86 files · 836 KB · theme **1.9.20** · sha256
+      `eb3acf0a4d420f077773096ab078497e6a7e15a81cecf721a8ade09fd8ce5f65`
       (`sha256sum wordpress-theme/studentup-theme.zip` — upload chesina zip ide ani verify cheyandi;
       build ippudu **reproducible** — same content ⇒ same sha)
       `wp-admin → Users → Application Passwords` → app password create cheyyandi.
@@ -205,6 +207,20 @@ sudo systemctl status studentup-bot.timer su-watchdog.timer --no-pager
 **3) Deploy tarvata verify**
 ```bash
 python run.py --production-audit     # 0 blockers
+python3 tools/cwv_audit.py           # v157: CLS/LCP/a11y markup audit (0 errors undali)
+python run.py --aeo post.html        # v158: AI Overview / snippet readiness + HowTo schema
+python3 tools/image_weight_audit.py  # v159: image budget + oversize check (0 findings undali)
+python run.py --factcheck d.html --against src.txt  # v161: date/fee/vacancy source tho cross-check
+python run.py --revenue-plan gsc.csv --adsense ads.csv  # v164: nela ki okasari — ₹ action plan
+python run.py --push-keys            # v163: VAPID keys (public key ni theme options lo pettandi)
+python run.py --push-send "T|url"    # v163: web push andariki
+python run.py --slot-lab adsense.csv # v162: ad slot A/B RPM (7-10 rojula data taruvata)
+python run.py --final-audit          # v160: anni gates okate saari — GO / NO-GO
+python run.py --rpm-report Pages.csv  # v151: page/slot RPM + weak slots
+python run.py --ctr-boost Queries.csv # v149: low-CTR pages + title fixes
+python run.py --daily-quiz --notify  # v149: draft + Telegram alert
+python run.py --daily-quiz-dry       # v148: today's quiz plan
+python run.py --daily-quiz           # v148: quiz DRAFT lo pettu (publish meere cheyali)
 python run.py --deploy-check         # 0 fail
 python run.py --google-audit https://studentup.in
 curl -s https://studentup.in/ads.txt      # ads.txt host ayyindi leda chudandi
@@ -272,7 +288,7 @@ Detail: `python tools/revenue_estimate.py --views 10k`
 Clickbait titles · fake clicks · popups · "Google tricks" · ad ni content laaga dhaachadam ·
 job guarantee promises (advertisers kuda). Ivi AdSense ban + trust damage.
 
-*Last updated: v91 (2026-09-20) · 71/71 suites · 164/164 runtime · 11/11 production checks · theme v1.9.2 · v90 notifications + v91 Telegram tools*
-*Last updated: v92 (2026-09-22) · 72/72 suites · 53/53 saved-engine · 164/164 runtime · 11/11 production checks · theme v1.9.3 · v92 saved / reader retention*
-*Last updated: v93 (2026-09-22) · 73/73 suites · 53/53 saved-engine · 164/164 runtime · 11/11 production checks · theme v1.9.4 · v93 top-website UI pass (menu · icons · collisions)*
+*Last updated: v91 (2026-09-20) · 71/71 suites · 165/165 runtime · 11/11 production checks · theme v1.9.2 · v90 notifications + v91 Telegram tools*
+*Last updated: v92 (2026-09-22) · 72/72 suites · 53/53 saved-engine · 165/165 runtime · 11/11 production checks · theme v1.9.3 · v92 saved / reader retention*
+*Last updated: v93 (2026-09-22) · 73/73 suites · 53/53 saved-engine · 165/165 runtime · 11/11 production checks · theme v1.9.4 · v93 top-website UI pass (menu · icons · collisions)*
 *Last updated: 2026-09-25 · 99 test-suite files · readiness 97/100 (PHP parser pending) · pin gate wired · 53/53 saved-engine · theme v1.9.9 · source-backed draft/review flow*

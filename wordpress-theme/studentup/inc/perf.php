@@ -141,6 +141,14 @@ function studentup_robots_thin( $robots ) {
 		$robots['follow']  = true;
 		unset( $robots['index'] );
 	}
+	// v142: Google Discover + rich results need a large image preview and an
+	// unclipped snippet. Without max-image-preview:large a post can never show
+	// the big card in Discover, however good the featured image is.
+	if ( ! isset( $robots['noindex'] ) ) {
+		$robots['max-image-preview'] = 'large';
+		$robots['max-snippet']       = '-1';
+		$robots['max-video-preview'] = '-1';
+	}
 	if ( isset( $_GET['qual'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification
 		// v81 (§72): filter combos ki independent search value ledu —
 		// canonical category page kevalam index (duplicates ledu).

@@ -20,7 +20,7 @@ function studentup_tools_date( $post_id = 0 ) {
 	$values  = array(
 		get_post_meta( $post_id, 'studentup_last_date', true ),
 		get_post_meta( $post_id, 'su_deadline', true ),
-		get_post_meta( $post_id, 'studentup_exam_date', true ),
+		get_post_meta( $post_id, 'studentup_test_date', true ),
 	);
 	foreach ( $values as $value ) {
 		$value  = trim( (string) $value );

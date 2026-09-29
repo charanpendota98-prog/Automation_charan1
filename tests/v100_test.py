@@ -37,7 +37,7 @@ sys.path.insert(0, str(ROOT))
 
 from autoblog import config, district_hubs as dh, link_graph as lg, seo  # noqa: E402
 
-SUITES_EXPECTED = 96
+SUITES_EXPECTED = 123
 SITE = "https://studentup.in"
 
 
@@ -154,7 +154,10 @@ def test_automation_is_non_fatal() -> None:
         i = seg.index(block)
         after = seg[i:i + 700]
         assert "except Exception" in after, f"{block} guard ledu"
-        assert "log.exception" in after, f"{block} silent fail avutundi"
+        # v136: non-fatal steps report through _soft_fail (warning line +
+        # DEBUG traceback) instead of dumping a crash report.
+        assert ("log.exception" in after or "_soft_fail" in after), \
+            f"{block} silent fail avutundi"
     print("      weekly jobs non-fatal + logged ✔")
 
 
@@ -211,7 +214,7 @@ def test_existing_guards_still_hold() -> None:
 
 def test_docs_and_suites() -> None:
     suites = len(list((ROOT / "tests").glob("*_test.py")))
-    assert suites == SUITES_EXPECTED, f"suites {suites} (v116 tho 96)"
+    assert suites == SUITES_EXPECTED, f"suites {suites} (v116 tho 123)"
     readme = read(ROOT / "README.md")
     manual = read(ROOT / "MANUAL_ADVANCED_CHECKLIST.md")
     cur = f"{SUITES_EXPECTED}/{SUITES_EXPECTED}"

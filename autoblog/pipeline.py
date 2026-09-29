@@ -2234,6 +2234,19 @@ def update_post(post_id: int, new_source_urls=None, mock: bool = False) -> Dict:
         )
         article["_rankmath_meta"] = dict(meta)
 
+    # v135: updates kuda job meta ni refresh cheyyali. Mundu ee block publish
+    # path lo matrame undedi — anduke update tarvata 'studentup_qual' /
+    # 'studentup_last_date' purathanam ga migilipoyevi (apply bar countdown,
+    # eligibility filter, JobPosting schema anni stale ayyevi).
+    if meta is not None:
+        try:
+            qmeta = qual.post_meta(article)
+            if qmeta:
+                meta.update(qmeta)
+                log.info("v135 update qual/last-date refresh → %s", qual.describe(article))
+        except Exception:  # noqa: BLE001 — tag fail update ni aapadu
+            log.exception("v135 qual refresh skip (update safe)")
+
     source_meta = _source_identity_meta(article)
     if source_meta:
         if meta is None:

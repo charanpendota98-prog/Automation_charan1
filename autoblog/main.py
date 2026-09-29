@@ -22,6 +22,19 @@ from . import config, gemini_client, image_gen, notifier, pipeline, sources, sta
 
 log = logging.getLogger("autoblog")
 
+def _soft_fail(message: str) -> None:
+    """Log a non-fatal step failure without dumping a crash traceback.
+
+    v136: these steps are optional (monitors, digests, weekly rebuilds). A
+    network hiccup must read as a warning line; the traceback stays at DEBUG
+    for anyone actually debugging.
+    """
+    exc = sys.exc_info()[1]
+    log.warning("%s (%s: %s)", message, type(exc).__name__, exc)
+    log.debug("%s traceback", message, exc_info=True)
+
+
+
 KOLKATA_OFFSET = timezone(timedelta(hours=5, minutes=30))
 
 
@@ -140,7 +153,7 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
                 state.meta_set(config.STATE_PATH, digest_key, "1")
                 log.info("OPPORTUNITY DIGEST ✔ active list sent to owner chat")
         except Exception:
-            log.exception("Opportunity digest failed (regular posting continues)")
+            _soft_fail("Opportunity digest failed (regular posting continues)")
 
     # v124: once-per-day read-only official-source freshness scan. A changed
     # notice is alerted for owner review; the scheduler never edits content by
@@ -168,8 +181,12 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
                 len(monitor_result.get("changed", [])),
                 len(monitor_result.get("errors", [])),
             )
-        except Exception:
-            log.exception("Source freshness monitor failed (regular posting continues)")
+        except Exception as exc:  # noqa: BLE001
+            # v136: a network/TLS hiccup in the optional monitor is a warning,
+            # not a crash report. Full traceback stays available at DEBUG.
+            log.warning("Source freshness monitor failed (%s: %s) — regular "
+                        "posting continues", type(exc).__name__, exc)
+            log.debug("source monitor traceback", exc_info=True)
 
     # v125: lifecycle scan for active opportunities. It only probes public URLs
     # and writes a private review queue; it never changes a post or hides a
@@ -199,7 +216,7 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
                 len(lifecycle_result.get("errors", [])),
             )
         except Exception:
-            log.exception("Opportunity lifecycle monitor failed (regular posting continues)")
+            _soft_fail("Opportunity lifecycle monitor failed (regular posting continues)")
 
     # --- bulk queue mode: --process-queue N (N URLs ippude process) ---------
     if process_queue:
@@ -293,7 +310,7 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
                 n = len(_hubs.rebuild_hubs())
                 log.info("WEEKLY HUBS: %d pages refreshed", n)
             except Exception:
-                log.exception("Weekly hub rebuild failed (non-fatal)")
+                _soft_fail("Weekly hub rebuild failed (non-fatal)")
             # v100: district hubs (v96) + link graph (v99) ee weekly slot lo ne
             # automatic ga run avvali. Ivi ippati varaku CLI-only — ante owner
             # manual ga gurtu pettukoni run cheyyali. Adi jaragadu (nenu
@@ -308,7 +325,7 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
                     log.info("WEEKLY DISTRICT HUBS: %d/%d pages (thin-guard %d)",
                              made, len(rows), len(rows) - made)
                 except Exception:
-                    log.exception("Weekly district hubs failed (non-fatal)")
+                    _soft_fail("Weekly district hubs failed (non-fatal)")
             if getattr(config, "LINK_GRAPH_AUTO", True):
                 try:
                     from . import link_graph as _lg
@@ -319,7 +336,7 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
                              "%d links added", rep.get("orphans", 0),
                              rep.get("weak", 0), rep.get("applied", 0))
                 except Exception:
-                    log.exception("Weekly link graph failed (non-fatal)")
+                    _soft_fail("Weekly link graph failed (non-fatal)")
         # v114: daily GSC sync + deduplicated control-center alert. This is
         # maintenance only; credentials/network failure never stops posting.
         if (getattr(config, "GSC_AUTO_SYNC", True)
@@ -344,7 +361,7 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
                 _ops.check_and_alert(send=True)
                 log.info("DAILY OPS ALERT CHECK ✔")
             except Exception:
-                log.exception("Daily ops alert failed (non-fatal)")
+                _soft_fail("Daily ops alert failed (non-fatal)")
             finally:
                 state.meta_set(config.STATE_PATH, f"opsalert:{today.isoformat()}", "1")
 
@@ -365,7 +382,7 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
                 pipeline.auto_refresh(limit=config.AUTO_REFRESH_PER_DAY)
                 state.meta_set(config.STATE_PATH, f"autorefresh:{today.isoformat()}", "1")
             except Exception:
-                log.exception("Daily auto-refresh failed")
+                _soft_fail("Daily auto-refresh failed")
         # --- v59: బ్రేకింగ్ న్యూస్ feed — radar sweep tarvata site ticker fresh ---
         if (getattr(config, "BREAKING_ENABLED", True)
                 and now_hour >= getattr(config, "RADAR_HOUR", 7)
@@ -384,9 +401,9 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
                     log.info("WP THEME SYNC %s — %s", "✔" if _tres.get("ok") else "skip",
                              _tres.get("reason") or _tres.get("updated"))
                 except Exception:
-                    log.exception("wp theme sync failed (non-fatal)")
+                    _soft_fail("wp theme sync failed (non-fatal)")
             except Exception:
-                log.exception("breaking feed failed (non-fatal)")
+                _soft_fail("breaking feed failed (non-fatal)")
         # --- v60: SITE GUARDIAN — roju okkasari system motham check + report ---
         if (getattr(config, "GUARDIAN_ENABLED", True)
                 and now_hour >= getattr(config, "GUARDIAN_HOUR", 20)
@@ -402,7 +419,7 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
                     if not _r["ok"] and not _r.get("warn_only"):
                         log.warning("GUARDIAN ❌ %s: %s (%s)", _r["id"], _r["detail"], _r["fix"])
             except Exception:
-                log.exception("site guardian failed (non-fatal)")
+                _soft_fail("site guardian failed (non-fatal)")
         # --- v57: AD ADVISOR — roju okkasari: e network ki eppudu apply cheyyali ---
         if (getattr(config, "AD_ADVISOR_ENABLED", True)
                 and now_hour >= getattr(config, "AD_ADVISOR_HOUR", 10)
@@ -417,7 +434,7 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
                 for _k in _res["new_milestones"]:
                     log.info("AD ADVISOR milestone: %s — Telegram alert pampindi", _k)
             except Exception:
-                log.exception("Ad advisor failed (non-fatal)")
+                _soft_fail("Ad advisor failed (non-fatal)")
         # --- v26: Daily Quiz slot — roju okati, QUIZ_HOUR tarvata ---
         if (config.QUIZ_ENABLED
                 and now_hour >= config.QUIZ_HOUR
@@ -453,7 +470,7 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
                     else:
                         log.warning("Daily quiz draft failed — retry next run: %s", exc)
                 except Exception:
-                    log.exception("Daily quiz failed — regular posting continues")
+                    _soft_fail("Daily quiz failed — regular posting continues")
         # --- v15/v16: Breaking-News Radar — every RADAR_INTERVAL_HOURS ---
         if (config.RADAR_ENABLED
                 and (now_hour - config.RADAR_HOUR) % max(1, config.RADAR_INTERVAL_HOURS) == 0
@@ -465,7 +482,7 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
             try:
                 radar_run()
             except Exception:
-                log.exception("RADAR run failed — regular posting continues")
+                _soft_fail("RADAR run failed — regular posting continues")
         if now_hour not in plan:
             log.info("Hour %02d:00 not in today's plan %s — nothing to do.", now_hour, plan)
             return 0
@@ -497,7 +514,7 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
                              result["link"], result["status"])
                     return 0
                 except Exception:
-                    log.exception("Listicle failed — normal post ki veltanu")
+                    _soft_fail("Listicle failed — normal post ki veltanu")
 
     # --- source queue check (sources_queue.txt lo URLs unnaye priority) ----
     queued = sources.pending_from_queue()
@@ -562,7 +579,7 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
                 state.meta_set(config.STATE_PATH, f"trend:{today}", trend_topic)
                 log.info("🔥 Google Trends topic: %s", trend_topic)
         except Exception:
-            log.exception("Trends fetch error (continue normal topic)")
+            _soft_fail("Trends fetch error (continue normal topic)")
 
     mock_index = state.today_count(config.STATE_PATH, today)
     article = generate_one(cat, mock, mock_index, trend_topic=trend_topic)
@@ -638,7 +655,7 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
                 notifier.daily_digest(count, summary.get("last", []))
                 state.meta_set(config.STATE_PATH, digest_key, "1")
             except Exception:
-                log.exception("Daily digest failed")
+                _soft_fail("Daily digest failed")
     return 0
 
 
@@ -800,7 +817,7 @@ def gsc_opportunities(csv_path: str) -> int:
             print(f"  ✅ Queue boost: {len(boost)} GSC terms saved"
                   f" + {n} queue line(s) top ki move ayayi")
     except Exception:
-        log.exception("Queue boost apply failed (non-fatal)")
+        _soft_fail("Queue boost apply failed (non-fatal)")
     print("=" * 70)
     return 0
 
@@ -1727,6 +1744,36 @@ def main() -> int:
                         help="v109: mobile PageSpeed/CWV/accessibility/SEO audit")
     parser.add_argument("--corrections-audit", action="store_true",
                         help="v111: verify tamper-evident update/correction ledger")
+    parser.add_argument("--revenue-plan", default="", metavar="GSC_CSV",
+                        help="v164: GSC + AdSense join — prioritised actions with Rs impact")
+    parser.add_argument("--adsense", default="", metavar="CSV",
+                        help="v164: --revenue-plan ki AdSense pages CSV")
+    parser.add_argument("--push-keys", action="store_true",
+                        help="v163: VAPID keypair generate (okka sari)")
+    parser.add_argument("--push-send", default="", metavar="MSG",
+                        help="v163: web push pampadam — \"Title|url|body\"")
+    parser.add_argument("--slot-lab", nargs="?", const="", default=None, metavar="CSV",
+                        help="v162: ad slot A/B (RPM) measurement — AdSense CSV nunchi")
+    parser.add_argument("--factcheck", default=None, metavar="DRAFT",
+                        help="v161: draft lo unna dates/fees/vacancies ni source tho cross-check")
+    parser.add_argument("--against", default="", metavar="SOURCE",
+                        help="v161: --factcheck ki official source file")
+    parser.add_argument("--final-audit", action="store_true",
+                        help="v160: anni gates okate saari (deploy mundu)")
+    parser.add_argument("--aeo", nargs="?", const="", default=None, metavar="HTML",
+                        help="v158: AI Overview / featured-snippet readiness audit + HowTo schema")
+    parser.add_argument("--rpm-report", nargs="?", const="", default=None, metavar="CSV",
+                        help="v151: AdSense CSV nunchi page/slot RPM report + weak slots (read-only)")
+    parser.add_argument("--ctr-boost", nargs="?", const="", default=None, metavar="CSV",
+                        help="v149: Search Console CSV nunchi low-CTR pages + title suggestions (edit cheyyadu)")
+    parser.add_argument("--ctr-min-impressions", type=int, default=200,
+                        help="v149: CTR boost lo minimum impressions (default 200)")
+    parser.add_argument("--notify", action="store_true",
+                        help="v149: command finish ayyaka Telegram alert pampu (--daily-quiz tho)")
+    parser.add_argument("--daily-quiz", action="store_true",
+                        help="v148: prepare today's quiz as a WordPress DRAFT (never publishes)")
+    parser.add_argument("--daily-quiz-dry", action="store_true",
+                        help="v148: show today's quiz plan without touching WordPress")
     parser.add_argument("--control-center", action="store_true",
                         help="v112: unified read-only editorial/SEO safety action queue")
     parser.add_argument("--ops-alert", action="store_true",
@@ -1975,6 +2022,43 @@ def main() -> int:
                         help="v26: install/update site-wide quiz engine "
                              "(CSS+JS footer widget) — quiz UI, timers, scoring")
     args = parser.parse_args()
+
+    if args.revenue_plan:
+        from . import revenue_plan as _rp
+        return _rp.run_cli(args.revenue_plan, args.adsense)
+
+    if args.push_keys or args.push_send:
+        from . import webpush as _wp
+        return _wp.run_cli(args.push_send, bool(args.dry_run), bool(args.push_keys))
+
+    if args.slot_lab is not None:
+        from . import slot_lab as _sl
+        return _sl.run_cli(args.slot_lab)
+
+    if args.factcheck:
+        from . import factcheck as _fc
+        return _fc.run_cli(args.factcheck, args.against)
+
+    if args.final_audit:
+        from . import final_audit as _fa
+        return _fa.run_cli()
+
+    if args.aeo is not None:
+        from . import aeo as _aeo
+        return _aeo.run_cli(args.aeo)
+
+    if args.rpm_report is not None:
+        from . import rpm_report as _rr
+
+        return _rr.run_cli(args.rpm_report)
+    if args.ctr_boost is not None:
+        from . import ctr_boost as _cb
+
+        return _cb.run_cli(args.ctr_boost, args.ctr_min_impressions)
+    if args.daily_quiz or args.daily_quiz_dry:
+        from . import daily_quiz as _dq
+
+        return _dq.run_cli(dry=args.daily_quiz_dry, notify=args.notify)
 
     _setup_logging()
 

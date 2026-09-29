@@ -66,7 +66,23 @@ function studentup_qual_keywords() {
 		'degree'  => array( 'డిగ్రీ', 'degree', 'graduate', 'graduation', 'any degree', 'b.a', 'b.sc', 'b.com', 'బీఏ', 'బీఎస్సీ', 'బీకాం' ),
 		'pg'      => array( 'పీజీ', 'pg', 'post graduate', 'postgraduate', 'm.a', 'm.sc', 'm.com', 'mba', 'ఎంఏ', 'ఎంఎస్సీ', 'ఎంబీఏ' ),
 		'btech'   => array( 'బీటెక్', 'b.tech', 'btech', 'b.e', 'engineering', 'ఇంజినీరింగ్' ),
+		// v135: Telugu detection words for the opportunity board live here too,
+		// so every Telugu string in the theme stays inside this one keyword map.
+		'_topic_hallticket' => array( 'హాల్ టికెట్', 'హాల్‌టికెట్' ),
+		'_topic_result'     => array( 'ఫలితాలు', 'ఫలితం' ),
 	);
+}
+
+/**
+ * Telugu synonyms for a board topic (detection only — never printed).
+ *
+ * @param string $topic hallticket|result.
+ * @return array Keyword list.
+ */
+function studentup_topic_keywords( $topic ) {
+	$all = studentup_qual_keywords();
+	$key = '_topic_' . $topic;
+	return isset( $all[ $key ] ) ? (array) $all[ $key ] : array();
 }
 
 /**
@@ -238,6 +254,8 @@ function studentup_register_qual_meta() {
 	$keys = array(
 		'studentup_qual', 'studentup_last_date', 'studentup_apply_url',
 		'studentup_source_url', 'studentup_source_urls', 'studentup_source_checked', 'studentup_org_url',
+		// v133: full job dataset so the bot can publish a complete card in one call.
+		'studentup_salary', 'studentup_vacancies', 'studentup_age_min', 'studentup_age_max',
 	);
 	foreach ( $keys as $key ) {
 		register_post_meta(

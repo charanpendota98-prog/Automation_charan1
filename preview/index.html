@@ -595,19 +595,727 @@
       .usedcard .ucount{display:none !important}
     }
     /* v60: verified breaking surface; no headline is rendered for an empty feed */
-    .breaking{margin:18px 0 4px;background:var(--card);border:1px solid var(--line);border-left:4px solid var(--red);border-radius:15px;padding:14px 16px;animation:breaking-in .35s ease both}
-    .breakinghead{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
-    .breakinghead h2{font-size:17px;margin:0;color:var(--navy);display:flex;align-items:center;gap:7px}
-    .brkicon{font-size:16px;color:var(--red)}
     .brkbadge{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);font-weight:700}
-    .brkdot{width:9px;height:9px;border-radius:50%;background:var(--red);animation:brk-pulse 1.5s ease-in-out infinite}
-    .breakingempty{color:var(--muted);font-size:12.5px;margin:10px 0 3px}
-    .breakingsource{color:var(--muted);font-size:11px;margin:0}
     @keyframes breaking-in{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
     @keyframes brk-pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.45;transform:scale(.82)}}
-    body.dark .breakinghead h2{color:#e7f0ff}
-    body.dark .breaking{border-left-color:#ef6b6b}
-    @media(prefers-reduced-motion:reduce){.breaking,.brkdot{animation:none}}
+  
+  /* v139: read-more CTA — real link, pill hover, arrow slide (CTR) */
+  .newsfoot .su-readmore{margin-left:auto;display:inline-flex;align-items:center;gap:4px;
+    padding:6px 12px;border-radius:999px;font-weight:900;font-size:12px;text-decoration:none;
+    color:#4f46e5;background:rgba(79,70,229,.08);border:1px solid rgba(79,70,229,.18);
+    transition:gap .16s,background .16s,transform .16s}
+  .newsfoot .su-readmore:hover,.newsfoot .su-readmore:focus-visible{gap:9px;background:rgba(79,70,229,.15);transform:translateY(-1px)}
+  body.dark .newsfoot .su-readmore{color:#c7b6ff;background:rgba(124,58,237,.18);border-color:rgba(124,58,237,.35)}
+  @media (prefers-reduced-motion:reduce){.newsfoot .su-readmore{transition:none}}
+
+  /* v140: popular searches strip (mirrors theme style.css) */
+  .su-popsearch{margin:26px 0 6px;padding:18px 16px;border:1px solid var(--line);border-radius:18px;
+    background:linear-gradient(135deg,rgba(79,70,229,.05),rgba(236,72,153,.04))}
+  .su-popsearch-title{margin:0 0 12px;font-size:15px;letter-spacing:-.01em}
+  .su-popsearch-list{display:flex;flex-wrap:wrap;gap:8px;margin:0;padding:0;list-style:none}
+  .su-pop{display:inline-flex;align-items:center;gap:6px;padding:7px 13px;border-radius:999px;
+    background:#fff;border:1px solid var(--line);font-size:12.5px;font-weight:700;text-decoration:none;
+    color:var(--navy);transition:transform .16s,border-color .16s}
+  .su-pop:hover,.su-pop:focus-visible{transform:translateY(-1px);border-color:rgba(79,70,229,.45);color:#4f46e5}
+  .su-pop-cat{background:linear-gradient(135deg,rgba(79,70,229,.10),rgba(236,72,153,.08));font-weight:800}
+  body.dark .su-pop{background:#132339;color:#dbe7fb;border-color:#24364f}
+  .su-fresh{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:999px;
+    background:linear-gradient(135deg,#f43f5e,#f97316);color:#fff;font-size:10.5px;font-weight:900;
+    letter-spacing:.06em;box-shadow:0 4px 12px rgba(244,63,94,.3)}
+  @media (prefers-reduced-motion:reduce){.su-pop{transition:none}}
+
+  /* v142: latest jobs table (mirrors theme style.css) */
+  .su-jobtable{margin:26px 0;border:1px solid var(--line);border-radius:18px;overflow:hidden;background:var(--card)}
+  .su-jt-head{padding:16px 16px 12px;background:linear-gradient(135deg,rgba(79,70,229,.08),rgba(236,72,153,.06))}
+  .su-jt-head h2{margin:0 0 4px;font-size:16px;letter-spacing:-.01em}
+  .su-jt-head p{margin:0;font-size:12px;color:var(--muted)}
+  .su-jt-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .su-jt{width:100%;border-collapse:collapse;min-width:560px;font-size:13.5px}
+  .su-jt thead th{position:sticky;top:0;background:#4f46e5;color:#fff;text-align:left;padding:10px 12px;
+    font-size:11.5px;letter-spacing:.05em;text-transform:uppercase}
+  .su-jt td{padding:11px 12px;border-top:1px solid var(--line);vertical-align:top}
+  .su-jt tbody tr:nth-child(even){background:rgba(79,70,229,.035)}
+  .su-jt tbody tr:hover{background:rgba(79,70,229,.08)}
+  .su-jt-title a{font-weight:800;color:var(--navy);text-decoration:none}
+  .su-jt-title a:hover{color:#4f46e5;text-decoration:underline}
+  .su-jt-cat{display:inline-block;margin-left:6px;padding:2px 8px;border-radius:999px;background:rgba(15,23,42,.06);
+    font-size:10.5px;font-weight:800;color:var(--muted)}
+  .su-jt-na{color:var(--muted);font-size:12px}
+  .su-jt-apply,.su-jt-more{display:inline-block;padding:6px 12px;border-radius:999px;font-weight:900;font-size:12px;text-decoration:none}
+  .su-jt-apply{background:linear-gradient(135deg,#16a34a,#22c55e);color:#fff}
+  .su-jt-more{background:rgba(79,70,229,.10);color:#4f46e5;border:1px solid rgba(79,70,229,.2)}
+  body.dark .su-jobtable{background:#0f1c2e}
+  body.dark .su-jt-title a{color:#e8f0ff}
+
+  /* v143: image-first cards — real cover image, zero CLS (width/height set) */
+  .thumb-img{display:block;padding:0;overflow:hidden;position:relative;aspect-ratio:16/9;border-radius:14px 14px 0 0}
+  .thumb-img img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .35s ease}
+  .news:hover .thumb-img img{transform:scale(1.045)}
+  @media (prefers-reduced-motion:reduce){.thumb-img img{transition:none}.news:hover .thumb-img img{transform:none}}
+
+
+/* v146: deadline radar — built from the real last dates already on the cards */
+.su-radar{margin:20px 0;padding:16px 18px;border-radius:18px;border:1px solid var(--line);
+  background:linear-gradient(135deg,rgba(79,70,229,.08),rgba(236,72,153,.08))}
+.su-radar[hidden]{display:none}
+.su-radar-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.su-radar-head h2{margin:0;font-size:19px;color:var(--navy)}
+body.dark .su-radar-head h2{color:#eaf2ff}
+.su-radar-sub{font-size:12px;opacity:.75}
+.su-radar-list{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.su-radar-item{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:9px 11px;border-radius:12px;
+  background:var(--card);border:1px solid var(--line)}
+.su-radar-item a{font-weight:700;font-size:14px;flex:1 1 200px;color:var(--ink)}
+.su-radar-item a:hover{color:var(--su-g2)}
+.su-radar-pill{font-size:11.5px;font-weight:900;padding:4px 10px;border-radius:999px;white-space:nowrap}
+.su-radar-red{background:#fee2e2;color:#b91c1c}
+.su-radar-amber{background:#fef3c7;color:#92400e}
+.su-radar-green{background:#dcfce7;color:#166534}
+.su-radar-date{font-size:12px;opacity:.7;font-weight:700}
+
+/* v147: homepage tools — job finder, salary calculator, last-date calendar */
+.su-tools{display:grid;gap:16px;margin:22px 0}
+@media (min-width:900px){.su-tools{grid-template-columns:1fr 1fr}.su-tool-wide{grid-column:1/-1}}
+.su-tool{padding:16px 18px;border-radius:18px;border:1px solid var(--line);background:var(--card);
+  box-shadow:0 10px 26px rgba(31,26,92,.06)}
+.su-tool h2{margin:0 0 4px;font-size:18px;color:var(--navy)}
+body.dark .su-tool h2{color:#eaf2ff}
+.su-tool p.su-tool-sub{margin:0 0 12px;font-size:12.5px;opacity:.75}
+.su-tool label{display:block;font-size:12px;font-weight:800;margin:0 0 4px;opacity:.85}
+.su-tool-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.su-tool-row>div{flex:1 1 140px}
+.su-tool select,.su-tool input{width:100%;padding:9px 11px;border-radius:11px;border:1px solid var(--line);
+  background:var(--bg,#fff);color:var(--ink);font:inherit;font-size:14px}
+body.dark .su-tool select,body.dark .su-tool input{background:#0f1c2e;color:#e8f0ff}
+.su-tool button{padding:10px 16px;border:0;border-radius:12px;background:var(--su-grad);color:#fff;
+  font-weight:900;cursor:pointer;font-size:13.5px}
+.su-tool button:hover{filter:brightness(1.08)}
+.su-tool-out{margin-top:12px;font-size:13.5px}
+.su-tool-out ul{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:6px}
+.su-tool-out li{padding:8px 10px;border-radius:11px;background:rgba(124,58,237,.07)}
+.su-tool-out li a{font-weight:700;color:var(--ink)}
+.su-tool-out li a:hover{color:var(--su-g2)}
+.su-tool-badge{display:inline-block;padding:4px 10px;border-radius:999px;background:#dcfce7;color:#166534;
+  font-size:11.5px;font-weight:900}
+.su-tool-note{margin-top:10px;font-size:11.5px;opacity:.7}
+.su-cal-list{list-style:none;margin:0;padding:0;display:grid;gap:7px}
+.su-cal-item{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:8px 10px;border-radius:11px;
+  border:1px solid var(--line)}
+.su-cal-day{min-width:52px;text-align:center;font-weight:900;font-size:12px;padding:5px 6px;border-radius:10px;
+  background:var(--su-grad);color:#fff}
+.su-cal-item a{flex:1 1 180px;font-size:13.5px;font-weight:700;color:var(--ink)}
+.su-salary-big{font-size:26px;font-weight:900;color:var(--su-g2)}
+
+/* v150: save-for-later + for-you rail (localStorage only, no accounts) */
+.su-save{display:inline-flex;align-items:center;gap:5px;border:1px solid var(--line);background:transparent;
+  color:var(--ink);font:inherit;font-size:11.5px;font-weight:800;padding:4px 10px;border-radius:999px;cursor:pointer;
+  transition:background .16s,border-color .16s,color .16s}
+.su-save:hover{border-color:transparent;background:linear-gradient(135deg,#4f46e5,#ec4899);color:#fff}
+.su-save[aria-pressed="true"]{background:#dcfce7;border-color:#86efac;color:#166534}
+.su-savebar{position:fixed;right:14px;bottom:132px;z-index:58}
+.su-savebtn{position:relative;width:46px;height:46px;border-radius:50%;border:1px solid var(--line);background:var(--card);
+  font-size:20px;cursor:pointer;box-shadow:0 12px 28px rgba(31,26,92,.20)}
+.su-savecount{position:absolute;top:-4px;right:-4px;min-width:19px;height:19px;border-radius:999px;
+  background:linear-gradient(135deg,#4f46e5,#ec4899);color:#fff;font-size:11px;font-weight:900;line-height:19px}
+.su-savepanel{position:fixed;right:14px;bottom:186px;z-index:59;width:min(320px,calc(100vw - 28px));max-height:52vh;
+  overflow:auto;padding:14px;border-radius:18px;border:1px solid var(--line);background:var(--card);
+  box-shadow:0 22px 48px rgba(31,26,92,.26)}
+.su-savepanel h3{margin:0 0 8px;font-size:15px}
+.su-savepanel ul{list-style:none;margin:0;padding:0;display:grid;gap:7px}
+.su-savepanel li{display:flex;gap:8px;align-items:center}
+.su-savepanel li a{flex:1;font-size:13px;font-weight:700;color:var(--ink)}
+.su-savepanel li button{border:0;background:transparent;cursor:pointer;opacity:.6;font-size:15px;color:inherit}
+.su-savepanel li button:hover{opacity:1}
+.su-save-empty{font-size:12.5px;opacity:.75;margin:0}
+.su-foryou{margin:22px 0}
+.su-foryou h2{margin:0 0 4px;font-size:19px;color:var(--navy)}
+body.dark .su-foryou h2{color:#eaf2ff}
+.su-foryou p.su-tool-sub{margin:0 0 10px;font-size:12.5px;opacity:.75}
+.su-foryou[hidden]{display:none}
+@media (max-width:640px){.su-savebar{bottom:120px;right:10px}.su-savepanel{bottom:172px;right:10px}}
+
+/* v155: personalised "your 5 today" strip */
+.su-you{margin:20px 0;padding:16px 18px;border-radius:18px;border:1px solid var(--line);
+  background:linear-gradient(135deg,rgba(16,185,129,.09),rgba(79,70,229,.09))}
+.su-you h2{margin:0 0 4px;font-size:19px;color:var(--navy)}
+body.dark .su-you h2{color:#eaf2ff}
+.su-you-sub{margin:0 0 11px;font-size:12.5px;opacity:.78}
+.su-you-form{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
+.su-you-form>div{flex:1 1 150px}
+.su-you-form label{display:block;font-size:11.5px;font-weight:800;margin-bottom:4px;opacity:.85}
+.su-you-form select{width:100%;padding:9px 11px;border-radius:11px;border:1px solid var(--line);
+  background:var(--card);color:var(--ink);font:inherit;font-size:14px}
+.su-you-form button{padding:10px 16px;border:0;border-radius:12px;background:var(--su-grad);color:#fff;
+  font-weight:900;cursor:pointer;font-size:13.5px}
+.su-you-list{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:8px}
+.su-you-list li{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:9px 11px;border-radius:12px;
+  background:var(--card);border:1px solid var(--line)}
+.su-you-list li a{flex:1 1 200px;font-weight:700;font-size:13.5px;color:var(--ink)}
+.su-you-list li a:hover{color:var(--su-g2)}
+.su-you-rank{min-width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:11.5px;
+  font-weight:900;background:var(--su-grad);color:#fff}
+.su-you-why{font-size:11px;opacity:.7;font-weight:700}
+.su-you-reset{margin-top:9px;border:0;background:transparent;font-size:11.5px;font-weight:800;
+  color:var(--su-g2);cursor:pointer;padding:0}
+
+/* v156: add-to-calendar buttons on cards with a real last date */
+.su-ics{display:inline-flex;align-items:center;gap:5px;border:1px solid var(--line);background:transparent;
+  color:var(--ink);font:inherit;font-size:11.5px;font-weight:800;padding:4px 10px;border-radius:999px;cursor:pointer}
+.su-ics:hover{border-color:transparent;background:linear-gradient(135deg,#4f46e5,#ec4899);color:#fff}
+</style>
+  <style id="su-premium-css">
+/* ===========================================================
+   StudentUp v123 — PREMIUM layer
+   style.css tarvata load avutundi. Purpose:
+   1) colorful premium look (gradients, depth, motion)
+   2) social rail = right side, vertically middle — laptop AND phone
+   3) "1 update / 2 updates" badges pothayi (text overlap fix)
+   4) laptop menu lo anni options + phone menu neat
+   5) hero · hot jobs · scholarships · daily quiz · alerts · bottom nav
+   =========================================================== */
+
+:root{
+  --su-g1:#4f46e5; --su-g2:#7c3aed; --su-g3:#ec4899;
+  --su-amber:#f59e0b; --su-mint:#10b981; --su-sky:#0ea5e9;
+  --su-grad:linear-gradient(135deg,#4f46e5 0%,#7c3aed 45%,#ec4899 100%);
+  --su-shadow:0 18px 44px rgba(31,26,92,.16);
+  --su-radius:20px;
+}
+
+/* ---------- 1. Update-count badges OFF (text kanipinchakapovadam fix) ---------- */
+.usedcard .ucount,.usedcard em.ucount{display:none!important}
+.usedcard{position:relative;overflow:hidden;display:flex;align-items:center;gap:12px;padding:15px 16px;
+  border-radius:16px;border:1px solid var(--line);background:var(--card);
+  transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}
+.usedcard>div{min-width:0}
+.usedcard b{display:block;font-size:14.5px;line-height:1.35;overflow-wrap:anywhere}
+.usedcard small{display:block;color:var(--muted);font-size:11.5px;margin-top:3px;overflow-wrap:anywhere}
+.usedcard::after{content:"→";position:absolute;right:14px;top:50%;transform:translateY(-50%);
+  color:var(--su-g2);font-weight:900;opacity:.55;transition:transform .18s,opacity .18s}
+.usedcard:hover::after{transform:translate(4px,-50%);opacity:1}
+.usedcard:hover{transform:translateY(-3px);box-shadow:var(--su-shadow);border-color:rgba(124,58,237,.35)}
+.usedcard .ui{flex:0 0 auto;display:grid;place-items:center;width:44px;height:44px;border-radius:14px;
+  background:linear-gradient(135deg,rgba(79,70,229,.14),rgba(236,72,153,.14));font-size:20px}
+.usedcard.hot{border-color:rgba(236,72,153,.35)}
+.usedcard.hot .ui{background:var(--su-grad);color:#fff}
+
+/* ---------- 2. Social rail — RIGHT SIDE, MIDDLE, on every device ---------- */
+.su-social{position:fixed!important;right:12px!important;left:auto!important;top:50%!important;bottom:auto!important;
+  transform:translateY(-50%)!important;flex-direction:column!important;gap:9px!important;z-index:70!important;
+  padding:9px 7px;border-radius:999px;background:rgba(255,255,255,.72);backdrop-filter:blur(12px);
+  border:1px solid rgba(124,58,237,.18);box-shadow:0 14px 34px rgba(31,26,92,.16)}
+body.dark .su-social{background:rgba(17,31,54,.78);border-color:rgba(255,255,255,.12)}
+.su-social.su-out{transform:translate(135%,-50%)!important;opacity:0;visibility:hidden;pointer-events:none}
+.su-social a{width:38px;height:38px;border-radius:50%;border:0;color:#fff;display:grid;place-items:center;
+  box-shadow:0 6px 16px rgba(31,26,92,.22)}
+.su-rail-wa,.su-msoc-wa{background:#25d366}
+.su-rail-tg,.su-msoc-tg{background:#229ed9}
+.su-rail-ig,.su-msoc-ig{background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888)}
+.su-rail-yt,.su-msoc-yt{background:#ff0033}
+.su-social a:hover{transform:scale(1.12)}
+.su-social .su-icn{display:block}
+.su-close{top:-8px!important;right:-6px!important;background:var(--su-g2)!important}
+.su-tab{top:50%!important;bottom:auto!important;transform:translateY(-50%)!important;background:var(--su-grad)!important;
+  z-index:69;border-radius:12px 0 0 12px!important;height:52px;width:22px}
+body.su-has-stickyad .su-social{bottom:auto!important;top:46%!important}
+body.su-has-stickyad .su-tab{top:46%!important}
+@media(max-width:980px){
+  .su-social{right:8px!important;top:50%!important;bottom:auto!important;flex-direction:column!important;
+    gap:7px!important;padding:7px 5px}
+  .su-social.su-out{transform:translate(135%,-50%)!important}
+  .su-social a{width:34px;height:34px}
+  .su-social a svg{width:16px;height:16px}
+  .su-tab{bottom:auto!important;top:50%!important}
+}
+@media(max-width:400px){
+  .su-social{right:6px!important;gap:6px!important}
+  .su-social a{width:31px;height:31px}
+  .su-social a svg{width:15px;height:15px}
+}
+
+/* ---------- 3. Header + laptop menu: anni options kanipinchali ---------- */
+.header{backdrop-filter:blur(14px);background:rgba(255,255,255,.88);border-bottom:1px solid rgba(124,58,237,.14)}
+body.dark .header{background:rgba(14,27,49,.9)}
+.logo .mark{background:var(--su-grad)!important;color:#fff;border-radius:12px}
+.headrow{gap:14px}
+@media(min-width:981px){
+  .nav{flex:1 1 auto;min-width:0}
+  .nav .menu-primary{display:flex;flex-wrap:wrap;align-items:center;gap:2px;row-gap:2px;justify-content:flex-start}
+  .nav .menu-primary>li>a{padding:9px 10px;font-size:13px;white-space:nowrap;border-radius:10px;transition:background .15s,color .15s}
+  .nav .menu-primary>li>a:hover{background:linear-gradient(135deg,rgba(79,70,229,.1),rgba(236,72,153,.1));color:var(--su-g2)}
+  .nav .menu-primary>li.current-menu-item>a{background:var(--su-grad);color:#fff}
+}
+@media(min-width:1280px){.nav .menu-primary>li>a{font-size:13.5px;padding:9px 12px}}
+.iconbtn,.menubtn{border-radius:12px}
+.iconbtn:hover{border-color:var(--su-g2);color:var(--su-g2)}
+
+/* mobile panel — neat, colorful, scrollable, safe-area aware */
+.mpanel{padding-bottom:calc(90px + env(safe-area-inset-bottom));border-left:3px solid transparent;
+  border-image:var(--su-grad) 1}
+.mpanel .mlabel{color:var(--su-g2);text-transform:uppercase}
+.mpanel a{display:flex;align-items:center;gap:9px;border:1px solid transparent}
+.mpanel a:hover,.mpanel a:focus-visible{background:linear-gradient(135deg,rgba(79,70,229,.1),rgba(236,72,153,.08));
+  border-color:rgba(124,58,237,.25);color:var(--su-g2)}
+.mpanel .su-msoc{color:#fff!important;margin:5px 0;border-radius:12px;padding:10px 12px;font-weight:800}
+.mpanel .su-msoc svg{flex:0 0 auto}
+
+/* ---------- 4. HERO ---------- */
+.su-hero{position:relative;overflow:hidden;background:
+  radial-gradient(1200px 420px at 12% -10%,rgba(79,70,229,.20),transparent 60%),
+  radial-gradient(900px 380px at 88% 0%,rgba(236,72,153,.18),transparent 62%),
+  linear-gradient(180deg,#f7f8ff,transparent 85%)}
+body.dark .su-hero{background:
+  radial-gradient(1200px 420px at 12% -10%,rgba(79,70,229,.30),transparent 60%),
+  radial-gradient(900px 380px at 88% 0%,rgba(236,72,153,.22),transparent 62%),
+  linear-gradient(180deg,#101d33,transparent 85%)}
+.su-hero-in{padding:34px 0 28px;text-align:center;position:relative;z-index:2}
+.su-hero-orb{position:absolute;border-radius:50%;filter:blur(46px);opacity:.5;z-index:1;animation:suFloat 13s ease-in-out infinite}
+.su-orb1{width:240px;height:240px;background:#7c3aed;top:-70px;left:4%}
+.su-orb2{width:200px;height:200px;background:#ec4899;bottom:-80px;right:6%;animation-delay:-5s}
+@keyframes suFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(22px)}}
+.su-hero-kicker{display:inline-flex;align-items:center;gap:8px;margin:0 0 12px;padding:6px 14px;border-radius:999px;
+  background:rgba(255,255,255,.75);border:1px solid rgba(124,58,237,.25);color:var(--su-g2);
+  font-size:11.5px;font-weight:900;letter-spacing:.03em}
+body.dark .su-hero-kicker{background:rgba(17,31,54,.7);color:#c7b6ff}
+.su-live-dot{width:8px;height:8px;border-radius:50%;background:#22c55e;box-shadow:0 0 0 0 rgba(34,197,94,.6);animation:suPulse 1.8s infinite}
+@keyframes suPulse{70%{box-shadow:0 0 0 10px rgba(34,197,94,0)}100%{box-shadow:0 0 0 0 rgba(34,197,94,0)}}
+.su-hero-title{margin:0 0 8px;font-size:clamp(25px,4.6vw,44px);line-height:1.15;letter-spacing:-.02em;color:var(--navy)}
+.su-hero-title span{background:var(--su-grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+body.dark .su-hero-title{color:#eaf2ff}
+.su-hero-sub{margin:0 auto 18px;max-width:640px;color:var(--muted);font-size:14px;line-height:1.6}
+.su-hero-search{display:flex;align-items:center;gap:8px;max-width:660px;margin:0 auto;padding:7px 7px 7px 14px;
+  background:var(--card);border:1px solid rgba(124,58,237,.22);border-radius:999px;box-shadow:var(--su-shadow)}
+.su-hero-search input{flex:1 1 auto;min-width:0;border:0;background:transparent;font:inherit;font-size:14px;color:var(--ink);padding:10px 0}
+.su-hero-search input:focus{outline:0}
+.su-hero-search button{flex:0 0 auto;border:0;border-radius:999px;padding:11px 22px;background:var(--su-grad);color:#fff;
+  font-weight:900;font-size:13.5px;cursor:pointer;box-shadow:0 8px 20px rgba(124,58,237,.35)}
+.su-hero-search button:hover{filter:brightness(1.07)}
+.su-hs-ico{font-size:15px;opacity:.7}
+.su-hero-acts{display:flex;flex-wrap:wrap;justify-content:center;gap:9px;margin:18px auto 0;max-width:760px}
+.su-hact{display:inline-flex;align-items:center;gap:7px;padding:10px 16px;border-radius:999px;color:#fff;
+  font-weight:800;font-size:13px;box-shadow:0 10px 24px rgba(31,26,92,.18);transition:transform .16s}
+.su-hact:hover{transform:translateY(-2px)}
+.su-t-fire{background:linear-gradient(135deg,#f97316,#ef4444)}
+.su-t-grape{background:linear-gradient(135deg,#7c3aed,#ec4899)}
+.su-t-sky{background:linear-gradient(135deg,#0ea5e9,#4f46e5)}
+.su-t-mint{background:linear-gradient(135deg,#10b981,#14b8a6)}
+.su-hero-stats{list-style:none;display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin:20px 0 0;padding:0}
+.su-hero-stats li{min-width:118px;padding:10px 16px;border-radius:14px;background:var(--card);
+  border:1px solid var(--line);box-shadow:0 8px 20px rgba(31,26,92,.07)}
+.su-hero-stats b{display:block;font-size:19px;color:var(--su-g2)}
+.su-hero-stats span{font-size:11px;color:var(--muted);font-weight:700}
+@media(max-width:600px){
+  .su-hero-in{padding:24px 0 20px}
+  .su-hero-search{padding:6px 6px 6px 12px}
+  .su-hero-search button{padding:10px 16px;font-size:12.5px}
+  .su-hact{padding:9px 13px;font-size:12px}
+  .su-hero-stats li{flex:1 1 30%;min-width:0;padding:9px 8px;text-align:center}
+}
+
+/* ---------- 5. HOT JOBS rail (Netflix style) ---------- */
+.su-hot{margin:26px 0 8px}
+.su-hot-head,.su-schol-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+.su-hot-head h2,.su-schol-head h2{margin:0;font-size:21px;color:var(--navy)}
+body.dark .su-hot-head h2,body.dark .su-schol-head h2{color:#eaf2ff}
+.su-hot-head a,.su-schol-head a{font-size:12.5px;font-weight:900;color:var(--su-g2)}
+/* v146: bulletproof horizontal rail — flex + fixed card width so the track
+   ALWAYS overflows (the old grid 1fr tracks shrank to fit = no scrollbar). */
+.su-hot-rail{display:flex;flex-wrap:nowrap;align-items:stretch;gap:14px;
+  width:100%;max-width:100%;min-width:0;overflow-x:scroll;overflow-y:hidden;
+  padding:4px 2px 14px;scroll-snap-type:x proximity;scroll-behavior:smooth;
+  overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;
+  touch-action:pan-x pan-y;scrollbar-width:thin;scrollbar-color:rgba(124,58,237,.45) transparent;cursor:grab}
+.su-hot-rail>*{flex:0 0 clamp(250px,26vw,292px);scroll-snap-align:start}
+@media (max-width:640px){.su-hot-rail>*{flex:0 0 80vw}.su-hot-rail{scroll-snap-type:x mandatory;padding-right:16px}}
+@media (min-width:1000px){.su-hot-rail{padding-right:46px}}
+.su-hot-rail.dragging{cursor:grabbing;user-select:none;scroll-behavior:auto}
+.su-hot-rail::-webkit-scrollbar{height:8px}
+.su-hot-rail::-webkit-scrollbar-track{background:rgba(124,58,237,.10);border-radius:9px}
+.su-hot-rail::-webkit-scrollbar-thumb{background:rgba(124,58,237,.42);border-radius:9px}
+.su-hot-rail::-webkit-scrollbar-thumb:hover{background:rgba(124,58,237,.65)}
+.su-rail-host{position:relative;min-width:0}
+.su-rail-nav{position:absolute;top:34%;z-index:6;width:42px;height:42px;border-radius:50%;border:1px solid var(--line);
+  background:var(--card);color:var(--navy);font-size:24px;line-height:1;cursor:pointer;display:grid;place-items:center;
+  box-shadow:0 10px 24px rgba(31,26,92,.20);transition:transform .16s,background .16s,opacity .16s}
+.su-rail-nav:hover{transform:scale(1.09);background:linear-gradient(135deg,#4f46e5,#ec4899);color:#fff;border-color:transparent}
+.su-rail-nav:disabled{opacity:.28;cursor:default;transform:none}
+.su-rail-prev{left:-8px}.su-rail-next{right:-8px}
+@media (max-width:860px){.su-rail-nav{display:none}}
+.su-rail-hint{display:none;font-size:11.5px;font-weight:800;color:var(--su-g2);margin:-6px 0 8px}
+@media (max-width:860px){.su-rail-hint{display:block}}
+body.dark .su-rail-nav{background:#132339;color:#e8f0ff;border-color:#24364f}
+@media (prefers-reduced-motion:reduce){.su-hot-rail{scroll-behavior:auto}.su-rail-nav{transition:none}}
+.su-hotcard{scroll-snap-align:start;display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);
+  border-radius:var(--su-radius);overflow:hidden;box-shadow:0 10px 26px rgba(31,26,92,.08);transition:transform .18s,box-shadow .18s}
+.su-hotcard:hover{transform:translateY(-4px);box-shadow:var(--su-shadow)}
+.su-hot-thumb{position:relative;display:block;aspect-ratio:16/9;background:linear-gradient(135deg,#ede9fe,#fce7f3);overflow:hidden}
+.su-hot-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.su-hot-ph{position:absolute;inset:0;display:grid;place-items:center;font-size:34px}
+.su-hot-rank{position:absolute;left:10px;top:10px;padding:4px 10px;border-radius:999px;background:var(--su-grad);
+  color:#fff;font-size:11px;font-weight:900;box-shadow:0 6px 14px rgba(124,58,237,.35)}
+.su-hot-body{display:flex;flex-direction:column;gap:9px;padding:13px 14px 15px;flex:1 1 auto}
+.su-hot-body h3{margin:0;font-size:14.5px;line-height:1.4}
+.su-hot-body h3 a{color:var(--ink)}
+.su-hot-body h3 a:hover{color:var(--su-g2)}
+.su-hot-meta{display:flex;flex-wrap:wrap;gap:6px}
+.su-pill{padding:4px 10px;border-radius:999px;font-size:11px;font-weight:800}
+.su-pill-amber{background:rgba(245,158,11,.15);color:#9a5b00}
+.su-pill-green{background:rgba(16,185,129,.15);color:#10734f}
+body.dark .su-pill-amber{color:#ffc88a}
+body.dark .su-pill-green{color:#8ff0c6}
+.su-hot-apply{margin-top:auto;text-align:center;padding:9px 12px;border-radius:12px;background:var(--su-grad);
+  color:#fff;font-weight:900;font-size:12.5px}
+.su-hot-apply:hover{filter:brightness(1.08)}
+
+/* ---------- 6. Scholarships strip ---------- */
+.su-schol{margin:26px 0 6px;padding:18px;border-radius:var(--su-radius);
+  background:linear-gradient(135deg,rgba(79,70,229,.09),rgba(236,72,153,.09));border:1px solid rgba(124,58,237,.18)}
+.su-schol-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:11px}
+.su-scard{display:block;padding:13px 14px;border-radius:14px;background:var(--card);border:1px solid var(--line);
+  transition:transform .16s,box-shadow .16s}
+.su-scard:hover{transform:translateY(-3px);box-shadow:var(--su-shadow)}
+.su-scard b{display:block;font-size:13.5px;color:var(--ink);line-height:1.45}
+.su-scard small{display:block;margin-top:5px;color:var(--muted);font-size:11.5px}
+.su-schol-empty{margin:0;color:var(--muted);font-size:13px}
+
+/* ---------- 7. DAILY QUIZ (colorful rotating ring) ---------- */
+.su-quiz{position:relative;margin:30px 0 10px;padding:4px}
+.su-quiz-ring{position:absolute;inset:-2px;border-radius:26px;background:conic-gradient(from 0deg,
+  #4f46e5,#7c3aed,#ec4899,#f59e0b,#10b981,#0ea5e9,#4f46e5);filter:blur(7px);opacity:.75;animation:suSpin 7s linear infinite}
+@keyframes suSpin{to{transform:rotate(360deg)}}
+.su-quiz-card{position:relative;z-index:1;border-radius:22px;background:var(--card);border:1px solid var(--line);padding:20px}
+.su-quiz-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.su-quiz-kick{margin:0 0 4px;font-size:11px;font-weight:900;letter-spacing:.09em;color:var(--su-g2)}
+.su-quiz-head h2{margin:0;font-size:20px;color:var(--navy)}
+body.dark .su-quiz-head h2{color:#eaf2ff}
+.su-quiz-score{flex:0 0 auto;display:flex;align-items:baseline;gap:4px;padding:8px 14px;border-radius:14px;
+  background:var(--su-grad);color:#fff;font-weight:900}
+.su-quiz-score b{font-size:20px}
+.su-quiz-score span{font-size:12px;opacity:.85}
+.su-quiz-bar{height:7px;border-radius:9px;background:rgba(124,58,237,.14);margin:14px 0 16px;overflow:hidden}
+.su-quiz-bar i{display:block;height:100%;border-radius:9px;background:var(--su-grad);transition:width .35s ease}
+.su-q{padding:13px 0;border-top:1px dashed var(--line)}
+.su-q:first-child{border-top:0;padding-top:0}
+.su-q-title{margin:0 0 10px;font-weight:800;font-size:14.5px;color:var(--ink);line-height:1.5;overflow-wrap:anywhere}
+.su-q-n{display:inline-grid;place-items:center;width:23px;height:23px;margin-right:6px;border-radius:50%;
+  background:var(--su-grad);color:#fff;font-size:11.5px}
+.su-q-opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px}
+.su-q-opt{text-align:left;padding:11px 13px;border-radius:12px;border:1px solid var(--line);background:var(--soft);
+  color:var(--ink);font:inherit;font-size:13px;font-weight:700;cursor:pointer;transition:.15s;overflow-wrap:anywhere}
+.su-q-opt:hover{border-color:var(--su-g2);background:rgba(124,58,237,.08)}
+.su-q-opt.ok{background:rgba(16,185,129,.16);border-color:#10b981;color:#0b6b4b}
+.su-q-opt.bad{background:rgba(239,68,68,.14);border-color:#ef4444;color:#a02121}
+body.dark .su-q-opt.ok{color:#9ff0cd}body.dark .su-q-opt.bad{color:#ffb3b3}
+.su-q.answered .su-q-opt{cursor:default}
+.su-q-why{margin:9px 0 0;font-size:12.5px;line-height:1.6;color:var(--muted)}
+.su-q-why.good{color:#0b6b4b}.su-q-why.miss{color:#a02121}
+body.dark .su-q-why.good{color:#8ff0c6}body.dark .su-q-why.miss{color:#ffb3b3}
+.su-q-final{margin:14px 0 0;padding:12px 14px;border-radius:14px;background:var(--su-grad);color:#fff;font-weight:800;font-size:13.5px}
+.su-quiz-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:16px}
+.su-quiz-restart{border:1px solid var(--line);background:var(--soft);color:var(--ink);border-radius:12px;
+  padding:9px 14px;font:inherit;font-size:12.5px;font-weight:800;cursor:pointer}
+.su-quiz-restart:hover{border-color:var(--su-g2);color:var(--su-g2)}
+.su-quiz-more{font-size:12.5px;font-weight:900;color:var(--su-g2)}
+@media(max-width:600px){.su-quiz-card{padding:16px 14px}.su-quiz-head h2{font-size:17px}.su-q-opts{grid-template-columns:1fr}}
+
+/* ---------- 8. Alerts / push card ---------- */
+.su-alerts{margin:26px 0 8px;border-radius:var(--su-radius);padding:1px;background:var(--su-grad);box-shadow:var(--su-shadow)}
+.su-alerts-in{border-radius:19px;background:var(--card);padding:18px 20px;display:flex;align-items:center;
+  justify-content:space-between;gap:16px;flex-wrap:wrap}
+.su-alerts-copy h2{margin:0 0 5px;font-size:19px;color:var(--navy)}
+body.dark .su-alerts-copy h2{color:#eaf2ff}
+.su-alerts-copy p{margin:0;font-size:13px;color:var(--muted);max-width:520px;line-height:1.6}
+.su-alerts-btns{display:flex;gap:9px;flex-wrap:wrap}
+.su-alerts-btns>*{display:inline-flex;align-items:center;gap:7px;border:0;border-radius:12px;padding:11px 16px;
+  font-weight:900;font-size:13px;cursor:pointer;color:#fff}
+.su-alert-on{background:var(--su-grad);box-shadow:0 10px 22px rgba(124,58,237,.3)}
+.su-alert-on.on{background:linear-gradient(135deg,#10b981,#059669)}
+.su-alert-wa{background:#25d366}
+.su-alert-tg{background:#229ed9}
+.su-alert-state{flex:1 1 100%;margin:4px 0 0;font-size:12px;color:var(--muted)}
+@media(max-width:600px){.su-alerts-in{padding:15px}.su-alerts-btns>*{flex:1 1 auto;justify-content:center}}
+
+/* ---------- 9. Mobile bottom navigation ---------- */
+.su-bnav{display:none}
+@media(max-width:980px){
+  .su-bnav{position:fixed;left:10px;right:10px;bottom:calc(9px + env(safe-area-inset-bottom));z-index:68;
+    display:grid;grid-template-columns:repeat(5,1fr);gap:2px;padding:7px 6px;border-radius:20px;
+    background:rgba(255,255,255,.9);backdrop-filter:blur(14px);border:1px solid rgba(124,58,237,.18);
+    box-shadow:0 16px 36px rgba(31,26,92,.2)}
+  body.dark .su-bnav{background:rgba(14,27,49,.92);border-color:rgba(255,255,255,.1)}
+  .su-bnav a,.su-bnav button{display:grid;justify-items:center;gap:2px;padding:5px 2px;border:0;background:none;
+    color:var(--muted);font:inherit;font-size:10.5px;font-weight:800;cursor:pointer;border-radius:13px}
+  .su-bnav a span,.su-bnav button span{font-size:17px;line-height:1}
+  .su-bnav a.on,.su-bnav a:hover,.su-bnav button:hover{color:var(--su-g2);background:rgba(124,58,237,.1)}
+  body{padding-bottom:74px}
+  body.su-has-stickyad .su-bnav{bottom:calc(62px + env(safe-area-inset-bottom))}
+  .installbtn{bottom:88px!important}
+}
+
+/* ---------- 10. Global premium polish ---------- */
+.chip{border-radius:999px;transition:.16s}
+.chip:hover{border-color:var(--su-g2);color:var(--su-g2)}
+.chip.active{background:var(--su-grad)!important;border-color:transparent!important;color:#fff!important;
+  box-shadow:0 8px 18px rgba(124,58,237,.3)}
+.news{border-radius:18px;transition:transform .18s,box-shadow .18s}
+.news:hover{transform:translateY(-4px);box-shadow:var(--su-shadow)}
+.sectionhead h1,.sectionhead h2{letter-spacing:-.01em}
+.footer{background:linear-gradient(160deg,#141a4a,#0b2149 60%,#1a1040)}
+.bluebtn,.su-board-link{border-radius:12px}
+.su-board-link{color:var(--su-g2);font-weight:900}
+::selection{background:rgba(124,58,237,.25)}
+a:focus-visible,button:focus-visible{outline:3px solid rgba(124,58,237,.45);outline-offset:2px;border-radius:10px}
+@media (prefers-reduced-motion:reduce){
+  .su-quiz-ring,.su-hero-orb,.su-live-dot{animation:none}
+  .su-hotcard:hover,.news:hover,.su-hact:hover,.su-scard:hover{transform:none}
+}
+
+/* ===========================================================
+   v124 SMART LAYER — AI job match · eligibility · salary calc ·
+   job calendar · trending today · state-first homepage
+   =========================================================== */
+
+/* Trending today (hero kinda) */
+.su-trend{display:flex;align-items:center;gap:10px;margin:16px auto 0;max-width:900px;padding:8px 12px;
+  border-radius:999px;background:var(--card);border:1px solid var(--line);overflow:hidden}
+.su-trend-tag{flex:0 0 auto;font-size:11px;font-weight:900;color:#fff;background:var(--su-grad);padding:5px 11px;border-radius:999px}
+.su-trend-list{display:flex;gap:16px;overflow-x:auto;scrollbar-width:none;white-space:nowrap}
+.su-trend-list::-webkit-scrollbar{display:none}
+.su-trend-list a{font-size:12.5px;font-weight:700;color:var(--ink)}
+.su-trend-list a:hover{color:var(--su-g2)}
+
+/* State switcher */
+.su-statebar{display:flex;align-items:center;justify-content:center;gap:7px;flex-wrap:wrap;margin:14px 0 0;font-size:12px;color:var(--muted);font-weight:800}
+.su-statebar button{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;
+  padding:7px 14px;font:inherit;font-size:12px;font-weight:800;cursor:pointer}
+.su-statebar button.on{background:var(--su-grad);color:#fff;border-color:transparent;box-shadow:0 8px 18px rgba(124,58,237,.28)}
+
+/* AI job match */
+.su-finder{margin:28px 0 8px;padding:18px;border-radius:var(--su-radius);background:var(--card);
+  border:1px solid rgba(124,58,237,.2);box-shadow:0 12px 30px rgba(31,26,92,.07)}
+.su-finder-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.su-finder-kick{margin:0 0 4px;font-size:11px;font-weight:900;letter-spacing:.08em;color:var(--su-g2)}
+.su-finder-head h2{margin:0;font-size:20px;color:var(--navy)}
+body.dark .su-finder-head h2{color:#eaf2ff}
+.su-finder-count{flex:0 0 auto;padding:7px 13px;border-radius:999px;background:rgba(124,58,237,.12);
+  color:var(--su-g2);font-size:12px;font-weight:900}
+.su-finder-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;align-items:end}
+.su-finder-form label{display:grid;gap:5px;font-size:11px;font-weight:900;color:var(--muted)}
+.su-finder-form select,.su-finder-form input{min-height:42px;padding:9px 11px;border:1px solid var(--line);
+  border-radius:12px;background:var(--soft);color:var(--ink);font:inherit;font-size:13px}
+.su-finder-form select:focus,.su-finder-form input:focus{outline:3px solid rgba(124,58,237,.25);border-color:var(--su-g2)}
+.su-finder-reset{min-height:42px;border:1px solid var(--line);border-radius:12px;background:var(--soft);
+  color:var(--ink);font:inherit;font-size:12.5px;font-weight:800;cursor:pointer}
+.su-finder-reset:hover{border-color:var(--su-g2);color:var(--su-g2)}
+.su-finder-results{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:12px;margin-top:16px}
+.su-fcard{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:16px;overflow:hidden;
+  background:var(--card);box-shadow:0 8px 20px rgba(31,26,92,.06);transition:transform .16s,box-shadow .16s}
+.su-fcard:hover{transform:translateY(-3px);box-shadow:var(--su-shadow)}
+.su-fthumb img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block}
+.su-fbody{display:flex;flex-direction:column;gap:8px;padding:12px 13px 13px;flex:1 1 auto}
+.su-fbody h3{margin:0;font-size:14px;line-height:1.45}
+.su-fbody h3 a{color:var(--ink)}
+.su-fbody h3 a:hover{color:var(--su-g2)}
+.su-fmeta{display:flex;flex-wrap:wrap;gap:6px}
+.su-pill-hot{background:rgba(239,68,68,.15);color:#a02121}
+body.dark .su-pill-hot{color:#ffb3b3}
+.su-elig{display:inline-block;padding:6px 10px;border-radius:10px;font-size:11.5px;font-weight:800;line-height:1.4}
+.su-elig.yes{background:rgba(16,185,129,.15);color:#0b6b4b}
+.su-elig.no{background:rgba(239,68,68,.14);color:#a02121}
+.su-elig.may{background:rgba(245,158,11,.15);color:#9a5b00}
+body.dark .su-elig.yes{color:#8ff0c6}body.dark .su-elig.no{color:#ffb3b3}body.dark .su-elig.may{color:#ffc88a}
+.su-frow{display:flex;gap:8px;align-items:center;margin-top:auto}
+.su-frow .su-hot-apply{flex:1 1 auto}
+.su-finder-empty{margin:16px 0 0;padding:16px;border:1px dashed var(--line);border-radius:14px;color:var(--muted);text-align:center;font-size:13px}
+.su-finder-note{margin:14px 0 0;font-size:11.5px;color:var(--muted);line-height:1.6}
+
+/* Salary calculator */
+.su-calc{margin:26px 0 8px;padding:18px;border-radius:var(--su-radius);border:1px solid var(--line);
+  background:linear-gradient(135deg,rgba(16,185,129,.08),rgba(14,165,233,.08))}
+.su-calc-head h2{margin:0 0 4px;font-size:20px;color:var(--navy)}
+body.dark .su-calc-head h2{color:#eaf2ff}
+.su-calc-head p{margin:0 0 14px;font-size:12.5px;color:var(--muted)}
+.su-calc-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+.su-calc-form label{display:grid;gap:5px;font-size:11px;font-weight:900;color:var(--muted)}
+.su-calc-form input{min-height:42px;padding:9px 11px;border:1px solid var(--line);border-radius:12px;
+  background:var(--card);color:var(--ink);font:inherit;font-size:13px}
+.su-calc-out{margin-top:15px;display:grid;gap:12px}
+.su-calc-big{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+  padding:14px 16px;border-radius:16px;background:linear-gradient(135deg,#10b981,#0ea5e9);color:#fff}
+.su-calc-big span{font-size:12.5px;font-weight:800;opacity:.95}
+.su-calc-big b{font-size:26px}
+.su-calc-rows{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:7px}
+.su-calc-rows li{display:flex;justify-content:space-between;gap:10px;padding:9px 12px;border-radius:11px;
+  background:var(--card);border:1px solid var(--line);font-size:12.5px;color:var(--muted);font-weight:700}
+.su-calc-rows b{color:var(--ink)}
+.su-calc-note{margin:0;font-size:11.5px;color:var(--muted)}
+
+/* Job calendar */
+.su-cal{margin:26px 0 8px;padding:18px;border-radius:var(--su-radius);border:1px solid var(--line);background:var(--card)}
+.su-cal-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.su-cal-head h2{margin:0;font-size:20px;color:var(--navy)}
+body.dark .su-cal-head h2{color:#eaf2ff}
+.su-cal-head span{font-size:12px;font-weight:800;color:var(--muted)}
+.su-cal-list{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.su-cal-list li{display:flex;align-items:center;gap:12px;padding:9px 11px;border-radius:13px;
+  border:1px solid var(--line);background:var(--soft)}
+.su-cal-date{flex:0 0 auto;display:grid;place-items:center;width:46px;padding:5px 0;border-radius:11px;
+  background:var(--su-grad);color:#fff;line-height:1.1}
+.su-cal-date b{font-size:16px}
+.su-cal-date small{font-size:10px;text-transform:uppercase;opacity:.9}
+.su-cal-list a{flex:1 1 auto;font-size:13px;font-weight:700;color:var(--ink);line-height:1.45;overflow-wrap:anywhere}
+.su-cal-list a:hover{color:var(--su-g2)}
+.su-cal-left{flex:0 0 auto;font-size:11px;font-weight:900;color:#0b6b4b;background:rgba(16,185,129,.15);
+  padding:5px 10px;border-radius:999px;font-style:normal}
+.su-cal-left.hot{color:#a02121;background:rgba(239,68,68,.15)}
+body.dark .su-cal-left{color:#8ff0c6}body.dark .su-cal-left.hot{color:#ffb3b3}
+@media(max-width:600px){
+  .su-finder,.su-calc,.su-cal{padding:14px}
+  .su-finder-head h2,.su-calc-head h2,.su-cal-head h2{font-size:17px}
+  .su-calc-big b{font-size:22px}
+  .su-trend{border-radius:16px}
+}
+
+/* v126: compare table page */
+.su-cmp{margin:18px 0 8px}
+.su-cmp-scroll{overflow-x:auto;border:1px solid var(--line);border-radius:var(--su-radius);background:var(--card)}
+.su-cmp-table{width:100%;border-collapse:collapse;min-width:780px;font-size:13px}
+.su-cmp-table th,.su-cmp-table td{padding:11px 13px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+.su-cmp-table thead th{position:sticky;top:0;background:var(--su-grad);color:#fff;font-size:11.5px;
+  letter-spacing:.04em;text-transform:uppercase;border:0;z-index:1}
+.su-cmp-table tbody th{font-weight:800;max-width:300px}
+.su-cmp-table tbody th a{color:var(--ink)}
+.su-cmp-table tbody th a:hover{color:var(--su-g2)}
+.su-cmp-table tbody tr:nth-child(even){background:rgba(124,58,237,.04)}
+.su-cmp-apply{display:inline-block;padding:6px 11px;border-radius:999px;background:var(--su-grad);color:#fff;
+  font-weight:900;font-size:11.5px;white-space:nowrap}
+@media(max-width:600px){.su-cmp-table{font-size:12px}.su-cmp-table th,.su-cmp-table td{padding:9px 10px}}
+
+/* ===========================================================
+   v127 INSTANT LAYER — command palette · picked for you
+   =========================================================== */
+.su-cmdk{position:fixed;inset:0;z-index:120;background:rgba(11,18,40,.5);backdrop-filter:blur(6px);
+  display:grid;align-items:start;justify-items:center;padding:12vh 14px 14px}
+.su-cmdk[hidden]{display:none}
+.su-cmdk-box{width:min(620px,100%);border-radius:20px;background:var(--card);border:1px solid rgba(124,58,237,.25);
+  box-shadow:0 30px 70px rgba(11,18,40,.4);overflow:hidden;animation:suPop .18s ease}
+@keyframes suPop{from{transform:translateY(-8px);opacity:0}to{transform:none;opacity:1}}
+.su-cmdk-top{display:flex;align-items:center;gap:10px;padding:13px 15px;border-bottom:1px solid var(--line)}
+.su-cmdk-top span{font-size:15px;color:var(--su-g2);font-weight:900}
+.su-cmdk-top input{flex:1 1 auto;min-width:0;border:0;background:transparent;font:inherit;font-size:15px;color:var(--ink)}
+.su-cmdk-top input:focus{outline:0}
+.su-cmdk-top kbd{font-size:10.5px;font-weight:800;color:var(--muted);border:1px solid var(--line);
+  border-radius:7px;padding:3px 6px;background:var(--soft)}
+.su-cmdk-list{max-height:52vh;overflow-y:auto;padding:6px}
+.su-cmdk-item{display:flex;align-items:center;gap:11px;padding:11px 12px;border-radius:12px;color:var(--ink);
+  font-size:13.5px;font-weight:700;line-height:1.4}
+.su-cmdk-item.on,.su-cmdk-item:hover{background:linear-gradient(135deg,rgba(79,70,229,.12),rgba(236,72,153,.1));color:var(--su-g2)}
+.su-cmdk-i{flex:0 0 auto;width:28px;height:28px;display:grid;place-items:center;border-radius:9px;background:var(--soft);font-size:14px}
+.su-cmdk-empty{margin:0;padding:18px;text-align:center;color:var(--muted);font-size:13px}
+.su-cmdk-foot{display:flex;justify-content:space-between;gap:10px;padding:9px 14px;border-top:1px solid var(--line);
+  color:var(--muted);font-size:11px;font-weight:700;background:var(--soft)}
+@media(max-width:600px){.su-cmdk{padding:8vh 10px 10px}.su-cmdk-foot{display:none}}
+
+/* Picked for you */
+.su-foryou{margin:26px 0 8px}
+.su-foryou[hidden]{display:none}
+.su-foryou-clear{border:1px solid var(--line);background:var(--soft);color:var(--muted);border-radius:999px;
+  padding:6px 12px;font:inherit;font-size:11.5px;font-weight:800;cursor:pointer}
+.su-foryou-clear:hover{border-color:var(--su-g2);color:var(--su-g2)}
+.su-foryou-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:11px}
+.su-fycard{display:flex;align-items:center;gap:11px;padding:10px;border-radius:15px;background:var(--card);
+  border:1px solid var(--line);transition:transform .16s,box-shadow .16s}
+.su-fycard:hover{transform:translateY(-3px);box-shadow:var(--su-shadow)}
+.su-fyimg{flex:0 0 auto;width:62px;height:44px;border-radius:10px;background-size:cover;background-position:center;
+  background-color:var(--soft);display:grid;place-items:center;font-size:18px}
+.su-fytext b{display:block;font-size:13px;line-height:1.4;color:var(--ink);overflow-wrap:anywhere}
+.su-fytext small{display:block;margin-top:3px;font-size:11px;color:var(--muted);font-weight:800}
+
+/* ===========================================================
+   v129 QUICK STORIES — full-screen swipe cards (CSS only)
+   =========================================================== */
+.su-stories{margin:26px 0 8px}
+.su-stories-rail{display:grid;grid-auto-flow:column;grid-auto-columns:min(320px,86vw);gap:12px;
+  overflow-x:auto;scroll-snap-type:x mandatory;padding:4px 2px 14px;scrollbar-width:thin}
+.su-stories-rail::-webkit-scrollbar{height:7px}
+.su-stories-rail::-webkit-scrollbar-thumb{background:rgba(124,58,237,.35);border-radius:9px}
+.su-story{position:relative;scroll-snap-align:center;aspect-ratio:9/16;max-height:560px;border-radius:22px;
+  overflow:hidden;background:var(--su-grad);box-shadow:0 16px 38px rgba(31,26,92,.22);isolation:isolate}
+.su-story-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.55;z-index:0}
+.su-story::after{content:"";position:absolute;inset:0;z-index:1;
+  background:linear-gradient(180deg,rgba(9,12,32,.15) 0%,rgba(9,12,32,.78) 62%,rgba(9,12,32,.94) 100%)}
+.su-story-bars{position:absolute;top:12px;left:12px;right:12px;z-index:3;display:flex;gap:4px}
+.su-story-bars i{flex:1 1 auto;height:3px;border-radius:9px;background:rgba(255,255,255,.35)}
+.su-story-bars i.on{background:#fff}
+.su-story-in{position:absolute;inset:auto 0 0 0;z-index:3;padding:18px 18px 20px;color:#fff;display:grid;gap:9px}
+.su-story-kick{font-size:11px;font-weight:900;letter-spacing:.08em;opacity:.85}
+.su-story-in h3{margin:0;font-size:19px;line-height:1.3;color:#fff;overflow-wrap:anywhere}
+.su-story-meta{display:flex;flex-wrap:wrap;gap:6px}
+.su-story-meta span{padding:4px 10px;border-radius:999px;background:rgba(255,255,255,.18);font-size:11.5px;font-weight:800}
+.su-story-cta{justify-self:start;padding:10px 18px;border-radius:999px;background:#fff;color:#1f1a5c;
+  font-weight:900;font-size:13px}
+.su-story-cta:hover{background:#ede9fe}
+.su-story-next,.su-story-prev{position:absolute;top:50%;z-index:4;transform:translateY(-50%);width:34px;height:34px;
+  display:grid;place-items:center;border-radius:50%;background:rgba(255,255,255,.22);color:#fff;font-size:20px;
+  font-weight:900;backdrop-filter:blur(6px);text-decoration:none}
+.su-story-next{right:10px}.su-story-prev{left:10px}
+.su-story-next:hover,.su-story-prev:hover{background:rgba(255,255,255,.4);color:#fff}
+@media(max-width:600px){.su-story-in h3{font-size:17px}}
+
+/* ===========================================================
+   v130 RENDER BUDGET — long homepage ni fast ga uncha:
+   below-fold heavy sections browser render ni skip chestundi
+   (content-visibility), kaani scroll/anchor/Ctrl+F pani chestundi
+   (contain-intrinsic-size tho placeholder height reserve → CLS 0).
+   Search engines DOM ni full ga chaduvutayi — SEO impact ledu.
+   =========================================================== */
+.su-hot,.su-stories,.su-finder,.su-quiz,.su-schol,.su-alerts,.su-foryou,.su-cal,.su-calc,.su-cmp{
+  content-visibility:auto}
+.su-hot{contain-intrinsic-size:auto 420px}
+.su-stories{contain-intrinsic-size:auto 600px}
+.su-finder{contain-intrinsic-size:auto 640px}
+.su-quiz{contain-intrinsic-size:auto 700px}
+.su-schol{contain-intrinsic-size:auto 260px}
+.su-alerts{contain-intrinsic-size:auto 200px}
+.su-foryou{contain-intrinsic-size:auto 300px}
+.su-cal{contain-intrinsic-size:auto 560px}
+.su-calc{contain-intrinsic-size:auto 480px}
+.su-cmp{contain-intrinsic-size:auto 520px}
+/* Hero + first rail eppudu immediate render (LCP ki content-visibility vaddu) */
+.su-hero{content-visibility:visible}
+@media print{.su-hot,.su-stories,.su-finder,.su-quiz,.su-schol,.su-alerts,.su-foryou,.su-cal,.su-calc,.su-cmp{content-visibility:visible}}
+
+/* ==========================================================================
+   v131 — apply conversion bar (single job posts)
+   ========================================================================== */
+.su-applybar{position:fixed;left:0;right:0;bottom:0;z-index:70;
+  padding:8px 10px calc(8px + env(safe-area-inset-bottom));
+  background:rgba(255,255,255,.96);backdrop-filter:saturate(1.4) blur(10px);
+  border-top:1px solid rgba(79,70,229,.18);box-shadow:0 -8px 26px rgba(15,23,42,.14)}
+.su-applybar-in{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:12px}
+.su-applybar-meta{min-width:0;flex:1}
+.su-applybar-title{display:block;font-size:13px;line-height:1.25;color:#0f172a;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.su-applybar-sub{display:flex;gap:6px;flex-wrap:wrap;margin-top:3px}
+.su-applychip,.su-applyfact{font-size:10.5px;font-weight:700;border-radius:999px;padding:2px 8px}
+.su-applychip{background:linear-gradient(135deg,var(--su-g1),var(--su-g2));color:#fff}
+.su-applybar--urgent .su-applychip{background:linear-gradient(135deg,#f43f5e,var(--su-amber));
+  animation:su-applypulse 1.6s ease-in-out infinite}
+.su-applybar--closed .su-applychip{background:#64748b}
+.su-applyfact{background:rgba(79,70,229,.10);color:#4338ca}
+.su-applybtn{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;
+  min-height:44px;padding:0 20px;border-radius:12px;font-size:14px;font-weight:800;
+  color:#fff;text-decoration:none;background:var(--su-grad);
+  box-shadow:0 8px 20px rgba(124,58,237,.34)}
+.su-applybtn:hover{filter:brightness(1.06)}
+.su-applybtn--ghost{background:#eef2ff;color:#3730a3;box-shadow:none}
+@keyframes su-applypulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+body.su-has-applybar .su-bnav{bottom:calc(64px + env(safe-area-inset-bottom))}
+body.su-has-applybar{padding-bottom:70px}
+@media (max-width:480px){.su-applybar-title{font-size:12px}.su-applybtn{padding:0 14px;font-size:13px}}
+@media print{.su-applybar{display:none}}
+@media (prefers-reduced-motion:reduce){.su-applybar--urgent .su-applychip{animation:none}}
+
   </style>
 </head>
 <body>
@@ -695,35 +1403,53 @@
   </aside>
 
   <!-- v59: what students search most — first screen (TS/AP first) -->
+
+  <!-- Premium hero — same markup the theme renders via studentup_hero_premium() -->
+  <section class="su-hero" aria-label="StudentUp search and quick links">
+    <span class="su-hero-orb su-orb1" aria-hidden="true"></span>
+    <span class="su-hero-orb su-orb2" aria-hidden="true"></span>
+    <div class="wrap su-hero-in">
+      <p class="su-hero-kicker"><span class="su-live-dot" aria-hidden="true"></span> Live updates · Telangana · Andhra Pradesh · Central</p>
+      <h2 class="su-hero-title">One place for every <span>job, scholarship &amp; result</span></h2>
+      <p class="su-hero-sub">Verified notifications, last dates and direct apply links — checked by hand before posting.</p>
+      <form class="su-hero-search" role="search" onsubmit="return false;">
+        <span class="su-hs-ico" aria-hidden="true">🔍</span>
+        <input id="heroq" type="search" placeholder="Search SSC, TSPSC, scholarships, hall tickets…" aria-label="Search StudentUp">
+        <button type="submit">Search</button>
+      </form>
+      <div class="su-hero-acts">
+        <a class="su-hact su-t-fire" href="#jobs"><span aria-hidden="true">🔥</span>Latest Govt Jobs</a>
+        <a class="su-hact su-t-grape" href="#scholarships"><span aria-hidden="true">🎓</span>Scholarships</a>
+        <a class="su-hact su-t-sky" href="#results"><span aria-hidden="true">📢</span>Results</a>
+        <a class="su-hact su-t-mint" href="#jobs"><span aria-hidden="true">🎫</span>Hall Tickets</a>
+      </div>
+      <ul class="su-hero-stats">
+        <li><b>15</b><span>Updates on this page</span></li>
+        <li><b>10</b><span>Live categories</span></li>
+        <li><b>100%</b><span>Official source links</span></li>
+      </ul>
+    </div>
+  </section>
   <section class="usedwrap" aria-label="Most searched by students">
     <div class="wrap">
       <div class="usedhead"><b>Most searched by students</b><span>One tap to the sections TS &amp; AP students open most</span></div>
       <div class="usedgrid">
-        <a class="usedcard hot" href="#jobs" data-goto-cat="ts-jobs" data-count-cat="ts-jobs"><span class="ui" aria-hidden="true">🏛</span><div><b>TS Government Jobs</b><small>TSPSC · Police · Gurukul</small></div><em class="ucount" data-ucount="ts-jobs">—</em></a>
-        <a class="usedcard hot" href="#jobs" data-goto-cat="ap-jobs" data-count-cat="ap-jobs"><span class="ui" aria-hidden="true">🏛</span><div><b>AP Government Jobs</b><small>APPSC · Police · DSC · Secretariat</small></div><em class="ucount" data-ucount="ap-jobs">—</em></a>
-        <a class="usedcard hot" href="#jobs" data-goto-cat="central-jobs" data-count-cat="central-jobs"><span class="ui" aria-hidden="true">🇮🇳</span><div><b>Central Govt Jobs</b><small>SSC · UPSC · Railways · Banks</small></div><em class="ucount" data-ucount="central-jobs">—</em></a>
-        <a class="usedcard" href="#jobs" data-goto-cat="hallticket" data-count-cat="hallticket"><span class="ui" aria-hidden="true">🎫</span><div><b>Hall Tickets</b><small>Admit card · key instructions</small></div><em class="ucount" data-ucount="hallticket">—</em></a>
-        <a class="usedcard" href="#jobs" data-goto-cat="results" data-count-cat="results"><span class="ui" aria-hidden="true">📄</span><div><b>Results</b><small>Board · competitive exams · keys</small></div><em class="ucount" data-ucount="results">—</em></a>
-        <a class="usedcard" href="#jobs" data-goto-cat="walkin" data-count-cat="walkin"><span class="ui" aria-hidden="true">🚶</span><div><b>Walk-in Interviews</b><small>This week's drives · venues</small></div><em class="ucount" data-ucount="walkin">—</em></a>
-        <a class="usedcard" href="#jobs" data-goto-cat="software" data-count-cat="software"><span class="ui" aria-hidden="true">💻</span><div><b>Software Jobs</b><small>IT · developer · fresher</small></div><em class="ucount" data-ucount="software">—</em></a>
-        <a class="usedcard" href="#jobs" data-goto-cat="success-stories" data-count-cat="success-stories"><span class="ui" aria-hidden="true">🏆</span><div><b>Success Stories</b><small>Verified journeys · lessons</small></div><em class="ucount" data-ucount="success-stories">Soon</em></a>
-        <a class="usedcard" href="#jobs" data-goto-cat="private" data-count-cat="private"><span class="ui" aria-hidden="true">🏢</span><div><b>Private Jobs</b><small>TCS · Infosys · Off-campus</small></div><em class="ucount" data-ucount="private">—</em></a>
-        <a class="usedcard" href="#jobs" data-goto-cat="current" data-count-cat="current"><span class="ui" aria-hidden="true">📰</span><div><b>Current Affairs</b><small>Daily GK · for exams</small></div><em class="ucount" data-ucount="current">—</em></a>
+        <a class="usedcard hot" href="#jobs" data-goto-cat="ts-jobs" data-count-cat="ts-jobs"><span class="ui" aria-hidden="true">🏛</span><div><b>TS Government Jobs</b><small>TSPSC · Police · Gurukul</small></div></a>
+        <a class="usedcard hot" href="#jobs" data-goto-cat="ap-jobs" data-count-cat="ap-jobs"><span class="ui" aria-hidden="true">🏛</span><div><b>AP Government Jobs</b><small>APPSC · Police · DSC · Secretariat</small></div></a>
+        <a class="usedcard hot" href="#jobs" data-goto-cat="central-jobs" data-count-cat="central-jobs"><span class="ui" aria-hidden="true">🇮🇳</span><div><b>Central Govt Jobs</b><small>SSC · UPSC · Railways · Banks</small></div></a>
+        <a class="usedcard" href="#jobs" data-goto-cat="hallticket" data-count-cat="hallticket"><span class="ui" aria-hidden="true">🎫</span><div><b>Hall Tickets</b><small>Admit card · key instructions</small></div></a>
+        <a class="usedcard" href="#jobs" data-goto-cat="results" data-count-cat="results"><span class="ui" aria-hidden="true">📄</span><div><b>Results</b><small>Board · competitive exams · keys</small></div></a>
+        <a class="usedcard" href="#jobs" data-goto-cat="walkin" data-count-cat="walkin"><span class="ui" aria-hidden="true">🚶</span><div><b>Walk-in Interviews</b><small>This week's drives · venues</small></div></a>
+        <a class="usedcard" href="#jobs" data-goto-cat="software" data-count-cat="software"><span class="ui" aria-hidden="true">💻</span><div><b>Software Jobs</b><small>IT · developer · fresher</small></div></a>
+        <a class="usedcard" href="#jobs" data-goto-cat="success-stories" data-count-cat="success-stories"><span class="ui" aria-hidden="true">🏆</span><div><b>Success Stories</b><small>Verified journeys · lessons</small></div></a>
+        <a class="usedcard" href="#jobs" data-goto-cat="private" data-count-cat="private"><span class="ui" aria-hidden="true">🏢</span><div><b>Private Jobs</b><small>TCS · Infosys · Off-campus</small></div></a>
+        <a class="usedcard" href="#jobs" data-goto-cat="current" data-count-cat="current"><span class="ui" aria-hidden="true">📰</span><div><b>Current Affairs</b><small>Daily GK · for exams</small></div></a>
       </div>
     </div>
   </section>
 
   <!-- v60: honest breaking-news surface; it stays empty until a verified feed item arrives -->
-  <section class="breaking" id="breaking" aria-labelledby="preview-breaking-title" data-breaking-state="empty">
-    <div class="wrap">
-      <div class="breakinghead">
-        <h2 id="preview-breaking-title"><span class="brkicon" aria-hidden="true">⚡</span> Breaking News</h2>
-        <span class="brkbadge"><span class="brkdot" aria-hidden="true"></span> Live source check</span>
-      </div>
-      <p class="breakingempty">No new verified updates right now. Official announcements appear here only after the source and date are checked.</p>
-      <p class="breakingsource">Preview state · Empty verified fixture · Live items appear only after the next successful source check</p>
-    </div>
-  </section>
+  
 
   <!-- v46: mobile menu panel (top-right hamburger) -->
   <div class="mbackdrop" id="mbackdrop" aria-hidden="true"></div>
@@ -791,7 +1517,7 @@
   </div>
 
   <div id="top"></div>
-  <section class="hero hero-slim screen-reader-text" aria-label="Page title"><div class="wrap">
+  <section class="hero hero-slim"><div class="wrap screen-reader-text" aria-label="Page title">
     <h1>Latest student updates</h1>
   </div></section>
 
@@ -860,21 +1586,21 @@
         </aside>
 
         <article class="news" data-state="ts" data-cat="ts-jobs upcoming" data-text="tspsc group 2 2026 notification telangana state service eligibility syllabus" data-qual="degree pg" data-last="2026-10-15">
-          <div class="thumb t2"><span>TSPSC Group 2<br>నోటిఫికేషన్ మార్గదర్శి</span></div>
+          <a class="thumb thumb-img" href="posts/upsc-junior-assistant-2026.html" tabindex="-1" aria-hidden="true"><img src="assets/img/card-tspsc.webp" width="800" height="446" loading="eager" fetchpriority="high" decoding="async" alt=""></a>
           <div class="newsbody">
-            <div class="tagrow"><span class="tag">తెలంగాణ ప్రభుత్వ ఉద్యోగాలు</span><span class="statechip ts">TS</span></div>
+            <div class="tagrow"><span class="tag">తెలంగాణ ప్రభుత్వ ఉద్యోగాలు</span><span class="su-fresh">NEW</span><span class="statechip ts">TS</span></div>
             <h3>TSPSC గ్రూప్ 2 2026: నోటిఫికేషన్, అర్హత &amp; సిలబస్</h3>
             <p>ఎలా దరఖాస్తు చేయాలి, ఫీజు ఎంత, వయో మినహాయింపు నియమాలు — పూర్తి వివరాలు.</p>
-            <div class="newsfoot"><span data-days-ago="0">Updated today</span><b>Read guide →</b></div>
+            <div class="newsfoot"><span data-days-ago="0">Updated today</span><a class="su-readmore" href="posts/upsc-junior-assistant-2026.html">Read guide →</a></div>
           </div>
         </article>
-        <article class="news" data-state="ts" data-cat="ts-jobs walkin" data-text="ts dsc telangana school teacher recruitment vacancies walk in interview updates" data-qual="inter degree" data-last="2026-09-28">
+        <article class="news" data-state="ts" data-cat="ts-jobs walkin" data-text="ts dsc telangana school teacher recruitment vacancies walk in interview updates" data-qual="inter degree" data-last="2026-10-06">
           <div class="thumb t5"><span>TS DSC<br>ఉపాధ్యాయ ఖాళీలు</span></div>
           <div class="newsbody">
             <div class="tagrow"><span class="tag">తెలంగాణ ప్రభుత్వ ఉద్యోగాలు</span><span class="statechip ts">TS</span></div>
             <h3>TS DSC: ఉపాధ్యాయ నియామక అప్డేట్‌లు &amp; అధికారిక లింకులు</h3>
             <p>DSC నోటిఫికేషన్‌లు, వాక్-ఇన్ తేదీలు, అర్హత — అధికారిక మూలాలతో మాత్రమే ట్రాక్ చేస్తాము.</p>
-            <div class="newsfoot"><span data-days-ago="2">Updated 2 days ago</span><b>Read guide →</b></div>
+            <div class="newsfoot"><span data-days-ago="2">Updated 2 days ago</span><a class="su-readmore" href="posts/upsc-junior-assistant-2026.html">Read guide →</a></div>
           </div>
         </article>
         <article class="news" data-state="ts ap" data-cat="ts-jobs ap-jobs" data-text="tgrtc apsrtc road transport staff recruitment apply eligibility" data-qual="10th inter iti" data-last="2026-09-30">
@@ -883,25 +1609,34 @@
             <div class="tagrow"><span class="tag">రాష్ట్ర ఉద్యోగాలు</span><span class="statechip multi">TS + AP</span></div>
             <h3>TGRTC &amp; APSRTC నియామకం: దరఖాస్తు తేదీలు &amp; అర్హత</h3>
             <p>రోడ్డు రవాణా సిబ్బంది నోటిఫికేషన్‌లు — డ్రైవర్, కండక్టర్, మెకానికల్ విభాగాలు వివరంగా.</p>
-            <div class="newsfoot"><span data-days-ago="4">Updated 4 days ago</span><b>Read guide →</b></div>
+            <div class="newsfoot"><span data-days-ago="4">Updated 4 days ago</span><a class="su-readmore" href="posts/upsc-junior-assistant-2026.html">Read guide →</a></div>
+          </div>
+        </article>
+        <article class="news" data-state="ts ap" data-cat="success-stories" data-text="success story constable selection preparation timetable telangana andhra student journey" data-qual="degree" data-last="2026-12-31">
+          <div class="thumb t5"><span>సక్సెస్ స్టోరీ<br>కానిస్టేబుల్ ఎంపిక</span></div>
+          <div class="newsbody">
+            <div class="tagrow"><span class="tag">విజయగాథలు</span><span class="statechip multi">TS + AP</span></div>
+            <h3>రోజుకి 6 గంటలు: కానిస్టేబుల్ ఉద్యోగం సాధించిన విద్యార్థి ప్రణాళిక</h3>
+            <p>ఎంత చదివారు, ఏ పుస్తకాలు, ఎలా టైమ్‌టేబుల్ వేసుకున్నారు — verified student journey.</p>
+            <div class="newsfoot"><span data-days-ago="2">Updated 2 days ago</span><a class="su-readmore" href="posts/upsc-junior-assistant-2026.html">Read story →</a></div>
           </div>
         </article>
         <article class="news" data-state="ap" data-cat="ap-jobs" data-text="appsc group 1 group 2 andhra pradesh state service cutoff trend preparation" data-qual="degree pg" data-last="2026-11-05">
-          <div class="thumb t3"><span>APPSC Group 1 &amp; 2<br>ఆంధ్రప్రదేశ్ రాష్ట్ర సేవలు</span></div>
+          <a class="thumb thumb-img" href="posts/upsc-junior-assistant-2026.html" tabindex="-1" aria-hidden="true"><img src="assets/img/card-results.webp" width="800" height="446" loading="lazy" decoding="async" alt=""></a>
           <div class="newsbody">
             <div class="tagrow"><span class="tag">ఆంధ్రప్రదేశ్ ప్రభుత్వ ఉద్యోగాలు</span><span class="statechip ap">AP</span></div>
             <h3>APPSC గ్రూప్ 1 &amp; గ్రూప్ 2: నోటిఫికేషన్‌లు &amp; కటాఫ్ ధోరణులు</h3>
             <p>ఆంధ్రప్రదేశ్ రాష్ట్ర సేవల పరీక్షల గత సంవత్సరాల కటాఫ్ విధానాలు + సన్నద్ధత ప్రణాళిక.</p>
-            <div class="newsfoot"><span data-days-ago="1">Updated yesterday</span><b>Read guide →</b></div>
+            <div class="newsfoot"><span data-days-ago="1">Updated yesterday</span><a class="su-readmore" href="posts/upsc-junior-assistant-2026.html">Read guide →</a></div>
           </div>
         </article>
         <article class="news" data-state="ts central" data-cat="hallticket upcoming" data-qual="all" data-text="hall ticket admit card download tspsc ssc exam day rules id proof reporting time hallticket">
-          <div class="thumb t2"><span>హాల్ టికెట్ 2026<br>డౌన్‌లోడ్ + నియమాలు</span></div>
+          <a class="thumb thumb-img" href="posts/upsc-junior-assistant-2026.html" tabindex="-1" aria-hidden="true"><img src="assets/img/card-walkin.webp" width="800" height="446" loading="lazy" decoding="async" alt=""></a>
           <div class="newsbody">
             <div class="tagrow"><span class="tag">Hall Tickets</span><span class="statechip">TS + IND</span></div>
             <h3>హాల్ టికెట్ డౌన్‌లోడ్: రిజిస్ట్రేషన్ నంబర్, పరీక్షా కేంద్రం &amp; ID ప్రూఫ్ చెక్‌లిస్ట్</h3>
             <p>అధికారిక పోర్టల్ నుండి మాత్రమే డౌన్‌లోడ్ చేయండి. రిపోర్టింగ్ టైమ్, అనుమతించిన వస్తువులు, స్క్రైబ్ నియమాలు ఇక్కడ.</p>
-            <div class="newsfoot"><span data-days-ago="1">Updated yesterday</span><b>Read guide →</b></div>
+            <div class="newsfoot"><span data-days-ago="1">Updated yesterday</span><a class="su-readmore" href="posts/upsc-junior-assistant-2026.html">Read guide →</a></div>
           </div>
         </article>
         <article class="news" data-state="ts ap" data-cat="results" data-qual="all" data-text="inter results board ts ap marks download revaluation dates district">
@@ -910,16 +1645,16 @@
             <div class="tagrow"><span class="tag">Results</span><span class="statechip multi">TS + AP</span></div>
             <h3>TS &amp; AP ఇంటర్/బోర్డు ఫలితాలు: తేదీలు, డౌన్‌లోడ్, రీవాల్యుయేషన్</h3>
             <p id="results">మార్కులు ఎలా డౌన్‌లోడ్ చేయాలి, రీవాల్యుయేషన్ ఫీజులు, ప్రక్రియ — జిల్లాల వారీగా అప్డేట్‌లు.</p>
-            <div class="newsfoot"><span data-days-ago="3">Updated 3 days ago</span><b>Read guide →</b></div>
+            <div class="newsfoot"><span data-days-ago="3">Updated 3 days ago</span><a class="su-readmore" href="posts/upsc-junior-assistant-2026.html">Read guide →</a></div>
           </div>
         </article>
-        <article class="news" data-state="ts ap" data-cat="outsourcing walkin" data-text="outsourcing contract basis recruitment crc guest faculty honorarium ts ap walkin interview drive" data-qual="degree pg" data-last="2026-09-25">
+        <article class="news" data-state="ts ap" data-cat="outsourcing walkin" data-text="outsourcing contract basis recruitment crc guest faculty honorarium ts ap walkin interview drive" data-qual="degree pg" data-last="2026-10-09">
           <div class="thumb t1"><span>Outsourcing<br>కాంట్రాక్ట్ ఉద్యోగాలు</span></div>
           <div class="newsbody">
             <div class="tagrow"><span class="tag">Outsourcing</span><span class="statechip">TS + AP</span></div>
             <h3>అవుట్‌సోర్సింగ్ &amp; కాంట్రాక్ట్ ఉద్యోగాలు: CRC, గెస్ట్ ఫ్యాకల్టీ, హానరేరియం పోస్టులు</h3>
             <p>ఒప్పంద ప్రాతిపదిక నియామకాలు, జీతం నిబంధనలు, పునరుద్ధరణ విధానం, పత్రాల వెరిఫికేషన్ — అధికారిక నోటిఫికేషన్ ఆధారంగా.</p>
-            <div class="newsfoot"><span data-days-ago="0">Updated today</span><b>Read guide →</b></div>
+            <div class="newsfoot"><span data-days-ago="0">Updated today</span><a class="su-readmore" href="posts/upsc-junior-assistant-2026.html">Read guide →</a></div>
           </div>
         </article>
         <article class="news" data-state="central" data-cat="private software" data-qual="all" data-text="fresher resume ats interview preparation career guide cover letter">
@@ -928,7 +1663,7 @@
             <div class="tagrow"><span class="tag">కెరీర్ మార్గదర్శి</span><span class="statechip">IND</span></div>
             <h3>ఫ్రెషర్ రెజ్యూమే: ATS-ఫ్రెండ్లీ ఫార్మాట్ + టాప్ 20 ఇంటర్వ్యూ ప్రశ్నలు</h3>
             <p>రెజ్యూమేలో ఏమి చేర్చాలి, కవర్ లెటర్ చెక్‌లిస్ట్, HR టాప్ ప్రశ్నలు &amp; సమాధానాలు.</p>
-            <div class="newsfoot"><span data-days-ago="5">Updated 5 days ago</span><b>Read guide →</b></div>
+            <div class="newsfoot"><span data-days-ago="5">Updated 5 days ago</span><a class="su-readmore" href="posts/upsc-junior-assistant-2026.html">Read guide →</a></div>
           </div>
         </article>
         <article class="news" data-state="central" data-cat="central-jobs" data-text="ssc cgl 2026 apply online central government jobs guide eligibility fee" data-qual="degree" data-last="2026-10-10">
@@ -937,7 +1672,7 @@
             <div class="tagrow"><span class="tag">Central Jobs</span><span class="statechip">IND</span></div>
             <h3>SSC CGL 2026: అర్హత, ఫీజు &amp; దరఖాస్తు దశలు — పూర్తి మార్గదర్శి</h3>
             <p>పత్రాలు, ఎంపిక ప్రక్రియ, అధికారిక లింక్ సులభంగా వివరించాము. ఫేక్ పోర్టల్ నుండి నంబర్ 1 రక్షణ చర్యలు.</p>
-            <div class="newsfoot"><span data-days-ago="0">Updated today</span><b>Read guide →</b></div>
+            <div class="newsfoot"><span data-days-ago="0">Updated today</span><a class="su-readmore" href="posts/upsc-junior-assistant-2026.html">Read guide →</a></div>
           </div>
         </article>
         <article class="news" data-state="ts ap central" data-cat="abroad" data-text="abroad jobs gulf dubai saudi qatar visa ielts study abroad nri telugu students" data-qual="inter iti diploma degree" data-last="2026-12-01">
@@ -946,7 +1681,7 @@
             <div class="tagrow"><span class="tag">Jobs Abroad</span><span class="statechip">TS + AP + కేంద్ర</span></div>
             <h3>గల్ఫ్ &amp; విదేశీ ఉద్యోగాలు: నకిలీ ఏజెంట్ల మోసం తప్పించుకునే 7 నియమాలు</h3>
             <p>eMigrate నమోదు, ఒప్పంద పత్రం, వీసా రకం, ఫీజు రసీదు — ఇవి లేకుండా ఎవరికీ డబ్బు చెల్లించవద్దు. IELTS/స్టడీ అబ్రాడ్‌కు సర్టిఫికెట్ తనిఖీ కూడా.</p>
-            <div class="newsfoot"><span data-days-ago="0">Updated today</span><b>Read →</b></div>
+            <div class="newsfoot"><span data-days-ago="0">Updated today</span><a class="su-readmore" href="posts/upsc-junior-assistant-2026.html">Read →</a></div>
           </div>
         </article>
         <article class="news" data-state="ts central" data-cat="scholarship" data-text="nsp national scholarship portal yasasvi telangana scholarship documents checklist last date" data-qual="all" data-last="2026-10-31" id="scholarships">
@@ -955,7 +1690,7 @@
             <div class="tagrow"><span class="tag">Scholarships</span><span class="statechip multi">TS + CENTRAL</span></div>
             <h3>NSP + YASASVI స్కాలర్‌షిప్‌లు: పత్రాలు &amp; చివరి తేదీ చెక్‌లిస్ట్</h3>
             <p>కేంద్ర + తెలంగాణ రాష్ట్ర స్కాలర్‌షిప్‌లు — దరఖాస్తు తేదీలు, కేటగిరీ ధృవపత్రాలు, సాధారణ పొరపాట్లు తప్పించుకోవడం.</p>
-            <div class="newsfoot"><span data-days-ago="1">Updated yesterday</span><b>Read guide →</b></div>
+            <div class="newsfoot"><span data-days-ago="1">Updated yesterday</span><a class="su-readmore" href="posts/upsc-junior-assistant-2026.html">Read guide →</a></div>
           </div>
         </article>
         <article class="news" data-state="ts ap central" data-cat="current" data-text="daily current affairs pib government scheme appointments awards tspsc appsc exam current affairs" data-qual="all" data-last="2026-09-30">
@@ -964,7 +1699,7 @@
             <div class="tagrow"><span class="tag">Current Affairs</span><span class="statechip">TS + AP</span></div>
             <h3>రోజువారీ ప్రస్తుతాంశాలు: ప్రభుత్వ ప్రకటనల ఆధారంగా పరీక్షకు ముఖ్యమైన పాయింట్లు</h3>
             <p>PIB మరియు రాష్ట్ర ప్రభుత్వ ప్రకటనల నుండి మాత్రమే — ఊహలు, వదంతులు లేవు. ప్రతి పాయింట్‌కు అధికారిక మూల లింకు ఉంటుంది.</p>
-            <div class="newsfoot"><span data-days-ago="0">Updated today</span><b>Read →</b></div>
+            <div class="newsfoot"><span data-days-ago="0">Updated today</span><a class="su-readmore" href="posts/upsc-junior-assistant-2026.html">Read →</a></div>
           </div>
         </article>
         <article class="news" data-state="ts ap central" data-cat="examtips upcoming" data-qual="all" data-text="tspsc appsc exam preparation plan revision cycle previous papers mock test exam tips strategy">
@@ -973,7 +1708,7 @@
             <div class="tagrow"><span class="tag">Exam Tips</span><span class="statechip">TS + AP</span></div>
             <h3>90 రోజుల సన్నద్ధత ప్లాన్: సిలబస్ విభజన, రివిజన్ సైకిల్స్, మాజీ పేపర్‌ల సాధన</h3>
             <p>ఏ రోజు ఏ సబ్జెక్ట్, ఎన్ని గంటలు, ఎప్పుడు మాక్ టెస్ట్ — అన్నీ ఒక ప్లాన్‌లో — మీ వేగానికి సరిపోయేలా మార్చుకోండి.</p>
-            <div class="newsfoot"><span data-days-ago="2">2 days ago</span><b>View plan →</b></div>
+            <div class="newsfoot"><span data-days-ago="2">2 days ago</span><a class="su-readmore" href="posts/upsc-junior-assistant-2026.html">View plan →</a></div>
           </div>
         </article>
         <article class="news" data-state="ts ap" data-cat="parttime" data-qual="all" data-last="2026-09-29" data-text="part time jobs work from home freelance data entry internship scam check student">
@@ -982,7 +1717,7 @@
             <div class="tagrow"><span class="tag">Part-time</span><span class="statechip">TS + AP</span></div>
             <h3>పార్ట్-టైమ్ &amp; ఇంటర్న్‌షిప్: నిజమైన ఒప్పందం vs మోసం — 6 తనిఖీ ప్రశ్నలు</h3>
             <p>ముందు డబ్బు అడిగితే మోసం. ఒప్పంద పత్రం, సంస్థ నమోదు, చెల్లింపు విధానం — ఇవి చూసి నిర్ణయించుకోండి.</p>
-            <div class="newsfoot"><span data-days-ago="1">Updated yesterday</span><b>Read →</b></div>
+            <div class="newsfoot"><span data-days-ago="1">Updated yesterday</span><a class="su-readmore" href="posts/engineering-internships-2026.html">Read →</a></div>
           </div>
         </article>
       </div>
@@ -1005,6 +1740,253 @@
           <article class="qgroup" data-qgroup="btech" hidden></article>
           <article class="qgroup" data-qgroup="closing" hidden></article>
         </div>
+      </section>
+
+
+
+
+      <!-- v143: Top hot jobs rail — same surface as theme studentup_hot_jobs() -->
+      <!-- v146: deadline radar — filled by JS from the cards' real data-last values -->
+      <section class="su-radar" id="suradar" aria-labelledby="su-radar-title" hidden>
+        <div class="su-radar-head">
+          <h2 id="su-radar-title">⏳ Closing soon</h2>
+          <span class="su-radar-sub">Last dates taken from the official notifications on this page</span>
+        </div>
+        <ul class="su-radar-list" id="suradarlist"></ul>
+      </section>
+      <!-- v155: personalised picks — profile stays in this browser only -->
+      <section class="su-you" id="suyou" aria-labelledby="su-you-title">
+        <h2 id="su-you-title">⭐ Your 5 today</h2>
+        <p class="su-you-sub">Tell us your qualification and state once. The list is built on this device — no login, nothing sent to a server.</p>
+        <div class="su-you-form">
+          <div>
+            <label for="suyouqual">Qualification</label>
+            <select id="suyouqual">
+              <option value="10th">10th class</option>
+              <option value="inter">Intermediate</option>
+              <option value="iti">ITI</option>
+              <option value="diploma">Diploma</option>
+              <option value="degree" selected>Degree</option>
+              <option value="pg">PG</option>
+            </select>
+          </div>
+          <div>
+            <label for="suyoustate">State</label>
+            <select id="suyoustate">
+              <option value="ts" selected>Telangana</option>
+              <option value="ap">Andhra Pradesh</option>
+              <option value="central">Central / All India</option>
+            </select>
+          </div>
+          <div style="flex:0 0 auto"><button type="button" id="suyoubtn">Build my list</button></div>
+        </div>
+        <ul class="su-you-list" id="suyoulist"></ul>
+        <button type="button" class="su-you-reset" id="suyoureset" hidden>Reset my choices</button>
+      </section>
+      <section class="su-hot" aria-label="Top hot jobs today">
+        <div class="su-hot-head">
+          <h2>🔥 Top 6 hot jobs today</h2>
+          <a href="#jobs">All active jobs →</a>
+        </div>
+        <p class="su-rail-hint">👉 Swipe sideways for more</p>
+        <div class="su-hot-rail">
+          <article class="su-hotcard">
+            <a class="su-hot-thumb" href="posts/upsc-junior-assistant-2026.html">
+              <img src="assets/img/card-tspsc.webp" width="800" height="446" loading="eager" fetchpriority="high" decoding="async" alt="">
+              <span class="su-hot-rank">#1</span>
+            </a>
+            <div class="su-hot-body">
+              <h3><a href="posts/upsc-junior-assistant-2026.html">TSPSC Group 2 2026 — 783 posts</a></h3>
+              <div class="su-hot-meta"><span class="su-pill su-pill-amber">📅 Oct 15</span><span class="su-pill su-pill-green">🪪 783 posts</span><span class="su-pill su-pill-hot">⏳ 6d left</span></div>
+              <a class="su-hot-apply" href="posts/upsc-junior-assistant-2026.html">Apply / Details →</a>
+            </div>
+          </article>
+          <article class="su-hotcard">
+            <a class="su-hot-thumb" href="posts/upsc-junior-assistant-2026.html">
+              <img src="assets/img/card-results.webp" width="800" height="446" loading="lazy" decoding="async" alt="">
+              <span class="su-hot-rank">#2</span>
+            </a>
+            <div class="su-hot-body">
+              <h3><a href="posts/upsc-junior-assistant-2026.html">AP DSC 2026 teacher recruitment</a></h3>
+              <div class="su-hot-meta"><span class="su-pill su-pill-amber">📅 Nov 5</span><span class="su-pill su-pill-green">🪪 6,100 posts</span></div>
+              <a class="su-hot-apply" href="posts/upsc-junior-assistant-2026.html">Apply / Details →</a>
+            </div>
+          </article>
+          <article class="su-hotcard">
+            <a class="su-hot-thumb" href="posts/upsc-junior-assistant-2026.html">
+              <img src="assets/img/card-walkin.webp" width="800" height="446" loading="lazy" decoding="async" alt="">
+              <span class="su-hot-rank">#3</span>
+            </a>
+            <div class="su-hot-body">
+              <h3><a href="posts/upsc-junior-assistant-2026.html">TS Police Constable — hall ticket live</a></h3>
+              <div class="su-hot-meta"><span class="su-pill su-pill-amber">📅 Oct 2</span><span class="su-pill su-pill-hot">⏳ 2d left</span></div>
+              <a class="su-hot-apply" href="posts/upsc-junior-assistant-2026.html">Apply / Details →</a>
+            </div>
+          </article>
+          <article class="su-hotcard">
+            <a class="su-hot-thumb" href="posts/upsc-junior-assistant-2026.html">
+              <img src="assets/img/card-scholarship.webp" width="800" height="446" loading="lazy" decoding="async" alt="">
+              <span class="su-hot-rank">#4</span>
+            </a>
+            <div class="su-hot-body">
+              <h3><a href="posts/upsc-junior-assistant-2026.html">NSP scholarship 2026 — last date</a></h3>
+              <div class="su-hot-meta"><span class="su-pill su-pill-amber">📅 Oct 31</span><span class="su-pill su-pill-green">🎓 Scholarship</span></div>
+              <a class="su-hot-apply" href="posts/upsc-junior-assistant-2026.html">Apply / Details →</a>
+            </div>
+          </article>
+          <article class="su-hotcard">
+            <a class="su-hot-thumb" href="posts/upsc-junior-assistant-2026.html">
+              <img src="assets/img/card-tspsc.webp" width="800" height="446" loading="lazy" decoding="async" alt="">
+              <span class="su-hot-rank">#5</span>
+            </a>
+            <div class="su-hot-body">
+              <h3><a href="posts/upsc-junior-assistant-2026.html">SSC CGL 2026 — central govt jobs</a></h3>
+              <div class="su-hot-meta"><span class="su-pill su-pill-amber">📅 Oct 28</span><span class="su-pill su-pill-green">🪪 17,727 posts</span></div>
+              <a class="su-hot-apply" href="posts/upsc-junior-assistant-2026.html">Apply / Details →</a>
+            </div>
+          </article>
+          <article class="su-hotcard">
+            <a class="su-hot-thumb" href="posts/upsc-junior-assistant-2026.html">
+              <img src="assets/img/card-results.webp" width="800" height="446" loading="lazy" decoding="async" alt="">
+              <span class="su-hot-rank">#6</span>
+            </a>
+            <div class="su-hot-body">
+              <h3><a href="posts/upsc-junior-assistant-2026.html">Railway Group D — 32,000 vacancies</a></h3>
+              <div class="su-hot-meta"><span class="su-pill su-pill-amber">📅 Nov 12</span><span class="su-pill su-pill-green">🪪 32,438 posts</span></div>
+              <a class="su-hot-apply" href="posts/upsc-junior-assistant-2026.html">Apply / Details →</a>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- v142: latest jobs table — same surface as theme studentup_jobs_table() -->
+      <!-- v147: homepage tools (client-side only, built from the cards on this page) -->
+      <div class="su-tools">
+        <section class="su-tool" id="sufinder" aria-labelledby="su-finder-title">
+          <h2 id="su-finder-title">🎯 Job finder — am I eligible?</h2>
+          <p class="su-tool-sub">Pick your qualification and state; we match it against every opening listed on this page.</p>
+          <div class="su-tool-row">
+            <div>
+              <label for="suqual">Your qualification</label>
+              <select id="suqual">
+                <option value="10th">10th class</option>
+                <option value="inter">Intermediate</option>
+                <option value="iti">ITI</option>
+                <option value="diploma">Diploma</option>
+                <option value="degree" selected>Degree</option>
+                <option value="pg">PG</option>
+              </select>
+            </div>
+            <div>
+              <label for="sustate">Your state</label>
+              <select id="sustate">
+                <option value="ts" selected>Telangana</option>
+                <option value="ap">Andhra Pradesh</option>
+                <option value="central">Central / All India</option>
+              </select>
+            </div>
+          </div>
+          <button type="button" id="sufindbtn">Show my matches</button>
+          <div class="su-tool-out" id="sufindout" aria-live="polite"></div>
+          <p class="su-tool-note">Matching uses the eligibility written in each notification. Always confirm on the official site before paying any fee.</p>
+        </section>
+
+        <section class="su-tool" id="sucalc" aria-labelledby="su-calc-title">
+          <h2 id="su-calc-title">🧮 In-hand salary calculator</h2>
+          <p class="su-tool-sub">Rough monthly take-home for a government pay scale — you enter the numbers, nothing is assumed.</p>
+          <div class="su-tool-row">
+            <div><label for="subasic">Basic pay (Rs)</label><input id="subasic" type="number" min="0" step="100" value="32000" inputmode="numeric"></div>
+            <div><label for="suda">DA %</label><input id="suda" type="number" min="0" step="1" value="30" inputmode="numeric"></div>
+          </div>
+          <div class="su-tool-row">
+            <div><label for="suhra">HRA %</label><input id="suhra" type="number" min="0" step="1" value="16" inputmode="numeric"></div>
+            <div><label for="sudeduct">Deductions (Rs)</label><input id="sudeduct" type="number" min="0" step="100" value="4000" inputmode="numeric"></div>
+          </div>
+          <button type="button" id="sucalcbtn">Calculate</button>
+          <div class="su-tool-out" id="sucalcout" aria-live="polite"></div>
+          <p class="su-tool-note">Estimate only. PF, CPS, income tax and local allowances differ by department and city.</p>
+        </section>
+
+        <section class="su-tool su-tool-wide" id="sucal" aria-labelledby="su-cal-title">
+          <h2 id="su-cal-title">🗓️ Last-date calendar</h2>
+          <p class="su-tool-sub">Every closing date on this page, in order — so nothing is missed.</p>
+          <ul class="su-cal-list" id="sucallist"></ul>
+        </section>
+      </div>
+      <!-- v150: for-you rail (this browser's recently read posts) -->
+      <section class="su-foryou" id="suforyou" aria-labelledby="su-foryou-title" hidden>
+        <h2 id="su-foryou-title">👀 Because you read</h2>
+        <p class="su-tool-sub">Only this browser knows this list — no account, no tracking sent anywhere.</p>
+        <div class="su-hot-rail" id="suforyourail"></div>
+      </section>
+      <section class="su-jobtable" aria-labelledby="su-jobtable-title">
+        <div class="su-jt-head">
+          <h2 id="su-jobtable-title">Latest updates at a glance</h2>
+          <p>Last dates come from the official notification. Blank means the notice has no date yet — we leave it empty instead of guessing.</p>
+        </div>
+        <div class="su-jt-scroll">
+          <table class="su-jt">
+            <thead><tr><th scope="col">Post / notification</th><th scope="col">Qualification</th><th scope="col">Last date</th><th scope="col">Link</th></tr></thead>
+            <tbody>
+              <tr>
+                <td class="su-jt-title"><a href="posts/upsc-junior-assistant-2026.html">TSPSC గ్రూప్ 2 2026: నోటిఫికేషన్, అర్హత &amp; సిలబస్</a><span class="su-fresh">NEW</span><span class="su-jt-cat">TS Government Jobs</span></td>
+                <td>Degree · PG</td>
+                <td>2026-10-15</td>
+                <td><a class="su-jt-apply" href="posts/upsc-junior-assistant-2026.html">Apply →</a></td>
+              </tr>
+              <tr>
+                <td class="su-jt-title"><a href="posts/upsc-junior-assistant-2026.html">AP DSC 2026: టీచర్ పోస్టులు — దరఖాస్తు</a><span class="su-fresh">NEW</span><span class="su-jt-cat">AP Government Jobs</span></td>
+                <td>Degree · B.Ed</td>
+                <td>2026-11-05</td>
+                <td><a class="su-jt-apply" href="posts/upsc-junior-assistant-2026.html">Apply →</a></td>
+              </tr>
+              <tr>
+                <td class="su-jt-title"><a href="posts/upsc-junior-assistant-2026.html">SSC CGL 2026 — Central Govt Jobs</a><span class="su-jt-cat">Central Govt Jobs</span></td>
+                <td>Degree</td>
+                <td>2026-10-28</td>
+                <td><a class="su-jt-apply" href="posts/upsc-junior-assistant-2026.html">Apply →</a></td>
+              </tr>
+              <tr>
+                <td class="su-jt-title"><a href="posts/upsc-junior-assistant-2026.html">NSP స్కాలర్‌షిప్ 2026 — చివరి తేదీ</a><span class="su-jt-cat">Scholarships</span></td>
+                <td>Inter · Degree</td>
+                <td>2026-10-31</td>
+                <td><a class="su-jt-apply" href="posts/upsc-junior-assistant-2026.html">Apply →</a></td>
+              </tr>
+              <tr>
+                <td class="su-jt-title"><a href="posts/upsc-junior-assistant-2026.html">TS Police Constable — Hall Ticket</a><span class="su-jt-cat">Hall Tickets</span></td>
+                <td>SSC / 10th</td>
+                <td><span class="su-jt-na">Not announced</span></td>
+                <td><a class="su-jt-more" href="posts/upsc-junior-assistant-2026.html">Details →</a></td>
+              </tr>
+              <tr>
+                <td class="su-jt-title"><a href="posts/upsc-junior-assistant-2026.html">Railway Group D — Walk-in drives</a><span class="su-jt-cat">Walk-in Interviews</span></td>
+                <td>SSC / 10th · ITI</td>
+                <td>2026-10-20</td>
+                <td><a class="su-jt-apply" href="posts/upsc-junior-assistant-2026.html">Apply →</a></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- v140: popular searches — long-tail internal links (same as theme studentup_popular_searches()) -->
+      <section class="su-popsearch" aria-labelledby="su-popsearch-title">
+        <h2 id="su-popsearch-title" class="su-popsearch-title">Popular searches</h2>
+        <ul class="su-popsearch-list">
+          <li><a class="su-pop su-pop-cat" href="#jobs"><span aria-hidden="true">🏛</span>TS Government Jobs</a></li>
+          <li><a class="su-pop su-pop-cat" href="#jobs"><span aria-hidden="true">🏛</span>AP Government Jobs</a></li>
+          <li><a class="su-pop su-pop-cat" href="#jobs"><span aria-hidden="true">🇮🇳</span>Central Govt Jobs</a></li>
+          <li><a class="su-pop su-pop-cat" href="#results"><span aria-hidden="true">📄</span>Results</a></li>
+          <li><a class="su-pop su-pop-cat" href="#scholarships"><span aria-hidden="true">🎓</span>Scholarships</a></li>
+          <li><a class="su-pop" href="#jobs">TSPSC notification</a></li>
+          <li><a class="su-pop" href="#jobs">APPSC notification</a></li>
+          <li><a class="su-pop" href="#jobs">SSC CGL apply online</a></li>
+          <li><a class="su-pop" href="#jobs">AP DSC teacher posts</a></li>
+          <li><a class="su-pop" href="#scholarships">NSP scholarship last date</a></li>
+          <li><a class="su-pop" href="#jobs">hall ticket download</a></li>
+          <li><a class="su-pop" href="#jobs">degree jobs</a></li>
+          <li><a class="su-pop" href="#jobs">10th pass jobs</a></li>
+        </ul>
       </section>
 
       <section class="su-ad" aria-label="Sponsored content" data-ad="college-banner-demo" data-slot="mid">
@@ -1256,9 +2238,14 @@
         activeState="all", activeCat="all", activeQual="all";
     var TODAY=new Date(); TODAY.setHours(0,0,0,0);
     function daysLeft(c){
+      /* v150 fix: whole-day maths only. The old version used a 23:59:59 stamp
+         and Math.round, so a date that closed yesterday could round to -0 and
+         still count as live on the following morning. */
       var v=c.getAttribute("data-last"); if(!v) return null;
-      var d=new Date(v+"T23:59:59"); if(isNaN(d)) return null;
-      return Math.round((d-TODAY)/86400000);
+      var m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(v); if(!m) return null;
+      var d=Date.UTC(+m[1],+m[2]-1,+m[3]);
+      var t=Date.UTC(TODAY.getFullYear(),TODAY.getMonth(),TODAY.getDate());
+      return Math.floor((d-t)/86400000);
     }
     function decorate(c){
       var left=daysLeft(c), foot=c.querySelector(".newsfoot"); if(foot===null) return;
@@ -1483,17 +2470,52 @@
     })();
 
     /* ---------- daily quiz ---------- */
-    var QUIZ=[
+    /* v145: 24-question bank → every day a different 6-question paper.
+       Day seed = IST date, so every reader sees the same quiz all day. */
+    var QUIZ_BANK=[
       {q:"తెలంగాణ రాష్ట్ర రాజధాని ఏది?",opts:["వరంగల్","హైదరాబాద్","అమరావతి","కర్నూలు"],a:1,why:"తెలంగాణ రాష్ట్ర రాజధాని హైదరాబాద్."},
       {q:"APPSC పూర్తి రూపం ఏమిటి?",opts:["ఆంధ్రప్రదేశ్ పబ్లిక్ సర్వీస్ కమిషన్","AP పబ్లిక్ సెక్టర్ కంపెనీ","ఆంధ్ర పోలీస్ & సర్వీస్ సెల్","AP ప్యానెల్ & షెడ్యూల్స్ కౌన్సిల్"],a:0,why:"APPSC = ఆంధ్రప్రదేశ్ పబ్లిక్ సర్వీస్ కమిషన్ (psc.ap.gov.in)."},
-      {q:"తెలంగాణలో ఎన్ని జిల్లాలు ఉన్నాయి?",opts:["33","26","45","59"],a:0,why:"తెలంగాణ 33 జిల్లాలు + ఆంధ్రప్రదేశ్ 26 జిల్లాలు = మొత్తం 59."},
-      {q:"“దక్షిణ గంగ” అని ఏ నదిని పిలుస్తారు?",opts:["కృష్ణా","కావేరి","గోదావరి","గంగ"],a:2,why:"గోదావరి నదిని “దక్షిణ గంగ” అంటారు — తెలంగాణ & ఆంధ్రప్రదేశ్ గుండా ప్రవహిస్తుంది."},
-      {q:"NSP (నేషనల్ స్కాలర్‌షిప్ పోర్టల్)లో ఏమి దరఖాస్తు చేయవచ్చు?",opts:["కేంద్ర + రాష్ట్ర స్కాలర్‌షిప్‌లు","బ్యాంక్ రుణాలు మాత్రమే","కళాశాల హాస్టళ్లు","లైబ్రరీ కార్డులు"],a:0,why:"NSPలో కేంద్ర + రాష్ట్ర స్కాలర్‌షిప్‌లు (ప్రీ-మెట్రిక్, పోస్ట్-మెట్రిక్, మెరిట్-కమ్-మీన్స్) దరఖాస్తు చేసుకోవచ్చు."},
-      {q:"2014 విభజనకు ముందు ఆంధ్రప్రదేశ్ రాజధాని ఏది?",opts:["అమరావతి","విజయవాడ","హైదరాబాద్","గుంటూరు"],a:2,why:"2014 వరకు ఉమ్మడి ఆంధ్రప్రదేశ్ రాజధాని హైదరాబాద్; విభజన తర్వాత అమరావతి."}
+      {q:"తెలంగాణలో ఎన్ని జిల్లాలు ఉన్నాయి?",opts:["33","26","45","59"],a:0,why:"తెలంగాణ 33 జిల్లాలు; ఆంధ్రప్రదేశ్ 26 జిల్లాలు."},
+      {q:"“దక్షిణ గంగ” అని ఏ నదిని పిలుస్తారు?",opts:["కృష్ణా","కావేరి","గోదావరి","గంగ"],a:2,why:"గోదావరి నదిని “దక్షిణ గంగ” అంటారు."},
+      {q:"NSP పోర్టల్‌లో ఏమి దరఖాస్తు చేయవచ్చు?",opts:["కేంద్ర + రాష్ట్ర స్కాలర్‌షిప్‌లు","బ్యాంక్ రుణాలు మాత్రమే","కళాశాల హాస్టళ్లు","లైబ్రరీ కార్డులు"],a:0,why:"NSP (scholarships.gov.in) లో కేంద్ర + రాష్ట్ర స్కాలర్‌షిప్‌లు."},
+      {q:"2014 విభజనకు ముందు ఉమ్మడి ఆంధ్రప్రదేశ్ రాజధాని?",opts:["అమరావతి","విజయవాడ","హైదరాబాద్","గుంటూరు"],a:2,why:"2014 వరకు హైదరాబాద్; విభజన తర్వాత అమరావతి."},
+      {q:"TSPSC ఏ ప్రభుత్వ ఉద్యోగాలకు పరీక్షలు నిర్వహిస్తుంది?",opts:["కేంద్ర ప్రభుత్వం","తెలంగాణ రాష్ట్ర ప్రభుత్వం","ప్రైవేట్ కంపెనీలు","బ్యాంకులు"],a:1,why:"TSPSC = తెలంగాణ స్టేట్ పబ్లిక్ సర్వీస్ కమిషన్ (tspsc.gov.in)."},
+      {q:"SSC CGL ఏ స్థాయి పోస్టుల కోసం?",opts:["Group B & C కేంద్ర పోస్టులు","కానిస్టేబుల్ పోస్టులు","ఉపాధ్యాయ పోస్టులు","బ్యాంక్ PO"],a:0,why:"SSC CGL కేంద్ర మంత్రిత్వ శాఖల్లో Group B & C పోస్టులకు."},
+      {q:"తెలంగాణ ఏర్పడిన తేదీ?",opts:["1 నవంబర్ 1956","2 జూన్ 2014","15 ఆగస్టు 1947","26 జనవరి 1950"],a:1,why:"2 జూన్ 2014 — భారతదేశపు 29వ రాష్ట్రం."},
+      {q:"IBPS ఏ రంగ నియామకాలు చేస్తుంది?",opts:["రైల్వే","బ్యాంకింగ్","రక్షణ","విద్య"],a:1,why:"IBPS = ఇన్‌స్టిట్యూట్ ఆఫ్ బ్యాంకింగ్ పర్సనల్ సెలక్షన్."},
+      {q:"RRB పరీక్షలు ఏ శాఖకు సంబంధించినవి?",opts:["రైల్వే","పోలీస్","పోస్టల్","అటవీ"],a:0,why:"RRB = రైల్వే రిక్రూట్‌మెంట్ బోర్డ్."},
+      {q:"UPSC సివిల్ సర్వీసెస్‌లో ఎన్ని దశలు ఉంటాయి?",opts:["ఒకటి","రెండు","మూడు","నాలుగు"],a:2,why:"ప్రిలిమ్స్, మెయిన్స్, ఇంటర్వ్యూ — మూడు దశలు."},
+      {q:"AP DSC ఏ పోస్టుల కోసం నిర్వహిస్తారు?",opts:["ఉపాధ్యాయ పోస్టులు","పోలీస్ పోస్టులు","రెవెన్యూ పోస్టులు","వైద్య పోస్టులు"],a:0,why:"DSC = డిస్ట్రిక్ట్ సెలక్షన్ కమిటీ — ఉపాధ్యాయ నియామకాలు."},
+      {q:"NEET ఏ కోర్సుల ప్రవేశానికి?",opts:["ఇంజనీరింగ్","మెడికల్","లా","మేనేజ్‌మెంట్"],a:1,why:"NEET = మెడికల్ (MBBS/BDS) ప్రవేశ పరీక్ష."},
+      {q:"JEE Main ఏ సంస్థ నిర్వహిస్తుంది?",opts:["NTA","UGC","AICTE","CBSE"],a:0,why:"నేషనల్ టెస్టింగ్ ఏజెన్సీ (NTA) JEE Main నిర్వహిస్తుంది."},
+      {q:"EAMCET ఇప్పుడు ఏ పేరుతో పిలుస్తారు (TS)?",opts:["TS EAPCET","TS ECET","TS PGECET","TS ICET"],a:0,why:"TS EAMCET → TS EAPCET గా పేరు మారింది."},
+      {q:"ప్రభుత్వ ఉద్యోగ దరఖాస్తుకు ఏ పోర్టల్ అధికారికం?",opts:["సంబంధిత శాఖ అధికారిక వెబ్‌సైట్","ఏదైనా జాబ్ యాప్","వాట్సాప్ లింక్","యూట్యూబ్ లింక్"],a:0,why:"ఎప్పుడూ అధికారిక వెబ్‌సైట్‌లోనే దరఖాస్తు చేయాలి — మోసాలు తప్పించుకోవచ్చు."},
+      {q:"హాల్ టికెట్ ఎక్కడ నుండి డౌన్‌లోడ్ చేయాలి?",opts:["అధికారిక పరీక్ష వెబ్‌సైట్","టెలిగ్రామ్ గ్రూప్","ఫేస్‌బుక్ పేజీ","ప్రైవేట్ యాప్"],a:0,why:"హాల్ టికెట్ ఎప్పుడూ అధికారిక వెబ్‌సైట్ నుండే."},
+      {q:"ఆంధ్రప్రదేశ్ ప్రస్తుత రాజధాని?",opts:["హైదరాబాద్","అమరావతి","విశాఖపట్నం","తిరుపతి"],a:1,why:"అమరావతి ఆంధ్రప్రదేశ్ రాజధాని."},
+      {q:"TGRTC/APSRTC ఏ రంగానికి చెందినవి?",opts:["రవాణా","విద్యుత్","నీటిపారుదల","వ్యవసాయం"],a:0,why:"రాష్ట్ర రోడ్డు రవాణా సంస్థలు."},
+      {q:"గ్రూప్-2 పరీక్షలో సాధారణంగా ఎన్ని దశలు?",opts:["ఒకటి","రెండు","నాలుగు","ఐదు"],a:1,why:"ప్రిలిమ్స్ + మెయిన్స్ — రెండు దశలు."},
+      {q:"స్కాలర్‌షిప్ దరఖాస్తుకు ఏది తప్పనిసరి?",opts:["ఆధార్ లింక్ బ్యాంక్ ఖాతా","క్రెడిట్ కార్డ్","పాస్‌పోర్ట్","డ్రైవింగ్ లైసెన్స్"],a:0,why:"DBT కోసం ఆధార్ లింక్ అయిన బ్యాంక్ ఖాతా అవసరం."},
+      {q:"ఏ సంస్థ బ్యాంక్ క్లర్క్ పరీక్ష నిర్వహిస్తుంది?",opts:["IBPS","SSC","UPSC","NTA"],a:0,why:"IBPS Clerk — పబ్లిక్ సెక్టార్ బ్యాంకుల క్లరికల్ నియామకాలు."},
+      {q:"ప్రభుత్వ ఉద్యోగానికి ఏ డాక్యుమెంట్ తప్పనిసరి?",opts:["కుల/ఆదాయ ధ్రువపత్రం (వర్తిస్తే)","సోషల్ మీడియా ఖాతా","క్లబ్ మెంబర్‌షిప్","జిమ్ కార్డ్"],a:0,why:"రిజర్వేషన్/ఫీజు రాయితీకి కుల/ఆదాయ ధ్రువపత్రాలు అవసరం."}
     ];
-    var BEST_KEY="studentup-quiz-best", wrap=document.getElementById("qwrap"), result=document.getElementById("qresult"),
+    /* IST day number — andariki same paper, roju kotha paper */
+    var _qn=new Date(Date.now()+(330+new Date().getTimezoneOffset())*60000);
+    var QUIZ_DAY=Math.floor(Date.UTC(_qn.getFullYear(),_qn.getMonth(),_qn.getDate())/86400000);
+    var QUIZ=(function(){
+      var out=[],used={},n=QUIZ_BANK.length;
+      for(var i=0;i<6;i++){
+        var ix=(QUIZ_DAY*6+i*7)%n, guard=0;
+        while(used[ix]&&guard<n){ix=(ix+1)%n;guard++;}
+        used[ix]=true; out.push(QUIZ_BANK[ix]);
+      }
+      return out;
+    })();
+    var BEST_KEY="studentup-quiz-best-"+QUIZ_DAY, wrap=document.getElementById("qwrap"), result=document.getElementById("qresult"),
         scoreEl=document.getElementById("qscore"), bestEl=document.getElementById("qbest"), msgEl=document.getElementById("qmsg"),
         prog=document.querySelectorAll("#qprog i"), cur=0, score=0, answered=0, done=false;
+    /* test hook: today's paper + its storage key (the runtime suite reads these
+       instead of hard-coding answers that change with every daily rotation) */
+    window.SU_QUIZ=QUIZ; window.SU_QUIZ_KEY=BEST_KEY;
     function bestLoad(){try{return parseInt(localStorage.getItem(BEST_KEY),10)||0;}catch(e){return 0;}}
     function render(){
       done=false;cur=0;score=0;answered=0;
@@ -1580,7 +2602,19 @@
       {t:"APPSC stands for?",o:["Andhra Pradesh Public Service Commission","AP Police Service Cell","Andhra Pradesh Power Supply Company","AP Panel & Schedules Council"],a:0,w:"APPSC = Andhra Pradesh Public Service Commission (psc.ap.gov.in)."},
       {t:"The official portal for central scholarships (NSP) is?",o:["scholarships.gov.in","nsp.gov.in","myscholarship.in","scholarship.ap.gov.in"],a:0,w:"National Scholarship Portal = scholarships.gov.in — always apply on official portals only."},
       {t:"Which of these is a Navratna-level state power utility pair of Telangana?",o:["TSNPDCL & TSSPDCL","APEPDCL & APCPDCL","TGDISCOM & APDISCOM","TSGENCO & APGENCO"],a:0,w:"Telangana discoms: TSNPDCL (north) & TSSPDCL (south)."},
-      {t:"SSC CGL is conducted for recruitment to?",o:["Bank PO posts","Group B & C posts in central ministries","Police constable posts","Teaching posts"],a:1,w:"SSC CGL recruits Group B & C officers for central government ministries (ssc.gov.in)."}
+      {t:"SSC CGL is conducted for recruitment to?",o:["Bank PO posts","Group B & C posts in central ministries","Police constable posts","Teaching posts"],a:1,w:"SSC CGL recruits Group B & C officers for central government ministries (ssc.gov.in)."},
+      {t:"Which board conducts railway job recruitment in India?",o:["RRB","IBPS","NTA","UGC"],a:0,w:"RRB = Railway Recruitment Board — NTPC, Group D and ALP notifications come from it."},
+      {t:"How many stages does the UPSC Civil Services exam have?",o:["One","Two","Three","Four"],a:2,w:"Prelims, Mains and the Interview (Personality Test) — three stages."},
+      {t:"TS EAMCET is now officially called?",o:["TS EAPCET","TS ECET","TS ICET","TS PGECET"],a:0,w:"TS EAMCET was renamed TS EAPCET (Engineering, Agriculture & Pharmacy Common Entrance Test)."},
+      {t:"NEET is the entrance exam for which stream?",o:["Engineering","Medical","Law","Management"],a:1,w:"NEET-UG is the single entrance test for MBBS/BDS/AYUSH admissions in India."},
+      {t:"IBPS conducts recruitment mainly for?",o:["Banking","Railways","Defence","Forests"],a:0,w:"IBPS runs PO, Clerk and SO exams for public sector banks."},
+      {t:"Telangana was formed on which date?",o:["1 Nov 1956","2 June 2014","15 Aug 1947","26 Jan 1950"],a:1,w:"Telangana became India's 29th state on 2 June 2014."},
+      {t:"Where should you always download a hall ticket from?",o:["The official exam website","A Telegram group","A Facebook page","A private app"],a:0,w:"Only the official website — third-party copies are how most exam scams start."},
+      {t:"AP DSC notifications are for which posts?",o:["Teaching posts","Police posts","Revenue posts","Medical posts"],a:0,w:"DSC (District Selection Committee) handles government teacher recruitment."},
+      {t:"What is mandatory for a scholarship amount to reach you?",o:["An Aadhaar-linked bank account","A credit card","A passport","A driving licence"],a:0,w:"Scholarships are paid by DBT, so the bank account must be Aadhaar-seeded."},
+      {t:"Which exam is conducted by NTA?",o:["JEE Main","TSPSC Group 2","RRB NTPC","IBPS Clerk"],a:0,w:"The National Testing Agency conducts JEE Main, NEET-UG, CUET and UGC-NET."},
+      {t:"TSPSC recruits for which government?",o:["Telangana state government","Central government","Private companies","Banks"],a:0,w:"TSPSC (tspsc.gov.in) handles Telangana state government recruitment."},
+      {t:"A Group-2 exam usually has how many written stages?",o:["One","Two","Three","Five"],a:1,w:"Prelims followed by Mains — two written stages before certificate verification."}
     ];
     (function(){
       var box=document.getElementById("pollbox"); if(!box) return;
@@ -1662,17 +2696,380 @@
   show(); restartCycle();
 })();
 
-/* ============ v59: most searched by students — live counts ============ */
-    (function(){
-      var cards=document.querySelectorAll("#grid .news");
-      function catCount(cat){var n=0;Array.prototype.forEach.call(cards,function(c){
-        if((" "+(c.getAttribute("data-cat")||"")+" ").indexOf(" "+cat+" ")>-1)n++;});return n;}
-      Array.prototype.forEach.call(document.querySelectorAll("[data-ucount]"),function(el){
-        var n=catCount(el.getAttribute("data-ucount"));
-        el.textContent=n?(n===1?"1 update":n+" updates"):"Soon";
-      });
-    })();
 
+</script>
+<script>
+  (function(){
+    var hq = document.getElementById("heroq"), q = document.getElementById("q");
+    if (!hq || !q) return;
+    function sync(){ q.value = hq.value; q.dispatchEvent(new Event("input", {bubbles:true}));
+      document.getElementById("jobs").scrollIntoView({behavior:"smooth", block:"start"}); }
+    hq.form.addEventListener("submit", function(e){ e.preventDefault(); sync(); });
+    hq.addEventListener("input", function(){ q.value = hq.value; q.dispatchEvent(new Event("input", {bubbles:true})); });
+  })();
+</script>
+<script>
+  /* v146: rails scroll sideways on phone AND laptop.
+     - touch: native momentum + snap
+     - mouse: click-drag, wheel (vertical wheel becomes horizontal), arrows
+     - keyboard: focus the rail, ArrowLeft / ArrowRight */
+  (function(){
+    Array.prototype.forEach.call(document.querySelectorAll(".su-hot-rail"), function(r){
+      var host=r.parentNode; if(!host) return;
+      host.classList.add("su-rail-host");
+      r.setAttribute("tabindex","0"); r.setAttribute("role","group");
+      r.setAttribute("aria-label","Scrollable cards — use arrow keys or swipe");
+      function step(){ var c=r.firstElementChild; return (c?c.getBoundingClientRect().width:260)+14; }
+      function go(d){ r.scrollBy({left:d*step(),behavior:"smooth"}); }
+      /* click-drag (mouse only; touch keeps native momentum) */
+      var down=false,x0=0,sl=0,moved=false;
+      r.addEventListener("pointerdown",function(e){
+        if(e.pointerType==="touch")return; down=true;moved=false;x0=e.clientX;sl=r.scrollLeft; });
+      window.addEventListener("pointerup",function(){ down=false;r.classList.remove("dragging"); });
+      r.addEventListener("pointermove",function(e){
+        if(!down)return; var d=e.clientX-x0;
+        if(Math.abs(d)>4){moved=true;r.classList.add("dragging");}
+        r.scrollLeft=sl-d; });
+      r.addEventListener("click",function(e){ if(moved){e.preventDefault();e.stopPropagation();moved=false;} },true);
+      /* wheel: trackpad/mouse wheel over the rail scrolls it sideways */
+      r.addEventListener("wheel",function(e){
+        var dx=Math.abs(e.deltaX), dy=Math.abs(e.deltaY);
+        if(dx>dy) return;                        /* real horizontal wheel: let it be */
+        var max=r.scrollWidth-r.clientWidth;
+        if(max<=0) return;
+        var next=r.scrollLeft+e.deltaY;
+        if(next<0||next>max) return;             /* at an edge: give the page its scroll back */
+        e.preventDefault(); r.scrollLeft=next;
+      },{passive:false});
+      r.addEventListener("keydown",function(e){
+        if(e.key!=="ArrowRight"&&e.key!=="ArrowLeft")return; e.preventDefault(); go(e.key==="ArrowRight"?1:-1); });
+      /* arrows */
+      var nav={};
+      ["prev","next"].forEach(function(k){
+        var b=host.querySelector(".su-rail-"+k);
+        if(!b){ b=document.createElement("button"); b.type="button"; b.className="su-rail-nav su-rail-"+k;
+          b.setAttribute("aria-label",k==="prev"?"Scroll left":"Scroll right");
+          b.innerHTML=k==="prev"?"\u2039":"\u203a"; host.appendChild(b); }
+        b.addEventListener("click",function(){ go(k==="prev"?-1:1); }); nav[k]=b;
+      });
+      function edges(){ var max=r.scrollWidth-r.clientWidth-2;
+        nav.prev.disabled=r.scrollLeft<=2; nav.next.disabled=r.scrollLeft>=max; }
+      r.addEventListener("scroll",edges,{passive:true}); window.addEventListener("resize",edges); edges();
+    });
+  })();
+</script>
+<script>
+  /* v146: deadline radar — it does not guess anything, it only re-surfaces the last dates
+     already published on the cards below, sorted by how soon they close. */
+  (function(){
+    var sec=document.getElementById("suradar"), list=document.getElementById("suradarlist");
+    if(!sec||!list) return;
+    var now=new Date(Date.now()+(330+new Date().getTimezoneOffset())*60000);
+    var today=Date.UTC(now.getFullYear(),now.getMonth(),now.getDate());
+    var MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    var rows=[];
+    Array.prototype.forEach.call(document.querySelectorAll(".news[data-last]"),function(a){
+      var d=a.getAttribute("data-last"); if(!/^\d{4}-\d{2}-\d{2}$/.test(d)) return;
+      var p=d.split("-"), t=Date.UTC(+p[0],+p[1]-1,+p[2]);
+      var left=Math.round((t-today)/86400000);
+      if(left<0||left>21) return;
+      var link=a.querySelector("h3 a,h2 a,a[href]"); if(!link) return;
+      rows.push({left:left,title:link.textContent.trim(),href:link.getAttribute("href"),
+                 label:(+p[2])+" "+MON[+p[1]-1]});
+    });
+    if(!rows.length) return;
+    rows.sort(function(a,b){return a.left-b.left;});
+    rows.slice(0,6).forEach(function(r){
+      var tone=r.left<=1?"su-radar-red":(r.left<=3?"su-radar-amber":"su-radar-green");
+      var txt=r.left===0?"Last day today":(r.left===1?"1 day left":r.left+" days left");
+      var li=document.createElement("li"); li.className="su-radar-item";
+      var pill=document.createElement("span"); pill.className="su-radar-pill "+tone; pill.textContent=txt;
+      var a=document.createElement("a"); a.href=r.href; a.textContent=r.title;
+      var tm=document.createElement("time"); tm.className="su-radar-date"; tm.textContent=r.label;
+      li.appendChild(pill); li.appendChild(a); li.appendChild(tm); list.appendChild(li);
+    });
+    sec.hidden=false;
+  })();
+</script>
+<script>
+  /* v147: homepage tools — finder, salary calculator, last-date calendar.
+     All three read the openings already published on this page. */
+  (function(){
+    var MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    function cards(){ return Array.prototype.slice.call(document.querySelectorAll(".news[data-last]")); }
+    function titleOf(a){ var l=a.querySelector("h3 a,h2 a,a[href]"); return l?{t:l.textContent.trim(),h:l.getAttribute("href")}:null; }
+
+    /* --- job finder --- */
+    var btn=document.getElementById("sufindbtn"), out=document.getElementById("sufindout");
+    if(btn&&out){
+      btn.addEventListener("click",function(){
+        var q=document.getElementById("suqual").value, st=document.getElementById("sustate").value;
+        var hits=cards().filter(function(a){
+          var qs=(a.getAttribute("data-qual")||"").split(/\s+/);
+          var ss=(a.getAttribute("data-state")||"").split(/\s+/);
+          return (qs.indexOf(q)>-1||qs.indexOf("all")>-1) && (ss.indexOf(st)>-1||ss.indexOf("central")>-1);
+        });
+        out.innerHTML="";
+        var head=document.createElement("p");
+        head.innerHTML='<span class="su-tool-badge">'+hits.length+' match'+(hits.length===1?'':'es')+'</span>';
+        out.appendChild(head);
+        if(!hits.length){
+          var e=document.createElement("p"); e.style.marginTop="8px";
+          e.textContent="Nothing on this page fits that combination today — check the full jobs list below.";
+          out.appendChild(e); return;
+        }
+        var ul=document.createElement("ul");
+        hits.slice(0,6).forEach(function(a){
+          var o=titleOf(a); if(!o)return;
+          var li=document.createElement("li"), lnk=document.createElement("a");
+          lnk.href=o.h; lnk.textContent=o.t; li.appendChild(lnk); ul.appendChild(li);
+        });
+        out.appendChild(ul);
+      });
+    }
+
+    /* --- salary calculator --- */
+    var cbtn=document.getElementById("sucalcbtn"), cout=document.getElementById("sucalcout");
+    if(cbtn&&cout){
+      function num(id){ var v=parseFloat((document.getElementById(id)||{}).value); return isFinite(v)&&v>0?v:0; }
+      function fmt(n){ return Math.round(n).toLocaleString("en-IN"); }
+      cbtn.addEventListener("click",function(){
+        var b=num("subasic"), da=b*num("suda")/100, hra=b*num("suhra")/100, ded=num("sudeduct");
+        var gross=b+da+hra, net=Math.max(0, gross-ded);
+        cout.innerHTML='<div class="su-salary-big">Rs '+fmt(net)+' / month</div>'+
+          '<ul><li>Gross: Rs '+fmt(gross)+'</li><li>DA: Rs '+fmt(da)+' · HRA: Rs '+fmt(hra)+'</li>'+
+          '<li>Deductions entered: Rs '+fmt(ded)+'</li></ul>';
+      });
+    }
+
+    /* --- last-date calendar --- */
+    var list=document.getElementById("sucallist");
+    if(list){
+      var now=new Date(Date.now()+(330+new Date().getTimezoneOffset())*60000);
+      var today=Date.UTC(now.getFullYear(),now.getMonth(),now.getDate());
+      var rows=[];
+      cards().forEach(function(a){
+        var d=a.getAttribute("data-last"); if(!/^\d{4}-\d{2}-\d{2}$/.test(d)) return;
+        var p=d.split("-"), t=Date.UTC(+p[0],+p[1]-1,+p[2]);
+        if(t<today) return;
+        var o=titleOf(a); if(!o) return;
+        rows.push({t:t,day:+p[2],mon:MON[+p[1]-1],title:o.t,href:o.h});
+      });
+      rows.sort(function(a,b){return a.t-b.t;});
+      if(!rows.length){
+        var li=document.createElement("li"); li.className="su-cal-item";
+        li.textContent="No upcoming last dates on this page right now."; list.appendChild(li);
+      } else {
+        rows.slice(0,8).forEach(function(r){
+          var li=document.createElement("li"); li.className="su-cal-item";
+          var d=document.createElement("span"); d.className="su-cal-day"; d.textContent=r.day+" "+r.mon;
+          var a=document.createElement("a"); a.href=r.href; a.textContent=r.title;
+          li.appendChild(d); li.appendChild(a); list.appendChild(li);
+        });
+      }
+    }
+  })();
+</script>
+<div class="su-savebar">
+  <button type="button" class="su-savebtn" id="susavebtn" aria-expanded="false" aria-controls="susavepanel" aria-label="Saved posts">🔖<span class="su-savecount" id="susavecount" hidden>0</span></button>
+</div>
+<div class="su-savepanel" id="susavepanel" role="dialog" aria-label="Saved posts" hidden>
+  <h3>🔖 Saved for later</h3>
+  <div id="susavebody"><p class="su-save-empty">Nothing saved yet. Tap 🔖 Save on any card.</p></div>
+</div>
+<script>
+  /* v150: save-for-later + "because you read" rail.
+     Everything lives in this browser's localStorage: no account, no server,
+     nothing sent anywhere. Clearing site data clears the lists. */
+  (function(){
+    var SKEY="studentup-saved-v1", VKEY="studentup-viewed-v1", MAX=20;
+    function read(k){ try{ return JSON.parse(localStorage.getItem(k)||"[]"); }catch(e){ return []; } }
+    function write(k,v){ try{ localStorage.setItem(k, JSON.stringify(v.slice(0,MAX))); }catch(e){} }
+
+    /* --- save buttons on every card --- */
+    var saved=read(SKEY);
+    function isSaved(u){ return saved.some(function(x){ return x.u===u; }); }
+    function paint(){
+      var n=saved.length, c=document.getElementById("susavecount");
+      if(c){ c.hidden=!n; c.textContent=n; }
+      var body=document.getElementById("susavebody");
+      if(!body) return;
+      if(!n){ body.innerHTML='<p class="su-save-empty">Nothing saved yet. Tap 🔖 Save on any card.</p>'; return; }
+      body.innerHTML=""; var ul=document.createElement("ul");
+      saved.forEach(function(item){
+        var li=document.createElement("li");
+        var a=document.createElement("a"); a.href=item.u; a.textContent=item.t;
+        var x=document.createElement("button"); x.type="button"; x.setAttribute("aria-label","Remove"); x.textContent="✕";
+        x.addEventListener("click",function(){ saved=saved.filter(function(s){return s.u!==item.u;}); write(SKEY,saved); sync(); });
+        li.appendChild(a); li.appendChild(x); ul.appendChild(li);
+      });
+      body.appendChild(ul);
+    }
+    function sync(){
+      paint();
+      Array.prototype.forEach.call(document.querySelectorAll(".su-save"),function(b){
+        var on=isSaved(b.getAttribute("data-url"));
+        b.setAttribute("aria-pressed", on?"true":"false");
+        b.querySelector(".su-save-txt").textContent = on ? "Saved" : "Save";
+      });
+    }
+    Array.prototype.forEach.call(document.querySelectorAll(".news"),function(card){
+      var link=card.querySelector("h3 a,h2 a,a[href]"); if(!link) return;
+      var meta=card.querySelector(".meta,.su-hot-meta,.pillrow") || card;
+      var b=document.createElement("button");
+      b.type="button"; b.className="su-save"; b.setAttribute("data-url",link.getAttribute("href"));
+      b.setAttribute("data-title",link.textContent.trim()); b.setAttribute("aria-pressed","false");
+      b.innerHTML='<span aria-hidden="true">🔖</span><span class="su-save-txt">Save</span>';
+      b.addEventListener("click",function(){
+        var u=b.getAttribute("data-url"), t=b.getAttribute("data-title");
+        if(isSaved(u)){ saved=saved.filter(function(s){return s.u!==u;}); }
+        else { saved.unshift({u:u,t:t}); }
+        write(SKEY,saved); sync();
+      });
+      meta.appendChild(b);
+    });
+    var sb=document.getElementById("susavebtn"), sp=document.getElementById("susavepanel");
+    if(sb&&sp){
+      sb.addEventListener("click",function(){
+        var open=sp.hidden; sp.hidden=!open; sb.setAttribute("aria-expanded",String(open));
+      });
+    }
+    sync();
+
+    /* --- because you read: remember opened posts, show them back --- */
+    var viewed=read(VKEY);
+    Array.prototype.forEach.call(document.querySelectorAll('a[href^="posts/"]'),function(a){
+      a.addEventListener("click",function(){
+        var u=a.getAttribute("href"), t=(a.textContent||"").trim();
+        if(!t) return;
+        viewed=viewed.filter(function(v){return v.u!==u;});
+        viewed.unshift({u:u,t:t}); write(VKEY,viewed);
+      });
+    });
+    var sec=document.getElementById("suforyou"), rail=document.getElementById("suforyourail");
+    if(sec&&rail&&viewed.length){
+      viewed.slice(0,8).forEach(function(v){
+        var card=document.createElement("article"); card.className="su-hotcard";
+        var body=document.createElement("div"); body.className="su-hot-body";
+        var h=document.createElement("h3"); var a=document.createElement("a");
+        a.href=v.u; a.textContent=v.t; h.appendChild(a);
+        var go=document.createElement("a"); go.className="su-hot-apply"; go.href=v.u; go.textContent="Read again →";
+        body.appendChild(h); body.appendChild(go); card.appendChild(body); rail.appendChild(card);
+      });
+      sec.hidden=false;
+    }
+  })();
+</script>
+<script>
+  /* v155: "your 5 today".
+     Ranks the openings already on this page against a profile the reader sets
+     once. The profile lives in this browser's localStorage: no account, no
+     server call, and "Reset my choices" deletes it. Scoring is explained on
+     every row so the reader can see why something is in the list. */
+  (function(){
+    var KEY="studentup-profile-v1";
+    var sec=document.getElementById("suyou"); if(!sec) return;
+    var qSel=document.getElementById("suyouqual"), sSel=document.getElementById("suyoustate"),
+        btn=document.getElementById("suyoubtn"), list=document.getElementById("suyoulist"),
+        reset=document.getElementById("suyoureset");
+
+    function load(){ try{ return JSON.parse(localStorage.getItem(KEY)||"null"); }catch(e){ return null; } }
+    function save(p){ try{ localStorage.setItem(KEY, JSON.stringify(p)); }catch(e){} }
+
+    function dayNum(){
+      var n=new Date(Date.now()+(330+new Date().getTimezoneOffset())*60000);
+      return Math.floor(Date.UTC(n.getFullYear(),n.getMonth(),n.getDate())/86400000);
+    }
+    function daysLeft(d){
+      if(!/^\d{4}-\d{2}-\d{2}$/.test(d||"")) return null;
+      var p=d.split("-");
+      return Math.floor(Date.UTC(+p[0],+p[1]-1,+p[2])/86400000)-dayNum();
+    }
+
+    function build(profile){
+      var rows=[];
+      Array.prototype.forEach.call(document.querySelectorAll("#grid .news"),function(c){
+        var link=c.querySelector("h3 a,h2 a,a[href]"); if(!link) return;
+        var left=daysLeft(c.getAttribute("data-last"));
+        if(left!==null&&left<0) return;                 /* closed vi chupinchamu */
+        var quals=(c.getAttribute("data-qual")||"").split(/\s+/);
+        var states=(c.getAttribute("data-state")||"").split(/\s+/);
+        var score=0, why=[];
+        if(quals.indexOf(profile.q)>-1){ score+=3; why.push("your qualification"); }
+        else if(quals.indexOf("all")>-1){ score+=1; }
+        if(states.indexOf(profile.s)>-1){ score+=2; why.push("your state"); }
+        else if(states.indexOf("central")>-1){ score+=1; why.push("all-India"); }
+        if(left!==null&&left<=7){ score+=2; why.push(left===0?"last day today":left+"d left"); }
+        if(score<=1) return;
+        rows.push({score:score,t:link.textContent.trim(),h:link.getAttribute("href"),
+                   why:why.slice(0,2).join(" · "),left:left===null?999:left});
+      });
+      rows.sort(function(a,b){ return (b.score-a.score)||(a.left-b.left); });
+      list.innerHTML="";
+      if(!rows.length){
+        var li=document.createElement("li");
+        li.textContent="Nothing matches that combination today — try Central / All India.";
+        list.appendChild(li); return;
+      }
+      rows.slice(0,5).forEach(function(r,i){
+        var li=document.createElement("li");
+        var rank=document.createElement("span"); rank.className="su-you-rank"; rank.textContent=i+1;
+        var a=document.createElement("a"); a.href=r.h; a.textContent=r.t;
+        var why=document.createElement("span"); why.className="su-you-why"; why.textContent=r.why;
+        li.appendChild(rank); li.appendChild(a); li.appendChild(why); list.appendChild(li);
+      });
+    }
+
+    btn.addEventListener("click",function(){
+      var p={q:qSel.value,s:sSel.value}; save(p); build(p); reset.hidden=false;
+    });
+    reset.addEventListener("click",function(){
+      try{ localStorage.removeItem(KEY); }catch(e){}
+      list.innerHTML=""; reset.hidden=true;
+    });
+
+    var saved=load();
+    if(saved&&saved.q&&saved.s){
+      qSel.value=saved.q; sSel.value=saved.s; build(saved); reset.hidden=false;
+    }
+  })();
+</script>
+<script>
+  /* v156: add the last date to the reader's own calendar.
+     The .ics file is built in the browser from the date already on the card —
+     nothing is uploaded, and cards without a real last date get no button. */
+  (function(){
+    function ics(dateStr, title, url){
+      var d=dateStr.replace(/-/g,"");
+      var stamp=new Date().toISOString().replace(/[-:]/g,"").split(".")[0]+"Z";
+      function esc(s){ return String(s).replace(/([,;\\])/g,"\\$1").replace(/\n/g,"\\n"); }
+      return ["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//StudentUp//EN","CALSCALE:GREGORIAN","BEGIN:VEVENT",
+        "UID:"+d+"-"+Math.random().toString(36).slice(2)+"@studentup","DTSTAMP:"+stamp,
+        "DTSTART;VALUE=DATE:"+d,"DTEND;VALUE=DATE:"+d,
+        "SUMMARY:"+esc("Last date: "+title),"DESCRIPTION:"+esc(url),
+        "BEGIN:VALARM","TRIGGER:-P1D","ACTION:DISPLAY",
+        "DESCRIPTION:"+esc("Tomorrow is the last date: "+title),"END:VALARM",
+        "END:VEVENT","END:VCALENDAR"].join("\r\n");
+    }
+    Array.prototype.forEach.call(document.querySelectorAll(".news[data-last]"),function(card){
+      var d=card.getAttribute("data-last");
+      if(!/^\d{4}-\d{2}-\d{2}$/.test(d||"")) return;
+      var link=card.querySelector("h3 a,h2 a,a[href]"); if(!link) return;
+      var host=card.querySelector(".meta,.pillrow")||card;
+      var b=document.createElement("button");
+      b.type="button"; b.className="su-ics";
+      b.innerHTML='<span aria-hidden="true">🗓️</span><span>Remind me</span>';
+      b.setAttribute("aria-label","Add last date to my calendar");
+      b.addEventListener("click",function(){
+        var blob=new Blob([ics(d, link.textContent.trim(), link.href)],{type:"text/calendar;charset=utf-8"});
+        var a=document.createElement("a");
+        a.href=URL.createObjectURL(blob); a.download="last-date.ics";
+        document.body.appendChild(a); a.click();
+        setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); },500);
+      });
+      host.appendChild(b);
+    });
+  })();
 </script>
 </body>
 </html>

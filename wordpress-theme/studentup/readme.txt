@@ -2,9 +2,9 @@
 Contributors: studentup
 Requires at least: 6.0
 Tested up to: 6.7
-Stable tag: 1.9.9
+Stable tag: 1.9.20
 Requires PHP: 7.4
-Version: 1.9.9
+Version: 1.9.17
 License: GNU General Public License v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Tags: news, education, blog, custom-logo, custom-menu, featured-images, translation-ready, right-sidebar, block-styles, wide-blocks
@@ -47,6 +47,62 @@ The theme ships a REST bridge (`inc/seo-bridge.php`). Use an account with `manag
 user tho App Password ivvandi (Administrator role).
 
 == Changelog ==
+
+= 1.9.20 =
+* v134: Second in-article ad slot for long posts, anchor ad no longer stacks with the apply bar, preview update-count badges removed.
+
+= 1.9.19 =
+* v133: One-click first-run setup (categories, policy pages, header/mobile/footer menus, permalinks) + full job meta registered for REST publishing.
+
+= 1.9.18 =
+* v131: Sticky apply bar on job posts (deadline countdown + Apply online CTA) and JobPosting JSON-LD from job meta.
+
+= 1.9.17 (2026-09-27, v130 render budget) =
+* Below-the-fold homepage sections now use content-visibility with reserved intrinsic sizes, so long pages paint faster without any layout shift; the hero and first rail always render immediately for a clean LCP.
+* Printing and search-engine crawling are unaffected — the markup is always present in the DOM.
+
+= 1.9.16 (2026-09-27, v129 auto social cards + quick stories) =
+* Automatic 1200x630 branded share card for posts without a featured image, rendered with GD, cached in uploads and served from a /studentup-card/<id>/ endpoint; when GD or a system font is unavailable the feature turns itself off instead of shipping a broken image.
+* A real featured image always wins over the generated card, and og:image output is skipped when Rank Math or Yoast already provides it.
+* Quick story cards: CSS-only full-screen swipe cards with progress bars, deadline, salary and vacancy chips plus prev/next controls, available on the homepage and via a [studentup_stories] shortcode.
+
+= 1.9.15 (2026-09-27, v128 go-live score) =
+* New Appearance → StudentUp Score page and dashboard widget: weighted, live checks for HTTPS, indexing, permalinks, content depth, the six policy pages, logo/site icon, menus, featured images, job data, social links, Search Console, GA4 and the AdSense publisher ID.
+* Every check reads real site data and prints the exact fix step; nothing is hardcoded as passing.
+
+= 1.9.14 (2026-09-27, v127 instant navigation + command palette) =
+* Browser-native Speculation Rules prerender/prefetch with conservative exclusions (admin, login, nonce, external and nofollow links are never speculated).
+* Cross-document View Transitions for app-like page changes; disabled automatically for reduced-motion readers.
+* Command palette on Ctrl/Cmd + K: live REST search plus jumps to jobs, scholarships, results, quiz, AI match, salary calculator and calendar, fully keyboard navigable.
+* "Picked for you" homepage rail built from the reader's own browsing history in localStorage, with a one-click clear button and no server-side profiling.
+
+= 1.9.13 (2026-09-27, v126 editor job-data box + compare page) =
+* New "StudentUp job data" editor box: last date, salary, vacancies, age range, qualification tags, apply URL and verified source date — strict validation means an invalid date or URL is dropped instead of stored.
+* Posts list shows a job-data completeness column so missing card, eligibility and calendar data is obvious at a glance.
+* Compare page template plus a `[studentup_compare]` shortcode: side-by-side salary, age, qualification, vacancies and last date from published posts only, with "—" wherever a detail is not yet confirmed.
+* First hot-job card image now loads eagerly with high fetch priority for a faster LCP; the rest stay lazy.
+
+= 1.9.12 (2026-09-27, v125 SEO + CTR finish) =
+* Homepage ItemList JSON-LD built only from published posts — clearer Discover/rich-result signals with no invented ratings or salary markup.
+* Urgency chips ("3d left" / "Last day") on hot job cards when a confirmed last date exists; undated posts stay silent.
+* Extra high-viewability in-feed ad position after the AI job match block, still inside the existing per-page ad density cap.
+
+= 1.9.11 (2026-09-27, v124 smart layer) =
+* AI Job Match + Eligibility Checker: qualification, state and age filters return matching updates instantly in the browser, with an honest "age limit not published" state when the notification data is missing.
+* In-hand salary calculator with an open formula (basic + DA + HRA + TA − deductions) and a clearly labelled estimate disclaimer.
+* Job calendar listing the next confirmed last dates with days-left chips; undated posts are never given a guessed deadline.
+* Trending Today strip under the hero and a state-first homepage switch (Telangana / Andhra Pradesh / All India) stored only in the reader's browser.
+* Hot job cards now read the real `studentup_last_date` and `studentup_salary` meta instead of placeholder keys.
+
+= 1.9.10 (2026-09-27, v123 premium homepage + real daily quiz) =
+* Premium hero: brand line, live search bar and 🔥 Latest Govt Jobs · 🎓 Scholarships · 📢 Results · 🎫 Hall Tickets quick actions.
+* TOP 10 hot jobs today — swipeable Netflix-style cards with last date, salary and apply link.
+* Real Daily Quiz block: five date-rotated questions, instant scoring, explanation for each answer and a colourful rotating ring.
+* Scholarships spotlight strip plus Scholarships and Daily Quiz in the header, mobile menu and bottom navigation.
+* Instant alerts card — reader-approved browser notifications for new posts, with WhatsApp and Telegram fallbacks.
+* Social rail is now pinned to the right edge, vertically centred, on phones as well as laptops; it no longer auto-hides.
+* Category tiles drop the "N updates" badge so the title and hint text always stay readable.
+* New homepage options group (hero, hot jobs, daily quiz, scholarships, alerts, bottom navigation) — every block can be switched off.
 
 = 1.9.9 (2026-09-25, v120 student utility layer + v119 performance hardening) =
 * Compare up to three posts locally without an account or reader profile.

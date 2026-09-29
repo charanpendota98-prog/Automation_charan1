@@ -101,13 +101,13 @@ def test_poll_bank_valid_and_english():
     m = re.search(r"var POLL_BANK=\[(.*?)\];", html, re.S)
     assert m, "POLL_BANK ledu"
     items = re.findall(r"\{t:\"(.*?)\",o:\[(.*?)\],a:(\d+),w:\"(.*?)\"\}", m.group(1))
-    assert len(items) == 7, len(items)
+    assert len(items) == 19, len(items)
     for t, opts, a, w in items:
         assert not TE.search(t + opts + w), "poll English-only (v73 scope)"
         assert len(re.findall(r"\"(.*?)\"", opts)) == 4
         assert 0 <= int(a) < 4
     assert "fetch(" not in html.split("var POLL_BANK=")[1].split("</script>")[0], "poll lo fetch undakoodadu"
-    print("  poll: 7 valid English questions · zero fetch ✔")
+    print("  poll: 19 valid English questions · zero fetch ✔")
 
 
 def test_theme_has_no_exam():
@@ -124,8 +124,8 @@ def test_theme_has_no_exam():
         assert s in pwa, f"shortcut ledu: {s}"
     assert "studentup_exam=1" not in pwa
     css = re.search(r"^Version:\s*(\S+)", (theme / "style.css").read_text(encoding="utf-8"), re.M).group(1)
-    assert css == "1.9.8", css
-    print("  theme: exam options/buttons/dead-link poyayi · shortcuts aligned · 1.9.4 ✔")
+    assert css == "1.9.20", css
+    print("  theme: exam options/buttons/dead-link poyayi · shortcuts aligned · 1.9.20 ✔")
 
 
 # ------------------------------------------------------------- approval cron
@@ -242,7 +242,7 @@ def main() -> None:
         ("cli flags clean", test_cli_help_has_no_exam_flags),
         ("preview portal-free", test_preview_has_no_portal),
         ("poll bank valid", test_poll_bank_valid_and_english),
-        ("theme exam-free 1.9.4", test_theme_has_no_exam),
+        ("theme exam-free 1.9.20", test_theme_has_no_exam),
         ("approval no-token path", test_approval_poll_no_token_path),
         ("approval processes updates", test_approval_poll_processes_updates_offline),
         ("deploy-check green", test_deploy_check_green_without_portal),

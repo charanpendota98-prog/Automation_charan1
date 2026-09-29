@@ -2,25 +2,42 @@
 # This file is distributed under the GNU GPL v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: StudentUp 1.9.9\n"
+"Project-Id-Version: StudentUp 1.9.20\n"
 "Report-Msgid-Bugs-To: https://studentup.in/\n"
-"POT-Creation-Date: 2026-09-26 20:14+0000\n"
+"POT-Creation-Date: 2026-09-29 11:23+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language-Team: Telugu (te_IN)\n"
 "X-Generator: tools/build_pot.py\n"
 
+#: inc/apply.php:103
+#: inc/engage.php:156
+msgid "%d days left"
+msgstr ""
+
 #: author.php:43
 msgid "%s articles"
+msgstr ""
+
+#: inc/engage.php:153
+msgid "1 day left"
 msgstr ""
 
 #: inc/cta.php:76
 msgid "100% free · no calls · 1–3 updates a day"
 msgstr ""
 
+#: inc/slotlab.php:87
+msgid "Ad slot A/B test is running"
+msgstr ""
+
 #: inc/student-tools.php:55
 msgid "Add deadline reminder"
+msgstr ""
+
+#: inc/personal.php:147
+msgid "Add last date to my calendar"
 msgstr ""
 
 #: inc/student-tools.php:55
@@ -43,8 +60,20 @@ msgstr ""
 msgid "Application PDF"
 msgstr ""
 
+#: inc/apply.php:108
+msgid "Apply actions"
+msgstr ""
+
+#: inc/apply.php:127
+msgid "Apply online"
+msgstr ""
+
 #: author.php:67
 msgid "Author website / profile"
+msgstr ""
+
+#: inc/personal.php:53
+msgid "Build my list"
 msgstr ""
 
 #: inc/cta.php:51
@@ -59,6 +88,7 @@ msgstr ""
 msgid "Clear all"
 msgstr ""
 
+#: inc/engage.php:216
 #: inc/saved.php:210
 #: inc/upnext.php:140
 msgid "Close"
@@ -66,6 +96,14 @@ msgstr ""
 
 #: inc/student-tools.php:70
 msgid "Close compare panel"
+msgstr ""
+
+#: inc/apply.php:95
+msgid "Closes today"
+msgstr ""
+
+#: inc/engage.php:134
+msgid "Closing this week"
 msgstr ""
 
 #: comments.php:67
@@ -97,6 +135,14 @@ msgstr ""
 msgid "Copy link"
 msgstr ""
 
+#: inc/remind.php:52
+msgid "Dismiss"
+msgstr ""
+
+#: inc/personal.php:149
+msgid "Downloads a calendar file with an alarm one day before."
+msgstr ""
+
 #: inc/cta.php:54
 msgid "Email"
 msgstr ""
@@ -113,6 +159,10 @@ msgstr ""
 msgid "Free job alerts on your phone"
 msgstr ""
 
+#: inc/apply.php:129
+msgid "Full details"
+msgstr ""
+
 #: search.php:29
 msgid "Go to home"
 msgstr ""
@@ -121,7 +171,7 @@ msgstr ""
 msgid "Hide social icons"
 msgstr ""
 
-#: inc/template.php:258
+#: inc/template.php:305
 msgid "Home"
 msgstr ""
 
@@ -149,11 +199,31 @@ msgstr ""
 msgid "Join WhatsApp"
 msgstr ""
 
+#: inc/keyfacts.php:64
+msgid "Key details"
+msgstr ""
+
+#: inc/keyfacts.php:28
+msgid "Last date"
+msgstr ""
+
+#: inc/apply.php:92
+msgid "Last date over"
+msgstr ""
+
+#: inc/engage.php:135
+msgid "Last dates from the official notifications"
+msgstr ""
+
+#: inc/engage.php:151
+msgid "Last day today"
+msgstr ""
+
 #: inc/breaking.php:286
 msgid "Latest Jobs"
 msgstr ""
 
-#: front-page.php:49
+#: front-page.php:67
 msgid "Latest student updates"
 msgstr ""
 
@@ -163,6 +233,10 @@ msgstr ""
 
 #: inc/share.php:123
 msgid "More"
+msgstr ""
+
+#: inc/template.php:108
+msgid "NEW"
 msgstr ""
 
 #: comments.php:46
@@ -198,6 +272,10 @@ msgstr ""
 msgid "Older comments"
 msgstr ""
 
+#: inc/apply.php:99
+msgid "Only %d days left"
+msgstr ""
+
 #: inc/student-tools.php:74
 msgid "Open comparison"
 msgstr ""
@@ -218,6 +296,10 @@ msgstr ""
 msgid "Post saved — open 🔖 any time to read it later."
 msgstr ""
 
+#: inc/apply.php:117
+msgid "posts"
+msgstr ""
+
 #: inc/cta.php:40
 msgid "Preparation Group"
 msgstr ""
@@ -234,7 +316,12 @@ msgstr ""
 msgid "Published articles: %d"
 msgstr ""
 
-#: inc/template.php:87
+#: inc/keyfacts.php:26
+#: inc/personal.php:34
+msgid "Qualification"
+msgstr ""
+
+#: inc/template.php:123
 msgid "Read more"
 msgstr ""
 
@@ -252,6 +339,10 @@ msgstr ""
 
 #: inc/saved.php:301
 msgid "Recently read"
+msgstr ""
+
+#: inc/remind.php:56
+msgid "Remind me in the browser too"
 msgstr ""
 
 #: inc/student-tools.php:111
@@ -274,9 +365,21 @@ msgstr ""
 msgid "Reply to %s"
 msgstr ""
 
+#: inc/personal.php:57
+msgid "Reset my choices"
+msgstr ""
+
+#: inc/keyfacts.php:27
+msgid "Salary"
+msgstr ""
+
 #: inc/saved.php:180
 #: inc/saved.php:291
 msgid "Save"
+msgstr ""
+
+#: inc/engage.php:272
+msgid "Save this notification as PDF"
 msgstr ""
 
 #: inc/saved.php:179
@@ -290,6 +393,10 @@ msgstr ""
 msgid "Saved"
 msgstr ""
 
+#: inc/remind.php:51
+msgid "Saved job reminders"
+msgstr ""
+
 #: header.php:56
 #: inc/saved.php:202
 #: inc/saved.php:206
@@ -298,6 +405,10 @@ msgstr ""
 
 #: inc/student-tools.php:113
 msgid "Select at least two posts to compare."
+msgstr ""
+
+#: inc/personal.php:31
+msgid "Set your qualification and state once. The list is built on this device - no login, nothing sent to a server."
 msgstr ""
 
 #: inc/share.php:115
@@ -316,6 +427,10 @@ msgstr ""
 msgid "Social media"
 msgstr ""
 
+#: inc/personal.php:45
+msgid "State"
+msgstr ""
+
 #: inc/saved.php:297
 msgid "Storage is not available in this browser (private mode?) — saving is off."
 msgstr ""
@@ -326,6 +441,10 @@ msgstr ""
 
 #: inc/editor.php:49
 msgid "StudentUp blocks"
+msgstr ""
+
+#: inc/premium.php:136
+msgid "Swipe sideways for more"
 msgstr ""
 
 #: inc/cta.php:47
@@ -344,8 +463,25 @@ msgstr ""
 msgid "TS & AP"
 msgstr ""
 
+#: inc/engage.php:215
+#: inc/engage.php:217
+msgid "Up next"
+msgstr ""
+
 #: inc/upnext.php:91
 msgid "Up next — read this too"
+msgstr ""
+
+#: inc/engage.php:35
+msgid "Updated on"
+msgstr ""
+
+#: inc/engage.php:274
+msgid "Uses your browser print dialog - choose "Save as PDF"."
+msgstr ""
+
+#: inc/keyfacts.php:25
+msgid "Vacancies"
 msgstr ""
 
 #: inc/saved.php:219
@@ -362,6 +498,10 @@ msgstr ""
 
 #: comments.php:59
 msgid "Write your comment"
+msgstr ""
+
+#: inc/personal.php:30
+msgid "Your 5 today"
 msgstr ""
 
 #: comments.php:64

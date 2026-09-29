@@ -12,13 +12,23 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'STUDENTUP_VERSION', '1.9.9' );  // v120: LCP assets + student compare/reminder/print utilities
+define( 'STUDENTUP_VERSION', '1.9.20' );  // v130 render budget + docs count parity; v129 auto social cards + quick stories; v128 go-live score dashboard; v127 instant nav (speculation rules · view transitions) + ⌘K palette + For You; v126 job data box + compare page + LCP polish; v125 ItemList schema + urgency chips + in-feed slot; v124 smart layer (AI job match · eligibility · salary · calendar); v123 premium UI (hero · hot jobs · daily quiz · alerts · bottom nav); v120: LCP assets + student compare/reminder/print utilities
 
 require_once get_template_directory() . '/inc/options.php';
 require_once get_template_directory() . '/inc/qual-filter.php';  // v72: 10th/Inter/Degree/PG filter (auto tags)
 require_once get_template_directory() . '/inc/breaking.php';
 require_once get_template_directory() . '/inc/ads.php';
 require_once get_template_directory() . '/inc/template.php';
+require_once get_template_directory() . '/inc/jobtable.php'; // v142: FreeJobAlert-style scannable table
+require_once get_template_directory() . '/inc/engage.php'; // v144: freshness stamp + helpful box
+require_once get_template_directory() . '/inc/remind.php'; // v151: saved-job deadline reminders
+require_once get_template_directory() . '/inc/searchindex.php'; // v153: static instant search index
+require_once get_template_directory() . '/inc/autolink.php'; // v154: internal link engine
+require_once get_template_directory() . '/inc/personal.php'; // v156: personalised picks + calendar reminders
+require_once get_template_directory() . '/inc/keyfacts.php'; // v158: key-facts strip + HowTo schema
+require_once get_template_directory() . '/inc/adfill.php';  // v159: unfilled ad slot collapse
+require_once get_template_directory() . '/inc/slotlab.php'; // v162: ad slot A/B variant assignment
+require_once get_template_directory() . '/inc/webpush.php'; // v163: real web push (VAPID)
 require_once get_template_directory() . '/inc/seo-bridge.php';
 require_once get_template_directory() . '/inc/toc.php';
 require_once get_template_directory() . '/inc/schema.php';
@@ -44,6 +54,17 @@ require_once get_template_directory() . '/inc/share.php';     // v98: viral shar
 require_once get_template_directory() . '/inc/success-stories.php'; // v117: consented TS/AP story intake CTA
 require_once get_template_directory() . '/inc/student-tools.php'; // v120: compare, reminders and print/PDF utility layer
 require_once get_template_directory() . '/inc/opportunities.php'; // v121: live active list, expiry-safe sections and job board
+require_once get_template_directory() . '/inc/premium.php'; // v123: hero, hot jobs, scholarships, alerts, bottom nav
+require_once get_template_directory() . '/inc/firstrun.php';   // v133: one-click site setup on activation
+require_once get_template_directory() . '/inc/apply.php';      // v131: sticky apply bar + JobPosting schema
+require_once get_template_directory() . '/inc/ogimage.php';     // v129: auto branded social card
+require_once get_template_directory() . '/inc/stories.php';     // v129: quick story cards
+require_once get_template_directory() . '/inc/score.php';       // v128: go-live score (AdSense/Discover readiness)
+require_once get_template_directory() . '/inc/speed.php';       // v127: speculation rules, view transitions, command palette
+require_once get_template_directory() . '/inc/jobmeta.php';     // v126: admin job data box
+require_once get_template_directory() . '/inc/compare-page.php'; // v126: compare table page/shortcode
+require_once get_template_directory() . '/inc/smart.php';   // v124: AI job match, eligibility, salary calc, calendar
+require_once get_template_directory() . '/inc/quiz.php';    // v123: real daily quiz
 require_once get_template_directory() . '/inc/shortlinks.php'; // v122: first-party /slug redirects + click counts
 
 /**
@@ -88,6 +109,11 @@ function studentup_cat_aliases() {
 		'success-stories' => array( 'success-stories', 'success-story' ),
 		'private-jobs'    => array( 'private-jobs', 'private' ),
 		'current-affairs' => array( 'current-affairs', 'current' ),
+		'scholarships'    => array( 'scholarships', 'scholarship', 'scholarships-2026' ),
+		'daily-quiz'      => array( 'daily-quiz', 'quiz', 'daily-quiz-gk' ),
+		'internships'     => array( 'internships', 'internship' ),
+		'admissions'      => array( 'admissions', 'admission', 'online-education' ),
+		'upcoming-exams'  => array( 'upcoming-exams', 'exam-calendar' ),
 	);
 }
 
@@ -225,9 +251,38 @@ add_action( 'after_setup_theme', 'studentup_setup' );
 /**
  * Styles + scripts (no jQuery — speed).
  */
+/**
+ * v152: minified stylesheet URL when the build produced one.
+ *
+ * `tools/minify_assets.py` writes `*.min.css` next to each source. If the file
+ * is missing (dev checkout, manual edit) the readable source is used, so the
+ * theme can never end up with no stylesheet.
+ *
+ * @param string $rel Path relative to the theme root, e.g. 'assets/css/premium.css'.
+ * @return string Absolute URL to the best available file.
+ */
+function studentup_css_url( $rel ) {
+	$min = preg_replace( '/\.css$/', '.min.css', $rel );
+	if ( ! defined( 'SCRIPT_DEBUG' ) || ! SCRIPT_DEBUG ) {
+		if ( file_exists( get_template_directory() . '/' . $min ) ) {
+			return get_template_directory_uri() . '/' . $min;
+		}
+	}
+	return get_template_directory_uri() . '/' . $rel;
+}
+
 function studentup_assets() {
-	wp_enqueue_style( 'studentup', get_stylesheet_uri(), array(), STUDENTUP_VERSION );
+	wp_enqueue_style( 'studentup', studentup_css_url( 'style.css' ), array(), STUDENTUP_VERSION );
+	// v123: premium layer — style.css tarvata load (overrides work).
+	wp_enqueue_style( 'studentup-premium', studentup_css_url( 'assets/css/premium.css' ), array( 'studentup' ), STUDENTUP_VERSION );
 	wp_enqueue_script( 'studentup', get_template_directory_uri() . '/assets/js/studentup.js', array(), STUDENTUP_VERSION, true );
+	wp_enqueue_script( 'studentup-premium', get_template_directory_uri() . '/assets/js/studentup-premium.js', array( 'studentup' ), STUDENTUP_VERSION, true );
+	// v127: command palette + reading history rail — site anta (chinna file).
+	wp_enqueue_script( 'studentup-cmdk', get_template_directory_uri() . '/assets/js/studentup-cmdk.js', array( 'studentup' ), STUDENTUP_VERSION, true );
+	if ( is_front_page() || is_home() ) {
+		// v124: smart tools homepage lo mattrame — article pages fast ga untayi.
+		wp_enqueue_script( 'studentup-smart', get_template_directory_uri() . '/assets/js/studentup-smart.js', array( 'studentup-premium' ), STUDENTUP_VERSION, true );
+	}
 	// v72: PWA install prompt (app-laga install) — pwa option ON unte mattrame
 	if ( studentup_opt( 'pwa', '1' ) ) {
 		wp_enqueue_script( 'studentup-pwa', get_template_directory_uri() . '/assets/js/studentup-pwa.js', array( 'studentup' ), STUDENTUP_VERSION, true );
@@ -237,6 +292,7 @@ function studentup_assets() {
 		'STUDENTUP',
 		array(
 			'home'     => esc_url_raw( home_url( '/' ) ),
+			'icon'     => esc_url_raw( (string) get_site_icon_url( 192 ) ),   // v123: notification icon
 			'rest'     => esc_url_raw( rest_url( 'wp/v2/' ) ),   // v89: live search endpoint
 			'aliases'  => studentup_cat_aliases(),               // v89: chip ↔ live-slug map
 			'chips'    => true,

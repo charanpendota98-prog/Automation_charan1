@@ -68,8 +68,11 @@ get_header();
 
 				<?php echo function_exists( 'studentup_expired_notice' ) ? wp_kses_post( studentup_expired_notice() ) : ''; ?>
 
+				<?php studentup_updated_stamp(); // v144: honest freshness line ?>
+
 				<?php studentup_ad( 'mid' ); ?>
 
+				<?php studentup_keyfacts_box(); // v158 ?>
 				<div class="article-content"><?php the_content(); ?></div>
 
 				<div class="share" aria-label="Share">
@@ -102,6 +105,8 @@ get_header();
 				studentup_upnext_block();
 			}
 			?>
+			<?php studentup_helpful_box(); // v144: browser-only helpfulness vote ?>
+
 			<?php studentup_ad( 'below-content' ); ?>
 			<?php
 			if ( comments_open() || get_comments_number() ) {
@@ -142,4 +147,8 @@ get_header();
 	</div>
 </main>
 <?php
+studentup_calendar_button();
+studentup_pdf_button();
+studentup_up_next();
+
 get_footer();

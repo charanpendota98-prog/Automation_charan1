@@ -15,6 +15,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 get_header();
 ?>
 
+<?php studentup_hero_premium(); // v123: premium hero (search + quick actions) ?>
+
 <?php studentup_latest_ticker(); // v89: latest jobs scrolling — click cheste aa post open avutundi. ?>
 
 <section class="usedwrap" aria-label="Most searched by students">
@@ -30,23 +32,40 @@ get_header();
 				if ( ! $term ) {
 					continue;
 				}
-				$count   = (int) $term->count;
-				$hot     = ( $i < 3 ) ? ' hot' : '';         // v89: TS · AP · Central top-3 highlight
-				$badge   = $count ? number_format_i18n( $count ) . ' updates' : 'Soon';
+				// v123: "1 update / 2 updates" badge tesesamu — card lo text ki full chotu.
+				$hot = ( $i < 3 ) ? ' hot' : '';             // v89: TS · AP · Central top-3 highlight
 				?>
 				<a class="usedcard<?php echo esc_attr( $hot ); ?>" href="<?php echo esc_url( get_category_link( $term ) ); ?>">
 					<span class="ui" aria-hidden="true"><?php echo esc_html( $m['icon'] ); ?></span>
 					<div><b><?php echo esc_html( $m['label'] ); ?></b><small><?php echo esc_html( $m['hint'] ); ?></small></div>
-					<em class="ucount"><?php echo esc_html( $badge ); ?></em>
 				</a>
 			<?php endforeach; ?>
 		</div>
 	</div>
 </section>
 
+<div class="wrap">
+	<?php
+	studentup_hot_jobs( 10 );      // v123: TOP 10 HOT JOBS TODAY
+	studentup_personal_picks();    // v156: local-only personalised top 5
+	studentup_closing_week( 7 ); // v146: closing-this-week radar (real su_last_date meta only)
+	studentup_job_finder();        // v124: AI job match + eligibility checker
+	studentup_ad( 'in-feed' );     // v125: high-viewability slot (cap: max_ads)
+	studentup_stories( 8 );        // v129: swipeable quick story cards
+	studentup_daily_quiz();        // v123: real daily quiz (colorful rotating ring)
+	studentup_scholarship_strip(); // v123: scholarships spotlight
+	studentup_alerts_card();       // v123: notification / WhatsApp / Telegram alerts
+	studentup_for_you();           // v127: reader history rail (localStorage only)
+	studentup_job_calendar();      // v124: last-date calendar (repeat visits)
+	studentup_salary_calc();       // v124: in-hand salary calculator
+	?>
+</div>
+
 <div class="wrap"><?php studentup_ad( 'leaderboard' ); ?></div>
 
-<h1 class="screen-reader-text"><?php esc_html_e( 'Latest student updates', 'studentup' ); ?></h1>
+<section class="hero hero-slim" aria-label="Page title">
+	<h1 class="screen-reader-text"><?php esc_html_e( 'Latest student updates', 'studentup' ); ?></h1>
+</section>
 
 <main id="main">
 	<div class="wrap">
@@ -89,7 +108,10 @@ get_header();
 			if ( $su_q->have_posts() ) :
 				while ( $su_q->have_posts() ) :
 					$su_q->the_post();
-					if ( 4 === $su_i ) {
+					// v140: two in-feed slots (4th + 10th card). The density cap in
+					// studentup_ad() still decides whether the second one renders,
+					// so this raises viewable impressions without breaking policy.
+					if ( 4 === $su_i || 10 === $su_i ) {
 						studentup_ad( 'in-feed' );
 					}
 					studentup_card( $su_i );
@@ -101,6 +123,10 @@ get_header();
 			<?php endif; ?>
 		</div>
 		<p class="nores" id="nores">Nothing for this filter — open the "All" tab and try again.</p>
+
+		<?php studentup_jobs_table( 12 ); // v142: scannable latest-jobs table ?>
+
+		<?php studentup_popular_searches(); // v140: long-tail internal links ?>
 
 		<?php studentup_ad( 'mid' ); ?>
 

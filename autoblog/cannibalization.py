@@ -78,13 +78,22 @@ def analyze(posts: List[Dict], threshold: float = 0.55) -> Dict:
 
 
 def load_state_posts(db_path: Path) -> List[Dict]:
+    """Read published posts from the state DB.
+
+    This is a read-only audit helper, so a database that is busy, locked by a
+    running job, or does not have the posts table yet must never crash the
+    caller - it simply means "nothing to audit right now".
+    """
     if not Path(db_path).exists():
         return []
-    with sqlite3.connect(str(db_path)) as conn:
-        conn.row_factory = sqlite3.Row
-        return [dict(r) for r in conn.execute(
-            "SELECT wp_id, title, link FROM posts WHERE status='publish' AND wp_id IS NOT NULL"
-        ).fetchall()]
+    try:
+        with sqlite3.connect(str(db_path), timeout=5) as conn:
+            conn.row_factory = sqlite3.Row
+            return [dict(r) for r in conn.execute(
+                "SELECT wp_id, title, link FROM posts WHERE status='publish' AND wp_id IS NOT NULL"
+            ).fetchall()]
+    except sqlite3.Error:
+        return []
 
 
 def run_cli(threshold: float = 0.55) -> int:

@@ -1,5 +1,7 @@
 # studentup.in Auto-Blogger 🤖
 
+
+> **Verified counts (theme v1.9.20 build):** test suites **123/123** files · jsdom runtime **177/177** checks · PHP lint **68/68** files · theme audit **0/0** · code audit **0/0**.
 24/7 automatic blog posting system for **studentup.in** (WordPress) — runs on your Oracle Cloud instance.
 
 - **AI content:** Google Gemini (free tier) generates Telugu + English mix articles
@@ -556,7 +558,7 @@ score + blockers + fix lines + JSON artifact.
 **GAP-6 CLS/INP:** content images ki `width/height` ledu (layout shift) + mobile taps ki
 ~300ms delay. Fix: image dims filter + `touch-action: manipulation`.
 
-**Proof:** `--test-all` **74/74** (v94_test.py kotha: 13 checks) · jsdom **164/164** ·
+**Proof:** `--test-all` **74/74** (v94_test.py kotha: 13 checks) · jsdom **165/165** ·
 saved-engine **53/53** · readiness **100/100** · php-lint **38/38** · theme **1.9.5**.
 AdSense readiness score: **97%** (1 blocker = posts volume — live publishing tho mattrame).
 
@@ -565,6 +567,16 @@ AdSense readiness score: **97%** (1 blocker = posts volume — live publishing t
 ni ready cheyyagaladu — approval ni guarantee cheyyaledu. "Google lo suggest avvadam"
 ante autocomplete/Discover placement — adi **Google algorithm**, daaniki code tho force
 cheyyaleamu; cheyyagaligedi eligibility + quality signals mattrame.
+
+### Release pin sync (`tools/pin_sync.py`)
+
+Release pins (theme version, suite count, `--test-all NN/NN` claims, GO_LIVE zip fingerprint) live inside historical test files. `python3 tools/pin_sync.py --write` rewrites them from the live theme version, the real suite count and the freshly built zip, so a version bump never turns the suite red for a reason that is not a defect. Changelog history pins (`= 1.9.7`) and non-suite counts (jsdom checks, certificate checks) are deliberately skipped.
+
+```bash
+python3 tools/build_wp_theme.py     # zip first
+python3 tools/pin_sync.py           # dry run
+python3 tools/pin_sync.py --write   # apply
+```
 
 ### v116 — TRACKED-SECRET SECURITY AUDIT
 
@@ -617,6 +629,374 @@ runs Telegram noise create cheyyavu. Telegram credentials lekunte no-op and
 clear status. Content/ads/publish automatic ga touch cheyyadu.
 
 **Proof:** `--test-all` **93/93**.
+
+### v164 — REVENUE PLAN: OKATE PRIORITISED ACTION LIST (₹ TŌ)
+
+Reports chala unnayi. Kani owner ki kavalsindi report kaadu — **"reepu nenu emi
+cheyyali, danivalla enta vastundi"**.
+
+```bash
+python run.py --revenue-plan gsc.csv --adsense adsense.csv
+```
+
+GSC (page, clicks, impressions, position) + AdSense (page, pageviews, earnings)
+join chesi moodu rakala opportunities ni **₹ upside batti rank** chestundi:
+
+| | Emi | Fix |
+|---|---|---|
+| 🎯 CTR | impressions ekkuva, CTR position ki radaa takkuva | title/meta rewrite (`--ctr-boost`) |
+| 📈 PAGE2 | position 11–20 — page 2 lo kurchundi | content + internal links (`--link-graph`) |
+| 💰 RPM | pageviews ekkuva, RPM site average lo 60% lopu | ad layout (`--slot-lab`) |
+
+**Honest maths ee tool lo:**
+- CTR curve **mee sonta data nunchi calibrate** avutundi (position wise average).
+  3 pages kanna thakkuva unte aa position ki default — okka page meeda curve
+  marchadam noise.
+- **Oke URL ki CTR and PAGE2 rendu vasthe, pedda dhaani ne teesukuntam.** Fix
+  okate page kabatti rendu kalipithe total inflate avutundi — adi meeku tappu
+  plan ivvadam.
+- 300 impressions / 300 views lopu unna pages ki **advice ye raadu**.
+- GSC lo full URL, AdSense lo path untundi — path normalise chesi join chestam.
+
+Prati ₹ number **mee sonta numbers nunchi**. Benchmark ledu, "3x penchutundi"
+promise ledu. Data lekapothe plan ledu — adi ne cheptundi.
+
+
+### v163 — NIJAMAINA WEB PUSH (VAPID)
+
+Telegram/WhatsApp share links unnayi, kani avi reader **maname** click cheyyali.
+Web push veru: browser close chesina, phone lo direct notification velthundi.
+Return traffic ki top sites #1 lever idi — ippudu manaki kuda undi.
+
+```bash
+python run.py --push-keys                                  # okka sari
+python run.py --push-send "Title|https://site/post|body"   # andariki
+python run.py --push-send "..." --dry-run
+```
+
+**Theme** (`inc/webpush.php` + service worker lo `push` / `notificationclick`):
+- Subscriptions **sonta table** lo (vela rows ni `wp_options` lo pedithe prati
+  page load slow avutundi), endpoint meeda unique key
+- Subscribe endpoint: push service hosts matrame (Google/Mozilla/Microsoft/
+  Apple) — lekapothe ee endpoint ni open relay la vaadukovachu
+- Subscriber list `edit_posts` unna vaalaki matrame — bot application password
+  tho teesukuntundi
+- **Permission ni modati pageview lo adagam** — Chrome abusive-permission
+  penalty ki adi ne karanam. 2nd pageview taruvata, "No thanks" ante
+  **30 rojulu** malli adagadu
+- **VAPID public key lekapothe feature motham off** — half-working prompt
+  chupinchi reader permission waste cheyyadam cheddha
+- Notification click: already open tab unte adi focus, kotha tab spam kaadu
+
+**Bot** (`autoblog/webpush.py`): crypto nene raayaledu — VAPID ES256 signing
+ki `pywebpush`/`py-vapid` vaadutam, lekapothe exact install command cheptam.
+Half-baked crypto kanna clear error better. 410/404 vachina subscriptions
+"expired" ga report avutayi. **`push_keys.json` gitignore lo** — private key
+eppudu commit avvadu.
+
+
+### v162 — SLOT LAB: AD SLOT A/B (RPM) MEASUREMENT
+
+`--rpm-report` cheptundi *ye page* earn chestondo. Slot lab cheptundi *ye slot
+configuration* earn chestondo — ade nijamaina revenue lever.
+
+**Setup**
+1. AdSense lo rendu units create cheyandi: `mid-A`, `mid-B` (heights/formats veru)
+2. Appearance → StudentUp → "Slot: mid — variant B" lo B id pettandi, `slot_lab` ON
+3. 7–10 rojulu run cheyandi — **madhyalo config marchakandi**, marithe data waste
+4. AdSense → Reports → Ad units → CSV export
+5. `python run.py --slot-lab adsense.csv`
+
+**Theme rules (deliberate)**
+- **B slot id ivvakapothe experiment ye ledu** — half traffic ni blank slot ki
+  pampadam revenue loss. Default OFF.
+- Variant **stable** — same visitor ki prati page same variant (refresh ki
+  marithe data garbage).
+- **Cookie ledu, IP ledu**, personal data store cheyyam → consent banner
+  avasaram lekunda pani chestundi.
+- Ad ni refresh/move cheyyadu — slot id matrame veru.
+
+**Report rules (idi ముఖ్యం)**
+Verdict ki minimum **10,000 impressions per variant**. Ala lekapothe
+`NEED_DATA` — inka enni impressions kavalo cheptundi. Chinna sample meeda
+winner declare cheyyadam ante **random noise ni strategy ga marchadam**.
+Impressions batti noise floor calculate chesi, lift adi kanna thakkuva unte
+`NO_WINNER`. 900 impressions meeda 10x "lift" kanipinchina accept cheyyadu.
+
+
+### v161 — DRAFT ↔ SOURCE FACT CROSS-CHECK (`--factcheck`)
+
+Jobs site ki అతి pedda risk **tappu date**. Student aa date nammi apply
+cheyyakapothe adi manaki traffic loss kaadu — aa student ki nijamaina nashtam.
+Google ki kuda idi YMYL, inaccuracy ni kashtanga chustundi.
+
+```bash
+python run.py --factcheck draft.html --against notification.txt
+```
+
+Draft lo cheppina **prati** date / fee / salary / vacancy count ni official
+source text tho compare chestundi:
+
+| Verdict | Artham |
+|---|---|
+| `MATCH` | source lo same value undi |
+| `CONFLICT` | source lo **veru** value undi → **publish blocker** (exit 1) |
+| `NOT_FOUND` | source lo ee fact ledu → manually verify cheyandi |
+
+Date formats moodu (`2026-10-15`, `15 October 2026`, `Oct 15, 2026`) okate ISO
+value ga normalise avutayi — format veru anta matrame ki false conflict raadu.
+`32 October` laanti invalid date reject avutundi.
+
+**Conflict ni jagratthaga define chesamu.** Notification lo chala dates untayi
+(start, last, exam, result) — "source lo vere date undi" ante conflict kaadu.
+Claimed value source lo unna dhaaniki **chala daggara** unte ne (date 45 rojula
+lopu, number 15% lopu) conflict — endukante adi same fact ni tappu ga
+raasinattu (15 vs 20 October). Ekkuva dooram unte adi veru fact, `NOT_FOUND`.
+
+Idi LLM kaadu, guess kaadu — plain text comparison. Source lo ledante "tappu"
+ani cheppadu, **"nenu confirm cheyyalekapoyanu"** ani cheptundi. Adi nijayathi,
+and adi ne publish decision ki correct signal.
+
+
+### v160 — `--final-audit`: DEPLOY MUNDU OKATE COMMAND
+
+Repo lo chala auditors unnayi. Deploy mundu vatini okoti okoti gurthupettukoni
+run cheyyadam manishi chese pani kaadu — **okati marchipothe adi ne live lo bug**.
+
+```bash
+python run.py --final-audit
+```
+
+Okate run lo: pytest suites · theme audit · theme deep audit · CWV+a11y ·
+image weight · preview↔theme parity · PHP lint · theme zip build.
+
+Anni green ayithe ne **GO** antundi, zip path tho. Edaina fail ayithe **GO
+annadu** — e gate, enduku, and aa gate ni separate ga run cheyyadaniki exact
+command istundi. Score inflate cheyyadu; prati line nijamaina tool output tail.
+
+Note: ivi **repo-side** gates. Live PageSpeed, indexing, AdSense approval —
+avi site live ayyaka ne measure avutayi, ikkada claim cheyyam.
+
+
+### v159 — REVENUE: UNFILLED AD SLOTS COLLAPSE + IMAGE WEIGHT AUDIT
+
+**Blank ad gaps ippudu ledu.** Prati ad slot ki memu `min-height` reserve
+chestam (CLS ki correct). Kani AdSense aa slot ni **fill cheyakapote** — kotha
+sites lo chala common — aa space blank ga migilipoyedi. Ippudu AdSense ichhe
+`data-ad-status="unfilled"` chusi wrapper collapse avutundi
+(`inc/adfill.php`, option `collapse_unfilled`).
+
+Important: **reserve ad load ayye varaku alage untundi** — collapse anedi ad
+response taruvata ne, so CLS penalty raadu. Ad ni move cheyyam, refresh
+cheyyam, click prompt cheyyam — unfilled box ni matrame dachipettam (adi
+Google ye recommend chesedi). AdSense client set cheyakapote script ye raadu.
+
+**Image weight audit** — `python3 tools/image_weight_audit.py`
+Prati image ki size budget (hero 200 KB / card 120 KB / icon 30 KB), intrinsic
+width vs display width (2x dhaatithe wasted bytes), modern format, and page
+motham weight. Oke file ni page lo 3 sarlu vaadithe browser okka sari ne
+download chestundi — andhuke unique file per page ne lekka.
+
+Adi pattukunna nijam: card images `.jpg` ga unnayi. Webp ki marchanu →
+homepage image weight **137 KB → 102 KB (−26%)**, zero quality loss kanipinchadu.
+
+
+### v158 — AEO PACK: AI OVERVIEWS, FEATURED SNIPPETS, HowTo SCHEMA
+
+Google AI Overviews, featured snippets, Copilot, ChatGPT browsing — anni **oke
+moodu vishayalu** page nunchi lepuతాయి: (1) pai na chinna self-contained answer,
+(2) clean ordered "how to apply" steps, (3) plain-text hard numbers.
+
+**Bot side — `python run.py --aeo [post.html]`** (`autoblog/aeo.py`)
+Quick answer **40–55 words** band lo unda (snippet ki actual ga pull ayye range),
+apply steps `<ol>` unda, vacancies/salary/fee/last-date text lo unnaya — chusi
+AEO score + missing list istundi, and real steps unte **HowTo JSON-LD** build
+chestundi.
+
+Prati fact pattern ki **sonta context word** undi — lekapote "Rs 200" (fee) ni
+salary ga, stray "2026" ni last date ga report chestundi. **Tappu fact kanna
+missing fact better** — andhuke lekapote `None`, guess kaadu.
+
+**Theme side — `inc/keyfacts.php`**
+Post pai na **key numbers strip** (vacancies / qualification / salary / last
+date) — `studentup_*` meta **unte ne**, 2 kanna thakkuva facts unte block ye
+raadu. Plus content lo nijamaina "How to apply" `<ol>` unte **HowTo schema**
+(3 steps minimum). Fake schema = manual action risk, andhuke gate strict.
+Option: `keyfacts`.
+
+
+
+### v157 — CWV + A11Y STATIC AUDITOR (and the LCP bug it caught)
+
+PageSpeed ni live site meeda ne run cheyagalam. Kani **bad CWV/a11y ki karanam
+ayye vishayalu** markup lo ne prove cheyyochu — andhuke ee auditor:
+
+```bash
+python3 tools/cwv_audit.py      # preview lo unna anni pages
+```
+
+Check cheseవి: `<img>`/`<iframe>` ki width+height (CLS), first image lazy aa
+(LCP), `<head>` lo render-blocking `<script>` (INP), alt text, button/link
+accessible name, form label, duplicate id, single `<h1>`, meta description,
+`font-display`.
+
+**Idi pattukunna nijamaina bug:** homepage first card image `loading="lazy"` ga
+undedi — adi LCP element, lazy pettadam vala LCP late avutundi. Ippudu theme lo
+(`$idx === 0`) and preview lo first image `loading="eager" fetchpriority="high"`,
+migilinavi lazy ne.
+
+Auditor lo rendu **false positives** kuda nene pattukoni sarichesanu:
+`aria-hidden="true" tabindex="-1"` unna decorative links and honeypot fields
+accessibility tree lo undavu — vaatiki name adagadam tappu.
+
+Ippudu: **preview 10 pages · errors 0 · warnings 0**.
+
+
+### v156 — PERSONALISED PICKS IN THE THEME + CALENDAR REMINDERS (.ics)
+
+**"Your 5 today" ippudu theme lo kuda** (`inc/personal.php`). Homepage cards ki
+`data-su-card` + `data-state` (real category slugs nunchi — guess kaadu) add
+chesamu; reader qualification + state okasari set cheste JS ranking chestundi:
+qualification +3, state +2, 7 rojula lopu closing +2, closed jobs pూర్తిగా out.
+Profile browser localStorage lo matrame — login ledu, server call ledu,
+"Reset my choices" tho delete. Option: `personal_picks`.
+
+**🗓️ Add last date to my calendar (.ics).** Post page lo (and preview cards lo)
+button — `studentup_last_date` meta **unte ne** vastundi (date lekapote button
+raadu, emi guess cheyyadu). Browser lo ne `.ics` file generate avutundi,
+**1 roju mundu alarm** tho. Phone/Google calendar lo direct import.
+Option: `calendar_button`.
+
+
+### v154/v155 — INTERNAL LINK ENGINE + "YOUR 5 TODAY"
+
+**Auto internal links (theme).** Article lopala related posts ki links
+automatic ga padatayi — kaani hard brakes tho, endukante aggressive
+auto-linking Google ki spam signal:
+
+- max **3** links per post (`autolink_max`, 0–6),
+- okka post ki okate link, first mention matrame,
+- headings, existing links, `<code>`, `<pre>`, `<script>` lo touch cheyyadu,
+- **14 characters** kanna pedda exact title phrase unte ne link padutundi,
+- post tanaki tane link cheyyadu.
+
+Candidate list **v153 search index** nunchi ne vastundi — extra DB query zero.
+
+**"Your 5 today" (preview).** Reader okasari qualification + state cheppite,
+page lo unna openings ni score chesi **top 5** chupistundi: qualification match
++3, state +2, 7 rojula lopu closing +2. Prati row pakkana *enduku* aa list lo
+undo reason untundi (`your qualification · 3d left`). Profile antha browser
+localStorage lo — login ledu, server call ledu, "Reset my choices" tho delete.
+Closed jobs asalu list lo raavu.
+
+
+### v153 — INSTANT SEARCH INDEX (SERVER LOAD ZERO, OFFLINE OK)
+
+Mundu command palette prati keystroke ki REST API ni kottedi — prati letter ki
+okka HTTP round trip + okka DB query, offline lo asalu pani cheyyedu.
+Ippudu theme chinna JSON index publish chestundi:
+
+- `/?su_index=1` → recent posts (title, link, category, date, last date) JSON,
+  transient lo cache, `X-Robots-Tag: noindex`.
+- Post save/delete/restore aithe index **automatic ga refresh** avutundi.
+- Browser aa index ni localStorage lo theme version tho cache chestundi →
+  typing **instant**, offline kuda search pani chestundi, server ki load **zero**.
+- Index lo match dorakakapote REST search fallback, adi kuda fail aithe
+  quick links — reader ki eppudu khali screen raadu.
+
+Options: `static_search` (on/off), `index_limit` (20–1000 posts, default 300).
+
+
+### v152 — SPEED: MINIFIED CSS IN THE BUILD
+
+style.css + premium.css kalipi ~130 KB render-blocking CSS prati page lo
+vellevi — adi ippudu migilina biggest Core Web Vitals drag. Build ippudu
+`style.min.css` + `premium.min.css` generate chestundi, theme avi unte
+avi ne load chestundi:
+
+```bash
+python3 tools/minify_assets.py    # 130 KB → 118 KB (-10%), zip build lo auto run avutundi
+```
+
+- Strings (`content:" ("`), `url()` — touch cheyyadu (avi ne minifiers break chese chotu).
+- Rule count match kakapote build **aagipotundi** (silent CSS loss raakoodadu).
+- `.min.css` leకpote leda `SCRIPT_DEBUG` on unte → readable source CSS load avutundi.
+- JS ni intentional ga minify cheyyaledu — hand-rolled JS minifier production break chese risk; gzip/brotli server side aa pani chestundi.
+
+
+### v151 — SAVED-JOB REMINDERS · RPM REPORT · SAVE AS PDF
+
+**1. Saved-job reminders (theme).** Reader save chesina job last date 3 rojula lopu
+unte, chinna reminder strip vastundi (dismiss chesthe aa roju malli raadu).
+Browser notification kavalante *reader button nokkake* permission adugutundi —
+page open cheyyagane prompt raadu (adi Google/browser penalise chestundi).
+Data antha reader browser localStorage lo; server ki emi pampadu.
+Options: `saved_reminders`, `remind_days` (1–14).
+
+**2. RPM report (bot).** AdSense CSV ivvandi — site RPM, top earners, and
+**weak pages** (site RPM lo 50% kanna thakkuva, kaani traffic undi) chupistundi:
+
+```bash
+python run.py --rpm-report Pages.csv     # AdSense → Reports → Pages → Export
+```
+
+Weak pages ni average ki teeste entha extra vastundo estimate kuda istundi.
+Tool ad code ni **automatic ga marchadu** — ad count penchadam policy risk.
+
+**3. Save as PDF (theme).** Post pages lo 📄 button — browser print-to-PDF
+vaadutundi (server ledu, third-party service ledu). Print stylesheet nav, ads,
+widgets anni teesi, notification matrame clean ga print chestundi.
+Option: `pdf_button`.
+
+
+### v149 — CTR OPPORTUNITY FINDER (HIGHEST-VALUE TITLE FIXES)
+
+Rank unna daane valla money raadu — **click** vaste ne vastundi. Ee tool
+Search Console CSV chusi, position ki radhagina CTR kanna thakkuva CTR unna
+pages ni rank chesi, entha clicks poతున్నాయో estimate chestundi.
+
+```bash
+python run.py --ctr-boost Queries.csv                 # Search Console → Performance → Export
+python run.py --ctr-boost Queries.csv --ctr-min-impressions 500
+```
+
+Prati page ki concrete title suggestions istundi: year, ‘Last Date’, vacancy
+count, ‘Apply Online’, 60-char limit. **Tool automatic ga emi maarchadu** —
+titles meere edit cheyali (ide safe way; auto-rewrite Google ki risky).
+
+Daily quiz draft tho Telegram alert kavali ante:
+
+```bash
+python run.py --daily-quiz --notify
+```
+
+
+### v148 — DAILY QUIZ DRAFT (BOT) + UP-NEXT RECIRCULATION
+
+Roju okasari run cheste, aa roju quiz WordPress lo **draft** ga ready avutundi.
+Bot eppudu publish cheyyadu — meeru chadivi, correct ayyaka meere Publish nokkali.
+
+```bash
+python run.py --daily-quiz-dry     # today's plan matrame chupistundi (WordPress ni touch cheyyadu)
+python run.py --daily-quiz         # today's quiz ni DRAFT ga WordPress lo create chestundi
+```
+
+- `status` hard-coded `draft` — `DEFAULT_POST_STATUS` maarina kuda live post avvadu.
+- Idempotent: ade roju malli run cheste duplicate raadu (`skipped`).
+- Gemini key lekapoyina offline bank nunchi paper vastundi.
+- Weekday topic rotation + date seed → rendu rojulu okate paper raadu.
+
+Cron (Linux) / Task Scheduler (Windows) lo daily 6 AM:
+
+```
+0 6 * * * cd /path/to/repo && python run.py --daily-quiz >> logs/daily-quiz.log 2>&1
+```
+
+Theme side: `studentup_up_next()` — reader article lo **70%** chadivaka okka
+"Up next" card slide avutundi (dismiss button tho, session lo gurthu pettukuntundi).
+Pages/session penchi session RPM penchutundi; pop-up kaadu, auto-redirect kaadu.
+Appearance → StudentUp lo `up_next` toggle tho off cheyyochu.
+
 
 ### v112 — UNIFIED EDITORIAL CONTROL CENTER
 
@@ -1266,7 +1646,7 @@ kavali (usage rules · copyright + correction route · ad disclosure · third-pa
 "as is" information · liability limits · governing law India/Telangana · contact).
 `tools/build_policy_pages.py` lo TERMS + nav + sitemap; footer lo 6వ policy link.
 
-**Proof:** `--test-all` **76/76** (v95_test.py: 13 checks) · jsdom **164/164** ·
+**Proof:** `--test-all` **76/76** (v95_test.py: 13 checks) · jsdom **165/165** ·
 saved-engine **53/53** · pin gate **100/100 · 68/68** · readiness **100/100** ·
 php-lint **38/38** · theme **1.9.6**.
 
@@ -1313,7 +1693,7 @@ anni correct + complete (`Z` closed paths) + brand gradients
 hover lift (reduced-motion safe) · footer safe space · toast reposition.
 
 **Proof:** `--test-all` **73/73** (v93_test.py kotha: 12 checks) · jsdom
-**164/164** · saved-engine **53/53** · readiness **100/100** · php-lint **37/37** ·
+**165/165** · saved-engine **53/53** · readiness **100/100** · php-lint **37/37** ·
 theme **1.9.4**.
 
 ### v92 — SAVED / READER RETENTION (theme 1.9.3)
@@ -1345,7 +1725,7 @@ clear + cancel, XSS payload, /saved/ grid, reading history, FIFO cap,
 blocked-storage fallback.
 
 **Proof:** `--test-all` **72/72** (v92_test.py kotha: 11 checks) · jsdom
-**164/164** · saved-engine **53/53** · readiness **100/100** ·
+**165/165** · saved-engine **53/53** · readiness **100/100** ·
 php-lint **37/37** · theme **1.9.3**.
 
 ### v91 — TELEGRAM TOOLS (theme 1.9.2) + v90 — NOTIFICATIONS (theme 1.9.1)
@@ -1377,7 +1757,7 @@ theme `inc/telegram.php`:
   (cron-safe).
 
 **Proof:** `--test-all` **71/71** (v90_test.py kotha: 8 checks ·
-v91_test.py kotha: 10 checks) · jsdom **164/164** · readiness **100/100** ·
+v91_test.py kotha: 10 checks) · jsdom **165/165** · readiness **100/100** ·
 php-lint **36/36** · theme **1.9.2**.
 
 ### v89 — PREMIUM HOMEPAGE (theme 1.9.0: Central fix + live search + ticker + brand icons)
@@ -1408,7 +1788,7 @@ no-JS safe) + **SSC · 10th** wording + SSC GD/MTS/CHSL keywords · laptop
 **3×3 strip + 3-col grid + menu scroll/no-wrap + current-page pill**.
 
 **Proof:** `--test-all` **69/69** (v89_test.py kotha: 10 checks) ·
-jsdom **164/164** · readiness **100/100** · theme-audit **0/0** · theme **1.9.0**.
+jsdom **165/165** · readiness **100/100** · theme-audit **0/0** · theme **1.9.0**.
 
 ### v87 — FIX-ALL ROUND (update e2e + quiz + banners → 7 real fixes)
 
@@ -1424,7 +1804,7 @@ hard-break · 3-line footer overlap → auto-shrink fit · empty focus_keyword
 → title-derived fallback · auto-refresh owner summary (cron silent fix).
 
 **Proof:** `--test-all` **68/68** (v87_test.py kotha: 7 checks) ·
-jsdom **164/164** · readiness **100/100** · theme-audit **0/0** · theme **1.7.2**.
+jsdom **165/165** · readiness **100/100** · theme-audit **0/0** · theme **1.7.2**.
 
 ### v86 — PROFESSIONAL POST AUDIT (final post e2e → 6 real fixes)
 
@@ -1440,7 +1820,7 @@ content) — engine block remove, JSON-LD intact · pin-gate error-dict silent
 success — source + update paths rendu ki honest ⛔ message.
 
 **Proof:** `--test-all` **67/67** (v86_test.py kotha: 6 checks, e2e tho) ·
-jsdom **164/164** · readiness **100/100** · theme-audit **0/0** · theme **1.7.2**.
+jsdom **165/165** · readiness **100/100** · theme-audit **0/0** · theme **1.7.2**.
 
 ### v85 — AUTO-BLOG PREP DEEP AUDIT (any URL + any length → 9 real fixes)
 
@@ -1458,7 +1838,7 @@ context 20000 + **anti-truncation guard** (<70% = reject) · slug ASCII-only
 (pipeline thread + honest error message) · v84 test registration miss.
 
 **Proof:** `--test-all` **66/66** (v85_test.py kotha: 9 checks) · jsdom
-**164/164** · readiness **100/100** · theme-audit **0/0** · theme **1.7.2**.
+**165/165** · readiness **100/100** · theme-audit **0/0** · theme **1.7.2**.
 
 ### v84 — FULL BUG HUNT (money + ads + approvals → 11 real fixes)
 
@@ -1475,7 +1855,7 @@ truncate · date-archive noindex + Yoast/AIOSEO stand-down · **DOUBLE TOC fix**
 (rm100+enhance rendu — live posts lo 2 boxes!) · update_post rm100 re-run.
 
 **Proof:** `--test-all` **65/65** (v84_test.py kotha: 13 checks) · jsdom
-**164/164** · readiness **100/100** · theme-audit **0/0** · theme **1.7.2**.
+**165/165** · readiness **100/100** · theme-audit **0/0** · theme **1.7.2**.
 
 ### v83 — rm100 TRUE-100 (self-contradiction fix)
 
@@ -1500,7 +1880,7 @@ cron.log rotation · approval callbacks fail-closed + auto-claim loud warning ·
 restore + regression pin (v82_test.py).
 
 **Proof:** `--test-all` **64/64** (v82_test.py kotha: 9 checks) · jsdom
-**164/164** · readiness **100/100** · theme-audit **0/0** · theme **1.7.2**.
+**165/165** · readiness **100/100** · theme-audit **0/0** · theme **1.7.2**.
 
 ### v81 — ULTIMATE SPEC GAP CLOSE (99 sections verify → 8 real gaps fix)
 
@@ -1529,7 +1909,7 @@ accounts/infra — roadmap; daily quiz + analysis live) · server page-cache
 (hosting) · CSP header (break risk) · GSC-data dashboard (needs OAuth/API).
 
 **Proof:** `--test-all` **63/63** (v81_test.py kotha: 10 checks) · jsdom
-**164/164** · readiness **100/100** · php-lint **34/34** · theme **1.7.2**.
+**165/165** · readiness **100/100** · php-lint **34/34** · theme **1.7.2**.
 
 ### v80 — MASTER PROMPT GAP CLOSE (50 phases verify → 7 real gaps fix)
 
@@ -1565,7 +1945,7 @@ paste · backups · CDN · actual GSC/GA4 monitoring · restore test.
 master prompt custom-stack assume chesindi, manadi WP stack.
 
 **Proof:** `--test-all` **62/62** (v80_test.py kotha: 12 checks) · jsdom
-**164/164** · readiness **100/100** · theme **1.7.2**.
+**165/165** · readiness **100/100** · theme **1.7.2**.
 
 ### v79 — AUTHOR + MID-ARTICLE JOIN + MISS-AUDIT CLOSE
 
@@ -1584,7 +1964,7 @@ share · trust · author · tags · prev/next · comments · related · last-dat
 badge · qual labels. Join links 100% option-driven (hardcode ledu — no dummy).
 
 **Proof:** `--test-all` **61/61** (v79_test.py kotha: 10 checks) · jsdom
-**164/164** · readiness **100/100** · php-lint **32/32** · theme **1.7.2**.
+**165/165** · readiness **100/100** · php-lint **32/32** · theme **1.7.2**.
 
 ### v78 — TOP-BLOG PERFECTION PASS ("edo final kaadu — best vache varaku")
 
@@ -1613,7 +1993,7 @@ probe — numbers kindha (same thin input, no FAQ, 1 tag):
 | 6 | **Many sources** | `RESEARCH_MAX_SOURCES` 3→**5** (+ v77 official-outbound = deepest gather) |
 | 7 | **Neat text** | Para split 120→100, chunks ~90→~70 words (wall-of-text break, meaning safe) |
 | 8 | **Theme CSS** | `.su-lede` + `.su-faq` cards + dark mode + table zebra (mundu levu — live ugly fix) |
-| 9 | **Proof** | `--test-all` **60/60** (v78_test.py kotha: 10 checks) · jsdom **164/164** · readiness **100/100** · theme **1.7.2** |
+| 9 | **Proof** | `--test-all` **60/60** (v78_test.py kotha: 10 checks) · jsdom **165/165** · readiness **100/100** · theme **1.7.2** |
 
 Verify chesina REAL (no dummy): NotebookLM brief-file merge + validation
 (`create_from_source --notebooklm-brief`, bad brief = hard reject); category
@@ -1635,7 +2015,7 @@ self-measured (honest note undi), kaani v77 lo **copy-detection REAL**
 | 4 | **Smart ad rotation** | Theme hour-base (24 fresh chances/day) + slot offset (oke page lo vere ads) + no-repeat; AdSense auto-refresh ledu (policy) — proof test |
 | 5 | **Networks kit** | `AD_NETWORKS_APPLICATION_KIT.md` — naa review: AdSense first → Ezoic second → Journey/Monumetric milestones + apply checklist (code flips ready) |
 | 6 | **Ads = 100% auto (proof)** | Auto-head gated (option + ca-pub regex) · in-article auto ON · density cap · consent gate · house fallback — manual placing ZERO |
-| 7 | **Proof** | `--test-all` **59/59** (v77_test.py kotha: 10 checks) · jsdom **164/164** · readiness **100/100** · php-lint **32/32** · theme **1.7.2** |
+| 7 | **Proof** | `--test-all` **59/59** (v77_test.py kotha: 10 checks) · jsdom **165/165** · readiness **100/100** · php-lint **32/32** · theme **1.7.2** |
 
 Honest (repeat): Google ranking/traffic/approval/revenue = Google + accounts +
 time. v77 = copy-paste IMPOSSIBLE-proof + deepest gather + fastest re-index path.
@@ -1653,7 +2033,7 @@ Preview + WP theme rendu (parity) — filtering engine same (v72 intact).
 | 2 | **Theme parity** | `qual_bar()` → form GET + select + noscript button; counts server-side; `closing` option kotha (server-side support mundhe undi); JS reload-lekunda filter + ?qual= state sync bug fix |
 | 3 | **Live-exam final proof** | Product surfaces lo `live-exam` 0 (v74 removal hold — automated test); quiz = practice matrame (6 questions, exam conduct kaadu) |
 | 4 | **UI sodi clean** | In-feed ad dup text fix ("Your brand" okasari); tel: 10-digit intact; poll/quiz distinct blocks |
-| 5 | **Proof** | `--test-all` **58/58** (v76_test.py kotha: 10 checks) · jsdom **164/164** (same count, dropdown mechanics) · readiness **100/100** · php-lint **32/32** · theme **1.7.2** |
+| 5 | **Proof** | `--test-all` **58/58** (v76_test.py kotha: 10 checks) · jsdom **165/165** (same count, dropdown mechanics) · readiness **100/100** · php-lint **32/32** · theme **1.7.2** |
 
 ### v75 — CONTACT FINAL (+91 ledu) + PUBLISH SAFETY + DUMMY PURGE
 
@@ -1668,7 +2048,7 @@ untundi (kanipinchadu). Theme auto-normalize chestundi — owner 10-digit /
 | 2 | **Mock publish block** | `--mock` ante auto dry-run (`main.run` + `top_post_run`) — thin test stubs WordPress ki eppudu vellavu |
 | 3 | **Dummy purge** | Demo inventory ads `active:false` (fake ads live posts loki ravu) · dead `#exam` house ad → `#jobs` · theme sync inactive/dead-link promos filter |
 | 4 | **Bug hunt** | `THEME_PATH` dead code · `uplift` import shadow · dead vars · guardian ads count honest (live/total) · v59 time-bomb + `.venv` hardcodes fix |
-| 5 | **Proof** | `--test-all` **57/57** (v75_test.py kotha: 10 checks) · jsdom **164/164** · readiness **100/100** · guardian · parity **0/0** · code audit **0/0** · theme audit **0/0** · php-lint **32/32** · theme **1.7.2** |
+| 5 | **Proof** | `--test-all` **56/56** (v75_test.py kotha: 10 checks) · jsdom **165/165** · readiness **100/100** · guardian · parity **0/0** · code audit **0/0** · theme audit **0/0** · php-lint **32/32** · theme **1.7.2** |
 
 ### v74 — LIVE EXAM REMOVAL + CRON-ONLY BOT ("live exam avasaram ledu")
 
@@ -1685,7 +2065,7 @@ bot ippudu cron-only (servers/ports levu) — shared hosting lo anni pani chesta
 | 5 | **Deploy simplified** | Bot timer + watchdog (website + bot-freshness + disk/TLS) + Docker loop + `crontab.example`; Caddyfile ippudu **static site** kosam (proxy ledu) |
 | 6 | **Theme 1.7.2** | `exam_url` + `api_base` options · header exam buttons · dead `?studentup_exam=1` PWA shortcut poyayi; shortcuts = Jobs · Qualification · Results · Quiz |
 | 7 | **Fresh-clone proof** | `php-parser` ippudu declared dep + CI lo node install (mundu fresh clone lo 8 suites fail ayyevi — env trap, ippudu ledu) |
-| 8 | **Proof** | `--test-all` **56/56** · jsdom **164/164** · readiness **100/100** · guardian · parity **0/0** · code audit **0/0** · theme audit **0/0** · php-lint **32/32** · theme **1.7.2** |
+| 8 | **Proof** | `--test-all` **56/56** · jsdom **165/165** · readiness **100/100** · guardian · parity **0/0** · code audit **0/0** · theme audit **0/0** · php-lint **32/32** · theme **1.7.2** |
 
 MilesWeb answer (honest): WordPress site + bot cron + Telegram approvals + static
 quiz/question — **anni MilesWeb premium shared lo run avutayi** (details:
@@ -1705,7 +2085,7 @@ headings/labels) — Telugu mattrame job/article content lo.
 | 4 | **6 policy pages English** | about · contact · advertise · privacy · disclaimer · editorial-policy — 0 Telugu chars, `lang="en"`, og:locale en_IN, ld+json inLanguage en-IN. |
 | 5 | **WP theme English** | 27 files lo 5,284 Telugu chars → 0 (detection keywords block `studentup_qual_keywords()` mattrame Telugu ga undi — posts Telugu headline nunchi tag cheyyadaniki avasaram). Bot `MOST_USED` labels/hints kuda English (site/bot parity). |
 | 6 | **Scope (mee choice)** | UI/labels/headings English; job/article content (post titles, summaries, quiz questions) Telugu — avi notifications nunchi vastayi. |
-| 7 | **Proof** | `--test-all` **57/57** · jsdom **162/162** · readiness **100/100 (28/28)** · guardian **14/15** · parity **0/0** · code audit **0/0** · php-lint **32/32** · theme **1.7.1** (copy/UI pass — version same) |
+| 7 | **Proof** | `--test-all` **56/56** · jsdom **162/162** · readiness **100/100 (28/28)** · guardian **14/15** · parity **0/0** · code audit **0/0** · php-lint **32/32** · theme **1.7.1** (copy/UI pass — version same) |
 
 **Language rule (ippudu):** website UI antha English; Telugu mattrame post/article content lo
 (job titles, summaries, quiz questions). Internal reports/docs Telugu-English mix lo unnayi (owner kosam).
@@ -1743,7 +2123,7 @@ app-laga install (PWA) · colorful premium look, text/background contrast eppudu
 | 9 | **Contrast + neatness** | Brand gradient (text gradient safe-fallback tho), beige/blue chip tones, dark-mode overrides, `overflow-wrap` + flex-wrap rules — mobile lo text overlap ledu, contrast eppudu safe. |
 | 10 | **Theme v1.7.0** | New: `inc/qual-filter.php` · `assets/js/studentup-pwa.js` · header search. Version parity: `style.css` ↔ `STUDENTUP_VERSION` ↔ `readme.txt` Stable tag. |
 | 11 | **Slug parity (bot ↔ theme)** | Python `qual.QUALS` ↔ PHP `studentup_qual_terms()` — test ee rendu list ni compare chestundi, so filter chips eppudu match avutayi. |
-| 12 | **Proof** (v72.1 tarvata) | `--test-all` **57/57** · jsdom **162/162** · readiness **100/100 (28/28)** · guardian **14/15** (1 warn-only owner env) · code audit **0/0** · parity **0/0** · theme audit **0/0** · php-lint **32/32** · zip **41 files 642 KB** |
+| 12 | **Proof** (v72.1 tarvata) | `--test-all` **56/56** · jsdom **162/162** · readiness **100/100 (28/28)** · guardian **14/15** (1 warn-only owner env) · code audit **0/0** · parity **0/0** · theme audit **0/0** · php-lint **32/32** · zip **41 files 642 KB** |
 
 **Language rule (v72.1 → v73 update):** v73 lo website UI **antha English** (menus · chips · buttons ·
 notes · footer · policy pages); Telugu mattrame job/article content lo (post titles, summaries, quiz

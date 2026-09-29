@@ -87,9 +87,16 @@ def test_title_rules_multiple_inputs():
         assert pos <= max(0, half), (t, pos, half)
         assert 40 <= len(t) <= 62, (t, len(t))
         assert re.search(r"\d", t), t
-        assert any(p in t.lower() for p in validator.TITLE_POWER_WORDS), t
-        assert any(p in t.lower() for p in ("best", "easy", "amazing", "excellent")), t
-        assert art["seo_title"] == t
+        # v136: the visible H1 stays natural; Rank Math's title field
+        # (seo_title) is where a power word is allowed.
+        seo_t = art.get("seo_title") or t
+        assert any(p in seo_t.lower() for p in validator.TITLE_POWER_WORDS), seo_t
+        assert any(p in seo_t.lower()
+                   for p in ("best", "easy", "amazing", "excellent", "complete",
+                             "guide", "top")), seo_t
+        # seo_title may differ from the H1 by exactly one power word.
+        assert kw.lower() in art["seo_title"].lower()
+        assert 40 <= len(art["seo_title"]) <= 62, art["seo_title"]
 
 
 def test_meta_slug_density_rules():

@@ -148,7 +148,29 @@ def relevant_internal_links(links: List[Dict[str, str]], focus_keyword: str,
     return out
 
 
-def add_internal_links(html: str, links: List[Dict[str, str]], seed: str = "") -> str:
+def generic_internal_links(links: List[Dict[str, str]],
+                           max_links: int = 3) -> List[Dict[str, str]]:
+    """Fallback list for the "more updates" block (no topic claim).
+
+    Used only when nothing shares the article topic. These links are labelled
+    as general site updates, never as "related articles", so the reader is not
+    told two unrelated notifications belong together.
+    """
+    out, seen = [], set()
+    for item in links or []:
+        url = (item.get("link") or item.get("url") or "").strip()
+        title = validator.strip_tags(item.get("title") or "")
+        if not url or not title or url in seen:
+            continue
+        seen.add(url)
+        out.append({**item, "link": url, "title": title})
+        if len(out) >= max_links:
+            break
+    return out
+
+
+def add_internal_links(html: str, links: List[Dict[str, str]], seed: str = "",
+                       generic: bool = False) -> str:
     """Add a small, topic-matched related block; unrelated links are omitted."""
     if not links:
         return html
@@ -160,7 +182,8 @@ def add_internal_links(html: str, links: List[Dict[str, str]], seed: str = "") -
     )
     if not items:
         return html
-    heading = _pick(RELATED_HEADINGS, seed)
+    heading = ("StudentUp nunchi మరిన్ని అప్‌డేట్‌లు (More updates)"
+               if generic else _pick(RELATED_HEADINGS, seed))
     section = ('<section class="su-related" aria-labelledby="related-articles">'
                f'<h2 id="related-articles">{heading}</h2><ul>{items}</ul></section>')
     return html + section
@@ -321,6 +344,14 @@ def trust_box(date_str: str, source_domains: Optional[List[str]] = None) -> str:
     )
 
 
+def source_note(date_str: str, source_domains: Optional[List[str]] = None) -> str:
+    """One honest provenance line kept in the published article."""
+    domains = ", ".join(source_domains[:3]) if source_domains else "official notification"
+    return (f'<p class="su-source">🔎 Source: {_esc(domains)} · '
+            f'checked {_esc(date_str or "")} · '
+            'వివరాలు అధికారిక వెబ్‌సైట్‌లో ఒకసారి ధృవీకరించుకోండి.</p>')
+
+
 def clean_public_article(html: str) -> str:
     """Remove machine/editorial chrome from the reader-facing article.
 
@@ -364,7 +395,9 @@ def clean_public_article(html: str) -> str:
         r'<div\b[^>]*class=["\\\'][^"\\\']*su-byline[^>]*>.*?</div>',
         r'<section\b[^>]*class=["\\\'][^"\\\']*su-trust-box[^>]*>.*?</section>',
         r'<section\b[^>]*class=["\\\'][^"\\\']*su-methodology[^>]*>.*?</section>',
-        r'<p\b[^>]*class=["\\\'][^"\\\']*su-source[^>]*>.*?</p>',
+        # v136: only the machine "source-backed draft" chrome is dropped. The
+        # reader-facing provenance line (p.su-source) must survive.
+        r'<p\b[^>]*class=["\\\'][^"\\\']*su-source-draft[^>]*>.*?</p>',
         r'<div\b[^>]*class=["\\\'][^"\\\']*su-related-entities[^>]*>.*?</div>\s*</div>',
         r'<div\b[^>]*class=["\\\'][^"\\\']*su-related-entities[^>]*>.*?</div>',
         r'<section\b[^>]*class=["\\\'][^"\\\']*su-deep[^>]*>.*?</section>',
@@ -814,11 +847,20 @@ def enhance(
     # v86: ONE topic-matched related block. Anganwadi/SSC/etc. must never be
     # shown on an Infor post merely because all are in a jobs category.
     related = relevant_internal_links(internal_links, focus_keyword, max_links=6)
-    html = add_internal_links(html, related, seed=slug)
+    if related:
+        html = add_internal_links(html, related, seed=slug)
+    else:
+        # v136: no topic match — still give the reader a way out of the page,
+        # but label it honestly as general site updates.
+        html = add_internal_links(html, generic_internal_links(internal_links),
+                                  seed=slug, generic=True)
     html = add_external_links(html, external_links)
     # v21: related-questions PAA block (own content, honest answers)
     html += related_questions_block(html, focus_keyword)
     html += trust_box(date_modified or date_str, source_domains)
+    # v136: reader-facing provenance line. The trust box is editorial chrome and
+    # gets cleaned before publish, so the source disclosure lives on its own.
+    html += source_note(date_modified or date_str, source_domains)
     html += schema_jsonld(title or focus_keyword, description or "", faq or [],
                           date_str, slug, category=category,
                           date_modified=date_modified, list_items=list_items,

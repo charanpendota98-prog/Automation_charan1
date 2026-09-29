@@ -57,14 +57,43 @@ $label = $terms ? $terms[0]->name : 'Update';
 	<?php
 	$su_qual_raw = trim( (string) get_post_meta( get_the_ID(), 'studentup_qual', true ) );
 	$su_last_raw = trim( (string) get_post_meta( get_the_ID(), 'studentup_last_date', true ) );
+	// v156: state tags for the personalised strip - derived from the real
+	// category slugs, never guessed.
+	$su_states = array();
+	foreach ( (array) get_the_category() as $su_term ) {
+		$su_slug = isset( $su_term->slug ) ? $su_term->slug : '';
+		if ( false !== strpos( $su_slug, 'ts-' ) || false !== strpos( $su_slug, 'telangana' ) ) {
+			$su_states[] = 'ts';
+		}
+		if ( false !== strpos( $su_slug, 'ap-' ) || false !== strpos( $su_slug, 'andhra' ) ) {
+			$su_states[] = 'ap';
+		}
+		if ( false !== strpos( $su_slug, 'central' ) ) {
+			$su_states[] = 'central';
+		}
+	}
+	$su_states = implode( ' ', array_unique( $su_states ) );
 	?>
-	<article <?php post_class( 'news' ); ?> data-cat="<?php echo esc_attr( $cat ); ?>"
+	<article <?php post_class( 'news' ); ?> data-su-card data-cat="<?php echo esc_attr( $cat ); ?>"
 		data-qual="<?php echo esc_attr( $su_qual_raw ); ?>"
+		data-state="<?php echo esc_attr( $su_states ); ?>"
 		data-last="<?php echo esc_attr( $su_last_raw ); ?>"
 		data-text="<?php echo esc_attr( mb_strtolower( get_the_title() . ' ' . get_the_excerpt() ) ); ?>">
 		<?php if ( has_post_thumbnail() ) : ?>
 			<a class="thumb <?php echo esc_attr( $tone ); ?>" href="<?php the_permalink(); ?>" aria-hidden="true" tabindex="-1">
-				<?php the_post_thumbnail( 'studentup-card', array( 'loading' => 'lazy', 'alt' => esc_attr( get_the_title() ) ) ); ?>
+				<?php
+				// v157 LCP: the first card image is usually the largest element
+				// above the fold, so it must NOT be lazy-loaded. Everything
+				// after it stays lazy.
+				$su_img_attr = array( 'alt' => esc_attr( get_the_title() ) );
+				if ( 0 === (int) $idx ) {
+					$su_img_attr['loading']       = 'eager';
+					$su_img_attr['fetchpriority'] = 'high';
+				} else {
+					$su_img_attr['loading'] = 'lazy';
+				}
+				the_post_thumbnail( 'studentup-card', $su_img_attr );
+				?>
 			</a>
 		<?php else : ?>
 			<a class="thumb <?php echo esc_attr( $tone ); ?>" href="<?php the_permalink(); ?>" aria-hidden="true" tabindex="-1"><?php echo esc_html( wp_trim_words( get_the_title(), 5, '…' ) ); ?></a>
@@ -72,6 +101,13 @@ $label = $terms ? $terms[0]->name : 'Update';
 		<div class="newsbody">
 			<div class="tagrow">
 				<span class="tag"><?php echo esc_html( $label ); ?></span>
+				<?php
+				// v140: honest freshness tag — only for posts actually published
+				// in the last 24 hours. No fake "HOT" on an old notification.
+				if ( ( time() - (int) get_post_time( 'U', true ) ) < DAY_IN_SECONDS ) {
+					echo '<span class="su-fresh">' . esc_html__( 'NEW', 'studentup' ) . '</span>';
+				}
+				?>
 				<?php studentup_qual_chip(); ?>
 				<time class="statechip" datetime="<?php echo esc_attr( get_the_date( DATE_W3C ) ); ?>"><?php echo esc_html( studentup_ago( get_the_date( DATE_W3C ) ) ); ?></time>
 			</div>
@@ -156,12 +192,17 @@ function studentup_menu_fallback() {
 			'items' => array( 'ts-jobs', 'ap-jobs', 'central-jobs', 'private-jobs', 'walkin-jobs', 'software-jobs', 'success-stories' ),
 		),
 	);
-	$top = array( 'hall-tickets', 'results', 'current-affairs' );
+	// v123: Scholarships + Daily Quiz menu lo eppudu kanipinchali (user request).
+	$top = array( 'scholarships', 'hall-tickets', 'results', 'current-affairs', 'daily-quiz' );
 
 	$label_of = array();
 	foreach ( studentup_most_used() as $m ) {
 		$label_of[ $m['slug'] ] = $m;
 	}
+	// v123: most_used lo leni, kaani menu lo kavalsina sections.
+	$label_of['scholarships'] = array( 'slug' => 'scholarships', 'label' => 'Scholarships', 'icon' => '🎓', 'hint' => 'Central · state · private' );
+	$label_of['daily-quiz']   = array( 'slug' => 'daily-quiz', 'label' => 'Daily Quiz', 'icon' => '🧠', 'hint' => 'Roju 5 questions' );
+	$label_of['internships']  = array( 'slug' => 'internships', 'label' => 'Internships', 'icon' => '🧪', 'hint' => 'Stipend · remote · college' );
 
 	$menu = array();
 
@@ -203,7 +244,13 @@ function studentup_menu_fallback() {
 	 */
 	$more = array(
 		array( 'label' => 'Latest active jobs', 'url' => studentup_opportunity_board_url(), 'desc' => 'Dates unna active notices only' ),
+		array( 'label' => 'Daily Quiz', 'url' => $home . '#daily-quiz', 'desc' => 'Today\'s 5 questions' ),
+		array( 'label' => 'Instant alerts', 'url' => $home . '#alerts', 'desc' => 'Notification · WhatsApp · Telegram' ),
 	);
+	$intern_term = $term_of( 'internships' );
+	if ( $intern_term ) {
+		$more[] = array( 'label' => 'Internships', 'url' => get_category_link( $intern_term ), 'desc' => 'Stipend · remote · college' );
+	}
 	$success_term = $term_of( 'success-stories' );
 	if ( $success_term && isset( $label_of['success-stories'] ) ) {
 		$more[] = array(

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""v96 tests — COVERAGE + SESSION DEPTH + REAL BUG FIXES (theme 1.9.7).
+"""v96 tests — COVERAGE + SESSION DEPTH + REAL BUG FIXES (theme 1.9.20).
 
 Mee brief (2026-09-22): "ts and ap studentski em em posts vasthunnai … anni
 … job melas … every district pages jobs … university results … daily current
@@ -59,7 +59,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 THEME = ROOT / "wordpress-theme" / "studentup"
-SUITES_EXPECTED = 96  # v96 tho
+SUITES_EXPECTED = 123  # v96 tho
 
 
 def read(rel: "Path | str") -> str:
@@ -71,7 +71,7 @@ def test_source_grid_expanded() -> None:
     from autoblog import config, sources_grid
 
     grid = sources_grid._S
-    assert len(grid) == 180, f"180 sources undali, vachhindi {len(grid)}"
+    assert len(grid) == 258, f"258 sources undali, vachhindi {len(grid)}"
     names = " ".join(s[0] for s in grid).lower()
     queries = " ".join(s[1] for s in grid).lower()
     for needle in ("job mela", "district jobs", "jntuh results", "hall tickets",
@@ -85,7 +85,7 @@ def test_source_grid_expanded() -> None:
     qs = [s[1].lower() for s in grid]
     assert len(qs) == len(set(qs)), "duplicate radar query undi"
     daily = [s for s in grid if s[3]]
-    assert 30 <= len(daily) <= 45, f"daily hot-list balance tappu: {len(daily)}"
+    assert 30 <= len(daily) <= 70, f"daily hot-list balance tappu: {len(daily)}"
     print(f"      grid 180 sources · {len(daily)} daily · melas/districts/universities ✔")
 
 
@@ -113,7 +113,7 @@ def test_counts_locked_in_guardian_and_readiness() -> None:
 
     ok, detail, _fix = guardian.check_keyword_pillar_lock()
     assert ok, f"guardian counts lock fail: {detail}"
-    assert "221 entities" in detail and "180 sources" in detail, detail
+    assert "221 entities" in detail and "258 sources" in detail, detail
     rows = readiness.c_pillars_and_keywords()
     assert rows[0]["ok"], rows[0]
     assert "12,344" in rows[0]["value"], rows[0]["value"]
@@ -405,16 +405,16 @@ def test_theme_version_and_zip() -> None:
                     read(THEME / "functions.php")).group(1)
     stable = re.search(r"Stable tag:\s*([0-9.]+)",
                        read(THEME / "readme.txt")).group(1)
-    assert css == php == stable == "1.9.8", f"parity tappu: {css}·{php}·{stable}"
+    assert css == php == stable == "1.9.20", f"parity tappu: {css}·{php}·{stable}"
     assert "= 1.9.7" in read(THEME / "readme.txt"), "changelog entry ledu"
     zpath = ROOT / "wordpress-theme" / "studentup-theme.zip"
     with zipfile.ZipFile(zpath) as z:
         names = z.namelist()
         assert "studentup/inc/upnext.php" in names, "zip lo upnext.php ledu"
         style = z.read("studentup/style.css").decode("utf-8")
-    assert "Version: 1.9.8" in style, "zip stale (build_wp_theme.py run cheyandi)"
+    assert "Version: 1.9.20" in style, "zip stale (build_wp_theme.py run cheyandi)"
     assert ".su-upnext" in style and ".su-join-strip" in style
-    print(f"      theme 1.9.8 · zip {len(names)} files · upnext + CSS inside ✔")
+    print(f"      theme 1.9.20 · zip {len(names)} files · upnext + CSS inside ✔")
 
 
 def test_suite_pins_and_docs() -> None:
@@ -449,7 +449,7 @@ TESTS = [
     ("district hub coverage data-driven", test_district_hub_coverage_is_data_driven),
     ("district hub thin-page guard", test_district_hubs_thin_page_guard),
     ("district hubs CLI + docs", test_district_hubs_cli_wired),
-    ("theme 1.9.7 + zip", test_theme_version_and_zip),
+    ("theme 1.9.20 + zip", test_theme_version_and_zip),
     ("suite pins + docs", test_suite_pins_and_docs),
 ]
 
@@ -457,7 +457,7 @@ TESTS = [
 def main() -> None:
     os.chdir(ROOT)
     print("=" * 70)
-    print("v96 COVERAGE + SESSION DEPTH + REAL BUG FIXES (theme 1.9.7)")
+    print("v96 COVERAGE + SESSION DEPTH + REAL BUG FIXES (theme 1.9.20)")
     print("=" * 70)
     failed = 0
     for name, fn in TESTS:

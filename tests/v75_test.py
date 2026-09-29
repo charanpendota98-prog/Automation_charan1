@@ -177,16 +177,16 @@ def test_php_and_zip_fresh():
 
 def test_docs_v75():
     suites = len(list((ROOT / "tests").glob("*_test.py")))
-    assert suites == 96, f"suites {suites} (v116 tho 96 expect)"
+    assert suites == 123, f"suites {suites} (v116 tho 123 expect)"
     readme = read(ROOT / "README.md")
     manual = read(ROOT / "MANUAL_ADVANCED_CHECKLIST.md")
     go_live = read(ROOT / "GO_LIVE_CHECKLIST.md")
-    assert "### v75" in readme and "71/71" in readme
-    assert "PART 34" in manual and "v75" in manual and "71/71" in manual
-    assert "71/71" in go_live
+    assert "### v75" in readme and "123/123" in readme
+    assert "PART 34" in manual and "v75" in manual and "123/123" in manual
+    assert "123/123" in go_live
     for name, txt in (("README", readme), ("MANUAL", manual),
                       ("GO_LIVE", go_live)):
-        assert "164/164" in txt, f"{name} lo jsdom claim poyindi"
+        assert "165/165" in txt, f"{name} lo jsdom claim poyindi"
 
 
 TESTS = [

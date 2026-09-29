@@ -5,7 +5,7 @@ import sys
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT))
 from autoblog import security_audit  # noqa: E402
-SUITES_EXPECTED=96
+SUITES_EXPECTED=123
 
 def test_scanner_runs():
  r=security_audit.scan();assert "status" in r and isinstance(r["findings"],list)
@@ -18,7 +18,7 @@ def test_known_patterns_detected():
 
 def test_cli_wired_docs():
  src=(ROOT/"autoblog/main.py").read_text(encoding="utf-8");r=(ROOT/"README.md").read_text(encoding="utf-8");m=(ROOT/"MANUAL_ADVANCED_CHECKLIST.md").read_text(encoding="utf-8")
- assert "--security-audit" in src and "security_audit as _sa_sec" in src and "### v116" in r and "PART 73" in m and "96/96" in r and "96/96" in m
+ assert "--security-audit" in src and "security_audit as _sa_sec" in src and "### v116" in r and "PART 73" in m and "123/123" in r and "123/123" in m
  print("      security CLI + docs 96/96 pinned ✔")
 TESTS=[("scanner",test_scanner_runs),("patterns",test_known_patterns_detected),("CLI/docs",test_cli_wired_docs)]
 def main():

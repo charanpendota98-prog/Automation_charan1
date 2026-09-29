@@ -420,8 +420,8 @@ def pending_from_queue() -> Optional[str]:
         if url and url.startswith("http") and not state.source_done(config.STATE_PATH, url):
             try:
                 state.mark_source_queued(config.STATE_PATH, url)
-            except Exception:
-                pass
+            except Exception:  # noqa: BLE001 — queue marking failure must not block the draft
+                log.debug("source queue mark skip: %s", url, exc_info=True)
             return url
     return None
 
@@ -445,15 +445,15 @@ def mark_done_and_clean(
         try:
             state.record_radar_event(config.STATE_PATH, "draft_ready", url,
                                      details="draft created after source preflight")
-        except Exception:
-            pass
+        except Exception:  # noqa: BLE001 — audit row failure must not lose the draft
+            log.debug("radar draft_ready event skip: %s", url, exc_info=True)
     else:
         state.mark_source_retry(config.STATE_PATH, url)
         try:
             state.record_radar_event(config.STATE_PATH, failure_type, url,
                                      details=details)
-        except Exception:
-            pass
+        except Exception:  # noqa: BLE001 — audit row failure must not hide the retry
+            log.debug("radar %s event skip: %s", failure_type, url, exc_info=True)
         url_key = "radar:url:" + hashlib.md5((url or "").encode("utf-8")).hexdigest()[:16]
         ref_key = url_key + ":opportunity"
         opportunity_key = state.meta_get(config.STATE_PATH, ref_key)
@@ -461,8 +461,8 @@ def mark_done_and_clean(
             if key:
                 try:
                     state.meta_delete(config.STATE_PATH, key)
-                except Exception:
-                    pass
+                except Exception:  # noqa: BLE001 — stale key cleanup is best effort
+                    log.debug("radar meta cleanup skip: %s", key, exc_info=True)
     path = queue_file_path()
     if path.exists():
         lines = [l for l in path.read_text(encoding="utf-8").splitlines()

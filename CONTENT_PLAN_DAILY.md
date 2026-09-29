@@ -1,5 +1,7 @@
 # STUDENTUP DAILY CONTENT PLAN (v50)
 
+
+> Prathi post ki qualification tag (**v72** filter) + `studentup_last_date` meta undela chudandi — homepage cards, eligibility checker, job calendar anni ee data meedane aadhaarapadi unnayi.
 Ee plan = "anni categories, chala posts, daily refresh, manual gate" — code lo
 wire ayyi unna configuration ki match avutundi (`tests/v50_test.py` ee plan ni
 verify chestundi).

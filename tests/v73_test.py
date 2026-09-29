@@ -89,8 +89,10 @@ def test_ui_chrome_telugu_free():
     assert nav and not TE.search(nav.group(0)), "nav lo Telugu undi"
     # Telugu content: grid cards + quiz bank
     assert TE.search(html.split('id="grid"')[1].split('id="nores"')[0]), "grid content Telugu kaadu"
-    assert re.search(r"var QUIZ\s*=\s*\[", html), "quiz bank ledu"
-    quiz = html[html.index("var QUIZ"):]
+    # v145: the bank rotates daily — QUIZ_BANK holds the questions, QUIZ is
+    # today's 6-question paper picked from it.
+    assert re.search(r"var QUIZ_BANK\s*=\s*\[", html), "quiz bank ledu"
+    quiz = html[html.index("var QUIZ_BANK"):]
     assert TE.search(quiz[:4000]), "quiz bank Telugu kaadu (content scope)"
 
 
@@ -151,6 +153,12 @@ def test_theme_telugu_only_in_detection_keywords():
             src = read(f)
             if f.name == "cta.php":
                 src = _strip_cta_telugu_brand(src)   # v89 allowed region
+            if f.name == "success-stories.php":
+                # v117 allowed region: the story-intake block speaks to Telugu
+                # students in their language by design (same rule as the v89
+                # CTA brand block). Everything outside it must stay English.
+                src = re.sub(r"<h2 id=\"su-success-intake-title\".*?</section>", "",
+                             src, flags=re.S)
             assert not TE.search(src), f"{f.relative_to(THEME)} lo Telugu undi"
 
 
