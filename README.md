@@ -1,7 +1,7 @@
 # studentup.in Auto-Blogger 🤖
 
 
-> **Verified counts (theme v1.9.20 build):** test suites **119/119** files · jsdom runtime **177/177** checks · PHP lint **66/66** files · theme audit **0/0** · code audit **0/0**.
+> **Verified counts (theme v1.9.20 build):** test suites **120/120** files · jsdom runtime **177/177** checks · PHP lint **66/66** files · theme audit **0/0** · code audit **0/0**.
 24/7 automatic blog posting system for **studentup.in** (WordPress) — runs on your Oracle Cloud instance.
 
 - **AI content:** Google Gemini (free tier) generates Telugu + English mix articles
@@ -629,6 +629,40 @@ runs Telegram noise create cheyyavu. Telegram credentials lekunte no-op and
 clear status. Content/ads/publish automatic ga touch cheyyadu.
 
 **Proof:** `--test-all` **93/93**.
+
+### v161 — DRAFT ↔ SOURCE FACT CROSS-CHECK (`--factcheck`)
+
+Jobs site ki అతి pedda risk **tappu date**. Student aa date nammi apply
+cheyyakapothe adi manaki traffic loss kaadu — aa student ki nijamaina nashtam.
+Google ki kuda idi YMYL, inaccuracy ni kashtanga chustundi.
+
+```bash
+python run.py --factcheck draft.html --against notification.txt
+```
+
+Draft lo cheppina **prati** date / fee / salary / vacancy count ni official
+source text tho compare chestundi:
+
+| Verdict | Artham |
+|---|---|
+| `MATCH` | source lo same value undi |
+| `CONFLICT` | source lo **veru** value undi → **publish blocker** (exit 1) |
+| `NOT_FOUND` | source lo ee fact ledu → manually verify cheyandi |
+
+Date formats moodu (`2026-10-15`, `15 October 2026`, `Oct 15, 2026`) okate ISO
+value ga normalise avutayi — format veru anta matrame ki false conflict raadu.
+`32 October` laanti invalid date reject avutundi.
+
+**Conflict ni jagratthaga define chesamu.** Notification lo chala dates untayi
+(start, last, exam, result) — "source lo vere date undi" ante conflict kaadu.
+Claimed value source lo unna dhaaniki **chala daggara** unte ne (date 45 rojula
+lopu, number 15% lopu) conflict — endukante adi same fact ni tappu ga
+raasinattu (15 vs 20 October). Ekkuva dooram unte adi veru fact, `NOT_FOUND`.
+
+Idi LLM kaadu, guess kaadu — plain text comparison. Source lo ledante "tappu"
+ani cheppadu, **"nenu confirm cheyyalekapoyanu"** ani cheptundi. Adi nijayathi,
+and adi ne publish decision ki correct signal.
+
 
 ### v160 — `--final-audit`: DEPLOY MUNDU OKATE COMMAND
 

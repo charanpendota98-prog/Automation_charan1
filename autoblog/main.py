@@ -1744,6 +1744,10 @@ def main() -> int:
                         help="v109: mobile PageSpeed/CWV/accessibility/SEO audit")
     parser.add_argument("--corrections-audit", action="store_true",
                         help="v111: verify tamper-evident update/correction ledger")
+    parser.add_argument("--factcheck", default=None, metavar="DRAFT",
+                        help="v161: draft lo unna dates/fees/vacancies ni source tho cross-check")
+    parser.add_argument("--against", default="", metavar="SOURCE",
+                        help="v161: --factcheck ki official source file")
     parser.add_argument("--final-audit", action="store_true",
                         help="v160: anni gates okate saari (deploy mundu)")
     parser.add_argument("--aeo", nargs="?", const="", default=None, metavar="HTML",
@@ -2008,6 +2012,10 @@ def main() -> int:
                         help="v26: install/update site-wide quiz engine "
                              "(CSS+JS footer widget) — quiz UI, timers, scoring")
     args = parser.parse_args()
+
+    if args.factcheck:
+        from . import factcheck as _fc
+        return _fc.run_cli(args.factcheck, args.against)
 
     if args.final_audit:
         from . import final_audit as _fa

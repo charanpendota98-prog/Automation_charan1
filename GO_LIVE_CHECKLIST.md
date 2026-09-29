@@ -1,7 +1,7 @@
 # GO-LIVE CHECKLIST (v60) — deploy cheyocha? Enti migilindi?
 
 
-> **Verified counts (theme v1.9.20 build):** test suites **119/119** files · jsdom runtime **177/177** checks · PHP lint **66/66** files · theme audit **0/0** · code audit **0/0**.
+> **Verified counts (theme v1.9.20 build):** test suites **120/120** files · jsdom runtime **177/177** checks · PHP lint **66/66** files · theme audit **0/0** · code audit **0/0**.
 **Short answer: CODE ready ✅ · DEPLOY ready ✅ · 5 panulu MEE accounts lo cheyyali ⏳.**
 Ee doc = okka page lo motham. Kramam ga cheyyandi.
 
@@ -125,7 +125,7 @@ Detail docs: `DEPLOY_MILESWEB.md` (cPanel steps) · `DEPLOY_ORACLE_CLOUD.md` (VM
 - [ ] **2. WordPress setup** — Rank Math; theme install (**v74**: theme **1.7.2** —
       `python tools/build_wp_theme.py` → zip → Appearance → Themes → Upload → Activate);
       **zip:** 84 files · 830 KB · theme **1.9.20** · sha256
-      `3336e8dec5e15dda45673664eb461a68592d84bd293d15330a3df77d5a70e46a`
+      `9e179ce97595b56605f4cd8003905f65f207b3fe0e3a3e566943365e841cf5fc`
       (`sha256sum wordpress-theme/studentup-theme.zip` — upload chesina zip ide ani verify cheyandi;
       build ippudu **reproducible** — same content ⇒ same sha)
       `wp-admin → Users → Application Passwords` → app password create cheyyandi.
@@ -210,6 +210,7 @@ python run.py --production-audit     # 0 blockers
 python3 tools/cwv_audit.py           # v157: CLS/LCP/a11y markup audit (0 errors undali)
 python run.py --aeo post.html        # v158: AI Overview / snippet readiness + HowTo schema
 python3 tools/image_weight_audit.py  # v159: image budget + oversize check (0 findings undali)
+python run.py --factcheck d.html --against src.txt  # v161: date/fee/vacancy source tho cross-check
 python run.py --final-audit          # v160: anni gates okate saari — GO / NO-GO
 python run.py --rpm-report Pages.csv  # v151: page/slot RPM + weak slots
 python run.py --ctr-boost Queries.csv # v149: low-CTR pages + title fixes
