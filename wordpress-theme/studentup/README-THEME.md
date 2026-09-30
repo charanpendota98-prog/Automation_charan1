@@ -75,3 +75,21 @@ theme.json           block editor colors/Typography (navy/blue/orange)
 | Breaking section | `inc/breaking.php` | ⚙️ default **OFF** (`StudentUp → కంటెంట్ → breaking_enabled`) |
 
 CLI: `wp studentup-qual-backfill --limit=500` (purana posts ki tags).
+
+## v168 (theme 1.9.20) — world-class interactive student suite
+
+| Feature | Where | Automatic? |
+|---|---|---|
+| వయోపరిమితి కాలిక్యులేటర్ (Age & Eligibility) | `inc/agecalc.php` + `[studentup_age_calc]` | ✅ DOB & cutoff tho TSPSC/APPSC/Central reservation relaxation |
+| దరఖాస్తు ఫీజు కాలిక్యులేటర్ (Fee Calculator) | `inc/feecalc.php` + `[studentup_fee_calc]` | ✅ SC/ST/PwD/Women fee exemptions breakdown |
+| నెగెటివ్ మార్కింగ్ స్కోర్ కాలిక్యులేటర్ (Score Calc) | `inc/scorecalc.php` + `[studentup_score_calc]` | ✅ Net score + Accuracy rate % calculation |
+| హాల్ టికెట్ పోర్టల్ హెల్పర్ (Admit Card Helper) | `inc/admitcard.php` + `[studentup_admit_card]` | ✅ Direct board hall ticket portals & login checklist |
+| ఫ్రెషర్ బయోడేటా మేకర్ (Resume Builder) | `inc/resumemaker.php` + `[studentup_resume_maker]` | ✅ 1-click clean PDF bio-data generator |
+| పరీక్ష సిలబస్ ట్రాకర్ (Syllabus Progress Tracker) | `inc/syllabustracker.php` + `[studentup_syllabus_tracker]` | ✅ Interactive study checklist with localStorage progress % |
+| వాట్సాప్ 9:16 స్టేటస్ ఇమేజ్ జెనరేటర్ (Status Card) | `inc/statuscard.php` | ✅ 1-click 1080x1920 viral status graphic download |
+| తెలుగు టెక్స్ట్-టు-స్పీచ్ రీడర్ (Audio Reader) | `inc/audioreader.php` | ✅ Native Web Speech API Telugu voice synthesizer |
+| గూగుల్ FAQPage Rich Snippet Schema | `inc/faqschema.php` | ✅ SERP expandable FAQ rich snippet structured data |
+| 1-Minute Key Highlights Box | `inc/quicksummary.php` | ✅ Axios/Verge style TL;DR takeaways card |
+| రీడర్ టూల్‌బార్ (Font Resizer A-/A+) | `inc/readerbar.php` | ✅ Accessibility text scaling + reading time |
+| కమ్యూనిటీ పల్స్ కార్డ్ (50k+ Community) | `inc/readerbar.php` | ✅ 1-click WhatsApp/Telegram channel conversion |
+

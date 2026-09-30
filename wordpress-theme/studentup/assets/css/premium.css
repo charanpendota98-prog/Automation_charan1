@@ -549,3 +549,385 @@ body.su-has-applybar{padding-bottom:70px}
 @media (max-width:480px){.su-applybar-title{font-size:12px}.su-applybtn{padding:0 14px;font-size:13px}}
 @media print{.su-applybar{display:none}}
 @media (prefers-reduced-motion:reduce){.su-applybar--urgent .su-applychip{animation:none}}
+
+/* ==========================================================================
+   v165 — World-Class Enhancements: Audio Reader · Age Calc · FAQ Accordion
+   ========================================================================== */
+
+/* 1. Audio Article Reader */
+.su-audio-reader-box{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:12px 0 16px;padding:10px 14px;border-radius:14px;background:linear-gradient(135deg,rgba(99,102,241,.08),rgba(16,185,129,.08));border:1px solid rgba(99,102,241,.20);transition:border-color .2s}
+.su-audio-reader-box:hover{border-color:rgba(99,102,241,.40)}
+.su-audio-left{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.su-audio-btn{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;border:0;background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;font-size:13px;font-weight:800;cursor:pointer;box-shadow:0 4px 12px rgba(79,70,229,.25);transition:transform .15s,filter .15s}
+.su-audio-btn:hover{transform:translateY(-1px);filter:brightness(1.08)}
+.su-audio-waves{display:inline-flex;align-items:flex-end;gap:3px;height:18px}
+.su-wave-bar{width:3px;height:100%;border-radius:2px;background:#10b981;animation:su-audio-wave 1s ease-in-out infinite}
+.su-wave-bar:nth-child(2){animation-delay:.2s;height:70%}
+.su-wave-bar:nth-child(3){animation-delay:.4s;height:90%}
+.su-wave-bar:nth-child(4){animation-delay:.6s;height:60%}
+@keyframes su-audio-wave{0%,100%{height:4px}50%{height:18px}}
+.su-audio-controls{display:flex;align-items:center;gap:8px}
+.su-audio-ctrl-btn{padding:6px 12px;border-radius:999px;border:1px solid rgba(15,23,42,.15);background:#fff;font-size:12px;font-weight:700;cursor:pointer;color:#334155}
+.su-audio-ctrl-btn:hover{background:#f1f5f9}
+.su-audio-speed{display:inline-block;padding:4px 8px;border-radius:6px;background:rgba(15,23,42,.08);font-size:11px;font-weight:800;cursor:pointer}
+body.dark .su-audio-reader-box{background:rgba(30,41,59,.7);border-color:rgba(148,163,184,.2)}
+body.dark .su-audio-ctrl-btn{background:#1e293b;color:#e2e8f0;border-color:#334155}
+
+/* 2. Age & Eligibility Calculator */
+.su-age-calc-wrap{margin:20px 0 24px;padding:18px 20px;border-radius:18px;background:linear-gradient(135deg,rgba(79,70,229,.05),rgba(244,63,94,.05));border:1px solid rgba(79,70,229,.2);box-shadow:0 4px 18px rgba(15,23,42,.04)}
+.su-age-calc-head{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.su-age-calc-icon{font-size:28px;line-height:1}
+.su-age-calc-title{margin:0;font-size:17px;font-weight:900;color:var(--navy,#0f2e62)}
+.su-age-calc-desc{margin:4px 0 0;font-size:12.5px;color:var(--muted,#64748b)}
+.su-age-calc-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:14px}
+.su-age-field{display:flex;flex-direction:column;gap:5px}
+.su-age-field label{font-size:12px;font-weight:800;color:#334155}
+.su-age-input,.su-age-select{width:100%;padding:10px 12px;border-radius:10px;border:1px solid rgba(15,23,42,.15);background:#fff;font-size:13.5px;font-weight:600;color:#0f172a;box-sizing:border-box}
+.su-age-input:focus,.su-age-select:focus{outline:none;border-color:#4f46e5;box-shadow:0 0 0 3px rgba(79,70,229,.15)}
+.su-age-actions{display:flex;justify-content:center;margin-bottom:12px}
+.su-calc-btn-primary{display:inline-flex;align-items:center;gap:6px;padding:11px 24px;border-radius:999px;border:0;background:linear-gradient(135deg,#16a34a,#22c55e);color:#fff;font-size:14px;font-weight:900;cursor:pointer;box-shadow:0 4px 14px rgba(22,163,74,.3);transition:transform .15s}
+.su-calc-btn-primary:hover{transform:scale(1.02)}
+.su-age-result{margin-top:14px;padding:16px;border-radius:14px;background:#fff;border:1px solid rgba(15,23,42,.1);box-shadow:0 2px 8px rgba(15,23,42,.06);animation:su-fade-in .25s ease}
+.su-age-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+.su-age-card{display:flex;flex-direction:column;gap:4px;padding:10px 12px;border-radius:10px;background:rgba(248,250,252,.9);border:1px solid rgba(15,23,42,.06)}
+.su-age-lbl{font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase}
+.su-age-val{font-size:14px;font-weight:900;color:#0f172a}
+.su-age-status{font-size:14.5px;font-weight:900}
+.su-elig-yes{color:#16a34a}
+.su-elig-no{color:#dc2626}
+.su-age-note{margin-top:10px;font-size:12px;color:#475569;line-height:1.5}
+body.dark .su-age-calc-wrap{background:linear-gradient(135deg,rgba(30,41,59,.8),rgba(15,23,42,.9));border-color:rgba(148,163,184,.15)}
+body.dark .su-age-calc-title{color:#e2e8f0}
+body.dark .su-age-field label{color:#94a3b8}
+body.dark .su-age-input,body.dark .su-age-select{background:#1e293b;border-color:#334155;color:#f1f5f9}
+body.dark .su-age-result{background:#1e293b;border-color:#334155}
+body.dark .su-age-card{background:#0f172a;border-color:#1e293b}
+body.dark .su-age-val{color:#f1f5f9}
+
+/* 3. FAQ Accordion & FAQPage Rich Schema */
+.su-faq-section{margin:24px 0 28px;padding:20px;border-radius:18px;background:linear-gradient(135deg,rgba(99,102,241,.06),rgba(236,72,153,.06));border:1px solid rgba(99,102,241,.2)}
+.su-faq-head{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.su-faq-badge{padding:4px 10px;border-radius:999px;background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;font-size:11.5px;font-weight:900}
+.su-faq-title{margin:0;font-size:18px;font-weight:900;color:var(--navy,#0f2e62)}
+.su-faq-list{display:flex;flex-direction:column;gap:10px}
+.su-faq-item{border-radius:12px;border:1px solid rgba(15,23,42,.1);background:#fff;overflow:hidden;transition:box-shadow .2s,border-color .2s}
+.su-faq-item[open]{box-shadow:0 4px 14px rgba(15,23,42,.06);border-color:rgba(79,70,229,.3)}
+.su-faq-question{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;font-size:14px;font-weight:800;color:#0f172a;cursor:pointer;list-style:none}
+.su-faq-question::-webkit-details-marker{display:none}
+.su-faq-arrow{font-size:16px;color:#64748b;transition:transform .2s}
+.su-faq-item[open] .su-faq-arrow{transform:rotate(180deg);color:#4f46e5}
+.su-faq-answer{padding:0 16px 14px;font-size:13px;line-height:1.6;color:#334155}
+.su-faq-answer p{margin:0}
+body.dark .su-faq-section{background:rgba(30,41,59,.7);border-color:rgba(148,163,184,.15)}
+body.dark .su-faq-title{color:#e2e8f0}
+body.dark .su-faq-item{background:#1e293b;border-color:#334155}
+body.dark .su-faq-question{color:#f1f5f9}
+body.dark .su-faq-answer{color:#cbd5e1}
+
+/* ==========================================================================
+   v166 — Ultra-Advanced Theme Features: Summary Box · Font Sizer · Community Hub
+   ========================================================================== */
+
+/* 1. Reader Toolbar & Font Sizer */
+.su-reader-bar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin:10px 0 12px;padding:8px 12px;border-radius:10px;background:rgba(15,23,42,.04);border:1px solid rgba(15,23,42,.08)}
+.su-rb-time{font-size:12px;font-weight:700;color:#475569}
+.su-rb-right{display:flex;align-items:center;gap:8px}
+.su-rb-label{font-size:11.5px;font-weight:700;color:#64748b}
+.su-font-sizer{display:inline-flex;align-items:center;background:#fff;border-radius:8px;border:1px solid rgba(15,23,42,.12);overflow:hidden}
+.su-fz-btn{padding:4px 8px;border:0;background:transparent;font-size:11.5px;font-weight:800;color:#334155;cursor:pointer;transition:background .15s,color .15s}
+.su-fz-btn:hover{background:#f1f5f9}
+.su-fz-btn.is-active{background:#4f46e5;color:#fff}
+body.dark .su-reader-bar{background:rgba(30,41,59,.6);border-color:rgba(148,163,184,.15)}
+body.dark .su-rb-time{color:#94a3b8}
+body.dark .su-font-sizer{background:#1e293b;border-color:#334155}
+body.dark .su-fz-btn{color:#cbd5e1}
+body.dark .su-fz-btn.is-active{background:#4f46e5;color:#fff}
+
+body.su-font-small .article-content{font-size:14.5px;line-height:1.7}
+body.su-font-large .article-content{font-size:18px;line-height:1.85}
+
+/* 2. AI Quick Highlights / 1-Minute Summary Box */
+.su-summary-box{margin:18px 0 22px;padding:16px 18px;border-radius:16px;background:linear-gradient(135deg,rgba(16,185,129,.08),rgba(99,102,241,.08));border:1.5px solid rgba(16,185,129,.25);box-shadow:0 4px 16px rgba(15,23,42,.04)}
+.su-summary-head{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.su-summary-badge{padding:3px 9px;border-radius:999px;background:linear-gradient(135deg,#10b981,#059669);color:#fff;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.04em}
+.su-summary-title{margin:0;font-size:16px;font-weight:900;color:var(--navy,#0f2e62)}
+.su-summary-list{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.su-summary-item{display:flex;align-items:flex-start;gap:8px;padding:8px 10px;border-radius:10px;background:#fff;border:1px solid rgba(15,23,42,.06)}
+.su-summary-icon{font-size:16px;line-height:1.3}
+.su-summary-text{font-size:12.5px;line-height:1.4;color:#1e293b}
+.su-summary-text strong{color:#0f172a;display:inline-block;margin-right:4px}
+.su-summary-cta{margin-top:12px;text-align:center}
+.su-summary-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:999px;background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;font-size:12.5px;font-weight:800;text-decoration:none;box-shadow:0 3px 10px rgba(79,70,229,.25);transition:transform .15s}
+.su-summary-btn:hover{transform:translateY(-1px);color:#fff}
+body.dark .su-summary-box{background:rgba(30,41,59,.7);border-color:rgba(16,185,129,.2)}
+body.dark .su-summary-title{color:#e2e8f0}
+body.dark .su-summary-item{background:#1e293b;border-color:#334155}
+body.dark .su-summary-text{color:#cbd5e1}
+body.dark .su-summary-text strong{color:#f1f5f9}
+
+/* 3. Community Pulse Card */
+.su-community-card{margin:26px 0 28px;padding:20px;border-radius:18px;background:linear-gradient(135deg,#0f172a,#1e293b);color:#fff;box-shadow:0 12px 30px rgba(15,23,42,.2)}
+.su-comm-head{text-align:center;margin-bottom:16px}
+.su-pulse-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:999px;background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.3);color:#4ade80;font-size:11.5px;font-weight:800}
+.su-pulse-dot{width:8px;height:8px;border-radius:50%;background:#22c55e;box-shadow:0 0 10px #22c55e;animation:su-pulse-anim 1.5s infinite}
+@keyframes su-pulse-anim{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.4);opacity:.6}}
+.su-comm-title{margin:10px 0 6px;font-size:18px;font-weight:900;color:#fff}
+.su-comm-desc{margin:0;font-size:13px;color:#94a3b8;line-height:1.5}
+.su-comm-buttons{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:14px}
+.su-comm-btn{display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border-radius:999px;font-size:13px;font-weight:800;text-decoration:none;transition:transform .15s}
+.su-comm-btn:hover{transform:translateY(-1px)}
+.su-comm-wa{background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff}
+.su-comm-tg{background:linear-gradient(135deg,#0284c7,#0369a1);color:#fff}
+
+/* ==========================================================================
+   v167 — Next-Gen Power Features: Fee Calc · Syllabus Tracker · Status Generator
+   ========================================================================== */
+
+/* 1. Fee & Concession Calculator */
+.su-fee-calc-wrap{margin:20px 0 24px;padding:18px 20px;border-radius:18px;background:linear-gradient(135deg,rgba(16,185,129,.05),rgba(79,70,229,.05));border:1px solid rgba(16,185,129,.2);box-shadow:0 4px 18px rgba(15,23,42,.04)}
+.su-fee-calc-head{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.su-fee-calc-icon{font-size:28px;line-height:1}
+.su-fee-calc-title{margin:0;font-size:17px;font-weight:900;color:var(--navy,#0f2e62)}
+.su-fee-calc-desc{margin:4px 0 0;font-size:12.5px;color:var(--muted,#64748b)}
+.su-fee-calc-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:14px}
+.su-fee-field{display:flex;flex-direction:column;gap:5px}
+.su-fee-field label{font-size:12px;font-weight:800;color:#334155}
+.su-fee-input,.su-fee-select{width:100%;padding:10px 12px;border-radius:10px;border:1px solid rgba(15,23,42,.15);background:#fff;font-size:13.5px;font-weight:600;color:#0f172a;box-sizing:border-box}
+.su-fee-input:focus,.su-fee-select:focus{outline:none;border-color:#10b981;box-shadow:0 0 0 3px rgba(16,185,129,.15)}
+.su-fee-actions{display:flex;justify-content:center;margin-bottom:12px}
+.su-fee-btn-primary{display:inline-flex;align-items:center;gap:6px;padding:11px 24px;border-radius:999px;border:0;background:linear-gradient(135deg,#059669,#10b981);color:#fff;font-size:14px;font-weight:900;cursor:pointer;box-shadow:0 4px 14px rgba(16,185,129,.3);transition:transform .15s}
+.su-fee-btn-primary:hover{transform:scale(1.02)}
+.su-fee-result{margin-top:14px;padding:16px;border-radius:14px;background:#fff;border:1px solid rgba(15,23,42,.1);box-shadow:0 2px 8px rgba(15,23,42,.06);animation:su-fade-in .25s ease}
+.su-fee-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+.su-fee-card{display:flex;flex-direction:column;gap:4px;padding:10px 12px;border-radius:10px;background:rgba(248,250,252,.9);border:1px solid rgba(15,23,42,.06)}
+.su-fee-lbl{font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase}
+.su-fee-val{font-size:15px;font-weight:900;color:#0f172a}
+.su-fee-highlight{color:#16a34a;font-size:17px}
+.su-fee-note{margin-top:10px;font-size:12px;color:#475569;line-height:1.5}
+body.dark .su-fee-calc-wrap{background:linear-gradient(135deg,rgba(30,41,59,.8),rgba(15,23,42,.9));border-color:rgba(148,163,184,.15)}
+body.dark .su-fee-calc-title{color:#e2e8f0}
+body.dark .su-fee-field label{color:#94a3b8}
+body.dark .su-fee-input,body.dark .su-fee-select{background:#1e293b;border-color:#334155;color:#f1f5f9}
+body.dark .su-fee-result{background:#1e293b;border-color:#334155}
+body.dark .su-fee-card{background:#0f172a;border-color:#1e293b}
+body.dark .su-fee-val{color:#f1f5f9}
+
+/* 2. Syllabus & Preparation Progress Tracker */
+.su-syl-wrap{margin:22px 0 26px;padding:18px 20px;border-radius:18px;background:linear-gradient(135deg,rgba(79,70,229,.06),rgba(236,72,153,.06));border:1px solid rgba(79,70,229,.2);box-shadow:0 4px 18px rgba(15,23,42,.04)}
+.su-syl-head{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.su-syl-icon{font-size:28px;line-height:1}
+.su-syl-title{margin:0;font-size:17px;font-weight:900;color:var(--navy,#0f2e62)}
+.su-syl-desc{margin:4px 0 0;font-size:12.5px;color:var(--muted,#64748b)}
+.su-syl-progress-wrap{margin-bottom:16px;padding:12px 14px;border-radius:12px;background:#fff;border:1px solid rgba(15,23,42,.08)}
+.su-syl-pbar-bg{height:10px;border-radius:999px;background:#e2e8f0;overflow:hidden;margin-bottom:8px}
+.su-syl-pbar-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,#4f46e5,#10b981);transition:width .3s ease}
+.su-syl-pbar-text{display:flex;align-items:center;justify-content:space-between;font-size:12.5px;font-weight:800;color:#334155}
+.su-syl-list{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.su-syl-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:10px;background:#fff;border:1px solid rgba(15,23,42,.08);cursor:pointer;transition:background .15s}
+.su-syl-item:hover{background:#f8fafc}
+.su-syl-chk{width:18px;height:18px;cursor:pointer;accent-color:#4f46e5}
+.su-syl-lbl{font-size:13.5px;font-weight:700;color:#1e293b;flex:1}
+.su-syl-item.is-done .su-syl-lbl{text-decoration:line-through;opacity:.6}
+.su-syl-actions{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.su-syl-btn-print{padding:8px 16px;border-radius:999px;border:1px solid rgba(15,23,42,.15);background:#fff;font-size:12.5px;font-weight:800;cursor:pointer;color:#334155}
+.su-syl-btn-print:hover{background:#f1f5f9}
+.su-syl-btn-reset{border:0;background:transparent;font-size:12px;font-weight:700;color:#64748b;cursor:pointer}
+.su-syl-btn-reset:hover{color:#ef4444;text-decoration:underline}
+body.dark .su-syl-wrap{background:linear-gradient(135deg,rgba(30,41,59,.8),rgba(15,23,42,.9));border-color:rgba(148,163,184,.15)}
+body.dark .su-syl-title{color:#e2e8f0}
+body.dark .su-syl-progress-wrap,body.dark .su-syl-item{background:#1e293b;border-color:#334155}
+body.dark .su-syl-pbar-bg{background:#334155}
+body.dark .su-syl-lbl{color:#f1f5f9}
+body.dark .su-syl-btn-print{background:#1e293b;border-color:#334155;color:#e2e8f0}
+
+/* 3. WhatsApp Viral Status Image Generator */
+.su-status-card-box{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;margin:24px 0 28px;padding:18px 20px;border-radius:18px;background:linear-gradient(135deg,rgba(34,197,94,.10),rgba(59,130,246,.10));border:1.5px solid rgba(34,197,94,.3);box-shadow:0 6px 20px rgba(34,197,94,.1)}
+.su-status-content{flex:1 1 240px}
+.su-status-badge{display:inline-block;padding:3px 10px;border-radius:999px;background:linear-gradient(135deg,#16a34a,#22c55e);color:#fff;font-size:11px;font-weight:900;margin-bottom:6px}
+.su-status-title{margin:0 0 4px;font-size:16px;font-weight:900;color:var(--navy,#0f2e62)}
+.su-status-desc{margin:0;font-size:12.5px;color:var(--muted,#64748b);line-height:1.4}
+.su-status-btn{display:inline-flex;align-items:center;gap:6px;padding:11px 20px;border-radius:999px;border:0;background:linear-gradient(135deg,#16a34a,#22c55e);color:#fff;font-size:13.5px;font-weight:900;cursor:pointer;box-shadow:0 4px 14px rgba(22,163,74,.35);transition:transform .15s}
+.su-status-btn:hover{transform:translateY(-1px);filter:brightness(1.08)}
+body.dark .su-status-card-box{background:rgba(30,41,59,.7);border-color:rgba(34,197,94,.25)}
+body.dark .su-status-title{color:#e2e8f0}
+
+/* ==========================================================================
+   v168 — World-Class Utilities: Admit Card Helper · Score Calc · Resume Maker
+   ========================================================================== */
+
+/* 1. Admit Card & Hall Ticket Helper */
+.su-admit-wrap{margin:22px 0 26px;padding:18px 20px;border-radius:18px;background:linear-gradient(135deg,rgba(2,132,199,.06),rgba(99,102,241,.06));border:1px solid rgba(2,132,199,.2);box-shadow:0 4px 18px rgba(15,23,42,.04)}
+.su-admit-head{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.su-admit-icon{font-size:28px;line-height:1}
+.su-admit-title{margin:0;font-size:17px;font-weight:900;color:var(--navy,#0f2e62)}
+.su-admit-desc{margin:4px 0 0;font-size:12.5px;color:var(--muted,#64748b)}
+.su-admit-select-wrap{margin-bottom:14px}
+.su-admit-select-wrap label{display:block;font-size:12px;font-weight:800;color:#334155;margin-bottom:6px}
+.su-admit-select{width:100%;padding:10px 12px;border-radius:10px;border:1px solid rgba(15,23,42,.15);background:#fff;font-size:13.5px;font-weight:700;color:#0f172a}
+.su-admit-info-box{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;padding:14px 16px;border-radius:12px;background:#fff;border:1px solid rgba(15,23,42,.08);margin-bottom:12px}
+.su-admit-req{font-size:13px;color:#334155}
+.su-admit-btn{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border-radius:999px;background:linear-gradient(135deg,#0284c7,#0369a1);color:#fff;font-size:13px;font-weight:800;text-decoration:none;box-shadow:0 3px 10px rgba(2,132,199,.25);transition:transform .15s}
+.su-admit-btn:hover{transform:translateY(-1px);color:#fff}
+.su-admit-tips{font-size:12px;color:#64748b;line-height:1.4}
+body.dark .su-admit-wrap{background:linear-gradient(135deg,rgba(30,41,59,.8),rgba(15,23,42,.9));border-color:rgba(148,163,184,.15)}
+body.dark .su-admit-title{color:#e2e8f0}
+body.dark .su-admit-select,body.dark .su-admit-info-box{background:#1e293b;border-color:#334155;color:#f1f5f9}
+body.dark .su-admit-req{color:#cbd5e1}
+
+/* 2. Score & Negative Marking Calculator */
+.su-score-calc-wrap{margin:20px 0 24px;padding:18px 20px;border-radius:18px;background:linear-gradient(135deg,rgba(234,88,12,.05),rgba(236,72,153,.05));border:1px solid rgba(234,88,12,.2);box-shadow:0 4px 18px rgba(15,23,42,.04)}
+.su-score-calc-head{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.su-score-calc-icon{font-size:28px;line-height:1}
+.su-score-calc-title{margin:0;font-size:17px;font-weight:900;color:var(--navy,#0f2e62)}
+.su-score-calc-desc{margin:4px 0 0;font-size:12.5px;color:var(--muted,#64748b)}
+.su-score-calc-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:14px}
+.su-score-field{display:flex;flex-direction:column;gap:5px}
+.su-score-field label{font-size:12px;font-weight:800;color:#334155}
+.su-score-input,.su-score-select{width:100%;padding:10px 12px;border-radius:10px;border:1px solid rgba(15,23,42,.15);background:#fff;font-size:13.5px;font-weight:600;color:#0f172a;box-sizing:border-box}
+.su-score-input:focus,.su-score-select:focus{outline:none;border-color:#ea580c;box-shadow:0 0 0 3px rgba(234,88,12,.15)}
+.su-score-actions{display:flex;justify-content:center;margin-bottom:12px}
+.su-score-btn-primary{display:inline-flex;align-items:center;gap:6px;padding:11px 24px;border-radius:999px;border:0;background:linear-gradient(135deg,#ea580c,#f97316);color:#fff;font-size:14px;font-weight:900;cursor:pointer;box-shadow:0 4px 14px rgba(234,88,12,.3);transition:transform .15s}
+.su-score-btn-primary:hover{transform:scale(1.02)}
+.su-score-result{margin-top:14px;padding:16px;border-radius:14px;background:#fff;border:1px solid rgba(15,23,42,.1);box-shadow:0 2px 8px rgba(15,23,42,.06);animation:su-fade-in .25s ease}
+.su-score-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+.su-score-card{display:flex;flex-direction:column;gap:4px;padding:10px 12px;border-radius:10px;background:rgba(248,250,252,.9);border:1px solid rgba(15,23,42,.06)}
+.su-score-lbl{font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase}
+.su-score-val{font-size:15px;font-weight:900;color:#0f172a}
+.su-score-neg-val{color:#ef4444}
+.su-score-highlight{color:#16a34a;font-size:18px}
+.su-score-note{margin-top:10px;font-size:12px;color:#475569;line-height:1.5}
+body.dark .su-score-calc-wrap{background:linear-gradient(135deg,rgba(30,41,59,.8),rgba(15,23,42,.9));border-color:rgba(148,163,184,.15)}
+body.dark .su-score-calc-title{color:#e2e8f0}
+body.dark .su-score-input,body.dark .su-score-select{background:#1e293b;border-color:#334155;color:#f1f5f9}
+body.dark .su-score-result{background:#1e293b;border-color:#334155}
+body.dark .su-score-card{background:#0f172a;border-color:#1e293b}
+body.dark .su-score-val{color:#f1f5f9}
+
+/* 3. Fresher Resume & Bio-Data Maker */
+.su-resume-wrap{margin:22px 0 26px;padding:18px 20px;border-radius:18px;background:linear-gradient(135deg,rgba(79,70,229,.05),rgba(16,185,129,.05));border:1px solid rgba(79,70,229,.2);box-shadow:0 4px 18px rgba(15,23,42,.04)}
+.su-resume-head{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.su-resume-icon{font-size:28px;line-height:1}
+.su-resume-title{margin:0;font-size:17px;font-weight:900;color:var(--navy,#0f2e62)}
+.su-resume-desc{margin:4px 0 0;font-size:12.5px;color:var(--muted,#64748b)}
+.su-resume-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:14px}
+.su-resume-field{display:flex;flex-direction:column;gap:5px}
+.su-resume-field label{font-size:12px;font-weight:800;color:#334155}
+.su-resume-input,.su-resume-select{width:100%;padding:10px 12px;border-radius:10px;border:1px solid rgba(15,23,42,.15);background:#fff;font-size:13.5px;font-weight:600;color:#0f172a;box-sizing:border-box}
+.su-resume-actions{display:flex;justify-content:center;margin-bottom:12px}
+.su-resume-btn-primary{display:inline-flex;align-items:center;gap:6px;padding:11px 24px;border-radius:999px;border:0;background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;font-size:14px;font-weight:900;cursor:pointer;box-shadow:0 4px 14px rgba(79,70,229,.3);transition:transform .15s}
+.su-resume-btn-primary:hover{transform:scale(1.02)}
+.su-resume-paper{margin-top:14px;padding:24px 28px;border-radius:12px;background:#fff;color:#0f172a;border:1px solid rgba(15,23,42,.15);box-shadow:0 6px 20px rgba(15,23,42,.08)}
+.su-rp-header{text-align:center;margin-bottom:14px}
+.su-rp-name{margin:0 0 6px;font-size:22px;font-weight:900;color:#0f2e62}
+.su-rp-contact{margin:0;font-size:13px;color:#64748b}
+.su-rp-hr{border:0;border-top:2px solid #0f2e62;margin:12px 0 16px}
+.su-rp-section{margin-bottom:14px}
+.su-rp-sec-title{margin:0 0 6px;font-size:14px;font-weight:800;color:#0f2e62;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid #e2e8f0;padding-bottom:4px}
+.su-rp-sec-p{margin:0;font-size:13px;line-height:1.5;color:#334155}
+.su-rp-footer{margin-top:18px;font-size:11.5px;color:#64748b;font-style:italic}
+.su-resume-print-action{margin-top:14px;text-align:center}
+.su-resume-print-btn{padding:9px 20px;border-radius:999px;border:1px solid rgba(15,23,42,.2);background:#fff;font-size:13px;font-weight:800;cursor:pointer;color:#334155}
+.su-resume-print-btn:hover{background:#f1f5f9}
+body.dark .su-resume-wrap{background:linear-gradient(135deg,rgba(30,41,59,.8),rgba(15,23,42,.9));border-color:rgba(148,163,184,.15)}
+body.dark .su-resume-title{color:#e2e8f0}
+body.dark .su-resume-input,body.dark .su-resume-select{background:#1e293b;border-color:#334155;color:#f1f5f9}
+
+/* ==========================================================================
+   v169 — Highest-RPM & Maximum Revenue Maximizers: Sponsor Hub · Video Unit · Recirc
+   ========================================================================== */
+
+/* 1. High-RPM Contextual Sponsor Box */
+.su-sponsor-box{margin:18px 0 22px;padding:16px 18px;border-radius:16px;background:linear-gradient(135deg,rgba(234,88,12,.08),rgba(245,158,11,.08));border:1.5px solid rgba(234,88,12,.25);box-shadow:0 4px 16px rgba(234,88,12,.06)}
+.su-sponsor-kicker{font-size:10.5px;font-weight:900;letter-spacing:.06em;color:#ea580c;text-transform:uppercase;margin-bottom:8px}
+.su-sponsor-card{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;padding:12px 14px;border-radius:12px;background:#fff;border:1px solid rgba(15,23,42,.06)}
+.su-sponsor-icon{font-size:32px;line-height:1}
+.su-sponsor-info{flex:1 1 220px}
+.su-sponsor-title{margin:0 0 4px;font-size:15px;font-weight:900;color:var(--navy,#0f2e62)}
+.su-sponsor-desc{margin:0;font-size:12.5px;color:var(--muted,#64748b);line-height:1.4}
+.su-sponsor-btn{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border-radius:999px;background:linear-gradient(135deg,#ea580c,#f97316);color:#fff;font-size:13px;font-weight:800;text-decoration:none;box-shadow:0 3px 12px rgba(234,88,12,.3);transition:transform .15s}
+.su-sponsor-btn:hover{transform:translateY(-1px);color:#fff}
+.su-sponsor-disc{margin-top:8px;font-size:11px;color:#94a3b8;font-style:italic}
+body.dark .su-sponsor-box{background:rgba(30,41,59,.7);border-color:rgba(234,88,12,.2)}
+body.dark .su-sponsor-card{background:#1e293b;border-color:#334155}
+body.dark .su-sponsor-title{color:#e2e8f0}
+
+/* 2. High-CPM Video & Outstream Ad Container */
+.su-video-ad-container{margin:20px 0 24px;border-radius:16px;background:rgba(15,23,42,.03);border:1px dashed rgba(15,23,42,.15);padding:14px;display:flex;justify-content:center;align-items:center}
+.su-video-ad-box{width:100%;max-width:680px;text-align:center}
+.su-video-native-card{display:flex;align-items:center;gap:12px;padding:14px 18px;border-radius:12px;background:#fff;border:1px solid rgba(15,23,42,.08);text-align:left}
+.su-vn-play{display:grid;place-items:center;width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;font-size:18px;flex:0 0 auto}
+.su-vn-text strong{display:block;font-size:14px;font-weight:800;color:#0f172a;margin-bottom:2px}
+.su-vn-text p{margin:0;font-size:12px;color:#64748b;line-height:1.4}
+body.dark .su-video-ad-container{background:rgba(30,41,59,.4);border-color:#334155}
+body.dark .su-video-native-card{background:#1e293b;border-color:#334155}
+body.dark .su-vn-text strong{color:#f1f5f9}
+
+/* 3. Smart Recirculation Trending Unit */
+.su-recirc-wrap{margin:24px 0 28px;padding:18px 20px;border-radius:18px;background:linear-gradient(135deg,rgba(99,102,241,.06),rgba(236,72,153,.06));border:1px solid rgba(99,102,241,.2)}
+.su-recirc-head{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.su-recirc-icon{font-size:24px;line-height:1}
+.su-recirc-title{margin:0;font-size:17px;font-weight:900;color:var(--navy,#0f2e62)}
+.su-recirc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
+.su-recirc-card{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;background:#fff;border:1px solid rgba(15,23,42,.08);text-decoration:none;transition:transform .15s,box-shadow .15s}
+.su-recirc-card:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(15,23,42,.08);border-color:rgba(79,70,229,.3)}
+.su-recirc-rank{display:grid;place-items:center;min-width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#4f46e5,#ec4899);color:#fff;font-size:12px;font-weight:900;flex:0 0 auto}
+.su-recirc-body{min-width:0;flex:1}
+.su-recirc-post-title{margin:0 0 3px;font-size:13px;font-weight:800;color:#0f172a;line-height:1.35;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.su-recirc-date{font-size:11px;color:#64748b;font-weight:600}
+body.dark .su-recirc-wrap{background:rgba(30,41,59,.7);border-color:rgba(148,163,184,.15)}
+body.dark .su-recirc-title{color:#e2e8f0}
+body.dark .su-recirc-card{background:#1e293b;border-color:#334155}
+body.dark .su-recirc-post-title{color:#f1f5f9}
+
+/* ==========================================================================
+   v170 — E-E-A-T Verified Author Box & Mobile Social Media Polish
+   ========================================================================== */
+
+/* 1. E-E-A-T Author Box (Charan Pendota · 5+ Years Experience) */
+.su-author-box{display:flex;align-items:flex-start;gap:18px;margin:28px 0 32px;padding:22px 24px;border-radius:20px;background:linear-gradient(135deg,rgba(79,70,229,.05),rgba(14,165,233,.05));border:1.5px solid rgba(79,70,229,.22);box-shadow:0 6px 24px rgba(15,23,42,.05);position:relative}
+.su-ab-left{flex:0 0 auto}
+.su-ab-avatar{position:relative;width:68px;height:68px}
+.su-ab-img{width:68px;height:68px;border-radius:50%;object-fit:cover;border:2px solid #4f46e5;box-shadow:0 4px 12px rgba(79,70,229,.25)}
+.su-ab-placeholder{width:68px;height:68px;border-radius:50%;background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;display:grid;place-items:center;font-size:24px;font-weight:900;box-shadow:0 4px 14px rgba(79,70,229,.3)}
+.su-ab-verified-badge{position:absolute;right:-2px;bottom:-2px;width:22px;height:22px;border-radius:50%;background:#16a34a;color:#fff;display:grid;place-items:center;font-size:12px;font-weight:900;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.2)}
+.su-ab-right{flex:1 1 auto;min-width:0}
+.su-ab-head{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:8px}
+.su-ab-name{margin:0 0 2px;font-size:18px;font-weight:900;color:var(--navy,#0f2e62)}
+.su-ab-exp{font-size:12.5px;font-weight:800;color:#4f46e5;display:block}
+.su-ab-shield{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:999px;background:rgba(22,163,74,.12);border:1px solid rgba(22,163,74,.3);color:#15803d;font-size:11.5px;font-weight:800}
+.su-ab-bio{margin:0 0 12px;font-size:13.5px;line-height:1.6;color:#334155}
+.su-ab-footer{display:flex;flex-direction:column;gap:10px}
+.su-ab-trust-pills{display:flex;flex-wrap:wrap;gap:8px}
+.su-ab-pill{font-size:11.5px;font-weight:700;color:#64748b;padding:3px 8px;border-radius:6px;background:rgba(15,23,42,.05)}
+.su-ab-socials{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.su-ab-soc{display:inline-flex;align-items:center;gap:6px;padding:6px 13px;border-radius:999px;font-size:12px;font-weight:800;text-decoration:none;transition:transform .15s}
+.su-ab-soc:hover{transform:translateY(-1px)}
+.su-ab-soc.wa{background:linear-gradient(135deg,#25d366,#16a34a);color:#fff}
+.su-ab-soc.tg{background:linear-gradient(135deg,#229ed9,#0284c7);color:#fff}
+.su-ab-soc.ig{background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366);color:#fff}
+.su-ab-soc.yt{background:#ff0000;color:#fff}
+.su-ab-soc.mail{background:#f1f5f9;color:#334155;border:1px solid rgba(15,23,42,.15)}
+.su-ab-soc.mail:hover{background:#e2e8f0}
+
+body.dark .su-author-box{background:linear-gradient(135deg,rgba(30,41,59,.8),rgba(15,23,42,.9));border-color:rgba(148,163,184,.15)}
+body.dark .su-ab-name{color:#e2e8f0}
+body.dark .su-ab-exp{color:#818cf8}
+body.dark .su-ab-bio{color:#cbd5e1}
+body.dark .su-ab-pill{background:rgba(255,255,255,.08);color:#94a3b8}
+body.dark .su-ab-soc.mail{background:#1e293b;color:#e2e8f0;border-color:#334155}
+
+/* 2. Mobile Social Rail & Sharing Icon Clarity */
+.su-social{display:flex!important;align-items:center!important;justify-content:center!important}
+.su-social a{display:grid!important;place-items:center!important;overflow:hidden!important}
+.su-social a svg,.su-social a .su-icn{width:18px!important;height:18px!important;fill:currentColor!important;display:block!important;margin:auto!important}
+.su-share-btn{display:inline-flex;align-items:center;gap:7px}
+.su-share-btn svg{width:15px;height:15px;fill:currentColor;flex:0 0 auto}
+
+@media(max-width:600px){
+  .su-author-box{flex-direction:column;align-items:center;text-align:center;padding:18px 16px}
+  .su-ab-head{flex-direction:column;align-items:center;text-align:center}
+  .su-ab-trust-pills,.su-ab-socials{justify-content:center}
+  .su-social{right:6px!important;gap:7px!important;padding:8px 5px!important}
+  .su-social a{width:36px!important;height:36px!important}
+  .su-social a svg{width:17px!important;height:17px!important}
+}

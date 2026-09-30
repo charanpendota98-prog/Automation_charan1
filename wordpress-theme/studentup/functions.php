@@ -29,6 +29,20 @@ require_once get_template_directory() . '/inc/keyfacts.php'; // v158: key-facts 
 require_once get_template_directory() . '/inc/adfill.php';  // v159: unfilled ad slot collapse
 require_once get_template_directory() . '/inc/slotlab.php'; // v162: ad slot A/B variant assignment
 require_once get_template_directory() . '/inc/webpush.php'; // v163: real web push (VAPID)
+require_once get_template_directory() . '/inc/agecalc.php'; // v165: interactive age & eligibility calculator
+require_once get_template_directory() . '/inc/audioreader.php'; // v165: Telugu text-to-speech audio reader
+require_once get_template_directory() . '/inc/faqschema.php'; // v165: FAQ accordion & FAQPage schema
+require_once get_template_directory() . '/inc/quicksummary.php'; // v166: 1-minute key highlights box
+require_once get_template_directory() . '/inc/readerbar.php'; // v166: font size sizer & community pulse card
+require_once get_template_directory() . '/inc/feecalc.php'; // v167: application fee & concession calculator
+require_once get_template_directory() . '/inc/syllabustracker.php'; // v167: syllabus & study progress tracker
+require_once get_template_directory() . '/inc/statuscard.php'; // v167: 1-click WhatsApp status card generator
+require_once get_template_directory() . '/inc/admitcard.php'; // v168: hall ticket & admit card download helper
+require_once get_template_directory() . '/inc/scorecalc.php'; // v168: exam score & negative marking calculator
+require_once get_template_directory() . '/inc/resumemaker.php'; // v168: instant fresher resume & bio-data builder
+require_once get_template_directory() . '/inc/sponsorhub.php'; // v169: high-RPM contextual sponsor & study partner box
+require_once get_template_directory() . '/inc/videoplayer.php'; // v169: smart high-CPM video / outstream ad container
+require_once get_template_directory() . '/inc/smartrecirc.php'; // v169: scroll-depth high-RPM smart recirculation unit
 require_once get_template_directory() . '/inc/seo-bridge.php';
 require_once get_template_directory() . '/inc/toc.php';
 require_once get_template_directory() . '/inc/schema.php';

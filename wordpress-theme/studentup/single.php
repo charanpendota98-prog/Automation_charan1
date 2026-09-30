@@ -47,6 +47,14 @@ get_header();
 					<?php // Byline is intentionally omitted from the article header; schema retains publisher/author data. ?>
 				</div>
 
+				<?php if ( function_exists( 'studentup_reader_toolbar' ) ) : ?>
+					<?php studentup_reader_toolbar(); ?>
+				<?php endif; ?>
+
+				<?php if ( function_exists( 'studentup_audio_reader' ) ) : ?>
+					<?php studentup_audio_reader(); ?>
+				<?php endif; ?>
+
 				<?php if ( has_post_thumbnail() ) : ?>
 					<figure class="su-featured-hero">
 						<?php the_post_thumbnail( 'studentup-discover', array(
@@ -72,8 +80,59 @@ get_header();
 
 				<?php studentup_ad( 'mid' ); ?>
 
+				<?php
+				if ( function_exists( 'studentup_quick_summary_box' ) ) {
+					studentup_quick_summary_box();
+				}
+				?>
+				<?php
+				if ( function_exists( 'studentup_sponsor_partner_box' ) ) {
+					studentup_sponsor_partner_box();
+				}
+				?>
+
 				<?php studentup_keyfacts_box(); // v158 ?>
+				<?php
+				if ( function_exists( 'studentup_age_calculator_block' ) ) {
+					studentup_age_calculator_block();
+				}
+				?>
+				<?php
+				if ( function_exists( 'studentup_fee_calculator_block' ) ) {
+					studentup_fee_calculator_block();
+				}
+				?>
+				<?php
+				if ( function_exists( 'studentup_video_ad_slot' ) ) {
+					studentup_video_ad_slot();
+				}
+				?>
 				<div class="article-content"><?php the_content(); ?></div>
+				<?php
+				if ( function_exists( 'studentup_syllabus_tracker_block' ) ) {
+					studentup_syllabus_tracker_block();
+				}
+				?>
+				<?php
+				if ( function_exists( 'studentup_faq_box' ) ) {
+					studentup_faq_box();
+				}
+				?>
+				<?php
+				if ( function_exists( 'studentup_smart_recirculation_box' ) ) {
+					studentup_smart_recirculation_box();
+				}
+				?>
+				<?php
+				if ( function_exists( 'studentup_community_pulse_card' ) ) {
+					studentup_community_pulse_card();
+				}
+				?>
+				<?php
+				if ( function_exists( 'studentup_status_card_generator' ) ) {
+					studentup_status_card_generator();
+				}
+				?>
 
 				<div class="share" aria-label="Share">
 					<a class="su-share-btn su-share-wa" href="https://wa.me/?text=<?php echo rawurlencode( get_the_title() . ' — ' . get_permalink() ); ?>" target="_blank" rel="noopener"><?php echo studentup_social_icon( 'whatsapp', 15 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Share on WhatsApp</a>
@@ -82,16 +141,14 @@ get_header();
 					<button type="button" class="su-copy su-share-copy" data-url="<?php echo esc_url( get_permalink() ); ?>"><?php echo studentup_social_icon( 'link', 14 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Copy link</button>
 				</div>
 
-				<?php
-				// These helpers remain available for policy pages, not every post.
-				if ( false ) {
-					studentup_trust_note();
-					studentup_author_box();
-				}
-				?>
 				<?php if ( has_tag() ) : ?>
 					<div class="su-tags" aria-label="Tags">🏷 <?php the_tags( '', ' · ', '' ); ?></div>
 				<?php endif; ?>
+
+				<?php studentup_author_box(); ?>
+
+				<?php studentup_trust_note(); ?>
+
 				<nav class="post-nav" aria-label="More posts">
 					<span class="post-nav-prev"><?php previous_post_link( '%link', '← %title' ); ?></span>
 					<span class="post-nav-next"><?php next_post_link( '%link', '%title →' ); ?></span>

@@ -117,4 +117,495 @@
     if (target && target.closest("[data-su-compare-clear]")) { event.preventDefault(); list = []; write(); render(); show(false); }
   });
   list = read(); render();
+
+  /* v165: Age & Eligibility Calculator Handler */
+  (function initAgeCalc() {
+    var btn = document.getElementById("su-calc-age-btn");
+    if (!btn) return;
+
+    btn.addEventListener("click", function () {
+      var dobVal = document.getElementById("su-dob").value;
+      var cutoffVal = document.getElementById("su-cutoff").value;
+      var catRelax = parseInt(document.getElementById("su-cat").value, 10) || 0;
+      var minAge = parseInt(btn.getAttribute("data-min"), 10) || 18;
+      var baseMaxAge = parseInt(btn.getAttribute("data-max"), 10) || 44;
+      var maxAllowed = baseMaxAge + catRelax;
+
+      if (!dobVal || !cutoffVal) {
+        alert("Please enter Date of Birth and Cut-off Date.");
+        return;
+      }
+
+      var dob = new Date(dobVal);
+      var cutoff = new Date(cutoffVal);
+
+      if (dob >= cutoff) {
+        alert("Date of Birth must be before Cut-off Date.");
+        return;
+      }
+
+      var y = cutoff.getFullYear() - dob.getFullYear();
+      var m = cutoff.getMonth() - dob.getMonth();
+      var d = cutoff.getDate() - dob.getDate();
+
+      if (d < 0) {
+        m -= 1;
+        var prevMonthLast = new Date(cutoff.getFullYear(), cutoff.getMonth(), 0).getDate();
+        d += prevMonthLast;
+      }
+      if (m < 0) {
+        y -= 1;
+        m += 12;
+      }
+
+      var exactStr = y + " Years, " + m + " Months, " + d + " Days (" + y + " yrs)";
+      var resBox = document.getElementById("su-age-result");
+      var exactAgeEl = document.getElementById("su-exact-age");
+      var maxAllowedEl = document.getElementById("su-max-allowed");
+      var statusEl = document.getElementById("su-elig-status");
+      var noteEl = document.getElementById("su-elig-note");
+
+      exactAgeEl.textContent = exactStr;
+      maxAllowedEl.textContent = maxAllowed + " Years (Base " + baseMaxAge + " + Relaxation " + catRelax + ")";
+
+      var isEligible = (y >= minAge) && (y < maxAllowed || (y === maxAllowed && m === 0 && d === 0));
+
+      if (isEligible) {
+        statusEl.textContent = "✅ Eligible";
+        statusEl.className = "su-age-status su-elig-yes";
+        noteEl.innerHTML = "🎉 Congratulations! Your age is within the eligible limit (" + minAge + " - " + maxAllowed + " years). Check official qualification criteria to apply.";
+      } else {
+        if (y < minAge) {
+          statusEl.textContent = "⚠️ Underage";
+          statusEl.className = "su-age-status su-elig-no";
+          noteEl.innerHTML = "Minimum age required is " + minAge + " years. As of the cut-off date, your age is " + y + " years.";
+        } else {
+          statusEl.textContent = "❌ Over Age";
+          statusEl.className = "su-age-status su-elig-no";
+          noteEl.innerHTML = "Maximum age limit with relaxation is " + maxAllowed + " years. You exceed the upper age limit.";
+        }
+      }
+
+      resBox.style.display = "block";
+    });
+  })();
+
+  /* v166: Font Resizer Toolbar */
+  (function initFontSizer() {
+    var stored = localStorage.getItem("su_font_size") || "normal";
+    function applyFont(size) {
+      document.body.classList.remove("su-font-small", "su-font-large");
+      if (size === "small") document.body.classList.add("su-font-small");
+      if (size === "large") document.body.classList.add("su-font-large");
+      document.querySelectorAll("[data-su-font]").forEach(function (btn) {
+        btn.classList.toggle("is-active", btn.getAttribute("data-su-font") === size);
+      });
+      try { localStorage.setItem("su_font_size", size); } catch (e) {}
+    }
+    applyFont(stored);
+    document.addEventListener("click", function (e) {
+      var btn = e.target.closest && e.target.closest("[data-su-font]");
+      if (btn) {
+        e.preventDefault();
+        applyFont(btn.getAttribute("data-su-font"));
+      }
+    });
+  })();
+
+  /* v167: Fee & Concession Calculator Handler */
+  (function initFeeCalc() {
+    var btn = document.getElementById("su-calc-fee-btn");
+    if (!btn) return;
+
+    btn.addEventListener("click", function () {
+      var cat = document.getElementById("su-fee-cat").value;
+      var proc = parseInt(document.getElementById("su-base-proc").value, 10) || 0;
+      var exam = parseInt(document.getElementById("su-base-exam").value, 10) || 0;
+      var finalProc = proc;
+      var finalExam = exam;
+      var note = "";
+
+      if (cat === "sc_st") {
+        finalExam = 0;
+        note = "🎉 SC / ST candidates get 100% Exam Fee Exemption. Only processing fee is applicable.";
+      } else if (cat === "pwd") {
+        finalProc = 0;
+        finalExam = 0;
+        note = "🎉 PwD / Differently Abled candidates are 100% exempt from both processing and examination fees.";
+      } else if (cat === "women") {
+        finalExam = 0;
+        note = "🎉 Female candidates receive exam fee concession as per state government rules.";
+      } else if (cat === "esm") {
+        finalExam = 0;
+        note = "Ex-Servicemen are entitled to exam fee exemption.";
+      } else {
+        note = "OC / General / BC candidates must pay the full application and exam fee via the online portal.";
+      }
+
+      var total = finalProc + finalExam;
+      document.getElementById("su-res-proc").textContent = "₹" + finalProc;
+      document.getElementById("su-res-exam").textContent = finalExam === 0 ? "₹0 (Exempted)" : "₹" + finalExam;
+      document.getElementById("su-res-total").textContent = "₹" + total;
+      document.getElementById("su-fee-note").innerHTML = note;
+      document.getElementById("su-fee-result").style.display = "block";
+    });
+  })();
+
+  /* v167: Syllabus & Study Progress Tracker */
+  (function initSyllabusTracker() {
+    var wrap = document.getElementById("syllabus-tracker");
+    if (!wrap) return;
+
+    var postId = wrap.getAttribute("data-post-id") || "global";
+    var storeKey = "su_syl_progress_" + postId;
+    var chks = wrap.querySelectorAll(".su-syl-chk");
+    var bar = document.getElementById("su-syl-bar");
+    var countEl = document.getElementById("su-syl-count");
+    var pctEl = document.getElementById("su-syl-percent");
+    var resetBtn = document.getElementById("su-syl-reset");
+
+    function getSaved() {
+      try { return JSON.parse(localStorage.getItem(storeKey) || "{}"); } catch (e) { return {}; }
+    }
+    function save(data) {
+      try { localStorage.setItem(storeKey, JSON.stringify(data)); } catch (e) {}
+    }
+
+    function updateUI() {
+      var saved = getSaved();
+      var done = 0;
+      chks.forEach(function (chk) {
+        var tid = chk.getAttribute("data-tid");
+        var isDone = !!saved[tid];
+        chk.checked = isDone;
+        var item = chk.closest(".su-syl-item");
+        if (item) item.classList.toggle("is-done", isDone);
+        if (isDone) done++;
+      });
+      var total = chks.length || 1;
+      var pct = Math.round((done / total) * 100);
+      if (bar) bar.style.width = pct + "%";
+      if (countEl) countEl.textContent = done + " / " + total + " Completed";
+      if (pctEl) pctEl.textContent = pct + "%";
+    }
+
+    chks.forEach(function (chk) {
+      chk.addEventListener("change", function () {
+        var saved = getSaved();
+        var tid = chk.getAttribute("data-tid");
+        saved[tid] = chk.checked;
+        save(saved);
+        updateUI();
+      });
+    });
+
+    if (resetBtn) {
+      resetBtn.addEventListener("click", function () {
+        if (confirm("Do you want to reset your syllabus progress?")) {
+          save({});
+          updateUI();
+        }
+      });
+    }
+
+    updateUI();
+  })();
+
+  /* v167: 1-Click WhatsApp Status Card Canvas Generator */
+  (function initStatusCardGenerator() {
+    var box = document.getElementById("su-status-box");
+    var btn = document.getElementById("su-gen-status-btn");
+    var canvas = document.getElementById("su-status-canvas");
+    if (!box || !btn || !canvas) return;
+
+    btn.addEventListener("click", function () {
+      btn.textContent = "⏳ Generating Status Image...";
+      btn.disabled = true;
+
+      var ctx = canvas.getContext("2d");
+      var w = 1080;
+      var h = 1920;
+
+      var grad = ctx.createLinearGradient(0, 0, w, h);
+      grad.addColorStop(0, "#0b1528");
+      grad.addColorStop(0.5, "#0f2e62");
+      grad.addColorStop(1, "#162235");
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, w, h);
+
+      ctx.fillStyle = "#22c55e";
+      ctx.beginPath();
+      ctx.arc(100, 140, 16, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "bold 56px system-ui, sans-serif";
+      ctx.fillText("StudentUp.in", 136, 156);
+
+      ctx.fillStyle = "#38bdf8";
+      ctx.font = "600 36px system-ui, sans-serif";
+      ctx.fillText("Telangana & AP Job Alerts", 100, 230);
+
+      ctx.fillStyle = "rgba(255, 255, 255, 0.08)";
+      if (ctx.roundRect) {
+        ctx.roundRect(80, 320, 920, 1200, 40);
+      } else {
+        ctx.rect(80, 320, 920, 1200);
+      }
+      ctx.fill();
+
+      ctx.fillStyle = "#ec4899";
+      if (ctx.roundRect) {
+        ctx.roundRect(140, 380, 450, 64, 32);
+      } else {
+        ctx.rect(140, 380, 450, 64);
+      }
+      ctx.fill();
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "bold 32px system-ui, sans-serif";
+      ctx.fillText("🔥 LATEST NOTIFICATION", 165, 424);
+
+      var title = box.getAttribute("data-title") || "Government Job Notification";
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "bold 54px system-ui, sans-serif";
+      
+      var words = title.split(" ");
+      var line = "";
+      var y = 540;
+      for (var i = 0; i < words.length; i++) {
+        var testLine = line + words[i] + " ";
+        if (ctx.measureText(testLine).width > 800 && i > 0) {
+          ctx.fillText(line, 140, y);
+          line = words[i] + " ";
+          y += 74;
+        } else {
+          line = testLine;
+        }
+      }
+      ctx.fillText(line, 140, y);
+
+      var facts = [
+        { icon: "💼", label: "Vacancies", val: box.getAttribute("data-vacancies") },
+        { icon: "🎓", label: "Qualification", val: box.getAttribute("data-qual") },
+        { icon: "⏰", label: "Last Date", val: box.getAttribute("data-last-date") }
+      ];
+
+      var fy = y + 80;
+      for (var j = 0; j < facts.length; j++) {
+        ctx.fillStyle = "rgba(255, 255, 255, 0.12)";
+        if (ctx.roundRect) {
+          ctx.roundRect(140, fy, 800, 110, 20);
+        } else {
+          ctx.rect(140, fy, 800, 110);
+        }
+        ctx.fill();
+
+        ctx.font = "44px system-ui, sans-serif";
+        ctx.fillText(facts[j].icon, 170, fy + 72);
+
+        ctx.fillStyle = "#94a3b8";
+        ctx.font = "600 28px system-ui, sans-serif";
+        ctx.fillText(facts[j].label + ":", 240, fy + 44);
+
+        ctx.fillStyle = "#38bdf8";
+        ctx.font = "bold 38px system-ui, sans-serif";
+        ctx.fillText(facts[j].val, 240, fy + 90);
+
+        fy += 135;
+      }
+
+      ctx.fillStyle = "#22c55e";
+      if (ctx.roundRect) {
+        ctx.roundRect(140, 1600, 800, 130, 65);
+      } else {
+        ctx.rect(140, 1600, 800, 130);
+      }
+      ctx.fill();
+
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "bold 44px system-ui, sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("Official Details & Apply 👉 studentup.in", 540, 1680);
+      ctx.textAlign = "left";
+
+      setTimeout(function () {
+        var link = document.createElement("a");
+        link.download = "studentup-job-status.png";
+        link.href = canvas.toDataURL("image/png");
+        link.click();
+        btn.textContent = "✅ Status Image Downloaded!";
+        btn.disabled = false;
+        setTimeout(function () {
+          btn.textContent = "📥 Download Status Image";
+        }, 4000);
+      }, 500);
+    });
+  })();
+
+  /* v168: Admit Card & Hall Ticket Helper Handler */
+  (function initAdmitCardHelper() {
+    var select = document.getElementById("su-admit-select");
+    var link = document.getElementById("su-admit-link");
+    var reqText = document.getElementById("su-admit-req-text");
+    if (!select || !link || !reqText) return;
+
+    select.addEventListener("change", function () {
+      var opt = select.options[select.selectedIndex];
+      var url = opt.getAttribute("data-url") || "#";
+      var req = opt.getAttribute("data-req") || "";
+      link.href = url;
+      reqText.textContent = req;
+    });
+  })();
+
+  /* v168: Exam Score & Negative Marking Calculator Handler */
+  (function initScoreCalc() {
+    var btn = document.getElementById("su-calc-score-btn");
+    if (!btn) return;
+
+    btn.addEventListener("click", function () {
+      var correct = parseFloat(document.getElementById("su-score-correct").value) || 0;
+      var wrong = parseFloat(document.getElementById("su-score-wrong").value) || 0;
+      var posRate = parseFloat(document.getElementById("su-score-pos").value) || 1.0;
+      var negRate = parseFloat(document.getElementById("su-score-neg").value) || 0.25;
+
+      var posMarks = correct * posRate;
+      var negDeduction = wrong * (posRate * negRate);
+      var netScore = Math.max(0, posMarks - negDeduction);
+      var totalQ = correct + wrong;
+      var accuracy = totalQ > 0 ? Math.round((correct / totalQ) * 100) : 0;
+
+      document.getElementById("su-res-pos-marks").textContent = "+" + posMarks.toFixed(2);
+      document.getElementById("su-res-neg-marks").textContent = "-" + negDeduction.toFixed(2);
+      document.getElementById("su-res-final-score").textContent = netScore.toFixed(2) + " Marks";
+
+      var note = "📊 Your Accuracy Rate: <strong>" + accuracy + "%</strong>. ";
+      if (accuracy >= 75) {
+        note += "🎉 Excellent Accuracy! High chance of clearing the cutoff.";
+      } else if (accuracy >= 55) {
+        note += "Good attempt! Reducing negative marks will improve your overall rank.";
+      } else {
+        note += "Marks lost in negative scoring. Focus on high-confidence questions and reduce guessing.";
+      }
+
+      document.getElementById("su-score-note").innerHTML = note;
+      document.getElementById("su-score-result").style.display = "block";
+    });
+  })();
+
+  /* v168: Fresher Resume & Bio-Data Generator Handler */
+  (function initResumeMaker() {
+    var btn = document.getElementById("su-gen-resume-btn");
+    var preview = document.getElementById("su-resume-preview");
+    if (!btn || !preview) return;
+
+    btn.addEventListener("click", function () {
+      var name = document.getElementById("su-res-name").value.trim() || "Full Name";
+      var phone = document.getElementById("su-res-phone").value.trim() || "9876543210";
+      var qual = document.getElementById("su-res-qual").value;
+      var skills = document.getElementById("su-res-skills").value.trim() || "MS Office, Typing, Basics";
+
+      document.getElementById("su-rp-name").textContent = name;
+      document.getElementById("su-rp-contact").textContent = "Phone: " + phone + " | Qualification: " + qual;
+      document.getElementById("su-rp-qual-text").textContent = qual + " Pass (from recognized University / Board)";
+      document.getElementById("su-rp-skills-text").textContent = skills;
+
+      preview.style.display = "block";
+      btn.textContent = "✅ Resume Ready! See preview below";
+    });
+  })();
+
+  /* v165: Web Speech API Telugu Audio Reader */
+  (function initAudioReader() {
+    var box = document.getElementById("su-audio-box");
+    if (!box || !("speechSynthesis" in window)) {
+      if (box && !("speechSynthesis" in window)) box.style.display = "none";
+      return;
+    }
+
+    var btn = document.getElementById("su-audio-btn");
+    var label = document.getElementById("su-audio-label");
+    var icon = document.getElementById("su-audio-icon");
+    var waves = document.getElementById("su-audio-waves");
+    var ctrls = document.getElementById("su-audio-controls");
+    var stopBtn = document.getElementById("su-audio-stop");
+    var speedBtn = document.getElementById("su-audio-speed-btn");
+
+    var speechText = box.getAttribute("data-speech") || "";
+    var utterance = null;
+    var isPlaying = false;
+    var isPaused = false;
+    var speed = 1.0;
+    var speeds = [1.0, 1.25, 0.9];
+    var speedIdx = 0;
+
+    function resetUI() {
+      isPlaying = false;
+      isPaused = false;
+      if (label) label.textContent = "Listen to Article";
+      if (icon) icon.textContent = "🔊";
+      if (waves) waves.style.display = "none";
+      if (ctrls) ctrls.style.display = "none";
+    }
+
+    btn.addEventListener("click", function () {
+      if (!isPlaying) {
+        window.speechSynthesis.cancel();
+        utterance = new SpeechSynthesisUtterance(speechText);
+        utterance.rate = speed;
+        utterance.pitch = 1.0;
+
+        var voices = window.speechSynthesis.getVoices();
+        for (var i = 0; i < voices.length; i++) {
+          if (voices[i].lang.indexOf("te") === 0 || voices[i].lang.indexOf("te-IN") === 0) {
+            utterance.voice = voices[i];
+            break;
+          }
+        }
+
+        utterance.onend = function () { resetUI(); };
+        utterance.onerror = function () { resetUI(); };
+
+        window.speechSynthesis.speak(utterance);
+        isPlaying = true;
+        isPaused = false;
+        label.textContent = "Pause";
+        icon.textContent = "⏸";
+        waves.style.display = "inline-flex";
+        ctrls.style.display = "flex";
+      } else if (isPlaying && !isPaused) {
+        window.speechSynthesis.pause();
+        isPaused = true;
+        label.textContent = "Resume";
+        icon.textContent = "▶";
+        waves.style.display = "none";
+      } else if (isPlaying && isPaused) {
+        window.speechSynthesis.resume();
+        isPaused = false;
+        label.textContent = "Pause";
+        icon.textContent = "⏸";
+        waves.style.display = "inline-flex";
+      }
+    });
+
+    if (stopBtn) {
+      stopBtn.addEventListener("click", function () {
+        window.speechSynthesis.cancel();
+        resetUI();
+      });
+    }
+
+    if (speedBtn) {
+      speedBtn.addEventListener("click", function () {
+        speedIdx = (speedIdx + 1) % speeds.length;
+        speed = speeds[speedIdx];
+        speedBtn.textContent = speed + "x";
+        if (isPlaying && utterance) {
+          window.speechSynthesis.cancel();
+          isPlaying = false;
+          btn.click();
+        }
+      });
+    }
+  })();
 })();

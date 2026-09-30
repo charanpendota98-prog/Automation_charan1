@@ -93,6 +93,10 @@ studentup_breaking_ticker();
 		<a href="#" class="su-msaved" data-su-saved-open>🔖 <?php echo esc_html__( 'Saved', 'studentup' ); ?></a>
 	<?php endif; ?>
 	<a href="<?php echo esc_url( home_url( '/#daily-quiz' ) ); ?>">🧠 Daily Quiz</a>
+	<a href="<?php echo esc_url( home_url( '/#age-calculator' ) ); ?>">🧮 Age Calculator</a>
+	<a href="<?php echo esc_url( home_url( '/#fee-calculator' ) ); ?>">💳 Fee Calculator</a>
+	<a href="<?php echo esc_url( home_url( '/#syllabus-tracker' ) ); ?>">📚 Syllabus Tracker</a>
+	<a href="<?php echo esc_url( home_url( '/#salary-calculator' ) ); ?>">💰 Salary Calculator</a>
 	<a href="<?php echo esc_url( home_url( '/#alerts' ) ); ?>">🔔 Instant alerts</a>
 	<?php
 	// v123: Scholarships mobile menu lo eppudu kanipinchali.

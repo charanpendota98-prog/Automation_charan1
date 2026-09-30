@@ -96,10 +96,16 @@ function studentup_command_palette() {
 		$links[] = array( 'i' => '📢', 't' => 'Results', 'u' => get_category_link( $res ) );
 	}
 	$links[] = array( 'i' => '📋', 't' => 'Active jobs board', 'u' => studentup_opportunity_board_url() );
-	$links[] = array( 'i' => '🧠', 't' => 'Daily quiz', 'u' => home_url( '/#daily-quiz' ) );
-	$links[] = array( 'i' => '🤖', 't' => 'AI job match', 'u' => home_url( '/#job-match' ) );
-	$links[] = array( 'i' => '💰', 't' => 'Salary calculator', 'u' => home_url( '/#salary-calculator' ) );
-	$links[] = array( 'i' => '🗓️', 't' => 'Job calendar', 'u' => home_url( '/#job-calendar' ) );
+		$links[] = array( 'i' => '🧮', 't' => 'Age & Eligibility Calculator', 'u' => home_url( '/#age-calculator' ) );
+		$links[] = array( 'i' => '💳', 't' => 'Fee & Concession Calculator', 'u' => home_url( '/#fee-calculator' ) );
+		$links[] = array( 'i' => '🎯', 't' => 'Exam Negative Marks Score Calculator', 'u' => home_url( '/#score-calculator' ) );
+		$links[] = array( 'i' => '🎫', 't' => 'Hall Ticket Download Helper', 'u' => home_url( '/#admit-card-helper' ) );
+		$links[] = array( 'i' => '📄', 't' => 'Fresher Resume & Bio-Data Maker', 'u' => home_url( '/#resume-maker' ) );
+		$links[] = array( 'i' => '📚', 't' => 'Syllabus & Study Progress Tracker', 'u' => home_url( '/#syllabus-tracker' ) );
+		$links[] = array( 'i' => '💰', 't' => 'In-hand Salary Calculator', 'u' => home_url( '/#salary-calculator' ) );
+		$links[] = array( 'i' => '🧠', 't' => 'Daily Quiz', 'u' => home_url( '/#daily-quiz' ) );
+		$links[] = array( 'i' => '🤖', 't' => 'AI Job Match', 'u' => home_url( '/#job-match' ) );
+		$links[] = array( 'i' => '🗓️', 't' => 'Job Calendar', 'u' => home_url( '/#job-calendar' ) );
 	?>
 	<div class="su-cmdk" id="su-cmdk" hidden role="dialog" aria-modal="true" aria-label="Quick search">
 		<div class="su-cmdk-box">
