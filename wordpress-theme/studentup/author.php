@@ -95,7 +95,7 @@ $su_count  = $su_id ? (int) count_user_posts( $su_id, 'post', true ) : 0;
 		</div>
 		<?php studentup_ad( 'mid' ); ?>
 		<nav class="sectionhead" aria-label="<?php esc_attr_e( 'Pages', 'studentup' ); ?>">
-			<div><?php echo wp_kses_post( paginate_links() ); ?></div>
+			<div><?php echo wp_kses_post( paginate_links() ?? '' ); // v173 REAL FIX: single page unte paginate_links() NULL → wp_kses_post(null) PHP 8.1+ fatal ?></div>
 		</nav>
 	</div>
 	<?php get_sidebar(); ?>

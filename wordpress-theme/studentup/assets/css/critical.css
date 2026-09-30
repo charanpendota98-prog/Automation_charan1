@@ -545,3 +545,21 @@ body.dark .su-ws-radar-item a{color:#e8f0ff}
   .su-ws-card{padding:15px 14px}
   .su-ws-job{flex-direction:column;gap:9px}
   .su-ws-job-side{justify-items:start;grid-auto-flow:column;grid-auto-columns:max-content;align-items:center}}
+.su-pill .su-uicon{width:12px;height:12px;flex:0 0 auto}
+.su-hot-head h2 .su-uicon{width:18px;height:18px}
+.su-rail-hint .su-uicon{width:13px;height:13px}
+.su-hot-ph .su-uicon{width:22px;height:22px;opacity:.55}
+.su-kf-i .su-uicon{width:16px;height:16px}
+.usedcard .ui .su-uicon{width:22px;height:22px}
+.su-pop-ico .su-uicon{width:15px;height:15px}
+.su-mnav a .su-uicon{width:15px;height:15px;vertical-align:-3px;margin-right:3px}
+.su-optabs a .su-uicon{width:14px;height:14px;vertical-align:-2.5px;margin-right:3px}
+.su-sec-ico .su-uicon{width:18px;height:18px;vertical-align:-4px}
+.su-summary-icon .su-uicon{width:15px;height:15px}
+.su-jmeta .su-uicon{width:13px;height:13px}
+.su-notify-msg .su-uicon,.notice su-notice .su-uicon{width:14px;height:14px;vertical-align:-2.5px}
+.su-notify-close .su-uicon{width:12px;height:12px;vertical-align:-2px}
+.footer-grid a .su-uicon{width:13px;height:13px;vertical-align:-2px;margin-right:2px}
+.su-pdf-btn .su-uicon{width:15px;height:15px;vertical-align:-3px}
+.su-op-notice .su-uicon{width:15px;height:15px;vertical-align:-3px}
+.su-health .su-uicon{width:14px;height:14px;vertical-align:-2.5px}

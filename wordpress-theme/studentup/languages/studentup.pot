@@ -2,9 +2,9 @@
 # This file is distributed under the GNU GPL v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: StudentUp 1.9.23\n"
+"Project-Id-Version: StudentUp 1.9.24\n"
 "Report-Msgid-Bugs-To: https://studentup.in/\n"
-"POT-Creation-Date: 2026-09-30 05:25+0000\n"
+"POT-Creation-Date: 2026-09-30 12:25+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -307,11 +307,11 @@ msgstr ""
 msgid "Join WhatsApp"
 msgstr ""
 
-#: inc/keyfacts.php:64
+#: inc/keyfacts.php:65
 msgid "Key details"
 msgstr ""
 
-#: inc/keyfacts.php:28
+#: inc/keyfacts.php:29
 msgid "Last date"
 msgstr ""
 
@@ -384,7 +384,7 @@ msgid "No saved posts yet. Open any post and tap Save."
 msgstr ""
 
 #: inc/saved.php:243
-msgid "No saved posts yet. Open any post and tap 🔖 Save."
+msgid "No saved posts yet. Open any post and tap the Save button."
 msgstr ""
 
 #: inc/saved.php:214
@@ -465,7 +465,7 @@ msgstr ""
 msgid "Published articles: %d"
 msgstr ""
 
-#: inc/keyfacts.php:26
+#: inc/keyfacts.php:27
 #: inc/personal.php:34
 #: inc/workspace.php:141
 #: inc/workspace.php:188
@@ -529,7 +529,7 @@ msgstr ""
 msgid "Result"
 msgstr ""
 
-#: inc/keyfacts.php:27
+#: inc/keyfacts.php:28
 msgid "Salary"
 msgstr ""
 
@@ -670,7 +670,7 @@ msgstr ""
 msgid "Uses your browser print dialog - choose "Save as PDF"."
 msgstr ""
 
-#: inc/keyfacts.php:25
+#: inc/keyfacts.php:26
 msgid "Vacancies"
 msgstr ""
 

@@ -69,11 +69,11 @@ function studentup_health_widget_render() {
 	}
 	?>
 	<ul class="su-health">
-		<li>📰 Published: <strong><?php echo (int) $counts->publish; ?></strong></li>
-		<li>📝 Drafts: <strong><?php echo (int) $counts->draft; ?></strong></li>
-		<li>⏳ Expiring (7 days): <strong><?php echo (int) $dl['expiring']; ?></strong></li>
-		<li>⏰ Expired (update/refresh): <strong><?php echo (int) $dl['expired']; ?></strong></li>
-		<li>🔀 301 redirects: <strong><?php echo (int) $redirect; ?></strong></li>
+		<li><?php echo studentup_ui_icon( 'news', 14 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Published: <strong><?php echo (int) $counts->publish; ?></strong></li>
+		<li><?php echo studentup_ui_icon( 'doc', 14 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Drafts: <strong><?php echo (int) $counts->draft; ?></strong></li>
+		<li><?php echo studentup_ui_icon( 'clock', 14 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Expiring (7 days): <strong><?php echo (int) $dl['expiring']; ?></strong></li>
+		<li><?php echo studentup_ui_icon( 'bolt', 14 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Expired (update/refresh): <strong><?php echo (int) $dl['expired']; ?></strong></li>
+		<li><?php echo studentup_ui_icon( 'arrow', 14 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> 301 redirects: <strong><?php echo (int) $redirect; ?></strong></li>
 	</ul>
 	<p><a href="<?php echo esc_url( admin_url( 'themes.php?page=studentup-settings' ) ); ?>">StudentUp Settings →</a></p>
 	<?php

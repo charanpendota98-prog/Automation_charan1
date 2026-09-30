@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'STUDENTUP_VERSION', '1.9.23' );  // v172 COMMAND CENTER: My Workspace (profile → eligible jobs → application pipeline → deadline radar); v171 SVG icons + critical CSS + apply tracker; v170 phone mode
+define( 'STUDENTUP_VERSION', '1.9.24' );  // v173 REAL-INSTALL FIXES (hot rail meta keys + days-left, paginate null fatal, saved page auto-create); v172 COMMAND CENTER: My Workspace (profile → eligible jobs → application pipeline → deadline radar); v171 SVG icons + critical CSS + apply tracker; v170 phone mode
 
 require_once get_template_directory() . '/inc/options.php';
 require_once get_template_directory() . '/inc/icons.php';        // v171: pro SVG UI icons (emoji UI badulu).
@@ -89,17 +89,18 @@ require_once get_template_directory() . '/inc/shortlinks.php'; // v122: first-pa
  * MOST_USED + preview site + tests anni ide order vaadutayi).
  */
 function studentup_most_used() {
+	/* v173: icon values = studentup_ui_icon() keys (emoji kadu — pro SVG). */
 	return array(
-		array( 'slug' => 'ts-jobs', 'label' => 'TS Government Jobs', 'icon' => '🏛', 'hint' => 'TSPSC · Police · Gurukul' ),
-		array( 'slug' => 'ap-jobs', 'label' => 'AP Government Jobs', 'icon' => '🏛', 'hint' => 'APPSC · Police · DSC · Secretariat' ),
-		array( 'slug' => 'central-jobs', 'label' => 'Central Govt Jobs', 'icon' => '🇮🇳', 'hint' => 'SSC · UPSC · Railways · Banks' ),
-		array( 'slug' => 'hall-tickets', 'label' => 'Hall Tickets', 'icon' => '🎫', 'hint' => 'Admit card · key instructions' ),
-		array( 'slug' => 'results', 'label' => 'Results', 'icon' => '📄', 'hint' => 'Board · competitive exams · keys' ),
-		array( 'slug' => 'walkin-jobs', 'label' => 'Walk-in Interviews', 'icon' => '🚶', 'hint' => 'This week\'s drives · venues' ),
-		array( 'slug' => 'software-jobs', 'label' => 'Software Jobs', 'icon' => '💻', 'hint' => 'IT · developer · fresher' ),
-		array( 'slug' => 'success-stories', 'label' => 'Success Stories', 'icon' => '🏆', 'hint' => 'Verified journeys · lessons' ),
-		array( 'slug' => 'private-jobs', 'label' => 'Private Jobs', 'icon' => '🏢', 'hint' => 'TCS · Infosys · Off-campus' ),
-		array( 'slug' => 'current-affairs', 'label' => 'Current Affairs', 'icon' => '📰', 'hint' => 'Daily GK · for exams' ),
+		array( 'slug' => 'ts-jobs', 'label' => 'TS Government Jobs', 'icon' => 'bank', 'hint' => 'TSPSC · Police · Gurukul' ),
+		array( 'slug' => 'ap-jobs', 'label' => 'AP Government Jobs', 'icon' => 'bank', 'hint' => 'APPSC · Police · DSC · Secretariat' ),
+		array( 'slug' => 'central-jobs', 'label' => 'Central Govt Jobs', 'icon' => 'flag', 'hint' => 'SSC · UPSC · Railways · Banks' ),
+		array( 'slug' => 'hall-tickets', 'label' => 'Hall Tickets', 'icon' => 'ticket', 'hint' => 'Admit card · key instructions' ),
+		array( 'slug' => 'results', 'label' => 'Results', 'icon' => 'doc', 'hint' => 'Board · competitive exams · keys' ),
+		array( 'slug' => 'walkin-jobs', 'label' => 'Walk-in Interviews', 'icon' => 'walk', 'hint' => 'This week\'s drives · venues' ),
+		array( 'slug' => 'software-jobs', 'label' => 'Software Jobs', 'icon' => 'laptop', 'hint' => 'IT · developer · fresher' ),
+		array( 'slug' => 'success-stories', 'label' => 'Success Stories', 'icon' => 'trophy', 'hint' => 'Verified journeys · lessons' ),
+		array( 'slug' => 'private-jobs', 'label' => 'Private Jobs', 'icon' => 'building', 'hint' => 'TCS · Infosys · Off-campus' ),
+		array( 'slug' => 'current-affairs', 'label' => 'Current Affairs', 'icon' => 'news', 'hint' => 'Daily GK · for exams' ),
 	);
 }
 

@@ -81,7 +81,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				</div>
 				<button type="submit" class="bluebtn">Search</button>
 			</form>
-			<button type="button" class="iconbtn" id="searchclose" aria-label="Close">✕</button>
+			<button type="button" class="iconbtn" id="searchclose" aria-label="Close"><?php echo studentup_ui_icon( 'close', 16 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?></button>
 		</div>
 	</div>
 </header>
@@ -125,7 +125,7 @@ studentup_breaking_ticker();
 			continue;
 		}
 		?>
-		<a href="<?php echo esc_url( get_category_link( $term ) ); ?>"><?php echo esc_html( $m['icon'] . ' ' . $m['label'] ); ?></a>
+		<a href="<?php echo esc_url( get_category_link( $term ) ); ?>"><?php echo studentup_ui_icon( $m['icon'], 15 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> <?php echo esc_html( $m['label'] ); ?></a>
 	<?php endforeach; ?>
 	<div class="mlabel">More</div>
 	<?php

@@ -2,9 +2,9 @@
 Contributors: studentup
 Requires at least: 6.0
 Tested up to: 6.7
-Stable tag: 1.9.23
+Stable tag: 1.9.24
 Requires PHP: 7.4
-Version: 1.9.23
+Version: 1.9.24
 License: GNU General Public License v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Tags: news, education, blog, custom-logo, custom-menu, featured-images, translation-ready, right-sidebar, block-styles, wide-blocks
@@ -47,6 +47,14 @@ The theme ships a REST bridge (`inc/seo-bridge.php`). Use an account with `manag
 user tho App Password ivvandi (Administrator role).
 
 == Changelog ==
+
+= 1.9.24 =
+* v173 REAL-INSTALL FIXES — WordPress 7.1.2 + PHP 8.3 real install mida proof chesina bugs:
+* FIX: "Top hot jobs" rail wrong meta keys (su_last_date/su_salary → studentup_*) valla salary + deadline pills eppudu kanipinchaledu + PHP "Undefined $left" warning — ippudu real studentup_* meta tho salary pill, days-left pill, closed posts exclusion anni work.
+* FIX: paginate_links() NULL → wp_kses_post(null) PHP 8.1+ FATAL (category/search/index/author single-page lo) — `?? ''` null-safe fix.
+* FIX: firstrun ippudu /saved/ page kuda automatic create chestundi ([studentup_saved] tho) — saved panel link fresh install lo eppudu break avvadu.
+* EMOJI PURGE: UI lo prathi emoji → professional inline SVG icons (23 kotha icon paths; keyfacts, hot rail, category menu/usedgrid/popular searches, footer tools, opportunities board, tools widgets, ⌘K palette, admin columns/health/notices) — cross-platform consistent look, font dependency ledu.
+* Workspace JS runtime prove (jsdom 22/22): profile → qualification/age/state filtering, urgent-first deadlines, Closed chip, pipeline tiles, deadline radar colour classes.
 
 = 1.9.23 =
 * v172 COMMAND CENTER — "My Workspace" page ([studentup_workspace]): profile (qualification · age · state) set chesthe eligible jobs instant, application pipeline (Saved/Applied/Interview/Result tiles), deadline radar (urgent 3/7/14 days first) and quick tools — anni okka page lo. No account, browser-only, offline-capable.

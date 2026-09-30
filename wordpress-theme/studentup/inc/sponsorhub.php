@@ -29,7 +29,7 @@ function studentup_sponsor_partner_box() {
 	<section class="su-sponsor-box" aria-label="Verified Study Partner Opportunities">
 		<div class="su-sponsor-kicker">SPONSORED · VERIFIED LEARNING PARTNERS</div>
 		<div class="su-sponsor-card">
-			<div class="su-sponsor-icon" aria-hidden="true">🎓</div>
+			<div class="su-sponsor-icon" aria-hidden="true"><?php echo studentup_ui_icon( 'school', 24 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?></div>
 			<div class="su-sponsor-info">
 				<h4 class="su-sponsor-title">Free Mock Tests & Preparation Study Kit</h4>
 				<p class="su-sponsor-desc">Practice topic-wise model papers, previous exam question papers, and free online test series.</p>
@@ -37,7 +37,7 @@ function studentup_sponsor_partner_box() {
 			<div class="su-sponsor-action">
 				<a href="https://wa.me/<?php echo esc_attr( $wa_number ); ?>?text=<?php echo rawurlencode( 'Hello, I want free study material and mock test links.' ); ?>"
 					target="_blank" rel="sponsored nofollow noopener" class="su-sponsor-btn">
-					📥 Get Free Study Kit →
+					<?php echo studentup_ui_icon( 'download', 14 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Get Free Study Kit →
 				</a>
 			</div>
 		</div>

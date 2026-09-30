@@ -41,7 +41,7 @@ function studentup_audio_reader() {
 	<div class="su-audio-reader-box" id="su-audio-box" data-speech="<?php echo esc_attr( $speech_text ); ?>" aria-label="Audio Article Reader">
 		<div class="su-audio-left">
 			<button type="button" id="su-audio-btn" class="su-audio-btn" aria-label="Listen to audio summary">
-				<span class="su-audio-icon" id="su-audio-icon">🔊</span>
+				<span class="su-audio-icon" id="su-audio-icon"><?php echo studentup_ui_icon( 'speaker', 16 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?></span>
 				<span class="su-audio-label" id="su-audio-label">Listen to Article</span>
 			</button>
 			<div class="su-audio-waves" id="su-audio-waves" aria-hidden="true" style="display:none;">

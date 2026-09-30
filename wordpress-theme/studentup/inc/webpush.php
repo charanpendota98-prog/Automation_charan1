@@ -233,7 +233,7 @@ function studentup_push_prompt() {
 			if (bar || !engaged) { return; }
 			bar = document.createElement('div');
 			bar.className = 'su-push-bar';
-			bar.innerHTML = '<span class="su-push-txt">🔔 Kotha jobs &amp; results alerts kavala?</span>'
+			bar.innerHTML = '<span class="su-push-txt">' . studentup_ui_icon( 'bell', 15 ) . ' Kotha jobs &amp; results alerts kavala?</span>' // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG
 				+ '<button type="button" class="su-push-yes">Yes, alert cheyandi</button>'
 				+ '<button type="button" class="su-push-no">No thanks</button>';
 			document.body.appendChild(bar);

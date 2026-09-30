@@ -156,14 +156,17 @@ def main():
     assert "slug" not in payload
     content = payload["content"]
     # fresh SEO sections exactly once (old ones strip + re-add, no duplicates)
-    # v84: ONE TOC box (rm100 div XOR enhance nav — double-TOC bug fix).
-    # String count kaadu (rm100 box lo aria+title = 2 strings), BOX count.
-    toc_boxes = (content.count('<div class="su-toc"')
-                 + content.count('<nav class="su-toc"'))
+    # v84: ONE TOC box (double-TOC bug fix). v135: TOC markup = official
+    # Rank Math block class (`wp-block-rank-math-toc-block su-toc`) — div/nav
+    # rendu forms lo class combo okkate, so combo count = box count.
+    toc_boxes = content.count('wp-block-rank-math-toc-block su-toc')
     assert toc_boxes == 1, f"TOC boxes: {toc_boxes}"
     assert content.count("FAQPage") == 0
     assert content.count("Quick Answer") <= 2  # h2 + TOC entry
-    assert content.count("About This Article") == 1
+    # v136+: trust box = editorial chrome — publish mundu clean_public_article
+    # strip chestundi. Provenance ikkada source_note (su-source) tho vastundi.
+    assert content.count("About This Article") == 0
+    assert 'class="su-source"' in content
     assert "Last Updated" in content
     # Rank Math meta present on update too
     assert payload["meta"]["rank_math_focus_keyword"].startswith("test guide 2026")

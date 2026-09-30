@@ -43,7 +43,7 @@ get_header();
 			?>
 		</div>
 		<?php studentup_ad( 'mid' ); ?>
-		<nav class="sectionhead" aria-label="Pages"><div><?php echo wp_kses_post( paginate_links() ); ?></div></nav>
+		<nav class="sectionhead" aria-label="Pages"><div><?php echo wp_kses_post( paginate_links() ?? '' ); // v173 REAL FIX: single page unte paginate_links() NULL → wp_kses_post(null) PHP 8.1+ fatal ?></div></nav>
 	</div>
 	<?php get_sidebar(); ?>
 </main>

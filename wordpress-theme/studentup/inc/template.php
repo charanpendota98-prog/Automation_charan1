@@ -150,7 +150,7 @@ function studentup_reading_time( $post_id = 0 ) {
  */
 function studentup_trust_note() {
 	$email = (string) get_option( 'admin_email', '' );
-	echo '<div class="trustnote">✅ This article was checked against official sources and written in simple language. '
+	echo '<div class="trustnote">' . studentup_ui_icon( 'check', 13 ) . ' This article was checked against official sources and written in simple language. '
 		. 'If you spot a mistake, ' . esc_html( $email ) . ' — we correct it within 24 hours. '
 		. 'Always confirm deadlines and numbers in the official notification.</div>';
 }
@@ -200,9 +200,9 @@ function studentup_menu_fallback() {
 		$label_of[ $m['slug'] ] = $m;
 	}
 	// v123: most_used lo leni, kaani menu lo kavalsina sections.
-	$label_of['scholarships'] = array( 'slug' => 'scholarships', 'label' => 'Scholarships', 'icon' => '🎓', 'hint' => 'Central · state · private' );
-	$label_of['daily-quiz']   = array( 'slug' => 'daily-quiz', 'label' => 'Daily Quiz', 'icon' => '🧠', 'hint' => 'Roju 5 questions' );
-	$label_of['internships']  = array( 'slug' => 'internships', 'label' => 'Internships', 'icon' => '🧪', 'hint' => 'Stipend · remote · college' );
+	$label_of['scholarships'] = array( 'slug' => 'scholarships', 'label' => 'Scholarships', 'icon' => 'school', 'hint' => 'Central · state · private' );
+	$label_of['daily-quiz']   = array( 'slug' => 'daily-quiz', 'label' => 'Daily Quiz', 'icon' => 'chart', 'hint' => 'Roju 5 questions' );
+	$label_of['internships']  = array( 'slug' => 'internships', 'label' => 'Internships', 'icon' => 'work', 'hint' => 'Stipend · remote · college' );
 
 	$menu = array();
 
@@ -245,11 +245,11 @@ function studentup_menu_fallback() {
 	$more = array(
 		array( 'label' => 'Latest active jobs', 'url' => studentup_opportunity_board_url(), 'desc' => 'Dates unna active notices only' ),
 		array( 'label' => 'Daily Quiz', 'url' => $home . '#daily-quiz', 'desc' => 'Today\'s 5 questions' ),
-		array( 'label' => '🧮 Age Calculator', 'url' => $home . '#age-calculator', 'desc' => 'Check age eligibility with reservation relaxation' ),
-		array( 'label' => '💳 Fee Calculator', 'url' => $home . '#fee-calculator', 'desc' => 'Calculate application & exam fee' ),
-		array( 'label' => '📚 Syllabus Tracker', 'url' => $home . '#syllabus-tracker', 'desc' => 'Track your exam study progress' ),
-		array( 'label' => '💰 Salary Calculator', 'url' => $home . '#salary-calculator', 'desc' => '7th Pay Commission in-hand pay' ),
-		array( 'label' => '⚖️ Compare Jobs', 'url' => studentup_compare_page_url(), 'desc' => 'Compare up to 3 posts' ),
+		array( 'label' => 'Age Calculator', 'url' => $home . '#age-calculator', 'desc' => 'Check age eligibility with reservation relaxation' ),
+		array( 'label' => 'Fee Calculator', 'url' => $home . '#fee-calculator', 'desc' => 'Calculate application & exam fee' ),
+		array( 'label' => 'Syllabus Tracker', 'url' => $home . '#syllabus-tracker', 'desc' => 'Track your exam study progress' ),
+		array( 'label' => 'Salary Calculator', 'url' => $home . '#salary-calculator', 'desc' => '7th Pay Commission in-hand pay' ),
+		array( 'label' => 'Compare Jobs', 'url' => studentup_compare_page_url(), 'desc' => 'Compare up to 3 posts' ),
 		array( 'label' => 'Instant alerts', 'url' => $home . '#alerts', 'desc' => 'Notification · WhatsApp · Telegram' ),
 	);
 	$intern_term = $term_of( 'internships' );

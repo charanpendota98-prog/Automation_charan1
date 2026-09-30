@@ -39,16 +39,18 @@ function studentup_qual_terms() {
  * @return array slug => emoji
  */
 function studentup_qual_icons() {
+	/* v173: emoji → trusted SVG markup (JS quadd button direct render). */
+	$mk = function_exists( 'studentup_ui_icon' ) ? 'studentup_ui_icon' : null;
 	return array(
-		'all'     => '🎓',
-		'10th'    => '📘',
-		'inter'   => '📗',
-		'iti'     => '🔧',
-		'diploma' => '📐',
-		'degree'  => '🎯',
-		'pg'      => '🏅',
-		'btech'   => '💻',
-		'closing' => '⏳',
+		'all'     => $mk ? $mk( 'school', 14 ) : '',
+		'10th'    => $mk ? $mk( 'book', 14 ) : '',
+		'inter'   => $mk ? $mk( 'book', 14 ) : '',
+		'iti'     => $mk ? $mk( 'work', 14 ) : '',
+		'diploma' => $mk ? $mk( 'work', 14 ) : '',
+		'degree'  => $mk ? $mk( 'board', 14 ) : '',
+		'pg'      => $mk ? $mk( 'star', 14 ) : '',
+		'btech'   => $mk ? $mk( 'laptop', 14 ) : '',
+		'closing' => $mk ? $mk( 'clock', 14 ) : '',
 	);
 }
 
@@ -448,7 +450,7 @@ function studentup_qual_bar() {
 	$icons   = studentup_qual_icons();
 	$current = studentup_qual_current();
 	echo '<form class="qrow qualform" method="get" action="' . esc_url( home_url( '/' ) ) . '" aria-label="Jobs by qualification" data-icons="' . esc_attr( wp_json_encode( $icons, JSON_UNESCAPED_UNICODE ) ) . '">';
-	echo '<label class="catlabel qualabel" for="qualsel">🎯 Your qualification:</label>';
+	echo '<label class="catlabel qualabel" for="qualsel">' . studentup_ui_icon( 'school', 14 ) . ' Your qualification:</label>'; // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG
 	echo '<select id="qualsel" class="qualsel" name="qual">';
 	echo '<option value="all"' . selected( $current, 'all', false ) . '>All qualifications</option>';
 	foreach ( $terms as $slug => $label ) {

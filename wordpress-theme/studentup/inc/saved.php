@@ -208,7 +208,7 @@ function studentup_saved_panel() {
 			<div class="su-saved-head">
 				<strong><?php echo esc_html__( 'Saved', 'studentup' ); ?></strong>
 				<span class="su-saved-n" data-su-saved-count aria-live="polite">0</span>
-				<button type="button" class="su-saved-close" id="su-saved-close" aria-label="<?php echo esc_attr__( 'Close', 'studentup' ); ?>">✕</button>
+				<button type="button" class="su-saved-close" id="su-saved-close" aria-label="<?php echo esc_attr__( 'Close', 'studentup' ); ?>"><?php echo studentup_ui_icon( 'close', 14 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?></button>
 			</div>
 			<div class="su-saved-body" id="su-saved-body" data-su-saved-body>
 				<p class="su-saved-empty"><?php echo esc_html__( 'No saved posts yet. Tap Save on any card to keep it here.', 'studentup' ); ?></p>
@@ -240,7 +240,7 @@ function studentup_saved_shortcode() {
 	}
 	return '<div class="su-saved-page" id="su-saved-page" data-su-saved-page>'
 		. '<p class="su-saved-empty" data-su-saved-page-empty>'
-		. esc_html__( 'No saved posts yet. Open any post and tap 🔖 Save.', 'studentup' )
+		. esc_html__( 'No saved posts yet. Open any post and tap the Save button.', 'studentup' )
 		. '</p></div>';
 }
 add_shortcode( 'studentup_saved', 'studentup_saved_shortcode' );

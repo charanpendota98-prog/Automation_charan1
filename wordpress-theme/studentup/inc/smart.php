@@ -113,7 +113,7 @@ function studentup_trending_today() {
 	}
 	?>
 	<div class="su-trend" aria-label="Trending today">
-		<span class="su-trend-tag">⚡ Trending today</span>
+		<span class="su-trend-tag"><?php echo studentup_ui_icon( 'bolt', 12 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Trending today</span>
 		<div class="su-trend-list">
 			<?php
 			while ( $q->have_posts() ) :
@@ -146,7 +146,7 @@ function studentup_job_finder() {
 	<section class="su-finder" id="job-match" aria-label="AI job match and eligibility checker">
 		<div class="su-finder-head">
 			<div>
-				<p class="su-finder-kick">🤖 AI JOB MATCH · ELIGIBILITY CHECKER</p>
+				<p class="su-finder-kick"><?php echo studentup_ui_icon( 'person', 14 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> AI JOB MATCH · ELIGIBILITY CHECKER</p>
 				<h2>Mee qualification, state, age — eligible jobs instant ga</h2>
 			</div>
 			<span class="su-finder-count" data-su-finder-count aria-live="polite"></span>
@@ -178,7 +178,7 @@ function studentup_job_finder() {
 					<option value="new">Newest first</option>
 				</select>
 			</label>
-			<button type="button" class="su-finder-reset" data-su-f-reset>↺ Reset</button>
+			<button type="button" class="su-finder-reset" data-su-f-reset><?php echo studentup_ui_icon( 'refresh', 13 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Reset</button>
 		</form>
 
 		<div class="su-finder-results" data-su-finder-results></div>
@@ -197,7 +197,7 @@ function studentup_salary_calc() {
 	?>
 	<section class="su-calc" id="salary-calculator" aria-label="Salary calculator">
 		<div class="su-calc-head">
-			<h2>💰 In-hand salary calculator</h2>
+			<h2><?php echo studentup_ui_icon( 'wallet', 17 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> In-hand salary calculator</h2>
 			<p>Basic pay + DA + HRA + TA − deductions. Formula open ga undi — mee notification numbers pettandi.</p>
 		</div>
 		<form class="su-calc-form" onsubmit="return false">
@@ -242,7 +242,7 @@ function studentup_job_calendar() {
 	?>
 	<section class="su-cal" id="job-calendar" aria-label="Job calendar">
 		<div class="su-cal-head">
-			<h2>🗓️ Job calendar — last dates</h2>
+			<h2><?php echo studentup_ui_icon( 'calendar', 18 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Job calendar — last dates</h2>
 			<span><?php echo esc_html( date_i18n( 'F Y' ) ); ?> onwards</span>
 		</div>
 		<ol class="su-cal-list">
@@ -275,7 +275,7 @@ function studentup_state_switch() {
 	}
 	?>
 	<div class="su-statebar" data-su-state-bar>
-		<span>📍 Your state:</span>
+		<span><?php echo studentup_ui_icon( 'pin', 13 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Your state:</span>
 		<button type="button" data-su-state="ts">Telangana</button>
 		<button type="button" data-su-state="ap">Andhra Pradesh</button>
 		<button type="button" data-su-state="central">All India</button>
@@ -353,7 +353,7 @@ function studentup_popular_searches() {
 				<?php $su_term = studentup_used_term( $su_m['slug'] ); ?>
 				<?php if ( $su_term ) : ?>
 					<li><a class="su-pop su-pop-cat" href="<?php echo esc_url( get_category_link( $su_term ) ); ?>">
-						<span aria-hidden="true"><?php echo esc_html( $su_m['icon'] ); ?></span><?php echo esc_html( $su_m['label'] ); ?></a></li>
+						<span class="su-pop-ico" aria-hidden="true"><?php echo studentup_ui_icon( $su_m['icon'], 15 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?></span><?php echo esc_html( $su_m['label'] ); ?></a></li>
 				<?php endif; ?>
 			<?php endforeach; ?>
 			<?php foreach ( $queries as $su_q ) : ?>

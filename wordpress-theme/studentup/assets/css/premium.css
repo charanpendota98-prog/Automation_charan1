@@ -1143,3 +1143,36 @@ body.dark .su-ws-radar-item a{color:#e8f0ff}
   .su-ws-job{flex-direction:column;gap:9px}
   .su-ws-job-side{justify-items:start;grid-auto-flow:column;grid-auto-columns:max-content;align-items:center}
 }
+/* v173: hot rail SVG pills + heads (emoji pills → pro icons) */
+.su-pill{display:inline-flex;align-items:center;gap:4px}
+.su-pill .su-uicon{width:12px;height:12px;flex:0 0 auto}
+.su-hot-head h2{display:inline-flex;align-items:center;gap:7px}
+.su-hot-head h2 .su-uicon{width:18px;height:18px}
+.su-rail-hint{display:flex;align-items:center;gap:5px}
+.su-rail-hint .su-uicon{width:13px;height:13px}
+.su-hot-ph .su-uicon{width:22px;height:22px;opacity:.55}
+.su-hot-ph{display:grid;place-items:center}
+/* v173: keyfacts SVG icons (emoji → pro) */
+.su-kf-i .su-uicon{width:16px;height:16px}
+/* v173: category system SVG icons (emoji purge) */
+.usedcard .ui .su-uicon{width:22px;height:22px}
+.su-pop-ico{display:inline-flex;vertical-align:-3px;margin-right:4px}
+.su-pop-ico .su-uicon{width:15px;height:15px}
+.su-mnav a .su-uicon{width:15px;height:15px;vertical-align:-3px;margin-right:3px}
+.su-optabs a .su-uicon{width:14px;height:14px;vertical-align:-2.5px;margin-right:3px}
+.su-sec-ico .su-uicon{width:18px;height:18px;vertical-align:-4px}
+.su-summary-icon .su-uicon{width:15px;height:15px}
+/* v173: job meta admin column colour states */
+.su-jmeta{display:inline-flex;align-items:center;gap:4px;font-weight:700}
+.su-jmeta .su-uicon{width:13px;height:13px}
+.su-jmeta-m0{color:#94a3b8}
+.su-jmeta-m1{color:#f97316}
+.su-jmeta-m2{color:#eab308}
+.su-jmeta-m3{color:#22c55e}
+.su-jmeta-m4{color:#168451}
+.su-notify-msg .su-uicon,.notice su-notice .su-uicon{width:14px;height:14px;vertical-align:-2.5px}
+.su-notify-close .su-uicon{width:12px;height:12px;vertical-align:-2px}
+.footer-grid a .su-uicon{width:13px;height:13px;vertical-align:-2px;margin-right:2px}
+.su-pdf-btn .su-uicon{width:15px;height:15px;vertical-align:-3px}
+.su-op-notice .su-uicon{width:15px;height:15px;vertical-align:-3px}
+.su-health .su-uicon{width:14px;height:14px;vertical-align:-2.5px}

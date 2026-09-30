@@ -101,8 +101,20 @@ def main():
     # ---- 4. real bylines: deterministic rotation + schema + visible ----
     a1 = seo.author_for_slug("ssc-cgl-2026")
     assert a1 == seo.author_for_slug("ssc-cgl-2026")
-    seen = {seo.author_for_slug(f"s{i}")[0] for i in range(40)}
-    assert len(seen) >= 2, seen
+    # Rotation logic ni test cheyadaniki temp team (default .env lo 1 author
+    # matrame untadu — anduke inject; fake byline site ki publish avvadu).
+    _orig_team = getattr(config, "AUTHOR_TEAM", [])
+    config.AUTHOR_TEAM = [("Test Author One", "Editor"), ("Test Author Two", "Reporter")]
+    try:
+        seen = {seo.author_for_slug(f"s{i}")[0] for i in range(40)}
+        assert len(seen) >= 2, seen
+    finally:
+        config.AUTHOR_TEAM = _orig_team
+    # default (team lekapothe) safe fallback
+    _save = config.AUTHOR_TEAM
+    config.AUTHOR_TEAM = []
+    assert seo.author_for_slug("any-slug")[0] == "StudentUp Editorial Team"
+    config.AUTHOR_TEAM = _save
     out = seo.enhance("<p>" + "word " * 300 + "</p>", "kw", [], [],
                       slug="byline-test", title="T", description="d" * 140,
                       date_str="2026-09-10")

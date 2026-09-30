@@ -19,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<div>
 				<h4><?php bloginfo( 'name' ); ?></h4>
 				<p>Jobs, scholarships, results and exam updates for students.</p>
-				<p>✅ Spotted a mistake? Tell us at <a href="mailto:<?php echo esc_attr( studentup_contact_email() ); ?>"><?php echo esc_html( studentup_contact_email() ); ?></a></p>
+				<p><?php echo studentup_ui_icon( 'check', 13 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Spotted a mistake? Tell us at <a href="mailto:<?php echo esc_attr( studentup_contact_email() ); ?>"><?php echo esc_html( studentup_contact_email() ); ?></a></p>
 			</div>
 			<div>
 				<h4>Categories</h4>
@@ -38,16 +38,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<div>
 				<h4>Student Tools</h4>
 				<ul>
-					<li><a href="<?php echo esc_url( home_url( '/#age-calculator' ) ); ?>">🧮 Age Calculator</a></li>
-					<li><a href="<?php echo esc_url( home_url( '/#fee-calculator' ) ); ?>">💳 Fee Calculator</a></li>
-					<li><a href="<?php echo esc_url( home_url( '/#score-calculator' ) ); ?>">🎯 Score Calculator</a></li>
-					<li><a href="<?php echo esc_url( home_url( '/#admit-card-helper' ) ); ?>">🎫 Hall Ticket Portal</a></li>
-					<li><a href="<?php echo esc_url( home_url( '/#resume-maker' ) ); ?>">📄 Bio-Data Maker</a></li>
-					<li><a href="<?php echo esc_url( home_url( '/#syllabus-tracker' ) ); ?>">📚 Syllabus Tracker</a></li>
-					<li><a href="<?php echo esc_url( home_url( '/#salary-calculator' ) ); ?>">💰 Salary Calculator</a></li>
-					<li><a href="<?php echo esc_url( home_url( '/#daily-quiz' ) ); ?>">🧠 Daily Quiz</a></li>
-					<li><a href="<?php echo esc_url( studentup_compare_page_url() ); ?>">⚖️ Compare Jobs</a></li>
-					<li><a href="<?php echo esc_url( studentup_opportunity_board_url() ); ?>">📋 Active Board</a></li>
+					<li><a href="<?php echo esc_url( home_url( '/#age-calculator' ) ); ?>"><?php echo studentup_ui_icon( 'chart', 13 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Age Calculator</a></li>
+					<li><a href="<?php echo esc_url( home_url( '/#fee-calculator' ) ); ?>"><?php echo studentup_ui_icon( 'card', 13 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Fee Calculator</a></li>
+					<li><a href="<?php echo esc_url( home_url( '/#score-calculator' ) ); ?>"><?php echo studentup_ui_icon( 'board', 13 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Score Calculator</a></li>
+					<li><a href="<?php echo esc_url( home_url( '/#admit-card-helper' ) ); ?>"><?php echo studentup_ui_icon( 'ticket', 13 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Hall Ticket Portal</a></li>
+					<li><a href="<?php echo esc_url( home_url( '/#resume-maker' ) ); ?>"><?php echo studentup_ui_icon( 'doc', 13 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Bio-Data Maker</a></li>
+					<li><a href="<?php echo esc_url( home_url( '/#syllabus-tracker' ) ); ?>"><?php echo studentup_ui_icon( 'book', 13 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Syllabus Tracker</a></li>
+					<li><a href="<?php echo esc_url( home_url( '/#salary-calculator' ) ); ?>"><?php echo studentup_ui_icon( 'wallet', 13 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Salary Calculator</a></li>
+					<li><a href="<?php echo esc_url( home_url( '/#daily-quiz' ) ); ?>"><?php echo studentup_ui_icon( 'bolt', 13 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Daily Quiz</a></li>
+					<li><a href="<?php echo esc_url( studentup_compare_page_url() ); ?>"><?php echo studentup_ui_icon( 'check', 13 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Compare Jobs</a></li>
+					<li><a href="<?php echo esc_url( studentup_opportunity_board_url() ); ?>"><?php echo studentup_ui_icon( 'board', 13 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Active Board</a></li>
 				</ul>
 			</div>
 			<div>
@@ -97,7 +97,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 <!-- v71: rail auto-hides after 9s, returns every 2 minutes (see assets/js/studentup.js).
      ✕ = hide now · ‹ tab = show again instantly. -->
 <nav class="su-social" id="surail" aria-label="<?php esc_attr_e( 'Social media', 'studentup' ); ?>">
-	<button type="button" class="su-close" id="suclose" aria-label="<?php esc_attr_e( 'Hide social icons', 'studentup' ); ?>">✕</button>
+	<button type="button" class="su-close" id="suclose" aria-label="<?php esc_attr_e( 'Hide social icons', 'studentup' ); ?>"><?php echo studentup_ui_icon( 'close', 15 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?></button>
 	<a class="su-soc su-rail-wa" href="<?php echo esc_url( $su_soc['whatsapp'] ); ?>" target="_blank" rel="noopener" aria-label="WhatsApp"><?php echo studentup_social_icon( 'whatsapp', 19 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?></a>
 	<a class="su-soc su-rail-tg" href="<?php echo esc_url( $su_soc['telegram'] ); ?>" target="_blank" rel="noopener" aria-label="Telegram"><?php echo studentup_social_icon( 'telegram', 19 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?></a>
 	<a class="su-soc su-rail-ig" href="<?php echo esc_url( $su_soc['instagram'] ); ?>" target="_blank" rel="noopener" aria-label="Instagram"><?php echo studentup_social_icon( 'instagram', 19 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?></a>
@@ -111,7 +111,7 @@ if ( studentup_opt( 'sticky_ad', '0' ) ) :
 	?>
 	<script>document.body.classList.add('su-has-stickyad');</script>
 	<div class="su-stickyad" id="su-stickyad">
-		<button type="button" class="su-sticky-close" aria-label="Close">✕</button>
+		<button type="button" class="su-sticky-close" aria-label="Close"><?php echo studentup_ui_icon( 'close', 14 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?></button>
 		<?php studentup_ad( 'anchor' ); ?>
 	</div>
 <?php endif; ?>
@@ -121,13 +121,13 @@ if ( studentup_opt( 'sticky_ad', '0' ) ) :
 // Click: Android/Chrome lo install prompt, iPhone/desktop lo device-wise steps.
 if ( studentup_opt( 'pwa', '1' ) && studentup_opt( 'install_prompt', '1' ) ) :
 	?>
-	<button type="button" class="installbtn" aria-controls="installhint" aria-expanded="false" id="installbtn">⬇️ Download App <span class="ibadge">WEB APP</span></button>
+	<button type="button" class="installbtn" aria-controls="installhint" aria-expanded="false" id="installbtn"><?php echo studentup_ui_icon( 'download', 15 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Download App <span class="ibadge">WEB APP</span></button>
 	<div class="installsheet" id="installhint" hidden role="dialog" aria-modal="true" aria-labelledby="isheet-title">
 		<h3 id="isheet-title">Install StudentUp as a web app</h3>
 		<p class="isub">One-tap access · visited pages can stay available offline. No native APK download is required.</p>
 		<ol id="isteps">
 			<li><b>Android (Chrome):</b> ⋮ Menu → <b>Install app</b> / <b>Add to Home screen</b></li>
-			<li><b>iPhone (Safari):</b> <b>Share</b> ⬆️ → <b>Add to Home Screen</b> → Add</li>
+			<li><b>iPhone (Safari):</b> tap <b>Share</b> → <b>Add to Home Screen</b> → Add</li>
 			<li><b>Computer:</b> click the install icon in the address bar</li>
 		</ol>
 		<div class="irow">

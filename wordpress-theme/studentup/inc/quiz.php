@@ -90,7 +90,7 @@ function studentup_daily_quiz() {
 			<div class="su-quiz-head">
 				<div>
 					<p class="su-quiz-kick">DAILY QUIZ · <?php echo esc_html( date_i18n( 'M j, Y' ) ); ?></p>
-					<h2>Roju 5 questions — 2 nimishalu chaalu 🧠</h2>
+					<h2>Roju 5 questions — 2 nimishalu chaalu <?php echo studentup_ui_icon( 'bolt', 17 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?></h2>
 				</div>
 				<div class="su-quiz-score"><b data-su-quiz-score>0</b><span>/ <?php echo esc_html( count( $qs ) ); ?></span></div>
 			</div>
@@ -99,7 +99,7 @@ function studentup_daily_quiz() {
 				<p class="su-quiz-loading">Loading today’s questions…</p>
 			</div>
 			<div class="su-quiz-foot">
-				<button type="button" class="su-quiz-restart" data-su-quiz-restart>↻ Restart</button>
+				<button type="button" class="su-quiz-restart" data-su-quiz-restart><?php echo studentup_ui_icon( 'refresh', 13 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Restart</button>
 				<?php if ( $more ) : ?>
 					<a class="su-quiz-more" href="<?php echo esc_url( $more ); ?>">More practice questions →</a>
 				<?php endif; ?>

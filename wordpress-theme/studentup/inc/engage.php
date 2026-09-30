@@ -52,8 +52,8 @@ function studentup_helpful_box() {
 	<section class="su-helpful" data-post="<?php echo esc_attr( $id ); ?>" aria-labelledby="su-helpful-title">
 		<h2 id="su-helpful-title">Was this update helpful?</h2>
 		<div class="su-helpful-btns">
-			<button type="button" class="su-help-btn" data-vote="yes">👍 Yes, clear</button>
-			<button type="button" class="su-help-btn" data-vote="no">👎 Something is missing</button>
+			<button type="button" class="su-help-btn" data-vote="yes"><?php echo studentup_ui_icon( 'thumbup', 14 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Yes, clear</button>
+			<button type="button" class="su-help-btn" data-vote="no"><?php echo studentup_ui_icon( 'thumbdown', 14 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Something is missing</button>
 		</div>
 		<p class="su-helpful-note" role="status" aria-live="polite">Your answer stays in this browser. For a correction, mail
 			<a href="mailto:<?php echo esc_attr( studentup_opt( 'contact_email', 'studentupinformative@gmail.com' ) ); ?>"><?php echo esc_html( studentup_opt( 'contact_email', 'studentupinformative@gmail.com' ) ); ?></a>.</p>
@@ -269,7 +269,7 @@ function studentup_pdf_button() {
 	?>
 	<p class="su-pdf">
 		<button type="button" class="su-pdf-btn" id="su-pdf-btn">
-			📄 <?php esc_html_e( 'Save this notification as PDF', 'studentup' ); ?>
+			<?php echo studentup_ui_icon( 'doc', 15 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> <?php esc_html_e( 'Save this notification as PDF', 'studentup' ); ?>
 		</button>
 		<span class="su-pdf-note"><?php esc_html_e( 'Uses your browser print dialog - choose "Save as PDF".', 'studentup' ); ?></span>
 	</p>

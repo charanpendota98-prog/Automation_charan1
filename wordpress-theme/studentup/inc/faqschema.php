@@ -86,7 +86,7 @@ function studentup_faq_box() {
 	?>
 	<section class="su-faq-section" id="faqs" aria-labelledby="su-faq-title">
 		<div class="su-faq-head">
-			<span class="su-faq-badge" aria-hidden="true">❓ FAQ</span>
+			<span class="su-faq-badge" aria-hidden="true"><?php echo studentup_ui_icon( 'help', 13 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> FAQ</span>
 			<h2 id="su-faq-title" class="su-faq-title">Frequently Asked Questions</h2>
 		</div>
 		<div class="su-faq-list">

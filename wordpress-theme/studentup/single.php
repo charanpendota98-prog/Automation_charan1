@@ -142,7 +142,7 @@ get_header();
 				</div>
 
 				<?php if ( has_tag() ) : ?>
-					<div class="su-tags" aria-label="Tags">🏷 <?php the_tags( '', ' · ', '' ); ?></div>
+					<div class="su-tags" aria-label="Tags"><?php echo studentup_ui_icon( 'tag', 13 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> <?php the_tags( '', ' · ', '' ); ?></div>
 				<?php endif; ?>
 
 				<?php studentup_author_box(); ?>

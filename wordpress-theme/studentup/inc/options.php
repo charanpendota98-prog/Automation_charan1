@@ -131,7 +131,7 @@ function studentup_option_fields() {
 				'share_inline' => array( 'In-content share bar (v98 viral reach)', 'check', '1', 'v98: modati H2 tarvata WhatsApp/Telegram share row — post chivara varaku scroll cheyyani readers ki kuda share option kanipistundi (free reach). Mobile lo native share sheet kuda vastundi.' ),
 				'upnext' => array( 'Up Next block (article chivara — session depth)', 'check', '1', 'v96: ade category lo kotha posts 3 — reader tap cheste NIJAMAINA kotha pageview (ad refresh policy-safe; timer/auto-reload KAADU)' ),
 				'upnext_bar' => array( 'Mobile sticky “next article” bar', 'check', '1', 'v96: scroll 60% tarvata kindha okka link bar — sticky AD tho collide avvadu (adi ON unte bar paiki jarugutundi)' ),
-					'saved_enabled' => array( 'Saved / bookmarks (🔖 reader save-for-later)', 'check', '1', 'v92: readers cards/posts meeda 🔖 save cheyyagalaru (localStorage — DB/cookie ledu, privacy-safe). OFF chesthe button + panel render avvavu' ),
+					'saved_enabled' => array( 'Saved / bookmarks (reader save-for-later)', 'check', '1', 'v92: readers cards/posts meeda save button cheyyagalaru (localStorage — DB/cookie ledu, privacy-safe). OFF chesthe button + panel render avvavu' ),
 					'saved_max' => array( 'Saved posts limit (per browser)', 'text', '60', 'v92: localStorage cap (5–200). Limit dhatithe purani vi FIFO ga drop avutayi — browser storage bloat avvadu' ),
 					'workspace' => array( 'My Workspace command center (v172)', 'check', '1', 'v172: [studentup_workspace] page — profile (qual · age · state) → eligible jobs · application pipeline · deadline radar. Browser-only (account ledu). Page create: First-run setup leda page lo shortcode pettandi' ),
 			),
@@ -139,7 +139,7 @@ function studentup_option_fields() {
 		'homepage' => array(
 			'title'  => 'Homepage (v123 premium)',
 			'fields' => array(
-				'hero_premium'  => array( 'Premium hero (search + quick actions)', 'check', '1', 'v123: LOGO · search bar · 🔥 Latest Govt Jobs · 🎓 Scholarships · 📢 Results · 🎫 Hall Tickets' ),
+				'hero_premium'  => array( 'Premium hero (search + quick actions)', 'check', '1', 'v123: LOGO · search bar · Latest Govt Jobs · Scholarships · Results · Hall Tickets' ),
 				'hot_jobs'      => array( 'TOP 10 hot jobs today (card rail)', 'check', '1', 'v123: image + last date + salary + apply — Netflix style swipe rail' ),
 				'daily_quiz'    => array( 'Daily Quiz block (colorful ring)', 'check', '1', 'v123: roju 5 questions, instant score, date-wise rotation' ),
 				'scholar_strip' => array( 'Scholarships spotlight strip', 'check', '1', 'v123: Scholarships category lo latest 4 + "see all" link' ),
@@ -155,7 +155,7 @@ function studentup_option_fields() {
 				'instant_nav'   => array( 'Instant navigation (Speculation Rules + View Transitions)', 'check', '1', 'v127: browser-native prerender on hover + smooth cross-page transitions. Admin/login/external links eppudu prerender kaavu.' ),
 				'command_palette'=> array( 'Command palette (Ctrl / ⌘ + K search)', 'check', '1', 'v127: power-user quick search + jump to jobs, scholarships, quiz, calculator' ),
 				'for_you'       => array( '"Picked for you" rail (reader history)', 'check', '1', 'v127: reader browser lo chusina posts batti — localStorage matrame, server ki data ledu' ),
-				'bottom_nav'    => array( 'Mobile floating bottom navigation', 'check', '1', 'v123: 🏠 Home · 💼 Jobs · 🎓 Scholarships · 🔔 Alerts · 🔍 Search' ),
+				'bottom_nav'    => array( 'Mobile floating bottom navigation', 'check', '1', 'v123: Home · Jobs · Scholarships · Alerts · Search' ),
 			),
 		),
 		'advanced' => array(
@@ -252,7 +252,7 @@ function studentup_settings_page() {
 	}
 	?>
 	<div class="wrap">
-		<h1>🎓 StudentUp Settings</h1>
+		<h1><?php echo studentup_ui_icon( 'bell', 20 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> StudentUp Settings</h1>
 		<p>Idi mee site options panelu — bot kuda ivi REST tho chaduvutundi
 			(<code>/wp-json/studentup/v1/options</code>). JSON fields ni bot nimpustundi;
 			mirvu kuda edit cheyyachu.</p>

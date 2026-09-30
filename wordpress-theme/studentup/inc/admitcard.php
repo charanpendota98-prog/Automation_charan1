@@ -41,7 +41,7 @@ function studentup_admit_card_block() {
 	?>
 	<section class="su-admit-wrap" id="admit-card-helper" aria-labelledby="su-admit-title">
 		<div class="su-admit-head">
-			<span class="su-admit-icon" aria-hidden="true">🎫</span>
+			<span class="su-admit-icon" aria-hidden="true"><?php echo studentup_ui_icon( 'ticket', 26 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?></span>
 			<div>
 				<h3 id="su-admit-title" class="su-admit-title">Hall Ticket & Admit Card Download Helper</h3>
 				<p class="su-admit-desc">Select your recruitment board to access the official admit card download portal directly.</p>
@@ -49,7 +49,7 @@ function studentup_admit_card_block() {
 		</div>
 
 		<div class="su-admit-select-wrap">
-			<label for="su-admit-select">📋 Select Recruitment Board / Exam:</label>
+			<label for="su-admit-select"><?php echo studentup_ui_icon( 'board', 14 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Select Recruitment Board / Exam:</label>
 			<select id="su-admit-select" class="su-admit-select">
 				<?php foreach ( $portals as $i => $p ) : ?>
 					<option value="<?php echo (int) $i; ?>" data-url="<?php echo esc_url( $p['url'] ); ?>" data-req="<?php echo esc_attr( $p['req'] ); ?>">
@@ -61,18 +61,18 @@ function studentup_admit_card_block() {
 
 		<div class="su-admit-info-box" id="su-admit-info">
 			<div class="su-admit-req">
-				<strong>🔑 Credentials Required:</strong>
+				<strong><?php echo studentup_ui_icon( 'key', 14 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Credentials Required:</strong>
 				<span id="su-admit-req-text"><?php echo esc_html( $portals[0]['req'] ); ?></span>
 			</div>
 			<div class="su-admit-action">
 				<a href="<?php echo esc_url( $portals[0]['url'] ); ?>" id="su-admit-link" target="_blank" rel="noopener noreferrer" class="su-admit-btn">
-					🚀 Open Official Hall Ticket Portal →
+					<?php echo studentup_ui_icon( 'external', 14 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Open Official Hall Ticket Portal →
 				</a>
 			</div>
 		</div>
 
 		<div class="su-admit-tips">
-			<strong>⚠️ Exam Hall Guidelines:</strong>
+			<strong><?php echo studentup_ui_icon( 'alert', 14 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Exam Hall Guidelines:</strong>
 			<span>Carry a printed copy of the hall ticket along with original Photo ID proof (Aadhaar / Voter ID) and 2 passport photos.</span>
 		</div>
 	</section>

@@ -54,6 +54,7 @@ return array(
 	'terms'            => 'Terms and Conditions',
 	'editorial-policy' => 'Editorial Policy',
 	'workspace'        => 'My Workspace',
+	'saved'            => 'Saved Posts',
 );
 }
 
@@ -100,6 +101,15 @@ function studentup_setup_page_body( $slug, $title ) {
  */
 function studentup_setup_workspace_body() {
 	return '<p>Set your qualification, age and state once — eligible jobs, deadlines and your application pipeline appear here automatically. Everything is stored in your browser only.</p>' . "\n\n" . '[studentup_workspace]';
+}
+
+/**
+ * v173: Saved page body — [studentup_saved] grid (localStorage powered).
+ *
+ * @return string
+ */
+function studentup_setup_saved_body() {
+	return '<p>Everything you save with the Save button is kept in this browser — no account needed. Your application status (Applied / Interview / Result) is tracked here too.</p>' . "\n\n" . '[studentup_saved]';
 }
 
 /**
@@ -165,7 +175,9 @@ function studentup_run_first_setup() {
 				'post_name'    => $slug,
 				'post_content' => ( 'workspace' === $slug && function_exists( 'studentup_setup_workspace_body' ) )
 					? studentup_setup_workspace_body()
-					: studentup_setup_page_body( $slug, $title ),
+					: ( ( 'saved' === $slug && function_exists( 'studentup_setup_saved_body' ) )
+						? studentup_setup_saved_body()
+						: studentup_setup_page_body( $slug, $title ) ),
 				'post_status'  => 'publish',
 				'post_type'    => 'page',
 			)

@@ -36,7 +36,7 @@ get_header();
 				$hot = ( $i < 3 ) ? ' hot' : '';             // v89: TS · AP · Central top-3 highlight
 				?>
 				<a class="usedcard<?php echo esc_attr( $hot ); ?>" href="<?php echo esc_url( get_category_link( $term ) ); ?>">
-					<span class="ui" aria-hidden="true"><?php echo esc_html( $m['icon'] ); ?></span>
+					<span class="ui" aria-hidden="true"><?php echo studentup_ui_icon( $m['icon'], 22 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?></span>
 					<div><b><?php echo esc_html( $m['label'] ); ?></b><small><?php echo esc_html( $m['hint'] ); ?></small></div>
 				</a>
 			<?php endforeach; ?>

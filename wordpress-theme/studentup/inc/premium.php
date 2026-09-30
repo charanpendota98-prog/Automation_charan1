@@ -135,19 +135,28 @@ function studentup_hot_jobs( $limit = 10 ) {
 	?>
 	<section class="su-hot" aria-label="Top hot jobs today">
 		<div class="su-hot-head">
-			<h2>🔥 Top <?php echo esc_html( (int) $limit ); ?> hot jobs today</h2>
+			<h2><?php echo studentup_ui_icon( 'bolt', 18 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Top <?php echo esc_html( (int) $limit ); ?> hot jobs today</h2>
 			<a href="<?php echo esc_url( studentup_opportunity_board_url() ); ?>">All active jobs →</a>
 		</div>
-		<p class="su-rail-hint">👉 <?php esc_html_e( 'Swipe sideways for more', 'studentup' ); ?></p>
+		<p class="su-rail-hint"><?php echo studentup_ui_icon( 'chevron', 13 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> <?php esc_html_e( 'Swipe sideways for more', 'studentup' ); ?></p>
 		<div class="su-hot-rail">
-			<?php
-			$n = 0;
-			while ( $q->have_posts() ) :
-				$q->the_post();
-				$n++;
-				$last = get_post_meta( get_the_ID(), 'su_last_date', true );
-				$pay  = get_post_meta( get_the_ID(), 'su_salary', true );
-				?>
+	<?php
+	$n = 0;
+	while ( $q->have_posts() ) :
+		$q->the_post();
+		$n++;
+		// v173 REAL FIX: meta keys correct ga (purathana 'su_last_date'/'su_salary'
+		// keys eppudu save cheyyaledu — anduke salary/deadline pills kanipinchaledu,
+		// and $left define cheyyaledu → PHP warning).
+		$last = studentup_opportunity_last_date( get_the_ID() );
+		$left = ( $last && function_exists( 'studentup_opportunity_days_left' ) )
+			? studentup_opportunity_days_left( $last )
+			: null;
+		if ( null !== $left && $left < 0 ) {
+			continue;   // closed posts "hot jobs today" lo vaddu.
+		}
+		$pay = trim( (string) get_post_meta( get_the_ID(), 'studentup_salary', true ) );
+		?>
 				<article class="su-hotcard">
 					<a class="su-hot-thumb" href="<?php the_permalink(); ?>">
 						<?php if ( has_post_thumbnail() ) : ?>
@@ -161,25 +170,25 @@ function studentup_hot_jobs( $limit = 10 ) {
 							);
 							?>
 						<?php else : ?>
-							<span class="su-hot-ph" aria-hidden="true">🎯</span>
+							<span class="su-hot-ph" aria-hidden="true"><?php echo studentup_ui_icon( 'work', 22 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?></span>
 						<?php endif; ?>
 						<span class="su-hot-rank">#<?php echo esc_html( $n ); ?></span>
 					</a>
 					<div class="su-hot-body">
 						<h3><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h3>
 						<div class="su-hot-meta">
-							<span class="su-pill su-pill-amber">📅 <?php echo esc_html( $last ? $last : get_the_date( 'M j' ) ); ?></span>
+							<span class="su-pill su-pill-amber"><?php echo studentup_ui_icon( 'calendar', 12 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> <?php echo esc_html( $last ? $last : get_the_date( 'M j' ) ); ?></span>
 							<?php if ( $pay ) : ?>
-								<span class="su-pill su-pill-green">💰 <?php echo esc_html( $pay ); ?></span>
+								<span class="su-pill su-pill-green"><?php echo studentup_ui_icon( 'wallet', 12 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> <?php echo esc_html( $pay ); ?></span>
 							<?php endif; ?>
 							<?php if ( null !== $left && $left >= 0 && $left <= 10 ) : ?>
-								<span class="su-pill su-pill-hot">⏳ <?php echo esc_html( 0 === $left ? 'Last day' : $left . 'd left' ); ?></span>
+								<span class="su-pill su-pill-hot"><?php echo studentup_ui_icon( 'bolt', 12 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> <?php echo esc_html( 0 === $left ? 'Last day' : $left . 'd left' ); ?></span>
 							<?php endif; ?>
 						</div>
 						<a class="su-hot-apply" href="<?php the_permalink(); ?>">Apply / Details →</a>
 					</div>
 				</article>
-			<?php endwhile; ?>
+	<?php endwhile; ?>
 		</div>
 	</section>
 	<?php

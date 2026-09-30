@@ -9,6 +9,14 @@
     return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
   }); }
 
+  /* v173: trusted SVG icons (server studentup_ui_icon — emoji purge). */
+  var SVG = '<svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" aria-hidden="true" focusable="false"><path d="';
+  var ICON = {
+    doc: SVG + "M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z\"/></svg>",
+    search: SVG + "M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z\"/></svg>"
+  };
+  function icon(i) { return (typeof i === "string" && i.indexOf("<svg") === 0) ? i : (ICON[i] ? ICON[i] : ICON.search); }
+
   function readHist() {
     try { return JSON.parse(localStorage.getItem(HIST) || "[]"); } catch (e) { return []; }
   }
@@ -42,7 +50,7 @@
     sec.hidden = false;
     grid.innerHTML = list.slice(0, 6).map(function (x) {
       return '<a class="su-fycard" href="' + esc(x.u) + '">' +
-        (x.i ? '<span class="su-fyimg" style="background-image:url(' + esc(x.i) + ')"></span>' : '<span class="su-fyimg su-fyph">📄</span>') +
+        (x.i ? '<span class="su-fyimg" style="background-image:url(' + esc(x.i) + ')"></span>' : '<span class="su-fyimg su-fyph">' + ICON.doc + '</span>') +
         '<span class="su-fytext"><b>' + esc(x.t) + "</b>" + (x.c ? "<small>" + esc(x.c) + "</small>" : "") + "</span></a>";
     }).join("");
     var clear = sec.querySelector("[data-su-foryou-clear]");
@@ -65,7 +73,7 @@
     function paint() {
       list.innerHTML = items.map(function (it, i) {
         return '<a class="su-cmdk-item' + (i === idx ? " on" : "") + '" role="option" aria-selected="' +
-          (i === idx) + '" href="' + esc(it.u) + '"><span class="su-cmdk-i">' + esc(it.i || "🔎") +
+          (i === idx) + '" href="' + esc(it.u) + '"><span class="su-cmdk-i">' + icon(it.i) +
           "</span><span>" + esc(it.t) + "</span></a>";
       }).join("") || '<p class="su-cmdk-empty">No matches — press Enter for the full search page.</p>';
     }
@@ -112,7 +120,7 @@
         var hay = (it.t + " " + (it.c || "")).toLowerCase();
         var ok = true;
         for (var w = 0; w < words.length; w++) { if (hay.indexOf(words[w]) === -1) { ok = false; break; } }
-        if (ok) { out.push({ i: "📄", t: it.t, u: it.u }); }
+        if (ok) { out.push({ i: ICON.doc, t: it.t, u: it.u }); }
       }
       return out;
     }
@@ -131,7 +139,7 @@
         .then(function (rows) {
           if (q !== lastQuery) return;
           items = (rows || []).map(function (p) {
-            return { i: "📄", t: (p.title && p.title.rendered ? p.title.rendered : "").replace(/<[^>]*>/g, ""), u: p.link };
+            return { i: ICON.doc, t: (p.title && p.title.rendered ? p.title.rendered : "").replace(/<[^>]*>/g, ""), u: p.link };
           });
           if (!items.length) items = quick.filter(function (k) { return k.t.toLowerCase().indexOf(q.toLowerCase()) > -1; });
           idx = 0; paint();

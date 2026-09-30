@@ -27,7 +27,7 @@ function studentup_personal_picks() {
 	}
 	?>
 	<section class="su-you" id="su-you" aria-labelledby="su-you-title">
-		<h2 id="su-you-title">⭐ <?php esc_html_e( 'Your 5 today', 'studentup' ); ?></h2>
+		<h2 id="su-you-title"><?php echo studentup_ui_icon( 'star', 17 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> <?php esc_html_e( 'Your 5 today', 'studentup' ); ?></h2>
 		<p class="su-you-sub"><?php esc_html_e( 'Set your qualification and state once. The list is built on this device - no login, nothing sent to a server.', 'studentup' ); ?></p>
 		<div class="su-you-form">
 			<div>
@@ -144,7 +144,7 @@ function studentup_calendar_button() {
 			data-date="<?php echo esc_attr( $last ); ?>"
 			data-title="<?php echo esc_attr( get_the_title() ); ?>"
 			data-url="<?php echo esc_url( get_permalink() ); ?>">
-			🗓️ <?php esc_html_e( 'Add last date to my calendar', 'studentup' ); ?>
+			<?php echo studentup_ui_icon( 'calendar', 15 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> <?php esc_html_e( 'Add last date to my calendar', 'studentup' ); ?>
 		</button>
 		<span class="su-cal-hint"><?php esc_html_e( 'Downloads a calendar file with an alarm one day before.', 'studentup' ); ?></span>
 	</p>

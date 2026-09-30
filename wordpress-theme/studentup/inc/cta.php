@@ -98,7 +98,7 @@ function studentup_cta_join_inline() {
 	$soc = studentup_social_links();
 	?>
 	<div class="su-join-inline" role="complementary" aria-label="<?php esc_attr_e( 'Join our channels', 'studentup' ); ?>">
-		<span class="su-join-inline-txt"><strong>📲 <?php esc_html_e( 'Free job alerts on your phone', 'studentup' ); ?></strong>
+		<span class="su-join-inline-txt"><strong><?php echo studentup_ui_icon( 'bell', 15 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> <?php esc_html_e( 'Free job alerts on your phone', 'studentup' ); ?></strong>
 			<span><?php esc_html_e( 'Jobs · results · hall tickets — first on WhatsApp / Telegram.', 'studentup' ); ?></span></span>
 		<span class="su-join-inline-btns">
 			<a class="su-join-wa" href="<?php echo esc_url( $soc['whatsapp'] ); ?>" target="_blank" rel="noopener"><?php echo studentup_social_icon( 'whatsapp', 15 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> <?php esc_html_e( 'Join WhatsApp', 'studentup' ); ?></a>

@@ -52,13 +52,13 @@ function studentup_stories( $limit = 8 ) {
 						<h3><?php echo esc_html( $r['title'] ); ?></h3>
 						<div class="su-story-meta">
 							<?php if ( $r['last'] ) : ?>
-								<span>📅 <?php echo esc_html( date_i18n( 'M j', strtotime( $r['last'] ) ) ); ?></span>
+								<span><?php echo studentup_ui_icon( 'calendar', 12 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> <?php echo esc_html( date_i18n( 'M j', strtotime( $r['last'] ) ) ); ?></span>
 							<?php endif; ?>
 							<?php if ( $r['pay'] ) : ?>
-								<span>💰 <?php echo esc_html( $r['pay'] ); ?></span>
+								<span><?php echo studentup_ui_icon( 'wallet', 12 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> <?php echo esc_html( $r['pay'] ); ?></span>
 							<?php endif; ?>
 							<?php if ( $r['vac'] ) : ?>
-								<span>🧾 <?php echo esc_html( $r['vac'] ); ?> posts</span>
+								<span><?php echo studentup_ui_icon( 'card', 12 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> <?php echo esc_html( $r['vac'] ); ?> posts</span>
 							<?php endif; ?>
 						</div>
 						<a class="su-story-cta" href="<?php echo esc_url( $r['link'] ); ?>">Full details →</a>
