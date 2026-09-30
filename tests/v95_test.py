@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""v95 tests — SEO 100 pin-to-pin + TERMS + IN-BODY SIGNALS (theme 1.9.22).
+"""v95 tests — SEO 100 pin-to-pin + TERMS + IN-BODY SIGNALS (theme 1.9.23).
 
 Brief: "fix" — అంటే remaining audit gaps (Rank Math / SEO 100 · Google-suggest
 keywords · contextual linking · terms page) ni okati okati ga close cheyyadam.
@@ -31,7 +31,7 @@ Ee suite v95 lo fix ayyina **nijamaina gaps** ni regression ga kāpādutundi:
 Checks (13): contextual_links API/safety · attach_inline_image API/safety · enhance()
 wiring · config knob · validator parity checks · rm100 slug trim · post_gate
 `content_image` (73/73 certificate) · pipeline wiring · terms page (builder ·
-nav · sitemap · footer) · version parity 1.9.22 · suite pins 75 · zip packaged.
+nav · sitemap · footer) · version parity 1.9.23 · suite pins 75 · zip packaged.
 
 Run: python tests/v95_test.py   (also via python run.py --test-all)
 """
@@ -47,7 +47,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 THEME = ROOT / "wordpress-theme" / "studentup"
-SUITES_EXPECTED = 123  # v95 tho
+SUITES_EXPECTED = 124  # v95 tho
 
 
 def read(rel: Path | str) -> str:
@@ -257,12 +257,12 @@ def test_theme_assets_and_version() -> None:
     php = re.search(r"STUDENTUP_VERSION',\s*'([^']+)'", read(THEME / "functions.php")).group(1)
     stable = re.search(r"Stable tag:\s*([\d.]+)", read(THEME / "readme.txt")).group(1)
     vcss = re.search(r"Version:\s*([\d.]+)", css).group(1)
-    assert vcss == php == stable == "1.9.22", f"parity tappu: {vcss}·{php}·{stable}"
+    assert vcss == php == stable == "1.9.23", f"parity tappu: {vcss}·{php}·{stable}"
     for entry in ("= 1.9.4", "= 1.9.5", "= 1.9.6"):
         assert entry in read(THEME / "readme.txt"), f"changelog {entry} ledu"
     assert ".su-figure" in css and "su-figure figcaption" in css, "figure CSS ledu"
     assert "a.su-ctx" in css, "contextual link CSS ledu"
-    print("      theme 1.9.22 · figure + su-ctx CSS · changelog ✔")
+    print("      theme 1.9.23 · figure + su-ctx CSS · changelog ✔")
 
 
 def test_suite_pins_and_docs() -> None:
@@ -308,10 +308,10 @@ def test_zip_packaged() -> None:
         assert "studentup/footer.php" in names, "footer.php zip lo ledu"
         css = z.read("studentup/style.css").decode("utf-8")
         php = z.read("studentup/functions.php").decode("utf-8")
-    assert re.search(r"Version:\s*1\.9\.22", css), "zip lo css version 1.9.22 kaadu"
-    assert re.search(r"STUDENTUP_VERSION',\s*'1\.9\.22'", php), "zip lo php version 1.9.22 kaadu"
+    assert re.search(r"Version:\s*1\.9\.23", css), "zip lo css version 1.9.23 kaadu"
+    assert re.search(r"STUDENTUP_VERSION',\s*'1\.9\.23'", php), "zip lo php version 1.9.23 kaadu"
     assert ".su-figure" in css, "zip css lo su-figure ledu"
-    print(f"      zip: {len(names)} files · theme 1.9.22 · su-figure inside ✔")
+    print(f"      zip: {len(names)} files · theme 1.9.23 · su-figure inside ✔")
 
 
 TESTS = [
@@ -324,7 +324,7 @@ TESTS = [
     ("post_gate content_image", test_post_gate_content_image),
     ("terms page built", test_terms_page_built),
     ("footer terms link", test_footer_has_terms_link),
-    ("theme assets + 1.9.22", test_theme_assets_and_version),
+    ("theme assets + 1.9.23", test_theme_assets_and_version),
     ("suite pins + docs", test_suite_pins_and_docs),
     ("zip sha recorded", test_zip_sha_recorded),
     ("zip packaged", test_zip_packaged),
@@ -334,7 +334,7 @@ TESTS = [
 def main() -> None:
     os.chdir(ROOT)
     print("=" * 70)
-    print("v95 SEO-100 PIN-TO-PIN + TERMS + IN-BODY SIGNALS (theme 1.9.22)")
+    print("v95 SEO-100 PIN-TO-PIN + TERMS + IN-BODY SIGNALS (theme 1.9.23)")
     print("=" * 70)
     failed = 0
     for name, fn in TESTS:

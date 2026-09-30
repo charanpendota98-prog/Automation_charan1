@@ -46,14 +46,15 @@ function studentup_setup_categories() {
  * @return array List of slug => title.
  */
 function studentup_setup_pages() {
-	return array(
-		'about'            => 'About Us',
-		'contact'          => 'Contact Us',
-		'privacy'          => 'Privacy Policy',
-		'disclaimer'       => 'Disclaimer',
-		'terms'            => 'Terms and Conditions',
-		'editorial-policy' => 'Editorial Policy',
-	);
+return array(
+	'about'            => 'About Us',
+	'contact'          => 'Contact Us',
+	'privacy'          => 'Privacy Policy',
+	'disclaimer'       => 'Disclaimer',
+	'terms'            => 'Terms and Conditions',
+	'editorial-policy' => 'Editorial Policy',
+	'workspace'        => 'My Workspace',
+);
 }
 
 /**
@@ -89,6 +90,16 @@ function studentup_setup_page_body( $slug, $title ) {
 
 	$body = isset( $map[ $slug ] ) ? $map[ $slug ] : '<p>' . esc_html( $title ) . '</p>';
 	return $body . "\n" . $base;
+}
+
+/**
+ * v172: Workspace page body — functional page (policy $base note vaddu).
+ * Shortcode ye content — admin edit cheyyalsina emi ledu.
+ *
+ * @return string
+ */
+function studentup_setup_workspace_body() {
+	return '<p>Set your qualification, age and state once — eligible jobs, deadlines and your application pipeline appear here automatically. Everything is stored in your browser only.</p>' . "\n\n" . '[studentup_workspace]';
 }
 
 /**
@@ -152,7 +163,9 @@ function studentup_run_first_setup() {
 			array(
 				'post_title'   => $title,
 				'post_name'    => $slug,
-				'post_content' => studentup_setup_page_body( $slug, $title ),
+				'post_content' => ( 'workspace' === $slug && function_exists( 'studentup_setup_workspace_body' ) )
+					? studentup_setup_workspace_body()
+					: studentup_setup_page_body( $slug, $title ),
 				'post_status'  => 'publish',
 				'post_type'    => 'page',
 			)

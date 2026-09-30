@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'STUDENTUP_VERSION', '1.9.22' );  // v171 PRO MODE: SVG icon system + critical CSS (fast first paint) + application status tracker; v170 phone mode (zoom/side-scroll guards, mobile speed)
+define( 'STUDENTUP_VERSION', '1.9.23' );  // v172 COMMAND CENTER: My Workspace (profile → eligible jobs → application pipeline → deadline radar); v171 SVG icons + critical CSS + apply tracker; v170 phone mode
 
 require_once get_template_directory() . '/inc/options.php';
 require_once get_template_directory() . '/inc/icons.php';        // v171: pro SVG UI icons (emoji UI badulu).
@@ -80,6 +80,7 @@ require_once get_template_directory() . '/inc/speed.php';       // v127: specula
 require_once get_template_directory() . '/inc/jobmeta.php';     // v126: admin job data box
 require_once get_template_directory() . '/inc/compare-page.php'; // v126: compare table page/shortcode
 require_once get_template_directory() . '/inc/smart.php';   // v124: AI job match, eligibility, salary calc, calendar
+require_once get_template_directory() . '/inc/workspace.php'; // v172: My Workspace command center (profile · pipeline · radar)
 require_once get_template_directory() . '/inc/quiz.php';    // v123: real daily quiz
 require_once get_template_directory() . '/inc/shortlinks.php'; // v122: first-party /slug redirects + click counts
 
@@ -347,6 +348,7 @@ function studentup_defer_scripts( $tag, $handle ) {
 		'studentup-saved',
 		'studentup-tools',
 		'studentup-opportunities',
+		'studentup-workspace',
 	);
 	if ( in_array( $handle, $defer, true ) && false !== strpos( $tag, ' src=' ) ) {
 		$tag = str_replace( ' src=', ' defer src=', $tag );

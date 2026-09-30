@@ -95,6 +95,7 @@ function studentup_command_palette() {
 	if ( $res ) {
 		$links[] = array( 'i' => '📢', 't' => 'Results', 'u' => get_category_link( $res ) );
 	}
+	$links[] = array( 'i' => '🧭', 't' => 'My Workspace', 'u' => function_exists( 'studentup_workspace_url' ) ? ( studentup_workspace_url() ? studentup_workspace_url() : home_url( '/' ) ) : home_url( '/' ) );
 	$links[] = array( 'i' => '📋', 't' => 'Active jobs board', 'u' => studentup_opportunity_board_url() );
 		$links[] = array( 'i' => '🧮', 't' => 'Age & Eligibility Calculator', 'u' => home_url( '/#age-calculator' ) );
 		$links[] = array( 'i' => '💳', 't' => 'Fee & Concession Calculator', 'u' => home_url( '/#fee-calculator' ) );

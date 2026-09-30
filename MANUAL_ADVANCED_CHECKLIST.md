@@ -1,6 +1,6 @@
 # 📋 MANUAL ADVANCED CHECKLIST — "Nenu manual ga em em cheyali"
 ### Website advanced ga run avvali · Posts ANI-PERFECT · Mistakes leku · Deep analyse + NotebookLM
-> **Verified counts (theme v1.9.20 build):** test suites **123/123** files · jsdom runtime **177/177** checks · PHP lint **82/82** files · theme audit **0/0** · code audit **0/0**.
+> **Verified counts (theme v1.9.23 build):** test suites **124/124** files · jsdom runtime **177/177** checks · PHP lint **85/85** files · theme audit **0/0** · code audit **0/0**.
 
 
 **Ee file = mee haath tho cheyyalsina ANNI — exact order, exact commands.**

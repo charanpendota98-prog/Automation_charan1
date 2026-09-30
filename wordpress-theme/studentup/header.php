@@ -101,6 +101,9 @@ studentup_breaking_ticker();
 	<?php if ( function_exists( 'studentup_saved_on' ) && studentup_saved_on() ) : ?>
 		<a href="#" class="su-msaved" data-su-saved-open><?php echo studentup_ui_icon( 'bookmark' ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> <?php echo esc_html__( 'Saved', 'studentup' ); ?></a>
 	<?php endif; ?>
+	<?php if ( function_exists( 'studentup_workspace_on' ) && studentup_workspace_on() && studentup_workspace_url() ) : ?>
+		<a href="<?php echo esc_url( studentup_workspace_url() ); ?>"><?php echo studentup_ui_icon( 'person' ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> My Workspace</a>
+	<?php endif; ?>
 	<a href="<?php echo esc_url( home_url( '/#daily-quiz' ) ); ?>"><?php echo studentup_ui_icon( 'chart' ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Daily Quiz</a>
 	<a href="<?php echo esc_url( home_url( '/#age-calculator' ) ); ?>"><?php echo studentup_ui_icon( 'person' ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Age Calculator</a>
 	<a href="<?php echo esc_url( home_url( '/#fee-calculator' ) ); ?>"><?php echo studentup_ui_icon( 'card' ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Fee Calculator</a>

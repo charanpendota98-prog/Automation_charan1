@@ -131,8 +131,9 @@ function studentup_option_fields() {
 				'share_inline' => array( 'In-content share bar (v98 viral reach)', 'check', '1', 'v98: modati H2 tarvata WhatsApp/Telegram share row — post chivara varaku scroll cheyyani readers ki kuda share option kanipistundi (free reach). Mobile lo native share sheet kuda vastundi.' ),
 				'upnext' => array( 'Up Next block (article chivara — session depth)', 'check', '1', 'v96: ade category lo kotha posts 3 — reader tap cheste NIJAMAINA kotha pageview (ad refresh policy-safe; timer/auto-reload KAADU)' ),
 				'upnext_bar' => array( 'Mobile sticky “next article” bar', 'check', '1', 'v96: scroll 60% tarvata kindha okka link bar — sticky AD tho collide avvadu (adi ON unte bar paiki jarugutundi)' ),
-				'saved_enabled' => array( 'Saved / bookmarks (🔖 reader save-for-later)', 'check', '1', 'v92: readers cards/posts meeda 🔖 save cheyyagalaru (localStorage — DB/cookie ledu, privacy-safe). OFF chesthe button + panel render avvavu' ),
-				'saved_max' => array( 'Saved posts limit (per browser)', 'text', '60', 'v92: localStorage cap (5–200). Limit dhatithe purani vi FIFO ga drop avutayi — browser storage bloat avvadu' ),
+					'saved_enabled' => array( 'Saved / bookmarks (🔖 reader save-for-later)', 'check', '1', 'v92: readers cards/posts meeda 🔖 save cheyyagalaru (localStorage — DB/cookie ledu, privacy-safe). OFF chesthe button + panel render avvavu' ),
+					'saved_max' => array( 'Saved posts limit (per browser)', 'text', '60', 'v92: localStorage cap (5–200). Limit dhatithe purani vi FIFO ga drop avutayi — browser storage bloat avvadu' ),
+					'workspace' => array( 'My Workspace command center (v172)', 'check', '1', 'v172: [studentup_workspace] page — profile (qual · age · state) → eligible jobs · application pipeline · deadline radar. Browser-only (account ledu). Page create: First-run setup leda page lo shortcode pettandi' ),
 			),
 		),
 		'homepage' => array(

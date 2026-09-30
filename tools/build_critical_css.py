@@ -50,6 +50,7 @@ EXACT = {
 PREFIX = (
     ".su-hero", ".su-hs", ".su-live-dot", ".su-trend", ".su-statebar",
     ".su-sres", ".su-apply", ".spanel-", ".su-social", ".su-hact", ".su-am",
+    ".su-ws",
 )
 KEYFRAMES = {"slide", "blip", "suPulse", "suSresIn"}
 MEDIA_KEEP = ("screen", "all", "print")

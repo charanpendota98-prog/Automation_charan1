@@ -2,9 +2,9 @@
 # This file is distributed under the GNU GPL v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: StudentUp 1.9.22\n"
+"Project-Id-Version: StudentUp 1.9.23\n"
 "Report-Msgid-Bugs-To: https://studentup.in/\n"
-"POT-Creation-Date: 2026-09-30 05:09+0000\n"
+"POT-Creation-Date: 2026-09-30 05:25+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -24,8 +24,28 @@ msgstr ""
 msgid "1 day left"
 msgstr ""
 
+#: inc/workspace.php:185
+msgid "1 · Your profile"
+msgstr ""
+
 #: inc/cta.php:76
 msgid "100% free · no calls · 1–3 updates a day"
+msgstr ""
+
+#: inc/workspace.php:214
+msgid "2 · Application pipeline"
+msgstr ""
+
+#: inc/workspace.php:220
+msgid "3 · Jobs matched for you"
+msgstr ""
+
+#: inc/workspace.php:226
+msgid "4 · Deadline radar"
+msgstr ""
+
+#: inc/workspace.php:170
+msgid "Active jobs board"
 msgstr ""
 
 #: inc/slotlab.php:87
@@ -52,8 +72,36 @@ msgstr ""
 msgid "Added"
 msgstr ""
 
+#: inc/workspace.php:142
+#: inc/workspace.php:197
+msgid "Age"
+msgstr ""
+
+#: inc/workspace.php:165
+msgid "Age & eligibility calculator"
+msgstr ""
+
+#: inc/workspace.php:121
+msgid "Age limit"
+msgstr ""
+
 #: inc/saved.php:302
 msgid "All saved posts removed."
+msgstr ""
+
+#: inc/workspace.php:117
+#: inc/workspace.php:203
+msgid "All states"
+msgstr ""
+
+#: inc/workspace.php:115
+#: inc/workspace.php:205
+msgid "Andhra Pradesh"
+msgstr ""
+
+#: inc/workspace.php:113
+#: inc/workspace.php:190
+msgid "Any qualification"
 msgstr ""
 
 #: inc/cta.php:38
@@ -65,6 +113,7 @@ msgid "Application status — tap to change"
 msgstr ""
 
 #: inc/saved.php:305
+#: inc/workspace.php:132
 msgid "Applied"
 msgstr ""
 
@@ -88,6 +137,11 @@ msgstr ""
 msgid "Call now"
 msgstr ""
 
+#: inc/workspace.php:116
+#: inc/workspace.php:206
+msgid "Central"
+msgstr ""
+
 #: inc/student-tools.php:75
 msgid "Clear"
 msgstr ""
@@ -106,11 +160,24 @@ msgstr ""
 msgid "Close compare panel"
 msgstr ""
 
+#: inc/workspace.php:127
+msgid "Closed"
+msgstr ""
+
 #: inc/apply.php:95
 msgid "Closes today"
 msgstr ""
 
+#: inc/workspace.php:137
+msgid "Closing in 3 days"
+msgstr ""
+
+#: inc/workspace.php:139
+msgid "Closing soon"
+msgstr ""
+
 #: inc/engage.php:134
+#: inc/workspace.php:138
 msgid "Closing this week"
 msgstr ""
 
@@ -143,6 +210,14 @@ msgstr ""
 msgid "Copy link"
 msgstr ""
 
+#: inc/workspace.php:125
+msgid "days left"
+msgstr ""
+
+#: inc/workspace.php:124
+msgid "Deadline"
+msgstr ""
+
 #: inc/remind.php:52
 msgid "Dismiss"
 msgstr ""
@@ -151,12 +226,28 @@ msgstr ""
 msgid "Downloads a calendar file with an alarm one day before."
 msgstr ""
 
+#: inc/workspace.php:120
+msgid "Eligible by age"
+msgstr ""
+
+#: inc/workspace.php:118
+msgid "Eligible for you"
+msgstr ""
+
 #: inc/cta.php:54
 msgid "Email"
 msgstr ""
 
 #: inc/cta.php:69
 msgid "Every job, exam date and result — first on your phone"
+msgstr ""
+
+#: inc/workspace.php:167
+msgid "Exam score calculator"
+msgstr ""
+
+#: inc/workspace.php:166
+msgid "Fee & concession calculator"
 msgstr ""
 
 #: inc/cta.php:70
@@ -183,7 +274,12 @@ msgstr ""
 msgid "Home"
 msgstr ""
 
+#: inc/workspace.php:169
+msgid "In-hand salary calculator"
+msgstr ""
+
 #: inc/saved.php:306
+#: inc/workspace.php:133
 msgid "Interview"
 msgstr ""
 
@@ -227,6 +323,10 @@ msgstr ""
 msgid "Last dates from the official notifications"
 msgstr ""
 
+#: inc/workspace.php:126
+msgid "Last day"
+msgstr ""
+
 #: inc/engage.php:151
 msgid "Last day today"
 msgstr ""
@@ -247,6 +347,14 @@ msgstr ""
 msgid "More"
 msgstr ""
 
+#: inc/workspace.php:175
+msgid "My workspace"
+msgstr ""
+
+#: inc/workspace.php:179
+msgid "My Workspace"
+msgstr ""
+
 #: inc/template.php:108
 msgid "NEW"
 msgstr ""
@@ -257,6 +365,10 @@ msgstr ""
 
 #: inc/student-tools.php:112
 msgid "No confirmed date is available for this post."
+msgstr ""
+
+#: inc/workspace.php:122
+msgid "No matching posts yet — relax the filters or check back after the next update."
 msgstr ""
 
 #: inc/security.php:130
@@ -295,12 +407,25 @@ msgstr ""
 msgid "Open comparison"
 msgstr ""
 
+#: inc/workspace.php:140
+msgid "Open saved panel"
+msgstr ""
+
 #: inc/saved.php:218
+#: inc/workspace.php:229
 msgid "Open the saved page"
 msgstr ""
 
 #: author.php:97
 msgid "Pages"
+msgstr ""
+
+#: inc/workspace.php:119
+msgid "Partly eligible — check details"
+msgstr ""
+
+#: inc/workspace.php:129
+msgid "Pay"
 msgstr ""
 
 #: comments.php:61
@@ -315,6 +440,10 @@ msgstr ""
 msgid "posts"
 msgstr ""
 
+#: inc/workspace.php:128
+msgid "Posts"
+msgstr ""
+
 #: inc/cta.php:40
 msgid "Preparation Group"
 msgstr ""
@@ -327,13 +456,24 @@ msgstr ""
 msgid "Print or save this article as PDF"
 msgstr ""
 
+#: inc/workspace.php:112
+#: inc/workspace.php:210
+msgid "Profile is stored in this browser only — no account, nothing sent to the server."
+msgstr ""
+
 #: author.php:52
 msgid "Published articles: %d"
 msgstr ""
 
 #: inc/keyfacts.php:26
 #: inc/personal.php:34
+#: inc/workspace.php:141
+#: inc/workspace.php:188
 msgid "Qualification"
+msgstr ""
+
+#: inc/workspace.php:233
+msgid "Quick tools"
 msgstr ""
 
 #: inc/template.php:123
@@ -385,6 +525,7 @@ msgid "Reset my choices"
 msgstr ""
 
 #: inc/saved.php:307
+#: inc/workspace.php:134
 msgid "Result"
 msgstr ""
 
@@ -394,7 +535,12 @@ msgstr ""
 
 #: inc/saved.php:180
 #: inc/saved.php:293
+#: inc/workspace.php:130
 msgid "Save"
+msgstr ""
+
+#: inc/workspace.php:135
+msgid "Save jobs from any card — your pipeline builds here automatically."
 msgstr ""
 
 #: inc/engage.php:272
@@ -410,11 +556,16 @@ msgstr ""
 #: inc/saved.php:209
 #: inc/saved.php:294
 #: inc/saved.php:304
+#: inc/workspace.php:131
 msgid "Saved"
 msgstr ""
 
 #: inc/remind.php:51
 msgid "Saved job reminders"
+msgstr ""
+
+#: inc/workspace.php:136
+msgid "Saved jobs with deadlines will show up here, most urgent first."
 msgstr ""
 
 #: header.php:65
@@ -425,6 +576,14 @@ msgstr ""
 
 #: inc/student-tools.php:113
 msgid "Select at least two posts to compare."
+msgstr ""
+
+#: inc/workspace.php:180
+msgid "Set your profile once — eligible jobs, deadlines and your application status, all in one place."
+msgstr ""
+
+#: inc/workspace.php:123
+msgid "Set your qualification above — matching jobs appear here instantly."
 msgstr ""
 
 #: inc/personal.php:31
@@ -448,6 +607,8 @@ msgid "Social media"
 msgstr ""
 
 #: inc/personal.php:45
+#: inc/workspace.php:143
+#: inc/workspace.php:201
 msgid "State"
 msgstr ""
 
@@ -463,12 +624,21 @@ msgstr ""
 msgid "StudentUp blocks"
 msgstr ""
 
-#: inc/premium.php:136
+#: inc/premium.php:141
 msgid "Swipe sideways for more"
+msgstr ""
+
+#: inc/workspace.php:168
+msgid "Syllabus tracker"
 msgstr ""
 
 #: inc/cta.php:47
 msgid "Tap చేస్తే మా WhatsApp open అవుతుంది — వెంటనే reply"
+msgstr ""
+
+#: inc/workspace.php:114
+#: inc/workspace.php:204
+msgid "Telangana"
 msgstr ""
 
 #: inc/cta.php:75

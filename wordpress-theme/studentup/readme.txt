@@ -2,9 +2,9 @@
 Contributors: studentup
 Requires at least: 6.0
 Tested up to: 6.7
-Stable tag: 1.9.22
+Stable tag: 1.9.23
 Requires PHP: 7.4
-Version: 1.9.22
+Version: 1.9.23
 License: GNU General Public License v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Tags: news, education, blog, custom-logo, custom-menu, featured-images, translation-ready, right-sidebar, block-styles, wide-blocks
@@ -47,6 +47,11 @@ The theme ships a REST bridge (`inc/seo-bridge.php`). Use an account with `manag
 user tho App Password ivvandi (Administrator role).
 
 == Changelog ==
+
+= 1.9.23 =
+* v172 COMMAND CENTER — "My Workspace" page ([studentup_workspace]): profile (qualification · age · state) set chesthe eligible jobs instant, application pipeline (Saved/Applied/Interview/Result tiles), deadline radar (urgent 3/7/14 days first) and quick tools — anni okka page lo. No account, browser-only, offline-capable.
+* v172: firstrun automatic ga My Workspace page create chestundi; mobile menu + ⌘K palette + hero lo entry points.
+* v172: workspace data server-side embedded (REST wait ledu) + JS deferred — speed impact zero.
 
 = 1.9.22 =
 * v171 PRO MODE — professional SVG icon system: anni UI emojis (☰ 🔍 ☾ 🔖 🏠 💼 🎓 🔔) clean inline SVG ga replace chesamu — prathi device lo same sharp look, zero extra requests.

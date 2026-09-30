@@ -78,6 +78,11 @@ function studentup_hero_premium() {
 						<span aria-hidden="true"><?php echo studentup_ui_icon( esc_html( $a['icn'] ), 15 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?></span><?php echo esc_html( $a['label'] ); ?>
 					</a>
 				<?php endforeach; ?>
+				<?php if ( function_exists( 'studentup_workspace_url' ) && studentup_workspace_url() ) : ?>
+					<a class="su-hact su-t-ink" href="<?php echo esc_url( studentup_workspace_url() ); ?>">
+						<span aria-hidden="true"><?php echo studentup_ui_icon( 'person', 15 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?></span>My Workspace
+					</a>
+				<?php endif; ?>
 			</div>
 
 			<?php

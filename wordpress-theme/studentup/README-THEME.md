@@ -76,6 +76,29 @@ theme.json           block editor colors/Typography (navy/blue/orange)
 
 CLI: `wp studentup-qual-backfill --limit=500` (purana posts ki tags).
 
+## v172 (theme 1.9.23) — COMMAND CENTER: My Workspace (flagship)
+
+**"1000x advanced" flagship feature** — student ki kavalsina ANNI okka page lo:
+
+| # | Module | Em chestundi |
+|---|---|---|
+| 1 | **Profile** | Qualification · age · state okasari set cheyyandi (browser lo matrame — account ledu) |
+| 2 | **Jobs matched for you** | Job meta (qual · age limits · state · deadline) ni profile tho instant match — eligible jobs deadline urgent-first order lo |
+| 3 | **Application pipeline** | Saved → Applied → Interview → Result counts + list (saved panel apply-tracker tho same store — ekkuva sync lo untayi) |
+| 4 | **Deadline radar** | Save chesina jobs lo closing-in-3-days RED · this-week AMBER · closing-soon BLUE |
+| + | **Quick tools** | Age calc · fee calc · score calc · syllabus tracker · salary calc · jobs board |
+
+**Kuda advanced (engineering):**
+- Data server-side embedded (`studentup_smart_dataset` JSON attr) — REST wait ledu, **offline kuda pani chestundi**
+- Assets workspace page lo matrame load (site-speed impact zero), JS deferred
+- Critical CSS layer lo `.su-ws` prefix (workspace page first-paint instant)
+- Admin toggle (StudentUp Options), firstrun automatic page creation (`My Workspace`)
+- Entry points: mobile menu · ⌘K command palette · hero action chip
+
+Setup: Theme activate chesina tarvata **StudentUp → First-run setup** run cheyyandi
+(My Workspace page automatic create avutundi), leda epage lo `[studentup_workspace]`
+shortcode pettandi. URL: `/workspace/`.
+
 ## v171 (theme 1.9.22) — PRO MODE: advanced · professional · very fast
 
 Mee 3 requirements — "very useful, not silly", "advanced", "very fast":
