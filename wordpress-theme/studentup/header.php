@@ -17,7 +17,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 <html <?php language_attributes(); ?>>
 <head>
 <meta charset="<?php bloginfo( 'charset' ); ?>">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<script>
+/* v170: phone accidental zoom OFF — iOS Safari viewport meta ni ignore chestundi,
+   anduke pinch gesture ni JS tho block chestundi (double-tap zoom: CSS touch-action). */
+(function () {
+  function stop(e) { e.preventDefault(); }
+  document.addEventListener('gesturestart', stop, { passive: false });
+  document.addEventListener('gesturechange', stop, { passive: false });
+})();
+</script>
 <link rel="profile" href="https://gmpg.org/xfn/11">
 <?php wp_head(); ?>
 </head>

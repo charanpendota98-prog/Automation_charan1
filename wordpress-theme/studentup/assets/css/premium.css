@@ -931,3 +931,63 @@ body.dark .su-ab-soc.mail{background:#1e293b;color:#e2e8f0;border-color:#334155}
   .su-social a{width:36px!important;height:36px!important}
   .su-social a svg{width:17px!important;height:17px!important}
 }
+
+/* ===========================================================
+   v170 PHONE MODE — 3 problems, 3 fixes:
+   1) "pakkaku velthundi"  → horizontal overflow hard guard
+   2) "zoom zoom-out avthundi" → double-tap zoom + iOS input zoom OFF
+   3) "phone lo slow"      → costly blur/animation effects mobile lo OFF
+   (Ivi andariki apply avtayi — kaani change kanipinchindi phone size lo
+    matrame, desktop design deggarledu.)
+   =========================================================== */
+
+/* ---------- 1) SIDE SCROLL GUARD ----------
+   overflow-x:clip → scroll container create cheyyadu, anduke sticky header
+   + position:sticky table headers pani chestu untayi (overflow-x:hidden
+   ni minchestundi). Chala purana browsers ki fallback = hidden. */
+html,body{overflow-x:clip}
+@supports not (overflow:clip){body{overflow-x:hidden}}
+body{max-width:100%}
+/* post content lo pedda URLs / long words leak ayite clip avvani wrap */
+.article-content a,.article-content code,.article-content pre,
+.su-recirc-post-title,.su-nextbar-title,.su-applybar-title{overflow-wrap:anywhere}
+.article-content iframe,.article-content embed,.article-content object,
+.article-content video,.su-ad iframe,.su-ad ins{max-width:100%}
+
+/* ---------- 2) ZOOM OFF (tap lo accidental zoom fix) ----------
+   touch-action:manipulation → double-tap zoom + 300ms tap delay remove
+   (pinch zoom: header.php JS block chestundi + viewport meta). */
+html{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+*{-webkit-tap-highlight-color:transparent}
+/* iOS Safari: input font-size 16px kante takkuva unte FOCUS chesinappudu
+   automatic ga ZOOM chestundi — anni inputs phone lo 16px. */
+@media(max-width:980px){
+  input,select,textarea{font-size:16px!important}
+}
+
+/* ---------- 3) PHONE SPEED ----------
+   (a) Hero orbs: blur(46px) + infinite float = low-end phone GPU full.
+       Phone lo render ye cheyyamu (desktop lo untundi).
+   (b) Quiz ring spin + blur, live-dot pulse: infinite repaint — phone lo OFF.
+   (c) backdrop-filter blur: scroll prathi frame ki repaint — solid color. */
+@media(max-width:980px){
+  .su-hero-orb{display:none}
+  .su-quiz-ring{animation:none;filter:none;opacity:.35}
+  .su-live-dot{animation:none;box-shadow:none}
+  .su-wave-bar{animation:none}  /* audio player wave bars = infinite repaint, phone lo OFF */
+  .header{backdrop-filter:none;-webkit-backdrop-filter:none;background:#fff}
+  body.dark .header{background:#0e1b31}
+  .su-bnav{backdrop-filter:none;-webkit-backdrop-filter:none;background:rgba(255,255,255,.97)}
+  body.dark .su-bnav{background:rgba(14,27,49,.97)}
+  .su-social{backdrop-filter:none;-webkit-backdrop-filter:none;background:rgba(255,255,255,.95)}
+  body.dark .su-social{background:rgba(17,31,54,.95)}
+  .su-cmdk{backdrop-filter:none;-webkit-backdrop-filter:none;background:rgba(11,18,40,.72)}
+  .su-applybar{backdrop-filter:none;-webkit-backdrop-filter:none;background:rgba(255,255,255,.98)}
+  body.dark .su-applybar{background:rgba(14,27,49,.98)}
+  .su-story-next,.su-story-prev{backdrop-filter:none;-webkit-backdrop-filter:none;background:rgba(15,23,42,.45)}
+}
+/* Reduced-motion preference unna evaraina: inka ekkuva calm */
+@media(prefers-reduced-motion:reduce){
+  .su-hero-orb,.su-quiz-ring,.su-live-dot{animation:none}
+  .su-quiz-ring{filter:none;opacity:.35}
+}

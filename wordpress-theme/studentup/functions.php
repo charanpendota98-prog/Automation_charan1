@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'STUDENTUP_VERSION', '1.9.20' );  // v130 render budget + docs count parity; v129 auto social cards + quick stories; v128 go-live score dashboard; v127 instant nav (speculation rules · view transitions) + ⌘K palette + For You; v126 job data box + compare page + LCP polish; v125 ItemList schema + urgency chips + in-feed slot; v124 smart layer (AI job match · eligibility · salary · calendar); v123 premium UI (hero · hot jobs · daily quiz · alerts · bottom nav); v120: LCP assets + student compare/reminder/print utilities
+define( 'STUDENTUP_VERSION', '1.9.21' );  // v170 phone mode: zoom OFF + side-scroll guard + mobile speed (no blur/anim, JS defer); v169 sponsor hub + video + smart recirc; v168 admit card + score calc + resume; v167 fee calc + syllabus tracker + status card
 
 require_once get_template_directory() . '/inc/options.php';
 require_once get_template_directory() . '/inc/qual-filter.php';  // v72: 10th/Inter/Degree/PG filter (auto tags)
@@ -325,6 +325,33 @@ function studentup_assets() {
 	}
 }
 add_action( 'wp_enqueue_scripts', 'studentup_assets' );
+
+/**
+ * v170: theme JS ki `defer` — script download HTML/CSS tho parallel ga
+ * start avutundi (slow phone network lo 200-400ms fast). Anni theme files
+ * DOM ready tarvata matrame pani chestayi (IIFE + DOMContentLoaded), anduke
+ * defer 100% safe.
+ */
+function studentup_defer_scripts( $tag, $handle ) {
+	if ( is_admin() ) {
+		return $tag;
+	}
+	$defer = array(
+		'studentup',
+		'studentup-premium',
+		'studentup-cmdk',
+		'studentup-smart',
+		'studentup-pwa',
+		'studentup-saved',
+		'studentup-tools',
+		'studentup-opportunities',
+	);
+	if ( in_array( $handle, $defer, true ) && false !== strpos( $tag, ' src=' ) ) {
+		$tag = str_replace( ' src=', ' defer src=', $tag );
+	}
+	return $tag;
+}
+add_filter( 'script_loader_tag', 'studentup_defer_scripts', 10, 2 );
 
 /**
  * Remove WordPress payload that this theme does not need on ordinary public

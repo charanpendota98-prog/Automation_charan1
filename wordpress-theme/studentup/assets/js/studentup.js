@@ -221,14 +221,24 @@
   var bar = document.getElementById("su-progress-bar");
   var article = document.querySelector(".article-content");
   if (bar && article) {
-    var onScroll = function () {
+    /* v170: rAF throttle — scroll prathi event ki getBoundingClientRect + offsetHeight
+       (forced layout) low-end phone lo jank istundi. Prathi frame okate update. */
+    var ticking = false;
+    var update = function () {
       var top = article.getBoundingClientRect().top + window.pageYOffset;
       var total = article.offsetHeight - window.innerHeight;
       var pct = total > 0 ? ((window.pageYOffset - top) / total) * 100 : 0;
       bar.style.width = Math.max(0, Math.min(100, pct)) + "%";
+      ticking = false;
+    };
+    var onScroll = function () {
+      if (!ticking) {
+        ticking = true;
+        window.requestAnimationFrame(update);
+      }
     };
     window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
+    window.addEventListener("resize", onScroll, { passive: true });
     onScroll();
   }
 

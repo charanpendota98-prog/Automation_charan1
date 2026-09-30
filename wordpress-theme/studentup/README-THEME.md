@@ -76,6 +76,23 @@ theme.json           block editor colors/Typography (navy/blue/orange)
 
 CLI: `wp studentup-qual-backfill --limit=500` (purana posts ki tags).
 
+## v170 (theme 1.9.21) — PHONE MODE: fast · no side-scroll · no zoom
+
+Mee phone lo 3 problems fix ayyayi:
+
+1. **"Pakkaku velthundi" (side scroll) OFF** — `overflow-x:clip` hard guard (sticky header safe ga
+   pani chestu untundi) + post content lo pedda URLs/tables leak ayite automatic wrap.
+2. **"Zoom zoom-out avthundi" OFF** — pinch zoom (viewport meta + iOS gesture guard JS) +
+   double-tap zoom (`touch-action:manipulation`) + iOS input-focus auto-zoom (16px inputs)
+   — moortham ga block.
+3. **"Phone lo slow" FIX** — hero blur orbs · quiz spin ring · pulse/wave infinite animations
+   phone size lo OFF (GPU cool); header/bottom-nav/social-rail/apply-bar meeda costly
+   `backdrop-filter` blur → solid colour; JS `defer` tho parallel download; reading-progress
+   bar rAF-throttled (scroll jank taggindi). Desktop design deggara ekkuva
+   marindhi cheyyaledu — anni changes `@media(max-width:980px)` lo unayi.
+
+Re-upload: `python tools/build_wp_theme.py` → zip → WP Admin → Appearance → Themes → Add New → Upload.
+
 ## v168 (theme 1.9.20) — world-class interactive student suite
 
 | Feature | Where | Automatic? |
