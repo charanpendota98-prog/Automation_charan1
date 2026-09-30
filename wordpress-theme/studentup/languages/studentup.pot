@@ -2,9 +2,9 @@
 # This file is distributed under the GNU GPL v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: StudentUp 1.9.21\n"
+"Project-Id-Version: StudentUp 1.9.22\n"
 "Report-Msgid-Bugs-To: https://studentup.in/\n"
-"POT-Creation-Date: 2026-09-30 04:28+0000\n"
+"POT-Creation-Date: 2026-09-30 05:09+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -52,12 +52,20 @@ msgstr ""
 msgid "Added"
 msgstr ""
 
-#: inc/saved.php:300
+#: inc/saved.php:302
 msgid "All saved posts removed."
 msgstr ""
 
 #: inc/cta.php:38
 msgid "Application PDF"
+msgstr ""
+
+#: inc/saved.php:308
+msgid "Application status — tap to change"
+msgstr ""
+
+#: inc/saved.php:305
+msgid "Applied"
 msgstr ""
 
 #: inc/apply.php:108
@@ -84,12 +92,12 @@ msgstr ""
 msgid "Clear"
 msgstr ""
 
-#: inc/saved.php:221
+#: inc/saved.php:222
 msgid "Clear all"
 msgstr ""
 
 #: inc/engage.php:216
-#: inc/saved.php:210
+#: inc/saved.php:211
 #: inc/upnext.php:140
 msgid "Close"
 msgstr ""
@@ -175,6 +183,10 @@ msgstr ""
 msgid "Home"
 msgstr ""
 
+#: inc/saved.php:306
+msgid "Interview"
+msgstr ""
+
 #: inc/cta.php:71
 msgid "Jobs · notifications · results — first on our WhatsApp / Telegram."
 msgstr ""
@@ -255,13 +267,16 @@ msgstr ""
 msgid "No results — try a different word."
 msgstr ""
 
-#: inc/saved.php:242
-#: inc/saved.php:298
+#: inc/saved.php:300
+msgid "No saved posts yet. Open any post and tap Save."
+msgstr ""
+
+#: inc/saved.php:243
 msgid "No saved posts yet. Open any post and tap 🔖 Save."
 msgstr ""
 
-#: inc/saved.php:213
-msgid "No saved posts yet. Tap 🔖 on any card to save it for later."
+#: inc/saved.php:214
+msgid "No saved posts yet. Tap Save on any card to keep it here."
 msgstr ""
 
 #: inc/opportunities.php:65
@@ -280,7 +295,7 @@ msgstr ""
 msgid "Open comparison"
 msgstr ""
 
-#: inc/saved.php:217
+#: inc/saved.php:218
 msgid "Open the saved page"
 msgstr ""
 
@@ -292,8 +307,8 @@ msgstr ""
 msgid "Post comment"
 msgstr ""
 
-#: inc/saved.php:296
-msgid "Post saved — open 🔖 any time to read it later."
+#: inc/saved.php:298
+msgid "Post saved — open the Saved panel any time to read it later."
 msgstr ""
 
 #: inc/apply.php:117
@@ -337,7 +352,7 @@ msgstr ""
 msgid "Recent articles"
 msgstr ""
 
-#: inc/saved.php:301
+#: inc/saved.php:303
 msgid "Recently read"
 msgstr ""
 
@@ -349,15 +364,15 @@ msgstr ""
 msgid "Reminder file downloaded. Add it to your calendar."
 msgstr ""
 
-#: inc/saved.php:299
+#: inc/saved.php:301
 msgid "Remove all saved posts?"
 msgstr ""
 
-#: inc/saved.php:294
+#: inc/saved.php:296
 msgid "Remove this post from saved"
 msgstr ""
 
-#: inc/saved.php:295
+#: inc/saved.php:297
 msgid "Removed from saved"
 msgstr ""
 
@@ -369,12 +384,16 @@ msgstr ""
 msgid "Reset my choices"
 msgstr ""
 
+#: inc/saved.php:307
+msgid "Result"
+msgstr ""
+
 #: inc/keyfacts.php:27
 msgid "Salary"
 msgstr ""
 
 #: inc/saved.php:180
-#: inc/saved.php:291
+#: inc/saved.php:293
 msgid "Save"
 msgstr ""
 
@@ -383,13 +402,14 @@ msgid "Save this notification as PDF"
 msgstr ""
 
 #: inc/saved.php:179
-#: inc/saved.php:293
+#: inc/saved.php:295
 msgid "Save this post for later"
 msgstr ""
 
 #: header.php:102
-#: inc/saved.php:208
-#: inc/saved.php:292
+#: inc/saved.php:209
+#: inc/saved.php:294
+#: inc/saved.php:304
 msgid "Saved"
 msgstr ""
 
@@ -398,8 +418,8 @@ msgid "Saved job reminders"
 msgstr ""
 
 #: header.php:65
-#: inc/saved.php:202
-#: inc/saved.php:206
+#: inc/saved.php:203
+#: inc/saved.php:207
 msgid "Saved posts"
 msgstr ""
 
@@ -431,7 +451,7 @@ msgstr ""
 msgid "State"
 msgstr ""
 
-#: inc/saved.php:297
+#: inc/saved.php:299
 msgid "Storage is not available in this browser (private mode?) — saving is off."
 msgstr ""
 
@@ -484,7 +504,7 @@ msgstr ""
 msgid "Vacancies"
 msgstr ""
 
-#: inc/saved.php:219
+#: inc/saved.php:220
 msgid "View saved here"
 msgstr ""
 

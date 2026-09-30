@@ -62,16 +62,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 		<div class="headactions">
 			<?php if ( studentup_saved_on() ) : ?>
-				<button type="button" class="iconbtn su-hdr-saved" data-su-saved-open aria-expanded="false" aria-controls="su-saved-panel" aria-label="<?php echo esc_attr__( 'Saved posts', 'studentup' ); ?>">🔖<span class="su-saved-count" data-su-saved-count hidden>0</span></button>
+				<button type="button" class="iconbtn su-hdr-saved" data-su-saved-open aria-expanded="false" aria-controls="su-saved-panel" aria-label="<?php echo esc_attr__( 'Saved posts', 'studentup' ); ?>"><?php echo studentup_ui_icon( 'bookmark', 20 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?><span class="su-saved-count" data-su-saved-count hidden>0</span></button>
 			<?php endif; ?>
-			<button type="button" class="iconbtn" id="searchbtn" aria-label="Search" aria-expanded="false" aria-controls="searchpanel">🔍</button>
-			<button type="button" class="iconbtn" id="theme" aria-label="Dark mode" aria-pressed="false">☾</button>
-			<button type="button" class="menubtn" id="menubtn" aria-label="Menu" aria-expanded="false" aria-controls="mpanel">☰</button>
+			<button type="button" class="iconbtn" id="searchbtn" aria-label="Search" aria-expanded="false" aria-controls="searchpanel"><?php echo studentup_ui_icon( 'search', 20 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?></button>
+			<button type="button" class="iconbtn" id="theme" aria-label="Dark mode" aria-pressed="false"><?php echo studentup_ui_icon( 'moon', 20 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?></button>
+			<button type="button" class="menubtn" id="menubtn" aria-label="Menu" aria-expanded="false" aria-controls="mpanel"><?php echo studentup_ui_icon( 'menu', 22 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?></button>
 		</div>
 	</div>
 	<div class="searchpanel" id="searchpanel" hidden>
 		<div class="wrap">
-			<span class="spanel-icon" aria-hidden="true">🔍</span>
+			<span class="spanel-icon" aria-hidden="true"><?php echo studentup_ui_icon( 'search', 20 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?></span>
 			<form class="spanel-form" role="search" method="get" action="<?php echo esc_url( home_url( '/' ) ); ?>" autocomplete="off">
 				<div class="su-livesearch" role="combobox" aria-expanded="false" aria-haspopup="listbox" aria-owns="su-sres">
 					<input id="qtop" type="search" name="s" autocomplete="off" value="<?php echo esc_attr( get_search_query() ); ?>"
@@ -93,26 +93,26 @@ studentup_breaking_ticker();
 
 <div class="mbackdrop" id="mbackdrop" aria-hidden="true"></div>
 <div class="mpanel" id="mpanel" role="dialog" aria-label="Site menu" aria-modal="true" aria-hidden="true">
-	<div class="mpanel-head"><strong>StudentUp</strong><button type="button" id="mpanelclose" aria-label="Close menu">✕</button></div>
+	<div class="mpanel-head"><strong>StudentUp</strong><button type="button" id="mpanelclose" aria-label="Close menu"><?php echo studentup_ui_icon( 'close', 20 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?></button></div>
 	<div class="mlabel">Explore</div>
-	<a href="<?php echo esc_url( home_url( '/' ) ); ?>">🏠 Home</a>
-	<a href="<?php echo esc_url( home_url( '/?s=' ) ); ?>">🔍 Search</a>
-	<a class="su-mobile-board-link" href="<?php echo esc_url( studentup_opportunity_board_url() ); ?>">📋 Latest active jobs</a>
+	<a href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php echo studentup_ui_icon( 'home' ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Home</a>
+	<a href="<?php echo esc_url( home_url( '/?s=' ) ); ?>"><?php echo studentup_ui_icon( 'search' ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Search</a>
+	<a class="su-mobile-board-link" href="<?php echo esc_url( studentup_opportunity_board_url() ); ?>"><?php echo studentup_ui_icon( 'board' ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Latest active jobs</a>
 	<?php if ( function_exists( 'studentup_saved_on' ) && studentup_saved_on() ) : ?>
-		<a href="#" class="su-msaved" data-su-saved-open>🔖 <?php echo esc_html__( 'Saved', 'studentup' ); ?></a>
+		<a href="#" class="su-msaved" data-su-saved-open><?php echo studentup_ui_icon( 'bookmark' ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> <?php echo esc_html__( 'Saved', 'studentup' ); ?></a>
 	<?php endif; ?>
-	<a href="<?php echo esc_url( home_url( '/#daily-quiz' ) ); ?>">🧠 Daily Quiz</a>
-	<a href="<?php echo esc_url( home_url( '/#age-calculator' ) ); ?>">🧮 Age Calculator</a>
-	<a href="<?php echo esc_url( home_url( '/#fee-calculator' ) ); ?>">💳 Fee Calculator</a>
-	<a href="<?php echo esc_url( home_url( '/#syllabus-tracker' ) ); ?>">📚 Syllabus Tracker</a>
-	<a href="<?php echo esc_url( home_url( '/#salary-calculator' ) ); ?>">💰 Salary Calculator</a>
-	<a href="<?php echo esc_url( home_url( '/#alerts' ) ); ?>">🔔 Instant alerts</a>
+	<a href="<?php echo esc_url( home_url( '/#daily-quiz' ) ); ?>"><?php echo studentup_ui_icon( 'chart' ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Daily Quiz</a>
+	<a href="<?php echo esc_url( home_url( '/#age-calculator' ) ); ?>"><?php echo studentup_ui_icon( 'person' ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Age Calculator</a>
+	<a href="<?php echo esc_url( home_url( '/#fee-calculator' ) ); ?>"><?php echo studentup_ui_icon( 'card' ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Fee Calculator</a>
+	<a href="<?php echo esc_url( home_url( '/#syllabus-tracker' ) ); ?>"><?php echo studentup_ui_icon( 'book' ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Syllabus Tracker</a>
+	<a href="<?php echo esc_url( home_url( '/#salary-calculator' ) ); ?>"><?php echo studentup_ui_icon( 'wallet' ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Salary Calculator</a>
+	<a href="<?php echo esc_url( home_url( '/#alerts' ) ); ?>"><?php echo studentup_ui_icon( 'bell' ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Instant alerts</a>
 	<?php
 	// v123: Scholarships mobile menu lo eppudu kanipinchali.
 	$su_schol = studentup_used_term( 'scholarships' );
 	if ( $su_schol ) :
 		?>
-		<a href="<?php echo esc_url( get_category_link( $su_schol ) ); ?>">🎓 Scholarships</a>
+		<a href="<?php echo esc_url( get_category_link( $su_schol ) ); ?>"><?php echo studentup_ui_icon( 'school' ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Scholarships</a>
 	<?php endif; ?>
 	<div class="mlabel">Most searched by students</div>
 	<?php foreach ( studentup_most_used() as $m ) : ?>

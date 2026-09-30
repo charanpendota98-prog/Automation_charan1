@@ -31,7 +31,7 @@ function studentup_updated_stamp() {
 		return; // not a real update — do not dress a fresh post as "updated"
 	}
 	printf(
-		'<p class="su-updated"><span aria-hidden="true">🔄</span> %1$s <time datetime="%2$s">%3$s</time></p>',
+		'<p class="su-updated"><span aria-hidden="true">' . studentup_ui_icon( 'bolt', 13 ) . '</span> %1$s <time datetime="%2$s">%3$s</time></p>', // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG
 		esc_html__( 'Updated on', 'studentup' ),
 		esc_attr( get_the_modified_date( DATE_W3C ) ),
 		esc_html( get_the_modified_date( 'j M Y, g:i a' ) )
@@ -131,7 +131,7 @@ function studentup_closing_week( $days = 7 ) {
 	?>
 	<section class="su-radar" aria-labelledby="su-radar-title">
 		<div class="su-radar-head">
-			<h2 id="su-radar-title">⏳ <?php esc_html_e( 'Closing this week', 'studentup' ); ?></h2>
+			<h2 id="su-radar-title"><?php echo studentup_ui_icon( 'clock', 18 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> <?php esc_html_e( 'Closing this week', 'studentup' ); ?></h2>
 			<span class="su-radar-sub"><?php esc_html_e( 'Last dates from the official notifications', 'studentup' ); ?></span>
 		</div>
 		<ul class="su-radar-list">

@@ -22,10 +22,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 function studentup_hero_actions() {
 	$out  = array();
 	$defs = array(
-		array( 'slug' => 'ts-jobs', 'label' => 'Latest Govt Jobs', 'icon' => '🔥', 'tone' => 'fire' ),
-		array( 'slug' => 'scholarships', 'label' => 'Scholarships', 'icon' => '🎓', 'tone' => 'grape' ),
-		array( 'slug' => 'results', 'label' => 'Results', 'icon' => '📢', 'tone' => 'sky' ),
-		array( 'slug' => 'hall-tickets', 'label' => 'Hall Tickets', 'icon' => '🎫', 'tone' => 'mint' ),
+		array( 'slug' => 'ts-jobs', 'label' => 'Latest Govt Jobs', 'icn' => 'bolt', 'tone' => 'fire' ),
+		array( 'slug' => 'scholarships', 'label' => 'Scholarships', 'icn' => 'school', 'tone' => 'grape' ),
+		array( 'slug' => 'results', 'label' => 'Results', 'icn' => 'board', 'tone' => 'sky' ),
+		array( 'slug' => 'hall-tickets', 'label' => 'Hall Tickets', 'icn' => 'tag', 'tone' => 'mint' ),
 	);
 	foreach ( $defs as $d ) {
 		$term = studentup_used_term( $d['slug'] );
@@ -66,7 +66,7 @@ function studentup_hero_premium() {
 			<p class="su-hero-sub">Verified notifications, last dates and direct apply links — checked by hand before posting.</p>
 
 			<form class="su-hero-search" role="search" method="get" action="<?php echo esc_url( home_url( '/' ) ); ?>">
-				<span class="su-hs-ico" aria-hidden="true">🔍</span>
+				<span class="su-hs-ico" aria-hidden="true"><?php echo studentup_ui_icon( 'search', 19 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?></span>
 				<input type="search" name="s" value="<?php echo esc_attr( get_search_query() ); ?>"
 					placeholder="Search SSC, TSPSC, scholarships, hall tickets…" aria-label="Search StudentUp">
 				<button type="submit">Search</button>
@@ -75,7 +75,7 @@ function studentup_hero_premium() {
 			<div class="su-hero-acts">
 				<?php foreach ( studentup_hero_actions() as $a ) : ?>
 					<a class="su-hact su-t-<?php echo esc_attr( $a['tone'] ); ?>" href="<?php echo esc_url( $a['url'] ); ?>">
-						<span aria-hidden="true"><?php echo esc_html( $a['icon'] ); ?></span><?php echo esc_html( $a['label'] ); ?>
+						<span aria-hidden="true"><?php echo studentup_ui_icon( esc_html( $a['icn'] ), 15 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?></span><?php echo esc_html( $a['label'] ); ?>
 					</a>
 				<?php endforeach; ?>
 			</div>
@@ -202,7 +202,7 @@ function studentup_scholarship_strip() {
 	?>
 	<section class="su-schol" aria-label="Scholarships">
 		<div class="su-schol-head">
-			<h2>🎓 Scholarships open now</h2>
+			<h2><?php echo studentup_ui_icon( 'school', 18 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Scholarships open now</h2>
 			<a href="<?php echo esc_url( get_category_link( $term ) ); ?>">See all scholarships →</a>
 		</div>
 		<?php if ( $q->have_posts() ) : ?>
@@ -237,11 +237,11 @@ function studentup_alerts_card() {
 	<section class="su-alerts" id="alerts" aria-label="Instant job alerts">
 		<div class="su-alerts-in">
 			<div class="su-alerts-copy">
-				<h2>🔔 Get every update as a notification</h2>
+				<h2><?php echo studentup_ui_icon( 'bell', 18 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Get every update as a notification</h2>
 				<p>Kotha job, result, hall ticket post chesina vent<span>a</span>ne — mee phone lo alert. Free, ekkada signup avasaram ledu.</p>
 			</div>
 			<div class="su-alerts-btns">
-				<button type="button" class="su-alert-on" data-su-push>🔔 Turn on alerts</button>
+				<button type="button" class="su-alert-on" data-su-push><?php echo studentup_ui_icon( 'bell', 15 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Turn on alerts</button>
 				<a class="su-alert-wa" href="<?php echo esc_url( $soc['whatsapp'] ); ?>" target="_blank" rel="noopener"><?php echo studentup_social_icon( 'whatsapp', 16 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> WhatsApp</a>
 				<a class="su-alert-tg" href="<?php echo esc_url( $soc['telegram'] ); ?>" target="_blank" rel="noopener"><?php echo studentup_social_icon( 'telegram', 16 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Telegram</a>
 			</div>
@@ -264,11 +264,11 @@ function studentup_bottom_nav() {
 	$sch_u  = $schol ? get_category_link( $schol ) : home_url( '/#jobs' );
 	?>
 	<nav class="su-bnav" aria-label="Quick navigation">
-		<a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="<?php echo is_front_page() ? 'on' : ''; ?>"><span aria-hidden="true">🏠</span>Home</a>
-		<a href="<?php echo esc_url( $jobs_u ); ?>"><span aria-hidden="true">💼</span>Jobs</a>
-		<a href="<?php echo esc_url( $sch_u ); ?>"><span aria-hidden="true">🎓</span>Scholar</a>
-		<a href="<?php echo esc_url( home_url( '/#alerts' ) ); ?>"><span aria-hidden="true">🔔</span>Alerts</a>
-		<button type="button" class="su-bnav-search" id="su-bnav-search"><span aria-hidden="true">🔍</span>Search</button>
+		<a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="<?php echo is_front_page() ? 'on' : ''; ?>"><?php echo studentup_ui_icon( 'home', 21 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?>Home</a>
+		<a href="<?php echo esc_url( $jobs_u ); ?>"><?php echo studentup_ui_icon( 'work', 21 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?>Jobs</a>
+		<a href="<?php echo esc_url( $sch_u ); ?>"><?php echo studentup_ui_icon( 'school', 21 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?>Scholar</a>
+		<a href="<?php echo esc_url( home_url( '/#alerts' ) ); ?>"><?php echo studentup_ui_icon( 'bell', 21 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?>Alerts</a>
+		<button type="button" class="su-bnav-search" id="su-bnav-search"><?php echo studentup_ui_icon( 'search', 21 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?>Search</button>
 	</nav>
 	<?php
 }

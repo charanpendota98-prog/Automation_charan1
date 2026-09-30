@@ -2,9 +2,9 @@
 Contributors: studentup
 Requires at least: 6.0
 Tested up to: 6.7
-Stable tag: 1.9.21
+Stable tag: 1.9.22
 Requires PHP: 7.4
-Version: 1.9.17
+Version: 1.9.22
 License: GNU General Public License v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Tags: news, education, blog, custom-logo, custom-menu, featured-images, translation-ready, right-sidebar, block-styles, wide-blocks
@@ -47,6 +47,19 @@ The theme ships a REST bridge (`inc/seo-bridge.php`). Use an account with `manag
 user tho App Password ivvandi (Administrator role).
 
 == Changelog ==
+
+= 1.9.22 =
+* v171 PRO MODE — professional SVG icon system: anni UI emojis (☰ 🔍 ☾ 🔖 🏠 💼 🎓 🔔) clean inline SVG ga replace chesamu — prathi device lo same sharp look, zero extra requests.
+* v171 VERY FAST — Critical CSS: above-fold styles (30 KB) head lo inline + full 154 KB CSS async (media=print + onload swap + noscript fallback) → first paint ki external CSS wait ledu.
+* v171 ADVANCED — Application Status Tracker: prathi saved job ki status chip (Saved → Applied → Interview → Result, tap to cycle). localStorage privacy-safe.
+* v171: article meta icons (date/category/eligibility) SVG; professional tone i18n cleanup.
+* v170 PHONE MODE: pinch/double-tap zoom OFF, side-scroll hard guard, mobile speed (blur/infinite-anim OFF), JS defer, iOS input-focus zoom fix.
+
+= 1.9.21 =
+* v170: pinch/double-tap zoom fully OFF (viewport meta + iOS gesture guard + touch-action) — accidental zoom fix.
+* v170: horizontal side-scroll hard guard (overflow-x clip + long-word wrap).
+* v170: mobile speed — hero blur orbs, quiz spin ring, pulse/wave infinite animations OFF on phones; backdrop-filter blur replaced with solid colour on header/bottom-nav/social rail/apply bar.
+* v170: iOS input auto-zoom fix (16px inputs), tap-highlight cleanup, JS deferred, reading-progress bar rAF-throttled.
 
 = 1.9.20 =
 * v134: Second in-article ad slot for long posts, anchor ad no longer stacks with the apply bar, preview update-count badges removed.

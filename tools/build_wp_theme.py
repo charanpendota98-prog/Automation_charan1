@@ -36,6 +36,8 @@ REQUIRED = [
     "assets/js/studentup.js",
 ]
 SKIP_DIRS = {"__pycache__", ".git", "node_modules"}
+# v171: unminified critical.css build intermediate — zip lo critical.min.css ye ship
+PACKAGE_SKIP = {"critical.css"}
 
 
 def validate() -> list[str]:
@@ -119,6 +121,8 @@ def package(out: Path) -> tuple[int, int]:
         for path in sorted(SRC.rglob("*")):
             if path.is_dir() or any(part in SKIP_DIRS for part in path.parts):
                 continue
+            if path.name in PACKAGE_SKIP:
+                continue
             info = zipfile.ZipInfo(
                 str(Path("studentup") / path.relative_to(SRC)), date_time=fixed)
             info.compress_type = zipfile.ZIP_DEFLATED
@@ -146,6 +150,12 @@ def main(argv: list[str] | None = None) -> int:
         print("  ✅ CSS minified (style.min.css + premium.min.css)")
     except Exception as exc:  # noqa: BLE001 — build must not die on minify
         print(f"  ⚠ CSS minify skipped: {exc}")
+    # v171: above-fold critical CSS (inline layer — first paint fast)
+    try:
+        from build_critical_css import main as _critical
+        _critical()
+    except Exception as exc:  # noqa: BLE001 — build must not die on critical css
+        print(f"  ⚠ critical css skipped: {exc}")
     problems = validate()
     for p in problems:
         print("  ❌ " + p)

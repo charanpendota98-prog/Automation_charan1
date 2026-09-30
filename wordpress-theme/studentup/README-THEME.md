@@ -76,6 +76,31 @@ theme.json           block editor colors/Typography (navy/blue/orange)
 
 CLI: `wp studentup-qual-backfill --limit=500` (purana posts ki tags).
 
+## v171 (theme 1.9.22) — PRO MODE: advanced · professional · very fast
+
+Mee 3 requirements — "very useful, not silly", "advanced", "very fast":
+
+1. **PROFESSIONAL (silly emojis pothayi)** — anni UI emojis (menu, search, dark,
+   saved, home, jobs, scholar, alerts, calculators…) clean **inline SVG icons** ga
+   replace chesamu (`inc/icons.php`). Prathi device lo same sharp professional
+   look, dark mode automatic, zero extra HTTP requests. Article meta
+   (date · category · eligibility) icons kuda SVG.
+2. **VERY FAST (first paint)** — **Critical CSS layer**: above-fold styles (30 KB,
+   `tools/build_critical_css.py` auto-build) `<head>` lo inline; full 154 KB CSS
+   `media="print" + onload` swap tho **async** (+ `<noscript>` fallback). First
+   paint ki external CSS wait ZERO — phone lo site open avvadam chala fast.
+   File lekapothe theme automatic ga purathana blocking path ki velthundi (safe).
+3. **ADVANCED + USEFUL — Application Status Tracker**: student job save chesina
+   tarvata "apply chesa? interview ayyinda? result?" track cheyochu. Prathi saved
+   job ki status chip — tap chesthe: **Saved → Applied → Interview → Result**.
+   Saved panel + /saved/ page rendu chotla. localStorage matrame (privacy-safe:
+   account ledu, server ki emi pampaledu).
+
+Tech: `inc/icons.php` (SVG system) · `inc/critical-css.php` (inline+async) ·
+`tools/build_critical_css.py` (build step, `build_wp_theme.py` automatic run) ·
+`studentup-saved.js` (tracker). Re-upload: `python tools/build_wp_theme.py` →
+zip → WP Admin → Appearance → Themes → Add New → Upload.
+
 ## v170 (theme 1.9.21) — PHONE MODE: fast · no side-scroll · no zoom
 
 Mee phone lo 3 problems fix ayyayi:

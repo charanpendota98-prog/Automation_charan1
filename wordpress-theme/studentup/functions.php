@@ -12,9 +12,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'STUDENTUP_VERSION', '1.9.21' );  // v170 phone mode: zoom OFF + side-scroll guard + mobile speed (no blur/anim, JS defer); v169 sponsor hub + video + smart recirc; v168 admit card + score calc + resume; v167 fee calc + syllabus tracker + status card
+define( 'STUDENTUP_VERSION', '1.9.22' );  // v171 PRO MODE: SVG icon system + critical CSS (fast first paint) + application status tracker; v170 phone mode (zoom/side-scroll guards, mobile speed)
 
 require_once get_template_directory() . '/inc/options.php';
+require_once get_template_directory() . '/inc/icons.php';        // v171: pro SVG UI icons (emoji UI badulu).
+require_once get_template_directory() . '/inc/critical-css.php'; // v171: above-fold inline CSS + async full CSS.
 require_once get_template_directory() . '/inc/qual-filter.php';  // v72: 10th/Inter/Degree/PG filter (auto tags)
 require_once get_template_directory() . '/inc/breaking.php';
 require_once get_template_directory() . '/inc/ads.php';
