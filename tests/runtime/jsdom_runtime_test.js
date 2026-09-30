@@ -167,9 +167,10 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
      qboxes2.length === 6 && qboxes2[0].classList.contains("on") &&
      !document.getElementById("qresult").classList.contains("show"));
   // wrong-answer path
-  document.querySelector('.opt[data-q="0"][data-o="0"]').click(); // a=1, so 0 is wrong
+  const wrongIdx = (ANSWERS[0] + 1) % 4;
+  document.querySelector('.opt[data-q="0"][data-o="' + wrongIdx + '"]').click();
   ok("wrong option marked .wrong",
-     document.querySelector('.opt[data-q="0"][data-o="0"]').classList.contains("wrong"));
+     document.querySelector('.opt[data-q="0"][data-o="' + wrongIdx + '"]').classList.contains("wrong"));
   for (let ix = 0; ix < 5; ix++) document.querySelector('.next[data-q="' + ix + '"]').click();
   document.querySelector('.next[data-q="5"]').click();
   await sleep(50);

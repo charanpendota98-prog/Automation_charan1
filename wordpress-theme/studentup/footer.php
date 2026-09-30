@@ -36,6 +36,21 @@ if ( ! defined( 'ABSPATH' ) ) {
 				</ul>
 			</div>
 			<div>
+				<h4>Student Tools</h4>
+				<ul>
+					<li><a href="<?php echo esc_url( home_url( '/#age-calculator' ) ); ?>">🧮 Age Calculator</a></li>
+					<li><a href="<?php echo esc_url( home_url( '/#fee-calculator' ) ); ?>">💳 Fee Calculator</a></li>
+					<li><a href="<?php echo esc_url( home_url( '/#score-calculator' ) ); ?>">🎯 Score Calculator</a></li>
+					<li><a href="<?php echo esc_url( home_url( '/#admit-card-helper' ) ); ?>">🎫 Hall Ticket Portal</a></li>
+					<li><a href="<?php echo esc_url( home_url( '/#resume-maker' ) ); ?>">📄 Bio-Data Maker</a></li>
+					<li><a href="<?php echo esc_url( home_url( '/#syllabus-tracker' ) ); ?>">📚 Syllabus Tracker</a></li>
+					<li><a href="<?php echo esc_url( home_url( '/#salary-calculator' ) ); ?>">💰 Salary Calculator</a></li>
+					<li><a href="<?php echo esc_url( home_url( '/#daily-quiz' ) ); ?>">🧠 Daily Quiz</a></li>
+					<li><a href="<?php echo esc_url( studentup_compare_page_url() ); ?>">⚖️ Compare Jobs</a></li>
+					<li><a href="<?php echo esc_url( studentup_opportunity_board_url() ); ?>">📋 Active Board</a></li>
+				</ul>
+			</div>
+			<div>
 				<h4>Other links</h4>
 				<?php
 				if ( has_nav_menu( 'footer' ) ) {

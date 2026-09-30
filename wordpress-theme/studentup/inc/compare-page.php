@@ -90,3 +90,16 @@ function studentup_compare_shortcode( $atts ) {
 	return (string) ob_get_clean();
 }
 add_shortcode( 'studentup_compare', 'studentup_compare_shortcode' );
+
+/**
+ * URL to the comparison page.
+ *
+ * @return string
+ */
+function studentup_compare_page_url() {
+	$page = get_page_by_path( 'compare' );
+	if ( $page && 'publish' === get_post_status( $page ) ) {
+		return get_permalink( $page );
+	}
+	return home_url( '/#compare' );
+}

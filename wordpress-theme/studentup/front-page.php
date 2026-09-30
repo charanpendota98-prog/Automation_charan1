@@ -58,6 +58,12 @@ get_header();
 	studentup_for_you();           // v127: reader history rail (localStorage only)
 	studentup_job_calendar();      // v124: last-date calendar (repeat visits)
 	studentup_salary_calc();       // v124: in-hand salary calculator
+	studentup_age_calculator_block(); // v165: age & eligibility calculator
+	studentup_fee_calculator_block(); // v167: fee & concession calculator
+	studentup_score_calculator_block(); // v168: score & negative marking calculator
+	studentup_admit_card_block(); // v168: hall ticket & admit card helper
+	studentup_resume_maker_block(); // v168: instant fresher resume & bio-data builder
+	studentup_syllabus_tracker_block(); // v167: syllabus & study progress tracker
 	?>
 </div>
 

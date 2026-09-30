@@ -245,6 +245,11 @@ function studentup_menu_fallback() {
 	$more = array(
 		array( 'label' => 'Latest active jobs', 'url' => studentup_opportunity_board_url(), 'desc' => 'Dates unna active notices only' ),
 		array( 'label' => 'Daily Quiz', 'url' => $home . '#daily-quiz', 'desc' => 'Today\'s 5 questions' ),
+		array( 'label' => '🧮 Age Calculator', 'url' => $home . '#age-calculator', 'desc' => 'Check age eligibility with reservation relaxation' ),
+		array( 'label' => '💳 Fee Calculator', 'url' => $home . '#fee-calculator', 'desc' => 'Calculate application & exam fee' ),
+		array( 'label' => '📚 Syllabus Tracker', 'url' => $home . '#syllabus-tracker', 'desc' => 'Track your exam study progress' ),
+		array( 'label' => '💰 Salary Calculator', 'url' => $home . '#salary-calculator', 'desc' => '7th Pay Commission in-hand pay' ),
+		array( 'label' => '⚖️ Compare Jobs', 'url' => studentup_compare_page_url(), 'desc' => 'Compare up to 3 posts' ),
 		array( 'label' => 'Instant alerts', 'url' => $home . '#alerts', 'desc' => 'Notification · WhatsApp · Telegram' ),
 	);
 	$intern_term = $term_of( 'internships' );

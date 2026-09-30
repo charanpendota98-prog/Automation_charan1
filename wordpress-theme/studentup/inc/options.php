@@ -40,6 +40,7 @@ function studentup_option_fields() {
 				'adsense_slot_mid_b'    => array( 'Slot: mid — variant B (A/B test)', 'text', '', 'v162: B unit id pettithe ne A/B test nadustundi' ),
 				'adsense_slot_below_content_b' => array( 'Slot: below-content — variant B', 'text', '', 'v162: khaali unte test ledu' ),
 				'adsense_slot_in_feed'  => array( 'Slot: in-feed (grid madhya)', 'text', '', 'Between the cards in the home grid' ),
+				'adsense_slot_video'    => array( 'Slot: video/outstream (₹ highest CPM)', 'text', '', 'High-CPM video & outstream ad unit slot ID' ),
 				'adsense_slot_below_content' => array( 'Slot: below-content (article tarvata)', 'text', '', 'After the article — the 2nd highest RPM slot' ),
 				'ads_txt'        => array( 'ads.txt content', 'textarea', '', 'Site root /ads.txt ga serve avutundi (AdSense approval tarvata publisher id line)' ),
 				'deep_ad'       => array( 'Second in-article ad (long posts only)', 'check', '1', 'v134: 10+ paragraphs unna posts lo 70% mark daggara 2nd slot — density cap + 4 para gap tho policy-safe' ),
@@ -52,6 +53,21 @@ function studentup_option_fields() {
 				'personal_picks' => array( 'Your 5 today (personalised strip)', 'check', '1', 'v156: qualification+state profile browser lo ne — login ledu, server call ledu' ),
 				'webpush' => array( 'Web push notifications', 'check', '1', 'v163: VAPID public key pettaka ne pani chestundi (python run.py --push-keys)' ),
 				'push_public_key' => array( 'Web push: VAPID public key', 'text', '', 'v163: --push-keys output lo public key' ),
+				'age_calc' => array( 'Age & eligibility calculator (posts & tools)', 'check', '1', 'v165: interactive Telugu age and reservation relaxation calculator' ),
+				'audio_reader' => array( 'Telugu text-to-speech audio reader (posts)', 'check', '1', 'v165: Web Speech API voice synthesis bar — increases dwell time' ),
+				'faq_schema' => array( 'FAQ accordion & FAQPage schema (posts)', 'check', '1', 'v165: rich snippet FAQ schema for Google SERP expandable snippets' ),
+				'quick_summary' => array( '1-Minute Key Highlights box (posts)', 'check', '1', 'v166: TL;DR bullet takeaways — reduces bounce rate' ),
+				'reader_toolbar' => array( 'Reader toolbar (font sizer & reading time)', 'check', '1', 'v166: accessibility font adjuster and reading time' ),
+				'community_pulse' => array( 'Community Pulse WhatsApp/Telegram card', 'check', '1', 'v166: 50k+ student community conversion box' ),
+				'fee_calc' => array( 'Application fee & concession calculator', 'check', '1', 'v167: interactive fee calculator with category exemptions' ),
+				'syllabus_tracker' => array( 'Syllabus & study progress tracker', 'check', '1', 'v167: interactive syllabus checkbox checklist with percentage' ),
+				'status_card' => array( '1-Click WhatsApp status card generator', 'check', '1', 'v167: HTML5 canvas viral status image generator' ),
+				'admit_card_helper' => array( 'Hall ticket & admit card helper', 'check', '1', 'v168: direct portal lookup and guidelines' ),
+				'score_calc' => array( 'Exam negative marks score calculator', 'check', '1', 'v168: preliminary key net score estimator' ),
+				'resume_maker' => array( 'Instant fresher resume & bio-data maker', 'check', '1', 'v168: 1-click professional PDF CV generator' ),
+				'sponsor_hub' => array( 'Contextual sponsor & study partner box', 'check', '1', 'v169: high-RPM affiliate & study partner lead generator' ),
+				'video_ad_enabled' => array( 'High-CPM video & outstream ad unit', 'check', '1', 'v169: 3x-5x higher CPM video ad slot container' ),
+				'smart_recirc' => array( 'Smart recirculation trending jobs unit', 'check', '1', 'v169: 2x pages/session scroll-depth recommendations' ),
 				'slot_lab' => array( 'Slot lab: ad slot A/B test', 'check', '0', 'v162: B slot id set chesaka ne ON cheyandi — python run.py --slot-lab tho report' ),
 				'collapse_unfilled' => array( 'Collapse unfilled ad slots', 'check', '1', 'v159: AdSense fill cheyakapote blank gap teesestundi (CLS safe)' ),
 				'keyfacts' => array( 'Key facts strip + HowTo schema', 'check', '1', 'v158: meta unte ne — 2 kanna thakkuva facts unte block raadu' ),
@@ -83,6 +99,7 @@ function studentup_option_fields() {
 			'title'  => 'Social media',
 			'fields' => array(
 				'social_whatsapp'  => array( 'WhatsApp number', 'text', '9182739312', '10-digit mobile — +91 avasaram ledu (example: 9182739312)' ),
+				'whatsapp_channel_url' => array( 'WhatsApp Channel URL (Follow link)', 'text', '', 'Example: https://whatsapp.com/channel/... (WhatsApp channel link marithe ikkada update cheyandi)' ),
 				'social_telegram'  => array( 'Telegram', 'text', 'studentup_in', 't.me/<idi> — channel username' ),
 				'telegram_channel_url' => array( 'Telegram channel URL override (v91)', 'text', '', 'PRIVATE channel aithe full invite link (https://t.me/+AbCd…); khali unte username t.me link use avutundi' ),
 				'social_instagram' => array( 'Instagram', 'text', 'studentup.in', 'instagram.com/<idi>' ),
@@ -101,7 +118,9 @@ function studentup_option_fields() {
 				'contact_email' => array( 'Contact email', 'text', '', 'Errors/suggestions — falls back to the admin email if empty' ),
 				'success_story_form_url' => array( 'Verified Success Story Google Form URL', 'text', '', 'Public intake link. Collect consent + evidence only; never ask for Aadhaar, PAN, bank details, OTPs or passwords.' ),
 				'author_name'   => array( 'Author name', 'text', 'Charan Pendota', 'Shown in the byline and E-E-A-T box under the post' ),
-				'author_bio'    => array( 'Author bio', 'textarea', 'Charan Pendota is a content writer and digital marketing editor with 6+ years of experience in content writing. At StudentUp, he focuses on clear, source-backed education and career information for Telangana and Andhra Pradesh students.', 'Keep this factual and update it when the author profile changes.' ),
+				'author_experience' => array( 'Author Experience / Title', 'text', 'Senior Education Editor · 5+ Years of Experience', 'Shown under author name in the E-E-A-T box' ),
+				'author_avatar_url' => array( 'Author Photo URL', 'text', '', 'WordPress Media Library lo author photo upload chesi full URL paste cheyandi (optional)' ),
+				'author_bio'    => array( 'Author bio', 'textarea', 'Charan Pendota is a senior content editor and digital career researcher with 5+ years of experience in Telugu job notifications, exam patterns, and career guidance. At StudentUp, he leads the fact-checking desk, ensuring 100% source-verified information for Telangana and Andhra Pradesh students.', 'Keep this factual and update it when the author profile changes.' ),
 				'breaking_json' => array( 'Breaking feed (JSON)', 'textarea', '', 'Bot nimpustundi (--push-theme-data). Format: {"items":[{"title":"..","link":"..","time":"..","tag":".."}]}' ),
 				'breaking_enabled' => array( 'Breaking news section ON (verified feed only)', 'check', '0', 'Shows the restrained Breaking News surface; empty or stale feeds show an honest no-update state, never a fabricated headline.' ),
 				'qual_filter' => array( 'Qualification filter (SSC/10th · SSC +2 · Degree · PG)', 'check', '1', 'Chips on home/archive — the tag is set automatically when a post is saved' ),
@@ -404,6 +423,10 @@ function studentup_call_number( $raw = '' ) {
  */
 function studentup_social_links() {
 	$wa  = studentup_wa_number( studentup_opt( 'social_whatsapp', '9182739312' ) );
+	$wa_ch = trim( (string) studentup_opt( 'whatsapp_channel_url', '' ) );
+	if ( $wa_ch && ! preg_match( '#^https?://#i', $wa_ch ) ) {
+		$wa_ch = 'https://' . ltrim( $wa_ch, '/' );
+	}
 	$ig  = ltrim( (string) studentup_opt( 'social_instagram', 'studentup.in' ), '@' );
 	$li  = trim( (string) studentup_opt( 'social_linkedin', '' ) );
 	$liu = '';
@@ -428,14 +451,6 @@ function studentup_social_links() {
 	$reddit    = $profile( studentup_opt( 'social_reddit', '' ), 'https://www.reddit.com/', 'u/' );
 	$quora     = $profile( studentup_opt( 'social_quora', '' ), 'https://www.quora.com/profile/' );
 
-	/*
-	 * v93 FIX (nijamaina bug): ippati varaku idi `https://t.me/<username>` ne
-	 * hardcode cheyyadam valla v91 lo add chesina **private channel invite
-	 * override** (`telegram_channel_url`) footer rail icon · mobile panel ·
-	 * footer "Telegram channel" link ki **apply avvatledu**. Private channel
-	 * unte aa muggintiki link tappu (public username) velledi → join fail.
-	 * Ippudu resolver okkate source (function unte adi — lekapote fallback).
-	 */
 	if ( function_exists( 'studentup_tg_channel_url' ) && studentup_tg_channel_url() ) {
 		$tg_url = studentup_tg_channel_url();
 	} else {
@@ -444,16 +459,17 @@ function studentup_social_links() {
 	}
 
 	return array(
-		'whatsapp'  => 'https://wa.me/' . $wa,
-		'telegram'  => $tg_url,
-		'instagram' => 'https://www.instagram.com/' . $ig . '/',
-		'linkedin'  => $liu,
-		'youtube'   => $ytu,
-		'facebook'  => $facebook,
-		'x'         => $x_profile,
-		'pinterest' => $pinterest,
-		'reddit'    => $reddit,
-		'quora'     => $quora,
+		'whatsapp'         => 'https://wa.me/' . $wa,
+		'whatsapp_channel' => $wa_ch ? esc_url_raw( $wa_ch ) : '',
+		'telegram'         => $tg_url,
+		'instagram'        => 'https://www.instagram.com/' . $ig . '/',
+		'linkedin'         => $liu,
+		'youtube'          => $ytu,
+		'facebook'         => $facebook,
+		'x'                => $x_profile,
+		'pinterest'        => $pinterest,
+		'reddit'           => $reddit,
+		'quora'            => $quora,
 	);
 }
 
