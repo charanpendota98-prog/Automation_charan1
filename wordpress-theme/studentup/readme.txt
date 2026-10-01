@@ -2,7 +2,7 @@
 Contributors: studentup
 Requires at least: 6.0
 Tested up to: 6.7
-Stable tag: 1.9.27
+Stable tag: 1.9.28
 Requires PHP: 7.4
 Version: 1.9.26
 License: GNU General Public License v2 or later
@@ -47,6 +47,14 @@ The theme ships a REST bridge (`inc/seo-bridge.php`). Use an account with `manag
 user tho App Password ivvandi (Administrator role).
 
 == Changelog ==
+
+= 1.9.28 =
+
+* FIX (live-install proof): HOME page WhatsApp/Telegram share card complete ga missing ayyindi — og:title · og:description · og:url · og:type · og:image · twitter:card anni levu (fallback SEO singular posts ki matrame). Ippudu home + category/date/author archives ki full card + brand image (og-default.png). "Just another WordPress site" default tagline unte brand fallback text.
+* FIX: no-thumbnail posts lo twitter:card tag 2 sarlu print ayyedi (seo-bridge + ogimage rendu). Ippudu okate — twitter:image matrame ogimage nunchi.
+* FIX: canonical tags home /page/N/ + category / date / author archives ki levu (WP core singular ki matrame). Ippudu self-canonical, pagination-aware (archive page 2 ki page-2 URL ye) — duplicate-content signals clean.
+* NEW: favicon fallback — Customizer lo Site Icon set cheyyakapoina browser tab lo theme brand icon (gradient-S): favicon.svg + favicon-32.png + apple-touch-icon.png (iOS home screen). Site Icon set cheste owner icon ye vaadutundi (duplicate vaddu).
+* FIX: llms.txt (AI assistants kosam) — (a) Student tools section add (latest-jobs board, compare, workspace, saved); (b) expired job posts "Recent public articles" lo recommend avvadam vaddu — board policy laaga hidden (expired filter).
 
 = 1.9.27 =
 

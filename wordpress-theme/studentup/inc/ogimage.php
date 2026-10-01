@@ -250,7 +250,11 @@ function studentup_og_meta() {
 	echo '<meta property="og:image:width" content="1200">' . "\n";
 	echo '<meta property="og:image:height" content="630">' . "\n";
 	echo '<meta property="og:image:alt" content="' . esc_attr( wp_strip_all_tags( get_the_title() ) ) . '">' . "\n";
-	echo '<meta name="twitter:card" content="summary_large_image">' . "\n";
+	/*
+	 * v177 FIX: twitter:card ikkada print cheyyatam vaddu — seo-bridge fallback
+	 * already card + title + description istundi (live install lo 2 duplicates
+	 * kanipinchayi). twitter:image matrame ikkada (seo-bridge aa tag ivvadu).
+	 */
 	echo '<meta name="twitter:image" content="' . esc_url( $url ) . '">' . "\n";
 }
 add_action( 'wp_head', 'studentup_og_meta', 7 );
