@@ -76,6 +76,24 @@ theme.json           block editor colors/Typography (navy/blue/orange)
 
 CLI: `wp studentup-qual-backfill --limit=500` (purana posts ki tags).
 
+## v173–v178 (themes 1.9.24–1.9.29) — REAL-INSTALL AUDIT ERA
+
+Anni changes **real WordPress 7.1.2 + SQLite install meeda verify chesi** ship chesamu
+(fresh install → seed posts → curl audit → fix → re-verify cycle).
+
+| Ver | Theme | Headline fixes (live-proof) |
+|---|---|---|
+| v173 | 1.9.24 | Hot-rail purathana meta keys (`su_last_date`) → real keys; days-left PHP warning; `paginate_links()` null fatal; Saved page auto-create; full emoji→SVG purge |
+| v174 | 1.9.25 | Qualification word-boundary detection; board pills + pretty labels; SQLite/MySQL portable meta compares |
+| v175 | 1.9.26 | Context-aware CTAs (Hall Ticket / Result / Apply); JobPosting schema gates (non-job cats, expired, signal checks); `#su-details` anchor; pretty quals; comma-tolerant vacancies; closing-week widget wrong meta key; `type=>DATE` meta_query SQLite break (5 spots) |
+| v176 | 1.9.27 | Home `/page/N/` duplicate content + missing pagination (critical); news-sitemap HTTP 404 + ISO dates; JobPosting gate AND logic; health widget empty-meta false "Expired"; hot-rail signal gate + software boards; heading hierarchy; Compare page auto-create + version-stamped upgrade re-run; noindex (search + ?qual); og:image guarantee chain + shipped brand card |
+| v177 | 1.9.28 | og/twitter cards for home + archives; twitter:card duplicate; archive canonicals; favicon fallback (svg + 32 + apple-touch); llms.txt tools + expired filter |
+| v178 | 1.9.29 | **Alias-merged category archives** — menu links (`/category/ts-jobs/` etc.) empty ayye import/bot-slug sites lo group merge (0 → 10 cards); deterministic primary-term identity (H1/title/canonical); PWA manifest icons (install prompt fix); empty-archive noindex |
+| v179 | 1.9.30 | Attachment pages → 301 parent post; RSS feed media:content images + official source + read-more CTA; docs |
+
+**Invariant suite:** 124/124 python · jsdom 177 · workspace 22 · saved 53 · PHP lint 85/85 · theme audit 0/0 —
+prathi release tarvata anni run chesi green ga ne commit.
+
 ## v172 (theme 1.9.23) — COMMAND CENTER: My Workspace (flagship)
 
 **"1000x advanced" flagship feature** — student ki kavalsina ANNI okka page lo:

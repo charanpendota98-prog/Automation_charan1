@@ -2,7 +2,7 @@
 Contributors: studentup
 Requires at least: 6.0
 Tested up to: 6.7
-Stable tag: 1.9.29
+Stable tag: 1.9.30
 Requires PHP: 7.4
 Version: 1.9.26
 License: GNU General Public License v2 or later
@@ -47,6 +47,13 @@ The theme ships a REST bridge (`inc/seo-bridge.php`). Use an account with `manag
 user tho App Password ivvandi (Administrator role).
 
 == Changelog ==
+
+= 1.9.30 =
+
+* ADVANCED (RSS): feed items nagna text ga levu — ippudu (a) media:content image prathi item ki (featured image lekapothe brand og-default.png — RSS readers lo visual card), (b) item content lo official source link (E-E-A-T), (c) "Read the full update" site CTA — subscribers site ki back vastaru.
+* TOOLING (build-breaking guard): theme audit lo "redeclare fatal" check add — okka studentup_* function rendu files lo define ayyite PHP "Cannot redeclare" FATAL (site motham 500). Live incident nunchi nerpa: attachment-redirect function duplicate ayyaka syntax-lint + audit anni PASS ayyevi, kani site prathi page 500. Ippudu build ae fail avutundi (guard test: duplicate inject → errors 1 ⛔, clean → ✅).
+* VERIFY: attachment → parent post 301 redirect (security.php lo v178 nunchi unna feature) redirect-following audit false-alarm valla "missing" anukunna — direct 301 check tho confirm (status 301 + Location header).
+* DOCS: README-THEME.md lo v173–v178 full audit-era history table add (em fix ayyindo okka chotu).
 
 = 1.9.29 =
 

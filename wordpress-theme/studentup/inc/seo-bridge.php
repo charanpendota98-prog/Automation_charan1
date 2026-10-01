@@ -416,3 +416,64 @@ add_action(
 		);
 	}
 );
+
+/*
+ * v179: RSS feed richness — RSS readers lo items nagna text ga levu.
+ *   1) media:content image (featured image lekapothe brand og-default.png)
+ *   2) item content lo official source link + "Read full update" CTA
+ *      (feed subscribers site ki back ravali; source E-E-A-T feed lo kuda).
+ */
+
+/**
+ * RSS 2.0 root lo media namespace (rss2_ns = ACTION — echo cheyali, return kadhu).
+ *
+ * @return void
+ */
+function studentup_feed_media_ns() {
+	echo ' xmlns:media="http://search.yahoo.com/mrss/"';
+}
+add_action( 'rss2_ns', 'studentup_feed_media_ns' );
+
+/**
+ * Feed item ki media:content image.
+ *
+ * @return void
+ */
+function studentup_feed_item_image() {
+	$id  = get_the_ID();
+	$img = '';
+	if ( $id && has_post_thumbnail( $id ) ) {
+		$src = wp_get_attachment_image_src( get_post_thumbnail_id( $id ), 'large' );
+		if ( $src ) {
+			$img = $src[0];
+		}
+	}
+	if ( '' === $img ) {
+		$img = get_template_directory_uri() . '/assets/og-default.png';   // v179: brand card — guaranteed image in every reader.
+	}
+	if ( $img ) {
+		echo '<media:content url="' . esc_url( $img ) . '" medium="image" />' . "\n";
+	}
+}
+add_action( 'rss2_item', 'studentup_feed_item_image' );
+
+/**
+ * Feed content lo source + read-more CTA.
+ *
+ * @param string $content feed content.
+ * @return string
+ */
+function studentup_feed_content( $content ) {
+	if ( ! in_the_loop() || ! is_feed() ) {
+		return $content;
+	}
+	$id     = get_the_ID();
+	$out    = $content;
+	$source = $id ? trim( (string) get_post_meta( $id, 'studentup_source_url', true ) ) : '';
+	if ( $source && wp_http_validate_url( $source ) ) {
+		$out .= '<p><strong>Official source:</strong> <a href="' . esc_url( $source ) . '">Notification / official portal</a></p>';
+	}
+	$out .= '<p><a href="' . esc_url( get_permalink() ) . '">Read the full update on ' . esc_html( get_bloginfo( 'name' ) ) . ' →</a></p>';
+	return $out;
+}
+add_filter( 'the_content_feed', 'studentup_feed_content', 20 );
