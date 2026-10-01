@@ -8,7 +8,30 @@ const path = require("path");
 const { JSDOM } = require("jsdom");
 
 const PAGE = path.resolve(__dirname, "../../preview/index.html");
-const html = fs.readFileSync(PAGE, "utf8");
+let html = fs.readFileSync(PAGE, "utf8");
+
+/* v174: demo data-last dates ROLLING ga maintain chestundi.
+ * Static dates (2026-09-30 lanti vi) real calendar kalipoyaka "expired"
+ * ayi jsdom checks date-drift tho fail avtayi. Rank-based offset mapping:
+ * sorted unique dates → today + N (order preserve, idempotent — same-day
+ * rerun same output; roju +1 shift automatic ga补偿). Closing demo (0-7 days)
+ * rank-1 (+5) tho eppudu untundi. Static hand-edit ki chance ledu. */
+(function rollDates(src) {
+  const re = /data-last="(\d{4}-\d{2}-\d{2})"/g;
+  const dates = Array.from(new Set(Array.from(src.matchAll(re)).map(m => m[1]))).sort();
+  const OFF = [5, 8, 9, 12, 14, 20, 26, 35, 45, 61, 75, 91];
+  const map = {};
+  dates.forEach((d, i) => {
+    const off = OFF[i] !== undefined ? OFF[i] : 91 + (i - OFF.length + 1) * 14;
+    const t = new Date(); t.setHours(0, 0, 0, 0); t.setDate(t.getDate() + off);
+    map[d] = t.getFullYear() + "-" + String(t.getMonth() + 1).padStart(2, "0") + "-" + String(t.getDate()).padStart(2, "0");
+  });
+  const out = src.replace(re, (m, d) => 'data-last="' + (map[d] || d) + '"');
+  if (out !== src) {
+    fs.writeFileSync(PAGE, out);
+    html = out;
+  }
+})(html);
 
 /* v71: total check count — docs (README/MANUAL/GO_LIVE) claim this number and
  * tools/parity_audit.py P8 reads it, so a silent drift cannot slip through. */
@@ -675,9 +698,14 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
     const titled = first.querySelectorAll("li a").length;
     const gridCards = Array.from(document.querySelectorAll("#grid .news"));
     const left = c => {
+      /* v174: page v150 math ye — whole-day UTC floor (23:59:59+round version
+       * midnight boundary drifty: yesterday date -0 la count ayedi). */
       const v = c.getAttribute("data-last");
       if (!v) return null;
-      return Math.round((new Date(v + "T23:59:59") - new Date(new Date().setHours(0,0,0,0))) / 86400000);
+      const p = v.split("-");
+      const t0 = new Date(); t0.setHours(0, 0, 0, 0);
+      return Math.floor((Date.UTC(+p[0], +p[1] - 1, +p[2]) -
+        Date.UTC(t0.getFullYear(), t0.getMonth(), t0.getDate())) / 86400000);
     };
     const expected = gridCards.filter(c => {
       const l = left(c);

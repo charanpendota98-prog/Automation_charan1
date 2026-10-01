@@ -2,9 +2,9 @@
 Contributors: studentup
 Requires at least: 6.0
 Tested up to: 6.7
-Stable tag: 1.9.24
+Stable tag: 1.9.25
 Requires PHP: 7.4
-Version: 1.9.24
+Version: 1.9.25
 License: GNU General Public License v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Tags: news, education, blog, custom-logo, custom-menu, featured-images, translation-ready, right-sidebar, block-styles, wide-blocks
@@ -47,6 +47,14 @@ The theme ships a REST bridge (`inc/seo-bridge.php`). Use an account with `manag
 user tho App Password ivvandi (Administrator role).
 
 == Changelog ==
+
+= 1.9.25 =
+* v174 OPPORTUNITY BOARD RICHNESS — board cards ippudu salary + vacancies pills chupistayi (bot studentup_salary/studentup_vacancies meta nunchi) + qualification human labels ("degree,pg" → "Degree · PG").
+* v174: keyfacts · quicksummary · jobs table · workspace why-text — anni raw meta keys badulu human-readable labels + "05 Oct 2026" date format (raw ISO kaadu).
+* v174: hot rail date pill human format (d M) + closed post skip ayyaka rank numbers lo gap ledu.
+* v174: miss ayyina 2300-23FF emoji range (⏳ ⏰ ⏹ ⏸ ▶) kuda SVG ayipoyindi — audio reader stop/pause buttons, qualification badges, expired notice, closing filter. Page UI lo emoji zero (canvas-generated share image thappa — adhi intentional design).
+* v174 REAL FIX: qualification auto-tag lo substring match ("iti" → "writing", "pg" → "jpg" la false positives — Hello world! post ki "iti" tag attach ayindi real install lo). Ippudu ASCII keywords ki word-boundary match; Telugu ki fuzzy-safe strpos. `_topic_*` synonyms qual output lo leak ayye bug kuda fix.
+* v174: workspace dataset jobs-only — studentup_* meta leni posts (default "Hello world!") matching lo participate avvavu.
 
 = 1.9.24 =
 * v173 REAL-INSTALL FIXES — WordPress 7.1.2 + PHP 8.3 real install mida proof chesina bugs:

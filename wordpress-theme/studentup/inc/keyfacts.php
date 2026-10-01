@@ -35,6 +35,9 @@ function studentup_keyfacts_data( $post_id = 0 ) {
 		if ( '' === $val ) {
 			continue;
 		}
+		if ( 'studentup_qual' === $key && function_exists( 'studentup_qual_pretty' ) ) {
+			$val = studentup_qual_pretty( $val );   // v174: "degree,pg" → "Degree · PG".
+		}
 		if ( 'studentup_last_date' === $key ) {
 			$ts = strtotime( $val );
 			if ( $ts ) {

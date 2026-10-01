@@ -90,14 +90,14 @@ function studentup_jobs_table( $limit = 12 ) {
 							</td>
 							<td>
 								<?php if ( $r['qual'] ) : ?>
-									<?php echo esc_html( ucfirst( $r['qual'] ) ); ?>
+									<?php echo esc_html( studentup_qual_pretty( $r['qual'] ) );   // v174: human labels ?>
 								<?php else : ?>
 									<span class="su-jt-na">&mdash;</span>
 								<?php endif; ?>
 							</td>
 							<td>
 								<?php if ( $r['last'] ) : ?>
-									<?php echo esc_html( $r['last'] ); ?>
+									<?php echo esc_html( wp_date( 'd M Y', strtotime( $r['last'] . ' 12:00:00' ) ) );   // v174: raw ISO kaadu ?>
 								<?php else : ?>
 									<span class="su-jt-na">Not announced</span>
 								<?php endif; ?>

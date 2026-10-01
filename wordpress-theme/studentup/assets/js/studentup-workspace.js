@@ -55,6 +55,13 @@
     return Math.ceil((d.getTime() - Date.now()) / 86400000);
   }
 
+  /* v174: raw keys ("degree,pg") → human labels ("Degree, PG") — why-text lo. */
+  var QUAL_LABELS = { "10th": "SSC (10th)", "inter": "Inter (10+2)", "iti": "ITI",
+    "diploma": "Diploma", "degree": "Degree", "pg": "PG", "btech": "B.Tech" };
+  function qualPretty(keys) {
+    return (keys || []).map(function (k) { return QUAL_LABELS[k] || k; }).join(", ");
+  }
+
   /* ---------- matching ---------- */
   function verdict(row, p) {
     /* returns {cls:"yes"|"maybe"|"no", why:string} — profile lekapothe null */
@@ -64,7 +71,7 @@
     if (p.q) {
       if (row.qual && row.qual.length) {
         if (row.qual.indexOf(p.q) > -1) { why.push(I18N.eligible || "Eligible"); }
-        else { no = true; why.push((I18N.qualLabel || "Qualification") + ": " + row.qual.join(", ")); }
+        else { no = true; why.push((I18N.qualLabel || "Qualification") + ": " + qualPretty(row.qual)); }
       } else {
         maybe = true; why.push((I18N.qualLabel || "Qualification") + " — see notification");
       }

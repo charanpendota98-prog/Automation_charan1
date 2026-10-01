@@ -70,6 +70,16 @@ function studentup_smart_dataset( $limit = 60 ) {
 		if ( ! wp_http_validate_url( $apply ) ) {
 			$apply = '';
 		}
+		/*
+		 * v174: jobs-only dataset — studentup_* meta leni chota posts ("Hello
+		 * world!" la vaati) workspace matching lo vaddu. Bot/curator eppudu
+		 * aa meta tho ne publish chestayi; meta leni di matrame filter.
+		 */
+		$pay = trim( (string) get_post_meta( $id, 'studentup_salary', true ) );
+		$vac = trim( (string) get_post_meta( $id, 'studentup_vacancies', true ) );
+		if ( '' === $last && '' === $qual && '' === $apply && '' === $pay && '' === $vac ) {
+			continue;
+		}
 		$age_min = (int) get_post_meta( $id, 'studentup_age_min', true );
 		$age_max = (int) get_post_meta( $id, 'studentup_age_max', true );
 		$out[]   = array(
@@ -81,8 +91,8 @@ function studentup_smart_dataset( $limit = 60 ) {
 			'state' => studentup_smart_state( $id ),
 			'last'  => $last,
 			'days'  => ( $last && function_exists( 'studentup_opportunity_days_left' ) ) ? studentup_opportunity_days_left( $last ) : null,
-			'pay'   => trim( (string) get_post_meta( $id, 'studentup_salary', true ) ),
-			'vac'   => trim( (string) get_post_meta( $id, 'studentup_vacancies', true ) ),
+			'pay'   => $pay,
+			'vac'   => $vac,
 			'amin'  => $age_min > 0 ? $age_min : 0,
 			'amax'  => $age_max > 0 ? $age_max : 0,
 			'apply' => $apply,

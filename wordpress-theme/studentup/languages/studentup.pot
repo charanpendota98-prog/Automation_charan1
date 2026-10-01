@@ -2,9 +2,9 @@
 # This file is distributed under the GNU GPL v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: StudentUp 1.9.24\n"
+"Project-Id-Version: StudentUp 1.9.25\n"
 "Report-Msgid-Bugs-To: https://studentup.in/\n"
-"POT-Creation-Date: 2026-09-30 12:25+0000\n"
+"POT-Creation-Date: 2026-10-01 00:29+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -307,7 +307,7 @@ msgstr ""
 msgid "Join WhatsApp"
 msgstr ""
 
-#: inc/keyfacts.php:65
+#: inc/keyfacts.php:68
 msgid "Key details"
 msgstr ""
 

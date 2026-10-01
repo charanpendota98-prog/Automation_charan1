@@ -12,7 +12,8 @@
     card: SUICON("M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"),
     speaker: SUICON("M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1-3.29-2.5-4.03v8.05c1.5-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"),
     menu: SUICON("M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"),
-    school: SUICON("M12 3 1 9l11 6 9-4.91V17h2V9L12 3zM5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z")
+    school: SUICON("M12 3 1 9l11 6 9-4.91V17h2V9L12 3zM5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"),
+    clock: SUICON("M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"),
   };
   "use strict";
 
@@ -79,7 +80,7 @@
             '<span class="su-pill su-pill-amber">' + I.calendar + " " + esc(r.last || "Date in notification") + "</span>" +
             (r.pay ? '<span class="su-pill su-pill-green">' + I.wallet + " " + esc(r.pay) + "</span>" : "") +
             (r.vac ? '<span class="su-pill">' + I.card + " " + esc(r.vac) + " posts</span>" : "") +
-            (r.days != null && r.days >= 0 ? '<span class="su-pill' + (r.days <= 3 ? " su-pill-hot" : "") + '">⏳ ' + r.days + "d left</span>" : "") +
+            (r.days != null && r.days >= 0 ? '<span class="su-pill' + (r.days <= 3 ? " su-pill-hot" : "") + '">' + I.clock + " " + r.days + "d left</span>" : "") +
           "</div>" + badge +
           '<div class="su-frow"><a class="su-hot-apply" href="' + esc(r.apply || r.link) + '"' + (r.apply ? ' target="_blank" rel="nofollow noopener"' : "") + ">Apply / Details →</a>" +
           '<button type="button" class="su-tool-btn" data-su-compare data-id="' + esc(r.id) + '" data-title="' + esc(r.title) +

@@ -33,7 +33,7 @@ function studentup_quick_summary_box() {
 		$points[] = array( 'icon' => 'work', 'label' => 'Total Vacancies', 'val' => $vacancies . ' Posts' );
 	}
 	if ( $qual ) {
-		$points[] = array( 'icon' => 'school', 'label' => 'Qualification', 'val' => $qual );
+		$points[] = array( 'icon' => 'school', 'label' => 'Qualification', 'val' => studentup_qual_pretty( $qual ) );   // v174: raw keys kaadu — human labels
 	}
 	if ( $last_date ) {
 		$points[] = array( 'icon' => 'clock', 'label' => 'Last Date to Apply', 'val' => $last_date );

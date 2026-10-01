@@ -186,6 +186,8 @@ function studentup_opportunity_board_posts( $limit = 180 ) {
 			'days_left'  => studentup_opportunity_days_left( $last ),
 			'section'    => $section,
 			'qualification' => trim( (string) get_post_meta( $post->ID, 'studentup_qual', true ) ),
+			'salary'     => trim( (string) get_post_meta( $post->ID, 'studentup_salary', true ) ),
+			'vacancies'  => trim( (string) get_post_meta( $post->ID, 'studentup_vacancies', true ) ),
 			'apply_url'  => $apply_url,
 			'source_url' => $source_url,
 			'source_checked' => $source_checked,
@@ -222,7 +224,17 @@ function studentup_opportunity_render_card( $row ) {
 		<div class="su-op-card-copy">
 			<h3><a href="<?php echo esc_url( $row['link'] ); ?>"><?php echo esc_html( $row['title'] ); ?></a></h3>
 			<?php if ( ! empty( $row['qualification'] ) ) : ?>
-				<p class="su-op-qual"><?php echo studentup_ui_icon( 'school', 13 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> <?php echo esc_html( $row['qualification'] ); ?></p>
+				<p class="su-op-qual"><?php echo studentup_ui_icon( 'school', 13 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> <?php echo esc_html( studentup_qual_pretty( $row['qualification'] ) ); ?></p>
+			<?php endif; ?>
+			<?php if ( ! empty( $row['salary'] ) || ! empty( $row['vacancies'] ) ) : ?>
+				<p class="su-op-facts">
+					<?php if ( ! empty( $row['vacancies'] ) ) : ?>
+						<span class="su-op-fact"><?php echo studentup_ui_icon( 'work', 12 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> <?php echo esc_html( $row['vacancies'] ); ?> posts</span>
+					<?php endif; ?>
+					<?php if ( ! empty( $row['salary'] ) ) : ?>
+						<span class="su-op-fact su-op-fact-pay"><?php echo studentup_ui_icon( 'wallet', 12 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> <?php echo esc_html( $row['salary'] ); ?></span>
+					<?php endif; ?>
+				</p>
 			<?php endif; ?>
 			<?php if ( '' !== $row['last_date'] ) : ?>
 				<?php $date_class = 'su-op-date' . ( ( null !== $days && $days <= 7 ) ? ' is-soon' : '' ); ?>

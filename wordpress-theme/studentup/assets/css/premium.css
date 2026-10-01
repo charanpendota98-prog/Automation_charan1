@@ -1176,3 +1176,10 @@ body.dark .su-ws-radar-item a{color:#e8f0ff}
 .su-pdf-btn .su-uicon{width:15px;height:15px;vertical-align:-3px}
 .su-op-notice .su-uicon{width:15px;height:15px;vertical-align:-3px}
 .su-health .su-uicon{width:14px;height:14px;vertical-align:-2.5px}
+/* v174: board facts pills (salary + vacancies) */
+.su-op-facts{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 4px}
+.su-op-fact{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:999px;background:#eef4ff;color:#1d4ed8;font-size:11px;font-weight:800}
+.su-op-fact .su-uicon{width:12px;height:12px}
+.su-op-fact-pay{background:#edfbf2;color:#157347}
+.dark .su-op-fact{background:rgba(59,130,246,.18);color:#bfdbfe}
+.dark .su-op-fact-pay{background:rgba(16,185,129,.16);color:#a7f3d0}

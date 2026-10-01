@@ -144,7 +144,6 @@ function studentup_hot_jobs( $limit = 10 ) {
 	$n = 0;
 	while ( $q->have_posts() ) :
 		$q->the_post();
-		$n++;
 		// v173 REAL FIX: meta keys correct ga (purathana 'su_last_date'/'su_salary'
 		// keys eppudu save cheyyaledu — anduke salary/deadline pills kanipinchaledu,
 		// and $left define cheyyaledu → PHP warning).
@@ -155,7 +154,12 @@ function studentup_hot_jobs( $limit = 10 ) {
 		if ( null !== $left && $left < 0 ) {
 			continue;   // closed posts "hot jobs today" lo vaddu.
 		}
+		$n++;   // v174: render aina cards ye count — closed skip ayite rank lo gap radhu.
 		$pay = trim( (string) get_post_meta( get_the_ID(), 'studentup_salary', true ) );
+		// v174: raw ISO date ("2026-10-05") kaadu — human format ("05 Oct").
+		$last_show = $last
+			? wp_date( 'd M', strtotime( $last . ' 12:00:00' ) )
+			: get_the_date( 'M j' );
 		?>
 				<article class="su-hotcard">
 					<a class="su-hot-thumb" href="<?php the_permalink(); ?>">
@@ -177,7 +181,7 @@ function studentup_hot_jobs( $limit = 10 ) {
 					<div class="su-hot-body">
 						<h3><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h3>
 						<div class="su-hot-meta">
-							<span class="su-pill su-pill-amber"><?php echo studentup_ui_icon( 'calendar', 12 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> <?php echo esc_html( $last ? $last : get_the_date( 'M j' ) ); ?></span>
+							<span class="su-pill su-pill-amber"><?php echo studentup_ui_icon( 'calendar', 12 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> <?php echo esc_html( $last_show ); ?></span>
 							<?php if ( $pay ) : ?>
 								<span class="su-pill su-pill-green"><?php echo studentup_ui_icon( 'wallet', 12 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> <?php echo esc_html( $pay ); ?></span>
 							<?php endif; ?>
