@@ -12,9 +12,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'STUDENTUP_VERSION', '1.9.20' );  // v130 render budget + docs count parity; v129 auto social cards + quick stories; v128 go-live score dashboard; v127 instant nav (speculation rules · view transitions) + ⌘K palette + For You; v126 job data box + compare page + LCP polish; v125 ItemList schema + urgency chips + in-feed slot; v124 smart layer (AI job match · eligibility · salary · calendar); v123 premium UI (hero · hot jobs · daily quiz · alerts · bottom nav); v120: LCP assets + student compare/reminder/print utilities
+define( 'STUDENTUP_VERSION', '1.9.31' );  // v180 SVG SPRITE (home -30KB) + live-JS-clean; v179 ATTACHMENT-REDIRECT + RICH FEEDS; v178 ALIAS-MERGE ARCHIVES + PWA icons; v177 SHARE-CARD + ICONS: og/twitter for home+archives, archive canonicals, favicon fallback, llms tools; v176 REAL-INSTALL AUDIT: home pagination + og:image guarantee + baseSalary; v175 CONTEXT-AWARE CTAs + schema gates; v174 BOARD RICHNESS + pretty labels; v173 REAL-INSTALL FIXES (hot rail meta keys + days-left, paginate null fatal, saved page auto-create); v172 COMMAND CENTER: My Workspace (profile → eligible jobs → application pipeline → deadline radar); v171 SVG icons + critical CSS + apply tracker; v170 phone mode
 
 require_once get_template_directory() . '/inc/options.php';
+require_once get_template_directory() . '/inc/icons.php';        // v171: pro SVG UI icons (emoji UI badulu).
+require_once get_template_directory() . '/inc/critical-css.php'; // v171: above-fold inline CSS + async full CSS.
 require_once get_template_directory() . '/inc/qual-filter.php';  // v72: 10th/Inter/Degree/PG filter (auto tags)
 require_once get_template_directory() . '/inc/breaking.php';
 require_once get_template_directory() . '/inc/ads.php';
@@ -78,6 +80,7 @@ require_once get_template_directory() . '/inc/speed.php';       // v127: specula
 require_once get_template_directory() . '/inc/jobmeta.php';     // v126: admin job data box
 require_once get_template_directory() . '/inc/compare-page.php'; // v126: compare table page/shortcode
 require_once get_template_directory() . '/inc/smart.php';   // v124: AI job match, eligibility, salary calc, calendar
+require_once get_template_directory() . '/inc/workspace.php'; // v172: My Workspace command center (profile · pipeline · radar)
 require_once get_template_directory() . '/inc/quiz.php';    // v123: real daily quiz
 require_once get_template_directory() . '/inc/shortlinks.php'; // v122: first-party /slug redirects + click counts
 
@@ -86,17 +89,18 @@ require_once get_template_directory() . '/inc/shortlinks.php'; // v122: first-pa
  * MOST_USED + preview site + tests anni ide order vaadutayi).
  */
 function studentup_most_used() {
+	/* v173: icon values = studentup_ui_icon() keys (emoji kadu — pro SVG). */
 	return array(
-		array( 'slug' => 'ts-jobs', 'label' => 'TS Government Jobs', 'icon' => '🏛', 'hint' => 'TSPSC · Police · Gurukul' ),
-		array( 'slug' => 'ap-jobs', 'label' => 'AP Government Jobs', 'icon' => '🏛', 'hint' => 'APPSC · Police · DSC · Secretariat' ),
-		array( 'slug' => 'central-jobs', 'label' => 'Central Govt Jobs', 'icon' => '🇮🇳', 'hint' => 'SSC · UPSC · Railways · Banks' ),
-		array( 'slug' => 'hall-tickets', 'label' => 'Hall Tickets', 'icon' => '🎫', 'hint' => 'Admit card · key instructions' ),
-		array( 'slug' => 'results', 'label' => 'Results', 'icon' => '📄', 'hint' => 'Board · competitive exams · keys' ),
-		array( 'slug' => 'walkin-jobs', 'label' => 'Walk-in Interviews', 'icon' => '🚶', 'hint' => 'This week\'s drives · venues' ),
-		array( 'slug' => 'software-jobs', 'label' => 'Software Jobs', 'icon' => '💻', 'hint' => 'IT · developer · fresher' ),
-		array( 'slug' => 'success-stories', 'label' => 'Success Stories', 'icon' => '🏆', 'hint' => 'Verified journeys · lessons' ),
-		array( 'slug' => 'private-jobs', 'label' => 'Private Jobs', 'icon' => '🏢', 'hint' => 'TCS · Infosys · Off-campus' ),
-		array( 'slug' => 'current-affairs', 'label' => 'Current Affairs', 'icon' => '📰', 'hint' => 'Daily GK · for exams' ),
+		array( 'slug' => 'ts-jobs', 'label' => 'TS Government Jobs', 'icon' => 'bank', 'hint' => 'TSPSC · Police · Gurukul' ),
+		array( 'slug' => 'ap-jobs', 'label' => 'AP Government Jobs', 'icon' => 'bank', 'hint' => 'APPSC · Police · DSC · Secretariat' ),
+		array( 'slug' => 'central-jobs', 'label' => 'Central Govt Jobs', 'icon' => 'flag', 'hint' => 'SSC · UPSC · Railways · Banks' ),
+		array( 'slug' => 'hall-tickets', 'label' => 'Hall Tickets', 'icon' => 'ticket', 'hint' => 'Admit card · key instructions' ),
+		array( 'slug' => 'results', 'label' => 'Results', 'icon' => 'doc', 'hint' => 'Board · competitive exams · keys' ),
+		array( 'slug' => 'walkin-jobs', 'label' => 'Walk-in Interviews', 'icon' => 'walk', 'hint' => 'This week\'s drives · venues' ),
+		array( 'slug' => 'software-jobs', 'label' => 'Software Jobs', 'icon' => 'laptop', 'hint' => 'IT · developer · fresher' ),
+		array( 'slug' => 'success-stories', 'label' => 'Success Stories', 'icon' => 'trophy', 'hint' => 'Verified journeys · lessons' ),
+		array( 'slug' => 'private-jobs', 'label' => 'Private Jobs', 'icon' => 'building', 'hint' => 'TCS · Infosys · Off-campus' ),
+		array( 'slug' => 'current-affairs', 'label' => 'Current Affairs', 'icon' => 'news', 'hint' => 'Daily GK · for exams' ),
 	);
 }
 
@@ -153,6 +157,123 @@ function studentup_used_term( $slug ) {
 	}
 	return null;
 }
+
+/**
+ * v178 REAL FIX (live-install proof): category archive pages alias group ni
+ * merge cheyyaledu — menu link /category/ts-jobs/ ki 0 posts kanipistunnayi,
+ * ee roju unna posts anni /category/ts-govt-jobs/ lo (import/bot alternate
+ * slug family). Menu pradhana links → EMPTY pages. Ippudu archive query
+ * alias group anni terms ni cover chestundi:
+ *   /category/ts-jobs/  → ts-jobs + ts-govt-jobs + telangana-govt-jobs …
+ * Rendu slug families lo ekkadaina posts unte menu link eppadu empty kavadu.
+ *
+ * @param WP_Query $query main query.
+ * @return void
+ */
+function studentup_alias_archive_expand( $query ) {
+	if ( is_admin() || ! $query->is_main_query() || ! $query->is_category() ) {
+		return;
+	}
+	$slug = (string) $query->get( 'category_name' );
+	if ( '' !== $slug && false !== strpos( $slug, '/' ) ) {
+		$slug = trim( substr( $slug, strrpos( $slug, '/' ) + 1 ) );   // parent/child form.
+	}
+	if ( '' === $slug ) {
+		$cat_id = (int) $query->get( 'cat' );
+		if ( ! $cat_id ) {
+			return;
+		}
+		$term = get_term( $cat_id, 'category' );
+		if ( $term && ! is_wp_error( $term ) ) {
+			$slug = $term->slug;
+		}
+	}
+	if ( '' === $slug ) {
+		return;
+	}
+	$map   = studentup_cat_aliases();
+	$group = null;
+	foreach ( $map as $theme_slug => $aliases ) {
+		if ( $slug === $theme_slug || in_array( $slug, $aliases, true ) ) {
+			$group = array_merge( array( $theme_slug ), $aliases );
+			break;
+		}
+	}
+	if ( ! $group ) {
+		return;   // ee category alias group lo ledu — normal query.
+	}
+	$ids = array();
+	foreach ( array_unique( $group ) as $s ) {
+		$t = get_term_by( 'slug', $s, 'category' );
+		if ( $t && ! is_wp_error( $t ) ) {
+			$ids[] = (int) $t->term_id;
+		}
+	}
+	if ( count( $ids ) > 1 ) {
+		/*
+		 * WP core parse_tax_query: category_name + cat + category__in anni
+		 * separate AND-ed clauses ga build chestundi — original vars clear
+		 * cheyakunte merge work avvadu (live install lo prove ayyindi:
+		 * cat 21 AND (21,2) → 0 posts).
+		 */
+		$query->set( 'category__in', $ids );
+		$query->set( 'cat', '' );
+		$query->set( 'category_name', '' );
+	}
+}
+add_action( 'pre_get_posts', 'studentup_alias_archive_expand', 20 );
+
+/**
+ * v178: alias group lo "primary" term — posts ekkuva unna sibling.
+ *
+ * Category identity (H1 · <title> · canonical · og:title) ee term tho
+ * deterministic: term-ID order meeda depend cheyyadu, empty theme-slug term
+ * ki posts unna sibling madya confusion vaddu.
+ *
+ * @param WP_Term|mixed $term queried term.
+ * @return WP_Term|mixed
+ */
+function studentup_alias_primary_term( $term ) {
+	if ( ! $term instanceof WP_Term || 'category' !== $term->taxonomy ) {
+		return $term;
+	}
+	$map = studentup_cat_aliases();
+	foreach ( $map as $theme_slug => $aliases ) {
+		$group = array_merge( array( $theme_slug ), $aliases );
+		if ( in_array( $term->slug, $group, true ) ) {
+			$best = $term;
+			foreach ( $group as $s ) {
+				$t = get_term_by( 'slug', $s, 'category' );
+				if ( $t && ! is_wp_error( $t ) && (int) $t->count > (int) $best->count ) {
+					$best = $t;
+				}
+			}
+			return $best;
+		}
+	}
+	return $term;
+}
+
+/**
+ * v178: category archives document <title> — primary alias term name.
+ *
+ * @param array $parts title parts.
+ * @return array
+ */
+function studentup_alias_archive_title_parts( $parts ) {
+	if ( is_admin() || ! ( is_category() || is_tag() ) ) {
+		return $parts;
+	}
+	$obj = get_queried_object();
+	if ( function_exists( 'studentup_alias_primary_term' ) ) {
+		$obj = studentup_alias_primary_term( $obj );
+	}
+	if ( $obj instanceof WP_Term ) {
+		$parts['title'] = $obj->name;
+	}
+	return $parts;
+}
+add_filter( 'document_title_parts', 'studentup_alias_archive_title_parts', 20 );
 
 /**
  * Seed the categories the bot and homepage expect when the theme is activated.
@@ -325,6 +446,34 @@ function studentup_assets() {
 	}
 }
 add_action( 'wp_enqueue_scripts', 'studentup_assets' );
+
+/**
+ * v170: theme JS ki `defer` — script download HTML/CSS tho parallel ga
+ * start avutundi (slow phone network lo 200-400ms fast). Anni theme files
+ * DOM ready tarvata matrame pani chestayi (IIFE + DOMContentLoaded), anduke
+ * defer 100% safe.
+ */
+function studentup_defer_scripts( $tag, $handle ) {
+	if ( is_admin() ) {
+		return $tag;
+	}
+	$defer = array(
+		'studentup',
+		'studentup-premium',
+		'studentup-cmdk',
+		'studentup-smart',
+		'studentup-pwa',
+		'studentup-saved',
+		'studentup-tools',
+		'studentup-opportunities',
+		'studentup-workspace',
+	);
+	if ( in_array( $handle, $defer, true ) && false !== strpos( $tag, ' src=' ) ) {
+		$tag = str_replace( ' src=', ' defer src=', $tag );
+	}
+	return $tag;
+}
+add_filter( 'script_loader_tag', 'studentup_defer_scripts', 10, 2 );
 
 /**
  * Remove WordPress payload that this theme does not need on ordinary public

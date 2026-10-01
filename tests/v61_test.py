@@ -120,7 +120,7 @@ def test_front_page_order():
              fp.index('id="grid"')]
     assert order == sorted(order), order
     for needle in ('id="chips"', 'data-cat="all"', "studentup_ad( 'mid' )",
-                   "studentup_card(", "next_posts_link"):
+                   "studentup_card(", "paginate_links"):   # v176: numbered pagination
         assert needle in fp, needle
     assert "data-deadline" not in fp, "v73: countdown card poyindi (fake timer vaddhu)"
     assert "hero-slim" in fp and "Most searched by students" in fp

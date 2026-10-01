@@ -169,7 +169,7 @@ function studentup_save_button( $post_id = 0, $class = '' ) {
 	}
 
 	return sprintf(
-		'<button type="button" class="%1$s" data-su-save data-id="%2$d" data-title="%3$s" data-url="%4$s" data-cat="%5$s" data-date="%6$s" aria-pressed="false" aria-label="%7$s"><span class="su-save-ico" aria-hidden="true">🔖</span><span class="su-save-txt">%8$s</span></button>',
+		'<button type="button" class="%1$s" data-su-save data-id="%2$d" data-title="%3$s" data-url="%4$s" data-cat="%5$s" data-date="%6$s" aria-pressed="false" aria-label="%7$s"><span class="su-save-ico" aria-hidden="true">%9$s</span><span class="su-save-txt">%8$s</span></button>',
 		esc_attr( $classes ),
 		$post_id,
 		esc_attr( $title ),
@@ -177,7 +177,8 @@ function studentup_save_button( $post_id = 0, $class = '' ) {
 		esc_attr( $cat ),
 		esc_attr( $date ),
 		esc_attr__( 'Save this post for later', 'studentup' ),
-		esc_html__( 'Save', 'studentup' )
+		esc_html__( 'Save', 'studentup' ),
+		studentup_ui_icon( 'bookmark', 14 ) // phpcs:ignore WordPress.Security.EscapeOutput -- trusted inline SVG.
 	);
 }
 
@@ -200,17 +201,17 @@ function studentup_saved_panel() {
 	?>
 	<div class="su-saved-rail" id="su-saved-rail">
 		<button type="button" class="su-saved-tab" id="su-saved-tab" data-su-saved-open aria-expanded="false" aria-controls="su-saved-panel" aria-label="<?php echo esc_attr__( 'Saved posts', 'studentup' ); ?>">
-			<span class="su-saved-ico" aria-hidden="true">🔖</span>
+			<span class="su-saved-ico" aria-hidden="true"><?php echo studentup_ui_icon( 'bookmark', 17 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?></span>
 			<span class="su-saved-count" data-su-saved-count hidden>0</span>
 		</button>
 		<div class="su-saved-panel" id="su-saved-panel" role="dialog" aria-label="<?php echo esc_attr__( 'Saved posts', 'studentup' ); ?>" hidden>
 			<div class="su-saved-head">
 				<strong><?php echo esc_html__( 'Saved', 'studentup' ); ?></strong>
 				<span class="su-saved-n" data-su-saved-count aria-live="polite">0</span>
-				<button type="button" class="su-saved-close" id="su-saved-close" aria-label="<?php echo esc_attr__( 'Close', 'studentup' ); ?>">✕</button>
+				<button type="button" class="su-saved-close" id="su-saved-close" aria-label="<?php echo esc_attr__( 'Close', 'studentup' ); ?>"><?php echo studentup_ui_icon( 'close', 14 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?></button>
 			</div>
 			<div class="su-saved-body" id="su-saved-body" data-su-saved-body>
-				<p class="su-saved-empty"><?php echo esc_html__( 'No saved posts yet. Tap 🔖 on any card to save it for later.', 'studentup' ); ?></p>
+				<p class="su-saved-empty"><?php echo esc_html__( 'No saved posts yet. Tap Save on any card to keep it here.', 'studentup' ); ?></p>
 			</div>
 			<div class="su-saved-foot">
 				<?php if ( $su_saved_url ) : ?>
@@ -239,7 +240,7 @@ function studentup_saved_shortcode() {
 	}
 	return '<div class="su-saved-page" id="su-saved-page" data-su-saved-page>'
 		. '<p class="su-saved-empty" data-su-saved-page-empty>'
-		. esc_html__( 'No saved posts yet. Open any post and tap 🔖 Save.', 'studentup' )
+		. esc_html__( 'No saved posts yet. Open any post and tap the Save button.', 'studentup' )
 		. '</p></div>';
 }
 add_shortcode( 'studentup_saved', 'studentup_saved_shortcode' );
@@ -279,26 +280,32 @@ function studentup_saved_assets() {
 		'studentup-saved',
 		'STUDENTUP_SAVED',
 		array(
-		'store'  => STUDENTUP_SAVED_STORE,
-		'recent' => STUDENTUP_SAVED_RECENT,
-		'max'    => studentup_saved_max(),
-		'sync'   => array(
-			'enabled'  => is_user_logged_in(),
-			'endpoint' => is_user_logged_in() ? esc_url_raw( rest_url( 'studentup/v1/saved' ) ) : '',
-			'nonce'    => is_user_logged_in() ? wp_create_nonce( 'wp_rest' ) : '',
-		),
-		'i18n'   => array(
+			'store'  => STUDENTUP_SAVED_STORE,
+			'recent' => STUDENTUP_SAVED_RECENT,
+			'apply'  => 'studentup_apply_v1',
+			'max'    => studentup_saved_max(),
+			'sync'   => array(
+				'enabled'  => is_user_logged_in(),
+				'endpoint' => is_user_logged_in() ? esc_url_raw( rest_url( 'studentup/v1/saved' ) ) : '',
+				'nonce'    => is_user_logged_in() ? wp_create_nonce( 'wp_rest' ) : '',
+			),
+			'i18n'   => array(
 				'save'    => __( 'Save', 'studentup' ),
 				'saved'   => __( 'Saved', 'studentup' ),
 				'saveLabel' => __( 'Save this post for later', 'studentup' ),
 				'savedLabel' => __( 'Remove this post from saved', 'studentup' ),
 				'removed' => __( 'Removed from saved', 'studentup' ),
-				'savedmsg' => __( 'Post saved — open 🔖 any time to read it later.', 'studentup' ),
+				'savedmsg' => __( 'Post saved — open the Saved panel any time to read it later.', 'studentup' ),
 				'nomore'  => __( 'Storage is not available in this browser (private mode?) — saving is off.', 'studentup' ),
-				'empty'   => __( 'No saved posts yet. Open any post and tap 🔖 Save.', 'studentup' ),
+				'empty'   => __( 'No saved posts yet. Open any post and tap Save.', 'studentup' ),
 				'confirm' => __( 'Remove all saved posts?', 'studentup' ),
 				'cleared' => __( 'All saved posts removed.', 'studentup' ),
 				'recent'  => __( 'Recently read', 'studentup' ),
+				'statusSaved'     => __( 'Saved', 'studentup' ),
+				'statusApplied'   => __( 'Applied', 'studentup' ),
+				'statusInterview' => __( 'Interview', 'studentup' ),
+				'statusResult'    => __( 'Result', 'studentup' ),
+				'statusHint'      => __( 'Application status — tap to change', 'studentup' ),
 			),
 		)
 	);

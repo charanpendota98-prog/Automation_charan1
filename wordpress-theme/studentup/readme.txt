@@ -2,9 +2,9 @@
 Contributors: studentup
 Requires at least: 6.0
 Tested up to: 6.7
-Stable tag: 1.9.20
+Stable tag: 1.9.31
 Requires PHP: 7.4
-Version: 1.9.17
+Version: 1.9.26
 License: GNU General Public License v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Tags: news, education, blog, custom-logo, custom-menu, featured-images, translation-ready, right-sidebar, block-styles, wide-blocks
@@ -47,6 +47,91 @@ The theme ships a REST bridge (`inc/seo-bridge.php`). Use an account with `manag
 user tho App Password ivvandi (Administrator role).
 
 == Changelog ==
+
+= 1.9.31 =
+
+* SPEED (live-install measurement): home HTML lo 196 inline SVG icons = 65 KB duplicate paths (calendar 20×, wallet 17×, bookmark 15×…) — phone lo DOM parse slow + bytes waste. Ippudu **SVG sprite system**: okka hidden <symbol> sheet (wp_body_open lo, admin ki admin_footer fallback) + prathi icon <use href="#su-i-X"> reference. Home HTML ~30 KB lighter + DOM text nodes significant ga takkuva. Anni 48 icons same sharp look (fill currentColor — dark mode automatic).
+* NEW VERIFICATION LAYER: live site pages ni real scripts tho jsdom lo run chesi JS runtime errors check (10 pages: home, paged, ?qual, category, single ×2, workspace, saved, compare, latest-jobs) — **ZERO JS errors**. Ippudu prathi release lo idi kuda standard.
+* FIX: PWA manifest "Daily Quiz" shortcut EMPTY daily-quiz category ki pontundi (posts lekapote dead-end — live proof cards=0). Ippudu home #daily-quiz section (real quiz UI, category lekunda kuda render) ki point avutundi.
+
+= 1.9.30 =
+
+* ADVANCED (RSS): feed items nagna text ga levu — ippudu (a) media:content image prathi item ki (featured image lekapothe brand og-default.png — RSS readers lo visual card), (b) item content lo official source link (E-E-A-T), (c) "Read the full update" site CTA — subscribers site ki back vastaru.
+* TOOLING (build-breaking guard): theme audit lo "redeclare fatal" check add — okka studentup_* function rendu files lo define ayyite PHP "Cannot redeclare" FATAL (site motham 500). Live incident nunchi nerpa: attachment-redirect function duplicate ayyaka syntax-lint + audit anni PASS ayyevi, kani site prathi page 500. Ippudu build ae fail avutundi (guard test: duplicate inject → errors 1 ⛔, clean → ✅).
+* VERIFY: attachment → parent post 301 redirect (security.php lo v178 nunchi unna feature) redirect-following audit false-alarm valla "missing" anukunna — direct 301 check tho confirm (status 301 + Location header).
+* DOCS: README-THEME.md lo v173–v178 full audit-era history table add (em fix ayyindo okka chotu).
+
+= 1.9.29 =
+
+* FIX (CRITICAL, live-install proof): category alias group merge — menu pradhana links (/category/ts-jobs/ · /category/central-jobs/ · /category/ap-jobs/ · /category/hall-ticket/) alias slug family lo posts unna sites lo EMPTY pages chupistunnayi (aa posts /category/ts-govt-jobs/ lanti sibling slugs lo unnayi — import leda alternate-slug bot valla). Ippudu archive query alias group ANNI terms cover chestundi: /category/ts-jobs/ → ts-jobs + ts-govt-jobs + telangana-govt-jobs + … Menu link eppadu empty kadu (live proof: 0 cards → 10 cards).
+* FIX (PWA): manifest lo Site Icon set cheyyakapote icons LEdu (icons: [] — Chrome "Install app" prompt eppudu raadu) + description empty ayite nagna text. Ippudu: theme brand icons fallback (pwa-192.png + pwa-512.png + maskable) + brand description. Site Icon set cheste 192+512+maskable rendu combine.
+* SEO: truly-empty term archives (alias merge tarvata kuda posts levu) ki noindex,follow — thin content index avvadam vaddu.
+
+= 1.9.28 =
+
+* FIX (live-install proof): HOME page WhatsApp/Telegram share card complete ga missing ayyindi — og:title · og:description · og:url · og:type · og:image · twitter:card anni levu (fallback SEO singular posts ki matrame). Ippudu home + category/date/author archives ki full card + brand image (og-default.png). "Just another WordPress site" default tagline unte brand fallback text.
+* FIX: no-thumbnail posts lo twitter:card tag 2 sarlu print ayyedi (seo-bridge + ogimage rendu). Ippudu okate — twitter:image matrame ogimage nunchi.
+* FIX: canonical tags home /page/N/ + category / date / author archives ki levu (WP core singular ki matrame). Ippudu self-canonical, pagination-aware (archive page 2 ki page-2 URL ye) — duplicate-content signals clean.
+* NEW: favicon fallback — Customizer lo Site Icon set cheyyakapoina browser tab lo theme brand icon (gradient-S): favicon.svg + favicon-32.png + apple-touch-icon.png (iOS home screen). Site Icon set cheste owner icon ye vaadutundi (duplicate vaddu).
+* FIX: llms.txt (AI assistants kosam) — (a) Student tools section add (latest-jobs board, compare, workspace, saved); (b) expired job posts "Recent public articles" lo recommend avvadam vaddu — board policy laaga hidden (expired filter).
+
+= 1.9.27 =
+
+* FIX (CRITICAL, live-install proof): home /page/2/, /page/3/ … anni SAME 12 posts chupistunevi (paged front page kuda front-page.php vaadutundi kani query lo 'paged' ledu → duplicate content penalty) + "Older updates" link eppudu render cheyyaledu — users ki 12 posts tarvata browse cheyadam impossible. Ippudu: real paged grid + numbered pagination (← Newer / 1 2 3 / Older →) + page 2+ lo lean archive (widgets page 1 lo matrame — duplicate widget content poochindi). Mobile-first pagination CSS kuda add (adedo category pages lo unstyled links ga unna).
+* FIX: admin health widget — REST bot empty-string studentup_last_date save chesina posts false ga "Expired" count ayyevi ('' < today string compare TRUE). AND-relation non-empty guard.
+* FIX: news-sitemap.xml HTTP 404 status lo serve ayyedi (XML body ostu untundi — Search Console reject). status_header(200) + ISO 8601 dates (lastmod / publication_date "2026-10-01 07:37:07" → "2026-10-01T07:37:07+00:00").
+* FIX: JobPosting gate v175 lo OR ayipoyindi — apply_url LENI post (vac/salary unte) + numbers LENI placeholder post ki kuda schema vastevi. Ippudu: apply_url AND (numeric vacancies leda salary) — REAL jobs matrame Google Jobs lo.
+* ADVANCED: JobPosting lo url (post permalink) + baseSalary add — "₹65,000 – ₹2,10,000" → INR 65000–210000/MONTH, "Rs. 3.6 LPA" → INR 360000/YEAR (lakh/LPA parser). Google Jobs salary facet + rich results.
+* FIX: "Top 10 hot jobs today" rail — (a) job signal leni posts (last_date/salary/vacancies/apply_url anni leka poyina) #1 rank ayyevi; (b) software-jobs/walkin-jobs/internships boards eppudu rail lo raaledu. Signal gate + anni job boards cover.
+* FIX: heading hierarchy (a11y + SEO) — h1 → h3 jump (Key Highlights box), h2 → h4 jump (mock-tests promo + footer widgets). Sequential ga correct chesamu + CSS updated.
+* FIX: "Compare Jobs" tools link /#compare ki pontundi — aa anchor ekkada ledu (dead end). Ippudu firstrun /compare/ page auto-create chestundi ([studentup_compare] shortcode tho) + theme update mundu version stamp check chesi kotha pages purathana sites lo kuda automatic ga create avtayi (idempotent).
+* SEO: search results + ?qual= filter views ki noindex,follow (internal search results + duplicate content protection — Google guidelines). Users ki pages normal ga work avutayi.
+* ADVANCED: og:image GUARANTEE — chain: post thumbnail → generated card image (GD) → static brand card assets/og-default.png (1200×630, 60 KB, theme lo ship). GD/folder em lekapoina WhatsApp/Telegram/Google shares chala beautiful image tho vastayi (v175 lo nagna links!). og:image:alt + twitter:image kuda.
+
+= 1.9.26 =
+* v175 CONTEXT-AWARE CTAs + SCHEMA GATES — real WP audit nunchi:
+* FIX: JobPosting JSON-LD ippudu REAL job posts ki matrame (hall-ticket/result/success-stories/current-affairs/admissions/quiz/tips categories skip + apply_url/vacancies/salary job-signal kavali + expired postings ki schema ledu — Google Jobs spam/quality guideline). Puratham hall ticket post (qual + last_date unna) ki kuda JobPosting attach ayedi.
+* FIX: sticky apply bar CTA context-aware — hall-ticket post lo "Download Hall Ticket", result post lo "View Result", job post lo "Apply online" (puratham anni daanni "Apply online" ye).
+* FIX: apply bar "Full details" ghost button anchor (#su-details) ekkada ledu — click emi cheyaledu. Ippudu article content id tho scroll chestundi.
+* FIX: apply bar lo raw "degree,pg" → "Degree · PG"; FAQ answers lo kuda human labels + "05 Oct 2026" date format.
+* NEW: FAQ section context-aware — hall ticket posts ki download FAQs (last date to download, credentials, official portal warning), result posts ki result FAQs (check kaka mundu em cheyali, link active till, next steps), job posts ki recruitment FAQs.
+* FIX: totalJobOpenings "12,000" comma values kuda numeric ga parse.
+* FIX (SQLite/Playground): meta_query 'type' => 'DATE' valla SQLite-backed sites lo CAST('Y-m-d' AS DATE) numeric ga maari — admin health widget anni posts "Expired" la chupinchindi (19/19) mariyu "Expiring" 0. Zero-padded ISO string compare (type ledu) MySQL + SQLite rendula portable. 5 queries fix (health ×2 · qual filter ×2 · closing week).
+* FIX: "Closing this week" home widget (su-radar) puratham wrong meta key (su_last_date — eppudu save cheyyaledu) valla eppudu render cheyyaledu. Ippudu 7-days closing jobs deadline order lo vastayi (REAL install lo first render proof).
+
+= 1.9.25 =
+* v174 OPPORTUNITY BOARD RICHNESS — board cards ippudu salary + vacancies pills chupistayi (bot studentup_salary/studentup_vacancies meta nunchi) + qualification human labels ("degree,pg" → "Degree · PG").
+* v174: keyfacts · quicksummary · jobs table · workspace why-text — anni raw meta keys badulu human-readable labels + "05 Oct 2026" date format (raw ISO kaadu).
+* v174: hot rail date pill human format (d M) + closed post skip ayyaka rank numbers lo gap ledu.
+* v174: miss ayyina 2300-23FF emoji range (⏳ ⏰ ⏹ ⏸ ▶) kuda SVG ayipoyindi — audio reader stop/pause buttons, qualification badges, expired notice, closing filter. Page UI lo emoji zero (canvas-generated share image thappa — adhi intentional design).
+* v174 REAL FIX: qualification auto-tag lo substring match ("iti" → "writing", "pg" → "jpg" la false positives — Hello world! post ki "iti" tag attach ayindi real install lo). Ippudu ASCII keywords ki word-boundary match; Telugu ki fuzzy-safe strpos. `_topic_*` synonyms qual output lo leak ayye bug kuda fix.
+* v174: workspace dataset jobs-only — studentup_* meta leni posts (default "Hello world!") matching lo participate avvavu.
+
+= 1.9.24 =
+* v173 REAL-INSTALL FIXES — WordPress 7.1.2 + PHP 8.3 real install mida proof chesina bugs:
+* FIX: "Top hot jobs" rail wrong meta keys (su_last_date/su_salary → studentup_*) valla salary + deadline pills eppudu kanipinchaledu + PHP "Undefined $left" warning — ippudu real studentup_* meta tho salary pill, days-left pill, closed posts exclusion anni work.
+* FIX: paginate_links() NULL → wp_kses_post(null) PHP 8.1+ FATAL (category/search/index/author single-page lo) — `?? ''` null-safe fix.
+* FIX: firstrun ippudu /saved/ page kuda automatic create chestundi ([studentup_saved] tho) — saved panel link fresh install lo eppudu break avvadu.
+* EMOJI PURGE: UI lo prathi emoji → professional inline SVG icons (23 kotha icon paths; keyfacts, hot rail, category menu/usedgrid/popular searches, footer tools, opportunities board, tools widgets, ⌘K palette, admin columns/health/notices) — cross-platform consistent look, font dependency ledu.
+* Workspace JS runtime prove (jsdom 22/22): profile → qualification/age/state filtering, urgent-first deadlines, Closed chip, pipeline tiles, deadline radar colour classes.
+
+= 1.9.23 =
+* v172 COMMAND CENTER — "My Workspace" page ([studentup_workspace]): profile (qualification · age · state) set chesthe eligible jobs instant, application pipeline (Saved/Applied/Interview/Result tiles), deadline radar (urgent 3/7/14 days first) and quick tools — anni okka page lo. No account, browser-only, offline-capable.
+* v172: firstrun automatic ga My Workspace page create chestundi; mobile menu + ⌘K palette + hero lo entry points.
+* v172: workspace data server-side embedded (REST wait ledu) + JS deferred — speed impact zero.
+
+= 1.9.22 =
+* v171 PRO MODE — professional SVG icon system: anni UI emojis (☰ 🔍 ☾ 🔖 🏠 💼 🎓 🔔) clean inline SVG ga replace chesamu — prathi device lo same sharp look, zero extra requests.
+* v171 VERY FAST — Critical CSS: above-fold styles (30 KB) head lo inline + full 154 KB CSS async (media=print + onload swap + noscript fallback) → first paint ki external CSS wait ledu.
+* v171 ADVANCED — Application Status Tracker: prathi saved job ki status chip (Saved → Applied → Interview → Result, tap to cycle). localStorage privacy-safe.
+* v171: article meta icons (date/category/eligibility) SVG; professional tone i18n cleanup.
+* v170 PHONE MODE: pinch/double-tap zoom OFF, side-scroll hard guard, mobile speed (blur/infinite-anim OFF), JS defer, iOS input-focus zoom fix.
+
+= 1.9.21 =
+* v170: pinch/double-tap zoom fully OFF (viewport meta + iOS gesture guard + touch-action) — accidental zoom fix.
+* v170: horizontal side-scroll hard guard (overflow-x clip + long-word wrap).
+* v170: mobile speed — hero blur orbs, quiz spin ring, pulse/wave infinite animations OFF on phones; backdrop-filter blur replaced with solid colour on header/bottom-nav/social rail/apply bar.
+* v170: iOS input auto-zoom fix (16px inputs), tap-highlight cleanup, JS deferred, reading-progress bar rAF-throttled.
 
 = 1.9.20 =
 * v134: Second in-article ad slot for long posts, anchor ad no longer stacks with the apply bar, preview update-count badges removed.

@@ -129,6 +129,7 @@ def collect(report: dict) -> dict:
     info: list = report["info"]
 
     defined: set = set()
+    defined_in: dict = {}   # v179: function -> files — "Cannot redeclare" FATAL guard.
     called: dict = {}
     options_read: set = set()
     options_declared: set = set()
@@ -141,6 +142,7 @@ def collect(report: dict) -> dict:
 
         for m in re.finditer(r"function\s+(studentup_[a-z0-9_]+)\s*\(", text):
             defined.add(m.group(1))
+            defined_in.setdefault(m.group(1), set()).add(rel)
         for m in re.finditer(r"\b([a-z_][a-z0-9_]*)\s*\(", text):
             name = m.group(1)
             if name.startswith("studentup_"):
@@ -175,6 +177,14 @@ def collect(report: dict) -> dict:
     report["defined"] = sorted(defined)
     report["options_read"] = sorted(options_read)
 
+    # 0) v179 GUARD: okka function rendu files lo define ayyite PHP "Cannot
+    #    redeclare" FATAL — site motham 500 (live incident: attachment redirect
+    #    duplicate; syntax lint + audit anni pass ayyevi, kani fatal-ready).
+    for name, files in sorted(defined_in.items()):
+        if len(files) > 1:
+            errors.append(
+                f"redeclare fatal: {name}() — {', '.join(sorted(files))}"
+            )
     # 1) undefined function calls
     for name, files in sorted(called.items()):
         if name not in defined and name not in WP_CORE:

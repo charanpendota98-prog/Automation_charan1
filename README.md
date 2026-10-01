@@ -1,7 +1,7 @@
 # studentup.in Auto-Blogger 🤖
 
 
-> **Verified counts (theme v1.9.20 build):** test suites **123/123** files · jsdom runtime **177/177** checks · PHP lint **82/82** files · theme audit **0/0** · code audit **0/0**.
+> **Verified counts (theme v1.9.23 build):** test suites **124/124** files · jsdom runtime **177/177** checks · PHP lint **85/85** files · theme audit **0/0** · code audit **0/0**.
 24/7 automatic blog posting system for **studentup.in** (WordPress) — runs on your Oracle Cloud instance.
 
 - **AI content:** Google Gemini (free tier) generates Telugu + English mix articles

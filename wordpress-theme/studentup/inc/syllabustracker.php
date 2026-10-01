@@ -44,7 +44,7 @@ function studentup_syllabus_tracker_block() {
 	?>
 	<section class="su-syl-wrap" id="syllabus-tracker" data-post-id="<?php echo (int) $post_id; ?>" aria-labelledby="su-syl-title">
 		<div class="su-syl-head">
-			<span class="su-syl-icon" aria-hidden="true">📚</span>
+			<span class="su-syl-icon" aria-hidden="true"><?php echo studentup_ui_icon( 'book', 26 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?></span>
 			<div>
 				<h3 id="su-syl-title" class="su-syl-title">Exam Syllabus & Preparation Tracker</h3>
 				<p class="su-syl-desc">Check off topics as you complete them. Your preparation progress saves automatically.</p>
@@ -71,7 +71,7 @@ function studentup_syllabus_tracker_block() {
 		</div>
 
 		<div class="su-syl-actions">
-			<button type="button" class="su-syl-btn-print" onclick="window.print()">🖨️ Print / Save Syllabus</button>
+			<button type="button" class="su-syl-btn-print" onclick="window.print()"><?php echo studentup_ui_icon( 'print', 15 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Print / Save Syllabus</button>
 			<button type="button" class="su-syl-btn-reset" id="su-syl-reset">Reset Progress</button>
 		</div>
 	</section>

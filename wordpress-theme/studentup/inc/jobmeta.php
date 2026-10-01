@@ -156,7 +156,9 @@ function studentup_job_column_row( $col, $post_id ) {
 			$have++;
 		}
 	}
-	$icons = array( '⚪ none', '🟠 1/4', '🟡 2/4', '🟢 3/4', '✅ full' );
-	echo esc_html( $icons[ $have ] );
+	// v173: emoji dots → SVG + colour classes.
+	$labels = array( 'none', '1/4', '2/4', '3/4', 'full' );
+	$cls    = array( 'm0', 'm1', 'm2', 'm3', 'm4' );
+	echo '<span class="su-jmeta su-jmeta-' . esc_attr( $cls[ $have ] ) . '">' . studentup_ui_icon( 4 === $have ? 'check' : 'card', 13 ) . esc_html( $labels[ $have ] ) . '</span>'; // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG
 }
 add_action( 'manage_post_posts_custom_column', 'studentup_job_column_row', 10, 2 );

@@ -29,7 +29,7 @@ function studentup_reader_toolbar() {
 	?>
 	<div class="su-reader-bar" aria-label="Reading options">
 		<div class="su-rb-left">
-			<span class="su-rb-time">⏱️ <?php echo (int) $minutes; ?> min read</span>
+			<span class="su-rb-time"><?php echo studentup_ui_icon( 'clock', 13 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> <?php echo (int) $minutes; ?> min read</span>
 		</div>
 		<div class="su-rb-right">
 			<span class="su-rb-label">Text Size:</span>

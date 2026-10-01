@@ -1,7 +1,7 @@
 # GO-LIVE CHECKLIST (v60) — deploy cheyocha? Enti migilindi?
 
 
-> **Verified counts (theme v1.9.20 build):** test suites **123/123** files · jsdom runtime **177/177** checks · PHP lint **82/82** files · theme audit **0/0** · code audit **0/0**.
+> **Verified counts (theme v1.9.23 build):** test suites **124/124** files · jsdom runtime **177/177** checks · PHP lint **85/85** files · theme audit **0/0** · code audit **0/0**.
 **Short answer: CODE ready ✅ · DEPLOY ready ✅ · 5 panulu MEE accounts lo cheyyali ⏳.**
 Ee doc = okka page lo motham. Kramam ga cheyyandi.
 
@@ -122,10 +122,11 @@ Detail docs: `DEPLOY_MILESWEB.md` (cPanel steps) · `DEPLOY_ORACLE_CLOUD.md` (VM
 
 - [ ] **1. Domain + hosting** — studentup.in (leda mee peru) + MilesWeb cPanel plan (₹59–180/నెల).
       → WordPress install + SSL (Let's Encrypt) ON.
-- [ ] **2. WordPress setup** — Rank Math; theme install (**v74**: theme **1.7.2** —
-      `python tools/build_wp_theme.py` → zip → Appearance → Themes → Upload → Activate);
-      **zip:** 100 files · 869 KB · theme **1.9.20** · sha256
-      `912662cdb7c6ba6daa4b8578e27513229910b64804421d08b5b117215c8a3187`
+- [ ] **2. WordPress setup** — Rank Math; theme install (**v172**: theme **1.9.23** —
+      `python tools/build_wp_theme.py` (CSS minify + `tools/build_critical_css.py` above-fold layer + reproducible zip)
+      → zip → Appearance → Themes → Upload → Activate);
+      **zip:** 112 files · 1012 KB · theme **1.9.31** · sha256
+      `8fa23282c03dc1065c4b9c9fae369f0f3c36a9a7357b4d2e256a72343da4e4c1`
       (`sha256sum wordpress-theme/studentup-theme.zip` — upload chesina zip ide ani verify cheyandi;
       build ippudu **reproducible** — same content ⇒ same sha)
       `wp-admin → Users → Application Passwords` → app password create cheyyandi.

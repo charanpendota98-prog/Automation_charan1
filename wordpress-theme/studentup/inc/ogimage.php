@@ -222,6 +222,11 @@ function studentup_og_url( $post_id ) {
 /**
  * og:image / twitter:image fallback (Rank Math unte adi already istundi —
  * appudu ee tag duplicate avvadu: theme og tags Rank Math absence lo mattrame).
+ *
+ * v176 REAL FIX: GD/fonts leni server meeda generated card image ledu —
+ * appudu og:image EDU ledu (live install proof). WhatsApp shares nagna
+ * link la ga poyevi. Ippudu chain: post thumbnail (seo-bridge) → generated
+ * card (GD unte) → static brand card (assets/og-default.png — guaranteed).
  */
 function studentup_og_meta() {
 	if ( ! is_singular( 'post' ) ) {
@@ -229,11 +234,13 @@ function studentup_og_meta() {
 	}
 	$id = (int) get_the_ID();
 	if ( has_post_thumbnail( $id ) ) {
-		return;
+		return;   // seo-bridge.php prints og:image for thumbnails.
 	}
 	$url = studentup_og_url( $id );
 	if ( ! $url ) {
-		return;
+		// v176: static brand card — server GD/folder em support cheyyakapoina
+		// share ki oka chala beautiful image guaranteed.
+		$url = get_template_directory_uri() . '/assets/og-default.png';
 	}
 	if ( class_exists( 'RankMath' ) || defined( 'WPSEO_VERSION' ) ) {
 		// SEO plugin already prints og:image — duplicate vaddu.
@@ -242,7 +249,12 @@ function studentup_og_meta() {
 	echo '<meta property="og:image" content="' . esc_url( $url ) . '">' . "\n";
 	echo '<meta property="og:image:width" content="1200">' . "\n";
 	echo '<meta property="og:image:height" content="630">' . "\n";
-	echo '<meta name="twitter:card" content="summary_large_image">' . "\n";
+	echo '<meta property="og:image:alt" content="' . esc_attr( wp_strip_all_tags( get_the_title() ) ) . '">' . "\n";
+	/*
+	 * v177 FIX: twitter:card ikkada print cheyyatam vaddu — seo-bridge fallback
+	 * already card + title + description istundi (live install lo 2 duplicates
+	 * kanipinchayi). twitter:image matrame ikkada (seo-bridge aa tag ivvadu).
+	 */
 	echo '<meta name="twitter:image" content="' . esc_url( $url ) . '">' . "\n";
 }
 add_action( 'wp_head', 'studentup_og_meta', 7 );

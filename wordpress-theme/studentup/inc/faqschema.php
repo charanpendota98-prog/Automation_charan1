@@ -30,12 +30,61 @@ function studentup_get_post_faqs( $post_id = 0 ) {
 	$apply_url = (string) get_post_meta( $post_id, 'studentup_apply_url', true );
 	$salary    = (string) get_post_meta( $post_id, 'studentup_salary', true );
 
+	/*
+	 * v175: context-aware FAQs. Puratham — hall-ticket download post meeda
+	 * "last date to apply for X?" adigite wrong (apply cheyyaledu, download
+	 * chestunnadu). studentup_apply_cta() kind prakaram questions maarutayi.
+	 */
+	$cta = function_exists( 'studentup_apply_cta' ) ? studentup_apply_cta( $post_id ) : array( 'label' => 'Apply online', 'kind' => 'job' );
+	$kind = $cta['kind'];
+
 	$faqs = array();
+	$last_pretty = $last_date ? wp_date( 'd M Y', strtotime( $last_date . ' 12:00:00' ) ) : '';
+
+	if ( 'hallticket' === $kind ) {
+		if ( $last_date ) {
+			$faqs[] = array(
+				'q' => 'What is the last date to download the hall ticket?',
+				'a' => 'The hall ticket download link is available until ' . esc_html( $last_pretty ) . '. Download early to avoid last-minute server load.',
+			);
+		}
+		if ( $apply_url ) {
+			$faqs[] = array(
+				'q' => 'Where can I download my hall ticket?',
+				'a' => 'Download it from the official portal only. Use the official link given in this article — never third-party sites.',
+			);
+		}
+		$faqs[] = array(
+			'q' => 'What details do I need to download the hall ticket?',
+			'a' => 'Usually your registration number and date of birth (or password). Keep the application form copy ready.',
+		);
+		return $faqs;
+	}
+
+	if ( 'result' === $kind ) {
+		if ( $apply_url ) {
+			$faqs[] = array(
+				'q' => 'Where can I check my result?',
+				'a' => 'Check your result on the official website only. Use the official result link given in this article.',
+			);
+		}
+		if ( $last_date ) {
+			$faqs[] = array(
+				'q' => 'Till when is the result link active?',
+				'a' => 'The link is expected to be available until ' . esc_html( $last_pretty ) . '. Save a copy of your result for future reference.',
+			);
+		}
+		$faqs[] = array(
+			'q' => 'What should I do after checking my result?',
+			'a' => 'If you qualify, check the next-stage instructions (interview/document verification) on the official website and keep your certificates ready.',
+		);
+		return $faqs;
+	}
 
 	if ( $last_date ) {
 		$faqs[] = array(
 			'q' => 'What is the last date to apply for ' . esc_html( $title ) . '?',
-			'a' => 'The last date to submit online application is ' . esc_html( $last_date ) . '. Candidates are advised to apply early.',
+			'a' => 'The last date to submit online application is ' . esc_html( $last_pretty ) . '. Candidates are advised to apply early.',   // v175: human date
 		);
 	}
 
@@ -49,7 +98,7 @@ function studentup_get_post_faqs( $post_id = 0 ) {
 	if ( $qual ) {
 		$faqs[] = array(
 			'q' => 'What is the minimum qualification required?',
-			'a' => 'Candidates must possess ' . esc_html( $qual ) . ' or equivalent from a recognized board or university.',
+			'a' => 'Candidates must possess ' . esc_html( studentup_qual_pretty( $qual ) ) . ' or equivalent from a recognized board or university.',   // v175: human labels
 		);
 	}
 
@@ -86,7 +135,7 @@ function studentup_faq_box() {
 	?>
 	<section class="su-faq-section" id="faqs" aria-labelledby="su-faq-title">
 		<div class="su-faq-head">
-			<span class="su-faq-badge" aria-hidden="true">❓ FAQ</span>
+			<span class="su-faq-badge" aria-hidden="true"><?php echo studentup_ui_icon( 'help', 13 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> FAQ</span>
 			<h2 id="su-faq-title" class="su-faq-title">Frequently Asked Questions</h2>
 		</div>
 		<div class="su-faq-list">

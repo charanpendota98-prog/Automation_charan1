@@ -19,6 +19,7 @@
   var MAX = parseInt(D.max, 10) || 60;
   var KEY = D.store || "studentup_saved_v1";
   var RKEY = D.recent || "studentup_recent_v1";
+  var AKEY = D.apply || "studentup_apply_v1";   /* v171: application status tracker */
   var SYNC = D.sync || {};
   var syncTimer = null;
   var ok = true;                       /* storage usable aa? */
@@ -48,6 +49,56 @@
 
   function saved() { return read(KEY); }
   function recent() { return read(RKEY); }
+
+  /* ---------- v171: APPLICATION STATUS TRACKER ----------
+   * Student chala jobs save chestadu — kaani "veeti ki apply chesa, veeti
+   * cheyala" track cheyadaniki ledu. Ippudu prathi saved job ki status:
+   *   Saved → Applied → Interview → Result → (reset Saved)
+   * localStorage lo matrame (privacy: account ledu, server ki emi radhu).
+   */
+  var STATUS = ["applied", "interview", "result"];
+
+  function applyMap() {
+    if (!ok) { return {}; }
+    try {
+      var raw = window.localStorage.getItem(AKEY);
+      var val = raw ? JSON.parse(raw) : {};
+      return (val && typeof val === "object" && !Array.isArray(val)) ? val : {};
+    } catch (e) { return {}; }
+  }
+
+  function statusLabel(st) {
+    if (st === "applied") { return I18N.statusApplied || "Applied"; }
+    if (st === "interview") { return I18N.statusInterview || "Interview"; }
+    if (st === "result") { return I18N.statusResult || "Result"; }
+    return I18N.statusSaved || "Saved";
+  }
+
+  function setStatus(id, st) {
+    var m = applyMap();
+    if (st) { m[id] = st; } else { delete m[id]; }
+    try { window.localStorage.setItem(AKEY, JSON.stringify(m)); } catch (e) { ok = false; }
+  }
+
+  function statusChip(id, st) {
+    var b = document.createElement("button");
+    b.type = "button";
+    b.className = "su-status" + (st ? " su-status-" + st : "");
+    b.setAttribute("data-su-status", String(id));
+    b.setAttribute("title", I18N.statusHint || "Application status — tap to change");
+    b.setAttribute("aria-label", (I18N.statusHint || "Application status — tap to change") + ": " + statusLabel(st));
+    b.textContent = statusLabel(st);
+    return b;
+  }
+
+  function cycleStatus(id) {
+    var cur = applyMap()[String(id)] || "";
+    var idx = STATUS.indexOf(cur);
+    var next = (idx === -1 || idx === STATUS.length - 1) ? "" : STATUS[idx + 1];
+    setStatus(String(id), next);
+    renderPanel();
+    renderPage();
+  }
 
   /* Optional cross-device sync for a logged-in WordPress reader. Guests keep
    * the privacy-safe local-only path; no email, fingerprint or ad identity is
@@ -180,6 +231,11 @@
     var wrap = document.createElement("div");
     wrap.className = "su-saved-row";
     wrap.appendChild(a);
+    /* v171: application status chip (Saved → Applied → Interview → Result) */
+    var mid = document.createElement("div");
+    mid.className = "su-saved-mid";
+    mid.appendChild(statusChip(row.id, applyMap()[String(row.id)] || ""));
+    wrap.appendChild(mid);
     wrap.appendChild(del);
     return wrap;
   }
@@ -317,6 +373,10 @@
       var del = t.closest("[data-su-remove]");
       if (del) { e.preventDefault(); removeById(del.getAttribute("data-su-remove")); return; }
 
+      /* v171: application status cycle (tap chip → next status) */
+      var st = t.closest("[data-su-status]");
+      if (st) { e.preventDefault(); cycleStatus(st.getAttribute("data-su-status")); return; }
+
       if (t.closest("[data-su-saved-open]")) {
         e.preventDefault();
         /* mobile panel nunchi open chesthe — mundu aa menu ni close cheyyali
@@ -336,6 +396,7 @@
         e.preventDefault();
         if (window.confirm(I18N.confirm || "Remove all?")) {
           write(KEY, []);
+          try { window.localStorage.removeItem(AKEY); } catch (e2) {}
           syncToServer();
           renderAll();
           toast(I18N.cleared || "Cleared");

@@ -11,6 +11,7 @@ Usage (see run.py):
 
 import argparse
 import json
+import os
 import logging
 import re
 import sys
@@ -1491,7 +1492,9 @@ def test_all_run(only: str = "", quiet: bool = False) -> int:
     passed, failed = [], []
     for f in files:
         try:
-            proc = subprocess.run([_sys.executable, str(f)], cwd=root,
+            env = dict(os.environ)
+            env["PYTHONPATH"] = str(root) + (os.pathsep + env["PYTHONPATH"] if env.get("PYTHONPATH") else "")
+            proc = subprocess.run([_sys.executable, str(f)], cwd=root, env=env,
                                   capture_output=True, text=True, timeout=600)
         except subprocess.TimeoutExpired:
             failed.append((f.name, "TIMEOUT (>600s)"))

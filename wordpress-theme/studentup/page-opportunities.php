@@ -33,7 +33,7 @@ $total = count( $rows );
 			<div class="su-op-count"><strong><?php echo esc_html( number_format_i18n( $total ) ); ?></strong><span>active updates</span></div>
 		</section>
 		<div class="su-op-notice" role="note">
-			✅ This list updates from published StudentUp posts. Verified last dates are shown, expired notices are hidden automatically, and an unavailable date is shown as <strong>Not announced</strong> — never guessed.
+			<?php echo studentup_ui_icon( 'check', 15 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> This list updates from published StudentUp posts. Verified last dates are shown, expired notices are hidden automatically, and an unavailable date is shown as <strong>Not announced</strong> — never guessed.
 		</div>
 		<section class="su-op-filters" aria-labelledby="su-op-filter-title">
 			<div class="su-op-filter-heading">
@@ -52,14 +52,14 @@ $total = count( $rows );
 		<div class="su-op-jump" aria-label="Opportunity sections">
 			<?php foreach ( $sections as $key => $section ) : ?>
 				<?php if ( empty( $groups[ $key ] ) ) { continue; } ?>
-				<a href="#su-<?php echo esc_attr( $key ); ?>"><?php echo esc_html( $section['icon'] . ' ' . $section['label'] ); ?></a>
+				<a href="#su-<?php echo esc_attr( $key ); ?>"><?php echo studentup_ui_icon( $section['icon'], 14 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> <?php echo esc_html( $section['label'] ); ?></a>
 			<?php endforeach; ?>
 		</div>
 		<?php foreach ( $sections as $key => $section ) : ?>
 			<?php if ( empty( $groups[ $key ] ) ) { continue; } ?>
 			<section class="su-op-section" id="su-<?php echo esc_attr( $key ); ?>" aria-labelledby="su-<?php echo esc_attr( $key ); ?>-title">
 				<div class="su-op-section-head">
-					<h2 id="su-<?php echo esc_attr( $key ); ?>-title"><span aria-hidden="true"><?php echo esc_html( $section['icon'] ); ?></span> <?php echo esc_html( $section['label'] ); ?></h2>
+					<h2 id="su-<?php echo esc_attr( $key ); ?>-title"><span class="su-sec-ico" aria-hidden="true"><?php echo studentup_ui_icon( $section['icon'], 18 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?></span> <?php echo esc_html( $section['label'] ); ?></h2>
 					<a href="<?php echo esc_url( home_url( '/?s=' . rawurlencode( $section['label'] ) ) ); ?>">See all →</a>
 				</div>
 				<div class="su-op-list">

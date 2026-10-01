@@ -21,11 +21,12 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 function studentup_keyfacts_data( $post_id = 0 ) {
 	$post_id = $post_id ? (int) $post_id : get_the_ID();
+	/* v173: emoji icons → pro SVG icon keys (studentup_ui_icon). */
 	$map     = array(
-		'studentup_vacancies' => array( __( 'Vacancies', 'studentup' ), '📋' ),
-		'studentup_qual'      => array( __( 'Qualification', 'studentup' ), '🎓' ),
-		'studentup_salary'    => array( __( 'Salary', 'studentup' ), '💰' ),
-		'studentup_last_date' => array( __( 'Last date', 'studentup' ), '🗓️' ),
+		'studentup_vacancies' => array( __( 'Vacancies', 'studentup' ), 'card' ),
+		'studentup_qual'      => array( __( 'Qualification', 'studentup' ), 'school' ),
+		'studentup_salary'    => array( __( 'Salary', 'studentup' ), 'wallet' ),
+		'studentup_last_date' => array( __( 'Last date', 'studentup' ), 'calendar' ),
 	);
 
 	$out = array();
@@ -33,6 +34,9 @@ function studentup_keyfacts_data( $post_id = 0 ) {
 		$val = trim( (string) get_post_meta( $post_id, $key, true ) );
 		if ( '' === $val ) {
 			continue;
+		}
+		if ( 'studentup_qual' === $key && function_exists( 'studentup_qual_pretty' ) ) {
+			$val = studentup_qual_pretty( $val );   // v174: "degree,pg" → "Degree · PG".
 		}
 		if ( 'studentup_last_date' === $key ) {
 			$ts = strtotime( $val );
@@ -64,7 +68,7 @@ function studentup_keyfacts_box() {
 	<div class="su-keyfacts" aria-label="<?php esc_attr_e( 'Key details', 'studentup' ); ?>">
 		<?php foreach ( $facts as $f ) : ?>
 			<div class="su-kf">
-				<span class="su-kf-i" aria-hidden="true"><?php echo esc_html( $f['icon'] ); ?></span>
+				<span class="su-kf-i" aria-hidden="true"><?php echo studentup_ui_icon( $f['icon'], 16 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?></span>
 				<span class="su-kf-l"><?php echo esc_html( $f['label'] ); ?></span>
 				<strong class="su-kf-v"><?php echo esc_html( $f['value'] ); ?></strong>
 			</div>

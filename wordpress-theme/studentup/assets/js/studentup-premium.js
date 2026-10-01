@@ -1,6 +1,18 @@
 /* StudentUp v123 premium layer — daily quiz, instant alerts (push-style),
    bottom nav search, hot-jobs rail. No dependencies, no jQuery. */
 (function () {
+  var SUICON = function (d, s) { return '<svg viewBox="0 0 24 24" width="' + (s || 14) + '" height="' + (s || 14) + '" fill="currentColor" aria-hidden="true" focusable="false"><path d="' + d + '"/></svg>'; };
+  var I = {
+    check: SUICON("M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"),
+    close: SUICON("M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"),
+    bell: SUICON("M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"),
+    clock: SUICON("M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"),
+    calendar: SUICON("M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zM5 8V6h14v2H5z"),
+    wallet: SUICON("M21 7.28V5c0-1.1-.9-2-2-2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-2.28c.59-.35 1-.98 1-1.72V9c0-.74-.41-1.37-1-1.72zM20 9v6h-7V9h7zM5 19V5h14v2h-6c-1.1 0-2 .9-2 2v6c0 1.1.9 2 2 2h6v2H5z"),
+    card: SUICON("M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"),
+    speaker: SUICON("M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1-3.29-2.5-4.03v8.05c1.5-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"),
+    search: SUICON("M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z")
+  };
   "use strict";
 
   /* ---------------- Daily quiz ---------------- */
@@ -54,13 +66,13 @@
             paint();
             var why = document.createElement("p");
             why.className = "su-q-why " + (right ? "good" : "miss");
-            why.textContent = (right ? "✅ Correct — " : "❌ Answer: " + item.a[item.c] + " — ") + item.why;
+            why.innerHTML = (right ? I.check + " Correct — " : I.close + " Answer: " + item.a[item.c] + " — ") + item.why;
             wrap.appendChild(why);
             try { localStorage.setItem(key, String(score)); } catch (e) {}
             if (done === data.length) {
               var fin = document.createElement("p");
               fin.className = "su-q-final";
-              fin.textContent = "🎉 Today's score: " + score + "/" + data.length +
+              fin.textContent = "Today's score: " + score + "/" + data.length +
                 (score === data.length ? " — perfect! Repu malli try cheyandi." : " — repu kotha questions vastayi.");
               box.appendChild(fin);
             }
@@ -91,7 +103,7 @@
       var on = supported && Notification.permission === "granted" && localStorage.getItem("su_push_on") === "1";
       Array.prototype.forEach.call(btns, function (b) {
         b.classList.toggle("on", on);
-        b.textContent = on ? "✅ Alerts are ON" : "🔔 Turn on alerts";
+        b.innerHTML = on ? I.check + " Alerts are ON" : I.bell + " Turn on alerts";
       });
       if (on) say("You'll get an instant alert whenever a new job, result or hall ticket is posted.");
       return on;
@@ -107,7 +119,7 @@
           if (p === "granted") {
             localStorage.setItem("su_push_on", "1");
             sync();
-            notify("StudentUp alerts ON 🎉", "Kotha job/result post ayina vent ne ikkade alert vastundi.", location.href);
+            notify("StudentUp alerts ON", "Kotha job/result post ayina vent ne ikkade alert vastundi.", location.href);
             poll();
           } else {
             say("Notifications blocked — browser settings lo allow cheyandi, leda Telegram join cheyandi.");
@@ -136,7 +148,7 @@
             if (p.id > seen) {
               if (seen) {
                 var t = (p.title && p.title.rendered) ? p.title.rendered.replace(/<[^>]*>/g, "") : "New update";
-                notify("🔔 " + t, "Tap to open the full notification details.", p.link);
+                notify(t, "Tap to open the full notification details.", p.link);
               }
               newest = Math.max(newest, p.id);
             }

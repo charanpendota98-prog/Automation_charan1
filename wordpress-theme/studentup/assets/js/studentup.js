@@ -3,15 +3,33 @@
  * No external JS library. Vanilla, tiny, mobile-first.
  */
 (function () {
+  var SUICON = function (d, s) { return '<svg viewBox="0 0 24 24" width="' + (s || 14) + '" height="' + (s || 14) + '" fill="currentColor" aria-hidden="true" focusable="false"><path d="' + d + '"/></svg>'; };
+  var I = {
+    check: SUICON("M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"),
+    close: SUICON("M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"),
+    bell: SUICON("M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"),
+    info: SUICON("M11 17h2v-6h-2v6zm1-15C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm1-11h-2V7h2v2z"),
+    calendar: SUICON("M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zM5 8V6h14v2H5z"),
+    wallet: SUICON("M21 7.28V5c0-1.1-.9-2-2-2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-2.28c.59-.35 1-.98 1-1.72V9c0-.74-.41-1.37-1-1.72zM20 9v6h-7V9h7zM5 19V5h14v2h-6c-1.1 0-2 .9-2 2v6c0 1.1.9 2 2 2h6v2H5z"),
+    card: SUICON("M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"),
+    speaker: SUICON("M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1-3.29-2.5-4.03v8.05c1.5-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"),
+    menu: SUICON("M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"),
+    school: SUICON("M12 3 1 9l11 6 9-4.91V17h2V9L12 3zM5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"),
+    clock: SUICON("M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"),
+  };
   "use strict";
   var S = window.STUDENTUP || {};
 
   /* ---------- dark mode ---------- */
   var themeBtn = document.getElementById("theme");
+  /* v171: SVG icons (emoji ☀/☾ platform-to-platform different — pro look ki SVG) */
+  var SUN = '<svg class="su-uicon su-uicon-sun" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zm0 8c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58a.996.996 0 0 0-1.41 0 .996.996 0 0 0 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37a.996.996 0 0 0-1.41 0 .996.996 0 0 0 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0a.996.996 0 0 0 0-1.41l-1.06-1.06zm1.06-10.96a.996.996 0 0 0 0-1.41.996.996 0 0 0-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36a.996.996 0 0 0 0-1.41.996.996 0 0 0-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/></svg>';
+  var MOON = '<svg class="su-uicon su-uicon-moon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>';
   function applyTheme(dark) {
     document.body.classList.toggle("dark", dark);
     if (themeBtn) {
-      themeBtn.textContent = dark ? "☀" : "☾";
+      themeBtn.innerHTML = dark ? SUN : MOON;
+      themeBtn.setAttribute("aria-label", dark ? "Light mode" : "Dark mode");
       themeBtn.setAttribute("aria-pressed", dark ? "true" : "false");
     }
   }
@@ -43,7 +61,7 @@
     if (menuBtn) {
       menuBtn.setAttribute("aria-expanded", open ? "true" : "false");
       menuBtn.setAttribute("aria-label", open ? "Close menu" : "Open menu");
-      menuBtn.textContent = open ? "✕" : "☰";
+      menuBtn.innerHTML = open ? I.close : I.menu;
     }
     if (open && panelClose) { panelClose.focus(); }
   }
@@ -180,7 +198,7 @@
       });
       if (!items.length) { g.hidden = true; g.innerHTML = ""; return; }
       var h = document.createElement("h3");
-      h.innerHTML = (key === "closing" ? "⏳ Closing in 7 days" : (QUAL_LABELS[key] || key)) +
+      h.innerHTML = (key === "closing" ? I.clock + " Closing in 7 days" : (QUAL_LABELS[key] || key)) +
         ' <span class="qgnum">' + items.length + "</span>";
       var sub = document.createElement("p");
       sub.className = "qgsub";
@@ -221,14 +239,24 @@
   var bar = document.getElementById("su-progress-bar");
   var article = document.querySelector(".article-content");
   if (bar && article) {
-    var onScroll = function () {
+    /* v170: rAF throttle — scroll prathi event ki getBoundingClientRect + offsetHeight
+       (forced layout) low-end phone lo jank istundi. Prathi frame okate update. */
+    var ticking = false;
+    var update = function () {
       var top = article.getBoundingClientRect().top + window.pageYOffset;
       var total = article.offsetHeight - window.innerHeight;
       var pct = total > 0 ? ((window.pageYOffset - top) / total) * 100 : 0;
       bar.style.width = Math.max(0, Math.min(100, pct)) + "%";
+      ticking = false;
+    };
+    var onScroll = function () {
+      if (!ticking) {
+        ticking = true;
+        window.requestAnimationFrame(update);
+      }
     };
     window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
+    window.addEventListener("resize", onScroll, { passive: true });
     onScroll();
   }
 
@@ -238,7 +266,7 @@
       var url = btn.getAttribute("data-url") || window.location.href;
       var done = function () {
         var t = btn.textContent;
-        btn.textContent = "✅ Copied";
+        btn.textContent = "Copied";
         setTimeout(function () { btn.textContent = t; }, 1600);
       };
       if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -393,7 +421,7 @@
       var i = labelFor(qualsel.value || "all");
       var o = qualsel.options[i];
       var slug = o.value || "all";
-      btn.innerHTML = '<span class="qi" aria-hidden="true">' + (icons[slug] || "🎓") + "</span>" +
+      btn.innerHTML = '<span class="qi" aria-hidden="true">' + (icons[slug] || I.school) + "</span>" +
         '<span class="qt">' + clean(o.textContent) + "</span>" +
         '<span class="qchev" aria-hidden="true"></span>';
       Array.prototype.forEach.call(optData, function (d) {

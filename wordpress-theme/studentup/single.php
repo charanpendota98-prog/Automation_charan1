@@ -24,18 +24,18 @@ get_header();
 				<div class="article-head">
 					<h1><?php the_title(); ?></h1>
 					<div class="article-meta">
-						<span>📅 <?php echo esc_html( get_the_date() ); ?></span>
+						<span class="su-am su-am-date"><?php echo studentup_ui_icon( 'calendar', 14 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> <?php echo esc_html( get_the_date() ); ?></span>
 						<?php echo wp_kses_post( studentup_last_updated() ); ?>
 						<?php // studentup_reading_time() intentionally not shown on article pages. ?>
 						<?php $su_cats = get_the_category(); ?>
 						<?php if ( $su_cats ) : ?>
-							<span>🏷 <?php echo esc_html( $su_cats[0]->name ); ?></span>
+							<span class="su-am su-am-cat"><?php echo studentup_ui_icon( 'tag', 14 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> <?php echo esc_html( $su_cats[0]->name ); ?></span>
 						<?php endif; ?>
 						<?php
 						if ( function_exists( 'studentup_qual_labels' ) ) {
 							$su_q = studentup_qual_labels( get_the_ID(), 3 );
 							if ( $su_q ) {
-								echo '<span>🎯 ' . esc_html( implode( ' · ', $su_q ) ) . '</span>';
+								echo '<span class="su-am su-am-qual">' . studentup_ui_icon( 'check', 14 ) . ' ' . esc_html( implode( ' · ', $su_q ) ) . '</span>'; // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG
 							}
 							$su_badge = studentup_last_date_badge( get_the_ID() );
 							if ( $su_badge ) {
@@ -107,7 +107,7 @@ get_header();
 					studentup_video_ad_slot();
 				}
 				?>
-				<div class="article-content"><?php the_content(); ?></div>
+				<div class="article-content" id="su-details"><?php the_content(); ?></div>   <?php // v175: id — apply bar "Full details" ghost button anchor (puratham anchor ledu → click emi cheyaledu). ?>
 				<?php
 				if ( function_exists( 'studentup_syllabus_tracker_block' ) ) {
 					studentup_syllabus_tracker_block();
@@ -142,7 +142,7 @@ get_header();
 				</div>
 
 				<?php if ( has_tag() ) : ?>
-					<div class="su-tags" aria-label="Tags">🏷 <?php the_tags( '', ' · ', '' ); ?></div>
+					<div class="su-tags" aria-label="Tags"><?php echo studentup_ui_icon( 'tag', 13 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> <?php the_tags( '', ' · ', '' ); ?></div>
 				<?php endif; ?>
 
 				<?php studentup_author_box(); ?>

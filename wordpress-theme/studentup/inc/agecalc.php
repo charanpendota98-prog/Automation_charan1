@@ -32,7 +32,7 @@ function studentup_age_calculator_block( $args = array() ) {
 	?>
 	<section class="su-age-calc-wrap" id="age-calculator" aria-labelledby="su-age-calc-title">
 		<div class="su-age-calc-head">
-			<span class="su-age-calc-icon" aria-hidden="true">🧮</span>
+			<span class="su-age-calc-icon" aria-hidden="true"><?php echo studentup_ui_icon( 'chart', 26 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?></span>
 			<div>
 				<h3 id="su-age-calc-title" class="su-age-calc-title">Age & Eligibility Calculator</h3>
 				<p class="su-age-calc-desc">Enter your date of birth and category to check upper age limit relaxation instantly.</p>
@@ -41,17 +41,17 @@ function studentup_age_calculator_block( $args = array() ) {
 
 		<div class="su-age-calc-form">
 			<div class="su-age-field">
-				<label for="su-dob">🎂 Date of Birth (DOB)</label>
+				<label for="su-dob"><?php echo studentup_ui_icon( 'calendar', 14 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Date of Birth (DOB)</label>
 				<input type="date" id="su-dob" class="su-age-input" value="2000-01-01" max="<?php echo esc_attr( date_i18n( 'Y-m-d' ) ); ?>">
 			</div>
 
 			<div class="su-age-field">
-				<label for="su-cutoff">📅 Cutoff Date</label>
+				<label for="su-cutoff"><?php echo studentup_ui_icon( 'calendar', 14 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Cutoff Date</label>
 				<input type="date" id="su-cutoff" class="su-age-input" value="<?php echo esc_attr( $cutoff ); ?>">
 			</div>
 
 			<div class="su-age-field">
-				<label for="su-cat">🏷️ Category</label>
+				<label for="su-cat"><?php echo studentup_ui_icon( 'tag', 14 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Category</label>
 				<select id="su-cat" class="su-age-select">
 					<option value="0">OC / General (No Relaxation)</option>
 					<option value="5">BC-A / BC-B / BC-C / BC-D / BC-E (+5 Years)</option>
@@ -65,7 +65,7 @@ function studentup_age_calculator_block( $args = array() ) {
 
 		<div class="su-age-actions">
 			<button type="button" id="su-calc-age-btn" class="su-calc-btn-primary" data-min="<?php echo (int) $min_age; ?>" data-max="<?php echo (int) $max_age; ?>">
-				⚡ Calculate Age & Eligibility
+				<?php echo studentup_ui_icon( 'bolt', 15 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Calculate Age &amp; Eligibility
 			</button>
 		</div>
 

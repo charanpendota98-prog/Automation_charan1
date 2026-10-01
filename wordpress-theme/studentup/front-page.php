@@ -13,12 +13,28 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 
 get_header();
+
+/*
+ * v176 REAL FIX (live-install proof): /page/2/ kuda front-page.php ne vaadutundi
+ * (paged front pages aa template lo vaste — WP hierarchy gotcha). Kani grid query
+ * lo 'paged' ledu + no_found_rows=true → prathi page lo SAME latest 12 posts
+ * (duplicate content penalty) + "Older updates" link eppudu render cheyyaledu —
+ * users ki 12 posts tarvata browse cheyadam impossible.
+ *
+ * Ippudu: (1) grid query paged-aware, (2) numbered pagination, (3) page 2+ lo
+ * widgets ledu — lean archive (SEO duplicate content poochindi).
+ */
+$su_paged   = max( 1, (int) get_query_var( 'paged' ) );
+$su_is_p2   = $su_paged > 1;
 ?>
 
-<?php studentup_hero_premium(); // v123: premium hero (search + quick actions) ?>
+<?php if ( ! $su_is_p2 ) : ?>
+	<?php studentup_hero_premium(); // v123: premium hero (search + quick actions) ?>
+<?php endif; ?>
 
 <?php studentup_latest_ticker(); // v89: latest jobs scrolling — click cheste aa post open avutundi. ?>
 
+<?php if ( ! $su_is_p2 ) : ?>
 <section class="usedwrap" aria-label="Most searched by students">
 	<div class="wrap">
 		<div class="usedhead">
@@ -36,14 +52,16 @@ get_header();
 				$hot = ( $i < 3 ) ? ' hot' : '';             // v89: TS · AP · Central top-3 highlight
 				?>
 				<a class="usedcard<?php echo esc_attr( $hot ); ?>" href="<?php echo esc_url( get_category_link( $term ) ); ?>">
-					<span class="ui" aria-hidden="true"><?php echo esc_html( $m['icon'] ); ?></span>
+					<span class="ui" aria-hidden="true"><?php echo studentup_ui_icon( $m['icon'], 22 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?></span>
 					<div><b><?php echo esc_html( $m['label'] ); ?></b><small><?php echo esc_html( $m['hint'] ); ?></small></div>
 				</a>
-			<?php endforeach; ?>
+				<?php endforeach; ?>
 		</div>
 	</div>
 </section>
+<?php endif; ?>
 
+<?php if ( ! $su_is_p2 ) : ?>
 <div class="wrap">
 	<?php
 	studentup_hot_jobs( 10 );      // v123: TOP 10 HOT JOBS TODAY
@@ -66,23 +84,56 @@ get_header();
 	studentup_syllabus_tracker_block(); // v167: syllabus & study progress tracker
 	?>
 </div>
+<?php endif; ?>
 
+<?php if ( ! $su_is_p2 ) : ?>
 <div class="wrap"><?php studentup_ad( 'leaderboard' ); ?></div>
+<?php endif; ?>
 
 <section class="hero hero-slim" aria-label="Page title">
-	<h1 class="screen-reader-text"><?php esc_html_e( 'Latest student updates', 'studentup' ); ?></h1>
+	<h1 class="screen-reader-text">
+		<?php
+		if ( $su_is_p2 ) {
+			printf(
+				/* translators: %d: page number. */
+				esc_html__( 'Latest student updates — page %d', 'studentup' ),
+				(int) $su_paged
+			);
+		} else {
+			esc_html_e( 'Latest student updates', 'studentup' );
+		}
+		?>
+	</h1>
 </section>
 
 <main id="main">
 	<div class="wrap">
-		<?php studentup_breaking_section(); ?>
+		<?php if ( ! $su_is_p2 ) : ?>
+			<?php studentup_breaking_section(); ?>
+		<?php endif; ?>
 
 		<div class="sectionhead" id="jobs">
 			<div>
-				<h2>Latest opportunities</h2>
+				<h2>
+					<?php
+					if ( $su_is_p2 ) {
+						printf(
+							/* translators: %d: page number. */
+							esc_html__( 'Latest opportunities — page %d', 'studentup' ),
+							(int) $su_paged
+						);
+					} else {
+						esc_html_e( 'Latest opportunities', 'studentup' );
+					}
+					?>
+				</h2>
 				<p>Filter by qualification — Telangana · Andhra Pradesh · Central</p>
 			</div>
-			<a class="su-board-link" href="<?php echo esc_url( studentup_opportunity_board_url() ); ?>">All active sections →</a>
+			<?php if ( $su_is_p2 ) : ?>
+				<a class="su-board-link" href="<?php echo esc_url( home_url( '/' ) ); ?>">← Newest updates</a>
+			<?php else : ?>
+				<a class="su-board-link" href="<?php echo esc_url( studentup_opportunity_board_url() ); ?>">All active sections →</a>
+			<?php endif; ?>
 		</div>
 
 		<?php
@@ -105,8 +156,11 @@ get_header();
 					array(
 						'post_type'           => 'post',
 						'posts_per_page'      => 12,
+						'paged'               => $su_paged,          // v176: /page/N/ real pagination.
 						'ignore_sticky_posts' => false,
-						'no_found_rows'       => true,   // v69 perf: pagination ledu → extra SQL query vaddu
+						// v176: no_found_rows=false — pagination kosam max_num_pages kavali
+						// (v69 lo true pettina prati page same posts + link ye ledu).
+						'no_found_rows'       => false,
 					)
 				)
 			);
@@ -137,7 +191,23 @@ get_header();
 		<?php studentup_ad( 'mid' ); ?>
 
 		<nav class="sectionhead" aria-label="Post pages">
-			<div><?php next_posts_link( 'Older updates →', $su_q->max_num_pages ); ?></div>
+			<div>
+				<?php
+				$su_total = (int) $su_q->max_num_pages;
+				if ( $su_total > 1 ) {
+					echo wp_kses_post(
+						paginate_links(   // v176: numbered pagination (category pages laaga page-numbers markup).
+							array(
+								'total'     => $su_total,
+								'current'   => $su_paged,
+								'prev_text' => '← Newer',
+								'next_text' => 'Older →',
+							)
+						) ?? ''
+					);
+				}
+				?>
+			</div>
 		</nav>
 	</div>
 </main>

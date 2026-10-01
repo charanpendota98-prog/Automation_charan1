@@ -36,12 +36,12 @@ function studentup_status_card_generator() {
 		data-site="studentup.in"
 		aria-label="WhatsApp Status Card Generator">
 		<div class="su-status-content">
-			<span class="su-status-badge">📲 Viral Status Generator</span>
+			<span class="su-status-badge"><?php echo studentup_ui_icon( 'bell', 13 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Viral Status Generator</span>
 			<h4 class="su-status-title">WhatsApp Status Card (1-Click Download)</h4>
 			<p class="su-status-desc">Download a high-resolution notification card formatted for WhatsApp stories and status.</p>
 		</div>
 		<button type="button" id="su-gen-status-btn" class="su-status-btn">
-			📥 Download Status Image
+			<?php echo studentup_ui_icon( 'download', 15 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Download Status Image
 		</button>
 		<canvas id="su-status-canvas" width="1080" height="1920" style="display:none;"></canvas>
 	</div>

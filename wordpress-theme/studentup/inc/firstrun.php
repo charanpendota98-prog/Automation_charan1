@@ -46,14 +46,19 @@ function studentup_setup_categories() {
  * @return array List of slug => title.
  */
 function studentup_setup_pages() {
-	return array(
-		'about'            => 'About Us',
-		'contact'          => 'Contact Us',
-		'privacy'          => 'Privacy Policy',
-		'disclaimer'       => 'Disclaimer',
-		'terms'            => 'Terms and Conditions',
-		'editorial-policy' => 'Editorial Policy',
-	);
+return array(
+	'about'            => 'About Us',
+	'contact'          => 'Contact Us',
+	'privacy'          => 'Privacy Policy',
+	'disclaimer'       => 'Disclaimer',
+	'terms'            => 'Terms and Conditions',
+	'editorial-policy' => 'Editorial Policy',
+	'workspace'        => 'My Workspace',
+	'saved'            => 'Saved Posts',
+	// v176: Compare Jobs page — page-compare.php template + shortcode ekkada
+	// attach avtundo ani deal chesi, /compare/ URL automatic ga ready avutundi.
+	'compare'          => 'Compare Jobs',
+);
 }
 
 /**
@@ -89,6 +94,25 @@ function studentup_setup_page_body( $slug, $title ) {
 
 	$body = isset( $map[ $slug ] ) ? $map[ $slug ] : '<p>' . esc_html( $title ) . '</p>';
 	return $body . "\n" . $base;
+}
+
+/**
+ * v172: Workspace page body — functional page (policy $base note vaddu).
+ * Shortcode ye content — admin edit cheyyalsina emi ledu.
+ *
+ * @return string
+ */
+function studentup_setup_workspace_body() {
+	return '<p>Set your qualification, age and state once — eligible jobs, deadlines and your application pipeline appear here automatically. Everything is stored in your browser only.</p>' . "\n\n" . '[studentup_workspace]';
+}
+
+/**
+ * v173: Saved page body — [studentup_saved] grid (localStorage powered).
+ *
+ * @return string
+ */
+function studentup_setup_saved_body() {
+	return '<p>Everything you save with the Save button is kept in this browser — no account needed. Your application status (Applied / Interview / Result) is tracked here too.</p>' . "\n\n" . '[studentup_saved]';
 }
 
 /**
@@ -152,7 +176,11 @@ function studentup_run_first_setup() {
 			array(
 				'post_title'   => $title,
 				'post_name'    => $slug,
-				'post_content' => studentup_setup_page_body( $slug, $title ),
+				'post_content' => ( 'workspace' === $slug && function_exists( 'studentup_setup_workspace_body' ) )
+					? studentup_setup_workspace_body()
+					: ( ( 'saved' === $slug && function_exists( 'studentup_setup_saved_body' ) )
+						? studentup_setup_saved_body()
+						: ( 'compare' === $slug ? "[studentup_compare limit=\"12\"]" : studentup_setup_page_body( $slug, $title ) ) ),
 				'post_status'  => 'publish',
 				'post_type'    => 'page',
 			)
@@ -265,6 +293,7 @@ function studentup_run_first_setup() {
 	$report[] = 'Permalinks, page size and timezone checked.';
 
 	update_option( 'su_firstrun_stamp', gmdate( 'c' ) );
+	update_option( 'su_firstrun_version', STUDENTUP_VERSION );   // v176: version-aware.
 	return $report;
 }
 
@@ -274,7 +303,13 @@ function studentup_run_first_setup() {
  * @return void
  */
 function studentup_first_setup_on_activate() {
-	if ( get_option( 'su_firstrun_stamp' ) ) {
+	/*
+	 * v176 REAL FIX: okasari set ayite eppudu malli run cheyyaledu — theme
+	 * update chesina kuda kotha pages (v176: Compare Jobs) purathana site lo
+	 * create avvaledu. Version marite malli run (idempotent: existing content
+	 * ni touch cheyyadu, missing vitini matrame add chestundi).
+	 */
+	if ( get_option( 'su_firstrun_stamp' ) && STUDENTUP_VERSION === (string) get_option( 'su_firstrun_version' ) ) {
 		return;
 	}
 	studentup_run_first_setup();
@@ -350,7 +385,7 @@ function studentup_setup_page_render() {
  * @return void
  */
 function studentup_setup_notice() {
-	if ( ! current_user_can( 'manage_options' ) || get_option( 'su_firstrun_stamp' ) ) {
+	if ( ! current_user_can( 'manage_options' ) || ( get_option( 'su_firstrun_stamp' ) && STUDENTUP_VERSION === (string) get_option( 'su_firstrun_version' ) ) ) {
 		return;
 	}
 	$url = esc_url( admin_url( 'themes.php?page=studentup-setup' ) );

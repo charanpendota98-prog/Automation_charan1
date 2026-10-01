@@ -37,9 +37,9 @@ define( 'STUDENTUP_NOTIFY_MAX', 20 );
  */
 function studentup_notify_severities() {
 	return array(
-		'info'     => 'ℹ️',
-		'warn'     => '⚠️',
-		'critical' => '🚨',
+		'info'     => 'bell',
+		'warn'     => 'bolt',
+		'critical' => 'alert',
 	);
 }
 
@@ -158,7 +158,7 @@ function studentup_notify_admin_notices() {
 			$cls  = 'critical' === $sev ? 'error' : ( 'warn' === $sev ? 'notice-warning' : 'notice-info' );
 			?>
 			<div class="notice <?php echo esc_attr( $cls ); ?> su-notice is-dismissible" data-su-notify="<?php echo esc_attr( $item['code'] ); ?>">
-				<p><strong><?php echo esc_html( $icon ); ?> StudentUp:</strong> <?php echo esc_html( $item['message'] ); ?>
+				<p><strong><?php echo studentup_ui_icon( '$icon', 14 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> StudentUp:</strong> <?php echo esc_html( $item['message'] ); ?>
 					<code style="margin-left:6px"><?php echo esc_html( $item['code'] ); ?></code></p>
 			</div>
 			<?php
@@ -255,8 +255,8 @@ function studentup_notify_public_banner() {
 			}
 			?>
 			<div class="su-notify su-notify-critical" role="alert" data-code="<?php echo esc_attr( $item['code'] ); ?>">
-				<span class="su-notify-msg"><?php echo esc_html( $sevs['critical'] ); ?> <?php echo esc_html( $item['message'] ); ?></span>
-				<button type="button" class="su-notify-close" aria-label="Close">✕</button>
+				<span class="su-notify-msg"><?php echo studentup_ui_icon( $sevs['critical'], 14 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> <?php echo esc_html( $item['message'] ); ?></span>
+				<button type="button" class="su-notify-close" aria-label="Close"><?php echo studentup_ui_icon( 'close', 12 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?></button>
 			</div>
 			<?php
 		}

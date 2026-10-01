@@ -22,7 +22,7 @@ function studentup_last_updated() {
 		return '';
 	}
 	return sprintf(
-		'<span class="su-updated">♻️ Last updated: %s</span>',
+		'<span class="su-updated">' . studentup_ui_icon( 'refresh', 13 ) . ' Last updated: %s</span>', // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG
 		esc_html( get_the_modified_date() )
 	);
 }
@@ -35,7 +35,7 @@ function studentup_author_meta() {
 	$rev  = get_the_modified_date();
 	?>
 	<div class="su-author-meta" itemprop="author" itemscope itemtype="https://schema.org/Person">
-		<span>✍️ <strong itemprop="name"><?php echo esc_html( $name ); ?></strong></span>
+		<span><?php echo studentup_ui_icon( 'person', 14 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> <strong itemprop="name"><?php echo esc_html( $name ); ?></strong></span>
 		<?php if ( $rev ) : ?>
 			<span>Reviewed: <time itemprop="dateModified" datetime="<?php echo esc_attr( get_the_modified_date( 'c' ) ); ?>"><?php echo esc_html( $rev ); ?></time></span>
 		<?php endif; ?>
@@ -72,7 +72,7 @@ function studentup_author_box() {
 						<span>CP</span>
 					</div>
 				<?php endif; ?>
-				<span class="su-ab-verified-badge" title="E-E-A-T Verified Author" aria-label="Verified">✓</span>
+				<span class="su-ab-verified-badge" title="E-E-A-T Verified Author" aria-label="Verified"><?php echo studentup_ui_icon( 'check', 12 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?></span>
 			</div>
 		</div>
 
@@ -82,16 +82,16 @@ function studentup_author_box() {
 					<h3 class="su-ab-name" itemprop="name"><?php echo esc_html( $name ); ?></h3>
 					<span class="su-ab-exp" itemprop="jobTitle"><?php echo esc_html( $exp ); ?></span>
 				</div>
-				<span class="su-ab-shield">🛡️ E-E-A-T Certified</span>
+				<span class="su-ab-shield"><?php echo studentup_ui_icon( 'shield', 13 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> E-E-A-T Certified</span>
 			</div>
 
 			<p class="su-ab-bio" itemprop="description"><?php echo esc_html( $bio ); ?></p>
 
 			<div class="su-ab-footer">
 				<div class="su-ab-trust-pills">
-					<span class="su-ab-pill">✅ 100% Official Source Verified</span>
+					<span class="su-ab-pill"><?php echo studentup_ui_icon( 'check', 13 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> 100% Official Source Verified</span>
 					<?php if ( $rev ) : ?>
-						<span class="su-ab-pill">🔍 Reviewed: <?php echo esc_html( $rev ); ?></span>
+						<span class="su-ab-pill"><?php echo studentup_ui_icon( 'search', 13 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Reviewed: <?php echo esc_html( $rev ); ?></span>
 					<?php endif; ?>
 				</div>
 

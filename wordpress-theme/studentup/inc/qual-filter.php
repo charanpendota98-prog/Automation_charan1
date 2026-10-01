@@ -34,21 +34,45 @@ function studentup_qual_terms() {
 }
 
 /**
+ * v174: raw meta value ("degree,pg") → human label ("Degree · PG").
+ * Bot studentup_qual meta direct ga print cheyyadam valla board/workspace
+ * lo "degree,pg" la raw keys kanipistunnayi — students ki readable kaadu.
+ *
+ * @param string $raw Comma/space separated qual keys (ya any text).
+ * @return string
+ */
+function studentup_qual_pretty( $raw ) {
+	$terms = studentup_qual_terms();
+	$parts = array();
+	foreach ( preg_split( '/[\s,]+/', trim( (string) $raw ) ) as $key ) {
+		$key = strtolower( trim( $key ) );
+		if ( '' === $key ) {
+			continue;
+		}
+		$label   = isset( $terms[ $key ] ) ? $terms[ $key ] : ucwords( $key );
+		$parts[] = $label;
+	}
+	return implode( ' · ', array_slice( array_unique( $parts ), 0, 4 ) );
+}
+
+/**
  * v89: dropdown icons — custom animated dropdown (JS) kosam emoji map.
  *
  * @return array slug => emoji
  */
 function studentup_qual_icons() {
+	/* v173: emoji → trusted SVG markup (JS quadd button direct render). */
+	$mk = function_exists( 'studentup_ui_icon' ) ? 'studentup_ui_icon' : null;
 	return array(
-		'all'     => '🎓',
-		'10th'    => '📘',
-		'inter'   => '📗',
-		'iti'     => '🔧',
-		'diploma' => '📐',
-		'degree'  => '🎯',
-		'pg'      => '🏅',
-		'btech'   => '💻',
-		'closing' => '⏳',
+		'all'     => $mk ? $mk( 'school', 14 ) : '',
+		'10th'    => $mk ? $mk( 'book', 14 ) : '',
+		'inter'   => $mk ? $mk( 'book', 14 ) : '',
+		'iti'     => $mk ? $mk( 'work', 14 ) : '',
+		'diploma' => $mk ? $mk( 'work', 14 ) : '',
+		'degree'  => $mk ? $mk( 'board', 14 ) : '',
+		'pg'      => $mk ? $mk( 'star', 14 ) : '',
+		'btech'   => $mk ? $mk( 'laptop', 14 ) : '',
+		'closing' => $mk ? $mk( 'clock', 14 ) : '',
 	);
 }
 
@@ -100,8 +124,23 @@ function studentup_detect_qual( $post_id = 0, $post = null ) {
 	$hay = mb_strtolower( $post->post_title . ' ' . wp_strip_all_tags( (string) $post->post_content ) );
 	$hit = array();
 	foreach ( studentup_qual_keywords() as $slug => $words ) {
+		if ( 0 === strpos( $slug, '_' ) ) {
+			continue;   // _topic_* rows detection-only synonyms — qual kaadu.
+		}
 		foreach ( $words as $w ) {
-			if ( false !== mb_strpos( $hay, mb_strtolower( $w ) ) ) {
+			$w = mb_strtolower( $w );
+			/*
+			 * v174 REAL FIX: plain substring match valla "iti" → "writing",
+			 * "pg" → "jpg" la false positives vachayi (Hello world! post ki
+			 * "iti" tag attach ayindi). ASCII keywords ki word-boundary match;
+			 * Telugu words ki agglutination valla boundary fuzzy — strpos ye.
+			 */
+			if ( preg_match( '/^[\x20-\x7E]+$/', $w ) ) {
+				$matched = (bool) preg_match( '/(?<![a-z0-9])' . preg_quote( $w, '/' ) . '(?![a-z0-9])/', $hay );
+			} else {
+				$matched = ( false !== mb_strpos( $hay, $w ) );
+			}
+			if ( $matched ) {
 				$hit[] = $slug;
 				break;
 			}
@@ -315,7 +354,7 @@ function studentup_last_date_badge( $post_id = 0 ) {
 	}
 	if ( $left <= 7 ) {
 		$txt = ( 0 === $left ) ? 'Last day today' : $left . ' days left';
-		return '<span class="qbadge soon">⏳ ' . esc_html( $txt ) . '</span>';
+		return '<span class="qbadge soon">' . studentup_ui_icon( 'clock', 11 ) . ' ' . esc_html( $txt ) . '</span>'; // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG
 	}
 	return '';
 }
@@ -343,7 +382,7 @@ function studentup_expired_notice( $post_id = 0 ) {
 			esc_html( $cats[0]->name )
 		);
 	}
-	return '<div class="su-expired" role="note">⏰ <strong>Gaduvu mugisindi (Expired).</strong>'
+	return '<div class="su-expired" role="note">' . studentup_ui_icon( 'clock', 14 ) . ' <strong>Gaduvu mugisindi (Expired).</strong>' // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG
 		. ' Ee notification ki ippudu apply cheyyalem — kindha related current posts chudandi.'
 		. $cat . '</div>';
 }
@@ -387,7 +426,7 @@ function studentup_qual_pre_get_posts( $query ) {
 			'key'     => 'studentup_last_date',
 			'value'   => array( $today, $week ),
 			'compare' => 'BETWEEN',
-			'type'    => 'DATE',
+			/* v175: type DATE SQLite lo break — ISO string compare portable (MySQL + SQLite). */
 		);
 	} else {
 		$meta[] = array(
@@ -448,7 +487,7 @@ function studentup_qual_bar() {
 	$icons   = studentup_qual_icons();
 	$current = studentup_qual_current();
 	echo '<form class="qrow qualform" method="get" action="' . esc_url( home_url( '/' ) ) . '" aria-label="Jobs by qualification" data-icons="' . esc_attr( wp_json_encode( $icons, JSON_UNESCAPED_UNICODE ) ) . '">';
-	echo '<label class="catlabel qualabel" for="qualsel">🎯 Your qualification:</label>';
+	echo '<label class="catlabel qualabel" for="qualsel">' . studentup_ui_icon( 'school', 14 ) . ' Your qualification:</label>'; // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG
 	echo '<select id="qualsel" class="qualsel" name="qual">';
 	echo '<option value="all"' . selected( $current, 'all', false ) . '>All qualifications</option>';
 	foreach ( $terms as $slug => $label ) {
@@ -456,7 +495,7 @@ function studentup_qual_bar() {
 		echo '<option value="' . esc_attr( $slug ) . '"' . selected( $current, $slug, false ) . '>'
 			. esc_html( $label ) . ( $n ? ' (' . (int) $n . ')' : '' ) . '</option>';
 	}
-	echo '<option value="closing"' . selected( $current, 'closing', false ) . '>⏳ Closing in 7 days</option>';
+	echo '<option value="closing"' . selected( $current, 'closing', false ) . '>Closing in 7 days</option>';   // v174: option lo text matrame (SVG support ledu)
 	echo '</select>';
 	echo '<noscript><button type="submit" class="chip">Filter</button></noscript>';
 	echo '</form>';
@@ -484,7 +523,7 @@ function studentup_qual_query_args( $args = array() ) {
 			'key'     => 'studentup_last_date',
 			'value'   => array( $today, $week ),
 			'compare' => 'BETWEEN',
-			'type'    => 'DATE',
+			/* v175: type DATE SQLite lo break — ISO string compare portable (MySQL + SQLite). */
 		);
 		$args['meta_key'] = 'studentup_last_date'; // phpcs:ignore WordPress.DB.SlowDBQuery
 		$args['orderby']  = 'meta_value';
@@ -511,7 +550,7 @@ function studentup_qual_active_note( $count = 0 ) {
 		return;
 	}
 	$terms = studentup_qual_terms();
-	$label = ( 'closing' === $qual ) ? '⏳ Closing in 7 days' : ( $terms[ $qual ] ?? $qual );
+	$label = ( 'closing' === $qual ) ? 'Closing in 7 days' : ( $terms[ $qual ] ?? $qual );
 	echo '<p class="qnote">Qualification: <b>' . esc_html( $label ) . '</b>';
 	if ( $count ) {
 		echo ' · ' . (int) $count . ' jobs';

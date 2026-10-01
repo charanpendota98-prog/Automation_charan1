@@ -31,7 +31,7 @@ function studentup_updated_stamp() {
 		return; // not a real update — do not dress a fresh post as "updated"
 	}
 	printf(
-		'<p class="su-updated"><span aria-hidden="true">🔄</span> %1$s <time datetime="%2$s">%3$s</time></p>',
+		'<p class="su-updated"><span aria-hidden="true">' . studentup_ui_icon( 'bolt', 13 ) . '</span> %1$s <time datetime="%2$s">%3$s</time></p>', // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG
 		esc_html__( 'Updated on', 'studentup' ),
 		esc_attr( get_the_modified_date( DATE_W3C ) ),
 		esc_html( get_the_modified_date( 'j M Y, g:i a' ) )
@@ -52,8 +52,8 @@ function studentup_helpful_box() {
 	<section class="su-helpful" data-post="<?php echo esc_attr( $id ); ?>" aria-labelledby="su-helpful-title">
 		<h2 id="su-helpful-title">Was this update helpful?</h2>
 		<div class="su-helpful-btns">
-			<button type="button" class="su-help-btn" data-vote="yes">👍 Yes, clear</button>
-			<button type="button" class="su-help-btn" data-vote="no">👎 Something is missing</button>
+			<button type="button" class="su-help-btn" data-vote="yes"><?php echo studentup_ui_icon( 'thumbup', 14 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Yes, clear</button>
+			<button type="button" class="su-help-btn" data-vote="no"><?php echo studentup_ui_icon( 'thumbdown', 14 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Something is missing</button>
 		</div>
 		<p class="su-helpful-note" role="status" aria-live="polite">Your answer stays in this browser. For a correction, mail
 			<a href="mailto:<?php echo esc_attr( studentup_opt( 'contact_email', 'studentupinformative@gmail.com' ) ); ?>"><?php echo esc_html( studentup_opt( 'contact_email', 'studentupinformative@gmail.com' ) ); ?></a>.</p>
@@ -110,15 +110,20 @@ function studentup_closing_week( $days = 7 ) {
 			'posts_per_page'      => 6,
 			'ignore_sticky_posts' => true,
 			'no_found_rows'       => true,
-			'meta_key'            => 'su_last_date',
+			/* v175 REAL FIX: wrong meta key (su_last_date eppudu save cheyyaledu —
+			 * v173 hot rail bug laame class) → studentup_last_date. */
+			'meta_key'            => 'studentup_last_date',
 			'orderby'             => 'meta_value',
 			'order'               => 'ASC',
 			'meta_query'          => array(
 				array(
-					'key'     => 'su_last_date',
+					'key'     => 'studentup_last_date',
+					/* v175: type DATE vadali — SQLite (Playground) lo
+					 * CAST('Y-m-d' AS DATE) numeric ga maari comparison
+					 * modalu ayipotundi. Zero-padded ISO strings lexicographic
+					 * ga chronological ye — MySQL + SQLite rendu safe. */
 					'value'   => array( $today, $until ),
 					'compare' => 'BETWEEN',
-					'type'    => 'DATE',
 				),
 			),
 		)
@@ -131,7 +136,7 @@ function studentup_closing_week( $days = 7 ) {
 	?>
 	<section class="su-radar" aria-labelledby="su-radar-title">
 		<div class="su-radar-head">
-			<h2 id="su-radar-title">⏳ <?php esc_html_e( 'Closing this week', 'studentup' ); ?></h2>
+			<h2 id="su-radar-title"><?php echo studentup_ui_icon( 'clock', 18 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> <?php esc_html_e( 'Closing this week', 'studentup' ); ?></h2>
 			<span class="su-radar-sub"><?php esc_html_e( 'Last dates from the official notifications', 'studentup' ); ?></span>
 		</div>
 		<ul class="su-radar-list">
@@ -269,7 +274,7 @@ function studentup_pdf_button() {
 	?>
 	<p class="su-pdf">
 		<button type="button" class="su-pdf-btn" id="su-pdf-btn">
-			📄 <?php esc_html_e( 'Save this notification as PDF', 'studentup' ); ?>
+			<?php echo studentup_ui_icon( 'doc', 15 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> <?php esc_html_e( 'Save this notification as PDF', 'studentup' ); ?>
 		</button>
 		<span class="su-pdf-note"><?php esc_html_e( 'Uses your browser print dialog - choose "Save as PDF".', 'studentup' ); ?></span>
 	</p>

@@ -22,10 +22,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 function studentup_hero_actions() {
 	$out  = array();
 	$defs = array(
-		array( 'slug' => 'ts-jobs', 'label' => 'Latest Govt Jobs', 'icon' => '🔥', 'tone' => 'fire' ),
-		array( 'slug' => 'scholarships', 'label' => 'Scholarships', 'icon' => '🎓', 'tone' => 'grape' ),
-		array( 'slug' => 'results', 'label' => 'Results', 'icon' => '📢', 'tone' => 'sky' ),
-		array( 'slug' => 'hall-tickets', 'label' => 'Hall Tickets', 'icon' => '🎫', 'tone' => 'mint' ),
+		array( 'slug' => 'ts-jobs', 'label' => 'Latest Govt Jobs', 'icn' => 'bolt', 'tone' => 'fire' ),
+		array( 'slug' => 'scholarships', 'label' => 'Scholarships', 'icn' => 'school', 'tone' => 'grape' ),
+		array( 'slug' => 'results', 'label' => 'Results', 'icn' => 'board', 'tone' => 'sky' ),
+		array( 'slug' => 'hall-tickets', 'label' => 'Hall Tickets', 'icn' => 'tag', 'tone' => 'mint' ),
 	);
 	foreach ( $defs as $d ) {
 		$term = studentup_used_term( $d['slug'] );
@@ -66,7 +66,7 @@ function studentup_hero_premium() {
 			<p class="su-hero-sub">Verified notifications, last dates and direct apply links — checked by hand before posting.</p>
 
 			<form class="su-hero-search" role="search" method="get" action="<?php echo esc_url( home_url( '/' ) ); ?>">
-				<span class="su-hs-ico" aria-hidden="true">🔍</span>
+				<span class="su-hs-ico" aria-hidden="true"><?php echo studentup_ui_icon( 'search', 19 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?></span>
 				<input type="search" name="s" value="<?php echo esc_attr( get_search_query() ); ?>"
 					placeholder="Search SSC, TSPSC, scholarships, hall tickets…" aria-label="Search StudentUp">
 				<button type="submit">Search</button>
@@ -75,9 +75,14 @@ function studentup_hero_premium() {
 			<div class="su-hero-acts">
 				<?php foreach ( studentup_hero_actions() as $a ) : ?>
 					<a class="su-hact su-t-<?php echo esc_attr( $a['tone'] ); ?>" href="<?php echo esc_url( $a['url'] ); ?>">
-						<span aria-hidden="true"><?php echo esc_html( $a['icon'] ); ?></span><?php echo esc_html( $a['label'] ); ?>
+						<span aria-hidden="true"><?php echo studentup_ui_icon( esc_html( $a['icn'] ), 15 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?></span><?php echo esc_html( $a['label'] ); ?>
 					</a>
 				<?php endforeach; ?>
+				<?php if ( function_exists( 'studentup_workspace_url' ) && studentup_workspace_url() ) : ?>
+					<a class="su-hact su-t-ink" href="<?php echo esc_url( studentup_workspace_url() ); ?>">
+						<span aria-hidden="true"><?php echo studentup_ui_icon( 'person', 15 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?></span>My Workspace
+					</a>
+				<?php endif; ?>
 			</div>
 
 			<?php
@@ -109,7 +114,12 @@ function studentup_hot_jobs( $limit = 10 ) {
 		return;
 	}
 	$cats = array();
-	foreach ( array( 'ts-jobs', 'ap-jobs', 'central-jobs', 'private-jobs' ) as $s ) {
+	/*
+	 * v176 REAL FIX: purathana list lo software/internship/walkin boards levu —
+	 * software jobs eppudu "Top 10 hot jobs" rail lo raaledu. Anni job boards
+	 * cover chestunna alias list (ts/ap/central/private/software/walkin/intern).
+	 */
+	foreach ( array( 'ts-jobs', 'ap-jobs', 'central-jobs', 'private-jobs', 'software-jobs', 'walkin-jobs', 'internships' ) as $s ) {
 		$t = studentup_used_term( $s );
 		if ( $t ) {
 			$cats[] = (int) $t->term_id;
@@ -117,7 +127,7 @@ function studentup_hot_jobs( $limit = 10 ) {
 	}
 	$q = new WP_Query(
 		array(
-			'posts_per_page'      => (int) $limit,
+			'posts_per_page'      => (int) $limit * 3,   // v176: signal-gate skip aina tarvata kuda 10 cards ravali.
 			'ignore_sticky_posts' => true,
 			'no_found_rows'       => true,
 			'category__in'        => $cats ? $cats : array(),
@@ -130,19 +140,46 @@ function studentup_hot_jobs( $limit = 10 ) {
 	?>
 	<section class="su-hot" aria-label="Top hot jobs today">
 		<div class="su-hot-head">
-			<h2>🔥 Top <?php echo esc_html( (int) $limit ); ?> hot jobs today</h2>
+			<h2><?php echo studentup_ui_icon( 'bolt', 18 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Top <?php echo esc_html( (int) $limit ); ?> hot jobs today</h2>
 			<a href="<?php echo esc_url( studentup_opportunity_board_url() ); ?>">All active jobs →</a>
 		</div>
-		<p class="su-rail-hint">👉 <?php esc_html_e( 'Swipe sideways for more', 'studentup' ); ?></p>
+		<p class="su-rail-hint"><?php echo studentup_ui_icon( 'chevron', 13 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> <?php esc_html_e( 'Swipe sideways for more', 'studentup' ); ?></p>
 		<div class="su-hot-rail">
-			<?php
-			$n = 0;
-			while ( $q->have_posts() ) :
-				$q->the_post();
-				$n++;
-				$last = get_post_meta( get_the_ID(), 'su_last_date', true );
-				$pay  = get_post_meta( get_the_ID(), 'su_salary', true );
-				?>
+	<?php
+	$n = 0;
+	while ( $q->have_posts() ) :
+		$q->the_post();
+		// v173 REAL FIX: meta keys correct ga (purathana 'su_last_date'/'su_salary'
+		// keys eppudu save cheyyaledu — anduke salary/deadline pills kanipinchaledu,
+		// and $left define cheyyaledu → PHP warning).
+		$last = studentup_opportunity_last_date( get_the_ID() );
+		$left = ( $last && function_exists( 'studentup_opportunity_days_left' ) )
+			? studentup_opportunity_days_left( $last )
+			: null;
+		if ( null !== $left && $left < 0 ) {
+			continue;   // closed posts "hot jobs today" lo vaddu.
+		}
+		/*
+		 * v176 REAL FIX: job signal leni posts (last_date · salary · vacancies ·
+		 * apply_url anni leka poyina) "#1 hot job" ga rank ayyevi — live install
+		 * lo no-meta test post #1 lo kanipinchindi. Hot job ante REAL opening
+		 * signal undali. Signal gate + count cap.
+		 */
+		$pay  = trim( (string) get_post_meta( get_the_ID(), 'studentup_salary', true ) );
+		$vac  = trim( (string) get_post_meta( get_the_ID(), 'studentup_vacancies', true ) );
+		$appl = trim( (string) get_post_meta( get_the_ID(), 'studentup_apply_url', true ) );
+		if ( '' === (string) $last && '' === $pay && '' === $vac && '' === $appl ) {
+			continue;   // ekkada apply cheyalo teliyani post — "hot job" kadhu.
+		}
+		if ( $n >= (int) $limit ) {
+			break;   // cap reach ayyindi — antara render cheyyaku.
+		}
+		$n++;   // v174: render aina cards ye count — closed skip ayite rank lo gap radhu.
+		// v174: raw ISO date ("2026-10-05") kaadu — human format ("05 Oct").
+		$last_show = $last
+			? wp_date( 'd M', strtotime( $last . ' 12:00:00' ) )
+			: get_the_date( 'M j' );
+		?>
 				<article class="su-hotcard">
 					<a class="su-hot-thumb" href="<?php the_permalink(); ?>">
 						<?php if ( has_post_thumbnail() ) : ?>
@@ -156,25 +193,25 @@ function studentup_hot_jobs( $limit = 10 ) {
 							);
 							?>
 						<?php else : ?>
-							<span class="su-hot-ph" aria-hidden="true">🎯</span>
+							<span class="su-hot-ph" aria-hidden="true"><?php echo studentup_ui_icon( 'work', 22 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?></span>
 						<?php endif; ?>
 						<span class="su-hot-rank">#<?php echo esc_html( $n ); ?></span>
 					</a>
 					<div class="su-hot-body">
 						<h3><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h3>
 						<div class="su-hot-meta">
-							<span class="su-pill su-pill-amber">📅 <?php echo esc_html( $last ? $last : get_the_date( 'M j' ) ); ?></span>
+							<span class="su-pill su-pill-amber"><?php echo studentup_ui_icon( 'calendar', 12 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> <?php echo esc_html( $last_show ); ?></span>
 							<?php if ( $pay ) : ?>
-								<span class="su-pill su-pill-green">💰 <?php echo esc_html( $pay ); ?></span>
+								<span class="su-pill su-pill-green"><?php echo studentup_ui_icon( 'wallet', 12 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> <?php echo esc_html( $pay ); ?></span>
 							<?php endif; ?>
 							<?php if ( null !== $left && $left >= 0 && $left <= 10 ) : ?>
-								<span class="su-pill su-pill-hot">⏳ <?php echo esc_html( 0 === $left ? 'Last day' : $left . 'd left' ); ?></span>
+								<span class="su-pill su-pill-hot"><?php echo studentup_ui_icon( 'bolt', 12 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> <?php echo esc_html( 0 === $left ? 'Last day' : $left . 'd left' ); ?></span>
 							<?php endif; ?>
 						</div>
 						<a class="su-hot-apply" href="<?php the_permalink(); ?>">Apply / Details →</a>
 					</div>
 				</article>
-			<?php endwhile; ?>
+	<?php endwhile; ?>
 		</div>
 	</section>
 	<?php
@@ -202,7 +239,7 @@ function studentup_scholarship_strip() {
 	?>
 	<section class="su-schol" aria-label="Scholarships">
 		<div class="su-schol-head">
-			<h2>🎓 Scholarships open now</h2>
+			<h2><?php echo studentup_ui_icon( 'school', 18 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Scholarships open now</h2>
 			<a href="<?php echo esc_url( get_category_link( $term ) ); ?>">See all scholarships →</a>
 		</div>
 		<?php if ( $q->have_posts() ) : ?>
@@ -237,11 +274,11 @@ function studentup_alerts_card() {
 	<section class="su-alerts" id="alerts" aria-label="Instant job alerts">
 		<div class="su-alerts-in">
 			<div class="su-alerts-copy">
-				<h2>🔔 Get every update as a notification</h2>
+				<h2><?php echo studentup_ui_icon( 'bell', 18 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Get every update as a notification</h2>
 				<p>Kotha job, result, hall ticket post chesina vent<span>a</span>ne — mee phone lo alert. Free, ekkada signup avasaram ledu.</p>
 			</div>
 			<div class="su-alerts-btns">
-				<button type="button" class="su-alert-on" data-su-push>🔔 Turn on alerts</button>
+				<button type="button" class="su-alert-on" data-su-push><?php echo studentup_ui_icon( 'bell', 15 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Turn on alerts</button>
 				<a class="su-alert-wa" href="<?php echo esc_url( $soc['whatsapp'] ); ?>" target="_blank" rel="noopener"><?php echo studentup_social_icon( 'whatsapp', 16 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> WhatsApp</a>
 				<a class="su-alert-tg" href="<?php echo esc_url( $soc['telegram'] ); ?>" target="_blank" rel="noopener"><?php echo studentup_social_icon( 'telegram', 16 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Telegram</a>
 			</div>
@@ -264,11 +301,11 @@ function studentup_bottom_nav() {
 	$sch_u  = $schol ? get_category_link( $schol ) : home_url( '/#jobs' );
 	?>
 	<nav class="su-bnav" aria-label="Quick navigation">
-		<a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="<?php echo is_front_page() ? 'on' : ''; ?>"><span aria-hidden="true">🏠</span>Home</a>
-		<a href="<?php echo esc_url( $jobs_u ); ?>"><span aria-hidden="true">💼</span>Jobs</a>
-		<a href="<?php echo esc_url( $sch_u ); ?>"><span aria-hidden="true">🎓</span>Scholar</a>
-		<a href="<?php echo esc_url( home_url( '/#alerts' ) ); ?>"><span aria-hidden="true">🔔</span>Alerts</a>
-		<button type="button" class="su-bnav-search" id="su-bnav-search"><span aria-hidden="true">🔍</span>Search</button>
+		<a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="<?php echo is_front_page() ? 'on' : ''; ?>"><?php echo studentup_ui_icon( 'home', 21 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?>Home</a>
+		<a href="<?php echo esc_url( $jobs_u ); ?>"><?php echo studentup_ui_icon( 'work', 21 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?>Jobs</a>
+		<a href="<?php echo esc_url( $sch_u ); ?>"><?php echo studentup_ui_icon( 'school', 21 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?>Scholar</a>
+		<a href="<?php echo esc_url( home_url( '/#alerts' ) ); ?>"><?php echo studentup_ui_icon( 'bell', 21 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?>Alerts</a>
+		<button type="button" class="su-bnav-search" id="su-bnav-search"><?php echo studentup_ui_icon( 'search', 21 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?>Search</button>
 	</nav>
 	<?php
 }

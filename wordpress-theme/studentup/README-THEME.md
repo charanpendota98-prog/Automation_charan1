@@ -76,6 +76,89 @@ theme.json           block editor colors/Typography (navy/blue/orange)
 
 CLI: `wp studentup-qual-backfill --limit=500` (purana posts ki tags).
 
+## v173–v178 (themes 1.9.24–1.9.29) — REAL-INSTALL AUDIT ERA
+
+Anni changes **real WordPress 7.1.2 + SQLite install meeda verify chesi** ship chesamu
+(fresh install → seed posts → curl audit → fix → re-verify cycle).
+
+| Ver | Theme | Headline fixes (live-proof) |
+|---|---|---|
+| v173 | 1.9.24 | Hot-rail purathana meta keys (`su_last_date`) → real keys; days-left PHP warning; `paginate_links()` null fatal; Saved page auto-create; full emoji→SVG purge |
+| v174 | 1.9.25 | Qualification word-boundary detection; board pills + pretty labels; SQLite/MySQL portable meta compares |
+| v175 | 1.9.26 | Context-aware CTAs (Hall Ticket / Result / Apply); JobPosting schema gates (non-job cats, expired, signal checks); `#su-details` anchor; pretty quals; comma-tolerant vacancies; closing-week widget wrong meta key; `type=>DATE` meta_query SQLite break (5 spots) |
+| v176 | 1.9.27 | Home `/page/N/` duplicate content + missing pagination (critical); news-sitemap HTTP 404 + ISO dates; JobPosting gate AND logic; health widget empty-meta false "Expired"; hot-rail signal gate + software boards; heading hierarchy; Compare page auto-create + version-stamped upgrade re-run; noindex (search + ?qual); og:image guarantee chain + shipped brand card |
+| v177 | 1.9.28 | og/twitter cards for home + archives; twitter:card duplicate; archive canonicals; favicon fallback (svg + 32 + apple-touch); llms.txt tools + expired filter |
+| v178 | 1.9.29 | **Alias-merged category archives** — menu links (`/category/ts-jobs/` etc.) empty ayye import/bot-slug sites lo group merge (0 → 10 cards); deterministic primary-term identity (H1/title/canonical); PWA manifest icons (install prompt fix); empty-archive noindex |
+| v179 | 1.9.30 | Attachment pages → 301 parent post; RSS feed media:content images + official source + read-more CTA; docs |
+
+**Invariant suite:** 124/124 python · jsdom 177 · workspace 22 · saved 53 · PHP lint 85/85 · theme audit 0/0 —
+prathi release tarvata anni run chesi green ga ne commit.
+
+## v172 (theme 1.9.23) — COMMAND CENTER: My Workspace (flagship)
+
+**"1000x advanced" flagship feature** — student ki kavalsina ANNI okka page lo:
+
+| # | Module | Em chestundi |
+|---|---|---|
+| 1 | **Profile** | Qualification · age · state okasari set cheyyandi (browser lo matrame — account ledu) |
+| 2 | **Jobs matched for you** | Job meta (qual · age limits · state · deadline) ni profile tho instant match — eligible jobs deadline urgent-first order lo |
+| 3 | **Application pipeline** | Saved → Applied → Interview → Result counts + list (saved panel apply-tracker tho same store — ekkuva sync lo untayi) |
+| 4 | **Deadline radar** | Save chesina jobs lo closing-in-3-days RED · this-week AMBER · closing-soon BLUE |
+| + | **Quick tools** | Age calc · fee calc · score calc · syllabus tracker · salary calc · jobs board |
+
+**Kuda advanced (engineering):**
+- Data server-side embedded (`studentup_smart_dataset` JSON attr) — REST wait ledu, **offline kuda pani chestundi**
+- Assets workspace page lo matrame load (site-speed impact zero), JS deferred
+- Critical CSS layer lo `.su-ws` prefix (workspace page first-paint instant)
+- Admin toggle (StudentUp Options), firstrun automatic page creation (`My Workspace`)
+- Entry points: mobile menu · ⌘K command palette · hero action chip
+
+Setup: Theme activate chesina tarvata **StudentUp → First-run setup** run cheyyandi
+(My Workspace page automatic create avutundi), leda epage lo `[studentup_workspace]`
+shortcode pettandi. URL: `/workspace/`.
+
+## v171 (theme 1.9.22) — PRO MODE: advanced · professional · very fast
+
+Mee 3 requirements — "very useful, not silly", "advanced", "very fast":
+
+1. **PROFESSIONAL (silly emojis pothayi)** — anni UI emojis (menu, search, dark,
+   saved, home, jobs, scholar, alerts, calculators…) clean **inline SVG icons** ga
+   replace chesamu (`inc/icons.php`). Prathi device lo same sharp professional
+   look, dark mode automatic, zero extra HTTP requests. Article meta
+   (date · category · eligibility) icons kuda SVG.
+2. **VERY FAST (first paint)** — **Critical CSS layer**: above-fold styles (30 KB,
+   `tools/build_critical_css.py` auto-build) `<head>` lo inline; full 154 KB CSS
+   `media="print" + onload` swap tho **async** (+ `<noscript>` fallback). First
+   paint ki external CSS wait ZERO — phone lo site open avvadam chala fast.
+   File lekapothe theme automatic ga purathana blocking path ki velthundi (safe).
+3. **ADVANCED + USEFUL — Application Status Tracker**: student job save chesina
+   tarvata "apply chesa? interview ayyinda? result?" track cheyochu. Prathi saved
+   job ki status chip — tap chesthe: **Saved → Applied → Interview → Result**.
+   Saved panel + /saved/ page rendu chotla. localStorage matrame (privacy-safe:
+   account ledu, server ki emi pampaledu).
+
+Tech: `inc/icons.php` (SVG system) · `inc/critical-css.php` (inline+async) ·
+`tools/build_critical_css.py` (build step, `build_wp_theme.py` automatic run) ·
+`studentup-saved.js` (tracker). Re-upload: `python tools/build_wp_theme.py` →
+zip → WP Admin → Appearance → Themes → Add New → Upload.
+
+## v170 (theme 1.9.21) — PHONE MODE: fast · no side-scroll · no zoom
+
+Mee phone lo 3 problems fix ayyayi:
+
+1. **"Pakkaku velthundi" (side scroll) OFF** — `overflow-x:clip` hard guard (sticky header safe ga
+   pani chestu untundi) + post content lo pedda URLs/tables leak ayite automatic wrap.
+2. **"Zoom zoom-out avthundi" OFF** — pinch zoom (viewport meta + iOS gesture guard JS) +
+   double-tap zoom (`touch-action:manipulation`) + iOS input-focus auto-zoom (16px inputs)
+   — moortham ga block.
+3. **"Phone lo slow" FIX** — hero blur orbs · quiz spin ring · pulse/wave infinite animations
+   phone size lo OFF (GPU cool); header/bottom-nav/social-rail/apply-bar meeda costly
+   `backdrop-filter` blur → solid colour; JS `defer` tho parallel download; reading-progress
+   bar rAF-throttled (scroll jank taggindi). Desktop design deggara ekkuva
+   marindhi cheyyaledu — anni changes `@media(max-width:980px)` lo unayi.
+
+Re-upload: `python tools/build_wp_theme.py` → zip → WP Admin → Appearance → Themes → Add New → Upload.
+
 ## v168 (theme 1.9.20) — world-class interactive student suite
 
 | Feature | Where | Automatic? |

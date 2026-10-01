@@ -256,7 +256,10 @@ def main():
         # v64: rm100 tarvata title deterministic ga normalize avutundi (kw+year+power)
         assert res.get("refined") and "Better Title" in res["title"], res["title"]
         assert res["_rm_pre"] == 55 and res["_rm"]["score"] == 100
-        assert "Kw" in res["title"] and "Best" in res["title"]
+        # v135+ design: visible title NATURAL (kw front + year, artificial
+        # "Best Guide" hook ledu) — power word seo_title lo matrame.
+        assert "Kw" in res["title"] and "Best Guide" not in res["title"], res["title"]
+        assert "Complete" in res.get("seo_title", ""), res.get("seo_title")
 
         validator.rankmath_strict = lambda a, h="": low
         gc.refine_article = lambda a, f: {**a, "title": "Worse?"}

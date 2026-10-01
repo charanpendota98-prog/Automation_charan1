@@ -16,17 +16,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 function studentup_opportunity_sections() {
 	return array(
-		'ts'          => array( 'label' => 'Telangana Government Jobs', 'icon' => '🏛️' ),
-		'ap'          => array( 'label' => 'Andhra Pradesh Government Jobs', 'icon' => '🏛️' ),
-		'central'     => array( 'label' => 'Central Government Jobs', 'icon' => '🇮🇳' ),
-		'walkin'      => array( 'label' => 'Walk-in Jobs', 'icon' => '🚶' ),
-		'job-melas'   => array( 'label' => 'Job Melas & Job Fairs', 'icon' => '🤝' ),
-		'software'    => array( 'label' => 'Software Jobs', 'icon' => '💻' ),
-		'private'     => array( 'label' => 'Private Jobs', 'icon' => '🏢' ),
-		'scholarships'=> array( 'label' => 'Scholarships', 'icon' => '🎓' ),
-		'results'     => array( 'label' => 'Results', 'icon' => '📄' ),
-		'hall-tickets' => array( 'label' => 'Hall Tickets', 'icon' => '🎫' ),
-		'current-affairs' => array( 'label' => 'Daily Current Affairs', 'icon' => '📰' ),
+		'ts'          => array( 'label' => 'Telangana Government Jobs', 'icon' => 'bank' ),
+		'ap'          => array( 'label' => 'Andhra Pradesh Government Jobs', 'icon' => 'bank' ),
+		'central'     => array( 'label' => 'Central Government Jobs', 'icon' => 'flag' ),
+		'walkin'      => array( 'label' => 'Walk-in Jobs', 'icon' => 'walk' ),
+		'job-melas'   => array( 'label' => 'Job Melas & Job Fairs', 'icon' => 'person' ),
+		'software'    => array( 'label' => 'Software Jobs', 'icon' => 'laptop' ),
+		'private'     => array( 'label' => 'Private Jobs', 'icon' => 'building' ),
+		'scholarships'=> array( 'label' => 'Scholarships', 'icon' => 'school' ),
+		'results'     => array( 'label' => 'Results', 'icon' => 'doc' ),
+		'hall-tickets' => array( 'label' => 'Hall Tickets', 'icon' => 'ticket' ),
+		'current-affairs' => array( 'label' => 'Daily Current Affairs', 'icon' => 'news' ),
 	);
 }
 
@@ -186,6 +186,8 @@ function studentup_opportunity_board_posts( $limit = 180 ) {
 			'days_left'  => studentup_opportunity_days_left( $last ),
 			'section'    => $section,
 			'qualification' => trim( (string) get_post_meta( $post->ID, 'studentup_qual', true ) ),
+			'salary'     => trim( (string) get_post_meta( $post->ID, 'studentup_salary', true ) ),
+			'vacancies'  => trim( (string) get_post_meta( $post->ID, 'studentup_vacancies', true ) ),
 			'apply_url'  => $apply_url,
 			'source_url' => $source_url,
 			'source_checked' => $source_checked,
@@ -222,24 +224,34 @@ function studentup_opportunity_render_card( $row ) {
 		<div class="su-op-card-copy">
 			<h3><a href="<?php echo esc_url( $row['link'] ); ?>"><?php echo esc_html( $row['title'] ); ?></a></h3>
 			<?php if ( ! empty( $row['qualification'] ) ) : ?>
-				<p class="su-op-qual">🎓 <?php echo esc_html( $row['qualification'] ); ?></p>
+				<p class="su-op-qual"><?php echo studentup_ui_icon( 'school', 13 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> <?php echo esc_html( studentup_qual_pretty( $row['qualification'] ) ); ?></p>
+			<?php endif; ?>
+			<?php if ( ! empty( $row['salary'] ) || ! empty( $row['vacancies'] ) ) : ?>
+				<p class="su-op-facts">
+					<?php if ( ! empty( $row['vacancies'] ) ) : ?>
+						<span class="su-op-fact"><?php echo studentup_ui_icon( 'work', 12 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> <?php echo esc_html( $row['vacancies'] ); ?> posts</span>
+					<?php endif; ?>
+					<?php if ( ! empty( $row['salary'] ) ) : ?>
+						<span class="su-op-fact su-op-fact-pay"><?php echo studentup_ui_icon( 'wallet', 12 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> <?php echo esc_html( $row['salary'] ); ?></span>
+					<?php endif; ?>
+				</p>
 			<?php endif; ?>
 			<?php if ( '' !== $row['last_date'] ) : ?>
 				<?php $date_class = 'su-op-date' . ( ( null !== $days && $days <= 7 ) ? ' is-soon' : '' ); ?>
 				<p class="<?php echo esc_attr( $date_class ); ?>">
-					🗓️ Last date: <strong><?php echo esc_html( wp_date( 'd M Y', strtotime( $row['last_date'] . ' 12:00:00' ) ) ); ?></strong>
+					<?php echo studentup_ui_icon( 'calendar', 13 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Last date: <strong><?php echo esc_html( wp_date( 'd M Y', strtotime( $row['last_date'] . ' 12:00:00' ) ) ); ?></strong>
 					<?php if ( null !== $days ) : ?>
 						<span><?php echo esc_html( 0 === $days ? 'Last day today' : $days . ' days left' ); ?></span>
 					<?php endif; ?>
 				</p>
 			<?php else : ?>
-				<p class="su-op-date is-unknown">🗓️ Last date: <strong>Not announced</strong></p>
+				<p class="su-op-date is-unknown"><?php echo studentup_ui_icon( 'calendar', 13 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Last date: <strong>Not announced</strong></p>
 			<?php endif; ?>
 			<?php if ( $updated ) : ?>
 				<p class="su-op-updated">Updated <?php echo esc_html( wp_date( 'd M Y', $updated ) ); ?></p>
 			<?php endif; ?>
 			<?php if ( ! empty( $row['source_url'] ) ) : ?>
-				<p class="su-op-source">✓ Source checked<?php echo ! empty( $row['source_checked'] ) ? ' ' . esc_html( wp_date( 'd M Y', strtotime( $row['source_checked'] . ' 12:00:00' ) ) ) : ''; ?> · <a href="<?php echo esc_url( $row['source_url'] ); ?>" target="_blank" rel="noopener noreferrer">Official source</a></p>
+				<p class="su-op-source"><?php echo studentup_ui_icon( 'check', 12 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Source checked<?php echo ! empty( $row['source_checked'] ) ? ' ' . esc_html( wp_date( 'd M Y', strtotime( $row['source_checked'] . ' 12:00:00' ) ) ) : ''; ?> · <a href="<?php echo esc_url( $row['source_url'] ); ?>" target="_blank" rel="noopener noreferrer">Official source</a></p>
 			<?php endif; ?>
 		</div>
 		<div class="su-op-actions">

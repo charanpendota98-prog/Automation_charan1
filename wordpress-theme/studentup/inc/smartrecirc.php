@@ -41,7 +41,7 @@ function studentup_smart_recirculation_box() {
 	?>
 	<section class="su-recirc-wrap" aria-label="Trending and High-Intent Recommendations">
 		<div class="su-recirc-head">
-			<span class="su-recirc-icon" aria-hidden="true">🔥</span>
+			<span class="su-recirc-icon" aria-hidden="true"><?php echo studentup_ui_icon( 'bolt', 15 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?></span>
 			<h3 class="su-recirc-title">Trending & Related Notifications</h3>
 		</div>
 		<div class="su-recirc-grid">
@@ -54,7 +54,7 @@ function studentup_smart_recirculation_box() {
 					<span class="su-recirc-rank">#<?php echo (int) $idx; ?></span>
 					<div class="su-recirc-body">
 						<h4 class="su-recirc-post-title"><?php the_title(); ?></h4>
-						<span class="su-recirc-date">📅 <?php echo esc_html( get_the_date() ); ?> · Read details →</span>
+						<span class="su-recirc-date"><?php echo studentup_ui_icon( 'calendar', 12 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> <?php echo esc_html( get_the_date() ); ?> · Read details →</span>
 					</div>
 				</a>
 				<?php

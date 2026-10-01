@@ -24,7 +24,7 @@ function studentup_resume_maker_block() {
 	?>
 	<section class="su-resume-wrap" id="resume-maker" aria-labelledby="su-resume-title">
 		<div class="su-resume-head">
-			<span class="su-resume-icon" aria-hidden="true">📄</span>
+			<span class="su-resume-icon" aria-hidden="true"><?php echo studentup_ui_icon( 'doc', 26 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?></span>
 			<div>
 				<h3 id="su-resume-title" class="su-resume-title">Fresher Resume & Bio-Data Maker</h3>
 				<p class="su-resume-desc">Enter your details and generate a clean 1-page bio-data ready for printing and job applications.</p>
@@ -33,17 +33,17 @@ function studentup_resume_maker_block() {
 
 		<div class="su-resume-form">
 			<div class="su-resume-field">
-				<label for="su-res-name">👤 Full Name</label>
+				<label for="su-res-name"><?php echo studentup_ui_icon( 'person', 14 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Full Name</label>
 				<input type="text" id="su-res-name" class="su-resume-input" placeholder="e.g. John Doe">
 			</div>
 
 			<div class="su-resume-field">
-				<label for="su-res-phone">📱 Mobile Number</label>
+				<label for="su-res-phone"><?php echo studentup_ui_icon( 'phone', 14 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Mobile Number</label>
 				<input type="tel" id="su-res-phone" class="su-resume-input" placeholder="9876543210">
 			</div>
 
 			<div class="su-resume-field">
-				<label for="su-res-qual">🎓 Highest Qualification</label>
+				<label for="su-res-qual"><?php echo studentup_ui_icon( 'school', 14 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Highest Qualification</label>
 				<select id="su-res-qual" class="su-resume-select">
 					<option value="B.Tech / B.E">B.Tech / B.E (Engineering)</option>
 					<option value="Degree (B.Sc / B.Com / B.A)">Degree (B.Sc / B.Com / B.A)</option>
@@ -55,14 +55,14 @@ function studentup_resume_maker_block() {
 			</div>
 
 			<div class="su-resume-field">
-				<label for="su-res-skills">💡 Skills & Computer Knowledge</label>
+				<label for="su-res-skills"><?php echo studentup_ui_icon( 'bolt', 14 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Skills & Computer Knowledge</label>
 				<input type="text" id="su-res-skills" class="su-resume-input" placeholder="MS Office, English Typing, Computer Basics">
 			</div>
 		</div>
 
 		<div class="su-resume-actions">
 			<button type="button" id="su-gen-resume-btn" class="su-resume-btn-primary">
-				📄 Preview Resume & PDF
+				<?php echo studentup_ui_icon( 'doc', 15 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Preview Resume &amp; PDF
 			</button>
 		</div>
 
@@ -90,7 +90,7 @@ function studentup_resume_maker_block() {
 				</div>
 			</div>
 			<div class="su-resume-print-action">
-				<button type="button" class="su-resume-print-btn" onclick="window.print()">🖨️ Print / Save as PDF</button>
+				<button type="button" class="su-resume-print-btn" onclick="window.print()"><?php echo studentup_ui_icon( 'print', 15 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Print / Save as PDF</button>
 			</div>
 		</div>
 	</section>

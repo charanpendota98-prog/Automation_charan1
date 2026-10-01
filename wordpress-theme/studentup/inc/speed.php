@@ -78,6 +78,16 @@ add_action( 'wp_head', 'studentup_view_transitions', 4 );
 /**
  * Command palette markup (⌘K / Ctrl+K) — power-user search + quick actions.
  */
+/**
+ * v173: palette icon markup (trusted SVG — JS raw render).
+ *
+ * @param string $key icon key.
+ * @return string
+ */
+function studentup_cmdk_icon( $key ) {
+	return function_exists( 'studentup_ui_icon' ) ? studentup_ui_icon( $key, 15 ) : '';
+}
+
 function studentup_command_palette() {
 	if ( ! studentup_opt( 'command_palette', '1' ) ) {
 		return;
@@ -87,25 +97,26 @@ function studentup_command_palette() {
 	$res   = studentup_used_term( 'results' );
 	$links = array();
 	if ( $jobs ) {
-		$links[] = array( 'i' => '💼', 't' => 'Latest government jobs', 'u' => get_category_link( $jobs ) );
+		$links[] = array( 'i' => studentup_cmdk_icon( 'work' ), 't' => 'Latest government jobs', 'u' => get_category_link( $jobs ) );
 	}
 	if ( $schol ) {
-		$links[] = array( 'i' => '🎓', 't' => 'Scholarships', 'u' => get_category_link( $schol ) );
+		$links[] = array( 'i' => studentup_cmdk_icon( 'school' ), 't' => 'Scholarships', 'u' => get_category_link( $schol ) );
 	}
 	if ( $res ) {
-		$links[] = array( 'i' => '📢', 't' => 'Results', 'u' => get_category_link( $res ) );
+		$links[] = array( 'i' => studentup_cmdk_icon( 'doc' ), 't' => 'Results', 'u' => get_category_link( $res ) );
 	}
-	$links[] = array( 'i' => '📋', 't' => 'Active jobs board', 'u' => studentup_opportunity_board_url() );
-		$links[] = array( 'i' => '🧮', 't' => 'Age & Eligibility Calculator', 'u' => home_url( '/#age-calculator' ) );
-		$links[] = array( 'i' => '💳', 't' => 'Fee & Concession Calculator', 'u' => home_url( '/#fee-calculator' ) );
-		$links[] = array( 'i' => '🎯', 't' => 'Exam Negative Marks Score Calculator', 'u' => home_url( '/#score-calculator' ) );
-		$links[] = array( 'i' => '🎫', 't' => 'Hall Ticket Download Helper', 'u' => home_url( '/#admit-card-helper' ) );
-		$links[] = array( 'i' => '📄', 't' => 'Fresher Resume & Bio-Data Maker', 'u' => home_url( '/#resume-maker' ) );
-		$links[] = array( 'i' => '📚', 't' => 'Syllabus & Study Progress Tracker', 'u' => home_url( '/#syllabus-tracker' ) );
-		$links[] = array( 'i' => '💰', 't' => 'In-hand Salary Calculator', 'u' => home_url( '/#salary-calculator' ) );
-		$links[] = array( 'i' => '🧠', 't' => 'Daily Quiz', 'u' => home_url( '/#daily-quiz' ) );
-		$links[] = array( 'i' => '🤖', 't' => 'AI Job Match', 'u' => home_url( '/#job-match' ) );
-		$links[] = array( 'i' => '🗓️', 't' => 'Job Calendar', 'u' => home_url( '/#job-calendar' ) );
+	$links[] = array( 'i' => studentup_cmdk_icon( 'bolt' ), 't' => 'My Workspace', 'u' => function_exists( 'studentup_workspace_url' ) ? ( studentup_workspace_url() ? studentup_workspace_url() : home_url( '/' ) ) : home_url( '/' ) );
+	$links[] = array( 'i' => studentup_cmdk_icon( 'board' ), 't' => 'Active jobs board', 'u' => studentup_opportunity_board_url() );
+		$links[] = array( 'i' => studentup_cmdk_icon( 'chart' ), 't' => 'Age & Eligibility Calculator', 'u' => home_url( '/#age-calculator' ) );
+		$links[] = array( 'i' => studentup_cmdk_icon( 'card' ), 't' => 'Fee & Concession Calculator', 'u' => home_url( '/#fee-calculator' ) );
+		$links[] = array( 'i' => studentup_cmdk_icon( 'board' ), 't' => 'Exam Negative Marks Score Calculator', 'u' => home_url( '/#score-calculator' ) );
+		$links[] = array( 'i' => studentup_cmdk_icon( 'ticket' ), 't' => 'Hall Ticket Download Helper', 'u' => home_url( '/#admit-card-helper' ) );
+		$links[] = array( 'i' => studentup_cmdk_icon( 'doc' ), 't' => 'Fresher Resume & Bio-Data Maker', 'u' => home_url( '/#resume-maker' ) );
+		$links[] = array( 'i' => studentup_cmdk_icon( 'book' ), 't' => 'Syllabus & Study Progress Tracker', 'u' => home_url( '/#syllabus-tracker' ) );
+		$links[] = array( 'i' => studentup_cmdk_icon( 'wallet' ), 't' => 'In-hand Salary Calculator', 'u' => home_url( '/#salary-calculator' ) );
+		$links[] = array( 'i' => studentup_cmdk_icon( 'bolt' ), 't' => 'Daily Quiz', 'u' => home_url( '/#daily-quiz' ) );
+		$links[] = array( 'i' => studentup_cmdk_icon( 'person' ), 't' => 'AI Job Match', 'u' => home_url( '/#job-match' ) );
+		$links[] = array( 'i' => studentup_cmdk_icon( 'calendar' ), 't' => 'Job Calendar', 'u' => home_url( '/#job-calendar' ) );
 	?>
 	<div class="su-cmdk" id="su-cmdk" hidden role="dialog" aria-modal="true" aria-label="Quick search">
 		<div class="su-cmdk-box">
@@ -133,7 +144,7 @@ function studentup_for_you() {
 	?>
 	<section class="su-foryou" data-su-foryou hidden aria-label="Picked for you">
 		<div class="su-hot-head">
-			<h2>✨ Picked for you</h2>
+			<h2><?php echo studentup_ui_icon( 'bolt', 17 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Picked for you</h2>
 			<button type="button" class="su-foryou-clear" data-su-foryou-clear>Clear history</button>
 		</div>
 		<div class="su-foryou-grid" data-su-foryou-grid></div>

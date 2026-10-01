@@ -30,7 +30,7 @@ function studentup_fee_calculator_block( $args = array() ) {
 	?>
 	<section class="su-fee-calc-wrap" id="fee-calculator" aria-labelledby="su-fee-calc-title">
 		<div class="su-fee-calc-head">
-			<span class="su-fee-calc-icon" aria-hidden="true">💳</span>
+			<span class="su-fee-calc-icon" aria-hidden="true"><?php echo studentup_ui_icon( 'card', 26 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?></span>
 			<div>
 				<h3 id="su-fee-calc-title" class="su-fee-calc-title">Application Fee & Concession Calculator</h3>
 				<p class="su-fee-calc-desc">Select your category to determine exact examination fee concessions and total payable amount.</p>
@@ -39,7 +39,7 @@ function studentup_fee_calculator_block( $args = array() ) {
 
 		<div class="su-fee-calc-form">
 			<div class="su-fee-field">
-				<label for="su-fee-cat">🏷️ Reservation Category</label>
+				<label for="su-fee-cat"><?php echo studentup_ui_icon( 'tag', 14 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Reservation Category</label>
 				<select id="su-fee-cat" class="su-fee-select">
 					<option value="gen">OC / General / EWS (Male)</option>
 					<option value="bc">BC (A/B/C/D/E) Candidates</option>
@@ -51,19 +51,19 @@ function studentup_fee_calculator_block( $args = array() ) {
 			</div>
 
 			<div class="su-fee-field">
-				<label for="su-base-proc">📝 Processing Fee (₹)</label>
+				<label for="su-base-proc"><?php echo studentup_ui_icon( 'doc', 14 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Processing Fee (₹)</label>
 				<input type="number" id="su-base-proc" class="su-fee-input" value="<?php echo (int) $proc_fee; ?>" min="0">
 			</div>
 
 			<div class="su-fee-field">
-				<label for="su-base-exam">📋 Exam Fee (₹)</label>
+				<label for="su-base-exam"><?php echo studentup_ui_icon( 'card', 14 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Exam Fee (₹)</label>
 				<input type="number" id="su-base-exam" class="su-fee-input" value="<?php echo (int) $exam_fee; ?>" min="0">
 			</div>
 		</div>
 
 		<div class="su-fee-actions">
 			<button type="button" id="su-calc-fee-btn" class="su-fee-btn-primary">
-				⚡ Calculate Total Fee
+				<?php echo studentup_ui_icon( 'bolt', 15 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Calculate Total Fee
 			</button>
 		</div>
 

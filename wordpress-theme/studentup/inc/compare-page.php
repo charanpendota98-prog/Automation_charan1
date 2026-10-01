@@ -54,7 +54,7 @@ function studentup_compare_table( $limit = 12 ) {
 						<tr>
 							<th scope="row"><a href="<?php echo esc_url( $r['link'] ); ?>"><?php echo esc_html( $r['title'] ); ?></a></th>
 							<td><?php echo esc_html( isset( $states[ $r['state'] ] ) ? $states[ $r['state'] ] : '—' ); ?></td>
-							<td><?php echo esc_html( $r['qual'] ? implode( ', ', $r['qual'] ) : '—' ); ?></td>
+							<td><?php echo esc_html( $r['qual'] ? studentup_qual_pretty( implode( ',', $r['qual'] ) ) : '—' );   // v175: human labels ?></td>
 							<td><?php echo esc_html( ( $r['amin'] || $r['amax'] ) ? ( ( $r['amin'] ? $r['amin'] : '—' ) . '–' . ( $r['amax'] ? $r['amax'] : '—' ) ) : '—' ); ?></td>
 							<td><?php echo esc_html( $r['vac'] ? $r['vac'] : '—' ); ?></td>
 							<td><?php echo esc_html( $r['pay'] ? $r['pay'] : '—' ); ?></td>

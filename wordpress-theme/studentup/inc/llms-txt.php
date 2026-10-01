@@ -63,22 +63,39 @@ function studentup_llms_txt() {
 		'- [Editorial Policy](' . $home . 'editorial-policy/)',
 		'- [Corrections and Contact](' . $home . 'contact/)',
 		'',
+		'## Student tools',
+		'- [Latest active jobs board](' . $home . 'latest-jobs/) — expired notices automatically hidden',
+		'- [Compare jobs side by side](' . $home . 'compare/)',
+		'- [My Workspace — application tracker](' . $home . 'workspace/)',
+		'- [Saved posts](' . $home . 'saved/)',
+		'',
 		'## Recent public articles',
 	);
 
 	$posts = get_posts(
 		array(
-			'numberposts' => 30,
+			'numberposts' => 60,
 			'post_status' => 'publish',
 			'orderby'     => 'modified',
 			'order'       => 'DESC',
 		)
 	);
+	$shown = 0;
 	foreach ( $posts as $post ) {
+		// v177: expired job posts AI assistants ki "recent" ga recommend cheyyakudadhu —
+		// board policy laaga (expired notices hidden) ikkada kuda filter.
+		if ( $shown >= 30 ) {
+			break;
+		}
+		$last = (string) get_post_meta( $post->ID, 'studentup_last_date', true );
+		if ( '' !== $last && function_exists( 'studentup_opportunity_is_expired' ) && studentup_opportunity_is_expired( $last ) ) {
+			continue;
+		}
 		$url   = get_permalink( $post );
 		$title = wp_strip_all_tags( get_the_title( $post ) );
 		if ( $url && $title ) {
 			$lines[] = '- [' . $title . '](' . $url . ')';
+			++$shown;
 		}
 	}
 	$lines[] = '';

@@ -196,12 +196,18 @@ function studentup_seo_fallback_head() {
 		$img = get_the_post_thumbnail_url( get_the_ID(), 'large' );
 	} else {
 		$desc = get_bloginfo( 'description' );
-		$img  = '';
+		// v177: WP default tagline ("Just another WordPress site") OG card ki useless —
+		// brand fallback (live site tagline set cheyakapoina share card beautiful ga).
+		if ( '' === trim( (string) $desc ) || 'Just another WordPress site' === $desc ) {
+			$desc = 'Telangana & AP students ki jobs, scholarships, results, hall tickets — okate place lo anni updates';
+		}
+		$img = '';
 	}
 	$desc = trim( wp_strip_all_tags( (string) $desc ) );
 	if ( '' !== $desc ) {
 		echo '<meta name="description" content="' . esc_attr( mb_substr( $desc, 0, 160 ) ) . '">' . "\n";
 		echo '<meta property="og:description" content="' . esc_attr( mb_substr( $desc, 0, 200 ) ) . '">' . "\n";
+		echo '<meta name="twitter:description" content="' . esc_attr( mb_substr( $desc, 0, 200 ) ) . '">' . "\n";
 	}
 	if ( is_singular() ) {
 		echo '<meta property="og:title" content="' . esc_attr( wp_strip_all_tags( get_the_title() ) ) . '">' . "\n";
@@ -210,11 +216,175 @@ function studentup_seo_fallback_head() {
 		if ( $img ) {
 			echo '<meta property="og:image" content="' . esc_url( $img ) . '">' . "\n";
 		}
+		echo '<meta name="twitter:title" content="' . esc_attr( wp_strip_all_tags( get_the_title() ) ) . '">' . "\n";
 		echo '<meta name="twitter:card" content="summary_large_image">' . "\n";
+	} elseif ( studentup_seo_og_list_view() ) {   // v177: home + archives — WhatsApp share card.
+		$t = studentup_seo_list_title();
+		$u = studentup_seo_list_url();
+		if ( $t && $u ) {
+			echo '<meta property="og:title" content="' . esc_attr( $t ) . '">' . "\n";
+			echo '<meta name="twitter:title" content="' . esc_attr( $t ) . '">' . "\n";
+			echo '<meta property="og:url" content="' . esc_url( $u ) . '">' . "\n";
+			echo '<meta property="og:type" content="website">' . "\n";
+			// v177: brand card — post thumbnail leni pages ki kuda share image guaranteed.
+			echo '<meta property="og:image" content="' . esc_url( get_template_directory_uri() . '/assets/og-default.png' ) . '">' . "\n";
+			echo '<meta property="og:image:width" content="1200">' . "\n";
+			echo '<meta property="og:image:height" content="630">' . "\n";
+			echo '<meta name="twitter:card" content="summary_large_image">' . "\n";
+			echo '<meta name="twitter:image" content="' . esc_url( get_template_directory_uri() . '/assets/og-default.png' ) . '">' . "\n";
+		}
 	}
 	echo '<meta property="og:site_name" content="' . esc_attr( get_bloginfo( 'name' ) ) . '">' . "\n";
+
+	/*
+	 * v177 REAL FIX: WP core canonical SINGULAR pages ki matrame — home /page/2/,
+	 * category / date / author archives ki canonical LEdu (live install proof).
+	 * Paginated archive canonicals aa page URL ne point avvali (self-canonical).
+	 */
+	if ( ! is_singular() && studentup_seo_og_list_view() ) {
+		$canon = studentup_seo_list_url();
+		if ( $canon ) {
+			echo '<link rel="canonical" href="' . esc_url( $canon ) . '">' . "\n";
+		}
+	}
 }
 add_action( 'wp_head', 'studentup_seo_fallback_head', 5 );
+
+/**
+ * v177: favicon fallback — site icon set cheyyakapoina theme brand icon.
+ *
+ * WP core Customizer "Site Icon" set cheste aa icons vaadutundi (duplicate vaddu).
+ * Levakapote: browser tab lo default globe — brand ki chala takkuva. Ippudu
+ * theme lo ship aina gradient-S icons: favicon.svg (modern browsers) +
+ * favicon-32.png (fallback) + apple-touch-icon.png (iOS home screen).
+ *
+ * @return void
+ */
+function studentup_site_icons() {
+	if ( function_exists( 'has_site_icon' ) && has_site_icon() ) {
+		return;   // Owner Customizer lo site icon pettadu — vaadi icon ye.
+	}
+	$base = get_template_directory_uri() . '/assets';
+	echo '<link rel="icon" href="' . esc_url( $base . '/favicon-32.png' ) . '" sizes="32x32">' . "\n";
+	echo '<link rel="icon" href="' . esc_url( $base . '/favicon.svg' ) . '" type="image/svg+xml" sizes="any">' . "\n";
+	echo '<link rel="apple-touch-icon" href="' . esc_url( $base . '/apple-touch-icon.png' ) . '">' . "\n";
+}
+add_action( 'wp_head', 'studentup_site_icons', 2 );
+
+/**
+ * v177: OG card + canonical ivvochu list views ye? (front page, category, date, author).
+ * Search results NO — v176 lo noindex already (OG card avasaram ledu).
+ *
+ * @return bool
+ */
+function studentup_seo_og_list_view() {
+	return is_front_page() || is_home() || is_category() || is_tag() || is_date() || is_author();
+}
+
+/**
+ * v177: list view OG title — archive type kosaram site name tho.
+ *
+ * @return string
+ */
+function studentup_seo_list_title() {
+	$site = trim( (string) wp_strip_all_tags( get_bloginfo( 'name' ) ) );
+	$t    = '';
+	if ( is_category() || is_tag() || is_tax() ) {
+		$obj = get_queried_object();
+		// v178: alias group primary term — deterministic, posts-unna sibling.
+		if ( function_exists( 'studentup_alias_primary_term' ) ) {
+			$obj = studentup_alias_primary_term( $obj );
+		}
+		$t = ( $obj instanceof WP_Term ) ? $obj->name : single_term_title( '', false );
+	} elseif ( is_author() ) {
+		$t = 'Posts by ' . wp_strip_all_tags( get_the_author() );
+	} elseif ( is_date() ) {
+		$t = 'Updates archive';
+	} else {
+		return $site;   // front page — site name ye title.
+	}
+	return $t ? $t . ' — ' . $site : $site;
+}
+
+/**
+ * v177: list view self URL (pagination-aware — /page/2/ ki page-2 URL ne).
+ *
+ * @return string
+ */
+function studentup_seo_list_url() {
+	$paged = max( 1, (int) get_query_var( 'paged' ) );
+	if ( is_front_page() || is_home() ) {
+		return $paged > 1 ? get_pagenum_link( $paged ) : home_url( '/' );
+	}
+	if ( is_category() || is_tag() || is_tax() ) {
+		$obj = get_queried_object();
+		// v178: alias group primary term link (posts-unna sibling ki consolidate).
+		if ( function_exists( 'studentup_alias_primary_term' ) ) {
+			$obj = studentup_alias_primary_term( $obj );
+		}
+		$link = $obj instanceof WP_Term ? get_term_link( $obj ) : '';
+		if ( is_wp_error( $link ) ) {
+			return '';
+		}
+		return $paged > 1 ? get_pagenum_link( $paged ) : (string) $link;
+	}
+	if ( is_author() ) {
+		$link = get_author_posts_url( get_queried_object_id() );
+		return $paged > 1 ? get_pagenum_link( $paged ) : (string) $link;
+	}
+	if ( is_date() ) {
+		$y = (int) get_query_var( 'year' );
+		$m = (int) get_query_var( 'monthnum' );
+		$d = (int) get_query_var( 'day' );
+		$link = $d ? get_day_link( $y, $m, $d ) : ( $m ? get_month_link( $y, $m ) : get_year_link( $y ) );
+		return $paged > 1 ? get_pagenum_link( $paged ) : (string) $link;
+	}
+	return '';
+}
+
+/**
+ * v176: robots meta — thin/duplicate views ki noindex,follow.
+ *
+ *   · Search results (?s=) — Google guideline: internal search results index vaddu.
+ *   · ?qual= filter views — home page ye kani query-param variant; duplicate
+ *     content penalty nunchi save avvadam kosam noindex (users ki page normal
+ *     ga work avutundi — WhatsApp links etc. unaffected).
+ *
+ * SEO plugin (Rank Math / Yoast / AIOSEO) unte vaadi settings respect chestamu —
+ * manam duplicate print cheyyamu.
+ *
+ * @return void
+ */
+function studentup_seo_robots() {
+	if ( is_admin() || is_feed() ) {
+		return;
+	}
+	if ( defined( 'RANK_MATH_VERSION' ) || class_exists( 'RankMath' ) || defined( 'WPSEO_VERSION' ) || defined( 'AIOSEO_VERSION' ) ) {
+		return;
+	}
+	$noindex = false;
+	if ( is_search() ) {
+		$noindex = true;   // internal search results.
+	}
+	if ( ! $noindex && ( is_front_page() || is_home() ) && isset( $_GET['qual'] ) && '' !== trim( (string) wp_unslash( $_GET['qual'] ) ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$noindex = true;   // ?qual=degree lanti filter variants — content same as home grid.
+	}
+	if ( ! $noindex && ( is_category() || is_tag() ) ) {
+		/*
+		 * v178: truly-empty term archives (alias merge tarvata kuda posts levu)
+		 * thin content — index cheyyakudadhu. $wp_query ee point ki execute
+		 * ayyindi (wp_head header lo, loop mundu).
+		 */
+		global $wp_query;
+		if ( $wp_query instanceof WP_Query && 0 === (int) $wp_query->post_count ) {
+			$noindex = true;
+		}
+	}
+	if ( $noindex ) {
+		echo '<meta name="robots" content="noindex, follow">' . "\n";
+	}
+}
+add_action( 'wp_head', 'studentup_seo_robots', 1 );
 
 /**
  * Ee site ki SEO bridge active ani bot ki cheppadam (verification kosam).
@@ -246,3 +416,64 @@ add_action(
 		);
 	}
 );
+
+/*
+ * v179: RSS feed richness — RSS readers lo items nagna text ga levu.
+ *   1) media:content image (featured image lekapothe brand og-default.png)
+ *   2) item content lo official source link + "Read full update" CTA
+ *      (feed subscribers site ki back ravali; source E-E-A-T feed lo kuda).
+ */
+
+/**
+ * RSS 2.0 root lo media namespace (rss2_ns = ACTION — echo cheyali, return kadhu).
+ *
+ * @return void
+ */
+function studentup_feed_media_ns() {
+	echo ' xmlns:media="http://search.yahoo.com/mrss/"';
+}
+add_action( 'rss2_ns', 'studentup_feed_media_ns' );
+
+/**
+ * Feed item ki media:content image.
+ *
+ * @return void
+ */
+function studentup_feed_item_image() {
+	$id  = get_the_ID();
+	$img = '';
+	if ( $id && has_post_thumbnail( $id ) ) {
+		$src = wp_get_attachment_image_src( get_post_thumbnail_id( $id ), 'large' );
+		if ( $src ) {
+			$img = $src[0];
+		}
+	}
+	if ( '' === $img ) {
+		$img = get_template_directory_uri() . '/assets/og-default.png';   // v179: brand card — guaranteed image in every reader.
+	}
+	if ( $img ) {
+		echo '<media:content url="' . esc_url( $img ) . '" medium="image" />' . "\n";
+	}
+}
+add_action( 'rss2_item', 'studentup_feed_item_image' );
+
+/**
+ * Feed content lo source + read-more CTA.
+ *
+ * @param string $content feed content.
+ * @return string
+ */
+function studentup_feed_content( $content ) {
+	if ( ! in_the_loop() || ! is_feed() ) {
+		return $content;
+	}
+	$id     = get_the_ID();
+	$out    = $content;
+	$source = $id ? trim( (string) get_post_meta( $id, 'studentup_source_url', true ) ) : '';
+	if ( $source && wp_http_validate_url( $source ) ) {
+		$out .= '<p><strong>Official source:</strong> <a href="' . esc_url( $source ) . '">Notification / official portal</a></p>';
+	}
+	$out .= '<p><a href="' . esc_url( get_permalink() ) . '">Read the full update on ' . esc_html( get_bloginfo( 'name' ) ) . ' →</a></p>';
+	return $out;
+}
+add_filter( 'the_content_feed', 'studentup_feed_content', 20 );

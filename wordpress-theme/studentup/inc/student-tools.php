@@ -50,12 +50,12 @@ function studentup_tool_buttons( $post_id = 0, $variant = 'single' ) {
 	}
 	$class = 'su-student-tools su-tools-' . sanitize_html_class( $variant );
 	$html  = '<div class="' . esc_attr( $class ) . '" data-su-tools>';
-	$html .= '<button type="button" class="su-tool-btn" data-su-compare data-id="' . esc_attr( $post_id ) . '" data-title="' . esc_attr( $title ) . '" data-url="' . esc_url( $url ) . '" data-cat="' . esc_attr( $cat ) . '" data-date="' . esc_attr( $date ) . '" data-apply="' . esc_url( $apply_url ) . '" aria-pressed="false" aria-label="' . esc_attr__( 'Add this post to compare', 'studentup' ) . '"><span aria-hidden="true">⚖️</span> <span data-su-compare-label>' . esc_html__( 'Compare', 'studentup' ) . '</span></button>';
+	$html .= '<button type="button" class="su-tool-btn" data-su-compare data-id="' . esc_attr( $post_id ) . '" data-title="' . esc_attr( $title ) . '" data-url="' . esc_url( $url ) . '" data-cat="' . esc_attr( $cat ) . '" data-date="' . esc_attr( $date ) . '" data-apply="' . esc_url( $apply_url ) . '" aria-pressed="false" aria-label="' . esc_attr__( 'Add this post to compare', 'studentup' ) . '"><span aria-hidden="true">' . studentup_ui_icon( 'swap', 14 ) . '</span> <span data-su-compare-label>' . esc_html__( 'Compare', 'studentup' ) . '</span></button>';
 	if ( $date ) {
-		$html .= '<button type="button" class="su-tool-btn" data-su-reminder data-date="' . esc_attr( $date ) . '" data-title="' . esc_attr( $title ) . '" data-url="' . esc_url( $url ) . '" aria-label="' . esc_attr__( 'Add deadline reminder', 'studentup' ) . '"><span aria-hidden="true">⏰</span> ' . esc_html__( 'Add reminder', 'studentup' ) . '</button>';
+		$html .= '<button type="button" class="su-tool-btn" data-su-reminder data-date="' . esc_attr( $date ) . '" data-title="' . esc_attr( $title ) . '" data-url="' . esc_url( $url ) . '" aria-label="' . esc_attr__( 'Add deadline reminder', 'studentup' ) . '"><span aria-hidden="true">' . studentup_ui_icon( 'clock', 14 ) . '</span> ' . esc_html__( 'Add reminder', 'studentup' ) . '</button>';
 	}
 	if ( 'single' === $variant ) {
-		$html .= '<button type="button" class="su-tool-btn" data-su-print aria-label="' . esc_attr__( 'Print or save this article as PDF', 'studentup' ) . '"><span aria-hidden="true">🖨️</span> ' . esc_html__( 'Print / PDF', 'studentup' ) . '</button>';
+		$html .= '<button type="button" class="su-tool-btn" data-su-print aria-label="' . esc_attr__( 'Print or save this article as PDF', 'studentup' ) . '"><span aria-hidden="true">' . studentup_ui_icon( 'print', 14 ) . '</span> ' . esc_html__( 'Print / PDF', 'studentup' ) . '</button>';
 	}
 	$html .= '</div>';
 	return $html;
@@ -67,7 +67,7 @@ function studentup_tools_panel() {
 		<div class="su-compare-head">
 			<strong><?php esc_html_e( 'Compare posts', 'studentup' ); ?></strong>
 			<span data-su-compare-count aria-live="polite">0/3</span>
-			<button type="button" data-su-compare-close aria-label="<?php esc_attr_e( 'Close compare panel', 'studentup' ); ?>">✕</button>
+			<button type="button" data-su-compare-close aria-label="<?php esc_attr_e( 'Close compare panel', 'studentup' ); ?>"><?php echo studentup_ui_icon( 'close', 13 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?></button>
 		</div>
 		<div class="su-compare-items" data-su-compare-items></div>
 		<div class="su-compare-actions">

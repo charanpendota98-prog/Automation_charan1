@@ -202,14 +202,14 @@ function studentup_score_page() {
 			<p style="margin:8px 0 0;color:#555">%3$s</p></div></div>',
 		esc_attr( $tone ),
 		(int) $pct,
-		esc_html( $pct >= 90 ? '✅ Launch ready — AdSense/Discover ki apply cheyyochu.' : ( $pct >= 70 ? '🟠 Almost — kinda unna red items fix cheyandi.' : '🔴 Konni basics missing — kinda list follow avvandi.' ) )
+		esc_html( $pct >= 90 ? 'Launch ready — AdSense/Discover ki apply cheyyochu.' : ( $pct >= 70 ? 'Almost — kinda unna red items fix cheyandi.' : 'Konni basics missing — kinda list follow avvandi.' ) )
 	);
 	echo '<table class="widefat striped"><thead><tr><th>Check</th><th style="width:90px">Status</th><th>Fix</th></tr></thead><tbody>';
 	foreach ( $checks as $c ) {
 		printf(
 			'<tr><td><strong>%s</strong></td><td>%s</td><td>%s</td></tr>',
 			esc_html( $c['label'] ),
-			$c['pass'] ? '✅ Pass' : '❌ Fix needed',
+			$c['pass'] ? 'Pass' : 'Fix needed',
 			$c['pass'] ? '<span style="color:#666">—</span>' : esc_html( $c['fix'] )
 		);
 	}
@@ -256,11 +256,11 @@ function studentup_score_widget() {
 			if ( $pending ) {
 				echo '<ul style="margin:0 0 8px;padding-left:18px">';
 				foreach ( array_slice( $pending, 0, 4 ) as $t ) {
-					echo '<li>❌ ' . esc_html( $t ) . '</li>';
+					echo '<li>' . studentup_ui_icon( 'close', 12 ) . ' ' . esc_html( $t ) . '</li>'; // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG
 				}
 				echo '</ul>';
 			} else {
-				echo '<p>✅ Anni checks pass — launch ready.</p>';
+				echo '<p>' . studentup_ui_icon( 'check', 13 ) . ' Anni checks pass — launch ready.</p>'; // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG
 			}
 			echo '<a href="' . esc_url( admin_url( 'themes.php?page=studentup-score' ) ) . '">Full score →</a>';
 		}
