@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'STUDENTUP_VERSION', '1.9.28' );  // v177 SHARE-CARD + ICONS: og/twitter for home+archives, archive canonicals, favicon fallback, llms tools; v176 REAL-INSTALL AUDIT: home pagination + og:image guarantee + baseSalary; v175 CONTEXT-AWARE CTAs + schema gates; v174 BOARD RICHNESS + pretty labels; v173 REAL-INSTALL FIXES (hot rail meta keys + days-left, paginate null fatal, saved page auto-create); v172 COMMAND CENTER: My Workspace (profile → eligible jobs → application pipeline → deadline radar); v171 SVG icons + critical CSS + apply tracker; v170 phone mode
+define( 'STUDENTUP_VERSION', '1.9.29' );  // v178 ALIAS-MERGE ARCHIVES + PWA icons; v177 SHARE-CARD + ICONS: og/twitter for home+archives, archive canonicals, favicon fallback, llms tools; v176 REAL-INSTALL AUDIT: home pagination + og:image guarantee + baseSalary; v175 CONTEXT-AWARE CTAs + schema gates; v174 BOARD RICHNESS + pretty labels; v173 REAL-INSTALL FIXES (hot rail meta keys + days-left, paginate null fatal, saved page auto-create); v172 COMMAND CENTER: My Workspace (profile → eligible jobs → application pipeline → deadline radar); v171 SVG icons + critical CSS + apply tracker; v170 phone mode
 
 require_once get_template_directory() . '/inc/options.php';
 require_once get_template_directory() . '/inc/icons.php';        // v171: pro SVG UI icons (emoji UI badulu).
@@ -157,6 +157,123 @@ function studentup_used_term( $slug ) {
 	}
 	return null;
 }
+
+/**
+ * v178 REAL FIX (live-install proof): category archive pages alias group ni
+ * merge cheyyaledu — menu link /category/ts-jobs/ ki 0 posts kanipistunnayi,
+ * ee roju unna posts anni /category/ts-govt-jobs/ lo (import/bot alternate
+ * slug family). Menu pradhana links → EMPTY pages. Ippudu archive query
+ * alias group anni terms ni cover chestundi:
+ *   /category/ts-jobs/  → ts-jobs + ts-govt-jobs + telangana-govt-jobs …
+ * Rendu slug families lo ekkadaina posts unte menu link eppadu empty kavadu.
+ *
+ * @param WP_Query $query main query.
+ * @return void
+ */
+function studentup_alias_archive_expand( $query ) {
+	if ( is_admin() || ! $query->is_main_query() || ! $query->is_category() ) {
+		return;
+	}
+	$slug = (string) $query->get( 'category_name' );
+	if ( '' !== $slug && false !== strpos( $slug, '/' ) ) {
+		$slug = trim( substr( $slug, strrpos( $slug, '/' ) + 1 ) );   // parent/child form.
+	}
+	if ( '' === $slug ) {
+		$cat_id = (int) $query->get( 'cat' );
+		if ( ! $cat_id ) {
+			return;
+		}
+		$term = get_term( $cat_id, 'category' );
+		if ( $term && ! is_wp_error( $term ) ) {
+			$slug = $term->slug;
+		}
+	}
+	if ( '' === $slug ) {
+		return;
+	}
+	$map   = studentup_cat_aliases();
+	$group = null;
+	foreach ( $map as $theme_slug => $aliases ) {
+		if ( $slug === $theme_slug || in_array( $slug, $aliases, true ) ) {
+			$group = array_merge( array( $theme_slug ), $aliases );
+			break;
+		}
+	}
+	if ( ! $group ) {
+		return;   // ee category alias group lo ledu — normal query.
+	}
+	$ids = array();
+	foreach ( array_unique( $group ) as $s ) {
+		$t = get_term_by( 'slug', $s, 'category' );
+		if ( $t && ! is_wp_error( $t ) ) {
+			$ids[] = (int) $t->term_id;
+		}
+	}
+	if ( count( $ids ) > 1 ) {
+		/*
+		 * WP core parse_tax_query: category_name + cat + category__in anni
+		 * separate AND-ed clauses ga build chestundi — original vars clear
+		 * cheyakunte merge work avvadu (live install lo prove ayyindi:
+		 * cat 21 AND (21,2) → 0 posts).
+		 */
+		$query->set( 'category__in', $ids );
+		$query->set( 'cat', '' );
+		$query->set( 'category_name', '' );
+	}
+}
+add_action( 'pre_get_posts', 'studentup_alias_archive_expand', 20 );
+
+/**
+ * v178: alias group lo "primary" term — posts ekkuva unna sibling.
+ *
+ * Category identity (H1 · <title> · canonical · og:title) ee term tho
+ * deterministic: term-ID order meeda depend cheyyadu, empty theme-slug term
+ * ki posts unna sibling madya confusion vaddu.
+ *
+ * @param WP_Term|mixed $term queried term.
+ * @return WP_Term|mixed
+ */
+function studentup_alias_primary_term( $term ) {
+	if ( ! $term instanceof WP_Term || 'category' !== $term->taxonomy ) {
+		return $term;
+	}
+	$map = studentup_cat_aliases();
+	foreach ( $map as $theme_slug => $aliases ) {
+		$group = array_merge( array( $theme_slug ), $aliases );
+		if ( in_array( $term->slug, $group, true ) ) {
+			$best = $term;
+			foreach ( $group as $s ) {
+				$t = get_term_by( 'slug', $s, 'category' );
+				if ( $t && ! is_wp_error( $t ) && (int) $t->count > (int) $best->count ) {
+					$best = $t;
+				}
+			}
+			return $best;
+		}
+	}
+	return $term;
+}
+
+/**
+ * v178: category archives document <title> — primary alias term name.
+ *
+ * @param array $parts title parts.
+ * @return array
+ */
+function studentup_alias_archive_title_parts( $parts ) {
+	if ( is_admin() || ! ( is_category() || is_tag() ) ) {
+		return $parts;
+	}
+	$obj = get_queried_object();
+	if ( function_exists( 'studentup_alias_primary_term' ) ) {
+		$obj = studentup_alias_primary_term( $obj );
+	}
+	if ( $obj instanceof WP_Term ) {
+		$parts['title'] = $obj->name;
+	}
+	return $parts;
+}
+add_filter( 'document_title_parts', 'studentup_alias_archive_title_parts', 20 );
 
 /**
  * Seed the categories the bot and homepage expect when the theme is activated.

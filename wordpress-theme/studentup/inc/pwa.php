@@ -82,10 +82,35 @@ function studentup_manifest() {
 		),
 	);
 	if ( $icon ) {
+		/*
+		 * v178: Site Icon unte 192 + 512 + maskable — Chrome install prompt
+		 * minimum 192x192 icon kavali; okka 512 matrame chalu kadhu.
+		 */
 		$manifest['icons'] = array(
+			array( 'src' => get_site_icon_url( 192 ), 'sizes' => '192x192', 'type' => 'image/png', 'purpose' => 'any' ),
 			array( 'src' => $icon, 'sizes' => '512x512', 'type' => 'image/png', 'purpose' => 'any' ),
+			array( 'src' => $icon, 'sizes' => '512x512', 'type' => 'image/png', 'purpose' => 'maskable' ),
+		);
+	} else {
+		/*
+		 * v178 REAL FIX: Site Icon set cheyyakapote manifest lo icons LEdu —
+		 * Chrome/PWA install prompt eppudu raadu (live install proof: manifest
+		 * icons: [] empty). Theme lo ship aina brand icons fallback:
+		 * pwa-192.png + pwa-512.png + maskable variant.
+		 */
+		$base                = get_template_directory_uri() . '/assets';
+		$manifest['icons']   = array(
+			array( 'src' => $base . '/pwa-192.png', 'sizes' => '192x192', 'type' => 'image/png', 'purpose' => 'any' ),
+			array( 'src' => $base . '/pwa-512.png', 'sizes' => '512x512', 'type' => 'image/png', 'purpose' => 'any' ),
+			array( 'src' => $base . '/pwa-maskable-512.png', 'sizes' => '512x512', 'type' => 'image/png', 'purpose' => 'maskable' ),
 		);
 	}
+	// v178: empty/default tagline unte brand description — install sheet lo nagna text vaddu.
+	$manifest_desc = (string) get_bloginfo( 'description' );
+	if ( '' === trim( $manifest_desc ) || 'Just another WordPress site' === $manifest_desc ) {
+		$manifest_desc = 'Telangana & AP students ki jobs, scholarships, results, hall tickets — okate app lo anni updates.';
+	}
+	$manifest['description'] = $manifest_desc;
 	nocache_headers();
 	header( 'Content-Type: application/manifest+json; charset=utf-8' );
 	echo wp_json_encode( $manifest, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES );

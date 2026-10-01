@@ -66,7 +66,7 @@ def test_redirect_manager():
 
 def test_archive_rich():
     arch = read(THEME / "archive.php")
-    assert "<h1><?php the_archive_title(); ?></h1>" in arch
+    assert "studentup_alias_primary_term" in arch   # v178: deterministic alias archive H1
     assert "studentup_subcat_chips(" in arch
     tpl = read(THEME / "inc" / "template.php")
     assert "function studentup_subcat_chips(" in tpl

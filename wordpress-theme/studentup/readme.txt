@@ -2,7 +2,7 @@
 Contributors: studentup
 Requires at least: 6.0
 Tested up to: 6.7
-Stable tag: 1.9.28
+Stable tag: 1.9.29
 Requires PHP: 7.4
 Version: 1.9.26
 License: GNU General Public License v2 or later
@@ -47,6 +47,12 @@ The theme ships a REST bridge (`inc/seo-bridge.php`). Use an account with `manag
 user tho App Password ivvandi (Administrator role).
 
 == Changelog ==
+
+= 1.9.29 =
+
+* FIX (CRITICAL, live-install proof): category alias group merge — menu pradhana links (/category/ts-jobs/ · /category/central-jobs/ · /category/ap-jobs/ · /category/hall-ticket/) alias slug family lo posts unna sites lo EMPTY pages chupistunnayi (aa posts /category/ts-govt-jobs/ lanti sibling slugs lo unnayi — import leda alternate-slug bot valla). Ippudu archive query alias group ANNI terms cover chestundi: /category/ts-jobs/ → ts-jobs + ts-govt-jobs + telangana-govt-jobs + … Menu link eppadu empty kadu (live proof: 0 cards → 10 cards).
+* FIX (PWA): manifest lo Site Icon set cheyyakapote icons LEdu (icons: [] — Chrome "Install app" prompt eppudu raadu) + description empty ayite nagna text. Ippudu: theme brand icons fallback (pwa-192.png + pwa-512.png + maskable) + brand description. Site Icon set cheste 192+512+maskable rendu combine.
+* SEO: truly-empty term archives (alias merge tarvata kuda posts levu) ki noindex,follow — thin content index avvadam vaddu.
 
 = 1.9.28 =
 

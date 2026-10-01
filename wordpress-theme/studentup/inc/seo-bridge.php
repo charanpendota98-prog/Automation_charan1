@@ -290,7 +290,12 @@ function studentup_seo_list_title() {
 	$site = trim( (string) wp_strip_all_tags( get_bloginfo( 'name' ) ) );
 	$t    = '';
 	if ( is_category() || is_tag() || is_tax() ) {
-		$t = single_term_title( '', false );
+		$obj = get_queried_object();
+		// v178: alias group primary term — deterministic, posts-unna sibling.
+		if ( function_exists( 'studentup_alias_primary_term' ) ) {
+			$obj = studentup_alias_primary_term( $obj );
+		}
+		$t = ( $obj instanceof WP_Term ) ? $obj->name : single_term_title( '', false );
 	} elseif ( is_author() ) {
 		$t = 'Posts by ' . wp_strip_all_tags( get_the_author() );
 	} elseif ( is_date() ) {
@@ -312,7 +317,12 @@ function studentup_seo_list_url() {
 		return $paged > 1 ? get_pagenum_link( $paged ) : home_url( '/' );
 	}
 	if ( is_category() || is_tag() || is_tax() ) {
-		$link = get_term_link( get_queried_object() );
+		$obj = get_queried_object();
+		// v178: alias group primary term link (posts-unna sibling ki consolidate).
+		if ( function_exists( 'studentup_alias_primary_term' ) ) {
+			$obj = studentup_alias_primary_term( $obj );
+		}
+		$link = $obj instanceof WP_Term ? get_term_link( $obj ) : '';
 		if ( is_wp_error( $link ) ) {
 			return '';
 		}
@@ -358,6 +368,17 @@ function studentup_seo_robots() {
 	}
 	if ( ! $noindex && ( is_front_page() || is_home() ) && isset( $_GET['qual'] ) && '' !== trim( (string) wp_unslash( $_GET['qual'] ) ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$noindex = true;   // ?qual=degree lanti filter variants — content same as home grid.
+	}
+	if ( ! $noindex && ( is_category() || is_tag() ) ) {
+		/*
+		 * v178: truly-empty term archives (alias merge tarvata kuda posts levu)
+		 * thin content — index cheyyakudadhu. $wp_query ee point ki execute
+		 * ayyindi (wp_head header lo, loop mundu).
+		 */
+		global $wp_query;
+		if ( $wp_query instanceof WP_Query && 0 === (int) $wp_query->post_count ) {
+			$noindex = true;
+		}
 	}
 	if ( $noindex ) {
 		echo '<meta name="robots" content="noindex, follow">' . "\n";

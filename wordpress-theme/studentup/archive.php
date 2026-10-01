@@ -17,14 +17,31 @@ get_header();
 		<div class="crumbs"><?php echo wp_kses_post( studentup_breadcrumbs() ); ?></div>
 		<div class="sectionhead">
 			<div>
-				<h1><?php the_archive_title(); ?></h1>
+				<h1>
+					<?php
+					if ( is_category() || is_tag() ) {
+						// v178: alias group primary term — deterministic archive H1.
+						$su_arch_obj = get_queried_object();
+						if ( function_exists( 'studentup_alias_primary_term' ) ) {
+							$su_arch_obj = studentup_alias_primary_term( $su_arch_obj );
+						}
+						echo esc_html( $su_arch_obj instanceof WP_Term ? $su_arch_obj->name : get_the_archive_title() );
+					} else {
+						the_archive_title();
+					}
+					?>
+				</h1>
 				<p><?php echo esc_html( wp_strip_all_tags( get_the_archive_description() ) ); ?></p>
 			</div>
 		</div>
 		<?php
 		// v80 (P16): subcategory chips — category landing rich (child cats + counts).
 		if ( is_category() && function_exists( 'studentup_subcat_chips' ) ) {
-			studentup_subcat_chips( get_queried_object_id() );
+			$su_chips_obj = get_queried_object();
+			if ( function_exists( 'studentup_alias_primary_term' ) ) {
+				$su_chips_obj = studentup_alias_primary_term( $su_chips_obj );
+			}
+			studentup_subcat_chips( $su_chips_obj instanceof WP_Term ? (int) $su_chips_obj->term_id : get_queried_object_id() );
 		}
 		?>
 		<?php

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""v93 tests — TOP-WEBSITE UI PASS (theme 1.9.28): menu · icons · fixed-bar collisions.
+"""v93 tests — TOP-WEBSITE UI PASS (theme 1.9.29): menu · icons · fixed-bar collisions.
 
 Brief: "top website ui avvali and menu clear and neatga cheyu, icons correctga
 vundali (whatsapp instagram telegram youtube), chala mistakes unnayi — anni fix cheyu".
@@ -25,7 +25,7 @@ Deep audit lo kanukkunna **nijamaina mistakes** (ivi fix ayyayi):
         (block → grid). Fix: okkate declaration.
 
 Checks: menu structure · icons (path validity + brand/link match) · collisions ·
-CSS hygiene · version parity 1.9.28 · suite pins 73.
+CSS hygiene · version parity 1.9.29 · suite pins 73.
 
 Run: python tests/v93_test.py   (also via python run.py --test-all)
 """
@@ -169,11 +169,11 @@ def test_version_parity_194() -> None:
     php = re.search(r"STUDENTUP_VERSION',\s*'([^']+)'", read(THEME / "functions.php")).group(1)
     cs = re.search(r"Version:\s*([0-9.]+)", css()).group(1)
     stable = re.search(r"Stable tag:\s*([0-9.]+)", read(THEME / "readme.txt")).group(1)
-    assert php == cs == stable == "1.9.28", f"parity tappu: {php}·{cs}·{stable}"
+    assert php == cs == stable == "1.9.29", f"parity tappu: {php}·{cs}·{stable}"
     rd = read(THEME / "readme.txt")
     for entry in ("= 1.9.0", "= 1.9.1", "= 1.9.2", "= 1.9.3", "= 1.9.4", "= 1.9.5", "= 1.9.6", "= 1.9.7", "= 1.9.8"):
         assert entry in rd, f"changelog {entry} ledu"
-    print("      version parity 1.9.28 + changelog ✔")
+    print("      version parity 1.9.29 + changelog ✔")
 
 
 def test_suite_pins_and_docs() -> None:
@@ -204,9 +204,9 @@ def test_zip_packaged() -> None:
     names = z.namelist()
     assert all(n.startswith("studentup/") for n in names), "zip root tappu"
     cs = z.read("studentup/style.css").decode("utf-8")
-    assert re.search(r"Version:\s*1\.9\.28", cs), "zip css version 1.9.28 kaadu"
+    assert re.search(r"Version:\s*1\.9\.29", cs), "zip css version 1.9.29 kaadu"
     assert "body.su-has-stickyad .su-social" in cs, "zip lo v93 collision fix ledu"
-    print("      zip: 1.9.28 + v93 fixes packed ✔")
+    print("      zip: 1.9.29 + v93 fixes packed ✔")
 
 
 TESTS = [
@@ -219,7 +219,7 @@ TESTS = [
     ("fixed-bar collisions", test_fixed_bar_collisions),
     ("css duplicate props", test_css_no_duplicate_properties),
     ("saved in mobile menu", test_saved_in_mobile_menu),
-    ("version parity 1.9.28", test_version_parity_194),
+    ("version parity 1.9.29", test_version_parity_194),
     ("suite pins + docs", test_suite_pins_and_docs),
     ("zip packaged", test_zip_packaged),
 ]
@@ -228,7 +228,7 @@ TESTS = [
 def main() -> None:
     os.chdir(ROOT)
     print("=" * 70)
-    print("v93 TOP-WEBSITE UI PASS — menu · icons · collisions (theme 1.9.28)")
+    print("v93 TOP-WEBSITE UI PASS — menu · icons · collisions (theme 1.9.29)")
     print("=" * 70)
     failed = 0
     for name, fn in TESTS:
