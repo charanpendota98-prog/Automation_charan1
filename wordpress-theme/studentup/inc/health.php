@@ -32,7 +32,7 @@ function studentup_health_deadlines() {
 					'key'     => 'studentup_last_date',
 					'value'   => array( $today, gmdate( 'Y-m-d', strtotime( '+7 days' ) ) ),
 					'compare' => 'BETWEEN',
-					'type'    => 'DATE',
+					/* v175: type DATE SQLite lo break (CAST numeric) — ISO string compare portable. */
 				),
 			),
 		)
@@ -49,7 +49,6 @@ function studentup_health_deadlines() {
 					'key'     => 'studentup_last_date',
 					'value'   => $today,
 					'compare' => '<',
-					'type'    => 'DATE',
 				),
 			),
 		)

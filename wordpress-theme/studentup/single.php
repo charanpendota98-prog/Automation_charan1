@@ -107,7 +107,7 @@ get_header();
 					studentup_video_ad_slot();
 				}
 				?>
-				<div class="article-content"><?php the_content(); ?></div>
+				<div class="article-content" id="su-details"><?php the_content(); ?></div>   <?php // v175: id — apply bar "Full details" ghost button anchor (puratham anchor ledu → click emi cheyaledu). ?>
 				<?php
 				if ( function_exists( 'studentup_syllabus_tracker_block' ) ) {
 					studentup_syllabus_tracker_block();

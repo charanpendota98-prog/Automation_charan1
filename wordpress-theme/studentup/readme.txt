@@ -2,9 +2,9 @@
 Contributors: studentup
 Requires at least: 6.0
 Tested up to: 6.7
-Stable tag: 1.9.25
+Stable tag: 1.9.26
 Requires PHP: 7.4
-Version: 1.9.25
+Version: 1.9.26
 License: GNU General Public License v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Tags: news, education, blog, custom-logo, custom-menu, featured-images, translation-ready, right-sidebar, block-styles, wide-blocks
@@ -47,6 +47,17 @@ The theme ships a REST bridge (`inc/seo-bridge.php`). Use an account with `manag
 user tho App Password ivvandi (Administrator role).
 
 == Changelog ==
+
+= 1.9.26 =
+* v175 CONTEXT-AWARE CTAs + SCHEMA GATES — real WP audit nunchi:
+* FIX: JobPosting JSON-LD ippudu REAL job posts ki matrame (hall-ticket/result/success-stories/current-affairs/admissions/quiz/tips categories skip + apply_url/vacancies/salary job-signal kavali + expired postings ki schema ledu — Google Jobs spam/quality guideline). Puratham hall ticket post (qual + last_date unna) ki kuda JobPosting attach ayedi.
+* FIX: sticky apply bar CTA context-aware — hall-ticket post lo "Download Hall Ticket", result post lo "View Result", job post lo "Apply online" (puratham anni daanni "Apply online" ye).
+* FIX: apply bar "Full details" ghost button anchor (#su-details) ekkada ledu — click emi cheyaledu. Ippudu article content id tho scroll chestundi.
+* FIX: apply bar lo raw "degree,pg" → "Degree · PG"; FAQ answers lo kuda human labels + "05 Oct 2026" date format.
+* NEW: FAQ section context-aware — hall ticket posts ki download FAQs (last date to download, credentials, official portal warning), result posts ki result FAQs (check kaka mundu em cheyali, link active till, next steps), job posts ki recruitment FAQs.
+* FIX: totalJobOpenings "12,000" comma values kuda numeric ga parse.
+* FIX (SQLite/Playground): meta_query 'type' => 'DATE' valla SQLite-backed sites lo CAST('Y-m-d' AS DATE) numeric ga maari — admin health widget anni posts "Expired" la chupinchindi (19/19) mariyu "Expiring" 0. Zero-padded ISO string compare (type ledu) MySQL + SQLite rendula portable. 5 queries fix (health ×2 · qual filter ×2 · closing week).
+* FIX: "Closing this week" home widget (su-radar) puratham wrong meta key (su_last_date — eppudu save cheyyaledu) valla eppudu render cheyyaledu. Ippudu 7-days closing jobs deadline order lo vastayi (REAL install lo first render proof).
 
 = 1.9.25 =
 * v174 OPPORTUNITY BOARD RICHNESS — board cards ippudu salary + vacancies pills chupistayi (bot studentup_salary/studentup_vacancies meta nunchi) + qualification human labels ("degree,pg" → "Degree · PG").

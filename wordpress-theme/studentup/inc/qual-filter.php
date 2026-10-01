@@ -426,7 +426,7 @@ function studentup_qual_pre_get_posts( $query ) {
 			'key'     => 'studentup_last_date',
 			'value'   => array( $today, $week ),
 			'compare' => 'BETWEEN',
-			'type'    => 'DATE',
+			/* v175: type DATE SQLite lo break — ISO string compare portable (MySQL + SQLite). */
 		);
 	} else {
 		$meta[] = array(
@@ -523,7 +523,7 @@ function studentup_qual_query_args( $args = array() ) {
 			'key'     => 'studentup_last_date',
 			'value'   => array( $today, $week ),
 			'compare' => 'BETWEEN',
-			'type'    => 'DATE',
+			/* v175: type DATE SQLite lo break — ISO string compare portable (MySQL + SQLite). */
 		);
 		$args['meta_key'] = 'studentup_last_date'; // phpcs:ignore WordPress.DB.SlowDBQuery
 		$args['orderby']  = 'meta_value';

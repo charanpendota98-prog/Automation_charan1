@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""v90 tests — NOTIFICATIONS (theme 1.9.25).
+"""v90 tests — NOTIFICATIONS (theme 1.9.26).
 
 Brief: bot/site ki okka STANDARD alert surface kavali — guardian/radar alerts
 WP Admin lo notices ga kanipinchali, CRITICAL aithe readers ki site-wide
@@ -122,7 +122,7 @@ def test_wiring_and_changelog() -> None:
     fn = read(THEME / "functions.php")
     assert "require_once get_template_directory() . '/inc/notify.php'" in fn
     readme = read(THEME / "readme.txt")
-    assert "= 1.9.1" in readme, "changelog 1.9.25 entry ledu"
+    assert "= 1.9.1" in readme, "changelog 1.9.26 entry ledu"
     assert "notify" in readme.lower()
     # bot side: v91 tools ki bridge endpoint name match
     tools = read(ROOT / "autoblog" / "telegram_tools.py")
@@ -144,7 +144,7 @@ TESTS = [
 def main() -> None:
     os.chdir(ROOT)
     print("=" * 70)
-    print("v90 NOTIFICATIONS — regression tests (theme 1.9.25)")
+    print("v90 NOTIFICATIONS — regression tests (theme 1.9.26)")
     print("=" * 70)
     failed = 0
     for name, fn in TESTS:

@@ -110,15 +110,20 @@ function studentup_closing_week( $days = 7 ) {
 			'posts_per_page'      => 6,
 			'ignore_sticky_posts' => true,
 			'no_found_rows'       => true,
-			'meta_key'            => 'su_last_date',
+			/* v175 REAL FIX: wrong meta key (su_last_date eppudu save cheyyaledu —
+			 * v173 hot rail bug laame class) → studentup_last_date. */
+			'meta_key'            => 'studentup_last_date',
 			'orderby'             => 'meta_value',
 			'order'               => 'ASC',
 			'meta_query'          => array(
 				array(
-					'key'     => 'su_last_date',
+					'key'     => 'studentup_last_date',
+					/* v175: type DATE vadali — SQLite (Playground) lo
+					 * CAST('Y-m-d' AS DATE) numeric ga maari comparison
+					 * modalu ayipotundi. Zero-padded ISO strings lexicographic
+					 * ga chronological ye — MySQL + SQLite rendu safe. */
 					'value'   => array( $today, $until ),
 					'compare' => 'BETWEEN',
-					'type'    => 'DATE',
 				),
 			),
 		)

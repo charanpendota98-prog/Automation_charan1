@@ -73,6 +73,66 @@ function studentup_apply_active() {
 }
 
 /**
+ * v175: CTA label + context by post type (hall ticket / result / job).
+ *
+ * Hall-ticket download post meeda "Apply online" ani cheppadam wrong UX —
+ * student "apply" cheyyaledu, hall ticket download chestunnadu. Category
+ * prakaram label maarutundi (alias-aware).
+ *
+ * @param int $post_id Post id.
+ * @return array{label:string,kind:string}
+ */
+function studentup_apply_cta( $post_id = 0 ) {
+	$post_id = $post_id ? (int) $post_id : get_the_ID();
+	$labels  = array(
+		'hall-tickets'     => array( 'Download Hall Ticket', 'hallticket' ),
+		'hall-ticket'      => array( 'Download Hall Ticket', 'hallticket' ),
+		'results'          => array( 'View Result', 'result' ),
+		'admissions'       => array( 'Open Official Portal', 'admission' ),
+	);
+	if ( function_exists( 'studentup_used_term' ) ) {
+		$ids = wp_get_post_categories( $post_id );
+		$ids = array_map( 'intval', $ids );
+		foreach ( $labels as $slug => $info ) {
+			$term = studentup_used_term( $slug );
+			if ( $term && in_array( (int) $term->term_id, $ids, true ) ) {
+				return array( 'label' => $info[0], 'kind' => $info[1] );
+			}
+		}
+	}
+	return array( 'label' => 'Apply online', 'kind' => 'job' );
+}
+
+/**
+ * v175: ee post REAL job opportunity aa? (JobPosting schema gate).
+ *
+ * Hall-ticket/result/admit-card posts lo qual + last_date unnaavu — anduke
+ * v174 varaku avi kuda JobPosting schema pattukunevi (Google Jobs ki spam
+ * signal). Ippudu: non-job categories levu + okate job signal (apply_url /
+ * numeric vacancies / salary) kavali + expired postings schema levu
+ * (Google guideline: remove expired).
+ *
+ * @param array $meta Normalised job fields.
+ * @return bool
+ */
+function studentup_apply_is_job( $meta ) {
+	if ( function_exists( 'studentup_used_term' ) ) {
+		$ids    = array_map( 'intval', wp_get_post_categories( get_the_ID() ) );
+		$nonjob = array( 'hall-tickets', 'hall-ticket', 'results', 'success-stories', 'current-affairs', 'daily-quiz', 'exam-tips', 'online-education', 'admissions' );
+		foreach ( $nonjob as $slug ) {
+			$term = studentup_used_term( $slug );
+			if ( $term && in_array( (int) $term->term_id, $ids, true ) ) {
+				return false;
+			}
+		}
+	}
+	$has_signal = ( '' !== $meta['apply'] )
+		|| ( '' !== $meta['vac'] && is_numeric( str_replace( ',', '', $meta['vac'] ) ) )
+		|| '' !== $meta['salary'];
+	return $has_signal;
+}
+
+/**
  * Sticky apply bar markup.
  *
  * @return void
@@ -116,15 +176,17 @@ function studentup_apply_bar() {
 					<?php if ( '' !== $meta['vac'] ) : ?>
 						<span class="su-applyfact"><?php echo esc_html( $meta['vac'] ); ?> <?php esc_html_e( 'posts', 'studentup' ); ?></span>
 					<?php endif; ?>
-					<?php if ( '' !== $meta['qual'] ) : ?>
-						<span class="su-applyfact"><?php echo esc_html( $meta['qual'] ); ?></span>
+					<?php if ( '' !== $meta['qual'] && function_exists( 'studentup_qual_pretty' ) ) : ?>
+						<span class="su-applyfact"><?php echo esc_html( studentup_qual_pretty( $meta['qual'] ) );   // v175: raw keys kaadu — human labels ?></span>
 					<?php endif; ?>
 				</span>
 			</div>
 			<?php if ( '' !== $url && 'closed' !== $state ) : ?>
+				<?php $cta = studentup_apply_cta();   // v175: hall ticket/result post lo "Apply online" kaadu. ?>
 				<a class="su-applybtn" href="<?php echo esc_url( $url ); ?>"
 					rel="nofollow noopener" target="_blank"
-					data-su-apply="1"><?php esc_html_e( 'Apply online', 'studentup' ); ?></a>
+					aria-label="<?php echo esc_attr( $cta['label'] ); ?>"
+					data-su-apply="1"><?php echo esc_html( $cta['label'] ); ?></a>
 			<?php else : ?>
 				<a class="su-applybtn su-applybtn--ghost" href="#su-details"><?php esc_html_e( 'Full details', 'studentup' ); ?></a>
 			<?php endif; ?>
@@ -164,6 +226,20 @@ function studentup_apply_schema() {
 	if ( ! preg_match( '/^20\d\d-\d\d-\d\d$/', $meta['last'] ) ) {
 		return;
 	}
+	/*
+	 * v175 REAL FIX: hall-ticket/result posts (qual + last_date untayi kaani
+	 * job postings kaadu) ki JobPosting attach avvadam valla Google Jobs lo
+	 * spam/quality signal. Ippudu:
+	 *   1) non-job categories (hall tickets · results · stories · tips …) skip
+	 *   2) okate real job signal kavali (apply_url / numeric vacancies / salary)
+	 *   3) expired postings ki schema vaddu (Google: remove expired).
+	 */
+	if ( ! studentup_apply_is_job( $meta ) ) {
+		return;
+	}
+	if ( function_exists( 'studentup_opportunity_is_expired' ) && studentup_opportunity_is_expired( $meta['last'] ) ) {
+		return;
+	}
 	$data = array(
 		'@context'           => 'https://schema.org',
 		'@type'              => 'JobPosting',
@@ -172,7 +248,7 @@ function studentup_apply_schema() {
 		'datePosted'         => get_the_date( 'c' ),
 		'validThrough'       => $meta['last'] . 'T23:59:59+05:30',
 		'employmentType'     => 'FULL_TIME',
-		'educationRequirements' => $meta['qual'],
+		'educationRequirements' => function_exists( 'studentup_qual_pretty' ) ? studentup_qual_pretty( $meta['qual'] ) : $meta['qual'],   // v175: human labels.
 		'hiringOrganization' => array(
 			'@type' => 'Organization',
 			'name'  => get_bloginfo( 'name' ),
@@ -187,8 +263,8 @@ function studentup_apply_schema() {
 		),
 		'directApply'        => ( '' !== $meta['apply'] ),
 	);
-	if ( '' !== $meta['vac'] && is_numeric( $meta['vac'] ) ) {
-		$data['totalJobOpenings'] = (int) $meta['vac'];
+	if ( '' !== $meta['vac'] && is_numeric( str_replace( ',', '', $meta['vac'] ) ) ) {
+		$data['totalJobOpenings'] = (int) str_replace( ',', '', $meta['vac'] );   // v175: "12,000" kuda numeric ga.
 	}
 	echo "\n<script type=\"application/ld+json\">" .
 		wp_json_encode( $data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ) .
