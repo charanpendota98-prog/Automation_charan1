@@ -31,7 +31,7 @@ function studentup_sponsor_partner_box() {
 		<div class="su-sponsor-card">
 			<div class="su-sponsor-icon" aria-hidden="true"><?php echo studentup_ui_icon( 'school', 24 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?></div>
 			<div class="su-sponsor-info">
-				<h4 class="su-sponsor-title">Free Mock Tests & Preparation Study Kit</h4>
+				<h3 class="su-sponsor-title">Free Mock Tests & Preparation Study Kit</h3>
 				<p class="su-sponsor-desc">Practice topic-wise model papers, previous exam question papers, and free online test series.</p>
 			</div>
 			<div class="su-sponsor-action">

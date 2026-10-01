@@ -4,7 +4,7 @@ Theme URI: https://studentup.in/
 Author: StudentUp
 Author URI: https://studentup.in/
 Description: StudentUp design for Telangana & Andhra Pradesh students — TS/AP/Central govt jobs, qualification filter (SSC/10th · Inter · Degree · PG), live search, latest-jobs scrolling ticker, brand social icons, install as an app (PWA), job/exam cards, AdSense-ready ad slots, dark mode. Mobile-first, Rank Math + AdSense friendly.
-Version: 1.9.26
+Version: 1.9.27
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 7.4
@@ -173,7 +173,7 @@ body.dark .breaking{border-left-color:#ef6b6b}body.dark .brkhead h2{color:#e7f0f
 .footer{background:#0b2149;color:#b9c6da;margin-top:40px;padding:30px 0 24px;font-size:13px}
 .footer a{color:#dbe7f8}
 .footer-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:22px}
-.footer h4{color:#fff;font-size:14px;margin:0 0 10px}
+.footer h3{color:#fff;font-size:14px;margin:0 0 10px}
 .footer ul{list-style:none;padding:0;margin:0}
 .footer li{margin:6px 0}
 .footer-bottom{border-top:1px solid rgba(255,255,255,.14);margin-top:20px;padding-top:14px;font-size:12px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
@@ -1313,3 +1313,13 @@ body.dark .su-help-btn{background:#132339;color:#dbe7fb;border-color:#24364f}
 .su-push-no{background:rgba(255,255,255,.14);color:#e2e8f0}
 @media(min-width:860px){.su-push-bar{left:auto;right:18px;bottom:18px;max-width:420px}}
 @media(prefers-reduced-motion:reduce){.su-push-bar{animation:none}}
+
+/* v176: numbered pagination (home grid + category archives) — mobile-first pills. */
+.page-numbers{display:inline-flex;align-items:center;justify-content:center;min-width:42px;height:42px;padding:0 12px;margin:0 3px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--navy);font-size:14px;font-weight:800;text-decoration:none;transition:border-color .15s,color .15s,background .15s}
+a.page-numbers:hover{border-color:var(--su-g2);color:var(--su-g2)}
+.page-numbers.current{background:linear-gradient(135deg,#4f46e5,#7c3aed 55%,#ec4899);border-color:transparent;color:#fff;cursor:default}
+.page-numbers.dots{border:0;background:transparent;cursor:default}
+.page-numbers.prev,.page-numbers.next{font-weight:900}
+@media(max-width:600px){.page-numbers{min-width:38px;height:38px;padding:0 10px;margin:0 2px;font-size:13px}}
+body.dark .page-numbers{background:#101d33;border-color:#243a5c;color:#e8eef7}
+body.dark a.page-numbers:hover{border-color:#7c3aed;color:#c7b6ff}

@@ -45,6 +45,20 @@ function studentup_health_deadlines() {
 			'no_found_rows'  => true,
 			'fields'         => 'ids',
 			'meta_query'     => array( // phpcs:ignore WordPress.DB.SlowDBQuery
+				/*
+				 * v176 REAL FIX: REST API nunchi empty-string meta save avvocchu
+				 * (jobmeta admin form delete cheyyaledu kani bot REST lo '' save
+				 * chestundi). '' < today string-compare TRUE → khali meta unna
+				 * posts "Expired" ga count ayyevi (live install lo Hello world
+				 * false-expired proof). AND guard: meta row exist avvali +
+				 * value empty kakudadhu.
+				 */
+				'relation' => 'AND',
+				array(
+					'key'     => 'studentup_last_date',
+					'value'   => '',
+					'compare' => '!=',
+				),
 				array(
 					'key'     => 'studentup_last_date',
 					'value'   => $today,

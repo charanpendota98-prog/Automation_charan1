@@ -217,6 +217,39 @@ function studentup_seo_fallback_head() {
 add_action( 'wp_head', 'studentup_seo_fallback_head', 5 );
 
 /**
+ * v176: robots meta — thin/duplicate views ki noindex,follow.
+ *
+ *   · Search results (?s=) — Google guideline: internal search results index vaddu.
+ *   · ?qual= filter views — home page ye kani query-param variant; duplicate
+ *     content penalty nunchi save avvadam kosam noindex (users ki page normal
+ *     ga work avutundi — WhatsApp links etc. unaffected).
+ *
+ * SEO plugin (Rank Math / Yoast / AIOSEO) unte vaadi settings respect chestamu —
+ * manam duplicate print cheyyamu.
+ *
+ * @return void
+ */
+function studentup_seo_robots() {
+	if ( is_admin() || is_feed() ) {
+		return;
+	}
+	if ( defined( 'RANK_MATH_VERSION' ) || class_exists( 'RankMath' ) || defined( 'WPSEO_VERSION' ) || defined( 'AIOSEO_VERSION' ) ) {
+		return;
+	}
+	$noindex = false;
+	if ( is_search() ) {
+		$noindex = true;   // internal search results.
+	}
+	if ( ! $noindex && ( is_front_page() || is_home() ) && isset( $_GET['qual'] ) && '' !== trim( (string) wp_unslash( $_GET['qual'] ) ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$noindex = true;   // ?qual=degree lanti filter variants — content same as home grid.
+	}
+	if ( $noindex ) {
+		echo '<meta name="robots" content="noindex, follow">' . "\n";
+	}
+}
+add_action( 'wp_head', 'studentup_seo_robots', 1 );
+
+/**
  * Ee site ki SEO bridge active ani bot ki cheppadam (verification kosam).
  *   GET /wp-json/studentup/v1/theme-info
  */

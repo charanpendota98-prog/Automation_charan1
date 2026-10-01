@@ -17,12 +17,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<div class="wrap">
 		<div class="footer-grid">
 			<div>
-				<h4><?php bloginfo( 'name' ); ?></h4>
+				<h3><?php bloginfo( 'name' ); ?></h3>
 				<p>Jobs, scholarships, results and exam updates for students.</p>
 				<p><?php echo studentup_ui_icon( 'check', 13 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Spotted a mistake? Tell us at <a href="mailto:<?php echo esc_attr( studentup_contact_email() ); ?>"><?php echo esc_html( studentup_contact_email() ); ?></a></p>
 			</div>
 			<div>
-				<h4>Categories</h4>
+				<h3>Categories</h3>
 				<ul>
 					<?php
 					foreach ( array_slice( studentup_most_used(), 0, 5 ) as $m ) :
@@ -36,7 +36,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				</ul>
 			</div>
 			<div>
-				<h4>Student Tools</h4>
+				<h3>Student Tools</h3>
 				<ul>
 					<li><a href="<?php echo esc_url( home_url( '/#age-calculator' ) ); ?>"><?php echo studentup_ui_icon( 'chart', 13 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Age Calculator</a></li>
 					<li><a href="<?php echo esc_url( home_url( '/#fee-calculator' ) ); ?>"><?php echo studentup_ui_icon( 'card', 13 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Fee Calculator</a></li>
@@ -51,7 +51,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				</ul>
 			</div>
 			<div>
-				<h4>Other links</h4>
+				<h3>Other links</h3>
 				<?php
 				if ( has_nav_menu( 'footer' ) ) {
 					wp_nav_menu( array( 'theme_location' => 'footer', 'container' => false, 'depth' => 1, 'fallback_cb' => false ) );

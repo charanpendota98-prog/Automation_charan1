@@ -126,10 +126,57 @@ function studentup_apply_is_job( $meta ) {
 			}
 		}
 	}
-	$has_signal = ( '' !== $meta['apply'] )
-		|| ( '' !== $meta['vac'] && is_numeric( str_replace( ',', '', $meta['vac'] ) ) )
+	/*
+	 * v176 REAL FIX: v175 gate OR vaadindi — apply_url LENI post ki kuda
+	 * (vacancies/salary unte) JobPosting vastundi, numbers LENI placeholder ki
+	 * kuda (apply_url matrame unte) vastundi. Live install lo prove ayyindi.
+	 * REAL job ante: official portal link + (numeric vacancies leda salary).
+	 */
+	$has_portal = '' !== $meta['apply'];
+	$has_signal = ( '' !== $meta['vac'] && is_numeric( str_replace( ',', '', $meta['vac'] ) ) )
 		|| '' !== $meta['salary'];
-	return $has_signal;
+	return $has_portal && $has_signal;
+}
+
+/**
+ * v176: salary meta → schema.org baseSalary struct.
+ *
+ * "₹65,000 – ₹2,10,000" → {min:65000, max:210000, unit:MONTH}
+ * "Rs. 3.6 LPA"         → {min:360000, max:360000, unit:YEAR}
+ * "—" / "As per norms"  → null (numbers levi).
+ *
+ * @param string $raw raw salary meta.
+ * @return array|null {min,max,unit} leda null.
+ */
+function studentup_salary_struct( $raw ) {
+	$s = wp_strip_all_tags( (string) $raw );
+	if ( '' === trim( $s ) ) {
+		return null;
+	}
+	$annual = (bool) preg_match( '/\blpa\b|p\.?\s*a\.?|per\s+annum|annum|yearly|annual/i', $s );
+	if ( ! preg_match_all( '/\d[\d,]*(?:\.\d+)?/', $s, $m ) ) {
+		return null;
+	}
+	$vals = array();
+	foreach ( $m[0] as $num ) {
+		$n = (float) str_replace( ',', '', $num );
+		// "3.6 LPA" / "5 lakh" — lakhs lo cheppindi: 100000 x.
+		if ( $n > 0 && $n < 100 && ( $annual || preg_match( '/lakh/i', $s ) ) ) {
+			$n *= 100000;
+		}
+		// realistic floor — "pay band 3" lanti junk numbers drop.
+		if ( $n >= 1000 ) {
+			$vals[] = (int) round( $n );
+		}
+	}
+	if ( empty( $vals ) ) {
+		return null;
+	}
+	return array(
+		'min'  => min( $vals ),
+		'max'  => max( $vals ),
+		'unit' => $annual ? 'YEAR' : 'MONTH',
+	);
 }
 
 /**
@@ -231,7 +278,7 @@ function studentup_apply_schema() {
 	 * job postings kaadu) ki JobPosting attach avvadam valla Google Jobs lo
 	 * spam/quality signal. Ippudu:
 	 *   1) non-job categories (hall tickets · results · stories · tips …) skip
-	 *   2) okate real job signal kavali (apply_url / numeric vacancies / salary)
+	 *   2) real job proof kavali: apply_url + (numeric vacancies leda salary)
 	 *   3) expired postings ki schema vaddu (Google: remove expired).
 	 */
 	if ( ! studentup_apply_is_job( $meta ) ) {
@@ -248,6 +295,7 @@ function studentup_apply_schema() {
 		'datePosted'         => get_the_date( 'c' ),
 		'validThrough'       => $meta['last'] . 'T23:59:59+05:30',
 		'employmentType'     => 'FULL_TIME',
+		'url'                => get_permalink(),   // v176: Google Jobs — ee page ye job landing page.
 		'educationRequirements' => function_exists( 'studentup_qual_pretty' ) ? studentup_qual_pretty( $meta['qual'] ) : $meta['qual'],   // v175: human labels.
 		'hiringOrganization' => array(
 			'@type' => 'Organization',
@@ -265,6 +313,19 @@ function studentup_apply_schema() {
 	);
 	if ( '' !== $meta['vac'] && is_numeric( str_replace( ',', '', $meta['vac'] ) ) ) {
 		$data['totalJobOpenings'] = (int) str_replace( ',', '', $meta['vac'] );   // v175: "12,000" kuda numeric ga.
+	}
+	$salary_struct = studentup_salary_struct( $meta['salary'] );   // v176: baseSalary — Google Jobs salary facet.
+	if ( $salary_struct ) {
+		$data['baseSalary'] = array(
+			'@type'    => 'MonetaryAmount',
+			'currency' => 'INR',
+			'value'    => array(
+				'@type'    => 'QuantitativeValue',
+				'minValue' => $salary_struct['min'],
+				'maxValue' => $salary_struct['max'],
+				'unitText' => $salary_struct['unit'],
+			),
+		);
 	}
 	echo "\n<script type=\"application/ld+json\">" .
 		wp_json_encode( $data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ) .

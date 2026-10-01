@@ -50,7 +50,7 @@ function studentup_quick_summary_box() {
 	<section class="su-summary-box" aria-label="1-Minute Key Highlights">
 		<div class="su-summary-head">
 			<span class="su-summary-badge" aria-hidden="true"><?php echo studentup_ui_icon( 'bolt', 13 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> 1-Minute Read</span>
-			<h3 class="su-summary-title">Key Highlights</h3>
+			<h2 class="su-summary-title">Key Highlights</h2>
 		</div>
 		<ul class="su-summary-list">
 			<?php foreach ( $points as $pt ) : ?>

@@ -2,16 +2,16 @@
 # This file is distributed under the GNU GPL v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: StudentUp 1.9.26\n"
+"Project-Id-Version: StudentUp 1.9.27\n"
 "Report-Msgid-Bugs-To: https://studentup.in/\n"
-"POT-Creation-Date: 2026-10-01 03:33+0000\n"
+"POT-Creation-Date: 2026-10-01 08:08+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language-Team: Telugu (te_IN)\n"
 "X-Generator: tools/build_pot.py\n"
 
-#: inc/apply.php:163
+#: inc/apply.php:210
 #: inc/engage.php:161
 msgid "%d days left"
 msgstr ""
@@ -117,7 +117,7 @@ msgstr ""
 msgid "Applied"
 msgstr ""
 
-#: inc/apply.php:168
+#: inc/apply.php:215
 msgid "Apply actions"
 msgstr ""
 
@@ -160,7 +160,7 @@ msgstr ""
 msgid "Closed"
 msgstr ""
 
-#: inc/apply.php:155
+#: inc/apply.php:202
 msgid "Closes today"
 msgstr ""
 
@@ -254,7 +254,7 @@ msgstr ""
 msgid "Free job alerts on your phone"
 msgstr ""
 
-#: inc/apply.php:191
+#: inc/apply.php:238
 msgid "Full details"
 msgstr ""
 
@@ -311,7 +311,7 @@ msgstr ""
 msgid "Last date"
 msgstr ""
 
-#: inc/apply.php:152
+#: inc/apply.php:199
 msgid "Last date over"
 msgstr ""
 
@@ -331,8 +331,20 @@ msgstr ""
 msgid "Latest Jobs"
 msgstr ""
 
-#: front-page.php:73
+#: front-page.php:126
+msgid "Latest opportunities"
+msgstr ""
+
+#: front-page.php:122
+msgid "Latest opportunities — page %d"
+msgstr ""
+
+#: front-page.php:103
 msgid "Latest student updates"
+msgstr ""
+
+#: front-page.php:99
+msgid "Latest student updates — page %d"
 msgstr ""
 
 #: index.php:26
@@ -395,7 +407,7 @@ msgstr ""
 msgid "Older comments"
 msgstr ""
 
-#: inc/apply.php:159
+#: inc/apply.php:206
 msgid "Only %d days left"
 msgstr ""
 
@@ -432,7 +444,7 @@ msgstr ""
 msgid "Post saved — open the Saved panel any time to read it later."
 msgstr ""
 
-#: inc/apply.php:177
+#: inc/apply.php:224
 msgid "posts"
 msgstr ""
 
@@ -620,7 +632,7 @@ msgstr ""
 msgid "StudentUp blocks"
 msgstr ""
 
-#: inc/premium.php:141
+#: inc/premium.php:146
 msgid "Swipe sideways for more"
 msgstr ""
 

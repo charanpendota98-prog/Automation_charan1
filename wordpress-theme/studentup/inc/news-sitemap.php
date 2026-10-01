@@ -32,13 +32,20 @@ function studentup_news_sitemap() {
 			'numberposts' => 1000,
 			'post_status' => 'publish',
 			// v77: updated posts kuda trending loki — publish OR modified 48h lopala
-		'date_query'  => array(
-			'relation' => 'OR',
-			array( 'column' => 'post_date', 'after' => '48 hours ago' ),
-			array( 'column' => 'post_modified', 'after' => '48 hours ago' ),
-		),
+			'date_query'  => array(
+				'relation' => 'OR',
+				array( 'column' => 'post_date', 'after' => '48 hours ago' ),
+				array( 'column' => 'post_modified', 'after' => '48 hours ago' ),
+			),
 		)
 	);
+	/*
+	 * v176 REAL FIX: virtual URL ayite WP main query 404 set chestundi —
+	 * XML body vastu untundi kani HTTP status 400→404 ga velutundi (live
+	 * install proof). Search Console 404 sitemap accept cheyyadu.
+	 */
+	status_header( 200 );
+	nocache_headers();
 	header( 'Content-Type: application/xml; charset=utf-8' );
 	$home = home_url( '/' );
 	echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
@@ -50,13 +57,13 @@ function studentup_news_sitemap() {
 		echo "\t<url>\n";
 		echo "\t\t<loc>" . esc_url( get_permalink( $p ) ) . "</loc>\n";
 		// v68: lastmod (sitemap spec: loc tarvata, news tarvata kadhu)
-		echo "\t\t<lastmod>" . esc_html( get_gmt_from_date( get_post_modified_time( 'Y-m-d H:i:s', false, $p ) ) ) .
+		echo "\t\t<lastmod>" . esc_html( get_post_modified_time( 'c', true, $p ) ) .
 			"</lastmod>\n";
 		echo "\t\t<news:news>\n\t\t\t<news:publication>\n\t\t\t\t<news:name>" .
 			esc_html( get_bloginfo( 'name' ) ) . "</news:name>\n" .
 			"\t\t\t\t<news:language>te</news:language>\n\t\t\t</news:publication>\n";
 		echo "\t\t\t<news:publication_date>" .
-			esc_html( get_gmt_from_date( get_post_time( 'Y-m-d H:i:s', false, $p ) ) ) .
+			esc_html( get_post_time( 'c', true, $p ) ) .
 			"</news:publication_date>\n";
 		echo "\t\t\t<news:title>" . esc_html( $title ) . "</news:title>\n\t\t</news:news>\n";
 		if ( has_post_thumbnail( $p ) ) {

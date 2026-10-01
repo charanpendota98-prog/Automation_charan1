@@ -114,7 +114,12 @@ function studentup_hot_jobs( $limit = 10 ) {
 		return;
 	}
 	$cats = array();
-	foreach ( array( 'ts-jobs', 'ap-jobs', 'central-jobs', 'private-jobs' ) as $s ) {
+	/*
+	 * v176 REAL FIX: purathana list lo software/internship/walkin boards levu —
+	 * software jobs eppudu "Top 10 hot jobs" rail lo raaledu. Anni job boards
+	 * cover chestunna alias list (ts/ap/central/private/software/walkin/intern).
+	 */
+	foreach ( array( 'ts-jobs', 'ap-jobs', 'central-jobs', 'private-jobs', 'software-jobs', 'walkin-jobs', 'internships' ) as $s ) {
 		$t = studentup_used_term( $s );
 		if ( $t ) {
 			$cats[] = (int) $t->term_id;
@@ -122,7 +127,7 @@ function studentup_hot_jobs( $limit = 10 ) {
 	}
 	$q = new WP_Query(
 		array(
-			'posts_per_page'      => (int) $limit,
+			'posts_per_page'      => (int) $limit * 3,   // v176: signal-gate skip aina tarvata kuda 10 cards ravali.
 			'ignore_sticky_posts' => true,
 			'no_found_rows'       => true,
 			'category__in'        => $cats ? $cats : array(),
@@ -154,8 +159,22 @@ function studentup_hot_jobs( $limit = 10 ) {
 		if ( null !== $left && $left < 0 ) {
 			continue;   // closed posts "hot jobs today" lo vaddu.
 		}
+		/*
+		 * v176 REAL FIX: job signal leni posts (last_date · salary · vacancies ·
+		 * apply_url anni leka poyina) "#1 hot job" ga rank ayyevi — live install
+		 * lo no-meta test post #1 lo kanipinchindi. Hot job ante REAL opening
+		 * signal undali. Signal gate + count cap.
+		 */
+		$pay  = trim( (string) get_post_meta( get_the_ID(), 'studentup_salary', true ) );
+		$vac  = trim( (string) get_post_meta( get_the_ID(), 'studentup_vacancies', true ) );
+		$appl = trim( (string) get_post_meta( get_the_ID(), 'studentup_apply_url', true ) );
+		if ( '' === (string) $last && '' === $pay && '' === $vac && '' === $appl ) {
+			continue;   // ekkada apply cheyalo teliyani post — "hot job" kadhu.
+		}
+		if ( $n >= (int) $limit ) {
+			break;   // cap reach ayyindi — antara render cheyyaku.
+		}
 		$n++;   // v174: render aina cards ye count — closed skip ayite rank lo gap radhu.
-		$pay = trim( (string) get_post_meta( get_the_ID(), 'studentup_salary', true ) );
 		// v174: raw ISO date ("2026-10-05") kaadu — human format ("05 Oct").
 		$last_show = $last
 			? wp_date( 'd M', strtotime( $last . ' 12:00:00' ) )

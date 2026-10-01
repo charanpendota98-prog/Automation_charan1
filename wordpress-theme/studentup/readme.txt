@@ -2,7 +2,7 @@
 Contributors: studentup
 Requires at least: 6.0
 Tested up to: 6.7
-Stable tag: 1.9.26
+Stable tag: 1.9.27
 Requires PHP: 7.4
 Version: 1.9.26
 License: GNU General Public License v2 or later
@@ -47,6 +47,19 @@ The theme ships a REST bridge (`inc/seo-bridge.php`). Use an account with `manag
 user tho App Password ivvandi (Administrator role).
 
 == Changelog ==
+
+= 1.9.27 =
+
+* FIX (CRITICAL, live-install proof): home /page/2/, /page/3/ … anni SAME 12 posts chupistunevi (paged front page kuda front-page.php vaadutundi kani query lo 'paged' ledu → duplicate content penalty) + "Older updates" link eppudu render cheyyaledu — users ki 12 posts tarvata browse cheyadam impossible. Ippudu: real paged grid + numbered pagination (← Newer / 1 2 3 / Older →) + page 2+ lo lean archive (widgets page 1 lo matrame — duplicate widget content poochindi). Mobile-first pagination CSS kuda add (adedo category pages lo unstyled links ga unna).
+* FIX: admin health widget — REST bot empty-string studentup_last_date save chesina posts false ga "Expired" count ayyevi ('' < today string compare TRUE). AND-relation non-empty guard.
+* FIX: news-sitemap.xml HTTP 404 status lo serve ayyedi (XML body ostu untundi — Search Console reject). status_header(200) + ISO 8601 dates (lastmod / publication_date "2026-10-01 07:37:07" → "2026-10-01T07:37:07+00:00").
+* FIX: JobPosting gate v175 lo OR ayipoyindi — apply_url LENI post (vac/salary unte) + numbers LENI placeholder post ki kuda schema vastevi. Ippudu: apply_url AND (numeric vacancies leda salary) — REAL jobs matrame Google Jobs lo.
+* ADVANCED: JobPosting lo url (post permalink) + baseSalary add — "₹65,000 – ₹2,10,000" → INR 65000–210000/MONTH, "Rs. 3.6 LPA" → INR 360000/YEAR (lakh/LPA parser). Google Jobs salary facet + rich results.
+* FIX: "Top 10 hot jobs today" rail — (a) job signal leni posts (last_date/salary/vacancies/apply_url anni leka poyina) #1 rank ayyevi; (b) software-jobs/walkin-jobs/internships boards eppudu rail lo raaledu. Signal gate + anni job boards cover.
+* FIX: heading hierarchy (a11y + SEO) — h1 → h3 jump (Key Highlights box), h2 → h4 jump (mock-tests promo + footer widgets). Sequential ga correct chesamu + CSS updated.
+* FIX: "Compare Jobs" tools link /#compare ki pontundi — aa anchor ekkada ledu (dead end). Ippudu firstrun /compare/ page auto-create chestundi ([studentup_compare] shortcode tho) + theme update mundu version stamp check chesi kotha pages purathana sites lo kuda automatic ga create avtayi (idempotent).
+* SEO: search results + ?qual= filter views ki noindex,follow (internal search results + duplicate content protection — Google guidelines). Users ki pages normal ga work avutayi.
+* ADVANCED: og:image GUARANTEE — chain: post thumbnail → generated card image (GD) → static brand card assets/og-default.png (1200×630, 60 KB, theme lo ship). GD/folder em lekapoina WhatsApp/Telegram/Google shares chala beautiful image tho vastayi (v175 lo nagna links!). og:image:alt + twitter:image kuda.
 
 = 1.9.26 =
 * v175 CONTEXT-AWARE CTAs + SCHEMA GATES — real WP audit nunchi:
