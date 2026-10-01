@@ -2,7 +2,7 @@
 Contributors: studentup
 Requires at least: 6.0
 Tested up to: 6.7
-Stable tag: 1.9.30
+Stable tag: 1.9.31
 Requires PHP: 7.4
 Version: 1.9.26
 License: GNU General Public License v2 or later
@@ -47,6 +47,12 @@ The theme ships a REST bridge (`inc/seo-bridge.php`). Use an account with `manag
 user tho App Password ivvandi (Administrator role).
 
 == Changelog ==
+
+= 1.9.31 =
+
+* SPEED (live-install measurement): home HTML lo 196 inline SVG icons = 65 KB duplicate paths (calendar 20×, wallet 17×, bookmark 15×…) — phone lo DOM parse slow + bytes waste. Ippudu **SVG sprite system**: okka hidden <symbol> sheet (wp_body_open lo, admin ki admin_footer fallback) + prathi icon <use href="#su-i-X"> reference. Home HTML ~30 KB lighter + DOM text nodes significant ga takkuva. Anni 48 icons same sharp look (fill currentColor — dark mode automatic).
+* NEW VERIFICATION LAYER: live site pages ni real scripts tho jsdom lo run chesi JS runtime errors check (10 pages: home, paged, ?qual, category, single ×2, workspace, saved, compare, latest-jobs) — **ZERO JS errors**. Ippudu prathi release lo idi kuda standard.
+* FIX: PWA manifest "Daily Quiz" shortcut EMPTY daily-quiz category ki pontundi (posts lekapote dead-end — live proof cards=0). Ippudu home #daily-quiz section (real quiz UI, category lekunda kuda render) ki point avutundi.
 
 = 1.9.30 =
 

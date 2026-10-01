@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""v93 tests — TOP-WEBSITE UI PASS (theme 1.9.30): menu · icons · fixed-bar collisions.
+"""v93 tests — TOP-WEBSITE UI PASS (theme 1.9.31): menu · icons · fixed-bar collisions.
 
 Brief: "top website ui avvali and menu clear and neatga cheyu, icons correctga
 vundali (whatsapp instagram telegram youtube), chala mistakes unnayi — anni fix cheyu".
@@ -25,7 +25,7 @@ Deep audit lo kanukkunna **nijamaina mistakes** (ivi fix ayyayi):
         (block → grid). Fix: okkate declaration.
 
 Checks: menu structure · icons (path validity + brand/link match) · collisions ·
-CSS hygiene · version parity 1.9.30 · suite pins 73.
+CSS hygiene · version parity 1.9.31 · suite pins 73.
 
 Run: python tests/v93_test.py   (also via python run.py --test-all)
 """
@@ -92,8 +92,9 @@ def test_menu_css_polish_present() -> None:
 # --------------------------------------------------------------- icons (user ask)
 def test_icons_exist_and_are_real_paths() -> None:
     src = read(THEME / "inc" / "options.php")
-    block = src[src.index("function studentup_social_icon"):]
-    paths = dict(re.findall(r"'(\w+)'\s*=>\s*'([^']+)'", block[:block.index("$d = isset")]))
+    block = src[src.index("function studentup_social_icon_paths"):]
+    block = block[:block.index("function studentup_social_icon(")]
+    paths = dict(re.findall(r"'(\w+)'\s*=>\s*'([^']+)'", block))
     for key in ("whatsapp", "telegram", "instagram", "youtube"):
         assert key in paths, f"{key} icon ledu"
         d = paths[key]
@@ -102,10 +103,14 @@ def test_icons_exist_and_are_real_paths() -> None:
         assert re.match(r"^[Mm0-9 .,\-+a-zA-Z]+$", d), f"{key} path lo invalid characters"
         # closed/complete path — 'Z'/'z' tho end avvali (shape complete)
         assert d.rstrip().endswith(("Z", "z")), f"{key} path close avvatledu (Z ledu)"
-    # svg wrapper correct
-    for needle in ('viewBox="0 0 24 24"', 'fill="currentColor"', 'aria-hidden="true"'):
-        assert needle in block, f"svg lo {needle} ledu"
-    print(f"      {len(paths)} icons — path valid + closed ✔")
+    # v180: svg wrapper sprite-based — <use href="#su-s-X"> + fill inheritance
+    wrapper = block if "studentup_social_icon(" in block else src[src.index("function studentup_social_icon("):]
+    for needle in ('fill="currentColor"', 'aria-hidden="true"', '<use href="#su-s-'):
+        assert needle in src, f"svg lo {needle} ledu"
+    # sprite sheet lo social symbols emit avtunnayi (icons.php)
+    icons_php = read(THEME / "inc" / "icons.php")
+    assert "su-s-" in icons_php and "studentup_social_icon_paths" in icons_php, "social symbols sprite lo levu"
+    print(f"      {len(paths)} icons — path valid + closed + sprite ✔")
 
 
 def test_icon_brand_colors() -> None:
@@ -169,11 +174,11 @@ def test_version_parity_194() -> None:
     php = re.search(r"STUDENTUP_VERSION',\s*'([^']+)'", read(THEME / "functions.php")).group(1)
     cs = re.search(r"Version:\s*([0-9.]+)", css()).group(1)
     stable = re.search(r"Stable tag:\s*([0-9.]+)", read(THEME / "readme.txt")).group(1)
-    assert php == cs == stable == "1.9.30", f"parity tappu: {php}·{cs}·{stable}"
+    assert php == cs == stable == "1.9.31", f"parity tappu: {php}·{cs}·{stable}"
     rd = read(THEME / "readme.txt")
     for entry in ("= 1.9.0", "= 1.9.1", "= 1.9.2", "= 1.9.3", "= 1.9.4", "= 1.9.5", "= 1.9.6", "= 1.9.7", "= 1.9.8"):
         assert entry in rd, f"changelog {entry} ledu"
-    print("      version parity 1.9.30 + changelog ✔")
+    print("      version parity 1.9.31 + changelog ✔")
 
 
 def test_suite_pins_and_docs() -> None:
@@ -204,9 +209,9 @@ def test_zip_packaged() -> None:
     names = z.namelist()
     assert all(n.startswith("studentup/") for n in names), "zip root tappu"
     cs = z.read("studentup/style.css").decode("utf-8")
-    assert re.search(r"Version:\s*1\.9\.30", cs), "zip css version 1.9.30 kaadu"
+    assert re.search(r"Version:\s*1\.9\.31", cs), "zip css version 1.9.31 kaadu"
     assert "body.su-has-stickyad .su-social" in cs, "zip lo v93 collision fix ledu"
-    print("      zip: 1.9.30 + v93 fixes packed ✔")
+    print("      zip: 1.9.31 + v93 fixes packed ✔")
 
 
 TESTS = [
@@ -219,7 +224,7 @@ TESTS = [
     ("fixed-bar collisions", test_fixed_bar_collisions),
     ("css duplicate props", test_css_no_duplicate_properties),
     ("saved in mobile menu", test_saved_in_mobile_menu),
-    ("version parity 1.9.30", test_version_parity_194),
+    ("version parity 1.9.31", test_version_parity_194),
     ("suite pins + docs", test_suite_pins_and_docs),
     ("zip packaged", test_zip_packaged),
 ]
@@ -228,7 +233,7 @@ TESTS = [
 def main() -> None:
     os.chdir(ROOT)
     print("=" * 70)
-    print("v93 TOP-WEBSITE UI PASS — menu · icons · collisions (theme 1.9.30)")
+    print("v93 TOP-WEBSITE UI PASS — menu · icons · collisions (theme 1.9.31)")
     print("=" * 70)
     failed = 0
     for name, fn in TESTS:

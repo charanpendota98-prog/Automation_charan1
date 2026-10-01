@@ -18,14 +18,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Inline UI SVG icon.
+ * Icon path data (24×24 viewBox) — sprite symbols source.
  *
- * @param string $key  Icon key (menu|search|close|moon|sun|bookmark|home|work|…).
- * @param int    $size Pixel size (default 18).
- * @return string Inline SVG markup.
+ * @return array<string,string> key => path d attribute.
  */
-function studentup_ui_icon( $key, $size = 18 ) {
-	$size = max( 10, min( 64, (int) $size ) );
+function studentup_icon_paths() {
+	static $paths = null;
+	if ( null !== $paths ) {
+		return $paths;
+	}
 	$paths = array(
 		'menu'     => 'M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z',
 		'search'   => 'M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z',
@@ -78,7 +79,52 @@ function studentup_ui_icon( $key, $size = 18 ) {
 		'external' => 'M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z',
 		'chevron'  => 'M8.59 16.59 13.17 12 8.59 7.41 10 6l6 6-6 6z',
 	);
-	$d = isset( $paths[ $key ] ) ? $paths[ $key ] : $paths['arrow'];
-	return '<svg class="su-uicon su-uicon-' . esc_attr( $key ) . '" viewBox="0 0 24 24" width="' . $size
-		. '" height="' . $size . '" fill="currentColor" aria-hidden="true" focusable="false"><path d="' . $d . '"/></svg>';
+	return $paths;
 }
+
+/**
+ * Inline UI SVG icon — v180 SPRITE version.
+ *
+ * Prathi icon aa path ni malli malli print cheyyatam valla home HTML lo
+ * 65+ KB duplicate SVG paths (calendar 20×, wallet 17×…) — phone lo parse
+ * slow + bytes waste. Ippudu okka hidden sprite (wp_body_open lo <symbol>
+ * definitions) + prathi icon <use href="#su-i-X"> reference (~175 B vs
+ * ~370 B). Net home HTML ~30 KB lighter + DOM nodes takkuva.
+ *
+ * @param string $key  Icon key (menu|search|close|moon|sun|bookmark|home|work|…).
+ * @param int    $size Pixel size (default 18).
+ * @return string Inline SVG markup.
+ */
+function studentup_ui_icon( $key, $size = 18 ) {
+	$size = max( 10, min( 64, (int) $size ) );
+	$paths = studentup_icon_paths();
+	if ( ! isset( $paths[ $key ] ) ) {
+		$key = 'arrow';
+	}
+	return '<svg class="su-uicon su-uicon-' . esc_attr( $key ) . '" width="' . $size
+		. '" height="' . $size . '" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-'
+		. esc_attr( $key ) . '"></use></svg>';
+}
+
+/**
+ * v180: one-time hidden SVG sprite — <symbol> per icon, body open lo.
+ * (Admin pages lo wp_body_open fire avvadu — admin_footer fallback.)
+ *
+ * @return void
+ */
+function studentup_icon_sprite() {
+	$paths = studentup_icon_paths();
+	echo '<svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true" focusable="false">';
+	foreach ( $paths as $key => $d ) {
+		echo '<symbol id="su-i-' . esc_attr( $key ) . '" viewBox="0 0 24 24"><path d="' . esc_attr( $d ) . '"></path></symbol>';
+	}
+	// v180: brand/social icons kuda same sprite lo (options.php provider).
+	if ( function_exists( 'studentup_social_icon_paths' ) ) {
+		foreach ( studentup_social_icon_paths() as $key => $d ) {
+			echo '<symbol id="su-s-' . esc_attr( $key ) . '" viewBox="0 0 24 24"><path d="' . esc_attr( $d ) . '"></path></symbol>';
+		}
+	}
+	echo '</svg>';
+}
+add_action( 'wp_body_open', 'studentup_icon_sprite' );
+add_action( 'admin_footer', 'studentup_icon_sprite' );

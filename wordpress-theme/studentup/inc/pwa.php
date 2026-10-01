@@ -38,12 +38,22 @@ function studentup_manifest() {
 		$results_url = get_category_link( $results_cat );
 	}
 	$quiz_url  = add_query_arg( 's', 'daily quiz', home_url( '/' ) );
-	$quiz_page = get_page_by_path( 'quiz' );
-	$quiz_cat  = get_category_by_slug( 'daily-quiz' );
-	if ( $quiz_page && 'publish' === get_post_status( $quiz_page ) ) {
-		$quiz_url = get_permalink( $quiz_page );
-	} elseif ( $quiz_cat && ! is_wp_error( $quiz_cat ) ) {
-		$quiz_url = get_category_link( $quiz_cat );
+	/*
+	 * v178 REAL FIX: purathana logic EMPTY daily-quiz category ki pontundi —
+	 * posts lekapote shortcut ki dead-end (live install proof: cards=0).
+	 * Home lo #daily-quiz section (real quiz UI) opt ON unta sariga render
+	 * avutundi — categories lekunda kuda shortcut live destination ki.
+	 */
+	if ( studentup_opt( 'daily_quiz', '1' ) ) {
+		$quiz_url = home_url( '/#daily-quiz' );
+	} else {
+		$quiz_page = get_page_by_path( 'quiz' );
+		$quiz_cat  = get_category_by_slug( 'daily-quiz' );
+		if ( $quiz_page && 'publish' === get_post_status( $quiz_page ) ) {
+			$quiz_url = get_permalink( $quiz_page );
+		} elseif ( $quiz_cat && ! is_wp_error( $quiz_cat ) ) {
+			$quiz_url = get_category_link( $quiz_cat );
+		}
 	}
 	$manifest = array(
 		'name'             => get_bloginfo( 'name' ),

@@ -8,7 +8,7 @@ Enti check chestundi:
     persistence hooks · matching/deadline hooks · XSS-safe esc
   * wiring — functions.php require + defer, firstrun page, mobile menu link,
     command palette link, hero action, CSS classes
-  * version parity 1.9.30 (style.css ↔ functions.php ↔ readme)
+  * version parity 1.9.31 (style.css ↔ functions.php ↔ readme)
 """
 from __future__ import annotations
 
@@ -76,7 +76,7 @@ def test_wiring_functions_defer_firstrun_menus():
     fn = read("functions.php")
     assert "inc/workspace.php" in fn, "functions.php require ledu (dead module)"
     assert "'studentup-workspace'" in fn, "defer list lo workspace ledu"
-    assert "'1.9.30'" in fn, "version 1.9.30 ledu"
+    assert "'1.9.31'" in fn, "version 1.9.31 ledu"
 
     first = read("inc/firstrun.php")
     assert "'workspace'        => 'My Workspace'" in first, "firstrun page entry ledu"
@@ -106,8 +106,8 @@ def test_css_and_critical_layer():
 
 
 def test_version_parity_1923():
-    assert "Version: 1.9.30" in read("style.css"), "style.css version"
+    assert "Version: 1.9.31" in read("style.css"), "style.css version"
     readme = read("readme.txt")
-    assert "Stable tag: 1.9.30" in readme, "readme stable tag"
+    assert "Stable tag: 1.9.31" in readme, "readme stable tag"
     assert "= 1.9.23 =" in readme, "readme changelog entry"
-    print("      version parity 1.9.30 ✔")
+    print("      version parity 1.9.31 ✔")
