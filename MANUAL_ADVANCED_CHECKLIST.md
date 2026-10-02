@@ -1,6 +1,6 @@
 # 📋 MANUAL ADVANCED CHECKLIST — "Nenu manual ga em em cheyali"
 ### Website advanced ga run avvali · Posts ANI-PERFECT · Mistakes leku · Deep analyse + NotebookLM
-> **Verified counts (theme v1.9.35 build):** test suites **134/134** files · jsdom runtime **177/177** checks · PHP lint **86/86** files · theme audit **0/0** · **deep audit pass 1-4 31/31** · code audit **0/0**.
+> **Verified counts (theme v1.9.36 build):** test suites **135/135** files · jsdom runtime **177/177** checks · PHP lint **86/86** files · theme audit **0/0** · **deep audit pass 1-4 31/31** · code audit **0/0**.
 
 
 **Ee file = mee haath tho cheyyalsina ANNI — exact order, exact commands.**
@@ -3340,3 +3340,20 @@ python run.py --links-file links.txt --links-dry-run    # plan mattrame
 Proof: `python tests/v187_test.py` · `python run.py --test-all`.
 
 v187 flags: `--links-file` · `--links` · `--links-limit` · `--links-dry-run` · `--links-notify`
+
+---
+
+## PART 81 — v188: HOOK ENGINE (main enti mundu · links kinda)
+
+| Em | Detail |
+|---|---|
+| Blog hook | `seo.enhance()` → `hooks.ensure_lead()` → article modata `<p class="su-hook">` (English) |
+| Hook formula | `<strong>{main}</strong> recruitment [(N vacancies, last date …)] — eligibility, important dates, vacancy details and the official apply link in one place.` |
+| Honesty | vacancies/last date **nijamaina** value unte mattrame (evidence nunchi) — fabricate ledu |
+| Idempotent | `su-hook` marker + intro-subject check → rendu sari ledu, natural intro unte skip |
+| List hook | WhatsApp item main line = `hooks.headline()` — `SSC CHSL 2026 ఉద్యోగాలు` / software `Infosys Off Campus Drive 2026 Jobs` |
+| Chips | `2,000+ పోస్టులు` (comma) · `💰 pay` · `⏰ 2 రోజులు మాత్రమే` (≤3 rojulu) |
+| Links | **mana blog permalink mattrame** (`🔗 https://studentup.in/…`) — external sources list lo ledu |
+| Theme | `.su-hook` CSS + dark/print + min.css — theme **1.9.36** |
+
+Proof: `python tests/v188_test.py` · `python run.py --test-all` (135/135).

@@ -4,7 +4,7 @@ Theme URI: https://studentup.in/
 Author: StudentUp
 Author URI: https://studentup.in/
 Description: StudentUp design for Telangana & Andhra Pradesh students — TS/AP/Central govt jobs, qualification filter (SSC/10th · Inter · Degree · PG), live search, latest-jobs scrolling ticker, brand social icons, install as an app (PWA), job/exam cards, AdSense-ready ad slots, dark mode. Mobile-first, Rank Math + AdSense friendly.
-Version: 1.9.35
+Version: 1.9.36
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 7.4
@@ -1329,3 +1329,12 @@ a.page-numbers:hover{border-color:var(--su-g2);color:var(--su-g2)}
 @media(max-width:600px){.page-numbers{min-width:38px;height:38px;padding:0 10px;margin:0 2px;font-size:13px}}
 body.dark .page-numbers{background:#101d33;border-color:#243a5c;color:#e8eef7}
 body.dark a.page-numbers:hover{border-color:#7c3aed;color:#c7b6ff}
+
+/* v188: hook lead — "main enti" first line of every auto article (premium look). */
+.su-hook{position:relative;margin:18px 0 4px;padding:15px 16px 15px 18px;background:linear-gradient(135deg,#f6f8ff,#fdf7ff 55%,#fff7f2);border:1px solid #e6e9f7;border-left:4px solid #4f46e5;border-radius:14px;color:var(--navy);font-size:15.5px;line-height:1.62}
+.su-hook strong{font-weight:900;color:#3f2fbe}
+.su-hook::after{content:"";position:absolute;inset:auto 14px -1px 18px;height:2px;background:linear-gradient(90deg,#4f46e5,#ec4899,#f59e0b);border-radius:2px;opacity:.35}
+body.dark .su-hook{background:linear-gradient(135deg,#131f38,#171a37 55%,#201a2e);border-color:#26355a;border-left-color:#7c3aed;color:#e8eef7}
+body.dark .su-hook strong{color:#c7b6ff}
+@media(max-width:600px){.su-hook{padding:13px 13px 13px 15px;font-size:15px}}
+@media print{.su-hook{background:none;border:0;border-left:3px solid #000;padding:0 0 0 10px}}

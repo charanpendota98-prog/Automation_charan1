@@ -468,10 +468,12 @@ def vacancies_count(value: object) -> str:
     m = re.search(r"\d[\d,]*", raw)
     if not m:
         return ""
-    shown = m.group(0)                       # "8,326" / "310" — comma preserve
+    shown = m.group(0)                       # "8326" / "8,326" / "310"
     digits = shown.replace(",", "")
     if not digits.isdigit() or int(digits) <= 0:
         return ""
+    if len(digits) >= 4:                     # 8326 → "8,326" (readable)
+        shown = f"{int(digits):,}"
     return shown + ("+" if "+" in raw else "")
 
 
@@ -555,9 +557,11 @@ def _whatsapp_parts(site: str, rows: Iterable[Dict], today: date | None = None,
         english = key == "software"
         mark = "🆕 " if (row.get("is_new") or str(row.get("id")) in fresh) else ""
         bits: List[str] = []
+        # v188: main enti → hook headline ('SSC CHSL 2026 ఉద్యోగాలు'); chips Telugu
+        # 'పోస్టులు' (headline lo ఉద్యోగాలు already undi — repeat avvadu)
         jobs = vacancies_note(row.get("vacancies"),
-                              word="openings" if english else "ఉద్యోగాలు",
-                              word_first=not english)
+                              word="openings" if english else "పోస్టులు",
+                              word_first=False)
         if jobs and re.sub(r"\D", "", jobs) in re.sub(r"\D", "", str(row.get("title") or "")):
             jobs = ""       # title lo already count unte malli veyyadu
         if jobs:
@@ -568,7 +572,12 @@ def _whatsapp_parts(site: str, rows: Iterable[Dict], today: date | None = None,
         urgent = wa_deadline_note(row.get("days_left"), telugu=not english)
         if urgent:
             bits.append(urgent)
-        head = f"{idx}) {mark}*{_wa_clean(row.get('title'))}*"
+        try:
+            from . import hooks as _hooks
+            main_line = _hooks.headline(row.get("title"), telugu=not english, kind=key)
+        except Exception:  # noqa: BLE001 — hook fail aithe pata title
+            main_line = _wa_clean(row.get("title"))
+        head = f"{idx}) {mark}*{main_line}*"
         if bits:
             head += " — " + " · ".join(bits)
         return head + "\n🔗 " + compact_site_link(site, row, prefer_permalink=True)

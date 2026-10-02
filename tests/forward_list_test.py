@@ -63,7 +63,7 @@ def test_whatsapp_format():
     assert "🏛️ *తెలంగాణ ప్రభుత్వ ఉద్యోగాలు*" in text
     assert "💼 *అవుట్‌సోర్సింగ్ & కాంట్రాక్ట్ ఉద్యోగాలు*" in text
     assert "🆕" in text
-    assert "TSPSC Group 2 Notification 2026" in text
+    assert "TSPSC Group 2 2026 ఉద్యోగాలు" in text, "hook headline ledu"
     assert "*COMPLETE DETAILS*" not in text and "Complete Details" not in text
     assert "https://studentup.in" in text
     assert "వెరిఫై చేసుకోండి" in text, "Telugu disclaimer ledu"

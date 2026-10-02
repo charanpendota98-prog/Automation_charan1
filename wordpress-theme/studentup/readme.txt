@@ -2,7 +2,7 @@
 Contributors: studentup
 Requires at least: 6.0
 Tested up to: 6.7
-Stable tag: 1.9.35
+Stable tag: 1.9.36
 Requires PHP: 7.4
 Version: 1.9.26
 License: GNU General Public License v2 or later
@@ -364,6 +364,12 @@ user tho App Password ivvandi (Administrator role).
 * Performance: custom WP_Query calls ki no_found_rows (extra SQL query teesesaam)
 * IndexNow key-file serving (/<key>.key) — instant indexing automatic
 
+
+= 1.9.36 (2026-10-02, v188) =
+* Hook lead: every auto article starts with a `.su-hook` block — what the post is about
+  first (real vacancies/deadline only when verified; never fabricated). Gradient + accent
+  bar, dark mode and print safe.
+* Daily forward list hook headlines (bot-side, Telugu list) + thousands-formatted chips.
 
 = 1.9.35 (2026-10-02, v185) =
 * No-flash dark mode: a tiny pre-paint script right after <body> applies the saved

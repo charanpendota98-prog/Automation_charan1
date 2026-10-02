@@ -1,7 +1,7 @@
 # studentup.in Auto-Blogger 🤖
 
 
-> **Verified counts (theme v1.9.35 build):** test suites **134/134** files · jsdom runtime **177/177** checks · PHP lint **86/86** files · theme audit **0/0** · **deep audit pass 1-4 31/31** · code audit **0/0**.
+> **Verified counts (theme v1.9.36 build):** test suites **135/135** files · jsdom runtime **177/177** checks · PHP lint **86/86** files · theme audit **0/0** · **deep audit pass 1-4 31/31** · code audit **0/0**.
 24/7 automatic blog posting system for **studentup.in** (WordPress) — runs on your Oracle Cloud instance.
 
 - **AI content:** Google Gemini (free tier) generates Telugu + English mix articles
@@ -792,9 +792,44 @@ python run.py --links-file links.txt --links-dry-run     # plan mattrame
 - **Prathi item kinda mee site link** — readers anni links open cheyyachu (truncation unte `… ఇంకా N ఉద్యోగాలు` line)
 - Expired/stale/superseded gating same (v184) · Telegram digest format marchaledu (backward compatible)
 
-Proof: `python tests/v187_test.py` (6 groups) · `--test-all` **134/134** · jsdom **177/177** · php-lint **86/86** · deep theme **31/0/0** · parity/code **0/0**.
+Proof: `python tests/v187_test.py` (6 groups) · `--test-all` **135/135** · jsdom **177/177** · php-lint **86/86** · deep theme **31/0/0** · parity/code **0/0**.
 
 v187 flags: `--links-file` · `--links` · `--links-limit` · `--links-dry-run` · `--links-notify`
+
+### v188 — HOOK ENGINE: "main enti" mundu, links kinda 🪝
+
+**Blog drafts (`su-hook` lead, English — site public surfaces English-only):**
+
+```
+SSC CHSL 2026 recruitment — eligibility, important dates, vacancy details and the official apply link in one place.
+```
+
+- Prapth formula: `<strong>{main}</strong> recruitment [(2,000+ vacancies, last date 04 Oct 2026)] — eligibility, important dates, vacancy details and the official apply link in one place.`
+- **Fabricate ledu** — vacancies/last date **nijamaina** value unte mattrame aa clause vastundi (`recruitment` evidence nunchi).
+- **Idempotent** — post ki rendu sari hook ledu; intro lo already subject unte asalu veyyadu.
+- CSS: `.su-hook` (gradient + accent bar + dark/print safe) — theme **1.9.36**.
+
+**Daily WhatsApp list — main enti mundu, link kinda (mee format):**
+
+```
+🇮🇳 *కేంద్ర ప్రభుత్వ ఉద్యోగాలు* (2 ఉద్యోగాలు)
+
+1) 🆕 *SSC CHSL 2026 ఉద్యోగాలు* — 2,000+ పోస్టులు · 💰 ₹25,500 – ₹81,100 · ⏰ 2 రోజులు మాత్రమే
+🔗 https://studentup.in/ssc-chsl-2026/
+2) 🆕 *IBPS Clerk 2026 ఉద్యోగాలు*
+🔗 https://studentup.in/ibps-clerk-2026/
+
+💻 *SOFTWARE JOBS* (1 job)
+
+1) 🆕 *Infosys Off Campus Drive 2026 Jobs* — 40 openings · 💰 ₹3.6 – ₹6.5 LPA
+🔗 https://studentup.in/infosys-2026/
+```
+
+- **Hook headline** = `subject()` boilerplate teesi (`Notification`/`Recruitment`/`Apply Online`/`Complete Details`...) → `SSC CHSL 2026` + `ఉద్యోగాలు` (software: `Jobs`).
+- **Chips** = `2,000+ పోస్టులు` (comma formatting) · `💰 pay` · `⏰ 2 రోజులు మాత్రమే`.
+- **Mana blog links mattrame** — external source domains (ssc.gov.in, ecil.co.in) list lo eppudu raavu.
+
+Proof: `python tests/v188_test.py` (5 groups) · `--test-all` **135/135**.
 
 ### Release pin sync (`tools/pin_sync.py`)
 

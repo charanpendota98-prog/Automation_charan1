@@ -144,8 +144,8 @@ def test_whatsapp_rich_items():
     assert "🗓 శుక్రవారం, 02 అక్టోబర్ 2026" in text
     # per-item date line ledu; Telugu wording: "ఉద్యోగాలు <count>"
     assert "📅" not in text and "Last date:" not in text
-    assert "1) 🆕 *SSC CGL 2026 Notification* — ఉద్యోగాలు 1000+ · ⏰ 2 రోజులు మాత్రమే" in text
-    assert "— ఉద్యోగాలు 310 · 💰 ₹18,000 – ₹22,000" in text
+    assert "1) 🆕 *SSC CGL 2026 ఉద్యోగాలు* — 1,000+ పోస్టులు · ⏰ 2 రోజులు మాత్రమే" in text
+    assert "— 310 పోస్టులు · 💰 ₹18,000 – ₹22,000" in text
     assert "Complete Details" not in text, "SEO suffix clean avvaledu"
     # prathi item kinda mee site link (anni open cheyyagalaru)
     assert text.count("🔗 https://studentup.in/") == 4, text
@@ -155,14 +155,16 @@ def test_whatsapp_rich_items():
     # software section English (user: "software vasthe english vundu")
     assert "💻 *SOFTWARE JOBS* (1 job)" in text
     assert "— 40 openings · ⏰ 2 days left" in text, "software English ledu"
+    assert "*Infosys Off Campus Drive 2026 Jobs*" in text, "software hook headline ledu"
     # Telugu footer + disclaimer
     assert "✅ *4 ఉద్యోగాలు*" in text and "👥 *1,350+ పోస్టులు*" in text
     assert "అధికారిక నోటిఫికేషన్‌లో వివరాలు వెరిఫై చేసుకోండి" in text
     # helpers (Telugu / English templates)
     assert od.vacancies_note("") == "" and od.vacancies_note("approx") == ""
     assert od.vacancies_note("8,326") == "ఉద్యోగాలు 8,326"
+    assert od.vacancies_count("8326") == "8,326" and od.vacancies_count("2000+") == "2,000+"
     assert od.vacancies_note("40", word="openings", word_first=False) == "40 openings"
-    assert od.vacancies_count("1000+") == "1000+"
+    assert od.vacancies_count("1000+") == "1,000+"
     assert od.wa_deadline_note(2, telugu=True) == "⏰ 2 రోజులు మాత్రమే"
     assert od.wa_deadline_note(0, telugu=True) == "⏰ ఈరోజే చివరి రోజు!"
     assert od.wa_deadline_note(None) == "" and od.wa_deadline_note(9) == ""
