@@ -24,6 +24,7 @@ SECTIONS = [
     ("ap", "Andhra Pradesh Government Jobs", "🏛️"),
     ("central", "Central Government Jobs", "🇮🇳"),
     ("walkin", "Walk-in Jobs", "🚶"),
+    ("outsourcing", "Outsourcing & Contract Jobs", "💼"),
     ("job-melas", "Job Melas & Job Fairs", "🤝"),
     ("software", "Software Jobs", "💻"),
     ("private", "Private Jobs", "🏢"),
@@ -38,6 +39,7 @@ CATEGORY_ALIASES = {
     "ap": {"ap-jobs", "ap-govt-jobs", "andhra-pradesh-govt-jobs"},
     "central": {"central", "central-jobs", "central-govt-jobs"},
     "walkin": {"walkin", "walkin-jobs", "walk-in-jobs"},
+    "outsourcing": {"outsourcing", "outsourcing-jobs", "contract", "contract-basis"},
     "software": {"software", "software-jobs"},
     "private": {"private", "private-jobs"},
     "scholarships": {"scholarship", "scholarships"},
@@ -118,6 +120,12 @@ def section_for_row(row: Dict) -> str:
         return "hall-tickets"
     if any(x in title for x in ("current affairs", "daily current", "daily gk", "daily news")):
         return "current-affairs"
+    # Outsourcing/contract posts: pipeline.py classification order ni mirror
+    # chestundi (pipeline "Outsourcing Jobs" ani pettina post ikkada kanipinchali).
+    if any(x in title for x in ("outsourcing", "contract basis", "contractual",
+                                "outsourced", "guest faculty", "honorarium",
+                                "అవుట్‌సోర్సింగ్", "కాంట్రాక్ట్")):
+        return "outsourcing"
     if any(x in title for x in ("walk-in", "walk in", "walkin", "direct interview")):
         return "walkin"
     if any(x in title for x in ("software", "developer", "full stack", "data analyst", "devops", "it job")):
@@ -133,27 +141,125 @@ def section_for_row(row: Dict) -> str:
     return ""  # not every published article belongs in the active-opportunity board
 
 
-def normalize_rows(rows: Iterable[Dict], today: date | None = None, limit: int = 240) -> List[Dict]:
-    """Drop expired rows and normalize the REST response for grouping."""
+def parse_post_date(value: object) -> date | None:
+    """REST `date` (ISO, time tho) → date. Unknown aithe None (guess cheyyadu)."""
+    raw = str(value or "").strip()
+    if not raw:
+        return None
+    try:
+        return datetime.fromisoformat(raw.replace("Z", "+00:00")).date()
+    except ValueError:
+        try:
+            return datetime.strptime(raw[:10], "%Y-%m-%d").date()
+        except ValueError:
+            return None
+
+
+def stale_days_default() -> int:
+    """Config nunchi stale window (0 = off). Import fail aithe 0 (safe)."""
+    try:
+        from . import config as _config
+        return max(0, int(getattr(_config, "OPPORTUNITY_STALE_DAYS", 0) or 0))
+    except Exception:  # noqa: BLE001 — config lekapote feature off
+        return 0
+
+
+def is_stale(row: Dict, today: date, stale_days: int) -> bool:
+    """Deadline teliyani post chala puratana aithe active list nunchi teesestam.
+
+    Enduku: govt job notice ki last date cheppakapovadam common (results /
+    admit-card / listicle laantivi). Kaani **120+ rojula puratana** notice ni
+    active board lo chupinchadam reader ni confuse chestundi (adi almost
+    close ayyi untundi). Idi conservative default — 0 pettithe off.
+    """
+    if not stale_days:
+        return False
+    if parse_last_date(row.get("last_date")):
+        return False                     # deadline unte adi ne decide chestundi
+    published = parse_post_date(row.get("date"))
+    if not published:
+        return False                     # date teliyadu → guess cheyyadu
+    return (today - published).days > stale_days
+
+
+def title_key(value: object) -> str:
+    """Same recruitment ki rendu/మూడు posts unte okate key ravali.
+
+    Conservative: SEO suffixes + year + punctuation teesi, first 60 chars.
+    Chinna title (<15 chars) ki key ivvadu — collision risk.
+    """
+    text = _clean(value, 300).lower()
+    text = re.sub(r"\b20\d{2}\b", " ", text)
+    text = re.sub(
+        r"\b(?:notification|notifications|recruitment|apply online|application|"
+        r"complete details|complete guide|latest update|official notification|"
+        r"result|results|hall ticket|admit card|merit list|answer key|"
+        r"revised|extended|update|job|jobs|posts?|vacancy|vacancies)\b",
+        " ", text)
+    text = re.sub(r"[^a-z0-9]+", "", text)
+    return text[:60] if len(text) >= 10 else ""
+
+
+def supersede(rows: List[Dict]) -> List[Dict]:
+    """Same recruitment ki kotha post vaste puratana di list nunchi teesestam.
+
+    Only same section + same title_key (≥15 chars) ki; newest date win.
+    Ee pani reader ki "rendu sari same job" kanipinchakunda chestundi.
+    """
+    best: Dict[str, Dict] = {}
+    out: List[Dict] = []
+    for row in rows:
+        key = f"{row.get('section')}|{title_key(row.get('title'))}"
+        if key.endswith("|"):
+            out.append(row)
+            continue
+        prev = best.get(key)
+        if prev is None:
+            best[key] = row
+            out.append(row)
+            continue
+        # same key → newest wins; puratana di drop (superseded)
+        if str(row.get("date") or "") > str(prev.get("date") or ""):
+            out[out.index(prev)] = row
+            row["superseded"] = prev.get("id")
+            best[key] = row
+        else:
+            prev["superseded"] = row.get("id")
+    return out
+
+
+def normalize_rows(rows: Iterable[Dict], today: date | None = None, limit: int = 240,
+                   stale_days: int | None = None, dedupe: bool = True) -> List[Dict]:
+    """Active rows mattrame: expired → out · chala puratana (undated) → out ·
+    same recruitment ki kotha post vaste puratana di → out (superseded)."""
     today = today or datetime.now(IST).date()
+    stale = stale_days_default() if stale_days is None else max(0, int(stale_days))
     out: List[Dict] = []
     seen = set()
     for raw in rows or []:
         row = dict(raw or {})
         if not is_active(row.get("last_date"), today):
+            continue                      # last date ayyipoyindi → list nunchi out
+        section = section_for_row(row)
+        if not section:
             continue
         key = str(row.get("id") or row.get("link") or row.get("title") or "").strip()
         if not key or key in seen:
             continue
-        section = section_for_row(row)
-        if not section:
-            continue
+        if is_stale(row, today, stale):
+            continue                      # deadline teliyadu + 120+ rojula puratana
         seen.add(key)
         row["title"] = _clean(row.get("title"), 180)
         row["last_date"] = parse_last_date(row.get("last_date"))
         row["section"] = section
         row["days_left"] = days_left(row.get("last_date"), today)
+        published = parse_post_date(row.get("date"))
+        row["is_new"] = bool(published and published >= today - timedelta(days=1))
+        row["closing_soon"] = (row["days_left"] is not None and 0 <= row["days_left"] <= 3)
+        row["stale_days"] = stale
         out.append(row)
+    if dedupe:
+        out = supersede(out)
     # Known deadlines first, with the closest closing date at the top. Unknown
     # dates follow, newest published posts first; nothing is fabricated.
     out.sort(key=lambda x: (
@@ -178,8 +284,14 @@ def group_rows(rows: Iterable[Dict], today: date | None = None, per_section: int
     return groups
 
 
-def compact_site_link(site: str, row: Dict) -> str:
-    """Use a configured shortener for owned posts, with safe native fallback."""
+def compact_site_link(site: str, row: Dict, prefer_permalink: bool = False) -> str:
+    """Use a configured shortener for owned posts, with safe native fallback.
+
+    `prefer_permalink=True` (v183 WhatsApp list): shortener lekapote `?p=ID`
+    badulu **nijamaina permalink** vadutundi — forward chesinappudu readable
+    URL (trust + clicks) and SEO-friendly. Telegram digest default behavior
+    (`?p=ID`) marchadu.
+    """
     long_url = str(row.get("link") or "").strip()
     site_url = str(site or "").rstrip("/")
     site_host = urlparse(site_url).netloc.lower().replace("www.", "")
@@ -194,6 +306,8 @@ def compact_site_link(site: str, row: Dict) -> str:
                     return provider_url
         except Exception:  # noqa: BLE001 — native fallback is always available
             pass
+    if prefer_permalink and long_url:
+        return long_url
     post_id = str(row.get("id") or "").strip()
     if post_id.isdigit() and site_url:
         return f"{site_url}/?p={post_id}"
@@ -294,3 +408,316 @@ def render_digest_messages(site: str, rows: Iterable[Dict], today: date | None =
     else:
         chunks.append(current)
     return chunks
+
+# ---------------------------------------------------------------------------
+# v183: WhatsApp forward list — plain text (WhatsApp HTML tags render cheyyadu)
+# ---------------------------------------------------------------------------
+
+WA_MONTHS = ("Jan", "Feb", "Mar", "Apr", "May", "Jun",
+             "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
+WA_DAYS = ("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
+
+# v187.2 — WhatsApp forwarded list Telugu lo (user feedback: "telugu lo vundali;
+# software vasthe English vundu"). Telegram digest + site board labels (SECTIONS)
+# English ga ne untayi — avi review/approval surfaces (v73 English-only gate).
+WHATSAPP_LABELS = {
+    "ts": "తెలంగాణ ప్రభుత్వ ఉద్యోగాలు",
+    "ap": "ఆంధ్రప్రదేశ్ ప్రభుత్వ ఉద్యోగాలు",
+    "central": "కేంద్ర ప్రభుత్వ ఉద్యోగాలు",
+    "walkin": "వాక్-ఇన్ ఇంటర్వ్యూలు",
+    "outsourcing": "అవుట్‌సోర్సింగ్ & కాంట్రాక్ట్ ఉద్యోగాలు",
+    "job-melas": "జాబ్ మేళాలు",
+    "software": "SOFTWARE JOBS",            # user: software vasthe English lo
+    "private": "ప్రైవేట్ ఉద్యోగాలు",
+    "scholarships": "స్కాలర్‌షిప్‌లు",
+    "results": "ఫలితాలు",
+    "hall-tickets": "హాల్ టికెట్‌లు",
+    "current-affairs": "నేటి కరెంట్ అఫైర్స్",
+}
+WA_TE_DAYS = ("సోమవారం", "మంగళవారం", "బుధవారం", "గురువారం",
+              "శుక్రవారం", "శనివారం", "ఆదివారం")
+WA_TE_MONTHS = ("జనవరి", "ఫిబ్రవరి", "మార్చి", "ఏప్రిల్", "మే", "జూన్",
+                "జూలై", "ఆగస్టు", "సెప్టెంబర్", "అక్టోబర్", "నవంబర్", "డిసెంబర్")
+
+
+def _wa_clean(value: object, limit: int = 110) -> str:
+    """WhatsApp text ki safe: SEO suffix teesi, markers remove chesi, okate line.
+
+    Same `display_title()` cleaning (Telegram card tho same look) — kaani
+    WhatsApp ki `*`/`_` markers natural text lo unte bold/italic ayyipotayi,
+    anduke avi teesestam (message formatting padipovadam ledu).
+    """
+    text = display_title(value, limit + 30)
+    text = text.replace("*", "").replace("_", "").replace("~", "")
+    return text[:limit].strip()
+
+
+def wa_date_line(today: date, telugu: bool = True) -> str:
+    """'శుక్రవారం, 02 అక్టోబర్ 2026' (telugu=False → 'Fri, 02 Oct 2026')."""
+    if telugu:
+        return (f"{WA_TE_DAYS[today.weekday()]}, {today.day:02d} "
+                f"{WA_TE_MONTHS[today.month - 1]} {today.year}")
+    return f"{WA_DAYS[today.weekday()]}, {today.day:02d} {WA_MONTHS[today.month - 1]} {today.year}"
+
+
+def vacancies_count(value: object) -> str:
+    """Meta nunchi number+plus mattrame ('1,000+' / '310' / '') — guess ledu."""
+    raw = str(value or "").strip()
+    if not raw:
+        return ""
+    m = re.search(r"\d[\d,]*", raw)
+    if not m:
+        return ""
+    shown = m.group(0)                       # "8326" / "8,326" / "310"
+    digits = shown.replace(",", "")
+    if not digits.isdigit() or int(digits) <= 0:
+        return ""
+    if len(digits) >= 4:                     # 8326 → "8,326" (readable)
+        shown = f"{int(digits):,}"
+    return shown + ("+" if "+" in raw else "")
+
+
+def vacancies_note(value: object, word: str = "ఉద్యోగాలు", word_first: bool = True) -> str:
+    """'ఉద్యోగాలు 1,000+' (Telugu) / '1,000+ openings' (software — English).
+
+    User wording: "telugu lo ssc chsl udhyogalu 2000+" → word mundu, count venaka.
+    Meta blank/0 aithe emi chupinchadu (fabricate ledu).
+    """
+    count = vacancies_count(value)
+    if not count:
+        return ""
+    if not word:
+        return count
+    return f"{word} {count}" if word_first else f"{count} {word}"
+
+
+def salary_note(value: object, limit: int = 26) -> str:
+    """'💰 ₹18,000 – ₹56,900' — meta unte mattrame (guess ledu)."""
+    raw = re.sub(r"\s+", " ", str(value or "")).strip()
+    if not raw:
+        return ""
+    return "💰 " + raw[:limit].rstrip()
+
+
+def _whatsapp_parts(site: str, rows: Iterable[Dict], today: date | None = None,
+                    per_section: int = 10, today_block: bool = False,
+                    today_limit: int = 5, new_ids: Iterable[object] | None = None,
+                    changes: Dict | None = None):
+    """WhatsApp plain-text parts: header + units + footer.
+
+    Unit = (section header, [item, ...]) — item string lo title + link rendu
+    lines unnayi ("1) Title\n🔗 url"). Chunking item boundaries lo jarugutundi
+    (link madhya lo eppudu split avvadu).
+
+    * `new_ids` — ippude (ninna list tho compare) kothaga add ayina post ids →
+      aa items ki 🆕 marker.
+    * `changes` — {"new": n, "gone": n} → header lo okka line ("em marindo").
+    """
+    today = today or datetime.now(IST).date()
+    groups = group_rows(rows, today=today, per_section=per_section)
+    site_url = str(site or "").rstrip("/")
+    # v187.2: section-wise FULL counts — silent truncation vaddu ("anni links" rule)
+    full_counts: Dict[str, int] = {}
+    for _row in normalize_rows(rows, today=today):
+        _sec = _row.get("section")
+        full_counts[_sec] = full_counts.get(_sec, 0) + 1
+    header = [
+        "📋 *StudentUp — నేటి ఉద్యోగాల లిస్ట్*",
+        f"🗓 {wa_date_line(today)} · 🌐 {site_url or 'studentup.in'}",
+    ]
+    if changes:
+        bits = []
+        if changes.get("new"):
+            bits.append(f"🆕 {changes['new']} కొత్త ఉద్యోగాలు")
+        if changes.get("gone"):
+            bits.append(f"❌ {changes['gone']} తీసేశాం (క్లోజ్ అయినవి/పాతవి)")
+        if bits:
+            header.append("📈 " + " · ".join(bits))
+    total = 0
+    posts_total = 0
+    count_partial = False
+    units = []
+    today_items = []
+    if today_block:
+        for key, _, _ in SECTIONS:
+            for row in groups.get(key) or []:
+                if str(row.get("date") or "")[:10] == today.isoformat():
+                    today_items.append(row)
+    fresh = {str(x) for x in (new_ids or [])}
+
+    def _item(idx: int, row: Dict, key: str = "") -> str:
+        """2 lines: *Title* — ఉద్యోగాలు 1,000+ · 💰 pay · ⏰ urgent  +  🔗 link.
+
+        User rules (v187.1 + v187.2):
+          * per-item '📅 Last date' line vaddhu (bot lopalane expiry ki vadutundi)
+          * Telugu wording — "ఉద్యోగాలు 1,000+" (software section mattrame English:
+            "1,000+ openings" / "⏰ 2 days left")
+          * prathi item kinda mee site link (open cheyyadaniki ready)
+        """
+        english = key == "software"
+        mark = "🆕 " if (row.get("is_new") or str(row.get("id")) in fresh) else ""
+        bits: List[str] = []
+        # v188: main enti → hook headline ('SSC CHSL 2026 ఉద్యోగాలు'); chips Telugu
+        # 'పోస్టులు' (headline lo ఉద్యోగాలు already undi — repeat avvadu)
+        jobs = vacancies_note(row.get("vacancies"),
+                              word="openings" if english else "పోస్టులు",
+                              word_first=False)
+        if jobs and re.sub(r"\D", "", jobs) in re.sub(r"\D", "", str(row.get("title") or "")):
+            jobs = ""       # title lo already count unte malli veyyadu
+        if jobs:
+            bits.append(jobs)
+        salary = salary_note(row.get("salary"))
+        if salary:
+            bits.append(salary)
+        urgent = wa_deadline_note(row.get("days_left"), telugu=not english)
+        if urgent:
+            bits.append(urgent)
+        try:
+            from . import hooks as _hooks
+            main_line = _hooks.headline(row.get("title"), telugu=not english, kind=key)
+        except Exception:  # noqa: BLE001 — hook fail aithe pata title
+            main_line = _wa_clean(row.get("title"))
+        head = f"{idx}) {mark}*{main_line}*"
+        if bits:
+            head += " — " + " · ".join(bits)
+        return head + "\n🔗 " + compact_site_link(site, row, prefer_permalink=True)
+
+    if today_items:
+        items = [_item(idx, row, "") 
+                 for idx, row in enumerate(today_items[:today_limit], 1)]
+        total += len(items)
+        units.append((f"🆕 *ఈరోజు కొత్తవి* ({len(items)})", items))
+    for key, label, icon in SECTIONS:
+        rows_here = groups.get(key) or []
+        if not rows_here:
+            continue
+        english = key == "software"
+        label_txt = WHATSAPP_LABELS.get(key) or label
+        items = [_item(idx, row, key) for idx, row in enumerate(rows_here, 1)]
+        total += len(items)
+        counts = [vacancies_count(r.get("vacancies")) for r in rows_here]
+        posts_sum = sum(int(re.sub(r"\D", "", c)) for c in counts if c)
+        posts_total += posts_sum
+        if any(not c for c in counts):
+            count_partial = True          # konni counts teliyavu → total "+" (honest)
+        # Section header: Telugu lo count ("1 ఉద్యోగం" / "2 ఉద్యోగాలు"); software English
+        if english:
+            head_note = f"{len(items)} job" + ("" if len(items) == 1 else "s")
+        else:
+            head_note = f"{len(items)} ఉద్యోగం" if len(items) == 1 else f"{len(items)} ఉద్యోగాలు"
+        hidden = full_counts.get(key, 0) - len(items)
+        if hidden > 0:                    # v187.2: "anni links" — truncate chesi dagoddu
+            more = (f"… ఇంకా {hidden} ఉద్యోగాలు — పూర్తి లిస్ట్ 🌐 {site_url or 'studentup.in'}"
+                    if not english else
+                    f"… and {hidden} more jobs — full list 🌐 {site_url or 'studentup.in'}")
+            items = items + [more]
+        units.append((f"{icon} *{label_txt}* ({head_note})", items))
+    footer_line = f"✅ *{total} ఉద్యోగాలు*"
+    if posts_total:
+        footer_line += f" · 👥 *{posts_total:,}{'+' if count_partial else ''} పోస్టులు*"
+    footer_line += f" · 🌐 {site_url or 'studentup.in'}"
+    footer = [
+        footer_line,
+        "ℹ️ అప్లై చేసే ముందు అధికారిక నోటిఫికేషన్‌లో వివరాలు వెరిఫై చేసుకోండి.",
+    ]
+    return header, units, footer, total
+
+
+def wa_deadline_note(days_left: int | None, telugu: bool = False) -> str:
+    """Closing-soon urgency (3 rojula lopu mattrame) — honest, peddha date ledu.
+
+    telugu=True → forwarded list ki Telugu wording ("⏰ 2 రోజులు మాత్రమే").
+    """
+    if days_left is None or days_left > 3:
+        return ""
+    if telugu:
+        if days_left <= 0:
+            return "⏰ ఈరోజే చివరి రోజు!"
+        if days_left == 1:
+            return "⏰ రేపు చివరి రోజు"
+        return f"⏰ {days_left} రోజులు మాత్రమే"
+    if days_left <= 0:
+        return "⏰ last date TODAY"
+    if days_left == 1:
+        return "⏰ repu last date (1 day left)"
+    return f"⏰ {days_left} days left"
+
+
+def _render_units(units) -> List[str]:
+    parts: List[str] = []
+    for head, items in units:
+        parts.append(head)
+        parts.append("")
+        for item in items:
+            parts.append(item)
+            parts.append("")
+    return parts
+
+
+def render_whatsapp(site: str, rows: Iterable[Dict], today: date | None = None,
+                    per_section: int = 10, today_block: bool = False,
+                    new_ids: Iterable[object] | None = None,
+                    changes: Dict | None = None) -> str:
+    """Okate plain-text message (WhatsApp group/status ki copy-paste cheyyadaniki)."""
+    header, units, footer, total = _whatsapp_parts(site, rows, today, per_section,
+                                                   today_block, new_ids=new_ids,
+                                                   changes=changes)
+    if not total:
+        return ""
+    return "\n".join(header + [""] + _render_units(units) + footer)
+
+
+def render_whatsapp_messages(site: str, rows: Iterable[Dict], today: date | None = None,
+                             per_section: int = 10, today_block: bool = False,
+                             max_chars: int = 3900,
+                             new_ids: Iterable[object] | None = None,
+                             changes: Dict | None = None) -> List[str]:
+    """Peddha list ni WhatsApp-safe chunks ga split (item madhya lo kaadu).
+
+    Split **item boundaries** lo mattrame (URL eppudu cut avvadu). Oka item
+    okkate chunk limit kanna peddha unte, adi ontariga okka chunk avutundi.
+    """
+    header, units, footer, total = _whatsapp_parts(site, rows, today, per_section,
+                                                   today_block, new_ids=new_ids,
+                                                   changes=changes)
+    if not total:
+        return []
+    prefix = "\n".join(header) + "\n\n"
+    contd = (f"📋 *StudentUp — నేటి ఉద్యోగాల లిస్ట్ (ఇంకా)*\n"
+             f"🌐 {str(site or '').rstrip('/')}\n\n")
+    footer_text = "\n" + "\n".join(footer)
+    chunks: List[str] = []
+    current = prefix
+    for head, items in units:
+        idx = 0
+        while idx < len(items):
+            block_head = head if idx == 0 else f"{head} (contd.)"
+            room = max_chars - len(footer_text) - len(current) - len(block_head) - 6
+            if room < 48 and current.strip() != prefix.strip():
+                chunks.append(current.rstrip())
+                current = contd
+                continue
+            take: List[str] = []
+            size = 0
+            while idx < len(items):
+                piece_len = len(items[idx]) + 2
+                if take and size + piece_len > room:
+                    break
+                take.append(items[idx])
+                size += piece_len
+                idx += 1
+            if not take and idx < len(items):        # item okkate limit kanna peddha
+                take = [items[idx]]
+                idx += 1
+            piece = block_head + "\n\n" + "\n\n".join(take) + "\n"
+            if current.strip() != prefix.strip() and len(current) + len(piece) + len(footer_text) > max_chars:
+                # Ee piece ikkada fit avvadu — kotha chunk ki pampu, items ni
+                # malli try cheyyali (anduke idx venakki — items pogapoyevi ledu).
+                chunks.append(current.rstrip())
+                current = contd
+                idx -= len(take)
+                continue
+            current += piece + "\n"
+    current += footer_text
+    chunks.append(current.rstrip())
+    return [c for c in chunks if c.strip()]

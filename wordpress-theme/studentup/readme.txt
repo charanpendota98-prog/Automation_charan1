@@ -2,7 +2,7 @@
 Contributors: studentup
 Requires at least: 6.0
 Tested up to: 6.7
-Stable tag: 1.9.31
+Stable tag: 1.9.36
 Requires PHP: 7.4
 Version: 1.9.26
 License: GNU General Public License v2 or later
@@ -363,6 +363,48 @@ user tho App Password ivvandi (Administrator role).
 * `post_class()` on article loops (plugin/CSS compatibility) · `aria-current="page"` nav filter
 * Performance: custom WP_Query calls ki no_found_rows (extra SQL query teesesaam)
 * IndexNow key-file serving (/<key>.key) — instant indexing automatic
+
+
+= 1.9.36 (2026-10-02, v188) =
+* Hook lead: every auto article starts with a `.su-hook` block — what the post is about
+  first (real vacancies/deadline only when verified; never fabricated). Gradient + accent
+  bar, dark mode and print safe.
+* Daily forward list hook headlines (bot-side, Telugu list) + thousands-formatted chips.
+
+= 1.9.35 (2026-10-02, v185) =
+* No-flash dark mode: a tiny pre-paint script right after <body> applies the saved
+  preference (or system prefers-color-scheme) before the header renders, so dark
+  readers no longer see a white flash while the footer JS loads.
+* Native UI theming: color-scheme meta + CSS `color-scheme` tokens, so scrollbars,
+  form controls and autofill follow the reader's chosen theme.
+* Accessibility: one H1 per view template (blog index / search fallback title now
+  H1), verified by the new deep-audit check matrix.
+* Performance: CSS containment on board cards / news cards (`contain: content`
+  and `contain: layout style`) and the minified build regenerated.
+
+= 1.9.34 (2026-10-02, v184) =
+* Active board hygiene (inc/opportunities.php) — bot daily list tho same rules:
+  last date ayyipoyina posts out · deadline lekunda **120+ rojula puratana**
+  posts out (`studentup_opportunity_stale_days` filter, 0 = off) · same
+  recruitment ki kotha post vaste puratana di out (title key dedupe, newest wins).
+* Ee moodu rules valla board lo eppudu **open jobs mattrame** kanipistayi —
+  reader ki confuse avvadu, kotha post vachinappudu neat ga replace avutundi.
+
+= 1.9.33 (2026-10-02, v183) =
+* Board lo kotha section: **Outsourcing & Contract Jobs** (inc/opportunities.php).
+  Outsourcing / contract-basis / guest-faculty posts ikkade kanipistayi —
+  puratana lo ivi e section lo lekunda board nunchi poyevi (pipeline lo category
+  'Outsourcing Jobs' unna kuda). Legacy repair fallback kuda add chesaamu
+  (outsourcing / contract-basis / guest-faculty keywords).
+* Bot daily list (`--forward-list`) kuda ide section + WhatsApp plain-text
+  format tho align ayindi — site board · WhatsApp forward list rendu okate.
+
+= 1.9.32 (2026-10-02, v181) =
+* On-site search demand log (inc/searchlog.php): reader searches — live-search
+  palette (“wp/v2/search”) + “?s=” pages — anonymous count + zero-result flag.
+  Strict privacy: term/count/zero matrame; IP/user eppudu store avvadu (throttle
+  transient 60s). Bot + admin searches skip. Bot ee list ni “--search-demand” tho
+  chusi content gaps → review queue cheshtundi (auto-publish ledu).
 
 
 = 1.3.0 (2026-09-18, v67) =

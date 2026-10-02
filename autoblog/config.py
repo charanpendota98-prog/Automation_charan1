@@ -567,6 +567,57 @@ SITE_BRAND = _get("SITE_BRAND", "studentup.in")
 STATE_PATH = Path(_get("STATE_PATH", str(BASE_DIR / "state.db")))
 LOG_DIR = Path(_get("LOG_DIR", str(BASE_DIR / "log")))
 OUTPUT_DIR = Path(_get("OUTPUT_DIR", str(BASE_DIR / "output")))
+
+# v183: daily WhatsApp-forward list (plain text) — output/forward-list.txt
+FORWARD_LIST_PATH = Path(_get("FORWARD_LIST_PATH", str(OUTPUT_DIR / "forward-list.txt")))
+FORWARD_LIST_STATE_PATH = Path(_get("FORWARD_LIST_STATE_PATH",
+                                    str(OUTPUT_DIR / "forward-list-state.json")))
+# v184: deadline cheppakapoyina 120+ rojula puratana posts active list nunchi out
+# (0 = off). Site board (theme) kuda ide window vaadutundi.
+OPPORTUNITY_STALE_DAYS = int(_get("OPPORTUNITY_STALE_DAYS", "120") or 0)
+
+# v186: live site audit (deploy tarvata HTTP verification)
+LIVE_AUDIT_PATH = Path(_get("LIVE_AUDIT_PATH", str(OUTPUT_DIR / "live-audit.json")))
+LIVE_AUDIT_POSTS = int(_get("LIVE_AUDIT_POSTS", "5") or 5)
+LIVE_AUDIT_TIMEOUT = int(_get("LIVE_AUDIT_TIMEOUT", "20") or 20)
+
+# v187: multi-link intake (oka list links → prathi okkati veru draft)
+LINK_INTAKE_MAX = int(_get("LINK_INTAKE_MAX", "10") or 10)
+LINK_INTAKE_REPORT = Path(_get("LINK_INTAKE_REPORT", str(OUTPUT_DIR / "link-intake.json")))
+
+# --- v181: growth loops (reader demand · rank trend · sponsor pipeline) ---
+# 1) On-site search demand → content gap queue (theme logs terms; bot reads)
+SEARCH_DEMAND_QUEUE = Path(_get("SEARCH_DEMAND_QUEUE",
+                                str(BASE_DIR / "output" / "search-demand-queue.json")))
+SEARCH_DEMAND_MAX_TERMS = max(20, min(1000, int(_get("SEARCH_DEMAND_MAX_TERMS", "200") or "200")))
+# 2) GSC time-series → decay detection → refresh queue
+RANK_HISTORY_PATH = Path(_get("RANK_HISTORY_PATH",
+                              str(BASE_DIR / "logs" / "rank-history.json")))
+RANK_REFRESH_QUEUE = Path(_get("RANK_REFRESH_QUEUE",
+                               str(BASE_DIR / "output" / "refresh-queue.json")))
+RANK_HISTORY_MAX_SNAPSHOTS = max(10, min(400, int(_get("RANK_HISTORY_MAX_SNAPSHOTS", "120") or "120")))
+# 3) Direct-sales sponsor pipeline (highest revenue lever, manual by design)
+SPONSOR_PIPELINE_PATH = Path(_get("SPONSOR_PIPELINE_PATH",
+                                  str(BASE_DIR / "ads" / "sponsors.json")))
+SPONSOR_OUTREACH_PER_DAY = max(1, min(10, int(_get("SPONSOR_OUTREACH_PER_DAY", "2") or "2")))
+SPONSOR_FOLLOWUP_STALE_DAYS = max(1, min(30, int(_get("SPONSOR_FOLLOWUP_STALE_DAYS", "3") or "3")))
+# Daily hook (hourly cron lo okkasari): search demand + sponsor plan automatic
+GROWTH_LOOPS_ENABLED = _get("GROWTH_LOOPS_ENABLED", "1") not in ("0", "false", "no")
+GROWTH_LOOPS_HOUR = max(0, min(23, int(_get("GROWTH_LOOPS_HOUR", "9") or "9")))
+
+# --- v182: editorial calendar · revenue loop · backlink authority -----------
+EDITORIAL_CALENDAR_PATH = Path(_get("EDITORIAL_CALENDAR_PATH",
+                                    str(BASE_DIR / "output" / "editorial-calendar.json")))
+EDITORIAL_CALENDAR_DAYS = max(7, min(365, int(_get("EDITORIAL_CALENDAR_DAYS", "90") or "90")))
+EDITORIAL_CALENDAR_PER_DAY = max(1, min(6, int(_get("EDITORIAL_CALENDAR_PER_DAY", "3") or "3")))
+CALENDAR_APPLY_LIMIT = max(1, min(40, int(_get("CALENDAR_APPLY_LIMIT", "12") or "12")))
+REVENUE_INSIGHTS_PATH = Path(_get("REVENUE_INSIGHTS_PATH",
+                                  str(BASE_DIR / "output" / "revenue-insights.json")))
+REVENUE_LOOP_MIN_IMPRESSIONS = max(10, min(100000,
+    int(_get("REVENUE_LOOP_MIN_IMPRESSIONS", "50") or "50")))
+BACKLINK_PIPELINE_PATH = Path(_get("BACKLINK_PIPELINE_PATH",
+                                   str(BASE_DIR / "output" / "backlink-pipeline.json")))
+BACKLINK_FOLLOWUP_DAYS = max(1, min(30, int(_get("BACKLINK_FOLLOWUP_DAYS", "7") or "7")))
 RESEARCH_BRIEF_DIR = Path(_get("RESEARCH_BRIEF_DIR", str(OUTPUT_DIR / "research")))
 # Save a private NotebookLM-ready evidence bundle for real source candidates.
 # This prepares sources; it never pretends to access a private NotebookLM account.

@@ -421,6 +421,36 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
                         log.warning("GUARDIAN ❌ %s: %s (%s)", _r["id"], _r["detail"], _r["fix"])
             except Exception:
                 _soft_fail("site guardian failed (non-fatal)")
+        # --- v181: GROWTH LOOPS — roju demand (search log) + sponsor plan ---
+        if (getattr(config, "GROWTH_LOOPS_ENABLED", True)
+                and now_hour >= getattr(config, "GROWTH_LOOPS_HOUR", 9)
+                and not state.meta_get(config.STATE_PATH,
+                                       f"growth:{today.isoformat()}")):
+            try:
+                from . import search_demand as _sd
+
+                _terms, _meta = _sd.fetch_live()
+                if _terms:
+                    _rep = _sd.analyze(_terms, state.recent_titles(config.STATE_PATH,
+                                                                   limit=400))
+                    _q = _sd.write_queue(_rep)
+                    log.info("SEARCH DEMAND ✔ %d terms · %d gaps → %s",
+                             _rep["total_terms"], len(_rep["gaps"]), _q.name)
+            except Exception:  # noqa: BLE001 — theme deploy/creds lekapote skip
+                log.info("search demand loop skipped (theme log/creds ledu)")
+            try:
+                from . import sponsor_crm as _sc
+
+                _plan = _sc.today_plan()
+                if _plan["outreach"] or _plan["followups"]:
+                    from . import notifier
+
+                    notifier.send_telegram(_sc.report_text(_plan, _sc.forecast()))
+                    log.info("SPONSOR PLAN ✔ outreach %d · followups %d",
+                             len(_plan["outreach"]), len(_plan["followups"]))
+            except Exception:  # noqa: BLE001
+                _soft_fail("sponsor plan failed (non-fatal)")
+            state.meta_set(config.STATE_PATH, f"growth:{today.isoformat()}", "1")
         # --- v57: AD ADVISOR — roju okkasari: e network ki eppudu apply cheyyali ---
         if (getattr(config, "AD_ADVISOR_ENABLED", True)
                 and now_hour >= getattr(config, "AD_ADVISOR_HOUR", 10)
@@ -1065,6 +1095,50 @@ def push_theme_data(dry_run: bool = False) -> int:
     print(f"  ❌ push fail: {res.get('reason')}")
     print("     ↳ fix: .env lo WP_SITE/WP_USERNAME/WP_APP_PASSWORD + theme activate")
     return 1
+
+
+def daily_run(send: bool = True, whatsapp: bool = True, telegram: bool = True,
+              drafts: bool = True, guardian_check: bool = True,
+              save_files: bool = True) -> int:
+    """v190: OKE COMMAND daily routine — draft flow tho ne list, automatic send.
+
+    User ask: "draf elaga chesthavo alaga cheyali anthe daily ... malli anni nuvve
+    set cheyu perefctgaa".
+
+    Order (prathi step non-fatal — okka step fail aina migilinavi continue):
+      1. Drafts — radar + queue topics → **prathi link ki veru draft** (hook lead tho)
+      2. Guardian quick check (site/system health)
+      3. Daily list — ade hook format → save → Telegram + WhatsApp + click-to-forward
+
+    rc: 0 = list build ayyi (send ok / channels levu) · 1 = list khali ·
+        2 = list build fail · 3 = channels unna anni send fail.
+    """
+    print("=" * 62)
+    print("  🌅 DAILY ROUTINE — drafts → health → list → send")
+    print("=" * 62)
+    if drafts:
+        try:
+            print("\n[1/3] DRAFTS (radar + queue → separate drafts, hook lead tho)")
+            rc = radar_run(process_posts=True)
+            if rc not in (0, None):
+                print(f"  ⚠️ draft step rc={rc} — list step continue avutundi")
+        except Exception as exc:  # noqa: BLE001 — drafts fail aina list aagakudadu
+            log.exception("daily drafts step failed (non-fatal): %s", exc)
+    else:
+        print("\n[1/3] DRAFTS — skip (--daily-no-drafts)")
+    if guardian_check:
+        try:
+            print("\n[2/3] GUARDIAN (system health)")
+            guardian_run(quiet=True)
+        except Exception as exc:  # noqa: BLE001
+            log.info("guardian step skip (safe): %s", exc)
+    else:
+        print("\n[2/3] GUARDIAN — skip")
+    print("\n[3/3] DAILY LIST (Telugu · hook items · mana blog links) + SEND")
+    from . import forward_list as _fl
+
+    return _fl.run_morning(save_files=save_files, send=send,
+                           whatsapp=whatsapp, telegram=telegram)
 
 
 def guardian_run(notify: bool = False, quiet: bool = False) -> int:
@@ -1974,6 +2048,130 @@ def main() -> int:
                         help="v60: SITE GUARDIAN — site/UI/SEO/ads/feed/storage full check")
     parser.add_argument("--guardian-notify", action="store_true",
                         help="v60: guardian report ni Telegram ki kuda pampu")
+    # ---- v181: growth loops (demand · rank trend · sponsor pipeline) ----
+    parser.add_argument("--search-demand", action="store_true",
+                        help="v181: on-site search log → content gap queue "
+                             "(readers' queries; human review — auto-publish ledu)")
+    parser.add_argument("--search-import", default="", metavar="FILE",
+                        help="v181: search demand ni JSON/CSV file nunchi (offline/test)")
+    parser.add_argument("--search-notify", action="store_true",
+                        help="v181: search demand report ni Telegram ki")
+    parser.add_argument("--rank-trend", action="store_true",
+                        help="v181: GSC time-series — rising/decaying pages + refresh queue")
+    parser.add_argument("--rank-csv", default="", metavar="CSV",
+                        help="v181: GSC Pages CSV ingest chesi snapshot save chey")
+    parser.add_argument("--rank-window", type=int, default=7,
+                        help="v181: baseline window days (default 7; 28 kuda ok)")
+    parser.add_argument("--rank-notify", action="store_true",
+                        help="v181: rank trend report ni Telegram ki")
+    parser.add_argument("--sponsor-crm", action="store_true",
+                        help="v181: sponsor pipeline — roju outreach + follow-ups + forecast")
+    parser.add_argument("--sponsor-targets", action="store_true",
+                        help="v181: evarini contact cheyyali (prospect types + search strings)")
+    parser.add_argument("--sponsor-add", default="",
+                        metavar='"Name|type|city|contact|value"',
+                        help="v181: kotha prospect add chey")
+    parser.add_argument("--sponsor-update", default="",
+                        metavar='"Name|stage|note|followup"',
+                        help="v181: prospect stage/follow-up update (new/contacted/"
+                             "replied/negotiating/won/lost/paused)")
+    parser.add_argument("--sponsor-notify", action="store_true",
+                        help="v181: roju sponsor plan ni Telegram ki")
+    parser.add_argument("--sponsor-limit", type=int, default=0,
+                        help="v181: roju outreach count (default SPONSOR_OUTREACH_PER_DAY=2)")
+    parser.add_argument("--sponsor-templates", action="store_true",
+                        help="v181: outreach messages kuda print chey (rate card tho)")
+    # ---- v182: editorial calendar · revenue loop · backlink authority ----
+    parser.add_argument("--calendar", action="store_true",
+                        help="v182: 90-day editorial calendar (demand+decay+trend+gaps+₹)")
+    parser.add_argument("--calendar-days", type=int, default=0,
+                        help="v182: plan days (default EDITORIAL_CALENDAR_DAYS=90)")
+    parser.add_argument("--calendar-per-day", type=int, default=0,
+                        help="v182: slots per day (default EDITORIAL_CALENDAR_PER_DAY=3)")
+    parser.add_argument("--calendar-apply", action="store_true",
+                        help="v182: top topics ni pipeline queue (topics_queue.txt) loki")
+    parser.add_argument("--calendar-limit", type=int, default=0,
+                        help="v182: apply chese topic count (default CALENDAR_APPLY_LIMIT=12)")
+    parser.add_argument("--calendar-no-universe", action="store_true",
+                        help="v182: keyword-matrix gaps ni skip chey (fast plan)")
+    parser.add_argument("--calendar-notify", action="store_true",
+                        help="v182: calendar summary ni Telegram ki")
+    parser.add_argument("--revenue-loop", default="", metavar="CSV",
+                        help="v182: AdSense Pages CSV → category RPM · money pages · leaks")
+    parser.add_argument("--revenue-notify", action="store_true",
+                        help="v182: revenue loop report ni Telegram ki")
+    parser.add_argument("--revenue-min-views", type=int, default=0,
+                        help="v182: sample threshold (default REVENUE_LOOP_MIN_IMPRESSIONS)")
+    # ---- v187: multi-link intake (list lo links → prathi okkati veru draft) ----
+    parser.add_argument("--links-file", default="",
+                        help="v187: links file (oka line okka link · markdown/plain)")
+    parser.add_argument("--links", default="",
+                        help="v187: inline links (comma/space separated)")
+    parser.add_argument("--links-limit", type=int, default=0,
+                        help="v187: ee run ki max links (default LINK_INTAKE_MAX=10)")
+    parser.add_argument("--links-dry-run", action="store_true",
+                        help="v187: plan mattrame chupu (eem create cheyyadu)")
+    parser.add_argument("--links-notify", action="store_true",
+                        help="v187: summary ni Telegram ki")
+    # ---- v186: live site audit (deploy tarvata nijamaina HTTP verification) ----
+    parser.add_argument("--live-audit", action="store_true",
+                        help="v186: live site ni 16 checks tho verify (robots · sitemap · "
+                             "schema · PWA · security headers · sample posts · 404)")
+    parser.add_argument("--live-url", default="",
+                        help="v186: audit URL (default .env WP_SITE)")
+    parser.add_argument("--live-posts", type=int, default=0,
+                        help="v186: sample post pages count (default LIVE_AUDIT_POSTS=5)")
+    parser.add_argument("--live-timeout", type=int, default=0,
+                        help="v186: per-request timeout seconds (default 20)")
+    parser.add_argument("--live-notify", action="store_true",
+                        help="v186: audit summary ni Telegram ki")
+    parser.add_argument("--live-strict", action="store_true",
+                        help="v186: warnings ni kuda fail ga treat cheyyi (exit 1)")
+    # ---- v183: daily WhatsApp forward list ----
+    parser.add_argument("--forward-list", action="store_true",
+                        help="v183: roju WhatsApp-forward-ready active list (plain text) "
+                             "→ output/forward-list.txt (+ roju file)")
+    parser.add_argument("--forward-format", default="wa", choices=("wa", "tg"),
+                        help="v183: wa = WhatsApp plain text (default) · tg = Telegram HTML")
+    parser.add_argument("--forward-per-section", type=int, default=10,
+                        help="v183: section ki max items (default 6)")
+    parser.add_argument("--daily", action="store_true",
+                        help="v190: OKE COMMAND daily routine — drafts (radar+queue) → "
+                             "guardian → list → Telegram+WhatsApp send")
+    parser.add_argument("--daily-no-drafts", action="store_true",
+                        help="v190: draft step skip (list + send mattrame)")
+    parser.add_argument("--daily-no-guardian", action="store_true",
+                        help="v190: guardian step skip")
+    parser.add_argument("--daily-no-send", action="store_true",
+                        help="v190: list build/save mattrame (send skip)")
+    parser.add_argument("--forward-morning", action="store_true",
+                        help="v189: daily morning send — list build → save → "
+                             "Telegram + WhatsApp (+ wa.me click-to-forward)")
+    parser.add_argument("--forward-morning-no-send", action="store_true",
+                        help="v189: morning list build/save mattrame (send skip)")
+    parser.add_argument("--forward-no-whatsapp", action="store_true",
+                        help="v189: morning send lo WhatsApp skip (Telegram mattrame)")
+    parser.add_argument("--forward-send", action="store_true",
+                        help="v183: list ni Telegram/WhatsApp ki pampinchadam (optional)")
+    parser.add_argument("--forward-no-save", action="store_true",
+                        help="v183: files save cheyyakunda print matrame")
+    parser.add_argument("--backlink", action="store_true",
+                        help="v182: backlink/authority plan (white-hat) + forecast")
+    parser.add_argument("--backlink-assets", action="store_true",
+                        help="v182: link-worthy asset ideas (mee data nunchi)")
+    parser.add_argument("--backlink-targets", action="store_true",
+                        help="v182: evarini contact cheyyali (types + search strings)")
+    parser.add_argument("--backlink-add", default="",
+                        metavar='"Name|type|city|contact|asset"',
+                        help="v182: kotha outreach target add chey")
+    parser.add_argument("--backlink-update", default="",
+                        metavar='"Name|stage|note|followup"',
+                        help="v182: stage/follow-up update (idea/asset_ready/outreach/"
+                             "mentioned/linked/lost/paused)")
+    parser.add_argument("--backlink-notify", action="store_true",
+                        help="v182: backlink plan ni Telegram ki")
+    parser.add_argument("--backlink-templates", action="store_true",
+                        help="v182: outreach message templates kuda print chey")
     parser.add_argument("--breaking-feed", action="store_true",
                         help="v59: బ్రేకింగ్ న్యూస్ feed build (radar → preview/data/breaking.json)")
     parser.add_argument("--breaking-from", default="", metavar="FILE",
@@ -2401,6 +2599,149 @@ def main() -> int:
         return push_theme_data(dry_run=args.dry_run)
     if args.guardian or args.guardian_notify:
         return guardian_run(notify=args.guardian_notify)
+    # ---- v181: growth loops (demand · rank trend · sponsor pipeline) ----
+    if getattr(args, "search_demand", False):
+        from . import search_demand as _sd
+
+        return _sd.run_cli(import_path=getattr(args, "search_import", "") or "",
+                           notify=getattr(args, "search_notify", False))
+    if getattr(args, "rank_trend", False):
+        from . import rank_trend as _rt
+
+        return _rt.run_cli(csv_path=getattr(args, "rank_csv", "") or "",
+                           window=int(getattr(args, "rank_window", 7) or 7),
+                           notify=getattr(args, "rank_notify", False))
+    if getattr(args, "sponsor_crm", False):
+        from . import sponsor_crm as _sc
+
+        return _sc.run_cli(notify=getattr(args, "sponsor_notify", False),
+                           limit=int(getattr(args, "sponsor_limit", 0) or 0),
+                           templates=getattr(args, "sponsor_templates", False))
+    if getattr(args, "sponsor_targets", False):
+        from . import sponsor_crm as _sc
+
+        return _sc.targets_cli()
+    if getattr(args, "sponsor_add", ""):
+        from . import sponsor_crm as _sc
+
+        parts = [p.strip() for p in args.sponsor_add.split("|")]
+        while len(parts) < 5:
+            parts.append("")
+        try:
+            row = _sc.add(parts[0], parts[1], parts[2], parts[3],
+                          int(parts[4] or 0))
+        except ValueError as exc:
+            print(f"❌ {exc}")
+            return 1
+        print(f"✅ prospect added: {row['name']} ({row['type'] or '—'}, {row['city'] or '—'})"
+              f" — stage new. Roju plan: python run.py --sponsor-crm")
+        return 0
+    if getattr(args, "sponsor_update", ""):
+        from . import sponsor_crm as _sc
+
+        parts = [p.strip() for p in args.sponsor_update.split("|")]
+        while len(parts) < 4:
+            parts.append("")
+        try:
+            row = _sc.update(parts[0], stage=parts[1], note=parts[2], followup=parts[3])
+        except ValueError as exc:
+            print(f"❌ {exc}")
+            return 1
+        print(f"✅ {row['name']} → {row['stage']}"
+              f" (follow-up {row.get('next_followup', '—')})")
+        return 0
+    # ---- v182: editorial calendar · revenue loop · backlink authority ----
+    if getattr(args, "calendar", False) or getattr(args, "calendar_apply", False):
+        from . import editorial_calendar as _ec
+
+        days = int(getattr(args, "calendar_days", 0) or 0) or config.EDITORIAL_CALENDAR_DAYS
+        per_day = (int(getattr(args, "calendar_per_day", 0) or 0)
+                   or config.EDITORIAL_CALENDAR_PER_DAY)
+        limit = (int(getattr(args, "calendar_limit", 0) or 0)
+                 or config.CALENDAR_APPLY_LIMIT)
+        return _ec.run_cli(days=days, per_day=per_day,
+                           notify=getattr(args, "calendar_notify", False),
+                           apply=getattr(args, "calendar_apply", False),
+                           apply_limit=limit,
+                           universe=not getattr(args, "calendar_no_universe", False))
+    if getattr(args, "revenue_loop", ""):
+        from . import revenue_loop as _rl
+
+        return _rl.run_cli(csv_path=args.revenue_loop,
+                           notify=getattr(args, "revenue_notify", False),
+                           min_impressions=(int(getattr(args, "revenue_min_views", 0) or 0)
+                                            or None))
+    if getattr(args, "backlink_assets", False):
+        from . import backlink_engine as _bl
+
+        return _bl.assets_cli()
+    if getattr(args, "backlink_targets", False):
+        from . import backlink_engine as _bl
+
+        return _bl.targets_cli()
+    if getattr(args, "backlink_add", ""):
+        from . import backlink_engine as _bl
+
+        parts = [p.strip() for p in args.backlink_add.split("|")]
+        while len(parts) < 5:
+            parts.append("")
+        try:
+            row = _bl.add(parts[0], parts[1], parts[2], parts[3], parts[4])
+        except ValueError as exc:
+            print(f"❌ {exc}")
+            return 1
+        print(f"✅ outreach target added: {row['name']} ({row['type'] or '—'})"
+              f" — stage {row['stage']}. Plan: python run.py --backlink")
+        return 0
+    if getattr(args, "backlink_update", ""):
+        from . import backlink_engine as _bl
+
+        parts = [p.strip() for p in args.backlink_update.split("|")]
+        while len(parts) < 4:
+            parts.append("")
+        try:
+            row = _bl.update(parts[0], stage=parts[1], note=parts[2],
+                             followup=parts[3])
+        except ValueError as exc:
+            print(f"❌ {exc}")
+            return 1
+        print(f"✅ {row['name']} → {row['stage']} (follow-up {row.get('next_followup', '—')})")
+        return 0
+    if args.links_file or args.links:
+        from . import link_intake as _li
+        return _li.run_cli(args.links, args.links_file, args.links_limit,
+                           dry_run=args.links_dry_run, notify=args.links_notify)
+
+    if getattr(args, "live_audit", False):
+        from . import live_audit as _la
+        return _la.run_cli(args.live_url, args.live_posts,
+                           notify=args.live_notify, strict=args.live_strict,
+                           timeout=args.live_timeout)
+
+    if getattr(args, "daily", False):
+        return daily_run(send=not args.daily_no_send,
+                         whatsapp=not args.forward_no_whatsapp,
+                         drafts=not args.daily_no_drafts,
+                         guardian_check=not args.daily_no_guardian,
+                         save_files=not args.forward_no_save)
+
+    if getattr(args, "forward_morning", False):
+        from . import forward_list as _fl
+        return _fl.run_morning(save_files=not args.forward_no_save,
+                               send=not args.forward_morning_no_send,
+                               whatsapp=not args.forward_no_whatsapp)
+
+    if getattr(args, "forward_list", False):
+        from . import forward_list as _fl
+        return _fl.run_cli(args.forward_format, args.forward_per_section,
+                           send=args.forward_send,
+                           save_files=not args.forward_no_save)
+
+    if getattr(args, "backlink", False) or getattr(args, "backlink_notify", False):
+        from . import backlink_engine as _bl
+
+        return _bl.run_cli(notify=getattr(args, "backlink_notify", False),
+                           templates=getattr(args, "backlink_templates", False))
     if args.breaking_feed or args.breaking_from:
         return breaking_feed_run(from_file=args.breaking_from)
     if args.radar:

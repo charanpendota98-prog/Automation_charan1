@@ -112,8 +112,11 @@ def test_theme_lint_and_zip():
                            capture_output=True, text=True, timeout=60)
     assert proc2.returncode == 0, proc2.stderr[:200]
     zpath = ROOT / "wordpress-theme" / "studentup-theme.zip"
-    newest = max(p.stat().st_mtime for p in THEME.rglob("*") if p.is_file())
-    assert zpath.stat().st_mtime >= newest, "zip stale — rebuild cheyandi"
+    # v175: content polika (mtime kaadu — byte polika, order-independent)
+    from autoblog.theme_pack import stale_detail, theme_zip_stale_files
+
+    stale = theme_zip_stale_files(THEME, zpath)
+    assert not stale, f"zip stale — rebuild cheyandi: {stale_detail(stale)}"
     zf = zipfile.ZipFile(zpath)
     assert "studentup_wa_number" in zf.read(
         "studentup/inc/options.php").decode("utf-8")
@@ -159,13 +162,13 @@ def test_ui_sodi_clean():
 
 def test_docs_v76():
     suites = len(list((ROOT / "tests").glob("*_test.py")))
-    assert suites == 124, f"suites {suites} (v116 tho 124 expect)"
+    assert suites == 137, f"suites {suites} (v116 tho 137 expect)"
     readme = read(ROOT / "README.md")
     manual = read(ROOT / "MANUAL_ADVANCED_CHECKLIST.md")
     go_live = read(ROOT / "GO_LIVE_CHECKLIST.md")
-    assert "### v76" in readme and "124/124" in readme
-    assert "PART 35" in manual and "v76" in manual and "124/124" in manual
-    assert "124/124" in go_live
+    assert "### v76" in readme and "137/137" in readme
+    assert "PART 35" in manual and "v76" in manual and "137/137" in manual
+    assert "137/137" in go_live
     for name, txt in (("README", readme), ("MANUAL", manual),
                       ("GO_LIVE", go_live)):
         assert "177/177" in txt, f"{name} lo jsdom claim poyindi"

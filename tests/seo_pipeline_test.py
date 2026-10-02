@@ -12,9 +12,13 @@ import json
 import re
 import sys
 import threading
-import pytest
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
+
+try:  # v175: pytest optional — lekapote main() runner (kinda) pani chestundi
+    import pytest
+except ModuleNotFoundError:  # pragma: no cover - environment dependent
+    pytest = None  # type: ignore[assignment]
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
@@ -181,45 +185,47 @@ def test_source_fetch():
 # v136: these two checks were written for the sequential main() runner. Real
 # pytest fixtures spin up the same fake WP/Telegram/source servers so the suite
 # collects and runs them instead of erroring on missing fixtures.
-@pytest.fixture(scope="module")
-def wp_base():
-    db = Path("/tmp/test_seo_pipeline_fx.db")
-    db.unlink(missing_ok=True)
-    state.init(db)
-    wp_srv = HTTPServer(("127.0.0.1", 0), FakeWP)
-    tg_srv = HTTPServer(("127.0.0.1", 0), FakeTelegram)
-    for s in (wp_srv, tg_srv):
-        threading.Thread(target=s.serve_forever, daemon=True).start()
-    base = f"http://127.0.0.1:{wp_srv.server_address[1]}"
-    old = (config.STATE_PATH, config.WP_SITE, config.TELEGRAM_BOT_TOKEN,
-           config.TELEGRAM_CHAT_ID, config.TELEGRAM_API_BASE, config.OUTPUT_DIR)
-    config.STATE_PATH, config.WP_SITE = db, base
-    config.TELEGRAM_BOT_TOKEN, config.TELEGRAM_CHAT_ID = "TEST", "555"
-    config.TELEGRAM_API_BASE = f"http://127.0.0.1:{tg_srv.server_address[1]}"
-    config.OUTPUT_DIR = Path("/tmp/test_output_images_fx")
-    try:
-        yield base
-    finally:
-        (config.STATE_PATH, config.WP_SITE, config.TELEGRAM_BOT_TOKEN,
-         config.TELEGRAM_CHAT_ID, config.TELEGRAM_API_BASE,
-         config.OUTPUT_DIR) = old
-        for s in (wp_srv, tg_srv):
-            s.shutdown()
+# v175: pytest install lekapote fixtures define avvavu — `python tests/...py`
+# main() runner ne run avutundi (CI/servers lo `pip install pytest` avasaram ledu).
+if pytest is not None:
+
+    @pytest.fixture(scope="module")
+    def wp_base():
+        db = Path("/tmp/test_seo_pipeline_fx.db")
         db.unlink(missing_ok=True)
+        state.init(db)
+        wp_srv = HTTPServer(("127.0.0.1", 0), FakeWP)
+        tg_srv = HTTPServer(("127.0.0.1", 0), FakeTelegram)
+        for s in (wp_srv, tg_srv):
+            threading.Thread(target=s.serve_forever, daemon=True).start()
+        base = f"http://127.0.0.1:{wp_srv.server_address[1]}"
+        old = (config.STATE_PATH, config.WP_SITE, config.TELEGRAM_BOT_TOKEN,
+               config.TELEGRAM_CHAT_ID, config.TELEGRAM_API_BASE, config.OUTPUT_DIR)
+        config.STATE_PATH, config.WP_SITE = db, base
+        config.TELEGRAM_BOT_TOKEN, config.TELEGRAM_CHAT_ID = "TEST", "555"
+        config.TELEGRAM_API_BASE = f"http://127.0.0.1:{tg_srv.server_address[1]}"
+        config.OUTPUT_DIR = Path("/tmp/test_output_images_fx")
+        try:
+            yield base
+        finally:
+            (config.STATE_PATH, config.WP_SITE, config.TELEGRAM_BOT_TOKEN,
+             config.TELEGRAM_CHAT_ID, config.TELEGRAM_API_BASE,
+             config.OUTPUT_DIR) = old
+            for s in (wp_srv, tg_srv):
+                s.shutdown()
+            db.unlink(missing_ok=True)
 
+    @pytest.fixture(scope="module")
+    def wp(wp_base):
+        return wp_base
 
-@pytest.fixture(scope="module")
-def wp(wp_base):
-    return wp_base
-
-
-@pytest.fixture(scope="module")
-def url(wp_base):
-    src_url, src_srv = test_source_fetch()
-    try:
-        yield src_url
-    finally:
-        src_srv.shutdown()
+    @pytest.fixture(scope="module")
+    def url(wp_base):
+        src_url, src_srv = test_source_fetch()
+        try:
+            yield src_url
+        finally:
+            src_srv.shutdown()
 
 
 def test_full_pipeline(url, wp_base):

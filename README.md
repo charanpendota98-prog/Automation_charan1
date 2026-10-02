@@ -1,7 +1,7 @@
 # studentup.in Auto-Blogger 🤖
 
 
-> **Verified counts (theme v1.9.23 build):** test suites **124/124** files · jsdom runtime **177/177** checks · PHP lint **85/85** files · theme audit **0/0** · code audit **0/0**.
+> **Verified counts (theme v1.9.36 build):** test suites **137/137** files · jsdom runtime **177/177** checks · PHP lint **86/86** files · theme audit **0/0** · **deep audit pass 1-4 31/31** · code audit **0/0**.
 24/7 automatic blog posting system for **studentup.in** (WordPress) — runs on your Oracle Cloud instance.
 
 - **AI content:** Google Gemini (free tier) generates Telugu + English mix articles
@@ -567,6 +567,313 @@ AdSense readiness score: **97%** (1 blocker = posts volume — live publishing t
 ni ready cheyyagaladu — approval ni guarantee cheyyaledu. "Google lo suggest avvadam"
 ante autocomplete/Discover placement — adi **Google algorithm**, daaniki code tho force
 cheyyaleamu; cheyyagaligedi eligibility + quality signals mattrame.
+
+### v175 — MILESWEB ZIP KIT + REPRODUCIBLE BUILD GATES
+
+MilesWeb (cPanel) lo "zip upload chesi live" cheyyadaniki okka command:
+
+```bash
+python3 tools/build_milesweb_kit.py     # → milesweb-kit/ (+ SHA256SUMS.txt + guide)
+python3 tools/build_milesweb_kit.py --list   # enti build avutundo chudu
+```
+
+| Zip | Ekkadiki |
+|---|---|
+| `studentup-theme-1.9.35.zip` | WP Admin → Appearance → Themes → Upload Theme |
+| `studentup-seo-bridge-1.1.0.zip` | WP Admin → Plugins → Upload Plugin (veru theme vadithe) |
+| `studentup-static-site.zip` | cPanel → `public_html/` (static option) |
+| `studentup-bot-cron.zip` | cPanel → `~/bot/` (cron bot: drafts + approvals + guardian) |
+
+Builder **reproducible** (fixed timestamps ⇒ same sha256 prathi machine lo) and mundu
+theme zip **content fresh**-a check chestundi (stale zip upload ki velladu).
+Step-by-step: **`MILESWEB_GO_LIVE.md`** · cPanel path detail: `DEPLOY_MILESWEB.md`.
+
+Ee release lo fix ayyina build-gate bugs (suite red avvakunda):
+* **POT date fixed epoch** (`tools/build_pot.py`) — mtime-battina date valla zip sha256
+  machine-nunchi machine ki maripoyedi → ippudu `SOURCE_DATE_EPOCH` leda fixed
+  `2026-01-01` ⇒ theme zip **byte-reproducible**.
+* **Theme zip freshness = content polika** (`autoblog/theme_pack.py`) — guardian ·
+  readiness · v67/v68/v69/v72/v75/v76 suites ippudu zip bytes ni source bytes tho
+  polchutunnayi (mtime kaadu). `--test-all` order-dependent false "zip stale" ledu.
+* **`tests/seo_pipeline_test.py` pytest optional** — pytest install lekapote `main()`
+  runner (CI/shared hosting lo `pip install pytest` avasaram ledu).
+
+### v181 — GROWTH LOOPS: demand · decay · direct sales
+
+Top sites ki unna moodu **feedback loops** — ippudu mee bot lo kuda (cron-only,
+shared hosting safe, offline-testable):
+
+```bash
+python run.py --search-demand --notify          # readers em adigaro → content gaps
+python run.py --rank-trend --csv Pages.csv --notify   # traffic padutunna pages → refresh queue
+python run.py --sponsor-crm --notify            # roju 2 sponsor outreach + follow-ups + forecast
+```
+
+| Loop | Module | Enduku idi "advanced" |
+|---|---|---|
+| 🔎 **Search demand** | `autoblog/search_demand.py` + theme `inc/searchlog.php` | On-site search (live-search palette REST + `?s=` pages) ni **anonymous** ga log chestundi (term/count/zero matrame — IP/user eppudu store avvadu; bot + admin skip). Zero-result terms = mee **content gaps** → `output/search-demand-queue.json` (human review; auto-publish ledu). |
+| 📉 **Rank trend / decay** | `autoblog/rank_trend.py` | GSC Pages CSV ni **time-series** ga save (`logs/rank-history.json`, same-date idempotent, capped). 7/28-day baseline tho RISING / DECAYING / NEW classification (small samples skip). Decaying pages → `output/refresh-queue.json` **+ `gsc_refresh` priority store scores update** — mee `--update` pipeline ippudu age-batti kaadu, **traffic-loss batti** refresh chestundi. |
+| 🤝 **Sponsor pipeline** | `autoblog/sponsor_crm.py` + `ads/sponsors.json` | Highest revenue lever (direct sales) ni systematic chesedi: stages (new→contacted→replied→negotiating→won/lost), roju **N outreach** (`SPONSOR_OUTREACH_PER_DAY=2`), overdue follow-ups, pipeline ₹ + expected (stage probabilities), ready Telugu templates (rate card nunchi), Telegram daily plan. Fake prospects seed cheyyadu — `--sponsor-targets` tho evarini vethakalo cheptundi. |
+
+Honest: demand queue = **ideas** (meeru review cheyyali) · rank trend = **evidence**
+(GSC data/CSV unte matrame) · sponsor loop = **manual sales** (messages meeru pampali,
+tool plan + templates istundi). Ee loops rankings/revenue guarantee cheyyavu — kaani
+prathi roju "em cheyyali" anedi chupistayi.
+
+> Build-gate fixes (reproducible POT · content-fresh zip · pytest-optional) v175
+> section lo unnayi — ee release kuda vaatini use chestundi.
+
+v181 flags: `--search-demand` · `--search-import` · `--search-notify` · `--rank-trend` · `--rank-csv` · `--rank-window` · `--rank-notify` · `--sponsor-crm` · `--sponsor-targets` · `--sponsor-add` · `--sponsor-update` · `--sponsor-notify` · `--sponsor-limit` · `--sponsor-templates`
+
+### v182 — PLAN · MONEY · AUTHORITY (strategic loops)
+
+Moodu strategic loops — "inka ekkuva blogs, kaani plan tho", "ads highest ga",
+"world-class authority":
+
+```bash
+python run.py --calendar --calendar-apply --calendar-notify   # 90-day plan → pipeline queue
+python run.py --revenue-loop adsense-pages.csv --revenue-notify  # ad data → content/slot strategy
+python run.py --backlink --backlink-assets --backlink-targets --backlink-notify  # authority
+```
+
+| Loop | Module | Enduku idi "top level" |
+|---|---|---|
+| 🗓 **Editorial calendar** | `autoblog/editorial_calendar.py` | 5 signals kalipi (readers' demand · GSC decay · trends · keyword-matrix gaps · ₹ RPM signals) next N days ki **balanced slots**: okate day lo category max 2, cluster max 1, roju 1 refresh slot (Sunday 2). `output/editorial-calendar.{json,md}` + `--calendar-apply` = top topics ni `topics_queue.txt` ki (radar/pipeline chaduvutundi) ⇒ **plan nijamga generation ni drive chestundi**. Auto-publish ledu. |
+| 💰 **Revenue loop** | `autoblog/revenue_loop.py` | AdSense **Pages** CSV → site RPM, **category RPM** (₹/1k views), **money pages** (protect: internal links + freshness), **revenue leaks** (views ekkuva, RPM takkuva → slots/interlinks fix), **high-RPM tokens**. `output/revenue-insights.json` → calendar ki priority. Ad code ni ee tool marchadu. |
+| 🔗 **Backlink engine** | `autoblog/backlink_engine.py` + `output/backlink-pipeline.json` | White-hat authority: **link-worthy assets** (live tracker · deadline calendar+ICS · original data stories · free tools bundle · district map · pillar guides), **outreach targets** (colleges/libraries/teachers/news desks/YouTubers/communities/forums), pipeline stages + follow-ups + expected-links forecast, ready messages. **No paid links · no PBN · no blasts** (code lo hard rules). |
+
+Proof: `python tests/editorial_calendar_test.py` · `python tests/revenue_loop_test.py` ·
+`python tests/backlink_engine_test.py` · `python run.py --test-all`.
+
+### v183 — DAILY FORWARD LIST (WhatsApp-ready) 📲
+
+Site board + bot daily list rendu ippudu **okate category set** tho pani chestayi
+(incl. **Outsourcing & Contract Jobs** — puratana lo ivi board/digest nunchi
+padipoyevi). WhatsApp ki HTML tags pani cheyyavu — anduke **plain-text** format:
+
+```bash
+python run.py --forward-list                      # print + save (output/forward-list.txt)
+python run.py --forward-list --forward-format tg  # Telegram HTML version
+python run.py --forward-list --forward-send       # optional: Telegram/WhatsApp ki pampu
+```
+
+| Enti | Detail |
+|---|---|
+| Sections (plan tho match) | TS · AP · Central · Walk-in · **Outsourcing** · Job Melas · Software · Private · Scholarships · Results · Hall Tickets · Current Affairs |
+| Top block | 🆕 **IVVALTI KOTHAAVI (today)** — ivvalti publish ayina posts (highlight) |
+| Format | Numbered items · oka line title · 🔗 mee site link (shortener unte short link, lekapote `?p=ID`) · WhatsApp `*bold*` |
+| Files | `output/forward-list-YYYY-MM-DD.txt` (roju) + `output/forward-list.txt` (latest) |
+| Gating (v184) | **Last date ayyipoyinavi out** · deadline lekunda **120+ rojula puratana** out (`OPPORTUNITY_STALE_DAYS`, 0 = off) · **same recruitment ki kotha post vaste puratana di out** (supersede — newest wins) |
+| Add neat ga (v184) | Kotha items ki **🆕** marker · 3 rojula lopu close avutunna vaatiki **⏰ "2 days left"** · section headers ki counts |
+| Change report (v184) | `output/forward-list-state.json` (per-post first/last seen) → roju **"🆕 4 kotha · ❌ 3 out"** + CLI lo **enduku poyindi** reason (last date / stale / kotha version) |
+| Site board parity | `inc/opportunities.php` (theme v1.9.35) lo same moodu rules → site page · Telegram digest · WhatsApp list **okate** chupistayi |
+| Cron | Roju 08:35 → list ready; meeru copy chesi groups/status ki forward cheyyandi |
+
+Proof: `python tests/forward_list_test.py` · `python run.py --test-all`.
+
+v183 flags: `--forward-list` · `--forward-format` · `--forward-per-section` · `--forward-send` · `--forward-no-save`
+
+### v185 — WORLD-CLASS WEB QUALITY (31-check deep audit) 🏆
+
+Theme ni "world best" standards tho **repeatable ga audit** cheyyadaniki
+`tools/theme_audit_deep.py` ki **PASS 4 — web-quality matrix** add chesaamu
+(27 deterministic checks + existing passes). Ippudu prathi release ki:
+
+```bash
+python3 tools/theme_audit_deep.py     # pass 1-4 · ✅ 31 pass · 0 warn · 0 fail
+node tools/php_lint.js                # 86/86
+python3 tools/cwv_audit.py            # CLS/a11y static (10 pages)
+```
+
+Ee pass lo **nijamaina gaps fix chesaamu** (audit cheppindi, guess kaadu):
+
+| Gap | Fix |
+|---|---|
+| 🌙 **Dark-mode flash** — dark readers ki page paint ayye mundu white flash (footer JS deferred) | `header.php` lo body taruvata **pre-paint inline script** (saved choice > system > light, ~180 bytes) |
+| 🎛 **Native controls light ga** — scrollbar/form/autofill theme follow avvavu | `<meta name="color-scheme" content="light dark">` + CSS `color-scheme` tokens |
+| 🔠 **Blog index ki H1 ledu** (h2) — SEO/screen-reader outline | `index.php` title → `<h1>` (per-template single-H1 check tho verify) |
+| 🧱 **Card rendering cost** | `contain: content` (board cards) + `contain: layout style` (news cards/grid) · `style.min.css` fresh (-11%) |
+
+Matrix check chesevi (anni deterministic): single-H1 per view · skip-link ·
+landmarks · `language_attributes()` · color-scheme (meta+CSS) · no-flash script ·
+reduced-motion · focus-visible · outline safety · aria-live · aria-expanded ·
+noopener · img alt/dims · lazy + LCP fetchpriority · responsive images ·
+LCP preload · containment · content-visibility · print CSS · overflow guard ·
+44px touch targets · CSS budget · min.css fresh · system fonts · PWA manifest ·
+service worker · schema rich results.
+
+Proof: `python tests/v185_test.py` · `python run.py --test-all`.
+
+### v186 — LIVE SITE AUDIT (deploy tarvata nijamaina verification) 🌐
+
+Ippati varaku anni gates **pre-deployment** (theme zip · tests · static CWV audit).
+Kaani "live site nijamga correct ga serve avutunda?" anedi veru prashna — hosting
+redirects, headers, robots, sitemap, schema, PWA, sample posts, 404 behavior.
+`autoblog/live_audit.py` ee loop ni close chestundi (**16 checks · real HTTP**):
+
+```bash
+python run.py --live-audit --live-url https://studentup.in --live-notify
+python run.py --live-audit --live-posts 8 --live-strict    # warnings kuda fail
+```
+
+| Checks | Enti verify chestundi |
+|---|---|
+| 🌐 Serving | reachability + **TTFB** (slow unte warn) · http→https redirect · www/non-www duplicate host |
+| 🤖 Crawl | robots.txt (Sitemap line · site-wide `Disallow: /` ledu) · sitemap.xml valid XML + URL count |
+| 💰 Ads | ads.txt — AdSense approve ayyaka **mandatory** (`google.com` line), lekapote skip |
+| 🔒 Headers | HSTS · nosniff · Referrer-Policy · X-Frame-Options · **gzip/br compression** |
+| 🏠 Homepage | title/description lengths · **okka H1** · canonical · og:title · JSON-LD (Organization/WebSite) · viewport · noindex safety |
+| 📱 PWA | manifest fetch + JSON + icons · sw.js |
+| 📄 Posts | sitemap nunchi sample pages: 200 · title+H1 · **thin content (<300 words)** |
+| 🧯 Hygiene | unknown URL → **404** (soft-404 ledu) · static asset Cache-Control |
+
+Report: `output/live-audit.json` + `.md` (readable) + `--live-notify` (Telegram).
+Exit: `0` all pass · `1` fail undi (`--live-strict` tho warn kuda) · `2` URL ledu.
+Read-only — eem marchadu.
+
+Proof: `python tests/live_audit_test.py` (mock sites: healthy + broken) ·
+`python run.py --test-all`.
+
+v186 flags: `--live-audit` · `--live-url` · `--live-posts` · `--live-timeout` · `--live-notify` · `--live-strict`
+
+### v187 — MULTI-LINK INTAKE + RICH WHATSAPP LIST 🔗
+
+**Mee list style ki bot ippudu exact ga pani chestundi.** Oka file lo (leda inline)
+links isthe — **prathi link ki veru veru draft**:
+
+```bash
+python run.py --links-file links.txt          # oka line okka link (markdown/plain)
+python run.py --links "https://a.com/x, https://b.com/y"
+python run.py --links-file links.txt --links-dry-run     # plan mattrame
+```
+
+```
+🔗 MULTI-LINK INTAKE — 1 kotha draft · 1 refresh · 1 fail
+   ✅ [created]   SSC CGL 2026 Notification (1000+ posts) — studentup.in/ssc-cgl/
+   ♻️ [refreshed] ECIL (310 ITI Trade Apprentice Posts) — studentup.in/ecil/
+   ❌ [failed]    IIT Hyderabad — ValueError: source fetch fail
+```
+
+| Niyamam | Detail |
+|---|---|
+| **Separate drafts** | Prathi link okka source URL → pipeline (no-copy + fact gates) aa okka URL nunchi ne article rasthundi · **merge ledu** |
+| Duplicate | Same source URL malli isthe pipeline **refresh** chestundi (kotha post ledu) |
+| Throttle | Run ki max `--links-limit` (default `LINK_INTAKE_MAX=10`) — 100 links spam pattern ni aaputundi |
+| Parse | WhatsApp/notes paste: `1. **ECIL (310 posts)**` + `- [https://…](…)` · bare URLs · markdown link text peru ga vastundi |
+| Report | `output/link-intake.json` + `--links-notify` (Telegram) |
+
+**WhatsApp list (v187.2) — Telugu lo, neat ga** (user feedback: date line vaddhu · duplicate vaddhu · Telugu):
+
+```
+📋 *StudentUp — నేటి ఉద్యోగాల లిస్ట్*
+🗓 శుక్రవారం, 02 అక్టోబర్ 2026 · 🌐 https://studentup.in
+
+🇮🇳 *కేంద్ర ప్రభుత్వ ఉద్యోగాలు* (2 ఉద్యోగాలు)
+
+1) 🆕 *SSC CGL 2026 Notification* — ఉద్యోగాలు 1000+ · 💰 ₹25,500 – ₹81,100 · ⏰ 2 రోజులు మాత్రమే
+🔗 https://studentup.in/ssc-cgl-2026/
+2) 🆕 *ECIL ITI Trade Apprentice Recruitment 2026* — ఉద్యోగాలు 310
+🔗 https://studentup.in/ecil-iti-trade-apprentice-2026/
+
+💻 *SOFTWARE JOBS* (2 jobs)
+
+1) *TCS NQT 2026 Registration Open* — 💰 ₹3.5 – ₹7 LPA
+🔗 https://studentup.in/tcs-nqt-2026/
+
+✅ *8 ఉద్యోగాలు* · 👥 *3,293+ పోస్టులు* · 🌐 https://studentup.in
+ℹ️ అప్లై చేసే ముందు అధికారిక నోటిఫికేషన్‌లో వివరాలు వెరిఫై చేసుకోండి.
+```
+
+- **Telugu lo** — headings (`తెలంగాణ ప్రభుత్వ ఉద్యోగాలు` · `కేంద్ర ప్రభుత్వ ఉద్యోగాలు` · `వాక్-ఇన్ ఇంటర్వ్యూలు` · `అవుట్‌సోర్సింగ్ & కాంట్రాక్ట్ ఉద్యోగాలు`) + `ఉద్యోగాలు 1,000+`
+- **Software section English** — `💻 *SOFTWARE JOBS* (2 jobs)` + `40 openings` / `⏰ 2 days left` (user preference)
+- **Duplicate today block ledu** — oka clean list; new items ki section lopala 🆕 marker
+- **Per-item 📅 last date line ledu** — last date bot lopalane expiry/stale/supersede ki vadutundi;
+  3 rojula lopu unte mattrame `⏰ 2 రోజులు మాత్రమే` chip
+- **Prathi item kinda mee site link** — readers anni links open cheyyachu (truncation unte `… ఇంకా N ఉద్యోగాలు` line)
+- Expired/stale/superseded gating same (v184) · Telegram digest format marchaledu (backward compatible)
+
+Proof: `python tests/v187_test.py` (6 groups) · `--test-all` **137/137** · jsdom **177/177** · php-lint **86/86** · deep theme **31/0/0** · parity/code **0/0**.
+
+v187 flags: `--links-file` · `--links` · `--links-limit` · `--links-dry-run` · `--links-notify`
+
+### v188 — HOOK ENGINE: "main enti" mundu, links kinda 🪝
+
+**Blog drafts (`su-hook` lead, English — site public surfaces English-only):**
+
+```
+SSC CHSL 2026 recruitment — eligibility, important dates, vacancy details and the official apply link in one place.
+```
+
+- Prapth formula: `<strong>{main}</strong> recruitment [(2,000+ vacancies, last date 04 Oct 2026)] — eligibility, important dates, vacancy details and the official apply link in one place.`
+- **Fabricate ledu** — vacancies/last date **nijamaina** value unte mattrame aa clause vastundi (`recruitment` evidence nunchi).
+- **Idempotent** — post ki rendu sari hook ledu; intro lo already subject unte asalu veyyadu.
+- CSS: `.su-hook` (gradient + accent bar + dark/print safe) — theme **1.9.36**.
+
+**Daily WhatsApp list — main enti mundu, link kinda (mee format):**
+
+```
+🇮🇳 *కేంద్ర ప్రభుత్వ ఉద్యోగాలు* (2 ఉద్యోగాలు)
+
+1) 🆕 *SSC CHSL 2026 ఉద్యోగాలు* — 2,000+ పోస్టులు · 💰 ₹25,500 – ₹81,100 · ⏰ 2 రోజులు మాత్రమే
+🔗 https://studentup.in/ssc-chsl-2026/
+2) 🆕 *IBPS Clerk 2026 ఉద్యోగాలు*
+🔗 https://studentup.in/ibps-clerk-2026/
+
+💻 *SOFTWARE JOBS* (1 job)
+
+1) 🆕 *Infosys Off Campus Drive 2026 Jobs* — 40 openings · 💰 ₹3.6 – ₹6.5 LPA
+🔗 https://studentup.in/infosys-2026/
+```
+
+- **Hook headline** = `subject()` boilerplate teesi (`Notification`/`Recruitment`/`Apply Online`/`Complete Details`...) → `SSC CHSL 2026` + `ఉద్యోగాలు` (software: `Jobs`).
+- **Chips** = `2,000+ పోస్టులు` (comma formatting) · `💰 pay` · `⏰ 2 రోజులు మాత్రమే`.
+- **Mana blog links mattrame** — external source domains (ssc.gov.in, ecil.co.in) list lo eppudu raavu.
+
+Proof: `python tests/v188_test.py` (5 groups) · `--test-all` **137/137**.
+
+### v189 — DAILY MORNING SEND 🌅 (roju udayam automatic)
+
+**Okkate command — list build → save → Telegram + WhatsApp + wa.me click-to-forward:**
+
+```bash
+python run.py --forward-morning                    # roju 6:30 AM cron (crontab.example)
+python run.py --forward-morning --forward-morning-no-send   # build/save mattrame
+python run.py --forward-morning --forward-no-whatsapp       # Telegram mattrame
+```
+
+| Em | Detail |
+|---|---|
+| Channels | **Telegram** (HTML — `*bold*` → `<b>bold</b>`, links clickable) + **WhatsApp** (CallMeBot, 820-char chunks) |
+| Files | `output/forward-list-YYYY-MM-DD.txt` + `output/forward-list.txt` (rendu save) |
+| Click-to-forward | `wa.me/?text=…` link print avutundi — group/status ni miru choose cheyyachu |
+| Honest rc | `0` ok · `1` list khali · `2` build fail · `3` channels configure ayyi anni fail |
+| Keys ledu | Warning mattrame — list file lo untundi (keys pettaka automatic start) |
+| Cron | `30 6 * * *` (6:30 AM) — `crontab.example` lo line ready |
+
+Proof: `python tests/v189_test.py` (5 groups).
+
+### v190 — `--daily`: OKE COMMAND (anni nene set chesanu) 🌅
+
+**Mee cron lo okka line — anthe. Migilinadi bot ne chusukuntundi:**
+
+```bash
+python run.py --daily                  # 6:30 AM: drafts → health → Telugu list → send
+python run.py --daily --daily-no-drafts      # list + send mattrame
+python run.py --daily --daily-no-send        # build/save mattrame (test ki)
+```
+
+| Step | Em jarugutundi |
+|---|---|
+| **1. Drafts** | radar + queue topics → **prathi link ki veru draft** — blog lead (`su-hook`) **ade format** tho |
+| **2. Guardian** | site/system health quick check (non-fatal) |
+| **3. List + Send** | daily list **ade hook format** (`*SSC CHSL 2026 ఉద్యోగాలు*` → chips → mana blog link) → save → **Telegram + WhatsApp** + `wa.me` click-to-forward |
+| Fail-safe | okka step fail aina migilinavi continue (drafts fail ≠ list fail) — honest rc `0/1/2/3` |
+
+**Consistency guarantee:** draft lead + list item **rendu okate `hooks` module** nunchi
+(`subject()`/`headline()`) — eppudu drift avvavu (test tho lock chesanu: `tests/v190_test.py 4`).
+Draft = English (site public surfaces), list = Telugu — mee preference prakaram.
+
+> 🏆 **Motham setup (world-best guide):** [`FULL_SETUP_GUIDE.md`](FULL_SETUP_GUIDE.md) — 8 steps · .env keys · cron · SEO · money · honest limits.
 
 ### Release pin sync (`tools/pin_sync.py`)
 

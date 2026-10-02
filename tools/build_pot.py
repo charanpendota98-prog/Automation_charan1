@@ -57,15 +57,23 @@ def _theme_version() -> str:
     return m.group(1) if m else "1.0.0"
 
 
+# v175: FIXED epoch — zip builder lo unna fixed date_time (2026-01-01) tho sync.
+FIXED_EPOCH = 1767225600  # 2026-01-01 00:00:00 UTC
+
+
 def _stamp() -> str:
-    """Deterministic POT-Creation-Date: SOURCE_DATE_EPOCH unte adhi, lekapote
-    theme PHP files lo newest mtime (content marakapote output byte-identical)."""
+    """Deterministic POT-Creation-Date (reproducible build).
+
+    Modalu mtime nunchi teesukunevallam, kaani file mtimes machine-nunchi
+    machine ki (fresh clone/CI lo checkout time) marutayi → POT date marutundi
+    → zip sha256 marutundi → GO_LIVE lo record chesina sha stale avutundi
+    (`tests/v95_test.py` pin fail). Ippudu content-based kaadu, fixed epoch:
+    same content ⇒ byte-identical POT ⇒ same zip sha256 (prathi machine lo).
+    `SOURCE_DATE_EPOCH` set chesthe adi respect chestundi (standard practice).
+    """
     epoch = os.environ.get("SOURCE_DATE_EPOCH")
-    if epoch and epoch.strip().isdigit():
-        dt = datetime.fromtimestamp(int(epoch.strip()), tz=timezone.utc)
-    else:
-        newest = max((p.stat().st_mtime for p in THEME.rglob("*.php")), default=0)
-        dt = datetime.fromtimestamp(newest, tz=timezone.utc)
+    ts = int(epoch.strip()) if epoch and epoch.strip().isdigit() else FIXED_EPOCH
+    dt = datetime.fromtimestamp(ts, tz=timezone.utc)
     return dt.strftime("%Y-%m-%d %H:%M+0000")
 
 

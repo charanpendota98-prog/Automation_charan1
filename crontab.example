@@ -20,3 +20,21 @@
 30 3 * * 0 cd /opt/studentup && /opt/studentup/.venv/bin/python tools/prune_media.py --days 30 --apply >> /opt/studentup/log/prune.log 2>&1
 # Weekly dead-link + orphan scan (Sunday 3:45 AM — rot links = trust loss):
 45 3 * * 0 cd /opt/studentup && /opt/studentup/.venv/bin/python run.py --orphans >> /opt/studentup/log/links.log 2>&1
+# v181 growth loops — readers' demand + GSC decay + sponsor sales (shared hosting safe):
+30 8 * * *   cd /opt/studentup && /opt/studentup/.venv/bin/python run.py --search-demand --notify >> /opt/studentup/log/demand.log 2>&1
+0 9 * * 1    cd /opt/studentup && /opt/studentup/.venv/bin/python run.py --rank-trend --csv /opt/studentup/private/Pages.csv --notify >> /opt/studentup/log/rank.log 2>&1
+15 9 * * *   cd /opt/studentup && /opt/studentup/.venv/bin/python run.py --sponsor-crm --notify >> /opt/studentup/log/sponsor.log 2>&1
+# v182 strategic loops (weekly plan · ad-data strategy · authority outreach):
+45 8 * * 1   cd /opt/studentup && /opt/studentup/.venv/bin/python run.py --revenue-loop private/adsense-pages.csv --revenue-notify >> /opt/studentup/log/revenue.log 2>&1
+0 9 * * 1    cd /opt/studentup && /opt/studentup/.venv/bin/python run.py --calendar --calendar-apply --calendar-notify >> /opt/studentup/log/calendar.log 2>&1
+30 9 * * 1   cd /opt/studentup && /opt/studentup/.venv/bin/python run.py --backlink --backlink-notify >> /opt/studentup/log/backlink.log 2>&1
+# v183 daily WhatsApp-forward list (plain text; copy-paste to groups):
+35 8 * * *   cd /opt/studentup && /opt/studentup/.venv/bin/python run.py --forward-list >> /opt/studentup/log/forward.log 2>&1
+# v190 DAILY ROUTINE (6:30 AM IST) — OKE LINE: drafts (radar+queue → prathi link ki veru draft,
+# hook lead tho) → guardian health → Telugu list (ade hook format) → Telegram + WhatsApp + wa.me
+30 6 * * *   cd /opt/studentup && /opt/studentup/.venv/bin/python run.py --daily >> /opt/studentup/log/daily.log 2>&1
+# (alternatives: --daily-no-drafts · --daily-no-guardian · --daily-no-send · --forward-no-whatsapp;
+#  only-list mattrame kavali ante: python run.py --forward-morning)
+# v186 live site audit (weekly): 16 HTTP checks (robots · sitemap · schema · PWA · 404 · caching):
+0 10 * * 1   cd /opt/studentup && /opt/studentup/.venv/bin/python run.py --live-audit --live-notify >> /opt/studentup/log/live-audit.log 2>&1
+

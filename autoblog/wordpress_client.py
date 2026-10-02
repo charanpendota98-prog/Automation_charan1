@@ -125,6 +125,9 @@ class WordPressClient:
                 "application_url": meta.get("studentup_apply_url", "") if isinstance(meta, dict) else "",
                 "org_url": meta.get("studentup_org_url", "") if isinstance(meta, dict) else "",
                 "qualification": meta.get("studentup_qual", "") if isinstance(meta, dict) else "",
+                # v187: "N posts" + pay — WhatsApp list lo org/role detail kosam
+                "vacancies": meta.get("studentup_vacancies", "") if isinstance(meta, dict) else "",
+                "salary": meta.get("studentup_salary", "") if isinstance(meta, dict) else "",
             })
         return rows
 

@@ -1,6 +1,6 @@
 # 📋 MANUAL ADVANCED CHECKLIST — "Nenu manual ga em em cheyali"
 ### Website advanced ga run avvali · Posts ANI-PERFECT · Mistakes leku · Deep analyse + NotebookLM
-> **Verified counts (theme v1.9.23 build):** test suites **124/124** files · jsdom runtime **177/177** checks · PHP lint **85/85** files · theme audit **0/0** · code audit **0/0**.
+> **Verified counts (theme v1.9.36 build):** test suites **137/137** files · jsdom runtime **177/177** checks · PHP lint **86/86** files · theme audit **0/0** · **deep audit pass 1-4 31/31** · code audit **0/0**.
 
 
 **Ee file = mee haath tho cheyyalsina ANNI — exact order, exact commands.**
@@ -3128,3 +3128,275 @@ python3 tools/build_wp_theme.py     # zip first
 python3 tools/pin_sync.py           # dry run
 python3 tools/pin_sync.py --write   # apply
 ```
+
+---
+
+## PART 74 — v175: MILESWEB ZIP KIT + REPRODUCIBLE BUILD GATES
+
+**MilesWeb lo zip upload chesi live cheyyadam** — okka command tho upload-ready bundle:
+
+```bash
+python3 tools/build_milesweb_kit.py          # → milesweb-kit/ (+ SHA256SUMS.txt + guide)
+python3 tools/build_milesweb_kit.py --list   # enti build avutundo chudu
+```
+
+| Zip | Ekkadiki upload | Enti |
+|---|---|---|
+| `studentup-theme-1.9.35.zip` (113 files) | WP Admin → Appearance → Themes → Upload Theme | Design + job card + Apply bar + schema + ad slots (activate tho one-click setup) |
+| `studentup-seo-bridge-1.1.0.zip` | WP Admin → Plugins → Upload Plugin | Rank Math REST bridge (veru theme vadithe matrame) |
+| `studentup-static-site.zip` (23 files) | cPanel → `public_html/` | Static site (WordPress path vadakapothe) |
+| `studentup-bot-cron.zip` (299 files) | cPanel → `~/bot/` | Cron bot: drafts + Telegram approvals + guardian |
+
+Builder mundu theme zip **content fresh**-a check chestundi; zips **reproducible**
+(fixed timestamps ⇒ same sha256 prathi machine lo, `sha256sum -c SHA256SUMS.txt` tho verify).
+Step-by-step guide: **`MILESWEB_GO_LIVE.md`** · cPanel path detail: `DEPLOY_MILESWEB.md`.
+
+Ee release lo fix ayyina build-gate bugs (suite ni nijamga green cheyyadaniki):
+
+1. **POT date fixed epoch** (`tools/build_pot.py`) — mtime-battina
+   `POT-Creation-Date` valla theme zip sha256 machine-nunchi machine ki maripoyedi
+   (GO_LIVE lo record chesina sha stale avutundi). Ippudu `SOURCE_DATE_EPOCH`
+   leda fixed `2026-01-01` ⇒ zip **byte-reproducible**.
+2. **Content-based theme zip freshness** (`autoblog/theme_pack.py`) —
+   guardian · readiness · v67/v68/v69/v72/v75/v76 suites ippudu zip **bytes** ni
+   source bytes tho polchutunnayi (mtime kaadu). Minify/POT regenerate ayina
+   content same unte "zip stale" false alarm raadu (order-dependent flake poyindi).
+3. **`tests/seo_pipeline_test.py` pytest optional** — pytest install lekapote
+   `main()` runner run avutundi (CI/shared hosting lo `pip install pytest` avasaram ledu).
+
+Proof: `python run.py --test-all` → **124/124 passed** (aa release lo) · jsdom **177/177** ·
+php-lint **85/85** · theme audit 0/0 · code audit 0/0 · parity 0/0 ·
+`run.py --guardian` **15 checks OK** (owner creds warn-only) ·
+`run.py --readiness` **100/100** · `run.py --deploy-check` **0 fail**.
+
+---
+
+## PART 75 — v181: GROWTH LOOPS (demand · decay · direct sales)
+
+Moodu feedback loops — ila top sites pani chestayi, ippudu mee bot lo (cron-only):
+
+```bash
+python run.py --search-demand --notify                 # 1) demand loop
+python run.py --rank-trend --csv private/Pages.csv --notify   # 2) evidence loop
+python run.py --sponsor-crm --notify --sponsor-templates      # 3) revenue loop
+```
+
+| Loop | Files | Enti |
+|---|---|---|
+| 🔎 Demand | `autoblog/search_demand.py` · theme `inc/searchlog.php` · `search.php` | Readers' on-site searches (palette REST `/wp/v2/search` + `?s=`) → anonymous count + zero flag → gaps queue `output/search-demand-queue.json`. Privacy: term/count/zero matrame; IP transient throttle lo 60s (persist ledu); bot + admin searches skip; 80-char cap; 200-term cap. |
+| 📉 Evidence | `autoblog/rank_trend.py` | GSC CSV → snapshots `logs/rank-history.json` (same-date replace, cap RANK_HISTORY_MAX_SNAPSHOTS=120) → 7/28d window → RISING / DECAYING / NEW / FLAT (clicks<3 sample skip) → `output/refresh-queue.json` + `gsc_refresh` store scores update → mee `--update`/auto-refresh data-driven. |
+| 🤝 Revenue | `autoblog/sponsor_crm.py` · `ads/sponsors.json` | Stages + probabilities (new 5% → won 100%), roju outreach (SPONSOR_OUTREACH_PER_DAY), overdue follow-ups, pipeline/expected/won forecast, Telugu templates (rate_card), Telegram plan. Fake data ledu. |
+
+Setup + config knobs (`.env`, anni optional):
+```
+SEARCH_DEMAND_QUEUE · SEARCH_DEMAND_MAX_TERMS=200
+RANK_HISTORY_PATH · RANK_REFRESH_QUEUE · RANK_HISTORY_MAX_SNAPSHOTS=120
+SPONSOR_PIPELINE_PATH · SPONSOR_OUTREACH_PER_DAY=2 · SPONSOR_FOLLOWUP_STALE_DAYS=3
+```
+
+Cron (MilesWeb):
+```
+30 8 * * *   ... run.py --search-demand --notify
+0 9 * * 1    ... run.py --rank-trend --csv private/Pages.csv --notify
+15 9 * * *   ... run.py --sponsor-crm --notify
+```
+
+Honest: ee loops rank/revenue **guarantee cheyyavu**. Demand = queue (human review),
+trend = GSC evidence (data unte), sponsor = manual sales (messages meeru pampali).
+
+Proof: `python tests/search_demand_test.py` · `python tests/rank_trend_test.py` ·
+`python tests/sponsor_crm_test.py` · `python run.py --test-all` → **127/127**.
+
+v181 flags: `--search-demand` · `--search-import` · `--search-notify` · `--rank-trend` · `--rank-csv` · `--rank-window` · `--rank-notify` · `--sponsor-crm` · `--sponsor-targets` · `--sponsor-add` · `--sponsor-update` · `--sponsor-notify` · `--sponsor-limit` · `--sponsor-templates`
+
+---
+
+## PART 76 — v182: PLAN · MONEY · AUTHORITY
+
+```bash
+python run.py --calendar --calendar-apply --calendar-notify
+python run.py --revenue-loop adsense-pages.csv --revenue-notify
+python run.py --backlink --backlink-assets --backlink-targets --backlink-notify
+```
+
+| Loop | Files | Enduku |
+|---|---|---|
+| 🗓 Calendar | `autoblog/editorial_calendar.py` → `output/editorial-calendar.{json,md}` | 5 signals (demand · decay · trends · matrix gaps · ₹ RPM) → balanced 90-day plan; caps: per-category 2/day, per-cluster 1/day, refresh slot daily (Sunday 2). `--calendar-apply` → `topics_queue.txt` (pipeline aa order lo rasi). |
+| 💰 Revenue | `autoblog/revenue_loop.py` → `output/revenue-insights.json` | AdSense Pages CSV → category RPM, money pages (protect), leaks (fix), high-RPM tokens → calendar priority. Sample chinna ga unte `ready=False` + honest warning. |
+| 🔗 Authority | `autoblog/backlink_engine.py` → `output/backlink-pipeline.json` | 6 link-worthy asset families (tracker/calendar/data/tools/map/guides) + 10 target types + search strings + stages/probabilities/forecast + Telugu templates. Rules hard: no paid links, no PBN, no auto-blast. |
+
+Config knobs (.env):
+```
+EDITORIAL_CALENDAR_PATH · EDITORIAL_CALENDAR_DAYS=90 · EDITORIAL_CALENDAR_PER_DAY=3
+CALENDAR_APPLY_LIMIT=12 · REVENUE_INSIGHTS_PATH · REVENUE_LOOP_MIN_IMPRESSIONS=50
+BACKLINK_PIPELINE_PATH · BACKLINK_FOLLOWUP_DAYS=7
+```
+
+Weekly cron (MilesWeb):
+```
+45 8 * * 1   ... run.py --revenue-loop private/adsense-pages.csv --revenue-notify
+0 9 * * 1    ... run.py --calendar --calendar-apply --calendar-notify
+30 9 * * 1   ... run.py --backlink --backlink-notify
+```
+
+Honest: calendar = plan (generation + approval gates appude) · revenue loop = strategy
+input (ad code touch cheyyadu) · backlink = manual outreach (time/links guarantee ledu).
+
+Proof: `python tests/editorial_calendar_test.py` · `python tests/revenue_loop_test.py`
+· `python tests/backlink_engine_test.py` · `python run.py --test-all`.
+
+> v182 flags: `--calendar` · `--calendar-days` · `--calendar-per-day` · `--calendar-apply` · `--calendar-limit` · `--calendar-no-universe` · `--calendar-notify` · `--revenue-loop` · `--revenue-notify` · `--revenue-min-views` · `--backlink` · `--backlink-assets` · `--backlink-targets` · `--backlink-add` · `--backlink-update` · `--backlink-notify` · `--backlink-templates`
+
+---
+
+## PART 77 — v183: DAILY FORWARD LIST (WhatsApp-ready)
+
+```bash
+python run.py --forward-list                       # plain text (WhatsApp) + files
+python run.py --forward-list --forward-format tg   # Telegram HTML chunks
+python run.py --forward-list --forward-send        # optional send
+python run.py --forward-list --forward-no-save     # print only
+```
+
+| Enti | Detail |
+|---|---|
+| Enduku | Students andaru WhatsApp groups lo unnaru — list akkadiki **plain text** ga vellali (HTML tags WhatsApp lo raw ga kanipistayi) |
+| Sections | TS · AP · Central · Walk-in · **Outsourcing & Contract Jobs** (kotha, v183) · Job Melas · Software · Private · Scholarships · Results · Hall Tickets · Current Affairs |
+| Today block | 🆕 IVVALTI KOTHAAVI — ivvalti published posts (max 5) |
+| Files | `output/forward-list-2026-10-02.txt` + `output/forward-list.txt` |
+| WhatsApp rules | Expired posts ledu · official notification verify disclaimer undi · dead links ledu (shortener OFF unte real permalinks) |
+| v184 gating | Expired out · undated **120+ rojula puratana** out (`OPPORTUNITY_STALE_DAYS`) · same recruitment kotha version vaste puratana di out |
+| v184 markers | 🆕 kotha items · ⏰ 3 rojula lopu close avutunna vaatiki days-left · section counts · header lo `📈 🆕 n kotha · ❌ n out` |
+| v184 state | `output/forward-list-state.json` (first_seen/last_seen, 90-day prune, corrupt file → fresh start) · CLI lo gone-reasons |
+| Send limits | CallMeBot URL limit → `--forward-send` plain text ni item boundaries lo split chesi (max 3 msgs) pampistundi; best practice = copy-paste |
+
+Proof: `python tests/forward_list_test.py` · site board section parity (`inc/opportunities.php`).
+
+v183 flags: `--forward-list` · `--forward-format` · `--forward-per-section` · `--forward-send` · `--forward-no-save`
+
+---
+
+## PART 78 — v185: WORLD-CLASS WEB QUALITY (deep audit pass 4)
+
+```bash
+python3 tools/theme_audit_deep.py    # pass 1-4 · 31 pass · 0 warn · 0 fail
+python3 tools/cwv_audit.py           # CLS/a11y static (10 pages)
+python tests/v185_test.py            # invariants (no-flash · h1 · containment)
+```
+
+| Em | Detail |
+|---|---|
+| Fix 1 | **No-flash dark mode** — `header.php` lo `<body>` taruvata pre-paint script: `localStorage.su_theme` > `prefers-color-scheme` > light. Footer JS same key tho toggle (parity test undi). |
+| Fix 2 | **color-scheme** meta (head) + CSS tokens → scrollbar · form controls · autofill reader theme follow avutayi. |
+| Fix 3 | **Single H1 per view** — blog index / search fallback title ippudu `<h1>` (title tag tho match). |
+| Fix 4 | **Containment + min.css** — board cards `contain:content`, news cards `contain:layout style`, `style.min.css` fresh (-11% CSS). |
+| Matrix | 27 checks: a11y (skip-link · landmarks · focus-visible · aria-live/expanded · img alt · touch targets) · CWV (LCP preload · fetchpriority · lazy · containment · content-visibility · CSS budget) · SEO/schema · PWA · print · noopener · reduced-motion. |
+| Rule | Ee tool **fail** unte CI lo release aapali — matrix honest (false positive lekunda PHP-strip + reserved-container exceptions). |
+
+Proof: `python3 tools/theme_audit_deep.py` · `python tests/v185_test.py` · `python run.py --test-all`.
+
+---
+
+## PART 79 — v186: LIVE SITE AUDIT (deploy tarvata HTTP verification)
+
+```bash
+python run.py --live-audit --live-url https://studentup.in
+python run.py --live-audit --live-posts 8 --live-notify --live-strict
+```
+
+| Em | Detail |
+|---|---|
+| Enduku | Pre-deploy gates anni pass aina, live hosting config tappu undochu — idi adi pattukuntundi (README/PART 76-79 laantivi kaadu: **real HTTP** checks) |
+| 16 checks | reachability+TTFB · https redirect · www duplicate · robots · sitemap · ads.txt · security headers · compression · homepage SEO (title/desc/H1/canonical/og/JSON-LD) · schema · viewport · PWA manifest+SW · sample posts (200/title/H1/thin) · soft-404 · asset Cache-Control · noindex safety |
+| Exit codes | `0` pass (warns tho) · `1` fail (`--live-strict` tho warn kuda) · `2` URL ledu |
+| Output | `output/live-audit.json` + `output/live-audit.md` + optional Telegram summary |
+| Cron | Deploy tarvata okkasari + weekly (crontab `--live-audit` line) |
+| Safety | **Read-only** — eem marchadu · network fail → finding (crash ledu) |
+
+Proof: `python tests/live_audit_test.py` (mock good/broken sites) · `python run.py --test-all`.
+
+v186 flags: `--live-audit` · `--live-url` · `--live-posts` · `--live-timeout` · `--live-notify` · `--live-strict`
+
+---
+
+## PART 80 — v187: MULTI-LINK INTAKE + RICH WHATSAPP LIST
+
+```bash
+python run.py --links-file links.txt                    # prathi link → veru draft
+python run.py --links "https://a.com/x, https://b.com/y"
+python run.py --links-file links.txt --links-dry-run    # plan mattrame
+```
+
+| Em | Detail |
+|---|---|
+| Parse | Numbered name line + `[url](url)` · bare URL · markdown link text peru ga · dedupe · trailing punctuation clean |
+| Separate drafts | Prathi link okka `pipeline.create_from_source(url, force_draft=True)` call — article aa okka source meeda (no-copy + fact gate same) |
+| Refresh | Same source URL → kotha post kaadu, existing post refresh (`find_post_by_source_url`) |
+| Throttle | Run ki `--links-limit` (default `LINK_INTAKE_MAX=10`) · excess skip report lo |
+| Fail handling | Okka link fail aina migilinavi continue · reason honest ga report lo |
+| Report | `output/link-intake.json` · `--links-notify` Telegram |
+| List upgrade (v187.2) | **Telugu list**: `📋 *StudentUp — నేటి ఉద్యోగాల లిస్ట్*` · heading `🏛️ *తెలంగాణ ప్రభుత్వ ఉద్యోగాలు* (1 ఉద్యోగం)` · item `*Title* — ఉద్యోగాలు 1000+ · 💰 pay · ⏰ 2 రోజులు మాత్రమే` + 🔗 link · **software English** (`40 openings` / `⏰ 2 days left`). Today block ledu (duplicate vaddhu) · per-item 📅 date line ledu · footer `✅ 8 ఉద్యోగాలు · 👥 3,293+ పోస్టులు` |
+
+Proof: `python tests/v187_test.py` · `python run.py --test-all`.
+
+v187 flags: `--links-file` · `--links` · `--links-limit` · `--links-dry-run` · `--links-notify`
+
+---
+
+## PART 81 — v188: HOOK ENGINE (main enti mundu · links kinda)
+
+| Em | Detail |
+|---|---|
+| Blog hook | `seo.enhance()` → `hooks.ensure_lead()` → article modata `<p class="su-hook">` (English) |
+| Hook formula | `<strong>{main}</strong> recruitment [(N vacancies, last date …)] — eligibility, important dates, vacancy details and the official apply link in one place.` |
+| Honesty | vacancies/last date **nijamaina** value unte mattrame (evidence nunchi) — fabricate ledu |
+| Idempotent | `su-hook` marker + intro-subject check → rendu sari ledu, natural intro unte skip |
+| List hook | WhatsApp item main line = `hooks.headline()` — `SSC CHSL 2026 ఉద్యోగాలు` / software `Infosys Off Campus Drive 2026 Jobs` |
+| Chips | `2,000+ పోస్టులు` (comma) · `💰 pay` · `⏰ 2 రోజులు మాత్రమే` (≤3 rojulu) |
+| Links | **mana blog permalink mattrame** (`🔗 https://studentup.in/…`) — external sources list lo ledu |
+| Theme | `.su-hook` CSS + dark/print + min.css — theme **1.9.36** |
+
+Proof: `python tests/v188_test.py` · `python run.py --test-all` (135/135).
+
+---
+
+## PART 82 — v189: DAILY MORNING SEND (roju udayam automatic)
+
+```bash
+python run.py --forward-morning                 # list → save → Telegram + WhatsApp
+python run.py --forward-morning --forward-morning-no-send
+python run.py --forward-morning --forward-no-whatsapp
+```
+
+| Em | Detail |
+|---|---|
+| Telegram | `wa_to_html()` — WhatsApp `*bold*` → `<b>`, link → `<a href>`; 3800-char chunks |
+| WhatsApp | CallMeBot, 820-char chunks (limits respect) |
+| Click-to-forward | `wa.me/?text=…` (1400 chars) — group/status ni owner choose chestaru |
+| rc | 0 ok · 1 khali · 2 build fail · 3 channels unna anni fail |
+| Cron | `30 6 * * *` — `crontab.example` |
+
+Proof: `python tests/v189_test.py` · `python run.py --test-all`.
+
+---
+
+## PART 83 — v190: `--daily` OKE COMMAND
+
+```bash
+python run.py --daily                    # drafts → guardian → list → send
+python run.py --daily --daily-no-drafts  # list + send mattrame
+python run.py --daily --daily-no-guardian
+python run.py --daily --daily-no-send    # build/save mattrame
+python run.py --daily --forward-no-whatsapp
+```
+
+| Step | Function | Non-fatal? |
+|---|---|---|
+| 1. Drafts (radar + queue → separate drafts) | `radar_run(process_posts=True)` | ✅ (exception/rc aina continue) |
+| 2. Guardian health | `guardian_run(quiet=True)` | ✅ |
+| 3. Daily list + send | `forward_list.run_morning()` | rc honest ga return |
+
+Consistency: draft lead (`hooks.article_lead`) + list item (`hooks.headline`) — okate module.
+Cron: `30 6 * * * … run.py --daily` (crontab.example).
+
+Proof: `python tests/v190_test.py`.

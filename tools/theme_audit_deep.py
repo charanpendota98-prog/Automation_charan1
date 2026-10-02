@@ -358,6 +358,224 @@ def deep_checks(report: dict) -> dict:
     return report
 
 
+
+# ===========================================================================
+# v185 PASS 4 — WEB-QUALITY MATRIX (27 deterministic checks)
+# ===========================================================================
+# Prathi check okka "world-class website" requirement ni verify chestundi:
+# accessibility (WCAG basics) · Core Web Vitals attrs · mobile · print ·
+# dark mode (no flash) · SEO/schema hooks · PWA. Static analysis mattrame —
+# live PageSpeed numbers ki `tools/cwv_audit.py` + real site kavali.
+
+def _php_plain(text: str) -> str:
+    """PHP blocks ni sentinel tho replace — <img> tag regex ki `?>` aapakunda."""
+    return re.sub(r"<\?php.*?\?>", " PHP ", text, flags=re.S)
+
+
+VIEW_TEMPLATES = ("front-page.php", "single.php", "index.php", "page.php",
+                  "archive.php", "search.php", "404.php")
+
+
+def web_quality_checks(report: dict) -> dict:
+    """Pass 4: returns KPI dict; appends to report['errors'] / ['warnings']."""
+    errors = report.setdefault("errors", [])
+    warnings = report.setdefault("warnings", [])
+    results: list[tuple[str, str, str]] = []   # (level, name, note)
+
+    def check(name: str, ok: bool, note: str = "") -> bool:
+        if ok:
+            results.append(("pass", name, note))
+        else:
+            results.append(("fail", name, note))
+            errors.append(f"v185 [{name}] {note or 'fail'}")
+        return ok
+
+    def warn(name: str, ok: bool, note: str = "") -> bool:
+        if not ok:
+            results.append(("warn", name, note))
+            warnings.append(f"v185 [{name}] {note}")
+        else:
+            results.append(("pass", name, note))
+        return ok
+
+    def read(rel: str) -> str:
+        f = THEME / rel
+        return f.read_text(encoding="utf-8") if f.exists() else ""
+
+    css = read("style.css")
+    min_css = read("style.min.css")
+    header = read("header.php")
+    index = read("index.php")
+
+    # ---- 1. single H1 per view template (SEO + screen reader outline) ----
+    bad_h1 = []
+    for name in VIEW_TEMPLATES:
+        text = read(name)
+        if not text:
+            continue
+        if text.count("<h1") != 1:
+            bad_h1.append(f"{name}={text.count('<h1')}")
+    check("single-h1-per-view", not bad_h1, " · ".join(bad_h1))
+
+    # ---- 2. skip link (keyboard users) ----
+    check("skip-link", "skip-link" in header and 'href="#main"' in header,
+          "header.php lo skip-link → #main ledu")
+
+    # ---- 3. landmarks (semantic header/main/footer) ----
+    landmarks = all(x in header for x in ("<header",))
+    landmarks = landmarks and all(f"<main id=\"main\">" in read(n)
+                                  for n in ("front-page.php", "single.php", "index.php"))
+    landmarks = landmarks and "<footer" in read("footer.php")
+    check("landmarks", landmarks, "semantic header/main/footer kaaliga ledu")
+
+    # ---- 4. lang attribute ----
+    check("language-attributes", "language_attributes()" in header,
+          "html tag ki language_attributes() ledu")
+
+    # ---- 5. color-scheme (native controls follow theme) ----
+    check("color-scheme-meta", 'name="color-scheme"' in header,
+          "color-scheme meta ledu (scrollbar/form controls light ga untayi)")
+    check("color-scheme-css", "color-scheme:light" in css and "color-scheme:dark" in css,
+          "style.css lo color-scheme tokens ledu")
+
+    # ---- 6. NO-FLASH dark mode: pre-paint inline script ----
+    body_at = header.find("<body")
+    script_at = header.find("data-su-theme", body_at)
+    header_markup_at = header.find("<header class=")
+    noflash = body_at != -1 and script_at != -1 and script_at < header_markup_at
+    check("no-flash-dark-mode", noflash,
+          "dark readers ki flash — pre-paint theme script body taruvata, header mundu ledu")
+    check("theme-pref-key", 'localStorage.getItem("su_theme")' in header,
+          "saved preference key (su_theme) inline script lo ledu")
+
+    # ---- 7. reduced motion (vestibular safety) ----
+    check("prefers-reduced-motion", "prefers-reduced-motion" in css,
+          "reduced-motion block ledu")
+
+    # ---- 8. visible focus ----
+    check("focus-visible", ":focus-visible" in css, ":focus-visible styles ledu")
+
+    # ---- 9. outline not globally killed ----
+    killed = css.count("outline:none") + css.count("outline: none")
+    has_restore = ":focus-visible{outline" in css.replace(" ", "") or \
+        "focus-visible" in css
+    warn("outline-safety", killed == 0 or has_restore,
+         f"outline:none {killed} chotla — focus-visible restore ledu")
+
+    # ---- 10. ARIA live + expanded ----
+    check("aria-live", "aria-live" in css or "aria-live" in header
+          or "aria-live" in read("footer.php") or "aria-live" in read("inc/smart.php")
+          or "aria-live" in "".join(read(f"inc/{n}") for n in ("engage.php", "searchindex.php",
+                                                             "quicksummary.php")),
+          "aria-live region ledu")
+    jss = "".join(read(f"assets/js/{n}") for n in ("studentup.js", "studentup-cmdk.js"))
+    check("aria-expanded-toggles", 'aria-expanded' in read("header.php") or
+          "aria-expanded" in jss, "toggles ki aria-expanded ledu")
+
+    # ---- 11. target=_blank ⇒ rel noopener ----
+    unsafe = 0
+    for f in _php_files():
+        text = f.read_text(encoding="utf-8")
+        for m in re.finditer(r'<a[^>]*target="_blank"[^>]*>', text):
+            if "noopener" not in m.group(0):
+                unsafe += 1
+    check("noopener-external", unsafe == 0, f"{unsafe} blank link(s) ki noopener ledu")
+
+    # ---- 12. images: alt + dimensions on raw <img> ----
+    missing_alt, missing_dim = [], []
+    for f in _php_files():
+        plain = _php_plain(f.read_text(encoding="utf-8"))
+        for m in re.finditer(r"<img\b[^>]*>", plain):
+            tag, at = m.group(0), m.start()
+            if "alt=" not in tag:
+                missing_alt.append(f.name)
+            if "width=" not in tag or "height=" not in tag:
+                ctx = plain[max(0, at - 500):at]
+                # Reserved container (min-height / data-su-height) = CLS already
+                # handled — ad slot laantivi honest exception.
+                if "data-su-height" not in ctx and "min-height" not in ctx:
+                    missing_dim.append(f.name)
+    check("img-alt", not missing_alt, f"alt ledu: {sorted(set(missing_alt))}")
+    warn("img-dimensions", not missing_dim, f"width/height ledu: {sorted(set(missing_dim))}")
+
+    # ---- 13. lazy loading + LCP eager/fetchpriority ----
+    tpl = read("inc/template.php")
+    check("lazy-images", 'loading="lazy"' in read("inc/engage.php") or
+          'loading="lazy"' in read("inc/ads.php"), "lazy loading use ledu")
+    lcp_ok = ("fetchpriority" in tpl and "'high'" in tpl) or 'fetchpriority="high"' in tpl
+    check("lcp-eager", lcp_ok, "first card ki fetchpriority=high ledu")
+
+    # ---- 14. responsive images via core (srcset auto) ----
+    check("responsive-images", "the_post_thumbnail(" in tpl and
+          "the_post_thumbnail(" in read("single.php"),
+          "card/single lo the_post_thumbnail() ledu (srcset raadu)")
+
+    # ---- 15. LCP preload in head ----
+    perf = read("inc/perf.php")
+    check("lcp-preload", 'rel="preload" as="image"' in perf and "fetchpriority" in perf,
+          "featured image preload ledu")
+
+    # ---- 16. containment / content-visibility (long pages) ----
+    contain_hits = len(re.findall(r"contain:\s*(?:content|layout|paint|strict)", css))
+    check("css-containment", contain_hits >= 2, f"contain rules {contain_hits} (>=2 kavali)")
+    check("content-visibility", "content-visibility" in css,
+          "content-visibility ledu (below-fold rendering)")
+
+    # ---- 17. print stylesheet ----
+    check("print-styles", "@media print" in css, "@media print ledu")
+
+    # ---- 18. mobile safety: overflow guard + 44px touch targets ----
+    check("overflow-guard", "overflow-x" in css, "overflow-x guard ledu")
+    check("touch-targets", "44px" in css or "min-height:48px" in css or
+          "min-height: 48px" in css, "touch target size token ledu")
+
+    # ---- 19. CSS budget + minified build ----
+    raw_kb = len(css.encode("utf-8")) / 1024
+    min_kb = len(min_css.encode("utf-8")) / 1024
+    check("css-budget", raw_kb <= 135, f"style.css {raw_kb:.1f} KB (>135)")
+    check("css-minified-fresh", bool(min_css) and min_kb < raw_kb,
+          f"min.css {min_kb:.1f} KB vs {raw_kb:.1f} KB — minify build run cheyyandi")
+
+    # ---- 20. system fonts (no webfont request = fast LCP) ----
+    webfont = "@font-face" in css
+    warn("system-fonts", not webfont,
+         "webfont unte font-display:swap + preload kavali")
+
+    # ---- 21. PWA surfaces ----
+    check("pwa-manifest", "manifest" in read("inc/pwa.php"),
+          "manifest hook ledu")
+    pwa_js = read("assets/js/studentup-pwa.js") + read("inc/webpush.php")
+    check("service-worker", "serviceWorker" in pwa_js and "register" in pwa_js,
+          "service worker registration ledu")
+
+    # ---- 22. schema hooks (rich results) ----
+    schema = read("inc/schema.php") + read("inc/faqschema.php")
+    schema_ok = all(k in schema for k in ("JobPosting",)) and "FAQPage" in schema
+    check("schema-rich-results", schema_ok, "JobPosting/FAQPage schema ledu")
+
+    report["web_quality"] = {
+        "checks": [{"level": lv, "name": n, "note": nt} for lv, n, nt in results],
+        "passes": sum(1 for lv, _, _ in results if lv == "pass"),
+        "warns": sum(1 for lv, _, _ in results if lv == "warn"),
+        "fails": sum(1 for lv, _, _ in results if lv == "fail"),
+    }
+    return report
+
+
+def print_web_quality(rep: dict) -> None:
+    wq = rep.get("web_quality") or {}
+    rows = wq.get("checks") or []
+    if not rows:
+        return
+    icons = {"pass": "✅", "warn": "⚠️ ", "fail": "❌"}
+    print("")
+    print("  ── PASS 4 · WEB-QUALITY MATRIX (v185 · world-class checklist) ──")
+    for row in rows:
+        note = f" — {row['note']}" if row["note"] and row["level"] != "pass" else ""
+        print(f"   {icons[row['level']]} {row['name']}{note}")
+    print(f"   → {wq.get('passes')} pass · {wq.get('warns')} warn · {wq.get('fails')} fail")
+
+
 def main() -> int:
     import argparse
 
@@ -368,8 +586,10 @@ def main() -> int:
     ap.add_argument("--json", default="")
     args = ap.parse_args()
     rep = theme_audit.run()
+    web_quality_checks(rep)
     print("=" * 70)
-    print("  🔬 DEEP THEME AUDIT (v67) — templates · security · perf · a11y · ads · standards")
+    print("  🔬 DEEP THEME AUDIT (v67+v185) — templates · security · perf · a11y · ads · "
+          "standards · web-quality")
     print("=" * 70)
     for row in rep["errors"]:
         print("  ❌ " + row)
@@ -380,6 +600,7 @@ def main() -> int:
     kpi = rep.get("kpi", {})
     print(f"  KPI: php {kpi.get('php_files')} · ad positions {kpi.get('ad_positions')}/6 · "
           f"css {kpi.get('css_kb')} KB · preconnect {kpi.get('preconnect')}")
+    print_web_quality(rep)
     print("-" * 70)
     print(f"  errors {len(rep['errors'])} · warnings {len(rep['warnings'])}")
     if args.json:

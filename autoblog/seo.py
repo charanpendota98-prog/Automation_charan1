@@ -821,6 +821,17 @@ def enhance(
     words = _v.word_count(html)
     minutes = _v.reading_minutes(words)
     html = reading_badge(words, minutes) + html
+    # v188: hook lead — "main enti" mundu cheppu (fabricate cheyyadu: nijamaina
+    # vacancies/deadline unte mattrame kalustaayi). Idempotent.
+    try:
+        from . import hooks as _hooks
+        html = _hooks.ensure_lead(
+            html, title=title or focus_keyword, focus_keyword=focus_keyword,
+            vacancies=_hooks.pick_vacancies(recruitment or {}),
+            last_date=str((recruitment or {}).get("apply_end", "") or ""),
+        )
+    except Exception:  # noqa: BLE001 — hook fail aithe article as-is
+        pass
     if getattr(config, "MOBILE_HEADLINE_TUNE", True):
         # v18: mobile lo pedda headings — responsive clamp (theme-dependent kaadu)
         html = MOBILE_CSS + html

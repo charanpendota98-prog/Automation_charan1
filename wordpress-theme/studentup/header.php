@@ -17,6 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 <html <?php language_attributes(); ?>>
 <head>
 <meta charset="<?php bloginfo( 'charset' ); ?>">
+<meta name="color-scheme" content="light dark">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <script>
 /* v170: phone accidental zoom OFF — iOS Safari viewport meta ni ignore chestundi,
@@ -31,6 +32,21 @@ if ( ! defined( 'ABSPATH' ) ) {
 <?php wp_head(); ?>
 </head>
 <body <?php body_class(); ?>>
+<script>
+/* v185 NO-FLASH THEME: dark-mode readers ki page paint ayye mundu class set
+   chestam (footer JS deferred — adi aagithe oka kshanam white flash kanipistundi).
+   Preference: saved choice > system (prefers-color-scheme) > light. ~180 bytes. */
+(function () {
+  var el = document.body;
+  if (!el) { return; }
+  var saved = "";
+  try { saved = localStorage.getItem("su_theme") || ""; } catch (e) {}
+  var dark = saved === "dark" || (!saved && window.matchMedia &&
+    window.matchMedia("(prefers-color-scheme: dark)").matches);
+  if (dark) { el.classList.add("dark"); }
+  el.setAttribute("data-su-theme", dark ? "dark" : "light");
+})();
+</script>
 <?php wp_body_open(); ?>
 <?php studentup_notify_public_banner(); // v90: critical alerts site-wide banner (option gate + localStorage dismiss) ?>
 <a class="skip-link screen-reader-text" href="#main">Skip to content</a>

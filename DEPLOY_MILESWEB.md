@@ -17,6 +17,26 @@ MilesWeb cPanel facts: **unlimited cron jobs** on hosting packages [1](https://w
 Python available via cPanel (venv in your home dir, no root needed). The real limit
 on shared hosting is often **inodes (file count)**, not size.
 
+## 0) Ready zips — `milesweb-kit/` (v175)
+
+Okka command tho upload-ready zips + sha256 (reproducible):
+
+```bash
+python3 tools/build_milesweb_kit.py        # → milesweb-kit/ (+ --list to preview)
+```
+
+| Zip | Ekkadiki upload |
+|---|---|
+| `studentup-theme-1.9.35.zip` (113 files) | WP Admin → **Appearance → Themes → Add New → Upload Theme** |
+| `studentup-seo-bridge-1.1.0.zip` | WP Admin → **Plugins → Add New → Upload Plugin** (veru theme vadithe matrame) |
+| `studentup-static-site.zip` (23 files) | cPanel → File Manager → **`public_html/`** (static option) |
+| `studentup-bot-cron.zip` (303 files) | cPanel → File Manager → **`~/bot/`** (cron bot) |
+
+`milesweb-kit/SHA256SUMS.txt` tho upload verify cheyyandi · step-by-step:
+**`MILESWEB_GO_LIVE.md`** (leda `milesweb-kit/MILESWEB-GO-LIVE.md`).
+Kit builder mundu theme zip **content fresh**-a ani check chestundi (stale zip unte
+upload cheyyadu — puratana theme live ki vellipovadam aaputundi).
+
 ---
 
 ## 1) Website (10 minutes)
@@ -66,7 +86,23 @@ cPanel → **Cron Jobs** → add (paths ni mee username tho marchandi):
 0 7 * * *      cd /home/<user>/bot && /home/<user>/bot/.venv/bin/python run.py --guardian >> log/guardian.log 2>&1
 0 3 * * 0      cd /home/<user>/bot && /home/<user>/bot/.venv/bin/python run.py --site-audit >> log/audit.log 2>&1
 30 3 * * 0     cd /home/<user>/bot && /home/<user>/bot/.venv/bin/python tools/prune_media.py --days 30 --apply >> log/prune.log 2>&1
+30 8 * * *     cd /home/<user>/bot && /home/<user>/bot/.venv/bin/python run.py --search-demand --notify >> log/demand.log 2>&1
+0 9 * * 1      cd /home/<user>/bot && /home/<user>/bot/.venv/bin/python run.py --rank-trend --csv private/Pages.csv --notify >> log/rank.log 2>&1
+15 9 * * *     cd /home/<user>/bot && /home/<user>/bot/.venv/bin/python run.py --sponsor-crm --notify >> log/sponsor.log 2>&1
+45 8 * * 1     cd /home/<user>/bot && /home/<user>/bot/.venv/bin/python run.py --revenue-loop private/adsense-pages.csv --revenue-notify >> log/revenue.log 2>&1
+0 9 * * 1      cd /home/<user>/bot && /home/<user>/bot/.venv/bin/python run.py --calendar --calendar-apply --calendar-notify >> log/calendar.log 2>&1
+30 9 * * 1     cd /home/<user>/bot && /home/<user>/bot/.venv/bin/python run.py --backlink --backlink-notify >> log/backlink.log 2>&1
 ```
+**v181 loops (kotha):** `--search-demand` (readers em adigaro → content gaps) ·
+`--rank-trend` (GSC time-series → traffic padutunna pages → refresh queue) ·
+`--sponsor-crm` (roju 2 sponsor outreach + follow-ups + forecast).
+GSC CSV (`private/Pages.csv`) leda key lekapote aa loop automatic skip — migilinavi pani chestayi.
+**v187:** `--links-file` — list lo links → prathi okkati veru draft (report `output/link-intake.json`).
+**v186:** `--live-audit` — deploy tarvata 16 HTTP checks (robots · sitemap · ads.txt · headers · schema · PWA · sample posts · soft-404).
+**v183/v184:** `--forward-list` — roju WhatsApp-forward-ready list (`output/forward-list.txt`): expired/stale/superseded posts out, kotha vi 🆕 tho, state diff (`forward-list-state.json`) lo em marindo.
+**v182 loops:** `--calendar` (90-day plan → `--calendar-apply` tho pipeline queue) ·
+`--revenue-loop` (AdSense Pages CSV → category RPM · money pages · leaks) ·
+`--backlink` (white-hat authority outreach: assets + targets + follow-ups).
 Note: bot posts still pass the **human-review gate** (draft + Telegram approval)
 — cron only *prepares* posts. Approval taps reach the bot within ~5 minutes
 (cron rhythm) instead of instantly — adi okkate shared-hosting tradeoff.

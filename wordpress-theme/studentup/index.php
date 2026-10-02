@@ -16,7 +16,7 @@ get_header();
 	<div class="wrap">
 		<div class="sectionhead">
 			<div>
-				<h2>
+				<h1>
 					<?php
 					if ( is_home() && ! is_front_page() ) {
 						single_post_title();
@@ -26,7 +26,7 @@ get_header();
 						esc_html_e( 'Latest updates', 'studentup' );
 					}
 					?>
-				</h2>
+				</h1>
 				<p>Guides verified from official sources</p>
 			</div>
 		</div>
