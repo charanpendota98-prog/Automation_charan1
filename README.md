@@ -1,7 +1,7 @@
 # studentup.in Auto-Blogger 🤖
 
 
-> **Verified counts (theme v1.9.35 build):** test suites **133/133** files · jsdom runtime **177/177** checks · PHP lint **86/86** files · theme audit **0/0** · **deep audit pass 1-4 31/31** · code audit **0/0**.
+> **Verified counts (theme v1.9.35 build):** test suites **134/134** files · jsdom runtime **177/177** checks · PHP lint **86/86** files · theme audit **0/0** · **deep audit pass 1-4 31/31** · code audit **0/0**.
 24/7 automatic blog posting system for **studentup.in** (WordPress) — runs on your Oracle Cloud instance.
 
 - **AI content:** Google Gemini (free tier) generates Telugu + English mix articles
@@ -735,6 +735,51 @@ Proof: `python tests/live_audit_test.py` (mock sites: healthy + broken) ·
 `python run.py --test-all`.
 
 v186 flags: `--live-audit` · `--live-url` · `--live-posts` · `--live-timeout` · `--live-notify` · `--live-strict`
+
+### v187 — MULTI-LINK INTAKE + RICH WHATSAPP LIST 🔗
+
+**Mee list style ki bot ippudu exact ga pani chestundi.** Oka file lo (leda inline)
+links isthe — **prathi link ki veru veru draft**:
+
+```bash
+python run.py --links-file links.txt          # oka line okka link (markdown/plain)
+python run.py --links "https://a.com/x, https://b.com/y"
+python run.py --links-file links.txt --links-dry-run     # plan mattrame
+```
+
+```
+🔗 MULTI-LINK INTAKE — 1 kotha draft · 1 refresh · 1 fail
+   ✅ [created]   SSC CGL 2026 Notification (1000+ posts) — studentup.in/ssc-cgl/
+   ♻️ [refreshed] ECIL (310 ITI Trade Apprentice Posts) — studentup.in/ecil/
+   ❌ [failed]    IIT Hyderabad — ValueError: source fetch fail
+```
+
+| Niyamam | Detail |
+|---|---|
+| **Separate drafts** | Prathi link okka source URL → pipeline (no-copy + fact gates) aa okka URL nunchi ne article rasthundi · **merge ledu** |
+| Duplicate | Same source URL malli isthe pipeline **refresh** chestundi (kotha post ledu) |
+| Throttle | Run ki max `--links-limit` (default `LINK_INTAKE_MAX=10`) — 100 links spam pattern ni aaputundi |
+| Parse | WhatsApp/notes paste: `1. **ECIL (310 posts)**` + `- [https://…](…)` · bare URLs · markdown link text peru ga vastundi |
+| Report | `output/link-intake.json` + `--links-notify` (Telegram) |
+
+**WhatsApp list (v187) inka rich** — mee example format lo:
+
+```
+🇮🇳 *CENTRAL GOVERNMENT JOBS* (2 jobs · 1,310 posts)
+
+1) 🆕 SSC CGL 2026 Notification  · 1000+ posts
+📅 Last date: 04 Oct 2026 · 2 days left
+🔗 https://studentup.in/ssc-cgl-2026/
+```
+
+- **N posts** — `studentup_vacancies` meta nunchi (guess ledu; blank aithe chupinchadu)
+- **📅 Last date** — prathi item ki (teliyakapote raadu) + `⏰ days left` (3 rojula lopu)
+- **Section header totals** — `(2 jobs · 1,310 posts)` — "SSC lo 1000+ udyogalu" style
+- Expired/stale/superseded gating same (v184) · Telegram digest format marchaledu (backward compatible)
+
+Proof: `python tests/v187_test.py` (6 groups) · `--test-all` **134/134** · jsdom **177/177** · php-lint **86/86** · deep theme **31/0/0** · parity/code **0/0**.
+
+v187 flags: `--links-file` · `--links` · `--links-limit` · `--links-dry-run` · `--links-notify`
 
 ### Release pin sync (`tools/pin_sync.py`)
 

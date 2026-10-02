@@ -272,6 +272,32 @@ cd ~/bot
 
 v186 flags: `--live-audit` · `--live-url` · `--live-posts` · `--live-timeout` · `--live-notify` · `--live-strict`
 
+## 3f) v187 — Multi-link intake (list → separate drafts) 🔗
+
+Mee daggara list unte (WhatsApp/notes lo ila):
+
+```
+1. **ECIL (310 ITI Trade Apprentice Posts)**
+   - [https://www.ecil.co.in](https://www.ecil.co.in)
+2. **SSC CGL 2026 (1000+ posts)**
+   - [https://ssc.gov.in](https://ssc.gov.in)
+```
+
+Aa list ni `~/bot/links.txt` lo paste chesi:
+
+```bash
+cd ~/bot
+.venv/bin/python run.py --links-file links.txt --links-dry-run   # modata plan chudu
+.venv/bin/python run.py --links-file links.txt --links-notify     # prathi link → veru draft
+```
+
+- Prathi draft WordPress lo **DRAFT** ga vastundi → Telegram ✅ approve cheyyandi.
+- Run ki max 10 links (`LINK_INTAKE_MAX`) — roju 2-3 lists chaalu.
+- Report: `~/bot/output/link-intake.json` (created/refreshed/failed).
+- WhatsApp list ipudu **posts count + last date** kuda chupistundi (`--forward-list`).
+
+v187 flags: `--links-file` · `--links` · `--links-limit` · `--links-dry-run` · `--links-notify`
+
 ## 4) Notification / verification commands (server lo)
 
 ```bash

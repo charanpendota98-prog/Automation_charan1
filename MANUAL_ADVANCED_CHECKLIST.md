@@ -1,6 +1,6 @@
 # 📋 MANUAL ADVANCED CHECKLIST — "Nenu manual ga em em cheyali"
 ### Website advanced ga run avvali · Posts ANI-PERFECT · Mistakes leku · Deep analyse + NotebookLM
-> **Verified counts (theme v1.9.35 build):** test suites **133/133** files · jsdom runtime **177/177** checks · PHP lint **86/86** files · theme audit **0/0** · **deep audit pass 1-4 31/31** · code audit **0/0**.
+> **Verified counts (theme v1.9.35 build):** test suites **134/134** files · jsdom runtime **177/177** checks · PHP lint **86/86** files · theme audit **0/0** · **deep audit pass 1-4 31/31** · code audit **0/0**.
 
 
 **Ee file = mee haath tho cheyyalsina ANNI — exact order, exact commands.**
@@ -3316,3 +3316,27 @@ python run.py --live-audit --live-posts 8 --live-notify --live-strict
 Proof: `python tests/live_audit_test.py` (mock good/broken sites) · `python run.py --test-all`.
 
 v186 flags: `--live-audit` · `--live-url` · `--live-posts` · `--live-timeout` · `--live-notify` · `--live-strict`
+
+---
+
+## PART 80 — v187: MULTI-LINK INTAKE + RICH WHATSAPP LIST
+
+```bash
+python run.py --links-file links.txt                    # prathi link → veru draft
+python run.py --links "https://a.com/x, https://b.com/y"
+python run.py --links-file links.txt --links-dry-run    # plan mattrame
+```
+
+| Em | Detail |
+|---|---|
+| Parse | Numbered name line + `[url](url)` · bare URL · markdown link text peru ga · dedupe · trailing punctuation clean |
+| Separate drafts | Prathi link okka `pipeline.create_from_source(url, force_draft=True)` call — article aa okka source meeda (no-copy + fact gate same) |
+| Refresh | Same source URL → kotha post kaadu, existing post refresh (`find_post_by_source_url`) |
+| Throttle | Run ki `--links-limit` (default `LINK_INTAKE_MAX=10`) · excess skip report lo |
+| Fail handling | Okka link fail aina migilinavi continue · reason honest ga report lo |
+| Report | `output/link-intake.json` · `--links-notify` Telegram |
+| List upgrade | WhatsApp items: `N posts` (meta) · `📅 Last date: 20 Oct 2026 · ⏰ 2 days left` · section header `(2 jobs · 1,310 posts)` |
+
+Proof: `python tests/v187_test.py` · `python run.py --test-all`.
+
+v187 flags: `--links-file` · `--links` · `--links-limit` · `--links-dry-run` · `--links-notify`

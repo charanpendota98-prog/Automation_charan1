@@ -581,6 +581,10 @@ LIVE_AUDIT_PATH = Path(_get("LIVE_AUDIT_PATH", str(OUTPUT_DIR / "live-audit.json
 LIVE_AUDIT_POSTS = int(_get("LIVE_AUDIT_POSTS", "5") or 5)
 LIVE_AUDIT_TIMEOUT = int(_get("LIVE_AUDIT_TIMEOUT", "20") or 20)
 
+# v187: multi-link intake (oka list links → prathi okkati veru draft)
+LINK_INTAKE_MAX = int(_get("LINK_INTAKE_MAX", "10") or 10)
+LINK_INTAKE_REPORT = Path(_get("LINK_INTAKE_REPORT", str(OUTPUT_DIR / "link-intake.json")))
+
 # --- v181: growth loops (reader demand · rank trend · sponsor pipeline) ---
 # 1) On-site search demand → content gap queue (theme logs terms; bot reads)
 SEARCH_DEMAND_QUEUE = Path(_get("SEARCH_DEMAND_QUEUE",

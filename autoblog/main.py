@@ -2058,6 +2058,17 @@ def main() -> int:
                         help="v182: revenue loop report ni Telegram ki")
     parser.add_argument("--revenue-min-views", type=int, default=0,
                         help="v182: sample threshold (default REVENUE_LOOP_MIN_IMPRESSIONS)")
+    # ---- v187: multi-link intake (list lo links → prathi okkati veru draft) ----
+    parser.add_argument("--links-file", default="",
+                        help="v187: links file (oka line okka link · markdown/plain)")
+    parser.add_argument("--links", default="",
+                        help="v187: inline links (comma/space separated)")
+    parser.add_argument("--links-limit", type=int, default=0,
+                        help="v187: ee run ki max links (default LINK_INTAKE_MAX=10)")
+    parser.add_argument("--links-dry-run", action="store_true",
+                        help="v187: plan mattrame chupu (eem create cheyyadu)")
+    parser.add_argument("--links-notify", action="store_true",
+                        help="v187: summary ni Telegram ki")
     # ---- v186: live site audit (deploy tarvata nijamaina HTTP verification) ----
     parser.add_argument("--live-audit", action="store_true",
                         help="v186: live site ni 16 checks tho verify (robots · sitemap · "
@@ -2636,6 +2647,11 @@ def main() -> int:
             return 1
         print(f"✅ {row['name']} → {row['stage']} (follow-up {row.get('next_followup', '—')})")
         return 0
+    if args.links_file or args.links:
+        from . import link_intake as _li
+        return _li.run_cli(args.links, args.links_file, args.links_limit,
+                           dry_run=args.links_dry_run, notify=args.links_notify)
+
     if getattr(args, "live_audit", False):
         from . import live_audit as _la
         return _la.run_cli(args.live_url, args.live_posts,
