@@ -89,11 +89,17 @@ cPanel → **Cron Jobs** → add (paths ni mee username tho marchandi):
 30 8 * * *     cd /home/<user>/bot && /home/<user>/bot/.venv/bin/python run.py --search-demand --notify >> log/demand.log 2>&1
 0 9 * * 1      cd /home/<user>/bot && /home/<user>/bot/.venv/bin/python run.py --rank-trend --csv private/Pages.csv --notify >> log/rank.log 2>&1
 15 9 * * *     cd /home/<user>/bot && /home/<user>/bot/.venv/bin/python run.py --sponsor-crm --notify >> log/sponsor.log 2>&1
+45 8 * * 1     cd /home/<user>/bot && /home/<user>/bot/.venv/bin/python run.py --revenue-loop private/adsense-pages.csv --revenue-notify >> log/revenue.log 2>&1
+0 9 * * 1      cd /home/<user>/bot && /home/<user>/bot/.venv/bin/python run.py --calendar --calendar-apply --calendar-notify >> log/calendar.log 2>&1
+30 9 * * 1     cd /home/<user>/bot && /home/<user>/bot/.venv/bin/python run.py --backlink --backlink-notify >> log/backlink.log 2>&1
 ```
 **v181 loops (kotha):** `--search-demand` (readers em adigaro → content gaps) ·
 `--rank-trend` (GSC time-series → traffic padutunna pages → refresh queue) ·
 `--sponsor-crm` (roju 2 sponsor outreach + follow-ups + forecast).
 GSC CSV (`private/Pages.csv`) leda key lekapote aa loop automatic skip — migilinavi pani chestayi.
+**v182 loops:** `--calendar` (90-day plan → `--calendar-apply` tho pipeline queue) ·
+`--revenue-loop` (AdSense Pages CSV → category RPM · money pages · leaks) ·
+`--backlink` (white-hat authority outreach: assets + targets + follow-ups).
 Note: bot posts still pass the **human-review gate** (draft + Telegram approval)
 — cron only *prepares* posts. Approval taps reach the bot within ~5 minutes
 (cron rhythm) instead of instantly — adi okkate shared-hosting tradeoff.

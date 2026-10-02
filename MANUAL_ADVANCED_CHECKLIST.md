@@ -1,6 +1,6 @@
 # 📋 MANUAL ADVANCED CHECKLIST — "Nenu manual ga em em cheyali"
 ### Website advanced ga run avvali · Posts ANI-PERFECT · Mistakes leku · Deep analyse + NotebookLM
-> **Verified counts (theme v1.9.32 build):** test suites **127/127** files · jsdom runtime **177/177** checks · PHP lint **86/86** files · theme audit **0/0** · code audit **0/0**.
+> **Verified counts (theme v1.9.32 build):** test suites **130/130** files · jsdom runtime **177/177** checks · PHP lint **86/86** files · theme audit **0/0** · code audit **0/0**.
 
 
 **Ee file = mee haath tho cheyyalsina ANNI — exact order, exact commands.**
@@ -3208,3 +3208,41 @@ Proof: `python tests/search_demand_test.py` · `python tests/rank_trend_test.py`
 `python tests/sponsor_crm_test.py` · `python run.py --test-all` → **127/127**.
 
 v181 flags: `--search-demand` · `--search-import` · `--search-notify` · `--rank-trend` · `--rank-csv` · `--rank-window` · `--rank-notify` · `--sponsor-crm` · `--sponsor-targets` · `--sponsor-add` · `--sponsor-update` · `--sponsor-notify` · `--sponsor-limit` · `--sponsor-templates`
+
+---
+
+## PART 76 — v182: PLAN · MONEY · AUTHORITY
+
+```bash
+python run.py --calendar --calendar-apply --calendar-notify
+python run.py --revenue-loop adsense-pages.csv --revenue-notify
+python run.py --backlink --backlink-assets --backlink-targets --backlink-notify
+```
+
+| Loop | Files | Enduku |
+|---|---|---|
+| 🗓 Calendar | `autoblog/editorial_calendar.py` → `output/editorial-calendar.{json,md}` | 5 signals (demand · decay · trends · matrix gaps · ₹ RPM) → balanced 90-day plan; caps: per-category 2/day, per-cluster 1/day, refresh slot daily (Sunday 2). `--calendar-apply` → `topics_queue.txt` (pipeline aa order lo rasi). |
+| 💰 Revenue | `autoblog/revenue_loop.py` → `output/revenue-insights.json` | AdSense Pages CSV → category RPM, money pages (protect), leaks (fix), high-RPM tokens → calendar priority. Sample chinna ga unte `ready=False` + honest warning. |
+| 🔗 Authority | `autoblog/backlink_engine.py` → `output/backlink-pipeline.json` | 6 link-worthy asset families (tracker/calendar/data/tools/map/guides) + 10 target types + search strings + stages/probabilities/forecast + Telugu templates. Rules hard: no paid links, no PBN, no auto-blast. |
+
+Config knobs (.env):
+```
+EDITORIAL_CALENDAR_PATH · EDITORIAL_CALENDAR_DAYS=90 · EDITORIAL_CALENDAR_PER_DAY=3
+CALENDAR_APPLY_LIMIT=12 · REVENUE_INSIGHTS_PATH · REVENUE_LOOP_MIN_IMPRESSIONS=50
+BACKLINK_PIPELINE_PATH · BACKLINK_FOLLOWUP_DAYS=7
+```
+
+Weekly cron (MilesWeb):
+```
+45 8 * * 1   ... run.py --revenue-loop private/adsense-pages.csv --revenue-notify
+0 9 * * 1    ... run.py --calendar --calendar-apply --calendar-notify
+30 9 * * 1   ... run.py --backlink --backlink-notify
+```
+
+Honest: calendar = plan (generation + approval gates appude) · revenue loop = strategy
+input (ad code touch cheyyadu) · backlink = manual outreach (time/links guarantee ledu).
+
+Proof: `python tests/editorial_calendar_test.py` · `python tests/revenue_loop_test.py`
+· `python tests/backlink_engine_test.py` · `python run.py --test-all`.
+
+> v182 flags: `--calendar` · `--calendar-days` · `--calendar-per-day` · `--calendar-apply` · `--calendar-limit` · `--calendar-no-universe` · `--calendar-notify` · `--revenue-loop` · `--revenue-notify` · `--revenue-min-views` · `--backlink` · `--backlink-assets` · `--backlink-targets` · `--backlink-add` · `--backlink-update` · `--backlink-notify` · `--backlink-templates`

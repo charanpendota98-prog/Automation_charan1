@@ -2037,6 +2037,44 @@ def main() -> int:
                         help="v181: roju outreach count (default SPONSOR_OUTREACH_PER_DAY=2)")
     parser.add_argument("--sponsor-templates", action="store_true",
                         help="v181: outreach messages kuda print chey (rate card tho)")
+    # ---- v182: editorial calendar · revenue loop · backlink authority ----
+    parser.add_argument("--calendar", action="store_true",
+                        help="v182: 90-day editorial calendar (demand+decay+trend+gaps+₹)")
+    parser.add_argument("--calendar-days", type=int, default=0,
+                        help="v182: plan days (default EDITORIAL_CALENDAR_DAYS=90)")
+    parser.add_argument("--calendar-per-day", type=int, default=0,
+                        help="v182: slots per day (default EDITORIAL_CALENDAR_PER_DAY=3)")
+    parser.add_argument("--calendar-apply", action="store_true",
+                        help="v182: top topics ni pipeline queue (topics_queue.txt) loki")
+    parser.add_argument("--calendar-limit", type=int, default=0,
+                        help="v182: apply chese topic count (default CALENDAR_APPLY_LIMIT=12)")
+    parser.add_argument("--calendar-no-universe", action="store_true",
+                        help="v182: keyword-matrix gaps ni skip chey (fast plan)")
+    parser.add_argument("--calendar-notify", action="store_true",
+                        help="v182: calendar summary ni Telegram ki")
+    parser.add_argument("--revenue-loop", default="", metavar="CSV",
+                        help="v182: AdSense Pages CSV → category RPM · money pages · leaks")
+    parser.add_argument("--revenue-notify", action="store_true",
+                        help="v182: revenue loop report ni Telegram ki")
+    parser.add_argument("--revenue-min-views", type=int, default=0,
+                        help="v182: sample threshold (default REVENUE_LOOP_MIN_IMPRESSIONS)")
+    parser.add_argument("--backlink", action="store_true",
+                        help="v182: backlink/authority plan (white-hat) + forecast")
+    parser.add_argument("--backlink-assets", action="store_true",
+                        help="v182: link-worthy asset ideas (mee data nunchi)")
+    parser.add_argument("--backlink-targets", action="store_true",
+                        help="v182: evarini contact cheyyali (types + search strings)")
+    parser.add_argument("--backlink-add", default="",
+                        metavar='"Name|type|city|contact|asset"',
+                        help="v182: kotha outreach target add chey")
+    parser.add_argument("--backlink-update", default="",
+                        metavar='"Name|stage|note|followup"',
+                        help="v182: stage/follow-up update (idea/asset_ready/outreach/"
+                             "mentioned/linked/lost/paused)")
+    parser.add_argument("--backlink-notify", action="store_true",
+                        help="v182: backlink plan ni Telegram ki")
+    parser.add_argument("--backlink-templates", action="store_true",
+                        help="v182: outreach message templates kuda print chey")
     parser.add_argument("--breaking-feed", action="store_true",
                         help="v59: బ్రేకింగ్ న్యూస్ feed build (radar → preview/data/breaking.json)")
     parser.add_argument("--breaking-from", default="", metavar="FILE",
@@ -2515,6 +2553,68 @@ def main() -> int:
         print(f"✅ {row['name']} → {row['stage']}"
               f" (follow-up {row.get('next_followup', '—')})")
         return 0
+    # ---- v182: editorial calendar · revenue loop · backlink authority ----
+    if getattr(args, "calendar", False) or getattr(args, "calendar_apply", False):
+        from . import editorial_calendar as _ec
+
+        days = int(getattr(args, "calendar_days", 0) or 0) or config.EDITORIAL_CALENDAR_DAYS
+        per_day = (int(getattr(args, "calendar_per_day", 0) or 0)
+                   or config.EDITORIAL_CALENDAR_PER_DAY)
+        limit = (int(getattr(args, "calendar_limit", 0) or 0)
+                 or config.CALENDAR_APPLY_LIMIT)
+        return _ec.run_cli(days=days, per_day=per_day,
+                           notify=getattr(args, "calendar_notify", False),
+                           apply=getattr(args, "calendar_apply", False),
+                           apply_limit=limit,
+                           universe=not getattr(args, "calendar_no_universe", False))
+    if getattr(args, "revenue_loop", ""):
+        from . import revenue_loop as _rl
+
+        return _rl.run_cli(csv_path=args.revenue_loop,
+                           notify=getattr(args, "revenue_notify", False),
+                           min_impressions=(int(getattr(args, "revenue_min_views", 0) or 0)
+                                            or None))
+    if getattr(args, "backlink_assets", False):
+        from . import backlink_engine as _bl
+
+        return _bl.assets_cli()
+    if getattr(args, "backlink_targets", False):
+        from . import backlink_engine as _bl
+
+        return _bl.targets_cli()
+    if getattr(args, "backlink_add", ""):
+        from . import backlink_engine as _bl
+
+        parts = [p.strip() for p in args.backlink_add.split("|")]
+        while len(parts) < 5:
+            parts.append("")
+        try:
+            row = _bl.add(parts[0], parts[1], parts[2], parts[3], parts[4])
+        except ValueError as exc:
+            print(f"❌ {exc}")
+            return 1
+        print(f"✅ outreach target added: {row['name']} ({row['type'] or '—'})"
+              f" — stage {row['stage']}. Plan: python run.py --backlink")
+        return 0
+    if getattr(args, "backlink_update", ""):
+        from . import backlink_engine as _bl
+
+        parts = [p.strip() for p in args.backlink_update.split("|")]
+        while len(parts) < 4:
+            parts.append("")
+        try:
+            row = _bl.update(parts[0], stage=parts[1], note=parts[2],
+                             followup=parts[3])
+        except ValueError as exc:
+            print(f"❌ {exc}")
+            return 1
+        print(f"✅ {row['name']} → {row['stage']} (follow-up {row.get('next_followup', '—')})")
+        return 0
+    if getattr(args, "backlink", False) or getattr(args, "backlink_notify", False):
+        from . import backlink_engine as _bl
+
+        return _bl.run_cli(notify=getattr(args, "backlink_notify", False),
+                           templates=getattr(args, "backlink_templates", False))
     if args.breaking_feed or args.breaking_from:
         return breaking_feed_run(from_file=args.breaking_from)
     if args.radar:

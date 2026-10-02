@@ -587,6 +587,20 @@ SPONSOR_FOLLOWUP_STALE_DAYS = max(1, min(30, int(_get("SPONSOR_FOLLOWUP_STALE_DA
 # Daily hook (hourly cron lo okkasari): search demand + sponsor plan automatic
 GROWTH_LOOPS_ENABLED = _get("GROWTH_LOOPS_ENABLED", "1") not in ("0", "false", "no")
 GROWTH_LOOPS_HOUR = max(0, min(23, int(_get("GROWTH_LOOPS_HOUR", "9") or "9")))
+
+# --- v182: editorial calendar · revenue loop · backlink authority -----------
+EDITORIAL_CALENDAR_PATH = Path(_get("EDITORIAL_CALENDAR_PATH",
+                                    str(BASE_DIR / "output" / "editorial-calendar.json")))
+EDITORIAL_CALENDAR_DAYS = max(7, min(365, int(_get("EDITORIAL_CALENDAR_DAYS", "90") or "90")))
+EDITORIAL_CALENDAR_PER_DAY = max(1, min(6, int(_get("EDITORIAL_CALENDAR_PER_DAY", "3") or "3")))
+CALENDAR_APPLY_LIMIT = max(1, min(40, int(_get("CALENDAR_APPLY_LIMIT", "12") or "12")))
+REVENUE_INSIGHTS_PATH = Path(_get("REVENUE_INSIGHTS_PATH",
+                                  str(BASE_DIR / "output" / "revenue-insights.json")))
+REVENUE_LOOP_MIN_IMPRESSIONS = max(10, min(100000,
+    int(_get("REVENUE_LOOP_MIN_IMPRESSIONS", "50") or "50")))
+BACKLINK_PIPELINE_PATH = Path(_get("BACKLINK_PIPELINE_PATH",
+                                   str(BASE_DIR / "output" / "backlink-pipeline.json")))
+BACKLINK_FOLLOWUP_DAYS = max(1, min(30, int(_get("BACKLINK_FOLLOWUP_DAYS", "7") or "7")))
 RESEARCH_BRIEF_DIR = Path(_get("RESEARCH_BRIEF_DIR", str(OUTPUT_DIR / "research")))
 # Save a private NotebookLM-ready evidence bundle for real source candidates.
 # This prepares sources; it never pretends to access a private NotebookLM account.

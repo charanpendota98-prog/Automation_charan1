@@ -1,7 +1,7 @@
 # studentup.in Auto-Blogger 🤖
 
 
-> **Verified counts (theme v1.9.32 build):** test suites **127/127** files · jsdom runtime **177/177** checks · PHP lint **86/86** files · theme audit **0/0** · code audit **0/0**.
+> **Verified counts (theme v1.9.32 build):** test suites **130/130** files · jsdom runtime **177/177** checks · PHP lint **86/86** files · theme audit **0/0** · code audit **0/0**.
 24/7 automatic blog posting system for **studentup.in** (WordPress) — runs on your Oracle Cloud instance.
 
 - **AI content:** Google Gemini (free tier) generates Telugu + English mix articles
@@ -624,6 +624,26 @@ prathi roju "em cheyyali" anedi chupistayi.
 > section lo unnayi — ee release kuda vaatini use chestundi.
 
 v181 flags: `--search-demand` · `--search-import` · `--search-notify` · `--rank-trend` · `--rank-csv` · `--rank-window` · `--rank-notify` · `--sponsor-crm` · `--sponsor-targets` · `--sponsor-add` · `--sponsor-update` · `--sponsor-notify` · `--sponsor-limit` · `--sponsor-templates`
+
+### v182 — PLAN · MONEY · AUTHORITY (strategic loops)
+
+Moodu strategic loops — "inka ekkuva blogs, kaani plan tho", "ads highest ga",
+"world-class authority":
+
+```bash
+python run.py --calendar --calendar-apply --calendar-notify   # 90-day plan → pipeline queue
+python run.py --revenue-loop adsense-pages.csv --revenue-notify  # ad data → content/slot strategy
+python run.py --backlink --backlink-assets --backlink-targets --backlink-notify  # authority
+```
+
+| Loop | Module | Enduku idi "top level" |
+|---|---|---|
+| 🗓 **Editorial calendar** | `autoblog/editorial_calendar.py` | 5 signals kalipi (readers' demand · GSC decay · trends · keyword-matrix gaps · ₹ RPM signals) next N days ki **balanced slots**: okate day lo category max 2, cluster max 1, roju 1 refresh slot (Sunday 2). `output/editorial-calendar.{json,md}` + `--calendar-apply` = top topics ni `topics_queue.txt` ki (radar/pipeline chaduvutundi) ⇒ **plan nijamga generation ni drive chestundi**. Auto-publish ledu. |
+| 💰 **Revenue loop** | `autoblog/revenue_loop.py` | AdSense **Pages** CSV → site RPM, **category RPM** (₹/1k views), **money pages** (protect: internal links + freshness), **revenue leaks** (views ekkuva, RPM takkuva → slots/interlinks fix), **high-RPM tokens**. `output/revenue-insights.json` → calendar ki priority. Ad code ni ee tool marchadu. |
+| 🔗 **Backlink engine** | `autoblog/backlink_engine.py` + `output/backlink-pipeline.json` | White-hat authority: **link-worthy assets** (live tracker · deadline calendar+ICS · original data stories · free tools bundle · district map · pillar guides), **outreach targets** (colleges/libraries/teachers/news desks/YouTubers/communities/forums), pipeline stages + follow-ups + expected-links forecast, ready messages. **No paid links · no PBN · no blasts** (code lo hard rules). |
+
+Proof: `python tests/editorial_calendar_test.py` · `python tests/revenue_loop_test.py` ·
+`python tests/backlink_engine_test.py` · `python run.py --test-all`.
 
 ### Release pin sync (`tools/pin_sync.py`)
 

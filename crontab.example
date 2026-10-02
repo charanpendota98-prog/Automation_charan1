@@ -24,3 +24,8 @@
 30 8 * * *   cd /opt/studentup && /opt/studentup/.venv/bin/python run.py --search-demand --notify >> /opt/studentup/log/demand.log 2>&1
 0 9 * * 1    cd /opt/studentup && /opt/studentup/.venv/bin/python run.py --rank-trend --csv /opt/studentup/private/Pages.csv --notify >> /opt/studentup/log/rank.log 2>&1
 15 9 * * *   cd /opt/studentup && /opt/studentup/.venv/bin/python run.py --sponsor-crm --notify >> /opt/studentup/log/sponsor.log 2>&1
+# v182 strategic loops (weekly plan · ad-data strategy · authority outreach):
+45 8 * * 1   cd /opt/studentup && /opt/studentup/.venv/bin/python run.py --revenue-loop private/adsense-pages.csv --revenue-notify >> /opt/studentup/log/revenue.log 2>&1
+0 9 * * 1    cd /opt/studentup && /opt/studentup/.venv/bin/python run.py --calendar --calendar-apply --calendar-notify >> /opt/studentup/log/calendar.log 2>&1
+30 9 * * 1   cd /opt/studentup && /opt/studentup/.venv/bin/python run.py --backlink --backlink-notify >> /opt/studentup/log/backlink.log 2>&1
+

@@ -128,6 +128,29 @@ chupistayi.
 
 ---
 
+## 3c) v182 — Plan · Money · Authority (moodu strategic loops)
+
+| Loop | Command | Enti chestundi |
+|---|---|---|
+| 🗓 **Calendar** | `run.py --calendar --calendar-apply --calendar-notify` | 90-day plan: demand (readers) + decay (GSC) + trends + keyword-matrix gaps + ₹-RPM signals ni kalipi **pillar/cluster balance tho** slots. `--calendar-apply` top topics ni pipeline queue loki (so bot aa order lo rasi) |
+| 💰 **Revenue loop** | `run.py --revenue-loop adsense-pages.csv --revenue-notify` | AdSense Pages CSV → **category RPM**, **money pages** (protect), **revenue leaks** (views unnayi RPM takkuva → slots/interlinks fix), **high-RPM topics** → calendar ki priority isthundi |
+| 🔗 **Backlink/authority** | `run.py --backlink --backlink-assets --backlink-targets --backlink-notify` | White-hat link building: link-worthy assets (trackers/data/tools), outreach targets (colleges/libraries/news desks/YouTubers/communities) + stages/follow-ups/forecast + ready messages. **No paid links, no PBN, no blasts.** |
+
+```bash
+# weekly rhythm (cron lo pettachu)
+python run.py --revenue-loop private/adsense-pages.csv --revenue-notify   # ad data → strategy
+python run.py --calendar --calendar-apply --calendar-notify               # plan → queue
+python run.py --backlink --backlink-notify --backlink-templates           # 3 outreach/day
+```
+
+> v182 flags: `--calendar` · `--calendar-days` · `--calendar-per-day` · `--calendar-apply` · `--calendar-limit` · `--calendar-no-universe` · `--calendar-notify` · `--revenue-loop` · `--revenue-notify` · `--revenue-min-views` · `--backlink` · `--backlink-assets` · `--backlink-targets` · `--backlink-add` · `--backlink-update` · `--backlink-notify` · `--backlink-templates`
+
+Honest: calendar = plan (generation + approval gates appude) · revenue loop =
+strategy input (ad code ni touch cheyyadu) · backlink = manual outreach
+(meeru messages pampali; links/time guarantee ledu).
+
+---
+
 ## 4) Notification / verification commands (server lo)
 
 ```bash
@@ -141,6 +164,9 @@ cd ~/bot
 python run.py --search-demand   # v181: readers' searches → content gaps (queue)
 python run.py --rank-trend      # v181: GSC time-series → decay → refresh queue
 python run.py --sponsor-crm     # v181: roju sponsor outreach + follow-ups + forecast
+python run.py --calendar        # v182: 90-day editorial calendar (plan + files)
+python run.py --revenue-loop adsense-pages.csv   # v182: ₹ strategy (RPM/leaks)
+python run.py --backlink        # v182: authority/backlink plan (white-hat)
 ```
 CI/local lo anni suites: `python run.py --test-all` (124/124) ·
 jsdom runtime: `node tests/runtime/jsdom_runtime_test.js` (177/177) ·
