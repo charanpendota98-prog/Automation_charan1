@@ -1,6 +1,6 @@
 # 📋 MANUAL ADVANCED CHECKLIST — "Nenu manual ga em em cheyali"
 ### Website advanced ga run avvali · Posts ANI-PERFECT · Mistakes leku · Deep analyse + NotebookLM
-> **Verified counts (theme v1.9.36 build):** test suites **136/136** files · jsdom runtime **177/177** checks · PHP lint **86/86** files · theme audit **0/0** · **deep audit pass 1-4 31/31** · code audit **0/0**.
+> **Verified counts (theme v1.9.36 build):** test suites **137/137** files · jsdom runtime **177/177** checks · PHP lint **86/86** files · theme audit **0/0** · **deep audit pass 1-4 31/31** · code audit **0/0**.
 
 
 **Ee file = mee haath tho cheyyalsina ANNI — exact order, exact commands.**
@@ -3377,3 +3377,26 @@ python run.py --forward-morning --forward-no-whatsapp
 | Cron | `30 6 * * *` — `crontab.example` |
 
 Proof: `python tests/v189_test.py` · `python run.py --test-all`.
+
+---
+
+## PART 83 — v190: `--daily` OKE COMMAND
+
+```bash
+python run.py --daily                    # drafts → guardian → list → send
+python run.py --daily --daily-no-drafts  # list + send mattrame
+python run.py --daily --daily-no-guardian
+python run.py --daily --daily-no-send    # build/save mattrame
+python run.py --daily --forward-no-whatsapp
+```
+
+| Step | Function | Non-fatal? |
+|---|---|---|
+| 1. Drafts (radar + queue → separate drafts) | `radar_run(process_posts=True)` | ✅ (exception/rc aina continue) |
+| 2. Guardian health | `guardian_run(quiet=True)` | ✅ |
+| 3. Daily list + send | `forward_list.run_morning()` | rc honest ga return |
+
+Consistency: draft lead (`hooks.article_lead`) + list item (`hooks.headline`) — okate module.
+Cron: `30 6 * * * … run.py --daily` (crontab.example).
+
+Proof: `python tests/v190_test.py`.

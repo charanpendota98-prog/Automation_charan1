@@ -1097,6 +1097,50 @@ def push_theme_data(dry_run: bool = False) -> int:
     return 1
 
 
+def daily_run(send: bool = True, whatsapp: bool = True, telegram: bool = True,
+              drafts: bool = True, guardian_check: bool = True,
+              save_files: bool = True) -> int:
+    """v190: OKE COMMAND daily routine — draft flow tho ne list, automatic send.
+
+    User ask: "draf elaga chesthavo alaga cheyali anthe daily ... malli anni nuvve
+    set cheyu perefctgaa".
+
+    Order (prathi step non-fatal — okka step fail aina migilinavi continue):
+      1. Drafts — radar + queue topics → **prathi link ki veru draft** (hook lead tho)
+      2. Guardian quick check (site/system health)
+      3. Daily list — ade hook format → save → Telegram + WhatsApp + click-to-forward
+
+    rc: 0 = list build ayyi (send ok / channels levu) · 1 = list khali ·
+        2 = list build fail · 3 = channels unna anni send fail.
+    """
+    print("=" * 62)
+    print("  🌅 DAILY ROUTINE — drafts → health → list → send")
+    print("=" * 62)
+    if drafts:
+        try:
+            print("\n[1/3] DRAFTS (radar + queue → separate drafts, hook lead tho)")
+            rc = radar_run(process_posts=True)
+            if rc not in (0, None):
+                print(f"  ⚠️ draft step rc={rc} — list step continue avutundi")
+        except Exception as exc:  # noqa: BLE001 — drafts fail aina list aagakudadu
+            log.exception("daily drafts step failed (non-fatal): %s", exc)
+    else:
+        print("\n[1/3] DRAFTS — skip (--daily-no-drafts)")
+    if guardian_check:
+        try:
+            print("\n[2/3] GUARDIAN (system health)")
+            guardian_run(quiet=True)
+        except Exception as exc:  # noqa: BLE001
+            log.info("guardian step skip (safe): %s", exc)
+    else:
+        print("\n[2/3] GUARDIAN — skip")
+    print("\n[3/3] DAILY LIST (Telugu · hook items · mana blog links) + SEND")
+    from . import forward_list as _fl
+
+    return _fl.run_morning(save_files=save_files, send=send,
+                           whatsapp=whatsapp, telegram=telegram)
+
+
 def guardian_run(notify: bool = False, quiet: bool = False) -> int:
     """v60: SITE GUARDIAN — system motham check (site/UI/SEO/ads/feed/storage)."""
     from . import guardian
@@ -2091,6 +2135,15 @@ def main() -> int:
                         help="v183: wa = WhatsApp plain text (default) · tg = Telegram HTML")
     parser.add_argument("--forward-per-section", type=int, default=10,
                         help="v183: section ki max items (default 6)")
+    parser.add_argument("--daily", action="store_true",
+                        help="v190: OKE COMMAND daily routine — drafts (radar+queue) → "
+                             "guardian → list → Telegram+WhatsApp send")
+    parser.add_argument("--daily-no-drafts", action="store_true",
+                        help="v190: draft step skip (list + send mattrame)")
+    parser.add_argument("--daily-no-guardian", action="store_true",
+                        help="v190: guardian step skip")
+    parser.add_argument("--daily-no-send", action="store_true",
+                        help="v190: list build/save mattrame (send skip)")
     parser.add_argument("--forward-morning", action="store_true",
                         help="v189: daily morning send — list build → save → "
                              "Telegram + WhatsApp (+ wa.me click-to-forward)")
@@ -2664,6 +2717,13 @@ def main() -> int:
         return _la.run_cli(args.live_url, args.live_posts,
                            notify=args.live_notify, strict=args.live_strict,
                            timeout=args.live_timeout)
+
+    if getattr(args, "daily", False):
+        return daily_run(send=not args.daily_no_send,
+                         whatsapp=not args.forward_no_whatsapp,
+                         drafts=not args.daily_no_drafts,
+                         guardian_check=not args.daily_no_guardian,
+                         save_files=not args.forward_no_save)
 
     if getattr(args, "forward_morning", False):
         from . import forward_list as _fl

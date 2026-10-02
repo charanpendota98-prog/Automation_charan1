@@ -1,7 +1,7 @@
 # studentup.in Auto-Blogger 🤖
 
 
-> **Verified counts (theme v1.9.36 build):** test suites **136/136** files · jsdom runtime **177/177** checks · PHP lint **86/86** files · theme audit **0/0** · **deep audit pass 1-4 31/31** · code audit **0/0**.
+> **Verified counts (theme v1.9.36 build):** test suites **137/137** files · jsdom runtime **177/177** checks · PHP lint **86/86** files · theme audit **0/0** · **deep audit pass 1-4 31/31** · code audit **0/0**.
 24/7 automatic blog posting system for **studentup.in** (WordPress) — runs on your Oracle Cloud instance.
 
 - **AI content:** Google Gemini (free tier) generates Telugu + English mix articles
@@ -792,7 +792,7 @@ python run.py --links-file links.txt --links-dry-run     # plan mattrame
 - **Prathi item kinda mee site link** — readers anni links open cheyyachu (truncation unte `… ఇంకా N ఉద్యోగాలు` line)
 - Expired/stale/superseded gating same (v184) · Telegram digest format marchaledu (backward compatible)
 
-Proof: `python tests/v187_test.py` (6 groups) · `--test-all` **136/136** · jsdom **177/177** · php-lint **86/86** · deep theme **31/0/0** · parity/code **0/0**.
+Proof: `python tests/v187_test.py` (6 groups) · `--test-all` **137/137** · jsdom **177/177** · php-lint **86/86** · deep theme **31/0/0** · parity/code **0/0**.
 
 v187 flags: `--links-file` · `--links` · `--links-limit` · `--links-dry-run` · `--links-notify`
 
@@ -829,7 +829,7 @@ SSC CHSL 2026 recruitment — eligibility, important dates, vacancy details and 
 - **Chips** = `2,000+ పోస్టులు` (comma formatting) · `💰 pay` · `⏰ 2 రోజులు మాత్రమే`.
 - **Mana blog links mattrame** — external source domains (ssc.gov.in, ecil.co.in) list lo eppudu raavu.
 
-Proof: `python tests/v188_test.py` (5 groups) · `--test-all` **136/136**.
+Proof: `python tests/v188_test.py` (5 groups) · `--test-all` **137/137**.
 
 ### v189 — DAILY MORNING SEND 🌅 (roju udayam automatic)
 
@@ -851,6 +851,27 @@ python run.py --forward-morning --forward-no-whatsapp       # Telegram mattrame
 | Cron | `30 6 * * *` (6:30 AM) — `crontab.example` lo line ready |
 
 Proof: `python tests/v189_test.py` (5 groups).
+
+### v190 — `--daily`: OKE COMMAND (anni nene set chesanu) 🌅
+
+**Mee cron lo okka line — anthe. Migilinadi bot ne chusukuntundi:**
+
+```bash
+python run.py --daily                  # 6:30 AM: drafts → health → Telugu list → send
+python run.py --daily --daily-no-drafts      # list + send mattrame
+python run.py --daily --daily-no-send        # build/save mattrame (test ki)
+```
+
+| Step | Em jarugutundi |
+|---|---|
+| **1. Drafts** | radar + queue topics → **prathi link ki veru draft** — blog lead (`su-hook`) **ade format** tho |
+| **2. Guardian** | site/system health quick check (non-fatal) |
+| **3. List + Send** | daily list **ade hook format** (`*SSC CHSL 2026 ఉద్యోగాలు*` → chips → mana blog link) → save → **Telegram + WhatsApp** + `wa.me` click-to-forward |
+| Fail-safe | okka step fail aina migilinavi continue (drafts fail ≠ list fail) — honest rc `0/1/2/3` |
+
+**Consistency guarantee:** draft lead + list item **rendu okate `hooks` module** nunchi
+(`subject()`/`headline()`) — eppudu drift avvavu (test tho lock chesanu: `tests/v190_test.py 4`).
+Draft = English (site public surfaces), list = Telugu — mee preference prakaram.
 
 ### Release pin sync (`tools/pin_sync.py`)
 

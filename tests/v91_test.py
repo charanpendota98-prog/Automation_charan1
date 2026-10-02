@@ -16,7 +16,7 @@ Checks (offline source audits + bot imports):
   * options field + footer call-site + CSS chip
   * .env.example private channel hint
   * version parity 1.9.36 (php·css·stable) + readme 1.9.36+1.9.36 changelog
-  * suites 71 pins (v75–v81 → "suites == 136") + docs 71/71 claims
+  * suites 71 pins (v75–v81 → "suites == 137") + docs 71/71 claims
 
 Run: python tests/v91_test.py   (also via python run.py --test-all)
 """
@@ -138,11 +138,11 @@ def test_version_parity_192() -> None:
 def test_suite_pins_and_docs() -> None:
     for f in ("v75_test.py", "v76_test.py", "v77_test.py", "v78_test.py",
               "v79_test.py", "v80_test.py", "v81_test.py"):
-        assert "suites == 136" in read(ROOT / "tests" / f), f + " (74 pin ledu)"
+        assert "suites == 137" in read(ROOT / "tests" / f), f + " (74 pin ledu)"
     suites = len(list((ROOT / "tests").glob("*_test.py")))
-    assert suites == 136, f"suites {suites} (v116 tho 136 expect)"
-    assert "136/136" in read(ROOT / "README.md"), "README 71/71 claim ledu"
-    assert "136/136" in read(ROOT / "MANUAL_ADVANCED_CHECKLIST.md"), "MANUAL 71/71 ledu"
+    assert suites == 137, f"suites {suites} (v116 tho 137 expect)"
+    assert "137/137" in read(ROOT / "README.md"), "README 71/71 claim ledu"
+    assert "137/137" in read(ROOT / "MANUAL_ADVANCED_CHECKLIST.md"), "MANUAL 71/71 ledu"
 
 
 TESTS = [

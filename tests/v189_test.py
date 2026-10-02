@@ -152,10 +152,14 @@ def test_run_morning_paths():
 
 def test_cron_and_docs():
     cron = (ROOT / "crontab.example").read_text(encoding="utf-8")
-    line = [l for l in cron.splitlines() if "--forward-morning" in l]
-    assert line, "crontab lo --forward-morning ledu"
-    assert any(l.strip().startswith("30 6") or l.strip().startswith("0 7")
-               for l in line), f"morning time ledu: {line}"
+    # v190: morning line ippudu `--daily` (adi lopala --forward-morning run chestundi);
+    # rendu okkataina 6:30 ki undali
+    line = [l for l in cron.splitlines()
+            if ("--forward-morning" in l or "--daily" in l)
+            and "--daily-quiz" not in l and not l.strip().startswith("#")]
+    assert line, "crontab lo morning line (--daily/--forward-morning) ledu"
+    assert any(l.strip().startswith(("30 6", "0 7")) for l in line), \
+        f"morning time ledu: {line}"
     for name in ("README.md", "MANUAL_ADVANCED_CHECKLIST.md", "MILESWEB_GO_LIVE.md"):
         doc = (ROOT / name).read_text(encoding="utf-8")
         assert "--forward-morning" in doc, f"{name} lo --forward-morning ledu"

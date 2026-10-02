@@ -30,9 +30,11 @@
 30 9 * * 1   cd /opt/studentup && /opt/studentup/.venv/bin/python run.py --backlink --backlink-notify >> /opt/studentup/log/backlink.log 2>&1
 # v183 daily WhatsApp-forward list (plain text; copy-paste to groups):
 35 8 * * *   cd /opt/studentup && /opt/studentup/.venv/bin/python run.py --forward-list >> /opt/studentup/log/forward.log 2>&1
-# v189 DAILY MORNING SEND (6:30 AM IST): list build → Telegram + WhatsApp automatic
-# (a appudu wa.me click-to-forward link kuda print avutundi — group/status ki paste cheyyadaniki)
-30 6 * * *   cd /opt/studentup && /opt/studentup/.venv/bin/python run.py --forward-morning >> /opt/studentup/log/morning.log 2>&1
+# v190 DAILY ROUTINE (6:30 AM IST) — OKE LINE: drafts (radar+queue → prathi link ki veru draft,
+# hook lead tho) → guardian health → Telugu list (ade hook format) → Telegram + WhatsApp + wa.me
+30 6 * * *   cd /opt/studentup && /opt/studentup/.venv/bin/python run.py --daily >> /opt/studentup/log/daily.log 2>&1
+# (alternatives: --daily-no-drafts · --daily-no-guardian · --daily-no-send · --forward-no-whatsapp;
+#  only-list mattrame kavali ante: python run.py --forward-morning)
 # v186 live site audit (weekly): 16 HTTP checks (robots · sitemap · schema · PWA · 404 · caching):
 0 10 * * 1   cd /opt/studentup && /opt/studentup/.venv/bin/python run.py --live-audit --live-notify >> /opt/studentup/log/live-audit.log 2>&1
 
