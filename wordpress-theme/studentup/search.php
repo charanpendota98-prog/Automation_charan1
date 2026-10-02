@@ -10,6 +10,11 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @package studentup
  */
 
+// v181: on-site search demand — server-side log (JS lekunda kuda pani chestundi).
+if ( function_exists( 'studentup_searchlog_page' ) && get_search_query() ) {
+	studentup_searchlog_page( get_search_query(), (int) $GLOBALS['wp_query']->found_posts );
+}
+
 get_header();
 ?>
 <main id="main">

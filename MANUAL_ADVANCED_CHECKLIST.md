@@ -1,6 +1,6 @@
 # 📋 MANUAL ADVANCED CHECKLIST — "Nenu manual ga em em cheyali"
 ### Website advanced ga run avvali · Posts ANI-PERFECT · Mistakes leku · Deep analyse + NotebookLM
-> **Verified counts (theme v1.9.23 build):** test suites **124/124** files · jsdom runtime **177/177** checks · PHP lint **85/85** files · theme audit **0/0** · code audit **0/0**.
+> **Verified counts (theme v1.9.32 build):** test suites **127/127** files · jsdom runtime **177/177** checks · PHP lint **86/86** files · theme audit **0/0** · code audit **0/0**.
 
 
 **Ee file = mee haath tho cheyyalsina ANNI — exact order, exact commands.**
@@ -3142,7 +3142,7 @@ python3 tools/build_milesweb_kit.py --list   # enti build avutundo chudu
 
 | Zip | Ekkadiki upload | Enti |
 |---|---|---|
-| `studentup-theme-1.9.31.zip` (112 files) | WP Admin → Appearance → Themes → Upload Theme | Design + job card + Apply bar + schema + ad slots (activate tho one-click setup) |
+| `studentup-theme-1.9.32.zip` (113 files) | WP Admin → Appearance → Themes → Upload Theme | Design + job card + Apply bar + schema + ad slots (activate tho one-click setup) |
 | `studentup-seo-bridge-1.1.0.zip` | WP Admin → Plugins → Upload Plugin | Rank Math REST bridge (veru theme vadithe matrame) |
 | `studentup-static-site.zip` (23 files) | cPanel → `public_html/` | Static site (WordPress path vadakapothe) |
 | `studentup-bot-cron.zip` (299 files) | cPanel → `~/bot/` | Cron bot: drafts + Telegram approvals + guardian |
@@ -3164,7 +3164,47 @@ Ee release lo fix ayyina build-gate bugs (suite ni nijamga green cheyyadaniki):
 3. **`tests/seo_pipeline_test.py` pytest optional** — pytest install lekapote
    `main()` runner run avutundi (CI/shared hosting lo `pip install pytest` avasaram ledu).
 
-Proof: `python run.py --test-all` → **124/124 passed** · jsdom **177/177** ·
+Proof: `python run.py --test-all` → **124/124 passed** (aa release lo) · jsdom **177/177** ·
 php-lint **85/85** · theme audit 0/0 · code audit 0/0 · parity 0/0 ·
 `run.py --guardian` **15 checks OK** (owner creds warn-only) ·
 `run.py --readiness` **100/100** · `run.py --deploy-check` **0 fail**.
+
+---
+
+## PART 75 — v181: GROWTH LOOPS (demand · decay · direct sales)
+
+Moodu feedback loops — ila top sites pani chestayi, ippudu mee bot lo (cron-only):
+
+```bash
+python run.py --search-demand --notify                 # 1) demand loop
+python run.py --rank-trend --csv private/Pages.csv --notify   # 2) evidence loop
+python run.py --sponsor-crm --notify --sponsor-templates      # 3) revenue loop
+```
+
+| Loop | Files | Enti |
+|---|---|---|
+| 🔎 Demand | `autoblog/search_demand.py` · theme `inc/searchlog.php` · `search.php` | Readers' on-site searches (palette REST `/wp/v2/search` + `?s=`) → anonymous count + zero flag → gaps queue `output/search-demand-queue.json`. Privacy: term/count/zero matrame; IP transient throttle lo 60s (persist ledu); bot + admin searches skip; 80-char cap; 200-term cap. |
+| 📉 Evidence | `autoblog/rank_trend.py` | GSC CSV → snapshots `logs/rank-history.json` (same-date replace, cap RANK_HISTORY_MAX_SNAPSHOTS=120) → 7/28d window → RISING / DECAYING / NEW / FLAT (clicks<3 sample skip) → `output/refresh-queue.json` + `gsc_refresh` store scores update → mee `--update`/auto-refresh data-driven. |
+| 🤝 Revenue | `autoblog/sponsor_crm.py` · `ads/sponsors.json` | Stages + probabilities (new 5% → won 100%), roju outreach (SPONSOR_OUTREACH_PER_DAY), overdue follow-ups, pipeline/expected/won forecast, Telugu templates (rate_card), Telegram plan. Fake data ledu. |
+
+Setup + config knobs (`.env`, anni optional):
+```
+SEARCH_DEMAND_QUEUE · SEARCH_DEMAND_MAX_TERMS=200
+RANK_HISTORY_PATH · RANK_REFRESH_QUEUE · RANK_HISTORY_MAX_SNAPSHOTS=120
+SPONSOR_PIPELINE_PATH · SPONSOR_OUTREACH_PER_DAY=2 · SPONSOR_FOLLOWUP_STALE_DAYS=3
+```
+
+Cron (MilesWeb):
+```
+30 8 * * *   ... run.py --search-demand --notify
+0 9 * * 1    ... run.py --rank-trend --csv private/Pages.csv --notify
+15 9 * * *   ... run.py --sponsor-crm --notify
+```
+
+Honest: ee loops rank/revenue **guarantee cheyyavu**. Demand = queue (human review),
+trend = GSC evidence (data unte), sponsor = manual sales (messages meeru pampali).
+
+Proof: `python tests/search_demand_test.py` · `python tests/rank_trend_test.py` ·
+`python tests/sponsor_crm_test.py` · `python run.py --test-all` → **127/127**.
+
+v181 flags: `--search-demand` · `--search-import` · `--search-notify` · `--rank-trend` · `--rank-csv` · `--rank-window` · `--rank-notify` · `--sponsor-crm` · `--sponsor-targets` · `--sponsor-add` · `--sponsor-update` · `--sponsor-notify` · `--sponsor-limit` · `--sponsor-templates`

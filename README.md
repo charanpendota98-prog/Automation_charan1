@@ -1,7 +1,7 @@
 # studentup.in Auto-Blogger 🤖
 
 
-> **Verified counts (theme v1.9.23 build):** test suites **124/124** files · jsdom runtime **177/177** checks · PHP lint **85/85** files · theme audit **0/0** · code audit **0/0**.
+> **Verified counts (theme v1.9.32 build):** test suites **127/127** files · jsdom runtime **177/177** checks · PHP lint **86/86** files · theme audit **0/0** · code audit **0/0**.
 24/7 automatic blog posting system for **studentup.in** (WordPress) — runs on your Oracle Cloud instance.
 
 - **AI content:** Google Gemini (free tier) generates Telugu + English mix articles
@@ -579,7 +579,7 @@ python3 tools/build_milesweb_kit.py --list   # enti build avutundo chudu
 
 | Zip | Ekkadiki |
 |---|---|
-| `studentup-theme-1.9.31.zip` | WP Admin → Appearance → Themes → Upload Theme |
+| `studentup-theme-1.9.32.zip` | WP Admin → Appearance → Themes → Upload Theme |
 | `studentup-seo-bridge-1.1.0.zip` | WP Admin → Plugins → Upload Plugin (veru theme vadithe) |
 | `studentup-static-site.zip` | cPanel → `public_html/` (static option) |
 | `studentup-bot-cron.zip` | cPanel → `~/bot/` (cron bot: drafts + approvals + guardian) |
@@ -597,6 +597,33 @@ Ee release lo fix ayyina build-gate bugs (suite red avvakunda):
   polchutunnayi (mtime kaadu). `--test-all` order-dependent false "zip stale" ledu.
 * **`tests/seo_pipeline_test.py` pytest optional** — pytest install lekapote `main()`
   runner (CI/shared hosting lo `pip install pytest` avasaram ledu).
+
+### v181 — GROWTH LOOPS: demand · decay · direct sales
+
+Top sites ki unna moodu **feedback loops** — ippudu mee bot lo kuda (cron-only,
+shared hosting safe, offline-testable):
+
+```bash
+python run.py --search-demand --notify          # readers em adigaro → content gaps
+python run.py --rank-trend --csv Pages.csv --notify   # traffic padutunna pages → refresh queue
+python run.py --sponsor-crm --notify            # roju 2 sponsor outreach + follow-ups + forecast
+```
+
+| Loop | Module | Enduku idi "advanced" |
+|---|---|---|
+| 🔎 **Search demand** | `autoblog/search_demand.py` + theme `inc/searchlog.php` | On-site search (live-search palette REST + `?s=` pages) ni **anonymous** ga log chestundi (term/count/zero matrame — IP/user eppudu store avvadu; bot + admin skip). Zero-result terms = mee **content gaps** → `output/search-demand-queue.json` (human review; auto-publish ledu). |
+| 📉 **Rank trend / decay** | `autoblog/rank_trend.py` | GSC Pages CSV ni **time-series** ga save (`logs/rank-history.json`, same-date idempotent, capped). 7/28-day baseline tho RISING / DECAYING / NEW classification (small samples skip). Decaying pages → `output/refresh-queue.json` **+ `gsc_refresh` priority store scores update** — mee `--update` pipeline ippudu age-batti kaadu, **traffic-loss batti** refresh chestundi. |
+| 🤝 **Sponsor pipeline** | `autoblog/sponsor_crm.py` + `ads/sponsors.json` | Highest revenue lever (direct sales) ni systematic chesedi: stages (new→contacted→replied→negotiating→won/lost), roju **N outreach** (`SPONSOR_OUTREACH_PER_DAY=2`), overdue follow-ups, pipeline ₹ + expected (stage probabilities), ready Telugu templates (rate card nunchi), Telegram daily plan. Fake prospects seed cheyyadu — `--sponsor-targets` tho evarini vethakalo cheptundi. |
+
+Honest: demand queue = **ideas** (meeru review cheyyali) · rank trend = **evidence**
+(GSC data/CSV unte matrame) · sponsor loop = **manual sales** (messages meeru pampali,
+tool plan + templates istundi). Ee loops rankings/revenue guarantee cheyyavu — kaani
+prathi roju "em cheyyali" anedi chupistayi.
+
+> Build-gate fixes (reproducible POT · content-fresh zip · pytest-optional) v175
+> section lo unnayi — ee release kuda vaatini use chestundi.
+
+v181 flags: `--search-demand` · `--search-import` · `--search-notify` · `--rank-trend` · `--rank-csv` · `--rank-window` · `--rank-notify` · `--sponsor-crm` · `--sponsor-targets` · `--sponsor-add` · `--sponsor-update` · `--sponsor-notify` · `--sponsor-limit` · `--sponsor-templates`
 
 ### Release pin sync (`tools/pin_sync.py`)
 

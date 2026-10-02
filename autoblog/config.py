@@ -567,6 +567,26 @@ SITE_BRAND = _get("SITE_BRAND", "studentup.in")
 STATE_PATH = Path(_get("STATE_PATH", str(BASE_DIR / "state.db")))
 LOG_DIR = Path(_get("LOG_DIR", str(BASE_DIR / "log")))
 OUTPUT_DIR = Path(_get("OUTPUT_DIR", str(BASE_DIR / "output")))
+
+# --- v181: growth loops (reader demand · rank trend · sponsor pipeline) ---
+# 1) On-site search demand → content gap queue (theme logs terms; bot reads)
+SEARCH_DEMAND_QUEUE = Path(_get("SEARCH_DEMAND_QUEUE",
+                                str(BASE_DIR / "output" / "search-demand-queue.json")))
+SEARCH_DEMAND_MAX_TERMS = max(20, min(1000, int(_get("SEARCH_DEMAND_MAX_TERMS", "200") or "200")))
+# 2) GSC time-series → decay detection → refresh queue
+RANK_HISTORY_PATH = Path(_get("RANK_HISTORY_PATH",
+                              str(BASE_DIR / "logs" / "rank-history.json")))
+RANK_REFRESH_QUEUE = Path(_get("RANK_REFRESH_QUEUE",
+                               str(BASE_DIR / "output" / "refresh-queue.json")))
+RANK_HISTORY_MAX_SNAPSHOTS = max(10, min(400, int(_get("RANK_HISTORY_MAX_SNAPSHOTS", "120") or "120")))
+# 3) Direct-sales sponsor pipeline (highest revenue lever, manual by design)
+SPONSOR_PIPELINE_PATH = Path(_get("SPONSOR_PIPELINE_PATH",
+                                  str(BASE_DIR / "ads" / "sponsors.json")))
+SPONSOR_OUTREACH_PER_DAY = max(1, min(10, int(_get("SPONSOR_OUTREACH_PER_DAY", "2") or "2")))
+SPONSOR_FOLLOWUP_STALE_DAYS = max(1, min(30, int(_get("SPONSOR_FOLLOWUP_STALE_DAYS", "3") or "3")))
+# Daily hook (hourly cron lo okkasari): search demand + sponsor plan automatic
+GROWTH_LOOPS_ENABLED = _get("GROWTH_LOOPS_ENABLED", "1") not in ("0", "false", "no")
+GROWTH_LOOPS_HOUR = max(0, min(23, int(_get("GROWTH_LOOPS_HOUR", "9") or "9")))
 RESEARCH_BRIEF_DIR = Path(_get("RESEARCH_BRIEF_DIR", str(OUTPUT_DIR / "research")))
 # Save a private NotebookLM-ready evidence bundle for real source candidates.
 # This prepares sources; it never pretends to access a private NotebookLM account.

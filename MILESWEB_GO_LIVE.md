@@ -99,6 +99,35 @@ mkdir -p log
 
 ---
 
+## 3b) Growth loops (v181) — visitors → content → rankings → revenue
+
+Ee loops mee site ni "post machine" nunchi **business** ga marchutayi (cron lo automatic):
+
+| Loop | Command | Enti chestundi |
+|---|---|---|
+| 🔎 **Search demand** | `run.py --search-demand --notify` | Students site lo em search chestunnaro (theme `inc/searchlog.php`, anonymous) chusi **content gaps → queue** (`output/search-demand-queue.json`). Meere review chesi topics rasi — auto-publish ledu. |
+| 📉 **Rank trend** | `run.py --rank-trend --csv Pages.csv --notify` | GSC CSV ni **time-series** ga save chesi (roju/weekly) rising/decaying pages chupistundi; **traffic padutunna pages → refresh queue** (`output/refresh-queue.json`) + mee `--update` pipeline priority update. |
+| 🤝 **Sponsor pipeline** | `run.py --sponsor-crm --notify` | Direct sales (highest revenue): roju **2 outreach targets** + overdue follow-ups + pipeline ₹/expected forecast + ready Telugu message templates. |
+
+```bash
+# one-time: GSC export unte (Search Console → Performance → Pages → Export)
+python run.py --rank-trend --csv Pages.csv --notify     # roju/weekly cron
+
+# sponsor pipeline start
+python run.py --sponsor-targets                          # evarini contact cheyyali
+python run.py --sponsor-add "Sri Coaching|coaching|Hyderabad|98480xxxxx|8000"
+python run.py --sponsor-crm --notify --sponsor-templates # roju plan + messages
+```
+
+**v181 flags (anni):** `--search-demand` · `--search-import` · `--search-notify` · `--rank-trend` · `--rank-csv` · `--rank-window` · `--rank-notify` · `--sponsor-crm` · `--sponsor-targets` · `--sponsor-add` · `--sponsor-update` · `--sponsor-notify` · `--sponsor-limit` · `--sponsor-templates`
+
+Honest note: search demand = **queued ideas**, rank trend = **evidence** (GSC data
+unte matrame), sponsor loop = **manual sales** (messages meeru pampali). Ee loops
+rankings/revenue ni guarantee cheyyavu — kaani prathi roju **em cheyyali** anedi
+chupistayi.
+
+---
+
 ## 4) Notification / verification commands (server lo)
 
 ```bash
@@ -109,6 +138,9 @@ cd ~/bot
 .venv/bin/python run.py --readiness       # 100/100 system score (owner items pending ga chupistundi)
 .venv/bin/python run.py --deploy-check    # server setup green-a?
 .venv/bin/python run.py --index-status    # IndexNow / Google indexing keys verify
+python run.py --search-demand   # v181: readers' searches → content gaps (queue)
+python run.py --rank-trend      # v181: GSC time-series → decay → refresh queue
+python run.py --sponsor-crm     # v181: roju sponsor outreach + follow-ups + forecast
 ```
 CI/local lo anni suites: `python run.py --test-all` (124/124) ·
 jsdom runtime: `node tests/runtime/jsdom_runtime_test.js` (177/177) ·

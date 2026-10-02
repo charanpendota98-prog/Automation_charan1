@@ -2,7 +2,7 @@
 Contributors: studentup
 Requires at least: 6.0
 Tested up to: 6.7
-Stable tag: 1.9.31
+Stable tag: 1.9.32
 Requires PHP: 7.4
 Version: 1.9.26
 License: GNU General Public License v2 or later
@@ -363,6 +363,14 @@ user tho App Password ivvandi (Administrator role).
 * `post_class()` on article loops (plugin/CSS compatibility) · `aria-current="page"` nav filter
 * Performance: custom WP_Query calls ki no_found_rows (extra SQL query teesesaam)
 * IndexNow key-file serving (/<key>.key) — instant indexing automatic
+
+
+= 1.9.32 (2026-10-02, v181) =
+* On-site search demand log (inc/searchlog.php): reader searches — live-search
+  palette (“wp/v2/search”) + “?s=” pages — anonymous count + zero-result flag.
+  Strict privacy: term/count/zero matrame; IP/user eppudu store avvadu (throttle
+  transient 60s). Bot + admin searches skip. Bot ee list ni “--search-demand” tho
+  chusi content gaps → review queue cheshtundi (auto-publish ledu).
 
 
 = 1.3.0 (2026-09-18, v67) =

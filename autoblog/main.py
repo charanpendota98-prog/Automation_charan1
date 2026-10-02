@@ -421,6 +421,36 @@ def run(dry_run: bool, force: bool, mock: bool, category: str = "",
                         log.warning("GUARDIAN ❌ %s: %s (%s)", _r["id"], _r["detail"], _r["fix"])
             except Exception:
                 _soft_fail("site guardian failed (non-fatal)")
+        # --- v181: GROWTH LOOPS — roju demand (search log) + sponsor plan ---
+        if (getattr(config, "GROWTH_LOOPS_ENABLED", True)
+                and now_hour >= getattr(config, "GROWTH_LOOPS_HOUR", 9)
+                and not state.meta_get(config.STATE_PATH,
+                                       f"growth:{today.isoformat()}")):
+            try:
+                from . import search_demand as _sd
+
+                _terms, _meta = _sd.fetch_live()
+                if _terms:
+                    _rep = _sd.analyze(_terms, state.recent_titles(config.STATE_PATH,
+                                                                   limit=400))
+                    _q = _sd.write_queue(_rep)
+                    log.info("SEARCH DEMAND ✔ %d terms · %d gaps → %s",
+                             _rep["total_terms"], len(_rep["gaps"]), _q.name)
+            except Exception:  # noqa: BLE001 — theme deploy/creds lekapote skip
+                log.info("search demand loop skipped (theme log/creds ledu)")
+            try:
+                from . import sponsor_crm as _sc
+
+                _plan = _sc.today_plan()
+                if _plan["outreach"] or _plan["followups"]:
+                    from . import notifier
+
+                    notifier.send_telegram(_sc.report_text(_plan, _sc.forecast()))
+                    log.info("SPONSOR PLAN ✔ outreach %d · followups %d",
+                             len(_plan["outreach"]), len(_plan["followups"]))
+            except Exception:  # noqa: BLE001
+                _soft_fail("sponsor plan failed (non-fatal)")
+            state.meta_set(config.STATE_PATH, f"growth:{today.isoformat()}", "1")
         # --- v57: AD ADVISOR — roju okkasari: e network ki eppudu apply cheyyali ---
         if (getattr(config, "AD_ADVISOR_ENABLED", True)
                 and now_hour >= getattr(config, "AD_ADVISOR_HOUR", 10)
@@ -1974,6 +2004,39 @@ def main() -> int:
                         help="v60: SITE GUARDIAN — site/UI/SEO/ads/feed/storage full check")
     parser.add_argument("--guardian-notify", action="store_true",
                         help="v60: guardian report ni Telegram ki kuda pampu")
+    # ---- v181: growth loops (demand · rank trend · sponsor pipeline) ----
+    parser.add_argument("--search-demand", action="store_true",
+                        help="v181: on-site search log → content gap queue "
+                             "(readers' queries; human review — auto-publish ledu)")
+    parser.add_argument("--search-import", default="", metavar="FILE",
+                        help="v181: search demand ni JSON/CSV file nunchi (offline/test)")
+    parser.add_argument("--search-notify", action="store_true",
+                        help="v181: search demand report ni Telegram ki")
+    parser.add_argument("--rank-trend", action="store_true",
+                        help="v181: GSC time-series — rising/decaying pages + refresh queue")
+    parser.add_argument("--rank-csv", default="", metavar="CSV",
+                        help="v181: GSC Pages CSV ingest chesi snapshot save chey")
+    parser.add_argument("--rank-window", type=int, default=7,
+                        help="v181: baseline window days (default 7; 28 kuda ok)")
+    parser.add_argument("--rank-notify", action="store_true",
+                        help="v181: rank trend report ni Telegram ki")
+    parser.add_argument("--sponsor-crm", action="store_true",
+                        help="v181: sponsor pipeline — roju outreach + follow-ups + forecast")
+    parser.add_argument("--sponsor-targets", action="store_true",
+                        help="v181: evarini contact cheyyali (prospect types + search strings)")
+    parser.add_argument("--sponsor-add", default="",
+                        metavar='"Name|type|city|contact|value"',
+                        help="v181: kotha prospect add chey")
+    parser.add_argument("--sponsor-update", default="",
+                        metavar='"Name|stage|note|followup"',
+                        help="v181: prospect stage/follow-up update (new/contacted/"
+                             "replied/negotiating/won/lost/paused)")
+    parser.add_argument("--sponsor-notify", action="store_true",
+                        help="v181: roju sponsor plan ni Telegram ki")
+    parser.add_argument("--sponsor-limit", type=int, default=0,
+                        help="v181: roju outreach count (default SPONSOR_OUTREACH_PER_DAY=2)")
+    parser.add_argument("--sponsor-templates", action="store_true",
+                        help="v181: outreach messages kuda print chey (rate card tho)")
     parser.add_argument("--breaking-feed", action="store_true",
                         help="v59: బ్రేకింగ్ న్యూస్ feed build (radar → preview/data/breaking.json)")
     parser.add_argument("--breaking-from", default="", metavar="FILE",
@@ -2401,6 +2464,57 @@ def main() -> int:
         return push_theme_data(dry_run=args.dry_run)
     if args.guardian or args.guardian_notify:
         return guardian_run(notify=args.guardian_notify)
+    # ---- v181: growth loops (demand · rank trend · sponsor pipeline) ----
+    if getattr(args, "search_demand", False):
+        from . import search_demand as _sd
+
+        return _sd.run_cli(import_path=getattr(args, "search_import", "") or "",
+                           notify=getattr(args, "search_notify", False))
+    if getattr(args, "rank_trend", False):
+        from . import rank_trend as _rt
+
+        return _rt.run_cli(csv_path=getattr(args, "rank_csv", "") or "",
+                           window=int(getattr(args, "rank_window", 7) or 7),
+                           notify=getattr(args, "rank_notify", False))
+    if getattr(args, "sponsor_crm", False):
+        from . import sponsor_crm as _sc
+
+        return _sc.run_cli(notify=getattr(args, "sponsor_notify", False),
+                           limit=int(getattr(args, "sponsor_limit", 0) or 0),
+                           templates=getattr(args, "sponsor_templates", False))
+    if getattr(args, "sponsor_targets", False):
+        from . import sponsor_crm as _sc
+
+        return _sc.targets_cli()
+    if getattr(args, "sponsor_add", ""):
+        from . import sponsor_crm as _sc
+
+        parts = [p.strip() for p in args.sponsor_add.split("|")]
+        while len(parts) < 5:
+            parts.append("")
+        try:
+            row = _sc.add(parts[0], parts[1], parts[2], parts[3],
+                          int(parts[4] or 0))
+        except ValueError as exc:
+            print(f"❌ {exc}")
+            return 1
+        print(f"✅ prospect added: {row['name']} ({row['type'] or '—'}, {row['city'] or '—'})"
+              f" — stage new. Roju plan: python run.py --sponsor-crm")
+        return 0
+    if getattr(args, "sponsor_update", ""):
+        from . import sponsor_crm as _sc
+
+        parts = [p.strip() for p in args.sponsor_update.split("|")]
+        while len(parts) < 4:
+            parts.append("")
+        try:
+            row = _sc.update(parts[0], stage=parts[1], note=parts[2], followup=parts[3])
+        except ValueError as exc:
+            print(f"❌ {exc}")
+            return 1
+        print(f"✅ {row['name']} → {row['stage']}"
+              f" (follow-up {row.get('next_followup', '—')})")
+        return 0
     if args.breaking_feed or args.breaking_from:
         return breaking_feed_run(from_file=args.breaking_from)
     if args.radar:

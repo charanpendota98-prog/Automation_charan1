@@ -2,7 +2,7 @@
 # This file is distributed under the GNU GPL v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: StudentUp 1.9.31\n"
+"Project-Id-Version: StudentUp 1.9.32\n"
 "Report-Msgid-Bugs-To: https://studentup.in/\n"
 "POT-Creation-Date: 2026-01-01 00:00+0000\n"
 "MIME-Version: 1.0\n"
@@ -258,7 +258,7 @@ msgstr ""
 msgid "Full details"
 msgstr ""
 
-#: search.php:29
+#: search.php:34
 msgid "Go to home"
 msgstr ""
 
@@ -383,7 +383,7 @@ msgstr ""
 msgid "No more than 3 links in one comment."
 msgstr ""
 
-#: search.php:26
+#: search.php:31
 msgid "No results — try a different word."
 msgstr ""
 

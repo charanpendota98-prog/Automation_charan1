@@ -86,7 +86,14 @@ cPanel → **Cron Jobs** → add (paths ni mee username tho marchandi):
 0 7 * * *      cd /home/<user>/bot && /home/<user>/bot/.venv/bin/python run.py --guardian >> log/guardian.log 2>&1
 0 3 * * 0      cd /home/<user>/bot && /home/<user>/bot/.venv/bin/python run.py --site-audit >> log/audit.log 2>&1
 30 3 * * 0     cd /home/<user>/bot && /home/<user>/bot/.venv/bin/python tools/prune_media.py --days 30 --apply >> log/prune.log 2>&1
+30 8 * * *     cd /home/<user>/bot && /home/<user>/bot/.venv/bin/python run.py --search-demand --notify >> log/demand.log 2>&1
+0 9 * * 1      cd /home/<user>/bot && /home/<user>/bot/.venv/bin/python run.py --rank-trend --csv private/Pages.csv --notify >> log/rank.log 2>&1
+15 9 * * *     cd /home/<user>/bot && /home/<user>/bot/.venv/bin/python run.py --sponsor-crm --notify >> log/sponsor.log 2>&1
 ```
+**v181 loops (kotha):** `--search-demand` (readers em adigaro → content gaps) ·
+`--rank-trend` (GSC time-series → traffic padutunna pages → refresh queue) ·
+`--sponsor-crm` (roju 2 sponsor outreach + follow-ups + forecast).
+GSC CSV (`private/Pages.csv`) leda key lekapote aa loop automatic skip — migilinavi pani chestayi.
 Note: bot posts still pass the **human-review gate** (draft + Telegram approval)
 — cron only *prepares* posts. Approval taps reach the bot within ~5 minutes
 (cron rhythm) instead of instantly — adi okkate shared-hosting tradeoff.
