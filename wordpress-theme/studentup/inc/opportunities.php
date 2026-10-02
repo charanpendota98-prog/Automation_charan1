@@ -71,6 +71,54 @@ function studentup_source_verification_notice( $post_id = 0 ) {
 	return $html . '</div>';
 }
 
+/**
+ * v184: deadline cheppakapoyina chala puratana post ni board nunchi teestam.
+ *
+ * Govt notices ki last date cheppakapovadam common (results / admit card).
+ * Kaani 120+ rojula puratana notice "active" ga chupinchadam reader ni confuse
+ * chestundi. Filter tho marchachu: add_filter( 'studentup_opportunity_stale_days',
+ * fn() => 0 );  (0 = off)
+ */
+function studentup_opportunity_stale_days() {
+	$days = (int) apply_filters( 'studentup_opportunity_stale_days', 120 );
+	return max( 0, $days );
+}
+
+function studentup_opportunity_is_stale( $post ) {
+	$stale = studentup_opportunity_stale_days();
+	if ( $stale < 1 ) {
+		return false;
+	}
+	if ( '' !== studentup_opportunity_last_date( $post->ID ) ) {
+		return false; // deadline unte adi ne decide chestundi.
+	}
+	$published = strtotime( (string) $post->post_date_gmt . ' UTC' );
+	if ( ! $published ) {
+		return false; // date teliyadu → guess cheyyadu.
+	}
+	return ( time() - $published ) > ( $stale * DAY_IN_SECONDS );
+}
+
+/**
+ * v184: same recruitment ki kotha post vaste puratana di board nunchi teesestam.
+ *
+ * Bot `title_key()` (autoblog/opportunity_digest.py) tho same rules: SEO
+ * suffixes + year + punctuation teesi first 60 chars; chinna title (<10) ki key
+ * ledu (collision risk). Telugu titles ki key raadu — adi kuda safe (dedupe ledu).
+ */
+function studentup_opportunity_title_key( $title ) {
+	$text = strtolower( wp_strip_all_tags( (string) $title ) );
+	$text = preg_replace( '/\b20\d{2}\b/', ' ', $text );
+	$text = preg_replace(
+		'/\b(?:notification|notifications|recruitment|apply online|application|' .
+		'complete details|complete guide|latest update|official notification|' .
+		'result|results|hall ticket|admit card|merit list|answer key|' .
+		'revised|extended|update|job|jobs|posts?|vacancy|vacancies)\b/',
+		' ', $text );
+	$text = preg_replace( '/[^a-z0-9]+/', '', $text );
+	return strlen( $text ) >= 10 ? substr( $text, 0, 60 ) : '';
+}
+
 function studentup_opportunity_category_slugs( $post_id ) {
 	return array_map( 'sanitize_key', wp_list_pluck( (array) get_the_category( $post_id ), 'slug' ) );
 }
@@ -168,7 +216,10 @@ function studentup_opportunity_board_posts( $limit = 180 ) {
 	foreach ( $q->posts as $post ) {
 		$last = studentup_opportunity_last_date( $post->ID );
 		if ( studentup_opportunity_is_expired( $last ) ) {
-			continue;
+			continue; // last date ayyipoyindi → board nunchi out.
+		}
+		if ( studentup_opportunity_is_stale( $post ) ) {
+			continue; // v184: deadline lekunda 120+ rojula puratana → out.
 		}
 		$section = studentup_opportunity_section_for_post( $post->ID );
 		if ( '' === $section ) {
@@ -204,6 +255,27 @@ function studentup_opportunity_board_posts( $limit = 180 ) {
 			'thumbnail'  => get_the_post_thumbnail_url( $post->ID, 'studentup-card' ),
 		);
 	}
+	// v184: same recruitment ki kotha post vaste puratana di teesestam
+	// (newest wins; okate section + okate title key).
+	$by_key = array();
+	$deduped = array();
+	foreach ( $out as $row ) {
+		$key = $row['section'] . '|' . studentup_opportunity_title_key( $row['title'] );
+		if ( '|' === substr( $key, -1 ) ) {
+			$deduped[] = $row;
+			continue;
+		}
+		if ( ! isset( $by_key[ $key ] ) ) {
+			$by_key[ $key ] = count( $deduped );
+			$deduped[] = $row;
+			continue;
+		}
+		$idx = $by_key[ $key ];
+		if ( strtotime( $row['date'] ) > strtotime( $deduped[ $idx ]['date'] ) ) {
+			$deduped[ $idx ] = $row;
+		}
+	}
+	$out = $deduped;
 	// Closing dates are more useful at the top; undated posts follow newest-first.
 	usort(
 		$out,

@@ -6,7 +6,7 @@ Anni zips `milesweb-kit/` folder lo unnayi (`python3 tools/build_milesweb_kit.py
 
 | # | Zip | Ekkadiki | Enti chestundi |
 |---|---|---|---|
-| 1 | `studentup-theme-1.9.33.zip` | WordPress → **Appearance → Themes → Add New → Upload Theme** | Mee site design + job card + Apply bar + schema + ads slots (theme activate ayinappude categories/menus/policy pages auto-create) |
+| 1 | `studentup-theme-1.9.34.zip` | WordPress → **Appearance → Themes → Add New → Upload Theme** | Mee site design + job card + Apply bar + schema + ads slots (theme activate ayinappude categories/menus/policy pages auto-create) |
 | 2 | `studentup-seo-bridge-1.1.0.zip` | WordPress → **Plugins → Add New → Upload Plugin** | Rank Math fields ni REST tho verify chese bridge (theme lo already undi — veru theme vadithe matrame kavali) |
 | 3 | `studentup-static-site.zip` | cPanel → **File Manager → `public_html/`** | Static site (23 files · PWA + ads.txt + sitemap tho) — WordPress path vadakapothe matrame |
 | 4 | `studentup-bot-cron.zip` | cPanel → **File Manager → `~/bot/`** | Auto-blogger bot (cron: research → draft → Telegram approval → publish; guardian + growth loops) |
@@ -20,7 +20,7 @@ Anni zips `milesweb-kit/` folder lo unnayi (`python3 tools/build_milesweb_kit.py
 ## 0) Modata verify (30 seconds) — zip sha256
 
 ```bash
-sha256sum studentup-theme-1.9.33.zip      # leda: sha256sum -c SHA256SUMS.txt
+sha256sum studentup-theme-1.9.34.zip      # leda: sha256sum -c SHA256SUMS.txt
 ```
 `milesweb-kit/SHA256SUMS.txt` lo unna value tho match avvali. Theme zip build **fully
 reproducible** (POT date kuda fixed) — so ee sha256 prathi machine lo same.
@@ -34,7 +34,7 @@ reproducible** (POT date kuda fixed) — so ee sha256 prathi machine lo same.
 3. `https://studentup.in/wp-admin` login → **Users → Profile → Application Passwords**
    → name "bot" → **Add New** → copy chesi `.env` lo `WP_APP_PASSWORD=` ki pettandi
    (idi password kaadu — separate app password, eppudaina revoke cheyyachu).
-4. **Appearance → Themes → Add New → Upload Theme** → `studentup-theme-1.9.33.zip`
+4. **Appearance → Themes → Add New → Upload Theme** → `studentup-theme-1.9.34.zip`
    → **Install Now** → **Activate**.
    Activate ayina ventane theme **one-click setup** run avutundi:
    categories (TS/AP/Central/Private/Software/Walk-in/…), policy pages
@@ -206,8 +206,14 @@ cd ~/bot
   (cPanel File Manager → bot/output → Download → copy → groups lo paste).
 - Sections: TS · AP · Central · Walk-in · **Outsourcing** · Job Melas · Software ·
   Private · Scholarships · Results · Hall Tickets · Current Affairs + 🆕 *IVVALTI* block.
-- **Plain text** (WhatsApp HTML render cheyyadu) · expired posts ledu · links mee site vi.
-- Site board kuda same sections (`inc/opportunities.php` v1.9.33 — outsourcing section kotha).
+- **Plain text** (WhatsApp HTML render cheyyadu) · links mee site vi (real permalinks).
+- **v184 hygiene (site board + list rendu okate):** last date ayyipoyinavi out ·
+  deadline lekunda **120+ rojula puratana** out · **same recruitment ki kotha post
+  vaste puratana di out** (supersede). Kotha items ki 🆕 · close avutunna vaatiki ⏰.
+- **Daily change report:** `output/forward-list-state.json` → roju *"🆕 4 kotha ·
+  ❌ 3 out"*; CLI lo **enduku poyindi** (last date ayyindi / stale / kotha version)
+  kanipistundi. Stale window marchali ante `.env` lo `OPPORTUNITY_STALE_DAYS=120`
+  (0 = off) — theme board kuda `studentup_opportunity_stale_days` filter tho same.
 
 v183 flags: `--forward-list` · `--forward-format` · `--forward-per-section` · `--forward-send` · `--forward-no-save`
 
@@ -239,7 +245,7 @@ CWV/a11y static audit: `python3 tools/cwv_audit.py` (10 pages · 0/0).
 
 | Meeru adigindi | Ekkada implement ayindi | Proof / command |
 |---|---|---|
-| 🌐 **Advanced UI + frontend** | `wordpress-theme/studentup/` (113 files, v1.9.33): hero · job cards · quiz ring · bottom nav · dark mode · skeleton · critical CSS · minified assets | theme audit 0/0 · jsdom 177/177 · php-lint 86/86 |
+| 🌐 **Advanced UI + frontend** | `wordpress-theme/studentup/` (113 files, v1.9.34): hero · job cards · quiz ring · bottom nav · dark mode · skeleton · critical CSS · minified assets | theme audit 0/0 · jsdom 177/177 · php-lint 86/86 |
 | 💻 **Laptop lo neat** | responsive grid + 51 `@media` rules · desktop mega menu · keyboard nav (`studentup-cmdk.js`) · wide layouts | `python3 tools/cwv_audit.py` (10 pages) · jsdom |
 | 📱 **Phone lo neat** | mobile bottom nav · tap targets · `viewport-fit=cover` · iOS zoom fix · sticky Apply bar | jsdom 177/177 · cwv_audit |
 | ⬇️ **App download** | `inc/pwa.php` + `manifest.webmanifest` + `sw.js` + install prompt banner (§2b) | theme option PWA=ON |

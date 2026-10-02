@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""v91 tests — TELEGRAM TOOLS (theme 1.9.33).
+"""v91 tests — TELEGRAM TOOLS (theme 1.9.34).
 
 Brief: owner ki manual Telegram toolbox kavali — connectivity test, channel
 broadcast (private -100… channels + long text auto-split), site notify push
@@ -15,7 +15,7 @@ Checks (offline source audits + bot imports):
   * theme inc/telegram.php: ABSPATH + override regex + join block + share URL
   * options field + footer call-site + CSS chip
   * .env.example private channel hint
-  * version parity 1.9.33 (php·css·stable) + readme 1.9.33+1.9.33 changelog
+  * version parity 1.9.34 (php·css·stable) + readme 1.9.34+1.9.34 changelog
   * suites 71 pins (v75–v81 → "suites == 131") + docs 71/71 claims
 
 Run: python tests/v91_test.py   (also via python run.py --test-all)
@@ -129,7 +129,7 @@ def test_version_parity_192() -> None:
     php = re.search(r"STUDENTUP_VERSION',\s*'([^']+)'", read(THEME / "functions.php")).group(1)
     css = re.search(r"Version:\s*([0-9.]+)", read(THEME / "style.css")).group(1)
     stable = re.search(r"Stable tag:\s*([0-9.]+)", read(THEME / "readme.txt")).group(1)
-    assert php == css == stable == "1.9.33", f"parity tappu: {php}·{css}·{stable}"
+    assert php == css == stable == "1.9.34", f"parity tappu: {php}·{css}·{stable}"
     readme = read(THEME / "readme.txt")
     assert "= 1.9.1" in readme and "= 1.9.2" in readme, "changelog entries ledu"
     assert "Telegram" in readme
@@ -154,7 +154,7 @@ TESTS = [
     ("theme telegram.php", test_theme_telegram_php),
     ("theme integration", test_theme_integration),
     ("env docs", test_env_docs),
-    ("version parity 1.9.33", test_version_parity_192),
+    ("version parity 1.9.34", test_version_parity_192),
     ("suite pins + docs", test_suite_pins_and_docs),
 ]
 
@@ -162,7 +162,7 @@ TESTS = [
 def main() -> None:
     os.chdir(ROOT)
     print("=" * 70)
-    print("v91 TELEGRAM TOOLS — regression tests (theme 1.9.33)")
+    print("v91 TELEGRAM TOOLS — regression tests (theme 1.9.34)")
     print("=" * 70)
     failed = 0
     for name, fn in TESTS:

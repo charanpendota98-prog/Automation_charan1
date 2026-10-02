@@ -2,7 +2,7 @@
 Contributors: studentup
 Requires at least: 6.0
 Tested up to: 6.7
-Stable tag: 1.9.33
+Stable tag: 1.9.34
 Requires PHP: 7.4
 Version: 1.9.26
 License: GNU General Public License v2 or later
@@ -364,6 +364,14 @@ user tho App Password ivvandi (Administrator role).
 * Performance: custom WP_Query calls ki no_found_rows (extra SQL query teesesaam)
 * IndexNow key-file serving (/<key>.key) — instant indexing automatic
 
+
+= 1.9.34 (2026-10-02, v184) =
+* Active board hygiene (inc/opportunities.php) — bot daily list tho same rules:
+  last date ayyipoyina posts out · deadline lekunda **120+ rojula puratana**
+  posts out (`studentup_opportunity_stale_days` filter, 0 = off) · same
+  recruitment ki kotha post vaste puratana di out (title key dedupe, newest wins).
+* Ee moodu rules valla board lo eppudu **open jobs mattrame** kanipistayi —
+  reader ki confuse avvadu, kotha post vachinappudu neat ga replace avutundi.
 
 = 1.9.33 (2026-10-02, v183) =
 * Board lo kotha section: **Outsourcing & Contract Jobs** (inc/opportunities.php).

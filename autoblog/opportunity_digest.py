@@ -141,27 +141,125 @@ def section_for_row(row: Dict) -> str:
     return ""  # not every published article belongs in the active-opportunity board
 
 
-def normalize_rows(rows: Iterable[Dict], today: date | None = None, limit: int = 240) -> List[Dict]:
-    """Drop expired rows and normalize the REST response for grouping."""
+def parse_post_date(value: object) -> date | None:
+    """REST `date` (ISO, time tho) → date. Unknown aithe None (guess cheyyadu)."""
+    raw = str(value or "").strip()
+    if not raw:
+        return None
+    try:
+        return datetime.fromisoformat(raw.replace("Z", "+00:00")).date()
+    except ValueError:
+        try:
+            return datetime.strptime(raw[:10], "%Y-%m-%d").date()
+        except ValueError:
+            return None
+
+
+def stale_days_default() -> int:
+    """Config nunchi stale window (0 = off). Import fail aithe 0 (safe)."""
+    try:
+        from . import config as _config
+        return max(0, int(getattr(_config, "OPPORTUNITY_STALE_DAYS", 0) or 0))
+    except Exception:  # noqa: BLE001 — config lekapote feature off
+        return 0
+
+
+def is_stale(row: Dict, today: date, stale_days: int) -> bool:
+    """Deadline teliyani post chala puratana aithe active list nunchi teesestam.
+
+    Enduku: govt job notice ki last date cheppakapovadam common (results /
+    admit-card / listicle laantivi). Kaani **120+ rojula puratana** notice ni
+    active board lo chupinchadam reader ni confuse chestundi (adi almost
+    close ayyi untundi). Idi conservative default — 0 pettithe off.
+    """
+    if not stale_days:
+        return False
+    if parse_last_date(row.get("last_date")):
+        return False                     # deadline unte adi ne decide chestundi
+    published = parse_post_date(row.get("date"))
+    if not published:
+        return False                     # date teliyadu → guess cheyyadu
+    return (today - published).days > stale_days
+
+
+def title_key(value: object) -> str:
+    """Same recruitment ki rendu/మూడు posts unte okate key ravali.
+
+    Conservative: SEO suffixes + year + punctuation teesi, first 60 chars.
+    Chinna title (<15 chars) ki key ivvadu — collision risk.
+    """
+    text = _clean(value, 300).lower()
+    text = re.sub(r"\b20\d{2}\b", " ", text)
+    text = re.sub(
+        r"\b(?:notification|notifications|recruitment|apply online|application|"
+        r"complete details|complete guide|latest update|official notification|"
+        r"result|results|hall ticket|admit card|merit list|answer key|"
+        r"revised|extended|update|job|jobs|posts?|vacancy|vacancies)\b",
+        " ", text)
+    text = re.sub(r"[^a-z0-9]+", "", text)
+    return text[:60] if len(text) >= 10 else ""
+
+
+def supersede(rows: List[Dict]) -> List[Dict]:
+    """Same recruitment ki kotha post vaste puratana di list nunchi teesestam.
+
+    Only same section + same title_key (≥15 chars) ki; newest date win.
+    Ee pani reader ki "rendu sari same job" kanipinchakunda chestundi.
+    """
+    best: Dict[str, Dict] = {}
+    out: List[Dict] = []
+    for row in rows:
+        key = f"{row.get('section')}|{title_key(row.get('title'))}"
+        if key.endswith("|"):
+            out.append(row)
+            continue
+        prev = best.get(key)
+        if prev is None:
+            best[key] = row
+            out.append(row)
+            continue
+        # same key → newest wins; puratana di drop (superseded)
+        if str(row.get("date") or "") > str(prev.get("date") or ""):
+            out[out.index(prev)] = row
+            row["superseded"] = prev.get("id")
+            best[key] = row
+        else:
+            prev["superseded"] = row.get("id")
+    return out
+
+
+def normalize_rows(rows: Iterable[Dict], today: date | None = None, limit: int = 240,
+                   stale_days: int | None = None, dedupe: bool = True) -> List[Dict]:
+    """Active rows mattrame: expired → out · chala puratana (undated) → out ·
+    same recruitment ki kotha post vaste puratana di → out (superseded)."""
     today = today or datetime.now(IST).date()
+    stale = stale_days_default() if stale_days is None else max(0, int(stale_days))
     out: List[Dict] = []
     seen = set()
     for raw in rows or []:
         row = dict(raw or {})
         if not is_active(row.get("last_date"), today):
+            continue                      # last date ayyipoyindi → list nunchi out
+        section = section_for_row(row)
+        if not section:
             continue
         key = str(row.get("id") or row.get("link") or row.get("title") or "").strip()
         if not key or key in seen:
             continue
-        section = section_for_row(row)
-        if not section:
-            continue
+        if is_stale(row, today, stale):
+            continue                      # deadline teliyadu + 120+ rojula puratana
         seen.add(key)
         row["title"] = _clean(row.get("title"), 180)
         row["last_date"] = parse_last_date(row.get("last_date"))
         row["section"] = section
         row["days_left"] = days_left(row.get("last_date"), today)
+        published = parse_post_date(row.get("date"))
+        row["is_new"] = bool(published and published >= today - timedelta(days=1))
+        row["closing_soon"] = (row["days_left"] is not None and 0 <= row["days_left"] <= 3)
+        row["stale_days"] = stale
         out.append(row)
+    if dedupe:
+        out = supersede(out)
     # Known deadlines first, with the closest closing date at the top. Unknown
     # dates follow, newest published posts first; nothing is fabricated.
     out.sort(key=lambda x: (
@@ -338,12 +436,17 @@ def wa_date_line(today: date) -> str:
 
 def _whatsapp_parts(site: str, rows: Iterable[Dict], today: date | None = None,
                     per_section: int = 6, today_block: bool = True,
-                    today_limit: int = 5):
+                    today_limit: int = 5, new_ids: Iterable[object] | None = None,
+                    changes: Dict | None = None):
     """WhatsApp plain-text parts: header + units + footer.
 
     Unit = (section header, [item, ...]) — item string lo title + link rendu
     lines unnayi ("1) Title\n🔗 url"). Chunking item boundaries lo jarugutundi
     (link madhya lo eppudu split avvadu).
+
+    * `new_ids` — ippude (ninna list tho compare) kothaga add ayina post ids →
+      aa items ki 🆕 marker.
+    * `changes` — {"new": n, "gone": n} → header lo okka line ("em marindo").
     """
     today = today or datetime.now(IST).date()
     groups = group_rows(rows, today=today, per_section=per_section)
@@ -352,6 +455,14 @@ def _whatsapp_parts(site: str, rows: Iterable[Dict], today: date | None = None,
         "📋 *StudentUp — Daily Updates List*",
         f"🗓 {wa_date_line(today)} · 🌐 {site_url or 'studentup.in'}",
     ]
+    if changes:
+        bits = []
+        if changes.get("new"):
+            bits.append(f"🆕 {changes['new']} kotha")
+        if changes.get("gone"):
+            bits.append(f"❌ {changes['gone']} out (close/stale/duplicate)")
+        if bits:
+            header.append("📈 " + " · ".join(bits))
     total = 0
     units = []
     today_items = []
@@ -360,30 +471,45 @@ def _whatsapp_parts(site: str, rows: Iterable[Dict], today: date | None = None,
             for row in groups.get(key) or []:
                 if str(row.get("date") or "")[:10] == today.isoformat():
                     today_items.append(row)
+    fresh = {str(x) for x in (new_ids or [])}
+
+    def _item(idx: int, row: Dict) -> str:
+        mark = "🆕 " if (row.get("is_new") or str(row.get("id")) in fresh) else ""
+        note = wa_deadline_note(row.get("days_left"))
+        tail = f"  · {note}" if note else ""
+        return (f"{idx}) {mark}{_wa_clean(row.get('title'))}{tail}\n"
+                f"🔗 {compact_site_link(site, row, prefer_permalink=True)}")
+
     if today_items:
-        items = []
-        for idx, row in enumerate(today_items[:today_limit], 1):
-            total += 1
-            items.append(f"{idx}) {_wa_clean(row.get('title'))}\n"
-                         f"🔗 {compact_site_link(site, row, prefer_permalink=True)}")
-        units.append(("🆕 *IVVALTI KOTHAAVI (today)*", items))
+        items = [_item(idx, row)
+                 for idx, row in enumerate(today_items[:today_limit], 1)]
+        total += len(items)
+        units.append((f"🆕 *IVVALTI KOTHAAVI (today)* ({len(items)})", items))
     section_meta = {key: (label, icon) for key, label, icon in SECTIONS}
     for key, _, _ in SECTIONS:
         rows_here = groups.get(key) or []
         if not rows_here:
             continue
         label, icon = section_meta[key]
-        items = []
-        for idx, row in enumerate(rows_here, 1):
-            total += 1
-            items.append(f"{idx}) {_wa_clean(row.get('title'))}\n"
-                         f"🔗 {compact_site_link(site, row, prefer_permalink=True)}")
-        units.append((f"{icon} *{label.upper()}*", items))
+        items = [_item(idx, row) for idx, row in enumerate(rows_here, 1)]
+        total += len(items)
+        units.append((f"{icon} *{label.upper()}* ({len(items)})", items))
     footer = [
         f"✅ *{total} updates* · 🌐 {site_url or 'studentup.in'}",
         "ℹ️ Apply cheyyemundu article lo unna official notification verify cheyyandi.",
     ]
     return header, units, footer, total
+
+
+def wa_deadline_note(days_left: int | None) -> str:
+    """Closing-soon urgency (3 rojula lopu mattrame) — honest, peddha date ledu."""
+    if days_left is None or days_left > 3:
+        return ""
+    if days_left <= 0:
+        return "⏰ last date TODAY"
+    if days_left == 1:
+        return "⏰ repu last date (1 day left)"
+    return f"⏰ {days_left} days left"
 
 
 def _render_units(units) -> List[str]:
@@ -398,10 +524,13 @@ def _render_units(units) -> List[str]:
 
 
 def render_whatsapp(site: str, rows: Iterable[Dict], today: date | None = None,
-                    per_section: int = 6, today_block: bool = True) -> str:
+                    per_section: int = 6, today_block: bool = True,
+                    new_ids: Iterable[object] | None = None,
+                    changes: Dict | None = None) -> str:
     """Okate plain-text message (WhatsApp group/status ki copy-paste cheyyadaniki)."""
     header, units, footer, total = _whatsapp_parts(site, rows, today, per_section,
-                                                   today_block)
+                                                   today_block, new_ids=new_ids,
+                                                   changes=changes)
     if not total:
         return ""
     return "\n".join(header + [""] + _render_units(units) + footer)
@@ -409,14 +538,17 @@ def render_whatsapp(site: str, rows: Iterable[Dict], today: date | None = None,
 
 def render_whatsapp_messages(site: str, rows: Iterable[Dict], today: date | None = None,
                              per_section: int = 6, today_block: bool = True,
-                             max_chars: int = 3900) -> List[str]:
+                             max_chars: int = 3900,
+                             new_ids: Iterable[object] | None = None,
+                             changes: Dict | None = None) -> List[str]:
     """Peddha list ni WhatsApp-safe chunks ga split (item madhya lo kaadu).
 
     Split **item boundaries** lo mattrame (URL eppudu cut avvadu). Oka item
     okkate chunk limit kanna peddha unte, adi ontariga okka chunk avutundi.
     """
     header, units, footer, total = _whatsapp_parts(site, rows, today, per_section,
-                                                   today_block)
+                                                   today_block, new_ids=new_ids,
+                                                   changes=changes)
     if not total:
         return []
     prefix = "\n".join(header) + "\n\n"

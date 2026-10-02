@@ -1,7 +1,7 @@
 # studentup.in Auto-Blogger 🤖
 
 
-> **Verified counts (theme v1.9.33 build):** test suites **131/131** files · jsdom runtime **177/177** checks · PHP lint **86/86** files · theme audit **0/0** · code audit **0/0**.
+> **Verified counts (theme v1.9.34 build):** test suites **131/131** files · jsdom runtime **177/177** checks · PHP lint **86/86** files · theme audit **0/0** · code audit **0/0**.
 24/7 automatic blog posting system for **studentup.in** (WordPress) — runs on your Oracle Cloud instance.
 
 - **AI content:** Google Gemini (free tier) generates Telugu + English mix articles
@@ -579,7 +579,7 @@ python3 tools/build_milesweb_kit.py --list   # enti build avutundo chudu
 
 | Zip | Ekkadiki |
 |---|---|
-| `studentup-theme-1.9.33.zip` | WP Admin → Appearance → Themes → Upload Theme |
+| `studentup-theme-1.9.34.zip` | WP Admin → Appearance → Themes → Upload Theme |
 | `studentup-seo-bridge-1.1.0.zip` | WP Admin → Plugins → Upload Plugin (veru theme vadithe) |
 | `studentup-static-site.zip` | cPanel → `public_html/` (static option) |
 | `studentup-bot-cron.zip` | cPanel → `~/bot/` (cron bot: drafts + approvals + guardian) |
@@ -663,7 +663,10 @@ python run.py --forward-list --forward-send       # optional: Telegram/WhatsApp 
 | Top block | 🆕 **IVVALTI KOTHAAVI (today)** — ivvalti publish ayina posts (highlight) |
 | Format | Numbered items · oka line title · 🔗 mee site link (shortener unte short link, lekapote `?p=ID`) · WhatsApp `*bold*` |
 | Files | `output/forward-list-YYYY-MM-DD.txt` (roju) + `output/forward-list.txt` (latest) |
-| Gating | Published posts mattrame · expired (last date ayipoyina) posts list lo ledu · stats/facts fabricate cheyyadu |
+| Gating (v184) | **Last date ayyipoyinavi out** · deadline lekunda **120+ rojula puratana** out (`OPPORTUNITY_STALE_DAYS`, 0 = off) · **same recruitment ki kotha post vaste puratana di out** (supersede — newest wins) |
+| Add neat ga (v184) | Kotha items ki **🆕** marker · 3 rojula lopu close avutunna vaatiki **⏰ "2 days left"** · section headers ki counts |
+| Change report (v184) | `output/forward-list-state.json` (per-post first/last seen) → roju **"🆕 4 kotha · ❌ 3 out"** + CLI lo **enduku poyindi** reason (last date / stale / kotha version) |
+| Site board parity | `inc/opportunities.php` (theme v1.9.34) lo same moodu rules → site page · Telegram digest · WhatsApp list **okate** chupistayi |
 | Cron | Roju 08:35 → list ready; meeru copy chesi groups/status ki forward cheyyandi |
 
 Proof: `python tests/forward_list_test.py` · `python run.py --test-all`.

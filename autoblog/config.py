@@ -570,6 +570,11 @@ OUTPUT_DIR = Path(_get("OUTPUT_DIR", str(BASE_DIR / "output")))
 
 # v183: daily WhatsApp-forward list (plain text) — output/forward-list.txt
 FORWARD_LIST_PATH = Path(_get("FORWARD_LIST_PATH", str(OUTPUT_DIR / "forward-list.txt")))
+FORWARD_LIST_STATE_PATH = Path(_get("FORWARD_LIST_STATE_PATH",
+                                    str(OUTPUT_DIR / "forward-list-state.json")))
+# v184: deadline cheppakapoyina 120+ rojula puratana posts active list nunchi out
+# (0 = off). Site board (theme) kuda ide window vaadutundi.
+OPPORTUNITY_STALE_DAYS = int(_get("OPPORTUNITY_STALE_DAYS", "120") or 0)
 
 # --- v181: growth loops (reader demand · rank trend · sponsor pipeline) ---
 # 1) On-site search demand → content gap queue (theme logs terms; bot reads)

@@ -1,6 +1,6 @@
 # 📋 MANUAL ADVANCED CHECKLIST — "Nenu manual ga em em cheyali"
 ### Website advanced ga run avvali · Posts ANI-PERFECT · Mistakes leku · Deep analyse + NotebookLM
-> **Verified counts (theme v1.9.33 build):** test suites **131/131** files · jsdom runtime **177/177** checks · PHP lint **86/86** files · theme audit **0/0** · code audit **0/0**.
+> **Verified counts (theme v1.9.34 build):** test suites **131/131** files · jsdom runtime **177/177** checks · PHP lint **86/86** files · theme audit **0/0** · code audit **0/0**.
 
 
 **Ee file = mee haath tho cheyyalsina ANNI — exact order, exact commands.**
@@ -3142,7 +3142,7 @@ python3 tools/build_milesweb_kit.py --list   # enti build avutundo chudu
 
 | Zip | Ekkadiki upload | Enti |
 |---|---|---|
-| `studentup-theme-1.9.33.zip` (113 files) | WP Admin → Appearance → Themes → Upload Theme | Design + job card + Apply bar + schema + ad slots (activate tho one-click setup) |
+| `studentup-theme-1.9.34.zip` (113 files) | WP Admin → Appearance → Themes → Upload Theme | Design + job card + Apply bar + schema + ad slots (activate tho one-click setup) |
 | `studentup-seo-bridge-1.1.0.zip` | WP Admin → Plugins → Upload Plugin | Rank Math REST bridge (veru theme vadithe matrame) |
 | `studentup-static-site.zip` (23 files) | cPanel → `public_html/` | Static site (WordPress path vadakapothe) |
 | `studentup-bot-cron.zip` (299 files) | cPanel → `~/bot/` | Cron bot: drafts + Telegram approvals + guardian |
@@ -3264,7 +3264,10 @@ python run.py --forward-list --forward-no-save     # print only
 | Sections | TS · AP · Central · Walk-in · **Outsourcing & Contract Jobs** (kotha, v183) · Job Melas · Software · Private · Scholarships · Results · Hall Tickets · Current Affairs |
 | Today block | 🆕 IVVALTI KOTHAAVI — ivvalti published posts (max 5) |
 | Files | `output/forward-list-2026-10-02.txt` + `output/forward-list.txt` |
-| WhatsApp rules | Expired posts ledu · official notification verify disclaimer undi · dead links ledu (WP `?p=ID` short links shortener OFF unte) |
+| WhatsApp rules | Expired posts ledu · official notification verify disclaimer undi · dead links ledu (shortener OFF unte real permalinks) |
+| v184 gating | Expired out · undated **120+ rojula puratana** out (`OPPORTUNITY_STALE_DAYS`) · same recruitment kotha version vaste puratana di out |
+| v184 markers | 🆕 kotha items · ⏰ 3 rojula lopu close avutunna vaatiki days-left · section counts · header lo `📈 🆕 n kotha · ❌ n out` |
+| v184 state | `output/forward-list-state.json` (first_seen/last_seen, 90-day prune, corrupt file → fresh start) · CLI lo gone-reasons |
 | Send limits | CallMeBot URL limit → `--forward-send` plain text ni item boundaries lo split chesi (max 3 msgs) pampistundi; best practice = copy-paste |
 
 Proof: `python tests/forward_list_test.py` · site board section parity (`inc/opportunities.php`).
