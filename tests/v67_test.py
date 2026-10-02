@@ -216,11 +216,11 @@ def test_zip_has_new_files():
     for rel in ("studentup/comments.php", "studentup/sidebar.php", "studentup/readme.txt",
                 "studentup/inc/security.php", "studentup/languages/studentup.pot"):
         assert rel in names, (rel, names[:12])
-    # zip source kanna paata kaadu (fresh)
-    newest_src = max((THEME.rglob("*")).__iter__().__next__().stat().st_mtime for _ in [0])
-    newest = max(p.stat().st_mtime for p in THEME.rglob("*") if p.is_file())
-    assert zip_path.stat().st_mtime >= newest - 1, "zip stale — build malli run cheyandi"
-    assert newest_src  # (trivial use — lint)
+    # v175: zip content fresh-a? (mtime kaadu — byte polika, order-independent)
+    from autoblog.theme_pack import stale_detail, theme_zip_stale_files
+
+    stale = theme_zip_stale_files(THEME, zip_path)
+    assert not stale, f"zip stale — build malli run cheyandi: {stale_detail(stale)}"
 
 
 def test_audit_wired_into_gates():

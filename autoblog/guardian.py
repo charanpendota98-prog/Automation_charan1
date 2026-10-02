@@ -246,20 +246,30 @@ def check_storage() -> tuple:
 
 
 def check_wp_theme() -> tuple:
-    """Real site theme (v61) — files + zip fresh (source marchi zip rebuild cheyyakapote)."""
+    """Real site theme (v61) — files + zip **content** fresh.
+
+    v175: mtime polika kaadu, **bytes** polika. Enduku: `--test-all` lo tarvata
+    suites minify/pot ni regenerate chestayi (content same, mtime matrame kotha)
+    → mtime check order-dependent ga fail ayyedi. Byte comparison nijamga
+    "zip stale-a?" ki jawabu istundi: zip lo unna prathi theme file ippati
+    source tho same unda leda.
+    """
     theme = ROOT / "wordpress-theme" / "studentup"
     zip_path = ROOT / "wordpress-theme" / "studentup-theme.zip"
     if not theme.exists():
         return False, "theme folder ledu (wordpress-theme/studentup)", "git pull / theme restore"
     if not zip_path.exists():
         return False, "theme zip ledu", "python tools/build_wp_theme.py"
-    srcs = [p for p in theme.rglob("*") if p.is_file()]
-    newest = max(p.stat().st_mtime for p in srcs)
-    if zip_path.stat().st_mtime < newest:
-        return False, "zip stale — source kante paata (WP upload lo puratana theme veltundi)", \
+    from .theme_pack import packaged_rel_paths, stale_detail, theme_zip_stale_files
+
+    stale = theme_zip_stale_files(theme, zip_path)
+    if stale:
+        if stale == ["<zip corrupt>"]:
+            return False, "zip corrupt (open avvatledu)", "python tools/build_wp_theme.py"
+        return False, f"zip stale — source tho match avvatledu: {stale_detail(stale)}", \
             "python tools/build_wp_theme.py"
     phps = len(list(theme.rglob("*.php")))
-    return True, f"theme zip fresh · {phps} PHP · {len(srcs)} files", ""
+    return True, f"theme zip content fresh · {phps} PHP · {len(packaged_rel_paths(theme))} files", ""
 
 
 def check_env_readiness() -> tuple:

@@ -166,6 +166,31 @@ def test_oracle_and_milesweb_docs_answer_hosting():
     print("  hosting answer: Oracle Always Free facts + MilesWeb cron-only documented ✔")
 
 
+def test_milesweb_zip_kit_ready():
+    """v175: cPanel zip upload kit — builder + guide + content-based zip freshness."""
+    builder = ROOT / "tools" / "build_milesweb_kit.py"
+    assert builder.exists(), "tools/build_milesweb_kit.py ledu"
+    src = builder.read_text(encoding="utf-8")
+    for token in ("studentup-theme", "studentup-seo-bridge", "studentup-static-site",
+                  "studentup-bot-cron", "SHA256SUMS.txt"):
+        assert token in src, "kit builder lo ledu: " + token
+    guide = ROOT / "MILESWEB_GO_LIVE.md"
+    assert guide.exists(), "MILESWEB_GO_LIVE.md ledu"
+    text = guide.read_text(encoding="utf-8")
+    for token in ("studentup-theme-", "studentup-static-site.zip",
+                  "studentup-bot-cron.zip", "sha256sum", "Application Password",
+                  "--approval-poll"):
+        assert token in text, "guide lo ledu: " + token
+    assert "build_milesweb_kit.py" in (ROOT / "DEPLOY_MILESWEB.md").read_text(encoding="utf-8")
+    # content-based freshness (mtime kaadu) — guardian/readiness ippudu idi vadutayi
+    from autoblog.theme_pack import theme_zip_fresh
+
+    assert theme_zip_fresh(ROOT / "wordpress-theme" / "studentup",
+                           ROOT / "wordpress-theme" / "studentup-theme.zip"), \
+        "theme zip content fresh kaadu — tools/build_wp_theme.py run cheyandi"
+    print("  milesweb kit: builder + guide + zip content-fresh check ✔")
+
+
 def test_money_claims_are_policy_safe_and_honest():
     oracle = (ROOT / "DEPLOY_ORACLE_CLOUD.md").read_text(encoding="utf-8")
     for rule in ["SPONSORED", "rel=\"sponsored nofollow\"", "no clickbait",
@@ -188,6 +213,7 @@ def main() -> None:
     test_systemd_units_restart_and_watchdog()
     test_watchdog_logic_live_dry_run()
     test_oracle_and_milesweb_docs_answer_hosting()
+    test_milesweb_zip_kit_ready()
     test_money_claims_are_policy_safe_and_honest()
     print("ALL v51 MENU + CRASH-PROOF + HOSTING TESTS PASSED ✔")
 

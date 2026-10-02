@@ -112,8 +112,11 @@ def test_theme_lint_and_zip():
                            capture_output=True, text=True, timeout=60)
     assert proc2.returncode == 0, proc2.stderr[:200]
     zpath = ROOT / "wordpress-theme" / "studentup-theme.zip"
-    newest = max(p.stat().st_mtime for p in THEME.rglob("*") if p.is_file())
-    assert zpath.stat().st_mtime >= newest, "zip stale — rebuild cheyandi"
+    # v175: content polika (mtime kaadu — byte polika, order-independent)
+    from autoblog.theme_pack import stale_detail, theme_zip_stale_files
+
+    stale = theme_zip_stale_files(THEME, zpath)
+    assert not stale, f"zip stale — rebuild cheyandi: {stale_detail(stale)}"
     zf = zipfile.ZipFile(zpath)
     assert "studentup_wa_number" in zf.read(
         "studentup/inc/options.php").decode("utf-8")

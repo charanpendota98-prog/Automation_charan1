@@ -126,9 +126,10 @@ Detail docs: `DEPLOY_MILESWEB.md` (cPanel steps) · `DEPLOY_ORACLE_CLOUD.md` (VM
       `python tools/build_wp_theme.py` (CSS minify + `tools/build_critical_css.py` above-fold layer + reproducible zip)
       → zip → Appearance → Themes → Upload → Activate);
       **zip:** 112 files · 1012 KB · theme **1.9.31** · sha256
-      `8fa23282c03dc1065c4b9c9fae369f0f3c36a9a7357b4d2e256a72343da4e4c1`
+      `3773e4d245a5d4773b3e4e9205500dc3f18f2b2a17826b405ab97574df20d08d`
       (`sha256sum wordpress-theme/studentup-theme.zip` — upload chesina zip ide ani verify cheyandi;
-      build ippudu **reproducible** — same content ⇒ same sha)
+      build ippudu **fully reproducible** — POT date kuda fixed (v175), same content ⇒ same sha
+      **prathi machine/CI lo**, mtimes tho sambandham ledu)
       `wp-admin → Users → Application Passwords` → app password create cheyyandi.
       **SEO bridge mandatory**: active StudentUp theme lo `inc/seo-bridge.php` load avvali;
       theme ni update cheyyakapothe `wordpress-plugin/studentup-seo-bridge.zip` ni Plugins → Add New → Upload → Activate cheyandi.

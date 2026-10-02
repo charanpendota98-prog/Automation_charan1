@@ -3128,3 +3128,43 @@ python3 tools/build_wp_theme.py     # zip first
 python3 tools/pin_sync.py           # dry run
 python3 tools/pin_sync.py --write   # apply
 ```
+
+---
+
+## PART 74 — v175: MILESWEB ZIP KIT + REPRODUCIBLE BUILD GATES
+
+**MilesWeb lo zip upload chesi live cheyyadam** — okka command tho upload-ready bundle:
+
+```bash
+python3 tools/build_milesweb_kit.py          # → milesweb-kit/ (+ SHA256SUMS.txt + guide)
+python3 tools/build_milesweb_kit.py --list   # enti build avutundo chudu
+```
+
+| Zip | Ekkadiki upload | Enti |
+|---|---|---|
+| `studentup-theme-1.9.31.zip` (112 files) | WP Admin → Appearance → Themes → Upload Theme | Design + job card + Apply bar + schema + ad slots (activate tho one-click setup) |
+| `studentup-seo-bridge-1.1.0.zip` | WP Admin → Plugins → Upload Plugin | Rank Math REST bridge (veru theme vadithe matrame) |
+| `studentup-static-site.zip` (23 files) | cPanel → `public_html/` | Static site (WordPress path vadakapothe) |
+| `studentup-bot-cron.zip` (299 files) | cPanel → `~/bot/` | Cron bot: drafts + Telegram approvals + guardian |
+
+Builder mundu theme zip **content fresh**-a check chestundi; zips **reproducible**
+(fixed timestamps ⇒ same sha256 prathi machine lo, `sha256sum -c SHA256SUMS.txt` tho verify).
+Step-by-step guide: **`MILESWEB_GO_LIVE.md`** · cPanel path detail: `DEPLOY_MILESWEB.md`.
+
+Ee release lo fix ayyina build-gate bugs (suite ni nijamga green cheyyadaniki):
+
+1. **POT date fixed epoch** (`tools/build_pot.py`) — mtime-battina
+   `POT-Creation-Date` valla theme zip sha256 machine-nunchi machine ki maripoyedi
+   (GO_LIVE lo record chesina sha stale avutundi). Ippudu `SOURCE_DATE_EPOCH`
+   leda fixed `2026-01-01` ⇒ zip **byte-reproducible**.
+2. **Content-based theme zip freshness** (`autoblog/theme_pack.py`) —
+   guardian · readiness · v67/v68/v69/v72/v75/v76 suites ippudu zip **bytes** ni
+   source bytes tho polchutunnayi (mtime kaadu). Minify/POT regenerate ayina
+   content same unte "zip stale" false alarm raadu (order-dependent flake poyindi).
+3. **`tests/seo_pipeline_test.py` pytest optional** — pytest install lekapote
+   `main()` runner run avutundi (CI/shared hosting lo `pip install pytest` avasaram ledu).
+
+Proof: `python run.py --test-all` → **124/124 passed** · jsdom **177/177** ·
+php-lint **85/85** · theme audit 0/0 · code audit 0/0 · parity 0/0 ·
+`run.py --guardian` **15 checks OK** (owner creds warn-only) ·
+`run.py --readiness` **100/100** · `run.py --deploy-check` **0 fail**.

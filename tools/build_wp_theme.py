@@ -38,6 +38,14 @@ REQUIRED = [
 SKIP_DIRS = {"__pycache__", ".git", "node_modules"}
 # v171: unminified critical.css build intermediate — zip lo critical.min.css ye ship
 PACKAGE_SKIP = {"critical.css"}
+# v175: packaging rules ni autoblog/theme_pack.py nunchi teesukuntunnam —
+# guardian + suites kuda same rules vadutayi (drift ledu). Fallback kinda undi.
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+try:
+    from autoblog.theme_pack import PACKAGE_SKIP, SKIP_DIRS  # type: ignore[no-redef]  # noqa: E402,F811
+except Exception:  # noqa: BLE001 — tool standalone ga kuda run avvali
+    pass
 
 
 def validate() -> list[str]:

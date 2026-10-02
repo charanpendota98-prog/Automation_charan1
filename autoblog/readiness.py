@@ -511,12 +511,15 @@ def c_theme() -> List[dict]:
     zip_path = ROOT / "wordpress-theme" / "studentup-theme.zip"
     php = len(list(THEME.rglob("*.php"))) if THEME.exists() else 0
     bridge = "studentup/v1" in _read(THEME / "inc" / "breaking.php")
+    # v175: freshness = content polika (mtime kaadu — minify/pot regenerate
+    # chesthe content same ga unna mtime kotha avutundi, appudu false alarm).
     fresh = False
     if zip_path.exists() and THEME.exists():
-        newest = max(p.stat().st_mtime for p in THEME.rglob("*") if p.is_file())
-        fresh = zip_path.stat().st_mtime >= newest
+        from .theme_pack import theme_zip_fresh
+
+        fresh = theme_zip_fresh(THEME, zip_path)
     if php >= 10 and bridge and fresh:
-        return [_ok("WordPress theme (real site)", f"zip fresh · {php} PHP · REST bridge",
+        return [_ok("WordPress theme (real site)", f"zip content fresh · {php} PHP · REST bridge",
                     "REAL SITE (WordPress theme)")]
     return [_bad("WordPress theme (real site)",
                  f"php {php} · bridge {bridge} · fresh {fresh}", "REAL SITE (WordPress theme)",

@@ -223,8 +223,11 @@ def test_code_audit_clean():
 def test_theme_zip_fresh_with_editor_css():
     zips = sorted((ROOT / "wordpress-theme").glob("studentup*.zip"))
     assert zips, "zip ledu"
-    newest = max(p.stat().st_mtime for p in THEME.rglob("*") if p.is_file())
-    assert zips[-1].stat().st_mtime >= newest, "zip stale — tools/build_wp_theme.py run cheyandi"
+    # v175: content polika (mtime kaadu — byte polika, order-independent)
+    from autoblog.theme_pack import stale_detail, theme_zip_stale_files
+
+    stale = theme_zip_stale_files(ROOT / "wordpress-theme" / "studentup", zips[-1])
+    assert not stale, f"zip stale — tools/build_wp_theme.py run cheyandi: {stale_detail(stale)}"
     names = zipfile.ZipFile(zips[-1]).namelist()
     for need in ("studentup/assets/css/editor.css", "studentup/style.css",
                  "studentup/inc/indexnow.php", "studentup/readme.txt"):

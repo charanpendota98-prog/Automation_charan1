@@ -164,8 +164,11 @@ def test_php_and_zip_fresh():
     import zipfile
 
     zpath = ROOT / "wordpress-theme" / "studentup-theme.zip"
-    newest = max(p.stat().st_mtime for p in THEME.rglob("*") if p.is_file())
-    assert zpath.stat().st_mtime >= newest, "zip stale — rebuild cheyandi"
+    # v175: content polika (mtime kaadu — byte polika, order-independent)
+    from autoblog.theme_pack import stale_detail, theme_zip_stale_files
+
+    stale = theme_zip_stale_files(THEME, zpath)
+    assert not stale, f"zip stale — rebuild cheyandi: {stale_detail(stale)}"
     names = zipfile.ZipFile(zpath).namelist()
     assert "studentup/inc/options.php" in names
     zopts = zipfile.ZipFile(zpath).read(

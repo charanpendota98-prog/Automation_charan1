@@ -315,8 +315,11 @@ def test_theme_zip_fresh_and_complete():
     """Zip build ani (indexnow.php to) undali — stale zip = guardian fail."""
     zips = sorted((ROOT / "wordpress-theme").glob("studentup*.zip"))
     assert zips, "theme zip ledu — tools/build_wp_theme.py run cheyandi"
-    newest_src = max(p.stat().st_mtime for p in THEME.rglob("*") if p.is_file())
-    assert zips[-1].stat().st_mtime >= newest_src, "zip stale — rebuild cheyandi"
+    # v175: content polika (mtime order-dependent flake teesam)
+    from autoblog.theme_pack import stale_detail, theme_zip_stale_files
+
+    stale = theme_zip_stale_files(THEME, zips[-1])
+    assert not stale, f"zip stale — rebuild cheyandi: {stale_detail(stale)}"
     import zipfile
 
     names = zipfile.ZipFile(zips[-1]).namelist()

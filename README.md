@@ -568,6 +568,36 @@ ni ready cheyyagaladu — approval ni guarantee cheyyaledu. "Google lo suggest a
 ante autocomplete/Discover placement — adi **Google algorithm**, daaniki code tho force
 cheyyaleamu; cheyyagaligedi eligibility + quality signals mattrame.
 
+### v175 — MILESWEB ZIP KIT + REPRODUCIBLE BUILD GATES
+
+MilesWeb (cPanel) lo "zip upload chesi live" cheyyadaniki okka command:
+
+```bash
+python3 tools/build_milesweb_kit.py     # → milesweb-kit/ (+ SHA256SUMS.txt + guide)
+python3 tools/build_milesweb_kit.py --list   # enti build avutundo chudu
+```
+
+| Zip | Ekkadiki |
+|---|---|
+| `studentup-theme-1.9.31.zip` | WP Admin → Appearance → Themes → Upload Theme |
+| `studentup-seo-bridge-1.1.0.zip` | WP Admin → Plugins → Upload Plugin (veru theme vadithe) |
+| `studentup-static-site.zip` | cPanel → `public_html/` (static option) |
+| `studentup-bot-cron.zip` | cPanel → `~/bot/` (cron bot: drafts + approvals + guardian) |
+
+Builder **reproducible** (fixed timestamps ⇒ same sha256 prathi machine lo) and mundu
+theme zip **content fresh**-a check chestundi (stale zip upload ki velladu).
+Step-by-step: **`MILESWEB_GO_LIVE.md`** · cPanel path detail: `DEPLOY_MILESWEB.md`.
+
+Ee release lo fix ayyina build-gate bugs (suite red avvakunda):
+* **POT date fixed epoch** (`tools/build_pot.py`) — mtime-battina date valla zip sha256
+  machine-nunchi machine ki maripoyedi → ippudu `SOURCE_DATE_EPOCH` leda fixed
+  `2026-01-01` ⇒ theme zip **byte-reproducible**.
+* **Theme zip freshness = content polika** (`autoblog/theme_pack.py`) — guardian ·
+  readiness · v67/v68/v69/v72/v75/v76 suites ippudu zip bytes ni source bytes tho
+  polchutunnayi (mtime kaadu). `--test-all` order-dependent false "zip stale" ledu.
+* **`tests/seo_pipeline_test.py` pytest optional** — pytest install lekapote `main()`
+  runner (CI/shared hosting lo `pip install pytest` avasaram ledu).
+
 ### Release pin sync (`tools/pin_sync.py`)
 
 Release pins (theme version, suite count, `--test-all NN/NN` claims, GO_LIVE zip fingerprint) live inside historical test files. `python3 tools/pin_sync.py --write` rewrites them from the live theme version, the real suite count and the freshly built zip, so a version bump never turns the suite red for a reason that is not a defect. Changelog history pins (`= 1.9.7`) and non-suite counts (jsdom checks, certificate checks) are deliberately skipped.

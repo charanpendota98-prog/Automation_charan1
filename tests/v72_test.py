@@ -219,9 +219,11 @@ def test_theme_zip_fresh_and_complete():
         names = z.namelist()
     assert any("inc/qual-filter.php" in n for n in names), "zip lo qual-filter.php ledu"
     assert any("studentup-pwa.js" in n for n in names), "zip lo studentup-pwa.js ledu"
-    newest = max(p.stat().st_mtime for p in THEME.rglob("*") if p.is_file()
-                 and "__pycache__" not in str(p))
-    assert zip_path.stat().st_mtime >= newest - 5, "zip stale — malli build cheyandi"
+    # v175: content polika (mtime kaadu — byte polika, order-independent)
+    from autoblog.theme_pack import stale_detail, theme_zip_stale_files
+
+    stale = theme_zip_stale_files(THEME, zip_path)
+    assert not stale, f"zip stale — malli build cheyandi: {stale_detail(stale)}"
 
 
 def test_php_lint_clean():

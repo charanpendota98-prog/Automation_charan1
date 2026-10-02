@@ -17,6 +17,26 @@ MilesWeb cPanel facts: **unlimited cron jobs** on hosting packages [1](https://w
 Python available via cPanel (venv in your home dir, no root needed). The real limit
 on shared hosting is often **inodes (file count)**, not size.
 
+## 0) Ready zips — `milesweb-kit/` (v175)
+
+Okka command tho upload-ready zips + sha256 (reproducible):
+
+```bash
+python3 tools/build_milesweb_kit.py        # → milesweb-kit/ (+ --list to preview)
+```
+
+| Zip | Ekkadiki upload |
+|---|---|
+| `studentup-theme-1.9.31.zip` (112 files) | WP Admin → **Appearance → Themes → Add New → Upload Theme** |
+| `studentup-seo-bridge-1.1.0.zip` | WP Admin → **Plugins → Add New → Upload Plugin** (veru theme vadithe matrame) |
+| `studentup-static-site.zip` (23 files) | cPanel → File Manager → **`public_html/`** (static option) |
+| `studentup-bot-cron.zip` (299 files) | cPanel → File Manager → **`~/bot/`** (cron bot) |
+
+`milesweb-kit/SHA256SUMS.txt` tho upload verify cheyyandi · step-by-step:
+**`MILESWEB_GO_LIVE.md`** (leda `milesweb-kit/MILESWEB-GO-LIVE.md`).
+Kit builder mundu theme zip **content fresh**-a ani check chestundi (stale zip unte
+upload cheyyadu — puratana theme live ki vellipovadam aaputundi).
+
 ---
 
 ## 1) Website (10 minutes)
