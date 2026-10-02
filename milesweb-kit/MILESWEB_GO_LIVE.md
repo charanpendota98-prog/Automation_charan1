@@ -1,4 +1,39 @@
-# 🚀 studentup.in — MilesWeb (cPanel) lo ZIP upload chesi LIVE (v182 · FINAL)
+# 🚀 studentup.in — MilesWeb (cPanel) lo ZIP upload chesi LIVE (v186 · FINAL)
+
+## ⚡ TL;DR — 40 nimushalalo live (ee 7 steps chaalu)
+
+| # | Pani | Ekkada | Detail section |
+|---|---|---|---|
+| 1 | Kit download + sha verify | mee laptop | [§0](#0-modata-verify-30-seconds--zip-sha256) |
+| 2 | Domain + **SSL ON** | cPanel → SSL/TLS Status | §1 (1-2) |
+| 3 | WordPress install | cPanel → Softaculous | §1 (1) |
+| 4 | **Theme zip upload → Activate** | WP Admin → Appearance → Themes | §1 (4) |
+| 5 | **Bot zip → `~/bot`** + `.env` + `--deploy-check` | cPanel File Manager + Terminal | §2 |
+| 6 | **Cron 4 lines** (core) | cPanel → Cron Jobs | §2 (4) |
+| 7 | `--live-audit` → em fix kavalo chudu | Terminal | §3e |
+
+```bash
+# 1) sha verify (kit folder lo)
+sha256sum -c SHA256SUMS.txt                 # 4 zips · anni OK ravali
+
+# 5) bot setup (cPanel Terminal)
+cd ~/bot && python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
+cp .env.example .env && nano .env            # WP_SITE · WP_USERNAME · WP_APP_PASSWORD ·
+                                             # GEMINI key · TELEGRAM token+chat id
+.venv/bin/python run.py --deploy-check       # 0 fail ravali
+.venv/bin/python run.py --check-wp           # WordPress login test ✅
+
+# 7) site live ayyaka — 16 checks
+.venv/bin/python run.py --live-audit --live-url https://studentup.in --live-notify
+```
+
+**Tarvata roju rhythm:** bot `0 * * * *` cron → WP lo **DRAFT** → Telegram **✅ Publish** tap →
+post live → `--forward-list` (WhatsApp groups ki) → weekly `--calendar` / `--revenue-loop` / `--rank-trend`.
+
+Mee accounts lo onetime: Gemini key · Telegram bot · Search Console (+sitemap submit) · GA4 ·
+IndexNow → push keys → (posts 20 ayaka) AdSense. Anni kinda checklist lo unnayi.
+
+---
 
 Ee doc = okka page lo motham. **Naalugu zips** — ekkadiki upload cheyyali anedi kinda table lo.
 WordPress path + static path lo **okati matrame** select cheyyandi (⭐ WordPress recommended).
@@ -306,5 +341,5 @@ gates mistakes ni taggistayi; final numbers mee GSC/AdSense accounts lo vastayi.
 
 ---
 
-*Last updated: v182 · kit builder: `python3 tools/build_milesweb_kit.py` ·
+*Last updated: v186 · kit builder: `python3 tools/build_milesweb_kit.py` ·
 detail docs: `DEPLOY_MILESWEB.md` · `GO_LIVE_CHECKLIST.md` · `docs/MILESWEB_SETUP_TELUGU.md`*
