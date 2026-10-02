@@ -873,6 +873,8 @@ python run.py --daily --daily-no-send        # build/save mattrame (test ki)
 (`subject()`/`headline()`) — eppudu drift avvavu (test tho lock chesanu: `tests/v190_test.py 4`).
 Draft = English (site public surfaces), list = Telugu — mee preference prakaram.
 
+> 🏆 **Motham setup (world-best guide):** [`FULL_SETUP_GUIDE.md`](FULL_SETUP_GUIDE.md) — 8 steps · .env keys · cron · SEO · money · honest limits.
+
 ### Release pin sync (`tools/pin_sync.py`)
 
 Release pins (theme version, suite count, `--test-all NN/NN` claims, GO_LIVE zip fingerprint) live inside historical test files. `python3 tools/pin_sync.py --write` rewrites them from the live theme version, the real suite count and the freshly built zip, so a version bump never turns the suite red for a reason that is not a defect. Changelog history pins (`= 1.9.7`) and non-suite counts (jsdom checks, certificate checks) are deliberately skipped.

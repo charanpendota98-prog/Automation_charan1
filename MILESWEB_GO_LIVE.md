@@ -1,5 +1,7 @@
 # 🚀 studentup.in — MilesWeb (cPanel) lo ZIP upload chesi LIVE (v186 · FINAL)
 
+> 🏆 **Complete setup guide:** [`FULL_SETUP_GUIDE.md`](../FULL_SETUP_GUIDE.md) — em cheyyali, em pettali (`.env` keys), cron, SEO, money, honest limits.
+
 ## ⚡ TL;DR — 40 nimushalalo live (ee 7 steps chaalu)
 
 | # | Pani | Ekkada | Detail section |
