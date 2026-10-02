@@ -1,7 +1,7 @@
 # studentup.in Auto-Blogger 🤖
 
 
-> **Verified counts (theme v1.9.36 build):** test suites **135/135** files · jsdom runtime **177/177** checks · PHP lint **86/86** files · theme audit **0/0** · **deep audit pass 1-4 31/31** · code audit **0/0**.
+> **Verified counts (theme v1.9.36 build):** test suites **136/136** files · jsdom runtime **177/177** checks · PHP lint **86/86** files · theme audit **0/0** · **deep audit pass 1-4 31/31** · code audit **0/0**.
 24/7 automatic blog posting system for **studentup.in** (WordPress) — runs on your Oracle Cloud instance.
 
 - **AI content:** Google Gemini (free tier) generates Telugu + English mix articles
@@ -792,7 +792,7 @@ python run.py --links-file links.txt --links-dry-run     # plan mattrame
 - **Prathi item kinda mee site link** — readers anni links open cheyyachu (truncation unte `… ఇంకా N ఉద్యోగాలు` line)
 - Expired/stale/superseded gating same (v184) · Telegram digest format marchaledu (backward compatible)
 
-Proof: `python tests/v187_test.py` (6 groups) · `--test-all` **135/135** · jsdom **177/177** · php-lint **86/86** · deep theme **31/0/0** · parity/code **0/0**.
+Proof: `python tests/v187_test.py` (6 groups) · `--test-all` **136/136** · jsdom **177/177** · php-lint **86/86** · deep theme **31/0/0** · parity/code **0/0**.
 
 v187 flags: `--links-file` · `--links` · `--links-limit` · `--links-dry-run` · `--links-notify`
 
@@ -829,7 +829,28 @@ SSC CHSL 2026 recruitment — eligibility, important dates, vacancy details and 
 - **Chips** = `2,000+ పోస్టులు` (comma formatting) · `💰 pay` · `⏰ 2 రోజులు మాత్రమే`.
 - **Mana blog links mattrame** — external source domains (ssc.gov.in, ecil.co.in) list lo eppudu raavu.
 
-Proof: `python tests/v188_test.py` (5 groups) · `--test-all` **135/135**.
+Proof: `python tests/v188_test.py` (5 groups) · `--test-all` **136/136**.
+
+### v189 — DAILY MORNING SEND 🌅 (roju udayam automatic)
+
+**Okkate command — list build → save → Telegram + WhatsApp + wa.me click-to-forward:**
+
+```bash
+python run.py --forward-morning                    # roju 6:30 AM cron (crontab.example)
+python run.py --forward-morning --forward-morning-no-send   # build/save mattrame
+python run.py --forward-morning --forward-no-whatsapp       # Telegram mattrame
+```
+
+| Em | Detail |
+|---|---|
+| Channels | **Telegram** (HTML — `*bold*` → `<b>bold</b>`, links clickable) + **WhatsApp** (CallMeBot, 820-char chunks) |
+| Files | `output/forward-list-YYYY-MM-DD.txt` + `output/forward-list.txt` (rendu save) |
+| Click-to-forward | `wa.me/?text=…` link print avutundi — group/status ni miru choose cheyyachu |
+| Honest rc | `0` ok · `1` list khali · `2` build fail · `3` channels configure ayyi anni fail |
+| Keys ledu | Warning mattrame — list file lo untundi (keys pettaka automatic start) |
+| Cron | `30 6 * * *` (6:30 AM) — `crontab.example` lo line ready |
+
+Proof: `python tests/v189_test.py` (5 groups).
 
 ### Release pin sync (`tools/pin_sync.py`)
 

@@ -2091,6 +2091,13 @@ def main() -> int:
                         help="v183: wa = WhatsApp plain text (default) · tg = Telegram HTML")
     parser.add_argument("--forward-per-section", type=int, default=10,
                         help="v183: section ki max items (default 6)")
+    parser.add_argument("--forward-morning", action="store_true",
+                        help="v189: daily morning send — list build → save → "
+                             "Telegram + WhatsApp (+ wa.me click-to-forward)")
+    parser.add_argument("--forward-morning-no-send", action="store_true",
+                        help="v189: morning list build/save mattrame (send skip)")
+    parser.add_argument("--forward-no-whatsapp", action="store_true",
+                        help="v189: morning send lo WhatsApp skip (Telegram mattrame)")
     parser.add_argument("--forward-send", action="store_true",
                         help="v183: list ni Telegram/WhatsApp ki pampinchadam (optional)")
     parser.add_argument("--forward-no-save", action="store_true",
@@ -2657,6 +2664,12 @@ def main() -> int:
         return _la.run_cli(args.live_url, args.live_posts,
                            notify=args.live_notify, strict=args.live_strict,
                            timeout=args.live_timeout)
+
+    if getattr(args, "forward_morning", False):
+        from . import forward_list as _fl
+        return _fl.run_morning(save_files=not args.forward_no_save,
+                               send=not args.forward_morning_no_send,
+                               whatsapp=not args.forward_no_whatsapp)
 
     if getattr(args, "forward_list", False):
         from . import forward_list as _fl

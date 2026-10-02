@@ -122,6 +122,74 @@ def send_whatsapp(text: str) -> bool:
     return False
 
 
+def wa_to_html(text: str) -> str:
+    """v189: WhatsApp plain text → Telegram HTML (bold + clickable links intact).
+
+    Morning send lo okate source text rendu channels ki pothundi — WhatsApp lo
+    `*bold*`, Telegram lo `<b>`. Escape mundu cheyyadam valla user text lo unna
+    `<`/`&` kabhi Telegram markup ga interpret avvadu (injection safe).
+    """
+    import html as _html
+    import re as _re
+
+    out = []
+    for line in str(text or "").splitlines():
+        esc = _html.escape(line)
+        esc = _re.sub(r"\*([^*\n]+)\*", r"<b>\1</b>", esc)
+        esc = _re.sub(r"(https?://[^\s<]+)", r'<a href="\1">\1</a>', esc)
+        out.append(esc)
+    return "\n".join(out)
+
+
+def wa_clickto(text: str, limit: int = 1400) -> str:
+    """v189: wa.me click-to-forward link (owner group/status ni choose cheyyachu)."""
+    from urllib.parse import quote as _quote
+
+    body = str(text or "").strip()
+    if not body:
+        return ""
+    return "https://wa.me/?text=" + _quote(body[:limit])
+
+
+def send_morning_list(text: str, whatsapp: bool = True,
+                      telegram: bool = True) -> dict:
+    """v189: daily morning list → Telegram (HTML) + WhatsApp (CallMeBot).
+
+    Returns {telegram: bool, whatsapp: bool, channels: int} — caller honest ga
+    report cheyyachu (silent failure ledu).
+    """
+    result = {"telegram": False, "whatsapp": False, "channels": 0}
+    body = str(text or "").strip()
+    if not body:
+        return result
+    if telegram and config.TELEGRAM_BOT_TOKEN:
+        result["channels"] += 1
+        html = wa_to_html(body)
+        ok = True
+        chunk = ""
+        for line in html.splitlines(keepends=True):
+            if len(chunk) + len(line) > 3800:
+                ok = send_telegram(chunk.rstrip()) and ok
+                chunk = ""
+            chunk += line
+        if chunk.strip():
+            ok = send_telegram(chunk.rstrip()) and ok
+        result["telegram"] = ok
+    if whatsapp and config.WHATSAPP_CALLMEBOT_URL:
+        result["channels"] += 1
+        ok = True
+        piece = ""
+        for line in body.splitlines(keepends=True):
+            if len(piece) + len(line) > 820:
+                ok = send_whatsapp(piece.rstrip()) and ok
+                piece = ""
+            piece += line
+        if piece.strip():
+            ok = send_whatsapp(piece.rstrip()) and ok
+        result["whatsapp"] = ok
+    return result
+
+
 def esc(text: str) -> str:
     return html.escape(str(text or ""), quote=True)
 

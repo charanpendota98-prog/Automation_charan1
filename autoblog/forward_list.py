@@ -173,6 +173,64 @@ def run_cli(fmt: str = "wa", per_section: int = 10, send: bool = False,
     return 0
 
 
+def run_morning(save_files: bool = True, today: date | None = None,
+                send: bool = True, whatsapp: bool = True,
+                telegram: bool = True) -> int:
+    """v189: DAILY MORNING send — list build → save → Telegram + WhatsApp.
+
+    rc: 0 = list build + save ok (send warning tho kuda) · 1 = list khali ·
+        2 = build fail · 3 = send channels configure ayyi anni fail ayyayi.
+    """
+    from . import config, notifier
+
+    try:
+        rows = gather()
+    except Exception as exc:  # noqa: BLE001 — WP lekunda honest message
+        print(f"  ❌ WordPress nunchi rows teesukolekapoyamu: {exc}")
+        return 2
+    try:
+        new_items, gone_items, _data, state_file = diff_and_update(rows, today=today)
+        changes = change_summary(new_items, gone_items)
+        new_ids = [r.get("id") for r in new_items]
+    except Exception as exc:  # noqa: BLE001 — diff fail aithe list eppudu vastundi
+        print(f"  ⚠️ state diff fail ({exc}) — list continue avutundi")
+        changes, new_ids, state_file = None, None, state_path()
+
+    chunks = build("wa", config.WP_SITE, rows, today=today, per_section=10,
+                   new_ids=new_ids, changes=changes)
+    if not chunks:
+        _print_changes([], [], state_file)
+        print("  ℹ️  Active opportunities levu — morning list pampinchaledu (khali).")
+        return 1
+    text = "\n\n".join(chunks)
+    labels: List[str] = []
+    if save_files:
+        for target in save(chunks, today=today):
+            labels.append(str(target))
+        print("  📄 saved: " + " · ".join(labels))
+    print(text)
+    if not send:
+        print("  ℹ️  --forward-morning (no-send): list save ayyindi mattrame.")
+        return 0
+    channels = 0
+    if telegram and config.TELEGRAM_BOT_TOKEN:
+        channels += 1
+    if whatsapp and config.WHATSAPP_CALLMEBOT_URL:
+        channels += 1
+    if channels == 0:
+        print("  ⚠️ Telegram/WhatsApp keys levu — list file lo undi; keys pettaka"
+              " automatic morning send start avutundi.")
+        return 0
+    res = notifier.send_morning_list(text, whatsapp=whatsapp, telegram=telegram)
+    sent_any = res["telegram"] or res["whatsapp"]
+    print(f"  🌅 morning send → Telegram {'✅' if res['telegram'] else '—'} · "
+          f"WhatsApp {'✅' if res['whatsapp'] else '—'}")
+    link = notifier.wa_clickto(text)
+    if link:
+        print("  📲 click-to-forward (group/status ki): " + link[:120] + "…")
+    return 0 if sent_any else 3
+
+
 def _split_for_whatsapp(text: str, limit: int = 850) -> List[str]:
     """Chinnadi CallMeBot limit ki saripoyela item boundaries lo split."""
     if len(text) <= limit:

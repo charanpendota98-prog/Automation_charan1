@@ -242,13 +242,13 @@ def test_end_to_end_perfection():
 
 def test_docs_v78():
     suites = len(list((ROOT / "tests").glob("*_test.py")))
-    assert suites == 135, f"suites {suites} (v116 tho 135 expect)"
+    assert suites == 136, f"suites {suites} (v116 tho 136 expect)"
     readme = read(ROOT / "README.md")
     manual = read(ROOT / "MANUAL_ADVANCED_CHECKLIST.md")
     go_live = read(ROOT / "GO_LIVE_CHECKLIST.md")
-    assert "### v78" in readme and "135/135" in readme
-    assert "PART 37" in manual and "v78" in manual and "135/135" in manual
-    assert "135/135" in go_live
+    assert "### v78" in readme and "136/136" in readme
+    assert "PART 37" in manual and "v78" in manual and "136/136" in manual
+    assert "136/136" in go_live
     for name, txt in (("README", readme), ("MANUAL", manual),
                       ("GO_LIVE", go_live)):
         assert "165/165" in txt, f"{name} lo jsdom claim poyindi"

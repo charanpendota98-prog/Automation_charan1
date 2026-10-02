@@ -1,6 +1,6 @@
 # 📋 MANUAL ADVANCED CHECKLIST — "Nenu manual ga em em cheyali"
 ### Website advanced ga run avvali · Posts ANI-PERFECT · Mistakes leku · Deep analyse + NotebookLM
-> **Verified counts (theme v1.9.36 build):** test suites **135/135** files · jsdom runtime **177/177** checks · PHP lint **86/86** files · theme audit **0/0** · **deep audit pass 1-4 31/31** · code audit **0/0**.
+> **Verified counts (theme v1.9.36 build):** test suites **136/136** files · jsdom runtime **177/177** checks · PHP lint **86/86** files · theme audit **0/0** · **deep audit pass 1-4 31/31** · code audit **0/0**.
 
 
 **Ee file = mee haath tho cheyyalsina ANNI — exact order, exact commands.**
@@ -3357,3 +3357,23 @@ v187 flags: `--links-file` · `--links` · `--links-limit` · `--links-dry-run` 
 | Theme | `.su-hook` CSS + dark/print + min.css — theme **1.9.36** |
 
 Proof: `python tests/v188_test.py` · `python run.py --test-all` (135/135).
+
+---
+
+## PART 82 — v189: DAILY MORNING SEND (roju udayam automatic)
+
+```bash
+python run.py --forward-morning                 # list → save → Telegram + WhatsApp
+python run.py --forward-morning --forward-morning-no-send
+python run.py --forward-morning --forward-no-whatsapp
+```
+
+| Em | Detail |
+|---|---|
+| Telegram | `wa_to_html()` — WhatsApp `*bold*` → `<b>`, link → `<a href>`; 3800-char chunks |
+| WhatsApp | CallMeBot, 820-char chunks (limits respect) |
+| Click-to-forward | `wa.me/?text=…` (1400 chars) — group/status ni owner choose chestaru |
+| rc | 0 ok · 1 khali · 2 build fail · 3 channels unna anni fail |
+| Cron | `30 6 * * *` — `crontab.example` |
+
+Proof: `python tests/v189_test.py` · `python run.py --test-all`.

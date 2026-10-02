@@ -113,6 +113,8 @@ mkdir -p log
 0 * * * *      cd /home/<user>/bot && /home/<user>/bot/.venv/bin/python run.py >> log/cron.log 2>&1
 */5 * * * *    cd /home/<user>/bot && /home/<user>/bot/.venv/bin/python run.py --approval-poll >> log/approval.log 2>&1
 0 7 * * *      cd /home/<user>/bot && /home/<user>/bot/.venv/bin/python run.py --guardian >> log/guardian.log 2>&1
+# 6:30 AM — daily morning list (Telegram + WhatsApp automatic + click-to-forward):
+30 6 * * * cd ~/bot && .venv/bin/python run.py --forward-morning >> ~/bot/log/morning.log 2>&1
 0 3 * * 0      cd /home/<user>/bot && /home/<user>/bot/.venv/bin/python run.py --site-audit >> log/audit.log 2>&1
 # v181 growth loops (optional — rendu in-bot daily hook tho automatic ga kuda jarugutayi):
 30 8 * * *     cd /home/<user>/bot && /home/<user>/bot/.venv/bin/python run.py --search-demand --notify >> log/demand.log 2>&1
