@@ -1,14 +1,15 @@
-# 🚀 studentup.in — MilesWeb (cPanel) lo ZIP upload chesi LIVE (v175)
+# 🚀 studentup.in — MilesWeb (cPanel) lo ZIP upload chesi LIVE (v182 · FINAL)
 
-Ee doc = okka page lo motham. **Moodu zips** — ekkadiki upload cheyyali anedi kinda table lo.
+Ee doc = okka page lo motham. **Naalugu zips** — ekkadiki upload cheyyali anedi kinda table lo.
+WordPress path + static path lo **okati matrame** select cheyyandi (⭐ WordPress recommended).
 Anni zips `milesweb-kit/` folder lo unnayi (`python3 tools/build_milesweb_kit.py` tho malli build cheyyachu).
 
 | # | Zip | Ekkadiki | Enti chestundi |
 |---|---|---|---|
-| 1 | `studentup-theme-1.9.31.zip` | WordPress → **Appearance → Themes → Add New → Upload Theme** | Mee site design + job card + Apply bar + schema + ads slots (theme activate ayinappude categories/menus/policy pages auto-create) |
+| 1 | `studentup-theme-1.9.32.zip` | WordPress → **Appearance → Themes → Add New → Upload Theme** | Mee site design + job card + Apply bar + schema + ads slots (theme activate ayinappude categories/menus/policy pages auto-create) |
 | 2 | `studentup-seo-bridge-1.1.0.zip` | WordPress → **Plugins → Add New → Upload Plugin** | Rank Math fields ni REST tho verify chese bridge (theme lo already undi — veru theme vadithe matrame kavali) |
-| 3 | `studentup-static-site.zip` | cPanel → **File Manager → `public_html/`** | Static preview site (WordPress path vadakapothe matrame) |
-| 4 | `studentup-bot-cron.zip` | cPanel → **File Manager → `~/bot/`** | Auto-blogger bot (cron jobs tho: drafts + approvals + guardian) |
+| 3 | `studentup-static-site.zip` | cPanel → **File Manager → `public_html/`** | Static site (23 files · PWA + ads.txt + sitemap tho) — WordPress path vadakapothe matrame |
+| 4 | `studentup-bot-cron.zip` | cPanel → **File Manager → `~/bot/`** | Auto-blogger bot (cron: research → draft → Telegram approval → publish; guardian + growth loops) |
 
 > **Okate path select cheyandi:** WordPress + theme (⭐ recommended) **leda** static site.
 > Rendu kalipi `public_html` lo pettakandi (WordPress `index.php` ne serve avvali).
@@ -19,7 +20,7 @@ Anni zips `milesweb-kit/` folder lo unnayi (`python3 tools/build_milesweb_kit.py
 ## 0) Modata verify (30 seconds) — zip sha256
 
 ```bash
-sha256sum studentup-theme-1.9.31.zip      # leda: sha256sum -c SHA256SUMS.txt
+sha256sum studentup-theme-1.9.32.zip      # leda: sha256sum -c SHA256SUMS.txt
 ```
 `milesweb-kit/SHA256SUMS.txt` lo unna value tho match avvali. Theme zip build **fully
 reproducible** (POT date kuda fixed) — so ee sha256 prathi machine lo same.
@@ -33,7 +34,7 @@ reproducible** (POT date kuda fixed) — so ee sha256 prathi machine lo same.
 3. `https://studentup.in/wp-admin` login → **Users → Profile → Application Passwords**
    → name "bot" → **Add New** → copy chesi `.env` lo `WP_APP_PASSWORD=` ki pettandi
    (idi password kaadu — separate app password, eppudaina revoke cheyyachu).
-4. **Appearance → Themes → Add New → Upload Theme** → `studentup-theme-1.9.31.zip`
+4. **Appearance → Themes → Add New → Upload Theme** → `studentup-theme-1.9.32.zip`
    → **Install Now** → **Activate**.
    Activate ayina ventane theme **one-click setup** run avutundi:
    categories (TS/AP/Central/Private/Software/Walk-in/…), policy pages
@@ -78,12 +79,49 @@ mkdir -p log
 */5 * * * *    cd /home/<user>/bot && /home/<user>/bot/.venv/bin/python run.py --approval-poll >> log/approval.log 2>&1
 0 7 * * *      cd /home/<user>/bot && /home/<user>/bot/.venv/bin/python run.py --guardian >> log/guardian.log 2>&1
 0 3 * * 0      cd /home/<user>/bot && /home/<user>/bot/.venv/bin/python run.py --site-audit >> log/audit.log 2>&1
+# v181 growth loops (optional — rendu in-bot daily hook tho automatic ga kuda jarugutayi):
+30 8 * * *     cd /home/<user>/bot && /home/<user>/bot/.venv/bin/python run.py --search-demand --notify >> log/demand.log 2>&1
+0 9 * * 1      cd /home/<user>/bot && /home/<user>/bot/.venv/bin/python run.py --rank-trend --csv private/Pages.csv --notify >> log/rank.log 2>&1
+15 9 * * *     cd /home/<user>/bot && /home/<user>/bot/.venv/bin/python run.py --sponsor-crm --notify >> log/sponsor.log 2>&1
+# v182 strategic loops (weekly):
+45 8 * * 1     cd /home/<user>/bot && /home/<user>/bot/.venv/bin/python run.py --revenue-loop private/adsense-pages.csv --revenue-notify >> log/revenue.log 2>&1
+0 9 * * 1      cd /home/<user>/bot && /home/<user>/bot/.venv/bin/python run.py --calendar --calendar-apply --calendar-notify >> log/calendar.log 2>&1
+30 9 * * 1     cd /home/<user>/bot && /home/<user>/bot/.venv/bin/python run.py --backlink --backlink-notify >> log/backlink.log 2>&1
 ```
    (MilesWeb lo **unlimited cron jobs** unnayi; shared hosting lo daemon run avvadu —
    anduke bot antha cron-only ga design ayyindi.)
 5. Flow: cron → bot research + draft → **WordPress lo DRAFT** → Telegram lo
    **✅ Publish / 🗑️ Delete** buttons → meeru tap chesthe ~5 nimishalaki post live
    (cron rhythm). **Emi mee approval lekunda publish avvadu.**
+
+---
+
+## 2b) App install (PWA) + Push notifications — reader ni tirigi techhe 2 levers 📱🔔
+
+**Idi theme lo already build ayindi** — meeru cheyyalsindi config matrame:
+
+**(a) App install (PWA) — "Download app" banner**
+- Theme options: **Appearance → StudentUp → PWA = ON** (default ON).
+- `inc/pwa.php` `manifest.webmanifest` + service worker + install prompt ni serve chestundi.
+- Reader phone lo Chrome → site open → "Install app" / "Add to Home screen" prompt (own icon, fullscreen, offline shell).
+- Static site path lo kuda `preview/manifest.webmanifest` + `sw.js` ready.
+
+**(b) Push notifications (real Web Push · VAPID)**
+```bash
+cd ~/bot
+.venv/bin/pip install pywebpush py-vapid        # one-time (lopaley unte skip)
+.venv/bin/python run.py --push-keys             # VAPID keypair → push_keys.json (gitignored)
+```
+- Tarvata WP Admin → **Appearance → StudentUp** → *Push public key* field lo `push_keys.json` lo unna **public** key paste cheyyandi → Save.
+- Reader ki prompt **2nd pageview / oka click tarvata** vastundi (Chrome abusive-permission penalty avoid; "No thanks" ante 30 rojulu malli adagadu).
+- Pampadaniki:
+```bash
+.venv/bin/python run.py --push-send "Title|https://studentup.in/post-url|Short body"
+.venv/bin/python run.py --push-send "..." --dry-run      # mundu chudu
+```
+- Subscriptions **sonta DB table** lo (`studentup_push_subs`) — `wp_options` kaadu (vela rows unna site slow avvadu).
+- `410/404` vachina subscriptions automatic ga "expired" ga clean avutayi.
+- **Best practice:** roju 1 push ekkuva vadakandi (breaking/result alert laantivi matrame) — spam chesthe unsubscribes vastayi.
 
 ---
 
@@ -168,17 +206,36 @@ python run.py --calendar        # v182: 90-day editorial calendar (plan + files)
 python run.py --revenue-loop adsense-pages.csv   # v182: ₹ strategy (RPM/leaks)
 python run.py --backlink        # v182: authority/backlink plan (white-hat)
 ```
-CI/local lo anni suites: `python run.py --test-all` (124/124) ·
-jsdom runtime: `node tests/runtime/jsdom_runtime_test.js` (177/177) ·
-PHP lint: `node tools/php_lint.js` (85/85).
+CI/local lo anni suites: `python run.py --test-all` (**130/130**) ·
+jsdom runtime: `node tests/runtime/jsdom_runtime_test.js` (**177/177**) ·
+PHP lint: `node tools/php_lint.js` (**86/86**) ·
+CWV/a11y static audit: `python3 tools/cwv_audit.py` (10 pages · 0/0).
+
+---
+
+## 4b) Emem already build ayindi — proof tho (laptop · phone · app · ads · clicks · backlinks)
+
+| Meeru adigindi | Ekkada implement ayindi | Proof / command |
+|---|---|---|
+| 🌐 **Advanced UI + frontend** | `wordpress-theme/studentup/` (113 files, v1.9.32): hero · job cards · quiz ring · bottom nav · dark mode · skeleton · critical CSS · minified assets | theme audit 0/0 · jsdom 177/177 · php-lint 86/86 |
+| 💻 **Laptop lo neat** | responsive grid + 51 `@media` rules · desktop mega menu · keyboard nav (`studentup-cmdk.js`) · wide layouts | `python3 tools/cwv_audit.py` (10 pages) · jsdom |
+| 📱 **Phone lo neat** | mobile bottom nav · tap targets · `viewport-fit=cover` · iOS zoom fix · sticky Apply bar | jsdom 177/177 · cwv_audit |
+| ⬇️ **App download** | `inc/pwa.php` + `manifest.webmanifest` + `sw.js` + install prompt banner (§2b) | theme option PWA=ON |
+| 🔔 **Push notifications** | `inc/webpush.php` (VAPID, own table) + bot `autoblog/webpush.py` + `--push-keys` / `--push-send` (§2b) | `--push-keys` → keys file |
+| 💰 **Ads highest (RPM)** | `inc/ads.php` (slots) + `inc/slotlab.php` (A/B variant) + `inc/ads-txt.php` + `--revenue-loop` (category RPM · leaks · money pages) + `AD_NETWORKS_APPLICATION_KIT.md` | `--adsense-ready` (97%, blocker: posts) |
+| 🖱️ **Highest clicks (CTR)** | `autoblog/ctr_boost.py` (`--ctr-boost`): GSC lo impressions unnayi kaani CTR takkuva unna queries → title/meta rewrite; title formulas + schema rich results | `python run.py --ctr-boost queries.csv` |
+| 🔄 **Post updates (freshness)** | `autoblog/rank_trend.py` + `--rank-trend --csv Pages.csv` → decay score → refresh queue; calendar roju 1 refresh slot | `python run.py --rank-trend` |
+| 🔗 **Backlinks (authority)** | `autoblog/backlink_engine.py`: 6 link-worthy assets + 10 target types + pipeline/forecast + Telugu templates (white-hat only) | `python run.py --backlink --backlink-assets` |
+| 🤖 **Backend advanced** | 130 test suites · guardian 15 checks · readiness 100/100 · state.db dedupe · fact-guard · no-copy · human approval gate | `--test-all` · `--guardian` · `--readiness` |
 
 ---
 
 ## 5) Nijam (honest) — edi code cheyyagaladu, edi meeru cheyyali
 
-**Code + repo ready (verified):** theme zip (112 files · sha256 reproducible) ·
-SEO bridge · static site · cron bot · guardian 15 checks · readiness 100/100 ·
-`--deploy-check` **0 fail** · php-lint 85/85 · code/parity audit 0 errors.
+**Code + repo ready (verified):** theme zip (**113 files** · 1016 KB · sha256 reproducible) ·
+SEO bridge · static site (23 files) · cron bot (303 files) · guardian **14/15 OK**
+(1 owner-pending) · readiness **100/100** · `--deploy-check` **0 fail** ·
+php-lint **86/86** · `--test-all` **130/130** · code/parity/theme audit **0/0**.
 
 **Mee accounts lo matrame jarugutundi (code valla kaadu):**
 - [ ] Domain `studentup.in` + hosting + SSL
@@ -188,6 +245,11 @@ SEO bridge · static site · cron bot · guardian 15 checks · readiness 100/100
 - [ ] Google **Search Console** verify + `sitemap.xml` submit · **GA4** property
 - [ ] **AdSense** apply → approve ayyaka `ADSENSE_CLIENT_ID` + `ADSENSE_APPROVED=1`
       → `python3 tools/build_policy_pages.py` (ads.txt live avutundi) + CMP ON
+      ⚠️ Apply cheyyadaniki **≥20 published posts** kavali (ippudu 0) — bot roju
+      drafts istundi, meeru Telegram lo approve chesthe avi publish avutayi
+- [ ] **Push notifications**: `--push-keys` → public key ni theme options lo paste (§2b)
+- [ ] **PWA/App**: theme option PWA=ON (default) — extra pani ledu
+- [ ] (Recommended) **IndexNow** key → `.env` (`--index-status` tho verify) · **GA4** property
 - [ ] (Optional) Oracle Always Free VM — 24×7 daemon + watchdog kosam
       (`DEPLOY_ORACLE_CLOUD.md`) — **MilesWeb cron tho kalipi vadakandi** (duplicates)
 
@@ -196,5 +258,5 @@ gates mistakes ni taggistayi; final numbers mee GSC/AdSense accounts lo vastayi.
 
 ---
 
-*Last updated: v175 · kit builder: `python3 tools/build_milesweb_kit.py` ·
+*Last updated: v182 · kit builder: `python3 tools/build_milesweb_kit.py` ·
 detail docs: `DEPLOY_MILESWEB.md` · `GO_LIVE_CHECKLIST.md` · `docs/MILESWEB_SETUP_TELUGU.md`*

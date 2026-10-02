@@ -27,10 +27,10 @@ python3 tools/build_milesweb_kit.py        # → milesweb-kit/ (+ --list to prev
 
 | Zip | Ekkadiki upload |
 |---|---|
-| `studentup-theme-1.9.31.zip` (112 files) | WP Admin → **Appearance → Themes → Add New → Upload Theme** |
+| `studentup-theme-1.9.32.zip` (113 files) | WP Admin → **Appearance → Themes → Add New → Upload Theme** |
 | `studentup-seo-bridge-1.1.0.zip` | WP Admin → **Plugins → Add New → Upload Plugin** (veru theme vadithe matrame) |
 | `studentup-static-site.zip` (23 files) | cPanel → File Manager → **`public_html/`** (static option) |
-| `studentup-bot-cron.zip` (299 files) | cPanel → File Manager → **`~/bot/`** (cron bot) |
+| `studentup-bot-cron.zip` (303 files) | cPanel → File Manager → **`~/bot/`** (cron bot) |
 
 `milesweb-kit/SHA256SUMS.txt` tho upload verify cheyyandi · step-by-step:
 **`MILESWEB_GO_LIVE.md`** (leda `milesweb-kit/MILESWEB-GO-LIVE.md`).
