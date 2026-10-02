@@ -417,6 +417,28 @@ WA_MONTHS = ("Jan", "Feb", "Mar", "Apr", "May", "Jun",
              "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
 WA_DAYS = ("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
 
+# v187.2 — WhatsApp forwarded list Telugu lo (user feedback: "telugu lo vundali;
+# software vasthe English vundu"). Telegram digest + site board labels (SECTIONS)
+# English ga ne untayi — avi review/approval surfaces (v73 English-only gate).
+WHATSAPP_LABELS = {
+    "ts": "తెలంగాణ ప్రభుత్వ ఉద్యోగాలు",
+    "ap": "ఆంధ్రప్రదేశ్ ప్రభుత్వ ఉద్యోగాలు",
+    "central": "కేంద్ర ప్రభుత్వ ఉద్యోగాలు",
+    "walkin": "వాక్-ఇన్ ఇంటర్వ్యూలు",
+    "outsourcing": "అవుట్‌సోర్సింగ్ & కాంట్రాక్ట్ ఉద్యోగాలు",
+    "job-melas": "జాబ్ మేళాలు",
+    "software": "SOFTWARE JOBS",            # user: software vasthe English lo
+    "private": "ప్రైవేట్ ఉద్యోగాలు",
+    "scholarships": "స్కాలర్‌షిప్‌లు",
+    "results": "ఫలితాలు",
+    "hall-tickets": "హాల్ టికెట్‌లు",
+    "current-affairs": "నేటి కరెంట్ అఫైర్స్",
+}
+WA_TE_DAYS = ("సోమవారం", "మంగళవారం", "బుధవారం", "గురువారం",
+              "శుక్రవారం", "శనివారం", "ఆదివారం")
+WA_TE_MONTHS = ("జనవరి", "ఫిబ్రవరి", "మార్చి", "ఏప్రిల్", "మే", "జూన్",
+                "జూలై", "ఆగస్టు", "సెప్టెంబర్", "అక్టోబర్", "నవంబర్", "డిసెంబర్")
+
 
 def _wa_clean(value: object, limit: int = 110) -> str:
     """WhatsApp text ki safe: SEO suffix teesi, markers remove chesi, okate line.
@@ -430,12 +452,16 @@ def _wa_clean(value: object, limit: int = 110) -> str:
     return text[:limit].strip()
 
 
-def wa_date_line(today: date) -> str:
+def wa_date_line(today: date, telugu: bool = True) -> str:
+    """'శుక్రవారం, 02 అక్టోబర్ 2026' (telugu=False → 'Fri, 02 Oct 2026')."""
+    if telugu:
+        return (f"{WA_TE_DAYS[today.weekday()]}, {today.day:02d} "
+                f"{WA_TE_MONTHS[today.month - 1]} {today.year}")
     return f"{WA_DAYS[today.weekday()]}, {today.day:02d} {WA_MONTHS[today.month - 1]} {today.year}"
 
 
-def vacancies_note(value: object) -> str:
-    """Meta nunchi '1000+ udyogalu' — number lekunda guess cheyyadu (0/blank = '')."""
+def vacancies_count(value: object) -> str:
+    """Meta nunchi number+plus mattrame ('1,000+' / '310' / '') — guess ledu."""
     raw = str(value or "").strip()
     if not raw:
         return ""
@@ -446,8 +472,21 @@ def vacancies_note(value: object) -> str:
     digits = shown.replace(",", "")
     if not digits.isdigit() or int(digits) <= 0:
         return ""
-    plus = "+" if "+" in raw else ""
-    return f"{shown}{plus} udyogalu"
+    return shown + ("+" if "+" in raw else "")
+
+
+def vacancies_note(value: object, word: str = "ఉద్యోగాలు", word_first: bool = True) -> str:
+    """'ఉద్యోగాలు 1,000+' (Telugu) / '1,000+ openings' (software — English).
+
+    User wording: "telugu lo ssc chsl udhyogalu 2000+" → word mundu, count venaka.
+    Meta blank/0 aithe emi chupinchadu (fabricate ledu).
+    """
+    count = vacancies_count(value)
+    if not count:
+        return ""
+    if not word:
+        return count
+    return f"{word} {count}" if word_first else f"{count} {word}"
 
 
 def salary_note(value: object, limit: int = 26) -> str:
@@ -459,7 +498,7 @@ def salary_note(value: object, limit: int = 26) -> str:
 
 
 def _whatsapp_parts(site: str, rows: Iterable[Dict], today: date | None = None,
-                    per_section: int = 6, today_block: bool = True,
+                    per_section: int = 10, today_block: bool = False,
                     today_limit: int = 5, new_ids: Iterable[object] | None = None,
                     changes: Dict | None = None):
     """WhatsApp plain-text parts: header + units + footer.
@@ -475,16 +514,21 @@ def _whatsapp_parts(site: str, rows: Iterable[Dict], today: date | None = None,
     today = today or datetime.now(IST).date()
     groups = group_rows(rows, today=today, per_section=per_section)
     site_url = str(site or "").rstrip("/")
+    # v187.2: section-wise FULL counts — silent truncation vaddu ("anni links" rule)
+    full_counts: Dict[str, int] = {}
+    for _row in normalize_rows(rows, today=today):
+        _sec = _row.get("section")
+        full_counts[_sec] = full_counts.get(_sec, 0) + 1
     header = [
-        "📋 *StudentUp — Daily Updates List*",
+        "📋 *StudentUp — నేటి ఉద్యోగాల లిస్ట్*",
         f"🗓 {wa_date_line(today)} · 🌐 {site_url or 'studentup.in'}",
     ]
     if changes:
         bits = []
         if changes.get("new"):
-            bits.append(f"🆕 {changes['new']} kotha")
+            bits.append(f"🆕 {changes['new']} కొత్త ఉద్యోగాలు")
         if changes.get("gone"):
-            bits.append(f"❌ {changes['gone']} out (close/stale/duplicate)")
+            bits.append(f"❌ {changes['gone']} తీసేశాం (క్లోజ్ అయినవి/పాతవి)")
         if bits:
             header.append("📈 " + " · ".join(bits))
     total = 0
@@ -499,24 +543,29 @@ def _whatsapp_parts(site: str, rows: Iterable[Dict], today: date | None = None,
                     today_items.append(row)
     fresh = {str(x) for x in (new_ids or [])}
 
-    def _item(idx: int, row: Dict) -> str:
-        """2 lines: *Title* — 1000+ udyogalu · 💰 pay · ⏰ urgent  +  🔗 link.
+    def _item(idx: int, row: Dict, key: str = "") -> str:
+        """2 lines: *Title* — ఉద్యోగాలు 1,000+ · 💰 pay · ⏰ urgent  +  🔗 link.
 
-        Per-item '📅 Last date' line vaddhu (user feedback v187.1) — last date
-        bot lopalane expiry ki vadutundi; closing-soon (≤3 rojulu) unte mattrame
-        '⏰ 2 days left' chip ga aa line lo kanipistundi.
+        User rules (v187.1 + v187.2):
+          * per-item '📅 Last date' line vaddhu (bot lopalane expiry ki vadutundi)
+          * Telugu wording — "ఉద్యోగాలు 1,000+" (software section mattrame English:
+            "1,000+ openings" / "⏰ 2 days left")
+          * prathi item kinda mee site link (open cheyyadaniki ready)
         """
+        english = key == "software"
         mark = "🆕 " if (row.get("is_new") or str(row.get("id")) in fresh) else ""
         bits: List[str] = []
-        jobs = vacancies_note(row.get("vacancies"))
+        jobs = vacancies_note(row.get("vacancies"),
+                              word="openings" if english else "ఉద్యోగాలు",
+                              word_first=not english)
         if jobs and re.sub(r"\D", "", jobs) in re.sub(r"\D", "", str(row.get("title") or "")):
-            jobs = ""       # title lo already "310+ udyogalu" unte malli veyyadu
+            jobs = ""       # title lo already count unte malli veyyadu
         if jobs:
             bits.append(jobs)
         salary = salary_note(row.get("salary"))
         if salary:
             bits.append(salary)
-        urgent = wa_deadline_note(row.get("days_left"))
+        urgent = wa_deadline_note(row.get("days_left"), telugu=not english)
         if urgent:
             bits.append(urgent)
         head = f"{idx}) {mark}*{_wa_clean(row.get('title'))}*"
@@ -525,45 +574,59 @@ def _whatsapp_parts(site: str, rows: Iterable[Dict], today: date | None = None,
         return head + "\n🔗 " + compact_site_link(site, row, prefer_permalink=True)
 
     if today_items:
-        items = [_item(idx, row)
+        items = [_item(idx, row, "") 
                  for idx, row in enumerate(today_items[:today_limit], 1)]
         total += len(items)
-        units.append((f"🆕 *IVVALTI KOTHAAVI (today)* ({len(items)})", items))
-    section_meta = {key: (label, icon) for key, label, icon in SECTIONS}
-    for key, _, _ in SECTIONS:
+        units.append((f"🆕 *ఈరోజు కొత్తవి* ({len(items)})", items))
+    for key, label, icon in SECTIONS:
         rows_here = groups.get(key) or []
         if not rows_here:
             continue
-        label, icon = section_meta[key]
-        items = [_item(idx, row) for idx, row in enumerate(rows_here, 1)]
+        english = key == "software"
+        label_txt = WHATSAPP_LABELS.get(key) or label
+        items = [_item(idx, row, key) for idx, row in enumerate(rows_here, 1)]
         total += len(items)
-        counts = [vacancies_note(r.get("vacancies")) for r in rows_here]
+        counts = [vacancies_count(r.get("vacancies")) for r in rows_here]
         posts_sum = sum(int(re.sub(r"\D", "", c)) for c in counts if c)
         posts_total += posts_sum
         if any(not c for c in counts):
             count_partial = True          # konni counts teliyavu → total "+" (honest)
-        # v184 contract: posts meta lekapote "(N)" as-is — v187 rich mattrame data unte
-        if posts_sum:
-            head_note = (f"{len(items)} job" + ("s" if len(items) != 1 else "")
-                         + f" · {posts_sum:,} udyogalu")
+        # Section header: Telugu lo count ("1 ఉద్యోగం" / "2 ఉద్యోగాలు"); software English
+        if english:
+            head_note = f"{len(items)} job" + ("" if len(items) == 1 else "s")
         else:
-            head_note = str(len(items))
-        units.append((f"{icon} *{label.upper()}* ({head_note})", items))
-    footer_line = f"✅ *{total} updates*"
+            head_note = f"{len(items)} ఉద్యోగం" if len(items) == 1 else f"{len(items)} ఉద్యోగాలు"
+        hidden = full_counts.get(key, 0) - len(items)
+        if hidden > 0:                    # v187.2: "anni links" — truncate chesi dagoddu
+            more = (f"… ఇంకా {hidden} ఉద్యోగాలు — పూర్తి లిస్ట్ 🌐 {site_url or 'studentup.in'}"
+                    if not english else
+                    f"… and {hidden} more jobs — full list 🌐 {site_url or 'studentup.in'}")
+            items = items + [more]
+        units.append((f"{icon} *{label_txt}* ({head_note})", items))
+    footer_line = f"✅ *{total} ఉద్యోగాలు*"
     if posts_total:
-        footer_line += f" · 👥 *{posts_total:,}{'+' if count_partial else ''} udyogalu*"
+        footer_line += f" · 👥 *{posts_total:,}{'+' if count_partial else ''} పోస్టులు*"
     footer_line += f" · 🌐 {site_url or 'studentup.in'}"
     footer = [
         footer_line,
-        "ℹ️ Apply cheyyemundu article lo unna official notification verify cheyyandi.",
+        "ℹ️ అప్లై చేసే ముందు అధికారిక నోటిఫికేషన్‌లో వివరాలు వెరిఫై చేసుకోండి.",
     ]
     return header, units, footer, total
 
 
-def wa_deadline_note(days_left: int | None) -> str:
-    """Closing-soon urgency (3 rojula lopu mattrame) — honest, peddha date ledu."""
+def wa_deadline_note(days_left: int | None, telugu: bool = False) -> str:
+    """Closing-soon urgency (3 rojula lopu mattrame) — honest, peddha date ledu.
+
+    telugu=True → forwarded list ki Telugu wording ("⏰ 2 రోజులు మాత్రమే").
+    """
     if days_left is None or days_left > 3:
         return ""
+    if telugu:
+        if days_left <= 0:
+            return "⏰ ఈరోజే చివరి రోజు!"
+        if days_left == 1:
+            return "⏰ రేపు చివరి రోజు"
+        return f"⏰ {days_left} రోజులు మాత్రమే"
     if days_left <= 0:
         return "⏰ last date TODAY"
     if days_left == 1:
@@ -583,7 +646,7 @@ def _render_units(units) -> List[str]:
 
 
 def render_whatsapp(site: str, rows: Iterable[Dict], today: date | None = None,
-                    per_section: int = 6, today_block: bool = True,
+                    per_section: int = 10, today_block: bool = False,
                     new_ids: Iterable[object] | None = None,
                     changes: Dict | None = None) -> str:
     """Okate plain-text message (WhatsApp group/status ki copy-paste cheyyadaniki)."""
@@ -596,7 +659,7 @@ def render_whatsapp(site: str, rows: Iterable[Dict], today: date | None = None,
 
 
 def render_whatsapp_messages(site: str, rows: Iterable[Dict], today: date | None = None,
-                             per_section: int = 6, today_block: bool = True,
+                             per_section: int = 10, today_block: bool = False,
                              max_chars: int = 3900,
                              new_ids: Iterable[object] | None = None,
                              changes: Dict | None = None) -> List[str]:
@@ -611,7 +674,8 @@ def render_whatsapp_messages(site: str, rows: Iterable[Dict], today: date | None
     if not total:
         return []
     prefix = "\n".join(header) + "\n\n"
-    contd = f"📋 *StudentUp Daily List (contd.)*\n🌐 {str(site or '').rstrip('/')}\n\n"
+    contd = (f"📋 *StudentUp — నేటి ఉద్యోగాల లిస్ట్ (ఇంకా)*\n"
+             f"🌐 {str(site or '').rstrip('/')}\n\n")
     footer_text = "\n" + "\n".join(footer)
     chunks: List[str] = []
     current = prefix

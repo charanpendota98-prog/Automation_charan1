@@ -3335,7 +3335,7 @@ python run.py --links-file links.txt --links-dry-run    # plan mattrame
 | Throttle | Run ki `--links-limit` (default `LINK_INTAKE_MAX=10`) · excess skip report lo |
 | Fail handling | Okka link fail aina migilinavi continue · reason honest ga report lo |
 | Report | `output/link-intake.json` · `--links-notify` Telegram |
-| List upgrade | WhatsApp items **2 lines**: `*Title* — 1000+ udyogalu · 💰 salary · ⏰ 2 days left` + link. Per-item **📅 date line ledu** (expiry lopala mattrame) · section header `(2 jobs · 1,310 udyogalu)` · footer `👥 1,310+ udyogalu` |
+| List upgrade (v187.2) | **Telugu list**: `📋 *StudentUp — నేటి ఉద్యోగాల లిస్ట్*` · heading `🏛️ *తెలంగాణ ప్రభుత్వ ఉద్యోగాలు* (1 ఉద్యోగం)` · item `*Title* — ఉద్యోగాలు 1000+ · 💰 pay · ⏰ 2 రోజులు మాత్రమే` + 🔗 link · **software English** (`40 openings` / `⏰ 2 days left`). Today block ledu (duplicate vaddhu) · per-item 📅 date line ledu · footer `✅ 8 ఉద్యోగాలు · 👥 3,293+ పోస్టులు` |
 
 Proof: `python tests/v187_test.py` · `python run.py --test-all`.
 

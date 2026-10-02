@@ -44,7 +44,7 @@ def _today() -> date:
 
 
 def build_whatsapp(site: str, rows: Iterable[Dict], today: date | None = None,
-                   per_section: int = 6, today_block: bool = True,
+                   per_section: int = 10, today_block: bool = False,
                    new_ids: Iterable[object] | None = None,
                    changes: Dict | None = None) -> str:
     """Single copy-paste message (WhatsApp groups/status ki best)."""
@@ -64,7 +64,7 @@ def build_telegram(site: str, rows: Iterable[Dict], today: date | None = None,
 
 
 def build(fmt: str, site: str, rows: Iterable[Dict], today: date | None = None,
-          per_section: int = 6, new_ids: Iterable[object] | None = None,
+          per_section: int = 10, new_ids: Iterable[object] | None = None,
           changes: Dict | None = None) -> List[str]:
     """fmt = 'wa' (plain text) leda 'tg' (HTML chunks)."""
     fmt = (fmt or "wa").strip().lower()
@@ -118,7 +118,7 @@ def _print_changes(new_items: List[Dict], gone_items: List[Dict], state_file: Pa
     print(f"     📄 state: {state_file}")
 
 
-def run_cli(fmt: str = "wa", per_section: int = 6, send: bool = False,
+def run_cli(fmt: str = "wa", per_section: int = 10, send: bool = False,
             save_files: bool = True, today: date | None = None,
             show_changes: bool = True) -> int:
     """CLI: list ni build chesi print + save (+ optional send). rc 0 ok, 1 empty."""

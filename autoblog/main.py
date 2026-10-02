@@ -2089,7 +2089,7 @@ def main() -> int:
                              "→ output/forward-list.txt (+ roju file)")
     parser.add_argument("--forward-format", default="wa", choices=("wa", "tg"),
                         help="v183: wa = WhatsApp plain text (default) · tg = Telegram HTML")
-    parser.add_argument("--forward-per-section", type=int, default=6,
+    parser.add_argument("--forward-per-section", type=int, default=10,
                         help="v183: section ki max items (default 6)")
     parser.add_argument("--forward-send", action="store_true",
                         help="v183: list ni Telegram/WhatsApp ki pampinchadam (optional)")

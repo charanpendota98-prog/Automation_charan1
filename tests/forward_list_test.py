@@ -54,19 +54,24 @@ def test_outsourcing_section():
 
 
 def test_whatsapp_format():
+    """v187.2: Telugu wording · today block ledu (duplicate vaddhu) · prathi item ki link."""
     text = fl.build_whatsapp("https://studentup.in", ROWS, today=TODAY)
     assert "<b>" not in text and "<a href" not in text, "WhatsApp ki HTML tags poyayi"
-    assert "*StudentUp — Daily Updates List*" in text
-    assert "🆕 *IVVALTI KOTHAAVI (today)*" in text
-    assert "💼 *OUTSOURCING & CONTRACT JOBS*" in text
-    assert "🆕" in text and "*TELANGANA GOVERNMENT JOBS*" in text
+    assert "*StudentUp — నేటి ఉద్యోగాల లిస్ట్*" in text
+    assert "IVVALTI" not in text and "Daily Updates List" not in text, \
+        "pata today block inka undi (user: idi kuda vaddu)"
+    assert "🏛️ *తెలంగాణ ప్రభుత్వ ఉద్యోగాలు*" in text
+    assert "💼 *అవుట్‌సోర్సింగ్ & కాంట్రాక్ట్ ఉద్యోగాలు*" in text
+    assert "🆕" in text
     assert "TSPSC Group 2 Notification 2026" in text
     assert "*COMPLETE DETAILS*" not in text and "Complete Details" not in text
     assert "https://studentup.in" in text
-    assert "verify cheyyandi" in text
+    assert "వెరిఫై చేసుకోండి" in text, "Telugu disclaimer ledu"
     assert "Expired old notice" not in text, "expired post list lo undi"
     assert text.count("TSPSC Group 2") >= 1
-    print("  2. WhatsApp plain-text format (sections · today · no HTML) ✔")
+    # v187.2: prathi item kinda mee site link — anni links open cheyyagalaru
+    assert text.count("🔗 https://studentup.in/") == 4, text  # 5 rows -1 expired
+    print("  2. WhatsApp Telugu format (sections · no duplicate · links) ✔")
 
 
 def test_chunking():
@@ -81,7 +86,7 @@ def test_chunking():
     for chunk in chunks:
         assert len(chunk) <= 1400, (len(chunk), chunk[:120])
     for chunk in chunks[1:]:
-        assert chunk.startswith("📋 *StudentUp Daily List (contd.)*"), chunk[:40]
+        assert chunk.startswith("📋 *StudentUp — నేటి ఉద్యోగాల లిస్ట్ (ఇంకా)*"), chunk[:40]
     joined = "\n".join(chunks)
     for i in range(60):
         assert f"🔗 https://studentup.in/post-{i}/" in joined
@@ -118,7 +123,7 @@ def test_run_cli_paths():
             fl_mod.gather = lambda **kw: ROWS
             assert fl.run_cli(save_files=True, today=TODAY) == 0
             saved = config.FORWARD_LIST_PATH.read_text(encoding="utf-8")
-            assert "OUTSOURCING & CONTRACT JOBS" in saved
+            assert "అవుట్‌సోర్సింగ్ & కాంట్రాక్ట్ ఉద్యోగాలు" in saved
 
             fl_mod.gather = lambda **kw: []
             assert fl.run_cli(save_files=False, today=TODAY) == 1, "empty list ki rc 1"
@@ -181,8 +186,9 @@ def test_v184_hygiene():
     assert od.wa_deadline_note(0) == "⏰ last date TODAY"
     text = od.render_whatsapp("https://studentup.in", rows, today=TODAY,
                               changes={"new": 2, "gone": 1})
-    assert "⏰ 2 days left" in text and "kotha" in text and "(2)" in text
-    assert "📈" in text
+    # v187.2 Telugu wording (v184 hygiene logic same — markers mattrame Telugu)
+    assert "⏰ 2 రోజులు మాత్రమే" in text and "కొత్త ఉద్యోగాలు" in text
+    assert "📈" in text and "IVVALTI" not in text
     print("  7. v184 hygiene: expired/stale/supersede/closing-soon ✔")
 
 

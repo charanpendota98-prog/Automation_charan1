@@ -762,25 +762,34 @@ python run.py --links-file links.txt --links-dry-run     # plan mattrame
 | Parse | WhatsApp/notes paste: `1. **ECIL (310 posts)**` + `- [https://…](…)` · bare URLs · markdown link text peru ga vastundi |
 | Report | `output/link-intake.json` + `--links-notify` (Telegram) |
 
-**WhatsApp list (v187) — attractive 2-line items** (user feedback: date line vaddhu):
+**WhatsApp list (v187.2) — Telugu lo, neat ga** (user feedback: date line vaddhu · duplicate vaddhu · Telugu):
 
 ```
-🇮🇳 *CENTRAL GOVERNMENT JOBS* (2 jobs · 1,310 udyogalu)
+📋 *StudentUp — నేటి ఉద్యోగాల లిస్ట్*
+🗓 శుక్రవారం, 02 అక్టోబర్ 2026 · 🌐 https://studentup.in
 
-1) 🆕 *SSC CGL 2026 Notification* — 1000+ udyogalu · ⏰ 2 days left
+🇮🇳 *కేంద్ర ప్రభుత్వ ఉద్యోగాలు* (2 ఉద్యోగాలు)
+
+1) 🆕 *SSC CGL 2026 Notification* — ఉద్యోగాలు 1000+ · 💰 ₹25,500 – ₹81,100 · ⏰ 2 రోజులు మాత్రమే
 🔗 https://studentup.in/ssc-cgl-2026/
-2) *ECIL ITI Trade Apprentice 2026* — 310 udyogalu · 💰 ₹18,000 – ₹22,000
-🔗 https://studentup.in/ecil-iti-trade-apprentice/
+2) 🆕 *ECIL ITI Trade Apprentice Recruitment 2026* — ఉద్యోగాలు 310
+🔗 https://studentup.in/ecil-iti-trade-apprentice-2026/
+
+💻 *SOFTWARE JOBS* (2 jobs)
+
+1) *TCS NQT 2026 Registration Open* — 💰 ₹3.5 – ₹7 LPA
+🔗 https://studentup.in/tcs-nqt-2026/
+
+✅ *8 ఉద్యోగాలు* · 👥 *3,293+ పోస్టులు* · 🌐 https://studentup.in
+ℹ️ అప్లై చేసే ముందు అధికారిక నోటిఫికేషన్‌లో వివరాలు వెరిఫై చేసుకోండి.
 ```
 
-- **2 lines mattrame** — `*Title* — 1000+ udyogalu` + link. Per-item **📅 Last date line ledu**
-  (bot lopalane expiry/stale/supersede ki last date vadutundi — list lo mattrame chupinchadu)
-- **N udyogalu** — `studentup_vacancies` meta nunchi (guess ledu; blank aithe chupinchadu)
-- **💰 salary** — `studentup_salary` meta unte mattrame
-- **⏰ urgent chip** — last date 3 rojula lopu unte mattrame (ee item ippude apply cheyyali)
-- **Section header totals** — `(2 jobs · 1,310 udyogalu)` · footer lo `👥 1,310+ udyogalu`
-  (`+` = konni posts counts teliyavu — honest lower bound)
-- Sections: Today · TS · AP · Central · Walk-in · Outsourcing · Software (+ Scholarships/Results/Hall Tickets)
+- **Telugu lo** — headings (`తెలంగాణ ప్రభుత్వ ఉద్యోగాలు` · `కేంద్ర ప్రభుత్వ ఉద్యోగాలు` · `వాక్-ఇన్ ఇంటర్వ్యూలు` · `అవుట్‌సోర్సింగ్ & కాంట్రాక్ట్ ఉద్యోగాలు`) + `ఉద్యోగాలు 1,000+`
+- **Software section English** — `💻 *SOFTWARE JOBS* (2 jobs)` + `40 openings` / `⏰ 2 days left` (user preference)
+- **Duplicate today block ledu** — oka clean list; new items ki section lopala 🆕 marker
+- **Per-item 📅 last date line ledu** — last date bot lopalane expiry/stale/supersede ki vadutundi;
+  3 rojula lopu unte mattrame `⏰ 2 రోజులు మాత్రమే` chip
+- **Prathi item kinda mee site link** — readers anni links open cheyyachu (truncation unte `… ఇంకా N ఉద్యోగాలు` line)
 - Expired/stale/superseded gating same (v184) · Telegram digest format marchaledu (backward compatible)
 
 Proof: `python tests/v187_test.py` (6 groups) · `--test-all` **134/134** · jsdom **177/177** · php-lint **86/86** · deep theme **31/0/0** · parity/code **0/0**.
