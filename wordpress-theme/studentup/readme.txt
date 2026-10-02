@@ -2,7 +2,7 @@
 Contributors: studentup
 Requires at least: 6.0
 Tested up to: 6.7
-Stable tag: 1.9.34
+Stable tag: 1.9.35
 Requires PHP: 7.4
 Version: 1.9.26
 License: GNU General Public License v2 or later
@@ -364,6 +364,17 @@ user tho App Password ivvandi (Administrator role).
 * Performance: custom WP_Query calls ki no_found_rows (extra SQL query teesesaam)
 * IndexNow key-file serving (/<key>.key) — instant indexing automatic
 
+
+= 1.9.35 (2026-10-02, v185) =
+* No-flash dark mode: a tiny pre-paint script right after <body> applies the saved
+  preference (or system prefers-color-scheme) before the header renders, so dark
+  readers no longer see a white flash while the footer JS loads.
+* Native UI theming: color-scheme meta + CSS `color-scheme` tokens, so scrollbars,
+  form controls and autofill follow the reader's chosen theme.
+* Accessibility: one H1 per view template (blog index / search fallback title now
+  H1), verified by the new deep-audit check matrix.
+* Performance: CSS containment on board cards / news cards (`contain: content`
+  and `contain: layout style`) and the minified build regenerated.
 
 = 1.9.34 (2026-10-02, v184) =
 * Active board hygiene (inc/opportunities.php) — bot daily list tho same rules:

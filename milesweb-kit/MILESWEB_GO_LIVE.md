@@ -6,7 +6,7 @@ Anni zips `milesweb-kit/` folder lo unnayi (`python3 tools/build_milesweb_kit.py
 
 | # | Zip | Ekkadiki | Enti chestundi |
 |---|---|---|---|
-| 1 | `studentup-theme-1.9.34.zip` | WordPress → **Appearance → Themes → Add New → Upload Theme** | Mee site design + job card + Apply bar + schema + ads slots (theme activate ayinappude categories/menus/policy pages auto-create) |
+| 1 | `studentup-theme-1.9.35.zip` | WordPress → **Appearance → Themes → Add New → Upload Theme** | Mee site design + job card + Apply bar + schema + ads slots (theme activate ayinappude categories/menus/policy pages auto-create) |
 | 2 | `studentup-seo-bridge-1.1.0.zip` | WordPress → **Plugins → Add New → Upload Plugin** | Rank Math fields ni REST tho verify chese bridge (theme lo already undi — veru theme vadithe matrame kavali) |
 | 3 | `studentup-static-site.zip` | cPanel → **File Manager → `public_html/`** | Static site (23 files · PWA + ads.txt + sitemap tho) — WordPress path vadakapothe matrame |
 | 4 | `studentup-bot-cron.zip` | cPanel → **File Manager → `~/bot/`** | Auto-blogger bot (cron: research → draft → Telegram approval → publish; guardian + growth loops) |
@@ -20,7 +20,7 @@ Anni zips `milesweb-kit/` folder lo unnayi (`python3 tools/build_milesweb_kit.py
 ## 0) Modata verify (30 seconds) — zip sha256
 
 ```bash
-sha256sum studentup-theme-1.9.34.zip      # leda: sha256sum -c SHA256SUMS.txt
+sha256sum studentup-theme-1.9.35.zip      # leda: sha256sum -c SHA256SUMS.txt
 ```
 `milesweb-kit/SHA256SUMS.txt` lo unna value tho match avvali. Theme zip build **fully
 reproducible** (POT date kuda fixed) — so ee sha256 prathi machine lo same.
@@ -34,7 +34,7 @@ reproducible** (POT date kuda fixed) — so ee sha256 prathi machine lo same.
 3. `https://studentup.in/wp-admin` login → **Users → Profile → Application Passwords**
    → name "bot" → **Add New** → copy chesi `.env` lo `WP_APP_PASSWORD=` ki pettandi
    (idi password kaadu — separate app password, eppudaina revoke cheyyachu).
-4. **Appearance → Themes → Add New → Upload Theme** → `studentup-theme-1.9.34.zip`
+4. **Appearance → Themes → Add New → Upload Theme** → `studentup-theme-1.9.35.zip`
    → **Install Now** → **Activate**.
    Activate ayina ventane theme **one-click setup** run avutundi:
    categories (TS/AP/Central/Private/Software/Walk-in/…), policy pages
@@ -234,7 +234,7 @@ python run.py --calendar        # v182: 90-day editorial calendar (plan + files)
 python run.py --revenue-loop adsense-pages.csv   # v182: ₹ strategy (RPM/leaks)
 python run.py --backlink        # v182: authority/backlink plan (white-hat)
 ```
-CI/local lo anni suites: `python run.py --test-all` (**131/131**) ·
+CI/local lo anni suites: `python run.py --test-all` (**132/132**) ·
 jsdom runtime: `node tests/runtime/jsdom_runtime_test.js` (**177/177**) ·
 PHP lint: `node tools/php_lint.js` (**86/86**) ·
 CWV/a11y static audit: `python3 tools/cwv_audit.py` (10 pages · 0/0).
@@ -245,7 +245,7 @@ CWV/a11y static audit: `python3 tools/cwv_audit.py` (10 pages · 0/0).
 
 | Meeru adigindi | Ekkada implement ayindi | Proof / command |
 |---|---|---|
-| 🌐 **Advanced UI + frontend** | `wordpress-theme/studentup/` (113 files, v1.9.34): hero · job cards · quiz ring · bottom nav · dark mode · skeleton · critical CSS · minified assets | theme audit 0/0 · jsdom 177/177 · php-lint 86/86 |
+| 🌐 **Advanced UI + frontend** | `wordpress-theme/studentup/` (113 files, v1.9.35): hero · job cards · quiz ring · bottom nav · dark mode · skeleton · critical CSS · minified assets | theme audit 0/0 · jsdom 177/177 · php-lint 86/86 |
 | 💻 **Laptop lo neat** | responsive grid + 51 `@media` rules · desktop mega menu · keyboard nav (`studentup-cmdk.js`) · wide layouts | `python3 tools/cwv_audit.py` (10 pages) · jsdom |
 | 📱 **Phone lo neat** | mobile bottom nav · tap targets · `viewport-fit=cover` · iOS zoom fix · sticky Apply bar | jsdom 177/177 · cwv_audit |
 | ⬇️ **App download** | `inc/pwa.php` + `manifest.webmanifest` + `sw.js` + install prompt banner (§2b) | theme option PWA=ON |
@@ -263,7 +263,7 @@ CWV/a11y static audit: `python3 tools/cwv_audit.py` (10 pages · 0/0).
 **Code + repo ready (verified):** theme zip (**113 files** · 1016 KB · sha256 reproducible) ·
 SEO bridge · static site (23 files) · cron bot (303 files) · guardian **14/15 OK**
 (1 owner-pending) · readiness **100/100** · `--deploy-check` **0 fail** ·
-php-lint **86/86** · `--test-all` **131/131** · code/parity/theme audit **0/0**.
+php-lint **86/86** · `--test-all` **132/132** · code/parity/theme audit **0/0**.
 
 **Mee accounts lo matrame jarugutundi (code valla kaadu):**
 - [ ] Domain `studentup.in` + hosting + SSL

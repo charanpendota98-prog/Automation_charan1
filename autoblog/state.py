@@ -92,7 +92,37 @@ def normalize_title(title: str) -> str:
     return re.sub(r"\s+", " ", re.sub(r"[^\w\d\u0c00-\u0c7f]+", " ", title.lower())).strip()
 
 
+def _table_exists(db_path: Path, table: str = "posts") -> bool:
+    if not Path(db_path).exists():
+        return False
+    try:
+        with _connect(db_path) as conn:
+            row = conn.execute(
+                "SELECT 1 FROM sqlite_master WHERE type='table' AND name=?",
+                (table,),
+            ).fetchone()
+        return row is not None
+    except sqlite3.Error:
+        return False
+
+
+def _read_ready(db_path: Path) -> bool:
+    """v185 ROBUSTNESS: reads ki schema undali.
+
+    Fresh clone / kotha server lo `state.db` inka create avvakapovachu
+    (`state.db` gitignored) — appudu `no such table: posts` crash avutuindi
+    (calendar / dedupe checks bot start avvakamundu run aithe). Ippudu:
+    file/table lekapote **init chesi** empty result istam (crash ledu,
+    silent data loss ledu — CREATE IF NOT EXISTS).
+    """
+    if _table_exists(db_path):
+        return True
+    init(Path(db_path))
+    return True
+
+
 def title_exists(db_path: Path, title: str) -> bool:
+    _read_ready(db_path)
     with _connect(db_path) as conn:
         row = conn.execute(
             "SELECT 1 FROM posts WHERE title_norm = ?", (normalize_title(title),)
@@ -101,6 +131,7 @@ def title_exists(db_path: Path, title: str) -> bool:
 
 
 def recent_titles(db_path: Path, limit: int = 60) -> List[str]:
+    _read_ready(db_path)
     with _connect(db_path) as conn:
         rows = conn.execute(
             "SELECT title FROM posts ORDER BY id DESC LIMIT ?", (limit,)

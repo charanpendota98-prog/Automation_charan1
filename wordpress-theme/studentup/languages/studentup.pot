@@ -2,7 +2,7 @@
 # This file is distributed under the GNU GPL v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: StudentUp 1.9.34\n"
+"Project-Id-Version: StudentUp 1.9.35\n"
 "Report-Msgid-Bugs-To: https://studentup.in/\n"
 "POT-Creation-Date: 2026-01-01 00:00+0000\n"
 "MIME-Version: 1.0\n"
@@ -560,7 +560,7 @@ msgstr ""
 msgid "Save this post for later"
 msgstr ""
 
-#: header.php:102
+#: header.php:118
 #: inc/saved.php:209
 #: inc/saved.php:294
 #: inc/saved.php:304
@@ -576,7 +576,7 @@ msgstr ""
 msgid "Saved jobs with deadlines will show up here, most urgent first."
 msgstr ""
 
-#: header.php:65
+#: header.php:81
 #: inc/saved.php:203
 #: inc/saved.php:207
 msgid "Saved posts"

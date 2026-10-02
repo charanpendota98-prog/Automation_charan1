@@ -27,7 +27,7 @@ python3 tools/build_milesweb_kit.py        # → milesweb-kit/ (+ --list to prev
 
 | Zip | Ekkadiki upload |
 |---|---|
-| `studentup-theme-1.9.34.zip` (113 files) | WP Admin → **Appearance → Themes → Add New → Upload Theme** |
+| `studentup-theme-1.9.35.zip` (113 files) | WP Admin → **Appearance → Themes → Add New → Upload Theme** |
 | `studentup-seo-bridge-1.1.0.zip` | WP Admin → **Plugins → Add New → Upload Plugin** (veru theme vadithe matrame) |
 | `studentup-static-site.zip` (23 files) | cPanel → File Manager → **`public_html/`** (static option) |
 | `studentup-bot-cron.zip` (303 files) | cPanel → File Manager → **`~/bot/`** (cron bot) |

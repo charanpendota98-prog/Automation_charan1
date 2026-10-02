@@ -61,7 +61,12 @@ def test_candidates_and_dedupe():
 
 def test_balancing_rules():
     with tempfile.TemporaryDirectory() as tmp:
-        titles = state.recent_titles(config.STATE_PATH, limit=10)
+        # v185: hermetic — repo state.db (gitignored) meeda depend avvakudadu.
+        # Fresh clone lo DB undadu; `recent_titles` ippudu safe ga init chestundi
+        # (idi kuda verify chestam: missing file → crash kaadu, empty list).
+        fresh_db = Path(tmp) / "fresh.db"
+        assert state.recent_titles(fresh_db, limit=5) == [], "missing DB crash avutuindi"
+        titles = state.recent_titles(Path(tmp) / "s0.db", limit=10)
         old = (config.SEARCH_DEMAND_QUEUE, config.RANK_REFRESH_QUEUE,
                config.REVENUE_INSIGHTS_PATH, config.STATE_PATH)
         try:

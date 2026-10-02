@@ -1,6 +1,6 @@
 # 📋 MANUAL ADVANCED CHECKLIST — "Nenu manual ga em em cheyali"
 ### Website advanced ga run avvali · Posts ANI-PERFECT · Mistakes leku · Deep analyse + NotebookLM
-> **Verified counts (theme v1.9.34 build):** test suites **131/131** files · jsdom runtime **177/177** checks · PHP lint **86/86** files · theme audit **0/0** · code audit **0/0**.
+> **Verified counts (theme v1.9.35 build):** test suites **132/132** files · jsdom runtime **177/177** checks · PHP lint **86/86** files · theme audit **0/0** · **deep audit pass 1-4 31/31** · code audit **0/0**.
 
 
 **Ee file = mee haath tho cheyyalsina ANNI — exact order, exact commands.**
@@ -3142,7 +3142,7 @@ python3 tools/build_milesweb_kit.py --list   # enti build avutundo chudu
 
 | Zip | Ekkadiki upload | Enti |
 |---|---|---|
-| `studentup-theme-1.9.34.zip` (113 files) | WP Admin → Appearance → Themes → Upload Theme | Design + job card + Apply bar + schema + ad slots (activate tho one-click setup) |
+| `studentup-theme-1.9.35.zip` (113 files) | WP Admin → Appearance → Themes → Upload Theme | Design + job card + Apply bar + schema + ad slots (activate tho one-click setup) |
 | `studentup-seo-bridge-1.1.0.zip` | WP Admin → Plugins → Upload Plugin | Rank Math REST bridge (veru theme vadithe matrame) |
 | `studentup-static-site.zip` (23 files) | cPanel → `public_html/` | Static site (WordPress path vadakapothe) |
 | `studentup-bot-cron.zip` (299 files) | cPanel → `~/bot/` | Cron bot: drafts + Telegram approvals + guardian |
@@ -3273,3 +3273,25 @@ python run.py --forward-list --forward-no-save     # print only
 Proof: `python tests/forward_list_test.py` · site board section parity (`inc/opportunities.php`).
 
 v183 flags: `--forward-list` · `--forward-format` · `--forward-per-section` · `--forward-send` · `--forward-no-save`
+
+---
+
+## PART 78 — v185: WORLD-CLASS WEB QUALITY (deep audit pass 4)
+
+```bash
+python3 tools/theme_audit_deep.py    # pass 1-4 · 31 pass · 0 warn · 0 fail
+python3 tools/cwv_audit.py           # CLS/a11y static (10 pages)
+python tests/v185_test.py            # invariants (no-flash · h1 · containment)
+```
+
+| Em | Detail |
+|---|---|
+| Fix 1 | **No-flash dark mode** — `header.php` lo `<body>` taruvata pre-paint script: `localStorage.su_theme` > `prefers-color-scheme` > light. Footer JS same key tho toggle (parity test undi). |
+| Fix 2 | **color-scheme** meta (head) + CSS tokens → scrollbar · form controls · autofill reader theme follow avutayi. |
+| Fix 3 | **Single H1 per view** — blog index / search fallback title ippudu `<h1>` (title tag tho match). |
+| Fix 4 | **Containment + min.css** — board cards `contain:content`, news cards `contain:layout style`, `style.min.css` fresh (-11% CSS). |
+| Matrix | 27 checks: a11y (skip-link · landmarks · focus-visible · aria-live/expanded · img alt · touch targets) · CWV (LCP preload · fetchpriority · lazy · containment · content-visibility · CSS budget) · SEO/schema · PWA · print · noopener · reduced-motion. |
+| Rule | Ee tool **fail** unte CI lo release aapali — matrix honest (false positive lekunda PHP-strip + reserved-container exceptions). |
+
+Proof: `python3 tools/theme_audit_deep.py` · `python tests/v185_test.py` · `python run.py --test-all`.
+

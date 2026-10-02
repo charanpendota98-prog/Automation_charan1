@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""v89 tests — PREMIUM HOMEPAGE (theme 1.9.34).
+"""v89 tests — PREMIUM HOMEPAGE (theme 1.9.35).
 
 User-reported bugs (screenshots):
   * TS/AP Govt Jobs cards+menu+chips asalu kanipinchaledu (slug mismatch:
@@ -21,8 +21,8 @@ Checks (offline source audits + bot imports):
   * Read more real permalink link
   * Telugu Internet-center block + perks + WhatsApp icon
   * animated custom qual dropdown (quadd) + SSC wording/keywords
-  * 1.9.34 parity + readme 1.9.34/1.9.34/1.9.34 changelog + suites 71 pins
-    (v91 update: theme 1.9.34 → 1.9.34 bump · 69 → 71 suites)
+  * 1.9.35 parity + readme 1.9.35/1.9.35/1.9.35 changelog + suites 71 pins
+    (v91 update: theme 1.9.35 → 1.9.35 bump · 69 → 71 suites)
 
 Run: python tests/v89_test.py   (also via python run.py --test-all)
 """
@@ -208,21 +208,21 @@ def test_layout_premium_css() -> None:
 
 
 def test_version_and_pins() -> None:
-    # v91: theme 1.9.34 (notify 1.9.34 + telegram tools 1.9.34) · suites 71
+    # v91: theme 1.9.35 (notify 1.9.35 + telegram tools 1.9.35) · suites 71
     php = re.search(r"STUDENTUP_VERSION',\s*'([^']+)'", read(THEME / "functions.php")).group(1)
     css = re.search(r"Version:\s*([0-9.]+)", read(THEME / "style.css")).group(1)
     stable = re.search(r"Stable tag:\s*([0-9.]+)", read(THEME / "readme.txt")).group(1)
-    assert php == css == stable == "1.9.34", f"parity tappu: {php}·{css}·{stable}"
+    assert php == css == stable == "1.9.35", f"parity tappu: {php}·{css}·{stable}"
     readme = read(THEME / "readme.txt")
     for entry in ("= 1.9.0", "= 1.9.1", "= 1.9.2", "= 1.9.3", "= 1.9.4", "= 1.9.5", "= 1.9.6", "= 1.9.7", "= 1.9.8"):
         assert entry in readme, f"readme changelog {entry} ledu"
     assert "Central Govt Jobs" in readme
     for f in ("v75_test.py", "v76_test.py", "v77_test.py", "v78_test.py",
               "v79_test.py", "v80_test.py", "v81_test.py"):
-        assert "suites == 131" in read(ROOT / "tests" / f), f + " (69→74 pin)"
+        assert "suites == 132" in read(ROOT / "tests" / f), f + " (69→74 pin)"
     suites = len(list((ROOT / "tests").glob("*_test.py")))
-    assert suites == 131, f"suites {suites} (v116 tho 131)"
-    print("  version parity 1.9.34 + suites pins 71 ✔")
+    assert suites == 132, f"suites {suites} (v116 tho 132)"
+    print("  version parity 1.9.35 + suites pins 71 ✔")
 
 
 TESTS = [

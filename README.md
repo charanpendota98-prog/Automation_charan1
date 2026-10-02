@@ -1,7 +1,7 @@
 # studentup.in Auto-Blogger 🤖
 
 
-> **Verified counts (theme v1.9.34 build):** test suites **131/131** files · jsdom runtime **177/177** checks · PHP lint **86/86** files · theme audit **0/0** · code audit **0/0**.
+> **Verified counts (theme v1.9.35 build):** test suites **132/132** files · jsdom runtime **177/177** checks · PHP lint **86/86** files · theme audit **0/0** · **deep audit pass 1-4 31/31** · code audit **0/0**.
 24/7 automatic blog posting system for **studentup.in** (WordPress) — runs on your Oracle Cloud instance.
 
 - **AI content:** Google Gemini (free tier) generates Telugu + English mix articles
@@ -579,7 +579,7 @@ python3 tools/build_milesweb_kit.py --list   # enti build avutundo chudu
 
 | Zip | Ekkadiki |
 |---|---|
-| `studentup-theme-1.9.34.zip` | WP Admin → Appearance → Themes → Upload Theme |
+| `studentup-theme-1.9.35.zip` | WP Admin → Appearance → Themes → Upload Theme |
 | `studentup-seo-bridge-1.1.0.zip` | WP Admin → Plugins → Upload Plugin (veru theme vadithe) |
 | `studentup-static-site.zip` | cPanel → `public_html/` (static option) |
 | `studentup-bot-cron.zip` | cPanel → `~/bot/` (cron bot: drafts + approvals + guardian) |
@@ -666,12 +666,43 @@ python run.py --forward-list --forward-send       # optional: Telegram/WhatsApp 
 | Gating (v184) | **Last date ayyipoyinavi out** · deadline lekunda **120+ rojula puratana** out (`OPPORTUNITY_STALE_DAYS`, 0 = off) · **same recruitment ki kotha post vaste puratana di out** (supersede — newest wins) |
 | Add neat ga (v184) | Kotha items ki **🆕** marker · 3 rojula lopu close avutunna vaatiki **⏰ "2 days left"** · section headers ki counts |
 | Change report (v184) | `output/forward-list-state.json` (per-post first/last seen) → roju **"🆕 4 kotha · ❌ 3 out"** + CLI lo **enduku poyindi** reason (last date / stale / kotha version) |
-| Site board parity | `inc/opportunities.php` (theme v1.9.34) lo same moodu rules → site page · Telegram digest · WhatsApp list **okate** chupistayi |
+| Site board parity | `inc/opportunities.php` (theme v1.9.35) lo same moodu rules → site page · Telegram digest · WhatsApp list **okate** chupistayi |
 | Cron | Roju 08:35 → list ready; meeru copy chesi groups/status ki forward cheyyandi |
 
 Proof: `python tests/forward_list_test.py` · `python run.py --test-all`.
 
 v183 flags: `--forward-list` · `--forward-format` · `--forward-per-section` · `--forward-send` · `--forward-no-save`
+
+### v185 — WORLD-CLASS WEB QUALITY (31-check deep audit) 🏆
+
+Theme ni "world best" standards tho **repeatable ga audit** cheyyadaniki
+`tools/theme_audit_deep.py` ki **PASS 4 — web-quality matrix** add chesaamu
+(27 deterministic checks + existing passes). Ippudu prathi release ki:
+
+```bash
+python3 tools/theme_audit_deep.py     # pass 1-4 · ✅ 31 pass · 0 warn · 0 fail
+node tools/php_lint.js                # 86/86
+python3 tools/cwv_audit.py            # CLS/a11y static (10 pages)
+```
+
+Ee pass lo **nijamaina gaps fix chesaamu** (audit cheppindi, guess kaadu):
+
+| Gap | Fix |
+|---|---|
+| 🌙 **Dark-mode flash** — dark readers ki page paint ayye mundu white flash (footer JS deferred) | `header.php` lo body taruvata **pre-paint inline script** (saved choice > system > light, ~180 bytes) |
+| 🎛 **Native controls light ga** — scrollbar/form/autofill theme follow avvavu | `<meta name="color-scheme" content="light dark">` + CSS `color-scheme` tokens |
+| 🔠 **Blog index ki H1 ledu** (h2) — SEO/screen-reader outline | `index.php` title → `<h1>` (per-template single-H1 check tho verify) |
+| 🧱 **Card rendering cost** | `contain: content` (board cards) + `contain: layout style` (news cards/grid) · `style.min.css` fresh (-11%) |
+
+Matrix check chesevi (anni deterministic): single-H1 per view · skip-link ·
+landmarks · `language_attributes()` · color-scheme (meta+CSS) · no-flash script ·
+reduced-motion · focus-visible · outline safety · aria-live · aria-expanded ·
+noopener · img alt/dims · lazy + LCP fetchpriority · responsive images ·
+LCP preload · containment · content-visibility · print CSS · overflow guard ·
+44px touch targets · CSS budget · min.css fresh · system fonts · PWA manifest ·
+service worker · schema rich results.
+
+Proof: `python tests/v185_test.py` · `python run.py --test-all`.
 
 ### Release pin sync (`tools/pin_sync.py`)
 

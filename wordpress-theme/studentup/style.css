@@ -4,7 +4,7 @@ Theme URI: https://studentup.in/
 Author: StudentUp
 Author URI: https://studentup.in/
 Description: StudentUp design for Telangana & Andhra Pradesh students — TS/AP/Central govt jobs, qualification filter (SSC/10th · Inter · Degree · PG), live search, latest-jobs scrolling ticker, brand social icons, install as an app (PWA), job/exam cards, AdSense-ready ad slots, dark mode. Mobile-first, Rank Math + AdSense friendly.
-Version: 1.9.34
+Version: 1.9.35
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 7.4
@@ -20,6 +20,7 @@ Tags: news, blog, custom-menu, custom-logo, featured-images, right-sidebar, tran
 --shadow:0 18px 45px rgba(15,46,98,.11)}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
+html{color-scheme:light}body.dark{color-scheme:dark}
 body{margin:0;background:var(--bg);color:var(--ink);line-height:1.75;
 font-family:system-ui,-apple-system,"Noto Sans Telugu","Segoe UI",Roboto,sans-serif}
 a{color:var(--blue);text-decoration:none}
@@ -192,6 +193,11 @@ body.mlock{overflow:hidden}
 .mbackdrop{position:fixed;inset:0;background:rgba(11,33,73,.45);z-index:55;display:none}
 .mbackdrop.show{display:block}
 .mcta{background:linear-gradient(135deg,var(--navy),var(--blue));color:#fff!important;text-align:center}
+
+/* ---------- v185 perf containment (cards are independent layout units) ---------- */
+.su-op-card,.usedcard{contain:content}
+.news{contain:layout style}
+.newsgrid{contain:layout style}
 
 /* ---------- dark mode ---------- */
 body.dark{--bg:#0c1729;--card:#111f36;--line:#1e3355;--ink:#e7f0ff;--muted:#93a4bd;--soft:#14243c;--navy:#cfe1ff}
