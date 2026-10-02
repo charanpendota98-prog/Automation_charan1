@@ -294,7 +294,8 @@ cd ~/bot
 - Prathi draft WordPress lo **DRAFT** ga vastundi → Telegram ✅ approve cheyyandi.
 - Run ki max 10 links (`LINK_INTAKE_MAX`) — roju 2-3 lists chaalu.
 - Report: `~/bot/output/link-intake.json` (created/refreshed/failed).
-- WhatsApp list ipudu **posts count + last date** kuda chupistundi (`--forward-list`).
+- WhatsApp list ipudu **attractive 2-line items**: `*Title* — 1000+ udyogalu · 💰 pay · ⏰ urgent` + link.
+  Per-item last-date line ledu; expiry lopala bot ne list nunchi teesestundi.
 
 v187 flags: `--links-file` · `--links` · `--links-limit` · `--links-dry-run` · `--links-notify`
 

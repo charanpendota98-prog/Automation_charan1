@@ -434,21 +434,8 @@ def wa_date_line(today: date) -> str:
     return f"{WA_DAYS[today.weekday()]}, {today.day:02d} {WA_MONTHS[today.month - 1]} {today.year}"
 
 
-def wa_last_date_note(last_date: object, days_left: int | None = None) -> str:
-    """'📅 Last date: 20 Oct 2026 · ⏰ 2 days left' — honest ga (guess ledu)."""
-    iso = parse_last_date(last_date)
-    if not iso:
-        return ""
-    d = datetime.strptime(iso, "%Y-%m-%d").date()
-    line = f"📅 Last date: {d.day:02d} {WA_MONTHS[d.month - 1]} {d.year}"
-    urgent = wa_deadline_note(days_left)
-    if urgent:
-        line += " · " + urgent          # "⏰ 2 days left" marker as-is (v184 contract)
-    return line
-
-
 def vacancies_note(value: object) -> str:
-    """Meta nunchi 'N posts' — number lekunda guess cheyyadu (0/blank = '')."""
+    """Meta nunchi '1000+ udyogalu' — number lekunda guess cheyyadu (0/blank = '')."""
     raw = str(value or "").strip()
     if not raw:
         return ""
@@ -460,7 +447,15 @@ def vacancies_note(value: object) -> str:
     if not digits.isdigit() or int(digits) <= 0:
         return ""
     plus = "+" if "+" in raw else ""
-    return f"{shown}{plus} posts"
+    return f"{shown}{plus} udyogalu"
+
+
+def salary_note(value: object, limit: int = 26) -> str:
+    """'💰 ₹18,000 – ₹56,900' — meta unte mattrame (guess ledu)."""
+    raw = re.sub(r"\s+", " ", str(value or "")).strip()
+    if not raw:
+        return ""
+    return "💰 " + raw[:limit].rstrip()
 
 
 def _whatsapp_parts(site: str, rows: Iterable[Dict], today: date | None = None,
@@ -493,6 +488,8 @@ def _whatsapp_parts(site: str, rows: Iterable[Dict], today: date | None = None,
         if bits:
             header.append("📈 " + " · ".join(bits))
     total = 0
+    posts_total = 0
+    count_partial = False
     units = []
     today_items = []
     if today_block:
@@ -503,17 +500,29 @@ def _whatsapp_parts(site: str, rows: Iterable[Dict], today: date | None = None,
     fresh = {str(x) for x in (new_ids or [])}
 
     def _item(idx: int, row: Dict) -> str:
+        """2 lines: *Title* — 1000+ udyogalu · 💰 pay · ⏰ urgent  +  🔗 link.
+
+        Per-item '📅 Last date' line vaddhu (user feedback v187.1) — last date
+        bot lopalane expiry ki vadutundi; closing-soon (≤3 rojulu) unte mattrame
+        '⏰ 2 days left' chip ga aa line lo kanipistundi.
+        """
         mark = "🆕 " if (row.get("is_new") or str(row.get("id")) in fresh) else ""
-        posts = vacancies_note(row.get("vacancies"))
-        if posts and re.sub(r"\D", "", posts) in re.sub(r"\D", "", str(row.get("title") or "")):
-            posts = ""      # title lo already "310 posts" unte malli veyyadu
-        tail = f"  · {posts}" if posts else ""
-        lines = [f"{idx}) {mark}{_wa_clean(row.get('title'))}{tail}"]
-        last_note = wa_last_date_note(row.get("last_date"), row.get("days_left"))
-        if last_note:
-            lines.append(last_note)
-        lines.append(f"🔗 {compact_site_link(site, row, prefer_permalink=True)}")
-        return "\n".join(lines)
+        bits: List[str] = []
+        jobs = vacancies_note(row.get("vacancies"))
+        if jobs and re.sub(r"\D", "", jobs) in re.sub(r"\D", "", str(row.get("title") or "")):
+            jobs = ""       # title lo already "310+ udyogalu" unte malli veyyadu
+        if jobs:
+            bits.append(jobs)
+        salary = salary_note(row.get("salary"))
+        if salary:
+            bits.append(salary)
+        urgent = wa_deadline_note(row.get("days_left"))
+        if urgent:
+            bits.append(urgent)
+        head = f"{idx}) {mark}*{_wa_clean(row.get('title'))}*"
+        if bits:
+            head += " — " + " · ".join(bits)
+        return head + "\n🔗 " + compact_site_link(site, row, prefer_permalink=True)
 
     if today_items:
         items = [_item(idx, row)
@@ -528,19 +537,24 @@ def _whatsapp_parts(site: str, rows: Iterable[Dict], today: date | None = None,
         label, icon = section_meta[key]
         items = [_item(idx, row) for idx, row in enumerate(rows_here, 1)]
         total += len(items)
-        posts_sum = sum(
-            int(re.sub(r"\D", "", vacancies_note(r.get("vacancies"))))
-            for r in rows_here if vacancies_note(r.get("vacancies"))
-        )
+        counts = [vacancies_note(r.get("vacancies")) for r in rows_here]
+        posts_sum = sum(int(re.sub(r"\D", "", c)) for c in counts if c)
+        posts_total += posts_sum
+        if any(not c for c in counts):
+            count_partial = True          # konni counts teliyavu → total "+" (honest)
         # v184 contract: posts meta lekapote "(N)" as-is — v187 rich mattrame data unte
         if posts_sum:
             head_note = (f"{len(items)} job" + ("s" if len(items) != 1 else "")
-                         + f" · {posts_sum:,} posts")
+                         + f" · {posts_sum:,} udyogalu")
         else:
             head_note = str(len(items))
         units.append((f"{icon} *{label.upper()}* ({head_note})", items))
+    footer_line = f"✅ *{total} updates*"
+    if posts_total:
+        footer_line += f" · 👥 *{posts_total:,}{'+' if count_partial else ''} udyogalu*"
+    footer_line += f" · 🌐 {site_url or 'studentup.in'}"
     footer = [
-        f"✅ *{total} updates* · 🌐 {site_url or 'studentup.in'}",
+        footer_line,
         "ℹ️ Apply cheyyemundu article lo unna official notification verify cheyyandi.",
     ]
     return header, units, footer, total

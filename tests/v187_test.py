@@ -14,6 +14,7 @@ Cover:
 from __future__ import annotations
 
 import json
+import re
 import sys
 import tempfile
 from datetime import date
@@ -119,11 +120,12 @@ def test_report_and_cli():
 
 
 def test_whatsapp_rich_items():
+    """v187.1 (user feedback): date line vaddhu · bold title · 'N udyogalu' · attractive."""
     rows = [
-        {"id": 1, "title": "ECIL ITI Trade Apprentice Recruitment 2026",
+        {"id": 1, "title": "ECIL ITI Trade Apprentice Recruitment 2026 – Complete Details",
          "link": "https://studentup.in/ecil/", "date": "2026-10-02",
          "category_slugs": ["central-jobs"], "last_date": "2026-10-20",
-         "vacancies": "310"},
+         "vacancies": "310", "salary": "₹18,000 – ₹22,000"},
         {"id": 2, "title": "SSC CGL 2026 Notification", "link": "https://studentup.in/ssc/",
          "date": "2026-10-02", "category_slugs": ["central-jobs"],
          "last_date": "2026-10-04", "vacancies": "1000+"},
@@ -132,21 +134,27 @@ def test_whatsapp_rich_items():
          "vacancies": ""},
     ]
     text = od.render_whatsapp("https://studentup.in", rows, today=date(2026, 10, 2))
-    assert "· 310 posts" in text, text[:400]
-    assert "· 1000+ posts" in text
-    assert "📅 Last date: 20 Oct 2026" in text
-    assert "📅 Last date: 04 Oct 2026 · ⏰ 2 days left" in text
-    assert "🇮🇳 *CENTRAL GOVERNMENT JOBS* (2 jobs · 1,310 posts)" in text
-    assert "🏛️ *TELANGANA GOVERNMENT JOBS* (1)" in text  # posts meta ledu → puratana format
-    # deadline teliyani post ki date line raakudadu (guess ledu)
-    tspsc_block = text.split("TELANGANA GOVERNMENT JOBS")[1].split("CENTRAL")[0]
-    assert "Last date" not in tspsc_block
+    # per-item "📅 Last date" line ledu (user feedback) — bot lopalane expiry ki vadutundi
+    assert "📅" not in text and "Last date:" not in text, text[:400]
+    # bold title + "N udyogalu" one-liner + link
+    assert "1) 🆕 *SSC CGL 2026 Notification* — 1000+ udyogalu · ⏰ 2 days left" in text
+    assert "*ECIL ITI Trade Apprentice Recruitment 2026* — 310 udyogalu · 💰 ₹18,000 – ₹22,000" in text
+    assert "Complete Details" not in text, "SEO suffix clean avvaledu"
+    assert re.search(r"🔗 https://studentup\.in/ssc/", text)
+    # section header totals (posts data unnappude rich; lekapote "(N)" contract)
+    assert "🇮🇳 *CENTRAL GOVERNMENT JOBS* (2 jobs · 1,310 udyogalu)" in text
+    assert "🏛️ *TELANGANA GOVERNMENT JOBS* (1)" in text
+    assert "👥 *1,310+ udyogalu*" in text, "footer total ledu (+ = konni counts teliyavu)"
+    # closing-soon 3 rojula lopu mattrame; full date eppudu ledu
+    assert od.wa_deadline_note(2) == "⏰ 2 days left"
+    assert od.wa_deadline_note(None) == "" and od.wa_deadline_note(9) == ""
     assert od.vacancies_note("") == "" and od.vacancies_note("approx") == ""
-    assert od.vacancies_note("8,326") == "8,326 posts"
-    # Telegram digest (existing) lo date line raakudadu — backward compatible
+    assert od.vacancies_note("8,326") == "8,326 udyogalu"
+    assert od.salary_note("") == "" and od.salary_note("₹18,000 – ₹56,900") == "💰 ₹18,000 – ₹56,900"
+    # Telegram digest (existing) format marchaledu — backward compatible
     tg = od.render_digest("https://studentup.in", rows, today=date(2026, 10, 2))
-    assert "Last date:" not in tg
-    print("  5. WhatsApp rich items (posts · last date · section totals) ✔")
+    assert "Last date:" not in tg and "<b>" in tg
+    print("  5. WhatsApp attractive items (bold+udyogalu · no date line · totals) ✔")
 
 
 def test_docs_wiring():

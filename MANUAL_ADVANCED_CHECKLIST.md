@@ -3335,7 +3335,7 @@ python run.py --links-file links.txt --links-dry-run    # plan mattrame
 | Throttle | Run ki `--links-limit` (default `LINK_INTAKE_MAX=10`) · excess skip report lo |
 | Fail handling | Okka link fail aina migilinavi continue · reason honest ga report lo |
 | Report | `output/link-intake.json` · `--links-notify` Telegram |
-| List upgrade | WhatsApp items: `N posts` (meta) · `📅 Last date: 20 Oct 2026 · ⏰ 2 days left` · section header `(2 jobs · 1,310 posts)` |
+| List upgrade | WhatsApp items **2 lines**: `*Title* — 1000+ udyogalu · 💰 salary · ⏰ 2 days left` + link. Per-item **📅 date line ledu** (expiry lopala mattrame) · section header `(2 jobs · 1,310 udyogalu)` · footer `👥 1,310+ udyogalu` |
 
 Proof: `python tests/v187_test.py` · `python run.py --test-all`.
 

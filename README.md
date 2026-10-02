@@ -762,19 +762,25 @@ python run.py --links-file links.txt --links-dry-run     # plan mattrame
 | Parse | WhatsApp/notes paste: `1. **ECIL (310 posts)**` + `- [https://…](…)` · bare URLs · markdown link text peru ga vastundi |
 | Report | `output/link-intake.json` + `--links-notify` (Telegram) |
 
-**WhatsApp list (v187) inka rich** — mee example format lo:
+**WhatsApp list (v187) — attractive 2-line items** (user feedback: date line vaddhu):
 
 ```
-🇮🇳 *CENTRAL GOVERNMENT JOBS* (2 jobs · 1,310 posts)
+🇮🇳 *CENTRAL GOVERNMENT JOBS* (2 jobs · 1,310 udyogalu)
 
-1) 🆕 SSC CGL 2026 Notification  · 1000+ posts
-📅 Last date: 04 Oct 2026 · 2 days left
+1) 🆕 *SSC CGL 2026 Notification* — 1000+ udyogalu · ⏰ 2 days left
 🔗 https://studentup.in/ssc-cgl-2026/
+2) *ECIL ITI Trade Apprentice 2026* — 310 udyogalu · 💰 ₹18,000 – ₹22,000
+🔗 https://studentup.in/ecil-iti-trade-apprentice/
 ```
 
-- **N posts** — `studentup_vacancies` meta nunchi (guess ledu; blank aithe chupinchadu)
-- **📅 Last date** — prathi item ki (teliyakapote raadu) + `⏰ days left` (3 rojula lopu)
-- **Section header totals** — `(2 jobs · 1,310 posts)` — "SSC lo 1000+ udyogalu" style
+- **2 lines mattrame** — `*Title* — 1000+ udyogalu` + link. Per-item **📅 Last date line ledu**
+  (bot lopalane expiry/stale/supersede ki last date vadutundi — list lo mattrame chupinchadu)
+- **N udyogalu** — `studentup_vacancies` meta nunchi (guess ledu; blank aithe chupinchadu)
+- **💰 salary** — `studentup_salary` meta unte mattrame
+- **⏰ urgent chip** — last date 3 rojula lopu unte mattrame (ee item ippude apply cheyyali)
+- **Section header totals** — `(2 jobs · 1,310 udyogalu)` · footer lo `👥 1,310+ udyogalu`
+  (`+` = konni posts counts teliyavu — honest lower bound)
+- Sections: Today · TS · AP · Central · Walk-in · Outsourcing · Software (+ Scholarships/Results/Hall Tickets)
 - Expired/stale/superseded gating same (v184) · Telegram digest format marchaledu (backward compatible)
 
 Proof: `python tests/v187_test.py` (6 groups) · `--test-all` **134/134** · jsdom **177/177** · php-lint **86/86** · deep theme **31/0/0** · parity/code **0/0**.
