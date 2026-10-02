@@ -97,6 +97,7 @@ cPanel → **Cron Jobs** → add (paths ni mee username tho marchandi):
 `--rank-trend` (GSC time-series → traffic padutunna pages → refresh queue) ·
 `--sponsor-crm` (roju 2 sponsor outreach + follow-ups + forecast).
 GSC CSV (`private/Pages.csv`) leda key lekapote aa loop automatic skip — migilinavi pani chestayi.
+**v186:** `--live-audit` — deploy tarvata 16 HTTP checks (robots · sitemap · ads.txt · headers · schema · PWA · sample posts · soft-404).
 **v183/v184:** `--forward-list` — roju WhatsApp-forward-ready list (`output/forward-list.txt`): expired/stale/superseded posts out, kotha vi 🆕 tho, state diff (`forward-list-state.json`) lo em marindo.
 **v182 loops:** `--calendar` (90-day plan → `--calendar-apply` tho pipeline queue) ·
 `--revenue-loop` (AdSense Pages CSV → category RPM · money pages · leaks) ·

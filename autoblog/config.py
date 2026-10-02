@@ -576,6 +576,11 @@ FORWARD_LIST_STATE_PATH = Path(_get("FORWARD_LIST_STATE_PATH",
 # (0 = off). Site board (theme) kuda ide window vaadutundi.
 OPPORTUNITY_STALE_DAYS = int(_get("OPPORTUNITY_STALE_DAYS", "120") or 0)
 
+# v186: live site audit (deploy tarvata HTTP verification)
+LIVE_AUDIT_PATH = Path(_get("LIVE_AUDIT_PATH", str(OUTPUT_DIR / "live-audit.json")))
+LIVE_AUDIT_POSTS = int(_get("LIVE_AUDIT_POSTS", "5") or 5)
+LIVE_AUDIT_TIMEOUT = int(_get("LIVE_AUDIT_TIMEOUT", "20") or 20)
+
 # --- v181: growth loops (reader demand · rank trend · sponsor pipeline) ---
 # 1) On-site search demand → content gap queue (theme logs terms; bot reads)
 SEARCH_DEMAND_QUEUE = Path(_get("SEARCH_DEMAND_QUEUE",

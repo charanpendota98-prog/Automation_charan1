@@ -89,6 +89,8 @@ mkdir -p log
 30 9 * * 1     cd /home/<user>/bot && /home/<user>/bot/.venv/bin/python run.py --backlink --backlink-notify >> log/backlink.log 2>&1
 # v183 daily forward list (WhatsApp):
 35 8 * * *     cd /home/<user>/bot && /home/<user>/bot/.venv/bin/python run.py --forward-list >> log/forward.log 2>&1
+# v186 live site audit (weekly, Monday 10:00):
+0 10 * * 1     cd /home/<user>/bot && /home/<user>/bot/.venv/bin/python run.py --live-audit --live-notify >> log/live-audit.log 2>&1
 ```
    (MilesWeb lo **unlimited cron jobs** unnayi; shared hosting lo daemon run avvadu —
    anduke bot antha cron-only ga design ayyindi.)
@@ -216,6 +218,24 @@ cd ~/bot
   (0 = off) — theme board kuda `studentup_opportunity_stale_days` filter tho same.
 
 v183 flags: `--forward-list` · `--forward-format` · `--forward-per-section` · `--forward-send` · `--forward-no-save`
+
+## 3e) v186 — Live site audit (deploy ayyaka okkasari + weekly) 🌐
+
+Site live ayyaka **modati pani** idi — 16 checks real HTTP tho:
+
+```bash
+cd ~/bot
+.venv/bin/python run.py --live-audit --live-url https://studentup.in --live-notify
+```
+
+- ✅ pass aithe: SSL/redirects · robots+sitemap · ads.txt · security headers ·
+  compression · homepage SEO/schema · PWA manifest+SW · sample posts · 404 · caching
+  — anni correct.
+- ❌ fail/warn vasthe: report lo **exact fix** untundi (`output/live-audit.md`) —
+  e.g. "site-wide Disallow: /", "soft-404", "no H1", "no gzip", "thin content".
+- Weekly cron lo kuda pettachu (kindha line) — hosting config marithe telustundi.
+
+v186 flags: `--live-audit` · `--live-url` · `--live-posts` · `--live-timeout` · `--live-notify` · `--live-strict`
 
 ## 4) Notification / verification commands (server lo)
 

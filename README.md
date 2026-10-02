@@ -1,7 +1,7 @@
 # studentup.in Auto-Blogger 🤖
 
 
-> **Verified counts (theme v1.9.35 build):** test suites **132/132** files · jsdom runtime **177/177** checks · PHP lint **86/86** files · theme audit **0/0** · **deep audit pass 1-4 31/31** · code audit **0/0**.
+> **Verified counts (theme v1.9.35 build):** test suites **133/133** files · jsdom runtime **177/177** checks · PHP lint **86/86** files · theme audit **0/0** · **deep audit pass 1-4 31/31** · code audit **0/0**.
 24/7 automatic blog posting system for **studentup.in** (WordPress) — runs on your Oracle Cloud instance.
 
 - **AI content:** Google Gemini (free tier) generates Telugu + English mix articles
@@ -703,6 +703,38 @@ LCP preload · containment · content-visibility · print CSS · overflow guard 
 service worker · schema rich results.
 
 Proof: `python tests/v185_test.py` · `python run.py --test-all`.
+
+### v186 — LIVE SITE AUDIT (deploy tarvata nijamaina verification) 🌐
+
+Ippati varaku anni gates **pre-deployment** (theme zip · tests · static CWV audit).
+Kaani "live site nijamga correct ga serve avutunda?" anedi veru prashna — hosting
+redirects, headers, robots, sitemap, schema, PWA, sample posts, 404 behavior.
+`autoblog/live_audit.py` ee loop ni close chestundi (**16 checks · real HTTP**):
+
+```bash
+python run.py --live-audit --live-url https://studentup.in --live-notify
+python run.py --live-audit --live-posts 8 --live-strict    # warnings kuda fail
+```
+
+| Checks | Enti verify chestundi |
+|---|---|
+| 🌐 Serving | reachability + **TTFB** (slow unte warn) · http→https redirect · www/non-www duplicate host |
+| 🤖 Crawl | robots.txt (Sitemap line · site-wide `Disallow: /` ledu) · sitemap.xml valid XML + URL count |
+| 💰 Ads | ads.txt — AdSense approve ayyaka **mandatory** (`google.com` line), lekapote skip |
+| 🔒 Headers | HSTS · nosniff · Referrer-Policy · X-Frame-Options · **gzip/br compression** |
+| 🏠 Homepage | title/description lengths · **okka H1** · canonical · og:title · JSON-LD (Organization/WebSite) · viewport · noindex safety |
+| 📱 PWA | manifest fetch + JSON + icons · sw.js |
+| 📄 Posts | sitemap nunchi sample pages: 200 · title+H1 · **thin content (<300 words)** |
+| 🧯 Hygiene | unknown URL → **404** (soft-404 ledu) · static asset Cache-Control |
+
+Report: `output/live-audit.json` + `.md` (readable) + `--live-notify` (Telegram).
+Exit: `0` all pass · `1` fail undi (`--live-strict` tho warn kuda) · `2` URL ledu.
+Read-only — eem marchadu.
+
+Proof: `python tests/live_audit_test.py` (mock sites: healthy + broken) ·
+`python run.py --test-all`.
+
+v186 flags: `--live-audit` · `--live-url` · `--live-posts` · `--live-timeout` · `--live-notify` · `--live-strict`
 
 ### Release pin sync (`tools/pin_sync.py`)
 

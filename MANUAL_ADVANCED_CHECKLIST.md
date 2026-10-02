@@ -1,6 +1,6 @@
 # 📋 MANUAL ADVANCED CHECKLIST — "Nenu manual ga em em cheyali"
 ### Website advanced ga run avvali · Posts ANI-PERFECT · Mistakes leku · Deep analyse + NotebookLM
-> **Verified counts (theme v1.9.35 build):** test suites **132/132** files · jsdom runtime **177/177** checks · PHP lint **86/86** files · theme audit **0/0** · **deep audit pass 1-4 31/31** · code audit **0/0**.
+> **Verified counts (theme v1.9.35 build):** test suites **133/133** files · jsdom runtime **177/177** checks · PHP lint **86/86** files · theme audit **0/0** · **deep audit pass 1-4 31/31** · code audit **0/0**.
 
 
 **Ee file = mee haath tho cheyyalsina ANNI — exact order, exact commands.**
@@ -3295,3 +3295,24 @@ python tests/v185_test.py            # invariants (no-flash · h1 · containment
 
 Proof: `python3 tools/theme_audit_deep.py` · `python tests/v185_test.py` · `python run.py --test-all`.
 
+---
+
+## PART 79 — v186: LIVE SITE AUDIT (deploy tarvata HTTP verification)
+
+```bash
+python run.py --live-audit --live-url https://studentup.in
+python run.py --live-audit --live-posts 8 --live-notify --live-strict
+```
+
+| Em | Detail |
+|---|---|
+| Enduku | Pre-deploy gates anni pass aina, live hosting config tappu undochu — idi adi pattukuntundi (README/PART 76-79 laantivi kaadu: **real HTTP** checks) |
+| 16 checks | reachability+TTFB · https redirect · www duplicate · robots · sitemap · ads.txt · security headers · compression · homepage SEO (title/desc/H1/canonical/og/JSON-LD) · schema · viewport · PWA manifest+SW · sample posts (200/title/H1/thin) · soft-404 · asset Cache-Control · noindex safety |
+| Exit codes | `0` pass (warns tho) · `1` fail (`--live-strict` tho warn kuda) · `2` URL ledu |
+| Output | `output/live-audit.json` + `output/live-audit.md` + optional Telegram summary |
+| Cron | Deploy tarvata okkasari + weekly (crontab `--live-audit` line) |
+| Safety | **Read-only** — eem marchadu · network fail → finding (crash ledu) |
+
+Proof: `python tests/live_audit_test.py` (mock good/broken sites) · `python run.py --test-all`.
+
+v186 flags: `--live-audit` · `--live-url` · `--live-posts` · `--live-timeout` · `--live-notify` · `--live-strict`

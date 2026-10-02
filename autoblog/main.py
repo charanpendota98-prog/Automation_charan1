@@ -2058,6 +2058,20 @@ def main() -> int:
                         help="v182: revenue loop report ni Telegram ki")
     parser.add_argument("--revenue-min-views", type=int, default=0,
                         help="v182: sample threshold (default REVENUE_LOOP_MIN_IMPRESSIONS)")
+    # ---- v186: live site audit (deploy tarvata nijamaina HTTP verification) ----
+    parser.add_argument("--live-audit", action="store_true",
+                        help="v186: live site ni 16 checks tho verify (robots · sitemap · "
+                             "schema · PWA · security headers · sample posts · 404)")
+    parser.add_argument("--live-url", default="",
+                        help="v186: audit URL (default .env WP_SITE)")
+    parser.add_argument("--live-posts", type=int, default=0,
+                        help="v186: sample post pages count (default LIVE_AUDIT_POSTS=5)")
+    parser.add_argument("--live-timeout", type=int, default=0,
+                        help="v186: per-request timeout seconds (default 20)")
+    parser.add_argument("--live-notify", action="store_true",
+                        help="v186: audit summary ni Telegram ki")
+    parser.add_argument("--live-strict", action="store_true",
+                        help="v186: warnings ni kuda fail ga treat cheyyi (exit 1)")
     # ---- v183: daily WhatsApp forward list ----
     parser.add_argument("--forward-list", action="store_true",
                         help="v183: roju WhatsApp-forward-ready active list (plain text) "
@@ -2622,6 +2636,12 @@ def main() -> int:
             return 1
         print(f"✅ {row['name']} → {row['stage']} (follow-up {row.get('next_followup', '—')})")
         return 0
+    if getattr(args, "live_audit", False):
+        from . import live_audit as _la
+        return _la.run_cli(args.live_url, args.live_posts,
+                           notify=args.live_notify, strict=args.live_strict,
+                           timeout=args.live_timeout)
+
     if getattr(args, "forward_list", False):
         from . import forward_list as _fl
         return _fl.run_cli(args.forward_format, args.forward_per_section,
