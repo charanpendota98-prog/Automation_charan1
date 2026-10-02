@@ -2,7 +2,7 @@
 Contributors: studentup
 Requires at least: 6.0
 Tested up to: 6.7
-Stable tag: 1.9.32
+Stable tag: 1.9.33
 Requires PHP: 7.4
 Version: 1.9.26
 License: GNU General Public License v2 or later
@@ -364,6 +364,15 @@ user tho App Password ivvandi (Administrator role).
 * Performance: custom WP_Query calls ki no_found_rows (extra SQL query teesesaam)
 * IndexNow key-file serving (/<key>.key) — instant indexing automatic
 
+
+= 1.9.33 (2026-10-02, v183) =
+* Board lo kotha section: **Outsourcing & Contract Jobs** (inc/opportunities.php).
+  Outsourcing / contract-basis / guest-faculty posts ikkade kanipistayi —
+  puratana lo ivi e section lo lekunda board nunchi poyevi (pipeline lo category
+  'Outsourcing Jobs' unna kuda). Legacy repair fallback kuda add chesaamu
+  (outsourcing / contract-basis / guest-faculty keywords).
+* Bot daily list (`--forward-list`) kuda ide section + WhatsApp plain-text
+  format tho align ayindi — site board · WhatsApp forward list rendu okate.
 
 = 1.9.32 (2026-10-02, v181) =
 * On-site search demand log (inc/searchlog.php): reader searches — live-search

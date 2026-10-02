@@ -20,6 +20,7 @@ function studentup_opportunity_sections() {
 		'ap'          => array( 'label' => 'Andhra Pradesh Government Jobs', 'icon' => 'bank' ),
 		'central'     => array( 'label' => 'Central Government Jobs', 'icon' => 'flag' ),
 		'walkin'      => array( 'label' => 'Walk-in Jobs', 'icon' => 'walk' ),
+		'outsourcing' => array( 'label' => 'Outsourcing & Contract Jobs', 'icon' => 'person' ),
 		'job-melas'   => array( 'label' => 'Job Melas & Job Fairs', 'icon' => 'person' ),
 		'software'    => array( 'label' => 'Software Jobs', 'icon' => 'laptop' ),
 		'private'     => array( 'label' => 'Private Jobs', 'icon' => 'building' ),
@@ -97,6 +98,7 @@ function studentup_opportunity_section_for_post( $post_id ) {
 		'ap'           => array( 'ap-jobs', 'ap-govt-jobs', 'andhra-pradesh-govt-jobs' ),
 		'central'      => array( 'central', 'central-jobs', 'central-govt-jobs' ),
 		'walkin'       => array( 'walkin', 'walkin-jobs', 'walk-in-jobs' ),
+		'outsourcing'  => array( 'outsourcing', 'outsourcing-jobs', 'contract', 'contract-basis' ),
 		'software'     => array( 'software', 'software-jobs' ),
 		'private'      => array( 'private', 'private-jobs' ),
 		'scholarships' => array( 'scholarship', 'scholarships' ),
@@ -122,6 +124,12 @@ function studentup_opportunity_section_for_post( $post_id ) {
 	}
 	if ( $has( array( 'current affairs', 'daily current', 'daily gk', 'daily news' ) ) ) {
 		return 'current-affairs';
+	}
+	// v183: outsourcing/contract posts (pipeline lo 'Outsourcing Jobs' category) —
+	// idi lekapote aa posts board lo e section lo kanipinchavu.
+	if ( $has( array( 'outsourcing', 'contract basis', 'contractual', 'outsourced',
+		'guest faculty', 'honorarium' ) ) ) {
+		return 'outsourcing';
 	}
 	if ( $has( array( 'walk-in', 'walk in', 'walkin', 'direct interview' ) ) ) {
 		return 'walkin';

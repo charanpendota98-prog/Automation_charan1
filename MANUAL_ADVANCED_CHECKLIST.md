@@ -1,6 +1,6 @@
 # 📋 MANUAL ADVANCED CHECKLIST — "Nenu manual ga em em cheyali"
 ### Website advanced ga run avvali · Posts ANI-PERFECT · Mistakes leku · Deep analyse + NotebookLM
-> **Verified counts (theme v1.9.32 build):** test suites **130/130** files · jsdom runtime **177/177** checks · PHP lint **86/86** files · theme audit **0/0** · code audit **0/0**.
+> **Verified counts (theme v1.9.33 build):** test suites **131/131** files · jsdom runtime **177/177** checks · PHP lint **86/86** files · theme audit **0/0** · code audit **0/0**.
 
 
 **Ee file = mee haath tho cheyyalsina ANNI — exact order, exact commands.**
@@ -3142,7 +3142,7 @@ python3 tools/build_milesweb_kit.py --list   # enti build avutundo chudu
 
 | Zip | Ekkadiki upload | Enti |
 |---|---|---|
-| `studentup-theme-1.9.32.zip` (113 files) | WP Admin → Appearance → Themes → Upload Theme | Design + job card + Apply bar + schema + ad slots (activate tho one-click setup) |
+| `studentup-theme-1.9.33.zip` (113 files) | WP Admin → Appearance → Themes → Upload Theme | Design + job card + Apply bar + schema + ad slots (activate tho one-click setup) |
 | `studentup-seo-bridge-1.1.0.zip` | WP Admin → Plugins → Upload Plugin | Rank Math REST bridge (veru theme vadithe matrame) |
 | `studentup-static-site.zip` (23 files) | cPanel → `public_html/` | Static site (WordPress path vadakapothe) |
 | `studentup-bot-cron.zip` (299 files) | cPanel → `~/bot/` | Cron bot: drafts + Telegram approvals + guardian |
@@ -3246,3 +3246,27 @@ Proof: `python tests/editorial_calendar_test.py` · `python tests/revenue_loop_t
 · `python tests/backlink_engine_test.py` · `python run.py --test-all`.
 
 > v182 flags: `--calendar` · `--calendar-days` · `--calendar-per-day` · `--calendar-apply` · `--calendar-limit` · `--calendar-no-universe` · `--calendar-notify` · `--revenue-loop` · `--revenue-notify` · `--revenue-min-views` · `--backlink` · `--backlink-assets` · `--backlink-targets` · `--backlink-add` · `--backlink-update` · `--backlink-notify` · `--backlink-templates`
+
+---
+
+## PART 77 — v183: DAILY FORWARD LIST (WhatsApp-ready)
+
+```bash
+python run.py --forward-list                       # plain text (WhatsApp) + files
+python run.py --forward-list --forward-format tg   # Telegram HTML chunks
+python run.py --forward-list --forward-send        # optional send
+python run.py --forward-list --forward-no-save     # print only
+```
+
+| Enti | Detail |
+|---|---|
+| Enduku | Students andaru WhatsApp groups lo unnaru — list akkadiki **plain text** ga vellali (HTML tags WhatsApp lo raw ga kanipistayi) |
+| Sections | TS · AP · Central · Walk-in · **Outsourcing & Contract Jobs** (kotha, v183) · Job Melas · Software · Private · Scholarships · Results · Hall Tickets · Current Affairs |
+| Today block | 🆕 IVVALTI KOTHAAVI — ivvalti published posts (max 5) |
+| Files | `output/forward-list-2026-10-02.txt` + `output/forward-list.txt` |
+| WhatsApp rules | Expired posts ledu · official notification verify disclaimer undi · dead links ledu (WP `?p=ID` short links shortener OFF unte) |
+| Send limits | CallMeBot URL limit → `--forward-send` plain text ni item boundaries lo split chesi (max 3 msgs) pampistundi; best practice = copy-paste |
+
+Proof: `python tests/forward_list_test.py` · site board section parity (`inc/opportunities.php`).
+
+v183 flags: `--forward-list` · `--forward-format` · `--forward-per-section` · `--forward-send` · `--forward-no-save`

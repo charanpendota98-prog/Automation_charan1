@@ -27,7 +27,7 @@ python3 tools/build_milesweb_kit.py        # → milesweb-kit/ (+ --list to prev
 
 | Zip | Ekkadiki upload |
 |---|---|
-| `studentup-theme-1.9.32.zip` (113 files) | WP Admin → **Appearance → Themes → Add New → Upload Theme** |
+| `studentup-theme-1.9.33.zip` (113 files) | WP Admin → **Appearance → Themes → Add New → Upload Theme** |
 | `studentup-seo-bridge-1.1.0.zip` | WP Admin → **Plugins → Add New → Upload Plugin** (veru theme vadithe matrame) |
 | `studentup-static-site.zip` (23 files) | cPanel → File Manager → **`public_html/`** (static option) |
 | `studentup-bot-cron.zip` (303 files) | cPanel → File Manager → **`~/bot/`** (cron bot) |
@@ -97,6 +97,7 @@ cPanel → **Cron Jobs** → add (paths ni mee username tho marchandi):
 `--rank-trend` (GSC time-series → traffic padutunna pages → refresh queue) ·
 `--sponsor-crm` (roju 2 sponsor outreach + follow-ups + forecast).
 GSC CSV (`private/Pages.csv`) leda key lekapote aa loop automatic skip — migilinavi pani chestayi.
+**v183:** `--forward-list` — roju WhatsApp-forward-ready list (`output/forward-list.txt`).
 **v182 loops:** `--calendar` (90-day plan → `--calendar-apply` tho pipeline queue) ·
 `--revenue-loop` (AdSense Pages CSV → category RPM · money pages · leaks) ·
 `--backlink` (white-hat authority outreach: assets + targets + follow-ups).

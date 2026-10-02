@@ -1,7 +1,7 @@
 # studentup.in Auto-Blogger 🤖
 
 
-> **Verified counts (theme v1.9.32 build):** test suites **130/130** files · jsdom runtime **177/177** checks · PHP lint **86/86** files · theme audit **0/0** · code audit **0/0**.
+> **Verified counts (theme v1.9.33 build):** test suites **131/131** files · jsdom runtime **177/177** checks · PHP lint **86/86** files · theme audit **0/0** · code audit **0/0**.
 24/7 automatic blog posting system for **studentup.in** (WordPress) — runs on your Oracle Cloud instance.
 
 - **AI content:** Google Gemini (free tier) generates Telugu + English mix articles
@@ -579,7 +579,7 @@ python3 tools/build_milesweb_kit.py --list   # enti build avutundo chudu
 
 | Zip | Ekkadiki |
 |---|---|
-| `studentup-theme-1.9.32.zip` | WP Admin → Appearance → Themes → Upload Theme |
+| `studentup-theme-1.9.33.zip` | WP Admin → Appearance → Themes → Upload Theme |
 | `studentup-seo-bridge-1.1.0.zip` | WP Admin → Plugins → Upload Plugin (veru theme vadithe) |
 | `studentup-static-site.zip` | cPanel → `public_html/` (static option) |
 | `studentup-bot-cron.zip` | cPanel → `~/bot/` (cron bot: drafts + approvals + guardian) |
@@ -644,6 +644,31 @@ python run.py --backlink --backlink-assets --backlink-targets --backlink-notify 
 
 Proof: `python tests/editorial_calendar_test.py` · `python tests/revenue_loop_test.py` ·
 `python tests/backlink_engine_test.py` · `python run.py --test-all`.
+
+### v183 — DAILY FORWARD LIST (WhatsApp-ready) 📲
+
+Site board + bot daily list rendu ippudu **okate category set** tho pani chestayi
+(incl. **Outsourcing & Contract Jobs** — puratana lo ivi board/digest nunchi
+padipoyevi). WhatsApp ki HTML tags pani cheyyavu — anduke **plain-text** format:
+
+```bash
+python run.py --forward-list                      # print + save (output/forward-list.txt)
+python run.py --forward-list --forward-format tg  # Telegram HTML version
+python run.py --forward-list --forward-send       # optional: Telegram/WhatsApp ki pampu
+```
+
+| Enti | Detail |
+|---|---|
+| Sections (plan tho match) | TS · AP · Central · Walk-in · **Outsourcing** · Job Melas · Software · Private · Scholarships · Results · Hall Tickets · Current Affairs |
+| Top block | 🆕 **IVVALTI KOTHAAVI (today)** — ivvalti publish ayina posts (highlight) |
+| Format | Numbered items · oka line title · 🔗 mee site link (shortener unte short link, lekapote `?p=ID`) · WhatsApp `*bold*` |
+| Files | `output/forward-list-YYYY-MM-DD.txt` (roju) + `output/forward-list.txt` (latest) |
+| Gating | Published posts mattrame · expired (last date ayipoyina) posts list lo ledu · stats/facts fabricate cheyyadu |
+| Cron | Roju 08:35 → list ready; meeru copy chesi groups/status ki forward cheyyandi |
+
+Proof: `python tests/forward_list_test.py` · `python run.py --test-all`.
+
+v183 flags: `--forward-list` · `--forward-format` · `--forward-per-section` · `--forward-send` · `--forward-no-save`
 
 ### Release pin sync (`tools/pin_sync.py`)
 

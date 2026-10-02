@@ -24,6 +24,7 @@ SECTIONS = [
     ("ap", "Andhra Pradesh Government Jobs", "🏛️"),
     ("central", "Central Government Jobs", "🇮🇳"),
     ("walkin", "Walk-in Jobs", "🚶"),
+    ("outsourcing", "Outsourcing & Contract Jobs", "💼"),
     ("job-melas", "Job Melas & Job Fairs", "🤝"),
     ("software", "Software Jobs", "💻"),
     ("private", "Private Jobs", "🏢"),
@@ -38,6 +39,7 @@ CATEGORY_ALIASES = {
     "ap": {"ap-jobs", "ap-govt-jobs", "andhra-pradesh-govt-jobs"},
     "central": {"central", "central-jobs", "central-govt-jobs"},
     "walkin": {"walkin", "walkin-jobs", "walk-in-jobs"},
+    "outsourcing": {"outsourcing", "outsourcing-jobs", "contract", "contract-basis"},
     "software": {"software", "software-jobs"},
     "private": {"private", "private-jobs"},
     "scholarships": {"scholarship", "scholarships"},
@@ -118,6 +120,12 @@ def section_for_row(row: Dict) -> str:
         return "hall-tickets"
     if any(x in title for x in ("current affairs", "daily current", "daily gk", "daily news")):
         return "current-affairs"
+    # Outsourcing/contract posts: pipeline.py classification order ni mirror
+    # chestundi (pipeline "Outsourcing Jobs" ani pettina post ikkada kanipinchali).
+    if any(x in title for x in ("outsourcing", "contract basis", "contractual",
+                                "outsourced", "guest faculty", "honorarium",
+                                "అవుట్‌సోర్సింగ్", "కాంట్రాక్ట్")):
+        return "outsourcing"
     if any(x in title for x in ("walk-in", "walk in", "walkin", "direct interview")):
         return "walkin"
     if any(x in title for x in ("software", "developer", "full stack", "data analyst", "devops", "it job")):
@@ -178,8 +186,14 @@ def group_rows(rows: Iterable[Dict], today: date | None = None, per_section: int
     return groups
 
 
-def compact_site_link(site: str, row: Dict) -> str:
-    """Use a configured shortener for owned posts, with safe native fallback."""
+def compact_site_link(site: str, row: Dict, prefer_permalink: bool = False) -> str:
+    """Use a configured shortener for owned posts, with safe native fallback.
+
+    `prefer_permalink=True` (v183 WhatsApp list): shortener lekapote `?p=ID`
+    badulu **nijamaina permalink** vadutundi — forward chesinappudu readable
+    URL (trust + clicks) and SEO-friendly. Telegram digest default behavior
+    (`?p=ID`) marchadu.
+    """
     long_url = str(row.get("link") or "").strip()
     site_url = str(site or "").rstrip("/")
     site_host = urlparse(site_url).netloc.lower().replace("www.", "")
@@ -194,6 +208,8 @@ def compact_site_link(site: str, row: Dict) -> str:
                     return provider_url
         except Exception:  # noqa: BLE001 — native fallback is always available
             pass
+    if prefer_permalink and long_url:
+        return long_url
     post_id = str(row.get("id") or "").strip()
     if post_id.isdigit() and site_url:
         return f"{site_url}/?p={post_id}"
@@ -294,3 +310,150 @@ def render_digest_messages(site: str, rows: Iterable[Dict], today: date | None =
     else:
         chunks.append(current)
     return chunks
+
+# ---------------------------------------------------------------------------
+# v183: WhatsApp forward list — plain text (WhatsApp HTML tags render cheyyadu)
+# ---------------------------------------------------------------------------
+
+WA_MONTHS = ("Jan", "Feb", "Mar", "Apr", "May", "Jun",
+             "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
+WA_DAYS = ("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
+
+
+def _wa_clean(value: object, limit: int = 110) -> str:
+    """WhatsApp text ki safe: SEO suffix teesi, markers remove chesi, okate line.
+
+    Same `display_title()` cleaning (Telegram card tho same look) — kaani
+    WhatsApp ki `*`/`_` markers natural text lo unte bold/italic ayyipotayi,
+    anduke avi teesestam (message formatting padipovadam ledu).
+    """
+    text = display_title(value, limit + 30)
+    text = text.replace("*", "").replace("_", "").replace("~", "")
+    return text[:limit].strip()
+
+
+def wa_date_line(today: date) -> str:
+    return f"{WA_DAYS[today.weekday()]}, {today.day:02d} {WA_MONTHS[today.month - 1]} {today.year}"
+
+
+def _whatsapp_parts(site: str, rows: Iterable[Dict], today: date | None = None,
+                    per_section: int = 6, today_block: bool = True,
+                    today_limit: int = 5):
+    """WhatsApp plain-text parts: header + units + footer.
+
+    Unit = (section header, [item, ...]) — item string lo title + link rendu
+    lines unnayi ("1) Title\n🔗 url"). Chunking item boundaries lo jarugutundi
+    (link madhya lo eppudu split avvadu).
+    """
+    today = today or datetime.now(IST).date()
+    groups = group_rows(rows, today=today, per_section=per_section)
+    site_url = str(site or "").rstrip("/")
+    header = [
+        "📋 *StudentUp — Daily Updates List*",
+        f"🗓 {wa_date_line(today)} · 🌐 {site_url or 'studentup.in'}",
+    ]
+    total = 0
+    units = []
+    today_items = []
+    if today_block:
+        for key, _, _ in SECTIONS:
+            for row in groups.get(key) or []:
+                if str(row.get("date") or "")[:10] == today.isoformat():
+                    today_items.append(row)
+    if today_items:
+        items = []
+        for idx, row in enumerate(today_items[:today_limit], 1):
+            total += 1
+            items.append(f"{idx}) {_wa_clean(row.get('title'))}\n"
+                         f"🔗 {compact_site_link(site, row, prefer_permalink=True)}")
+        units.append(("🆕 *IVVALTI KOTHAAVI (today)*", items))
+    section_meta = {key: (label, icon) for key, label, icon in SECTIONS}
+    for key, _, _ in SECTIONS:
+        rows_here = groups.get(key) or []
+        if not rows_here:
+            continue
+        label, icon = section_meta[key]
+        items = []
+        for idx, row in enumerate(rows_here, 1):
+            total += 1
+            items.append(f"{idx}) {_wa_clean(row.get('title'))}\n"
+                         f"🔗 {compact_site_link(site, row, prefer_permalink=True)}")
+        units.append((f"{icon} *{label.upper()}*", items))
+    footer = [
+        f"✅ *{total} updates* · 🌐 {site_url or 'studentup.in'}",
+        "ℹ️ Apply cheyyemundu article lo unna official notification verify cheyyandi.",
+    ]
+    return header, units, footer, total
+
+
+def _render_units(units) -> List[str]:
+    parts: List[str] = []
+    for head, items in units:
+        parts.append(head)
+        parts.append("")
+        for item in items:
+            parts.append(item)
+            parts.append("")
+    return parts
+
+
+def render_whatsapp(site: str, rows: Iterable[Dict], today: date | None = None,
+                    per_section: int = 6, today_block: bool = True) -> str:
+    """Okate plain-text message (WhatsApp group/status ki copy-paste cheyyadaniki)."""
+    header, units, footer, total = _whatsapp_parts(site, rows, today, per_section,
+                                                   today_block)
+    if not total:
+        return ""
+    return "\n".join(header + [""] + _render_units(units) + footer)
+
+
+def render_whatsapp_messages(site: str, rows: Iterable[Dict], today: date | None = None,
+                             per_section: int = 6, today_block: bool = True,
+                             max_chars: int = 3900) -> List[str]:
+    """Peddha list ni WhatsApp-safe chunks ga split (item madhya lo kaadu).
+
+    Split **item boundaries** lo mattrame (URL eppudu cut avvadu). Oka item
+    okkate chunk limit kanna peddha unte, adi ontariga okka chunk avutundi.
+    """
+    header, units, footer, total = _whatsapp_parts(site, rows, today, per_section,
+                                                   today_block)
+    if not total:
+        return []
+    prefix = "\n".join(header) + "\n\n"
+    contd = f"📋 *StudentUp Daily List (contd.)*\n🌐 {str(site or '').rstrip('/')}\n\n"
+    footer_text = "\n" + "\n".join(footer)
+    chunks: List[str] = []
+    current = prefix
+    for head, items in units:
+        idx = 0
+        while idx < len(items):
+            block_head = head if idx == 0 else f"{head} (contd.)"
+            room = max_chars - len(footer_text) - len(current) - len(block_head) - 6
+            if room < 48 and current.strip() != prefix.strip():
+                chunks.append(current.rstrip())
+                current = contd
+                continue
+            take: List[str] = []
+            size = 0
+            while idx < len(items):
+                piece_len = len(items[idx]) + 2
+                if take and size + piece_len > room:
+                    break
+                take.append(items[idx])
+                size += piece_len
+                idx += 1
+            if not take and idx < len(items):        # item okkate limit kanna peddha
+                take = [items[idx]]
+                idx += 1
+            piece = block_head + "\n\n" + "\n\n".join(take) + "\n"
+            if current.strip() != prefix.strip() and len(current) + len(piece) + len(footer_text) > max_chars:
+                # Ee piece ikkada fit avvadu — kotha chunk ki pampu, items ni
+                # malli try cheyyali (anduke idx venakki — items pogapoyevi ledu).
+                chunks.append(current.rstrip())
+                current = contd
+                idx -= len(take)
+                continue
+            current += piece + "\n"
+    current += footer_text
+    chunks.append(current.rstrip())
+    return [c for c in chunks if c.strip()]

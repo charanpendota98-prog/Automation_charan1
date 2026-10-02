@@ -2058,6 +2058,18 @@ def main() -> int:
                         help="v182: revenue loop report ni Telegram ki")
     parser.add_argument("--revenue-min-views", type=int, default=0,
                         help="v182: sample threshold (default REVENUE_LOOP_MIN_IMPRESSIONS)")
+    # ---- v183: daily WhatsApp forward list ----
+    parser.add_argument("--forward-list", action="store_true",
+                        help="v183: roju WhatsApp-forward-ready active list (plain text) "
+                             "→ output/forward-list.txt (+ roju file)")
+    parser.add_argument("--forward-format", default="wa", choices=("wa", "tg"),
+                        help="v183: wa = WhatsApp plain text (default) · tg = Telegram HTML")
+    parser.add_argument("--forward-per-section", type=int, default=6,
+                        help="v183: section ki max items (default 6)")
+    parser.add_argument("--forward-send", action="store_true",
+                        help="v183: list ni Telegram/WhatsApp ki pampinchadam (optional)")
+    parser.add_argument("--forward-no-save", action="store_true",
+                        help="v183: files save cheyyakunda print matrame")
     parser.add_argument("--backlink", action="store_true",
                         help="v182: backlink/authority plan (white-hat) + forecast")
     parser.add_argument("--backlink-assets", action="store_true",
@@ -2610,6 +2622,12 @@ def main() -> int:
             return 1
         print(f"✅ {row['name']} → {row['stage']} (follow-up {row.get('next_followup', '—')})")
         return 0
+    if getattr(args, "forward_list", False):
+        from . import forward_list as _fl
+        return _fl.run_cli(args.forward_format, args.forward_per_section,
+                           send=args.forward_send,
+                           save_files=not args.forward_no_save)
+
     if getattr(args, "backlink", False) or getattr(args, "backlink_notify", False):
         from . import backlink_engine as _bl
 

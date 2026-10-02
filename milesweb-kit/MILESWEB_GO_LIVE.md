@@ -6,7 +6,7 @@ Anni zips `milesweb-kit/` folder lo unnayi (`python3 tools/build_milesweb_kit.py
 
 | # | Zip | Ekkadiki | Enti chestundi |
 |---|---|---|---|
-| 1 | `studentup-theme-1.9.32.zip` | WordPress → **Appearance → Themes → Add New → Upload Theme** | Mee site design + job card + Apply bar + schema + ads slots (theme activate ayinappude categories/menus/policy pages auto-create) |
+| 1 | `studentup-theme-1.9.33.zip` | WordPress → **Appearance → Themes → Add New → Upload Theme** | Mee site design + job card + Apply bar + schema + ads slots (theme activate ayinappude categories/menus/policy pages auto-create) |
 | 2 | `studentup-seo-bridge-1.1.0.zip` | WordPress → **Plugins → Add New → Upload Plugin** | Rank Math fields ni REST tho verify chese bridge (theme lo already undi — veru theme vadithe matrame kavali) |
 | 3 | `studentup-static-site.zip` | cPanel → **File Manager → `public_html/`** | Static site (23 files · PWA + ads.txt + sitemap tho) — WordPress path vadakapothe matrame |
 | 4 | `studentup-bot-cron.zip` | cPanel → **File Manager → `~/bot/`** | Auto-blogger bot (cron: research → draft → Telegram approval → publish; guardian + growth loops) |
@@ -20,7 +20,7 @@ Anni zips `milesweb-kit/` folder lo unnayi (`python3 tools/build_milesweb_kit.py
 ## 0) Modata verify (30 seconds) — zip sha256
 
 ```bash
-sha256sum studentup-theme-1.9.32.zip      # leda: sha256sum -c SHA256SUMS.txt
+sha256sum studentup-theme-1.9.33.zip      # leda: sha256sum -c SHA256SUMS.txt
 ```
 `milesweb-kit/SHA256SUMS.txt` lo unna value tho match avvali. Theme zip build **fully
 reproducible** (POT date kuda fixed) — so ee sha256 prathi machine lo same.
@@ -34,7 +34,7 @@ reproducible** (POT date kuda fixed) — so ee sha256 prathi machine lo same.
 3. `https://studentup.in/wp-admin` login → **Users → Profile → Application Passwords**
    → name "bot" → **Add New** → copy chesi `.env` lo `WP_APP_PASSWORD=` ki pettandi
    (idi password kaadu — separate app password, eppudaina revoke cheyyachu).
-4. **Appearance → Themes → Add New → Upload Theme** → `studentup-theme-1.9.32.zip`
+4. **Appearance → Themes → Add New → Upload Theme** → `studentup-theme-1.9.33.zip`
    → **Install Now** → **Activate**.
    Activate ayina ventane theme **one-click setup** run avutundi:
    categories (TS/AP/Central/Private/Software/Walk-in/…), policy pages
@@ -87,6 +87,8 @@ mkdir -p log
 45 8 * * 1     cd /home/<user>/bot && /home/<user>/bot/.venv/bin/python run.py --revenue-loop private/adsense-pages.csv --revenue-notify >> log/revenue.log 2>&1
 0 9 * * 1      cd /home/<user>/bot && /home/<user>/bot/.venv/bin/python run.py --calendar --calendar-apply --calendar-notify >> log/calendar.log 2>&1
 30 9 * * 1     cd /home/<user>/bot && /home/<user>/bot/.venv/bin/python run.py --backlink --backlink-notify >> log/backlink.log 2>&1
+# v183 daily forward list (WhatsApp):
+35 8 * * *     cd /home/<user>/bot && /home/<user>/bot/.venv/bin/python run.py --forward-list >> log/forward.log 2>&1
 ```
    (MilesWeb lo **unlimited cron jobs** unnayi; shared hosting lo daemon run avvadu —
    anduke bot antha cron-only ga design ayyindi.)
@@ -189,6 +191,26 @@ strategy input (ad code ni touch cheyyadu) · backlink = manual outreach
 
 ---
 
+## 3d) v183 — Daily forward list (WhatsApp groups ki) 📲
+
+Idi mee **#1 free traffic lever**: roju oka ready list → meeru WhatsApp groups /
+status ki forward cheyyadam. Roju 08:35 ki cron tho build avutundi:
+
+```bash
+cd ~/bot
+.venv/bin/python run.py --forward-list                  # print + save
+.venv/bin/python run.py --forward-list --forward-send   # optional: Telegram/WhatsApp ki kuda
+```
+
+- Files: `~/bot/output/forward-list-YYYY-MM-DD.txt` + `~/bot/output/forward-list.txt`
+  (cPanel File Manager → bot/output → Download → copy → groups lo paste).
+- Sections: TS · AP · Central · Walk-in · **Outsourcing** · Job Melas · Software ·
+  Private · Scholarships · Results · Hall Tickets · Current Affairs + 🆕 *IVVALTI* block.
+- **Plain text** (WhatsApp HTML render cheyyadu) · expired posts ledu · links mee site vi.
+- Site board kuda same sections (`inc/opportunities.php` v1.9.33 — outsourcing section kotha).
+
+v183 flags: `--forward-list` · `--forward-format` · `--forward-per-section` · `--forward-send` · `--forward-no-save`
+
 ## 4) Notification / verification commands (server lo)
 
 ```bash
@@ -206,7 +228,7 @@ python run.py --calendar        # v182: 90-day editorial calendar (plan + files)
 python run.py --revenue-loop adsense-pages.csv   # v182: ₹ strategy (RPM/leaks)
 python run.py --backlink        # v182: authority/backlink plan (white-hat)
 ```
-CI/local lo anni suites: `python run.py --test-all` (**130/130**) ·
+CI/local lo anni suites: `python run.py --test-all` (**131/131**) ·
 jsdom runtime: `node tests/runtime/jsdom_runtime_test.js` (**177/177**) ·
 PHP lint: `node tools/php_lint.js` (**86/86**) ·
 CWV/a11y static audit: `python3 tools/cwv_audit.py` (10 pages · 0/0).
@@ -217,7 +239,7 @@ CWV/a11y static audit: `python3 tools/cwv_audit.py` (10 pages · 0/0).
 
 | Meeru adigindi | Ekkada implement ayindi | Proof / command |
 |---|---|---|
-| 🌐 **Advanced UI + frontend** | `wordpress-theme/studentup/` (113 files, v1.9.32): hero · job cards · quiz ring · bottom nav · dark mode · skeleton · critical CSS · minified assets | theme audit 0/0 · jsdom 177/177 · php-lint 86/86 |
+| 🌐 **Advanced UI + frontend** | `wordpress-theme/studentup/` (113 files, v1.9.33): hero · job cards · quiz ring · bottom nav · dark mode · skeleton · critical CSS · minified assets | theme audit 0/0 · jsdom 177/177 · php-lint 86/86 |
 | 💻 **Laptop lo neat** | responsive grid + 51 `@media` rules · desktop mega menu · keyboard nav (`studentup-cmdk.js`) · wide layouts | `python3 tools/cwv_audit.py` (10 pages) · jsdom |
 | 📱 **Phone lo neat** | mobile bottom nav · tap targets · `viewport-fit=cover` · iOS zoom fix · sticky Apply bar | jsdom 177/177 · cwv_audit |
 | ⬇️ **App download** | `inc/pwa.php` + `manifest.webmanifest` + `sw.js` + install prompt banner (§2b) | theme option PWA=ON |
@@ -235,7 +257,7 @@ CWV/a11y static audit: `python3 tools/cwv_audit.py` (10 pages · 0/0).
 **Code + repo ready (verified):** theme zip (**113 files** · 1016 KB · sha256 reproducible) ·
 SEO bridge · static site (23 files) · cron bot (303 files) · guardian **14/15 OK**
 (1 owner-pending) · readiness **100/100** · `--deploy-check` **0 fail** ·
-php-lint **86/86** · `--test-all` **130/130** · code/parity/theme audit **0/0**.
+php-lint **86/86** · `--test-all` **131/131** · code/parity/theme audit **0/0**.
 
 **Mee accounts lo matrame jarugutundi (code valla kaadu):**
 - [ ] Domain `studentup.in` + hosting + SSL

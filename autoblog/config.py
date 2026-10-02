@@ -568,6 +568,9 @@ STATE_PATH = Path(_get("STATE_PATH", str(BASE_DIR / "state.db")))
 LOG_DIR = Path(_get("LOG_DIR", str(BASE_DIR / "log")))
 OUTPUT_DIR = Path(_get("OUTPUT_DIR", str(BASE_DIR / "output")))
 
+# v183: daily WhatsApp-forward list (plain text) — output/forward-list.txt
+FORWARD_LIST_PATH = Path(_get("FORWARD_LIST_PATH", str(OUTPUT_DIR / "forward-list.txt")))
+
 # --- v181: growth loops (reader demand · rank trend · sponsor pipeline) ---
 # 1) On-site search demand → content gap queue (theme logs terms; bot reads)
 SEARCH_DEMAND_QUEUE = Path(_get("SEARCH_DEMAND_QUEUE",
