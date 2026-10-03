@@ -1339,3 +1339,26 @@ body.dark .su-hook{background:linear-gradient(135deg,#131f38,#171a37 55%,#201a2e
 body.dark .su-hook strong{color:#c7b6ff}
 @media(max-width:600px){.su-hook{padding:13px 13px 13px 15px;font-size:15px}}
 @media print{.su-hook{background:none;border:0;border-left:3px solid #000;padding:0 0 0 10px}}
+
+/* Quick Qualification & Urgency Filter Row + WhatsApp Card Share */
+.su-card-wa{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:999px;background:#e7f9ee;color:#0d7a3e;font-size:11px;font-weight:700;text-decoration:none;border:1px solid #bbf0cb;margin-left:auto;transition:all .15s ease}
+.su-card-wa:hover{background:#25d366;color:#fff;border-color:#25d366}
+body.dark .su-card-wa{background:rgba(37,211,102,.12);color:#4ade80;border-color:rgba(37,211,102,.25)}
+body.dark .su-card-wa:hover{background:#25d366;color:#fff}
+.su-qual-bar{display:flex;align-items:center;gap:10px;margin:0 0 16px;padding:8px 12px;background:var(--soft,#f8fafc);border:1px solid var(--line-2,#e2e8f0);border-radius:12px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.su-qual-bar::-webkit-scrollbar{display:none}
+.su-qual-label{font-size:11.5px;font-weight:800;color:var(--muted,#64748b);white-space:nowrap;display:inline-flex;align-items:center;gap:4px;letter-spacing:.02em;flex-shrink:0}
+.su-qual-pills{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.su-qp{appearance:none;border:1px solid var(--line,#cbd5e1);background:#fff;color:var(--ink,#1e293b);font-size:12px;font-weight:700;padding:5px 12px;border-radius:999px;cursor:pointer;white-space:nowrap;transition:all .16s ease;line-height:1.4;min-height:30px;display:inline-flex;align-items:center}
+.su-qp:hover{border-color:var(--blue,#2563eb);color:var(--blue,#2563eb);transform:translateY(-1px)}
+.su-qp.active{background:var(--navy,#0b2447);border-color:var(--navy,#0b2447);color:#fff;box-shadow:0 4px 12px rgba(11,36,71,.20)}
+.su-qp--urgent{border-color:#fca5a5;color:#dc2626;background:#fef2f2}
+.su-qp--urgent:hover{border-color:#ef4444;color:#b91c1c;background:#fee2e2}
+.su-qp--urgent.active{background:#dc2626;border-color:#dc2626;color:#fff;box-shadow:0 4px 12px rgba(220,38,38,.28)}
+body.dark .su-qual-bar{background:#14243c;border-color:#1e3355}
+body.dark .su-qp{background:#1a2f4c;border-color:#2a4369;color:#cbd5e1}
+body.dark .su-qp:hover{border-color:#60a5fa;color:#93c5fd}
+body.dark .su-qp.active{background:var(--blue,#2563eb);border-color:var(--blue,#2563eb);color:#fff}
+body.dark .su-qp--urgent{background:rgba(220,38,38,.14);border-color:#7f1d1d;color:#fca5a5}
+body.dark .su-qp--urgent.active{background:#ef4444;border-color:#ef4444;color:#fff}
+

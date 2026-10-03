@@ -454,7 +454,7 @@ msgid "Hide social icons"
 msgstr ""
 
 #: inc/megamenu.php:351
-#: inc/template.php:387
+#: inc/template.php:394
 msgid "Home"
 msgstr ""
 
