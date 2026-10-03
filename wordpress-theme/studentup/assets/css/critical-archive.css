@@ -464,7 +464,7 @@ body.dark .logo .brand{ color:#fff }
 .menubtn{ display:none; width:var(--tap); height:var(--tap); border-radius:12px; border:1px solid var(--line-2); background:var(--card); color:var(--navy); cursor:pointer }
 @media(max-width:899px){ .menubtn{ display:grid; place-items:center }}
 .su-lticker .tmove{ animation:slide 24s linear infinite }
-.su-lticker .tmove a{ font-size:13.5px; letter-spacing:.002em; font-weight:650 }
+.su-lticker .tmove a{ font-size:13.5px; letter-spacing:.002em; font-weight:650; color:#f8fafc; text-decoration:none }
 .su-hact{ flex:0 0 auto; min-height:44px; display:inline-flex; align-items:center; gap:6px;
   padding:0 13px; border-radius:999px; font-size:12.5px; font-weight:750;
   background:#fff; border:1px solid var(--line-2); color:var(--ink-2); transition:all .16s ease }
@@ -687,13 +687,15 @@ body.dark .menubtn{
 .header.su-head-small .headrow{height:56px}
 .header.su-head-small .logo .brand{font-size:17.5px}
 :root{ --tap-lg:48px; --su-top:70px }
-.tickerwrap{ position:relative; min-height:44px; display:flex; align-items:center }
-.tickerwrap .trow{ gap:10px; min-height:44px; padding:4px 0 }
+.tickerwrap{ position:relative; min-height:44px; width:100%; display:block }
+.tickerwrap .trow{ gap:12px; min-height:44px; padding:3px 0; width:100%; display:flex; align-items:center; box-sizing:border-box }
+.tickerwrap .tlabel{ flex-shrink:0 }
 .tickerwrap .tclip{
+  flex:1 1 0%; min-width:0; width:100%; position:relative;
   min-height:40px; height:40px; display:flex; align-items:center; overflow:hidden;
   -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 26px,#000 calc(100% - 26px),transparent 100%);
   mask-image:linear-gradient(90deg,transparent 0,#000 26px,#000 calc(100% - 26px),transparent 100%) }
-.tickerwrap .tmove{ height:44px; line-height:44px; will-change:transform; animation-duration:24s }
+.tickerwrap .tmove{ position:absolute; top:0; left:0; height:44px; line-height:44px; will-change:transform; animation:slide 24s linear infinite; display:inline-flex; align-items:center; gap:36px; white-space:nowrap }
 .tickerwrap .tmove a{ display:inline-flex; align-items:center; min-height:44px }
 @media (prefers-reduced-motion:reduce){
   .tickerwrap .tclip{ overflow-x:auto; scrollbar-width:none; -webkit-overflow-scrolling:touch }

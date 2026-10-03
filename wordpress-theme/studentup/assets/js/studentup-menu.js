@@ -319,11 +319,76 @@
     });
   }
 
+  /* ---------------------------------------------------------- ticker controls */
+  function wireTicker() {
+    var tmove = document.querySelector(".tickerwrap .tmove");
+    var tToggle = document.getElementById("su-t-toggle");
+    var tPrev = document.getElementById("su-t-prev");
+    var tNext = document.getElementById("su-t-next");
+    if (!tmove) return;
+
+    var tPaused = false;
+    var tickerTimer = null;
+
+    function getTransformX(el) {
+      var st = window.getComputedStyle(el);
+      var tr = st.transform || st.webkitTransform;
+      if (!tr || tr === "none") return 0;
+      var values = tr.split("(")[1].split(")")[0].split(",");
+      return parseFloat(values[4]) || 0;
+    }
+
+    function nudgeTicker(direction) {
+      var curX = getTransformX(tmove);
+      var step = 180;
+      var newX = curX + (direction * step);
+      var half = tmove.scrollWidth / 2;
+      if (newX > 0) newX = -half + step;
+      if (newX < -half) newX = 0;
+
+      tmove.style.animation = "none";
+      tmove.style.transform = "translateX(" + newX + "px)";
+
+      clearTimeout(tickerTimer);
+      tickerTimer = setTimeout(function () {
+        if (!tPaused) {
+          tmove.style.animation = "";
+          tmove.style.transform = "";
+        }
+      }, 2800);
+    }
+
+    if (tToggle) {
+      tToggle.addEventListener("click", function (e) {
+        e.preventDefault();
+        tPaused = !tPaused;
+        tmove.style.animationPlayState = tPaused ? "paused" : "running";
+        tToggle.textContent = tPaused ? "▶" : "⏸";
+        tToggle.setAttribute("aria-label", tPaused ? "Resume ticker" : "Pause ticker");
+      });
+    }
+
+    if (tPrev) {
+      tPrev.addEventListener("click", function (e) {
+        e.preventDefault();
+        nudgeTicker(1);
+      });
+    }
+
+    if (tNext) {
+      tNext.addEventListener("click", function (e) {
+        e.preventDefault();
+        nudgeTicker(-1);
+      });
+    }
+  }
+
   function boot() {
     wireDesktop();
     wireMobile();
     wireSticky();
     wireSocialRail();
+    wireTicker();
   }
 
   if (document.readyState !== "loading") boot();

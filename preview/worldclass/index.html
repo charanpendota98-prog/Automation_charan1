@@ -190,25 +190,10 @@
       <a class="su-hact" href="#jobs"><svg class="su-uicon su-uicon-ticket" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-ticket"/></svg> హాల్ టికెట్‌లు</a>
       <a class="su-hact" href="#jobs"><svg class="su-uicon su-uicon-shield" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-shield"/></svg> పోలీస్ ఉద్యోగాలు</a>
     </div>
-
-    <ul class="su-hero-stats">
-      <li><b>1,284</b><span>మొత్తం అప్‌డేట్‌లు</span></li>
-      <li><b>42</b><span>24 గంటల్లో కొత్తవి</span></li>
-      <li><b>9,640</b><span>ఈరోజు చదివిన విద్యార్థులు</span></li>
-    </ul>
   </div>
 </section>
 
 <div class="wrap">
-
-  <!-- ---------- trust signals (E-E-A-T) ---------- -->
-  <ul class="su-trust" aria-label="Why students trust StudentUp">
-    <li><span class="su-ok" aria-hidden="true"><svg class="su-uicon su-uicon-check" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-check"/></svg></span> <b>Official notifications</b> only</li>
-    <li><span aria-hidden="true"><svg class="su-uicon su-uicon-refresh" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-refresh"/></svg></span> Updated <b>today</b></li>
-    <li><span aria-hidden="true"><svg class="su-uicon su-uicon-doc" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-doc"/></svg></span> Source link <b>every post</b></li>
-    <li><span aria-hidden="true"><svg class="su-uicon su-uicon-tag" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-tag"/></svg></span> <b>100% free</b> — no signup</li>
-    <li><span aria-hidden="true"><svg class="su-uicon su-uicon-pin" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-pin"/></svg></span> TS · AP · Central</li>
-  </ul>
 
   <!-- ================== LATEST JOBS SLIDING TRACK ================== -->
   <section class="su-slider-sec" aria-label="Latest Jobs Sliding Track">
@@ -968,30 +953,64 @@
     }
   });
 
-  /* Ticker interactive controls */
+  /* Ticker interactive controls — smooth continuous marquee + pause/resume + step */
   var tmove = document.querySelector('.tickerwrap .tmove');
   var tToggle = document.getElementById('su-t-toggle');
   var tPrev = document.getElementById('su-t-prev');
   var tNext = document.getElementById('su-t-next');
   var tPaused = false;
-  if(tToggle && tmove){
-    tToggle.addEventListener('click', function(){
+  var tickerTimer = null;
+
+  function getTransformX(el) {
+    var st = window.getComputedStyle(el);
+    var tr = st.transform || st.webkitTransform;
+    if (!tr || tr === 'none') return 0;
+    var values = tr.split('(')[1].split(')')[0].split(',');
+    return parseFloat(values[4]) || 0;
+  }
+
+  function nudgeTicker(direction) {
+    if (!tmove) return;
+    var curX = getTransformX(tmove);
+    var step = 180;
+    var newX = curX + (direction * step);
+    var half = tmove.scrollWidth / 2;
+    if (newX > 0) newX = -half + step;
+    if (newX < -half) newX = 0;
+
+    tmove.style.animation = 'none';
+    tmove.style.transform = 'translateX(' + newX + 'px)';
+
+    clearTimeout(tickerTimer);
+    tickerTimer = setTimeout(function() {
+      if (!tPaused) {
+        tmove.style.animation = '';
+        tmove.style.transform = '';
+      }
+    }, 2800);
+  }
+
+  if (tToggle && tmove) {
+    tToggle.addEventListener('click', function(e) {
+      e.preventDefault();
       tPaused = !tPaused;
       tmove.style.animationPlayState = tPaused ? 'paused' : 'running';
       tToggle.textContent = tPaused ? '▶' : '⏸';
       tToggle.setAttribute('aria-label', tPaused ? 'Resume ticker' : 'Pause ticker');
     });
   }
-  if(tPrev && tmove){
-    tPrev.addEventListener('click', function(){
-      var clip = document.querySelector('.tickerwrap .tclip');
-      if(clip) clip.scrollLeft -= 140;
+
+  if (tPrev && tmove) {
+    tPrev.addEventListener('click', function(e) {
+      e.preventDefault();
+      nudgeTicker(1);
     });
   }
-  if(tNext && tmove){
-    tNext.addEventListener('click', function(){
-      var clip = document.querySelector('.tickerwrap .tclip');
-      if(clip) clip.scrollLeft += 140;
+
+  if (tNext && tmove) {
+    tNext.addEventListener('click', function(e) {
+      e.preventDefault();
+      nudgeTicker(-1);
     });
   }
 

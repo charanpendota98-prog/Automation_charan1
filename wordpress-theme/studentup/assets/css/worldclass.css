@@ -48,12 +48,14 @@ body.dark .logo .brand{ color:#fff }
 @media(max-width:899px){ .menubtn{ display:grid; place-items:center } }
 
 /* --------------------------------------------- 4. ticker (vibrant & smooth) */
-.su-lticker .trow{ min-height:42px }
+.su-lticker{ background:linear-gradient(90deg,#0a2540 0%,#0f3b75 50%,#1a56a6 100%); width:100%; min-height:44px }
+.su-lticker .trow{ min-height:44px; width:100%; display:flex; align-items:center; gap:12px }
 .su-lticker .tmove{ animation:slide 24s linear infinite }
-.su-lticker .tmove a{ font-size:13.5px; letter-spacing:.002em; font-weight:650 }
-.su-ticker-ctrls{ display:flex; align-items:center; gap:4px; flex-shrink:0 }
-.su-tbtn{ width:26px; height:26px; border-radius:7px; border:1px solid rgba(255,255,255,.2); background:rgba(255,255,255,.1); color:#fff; font-size:12px; font-weight:800; cursor:pointer; display:grid; place-items:center; padding:0; line-height:1 }
-.su-tbtn:hover{ background:rgba(255,255,255,.25) }
+.su-lticker .tmove a{ font-size:13.5px; letter-spacing:.002em; font-weight:650; color:#f8fafc; text-decoration:none }
+.su-lticker .tmove a:hover{ color:#93c5fd; text-decoration:underline }
+.su-ticker-ctrls{ display:flex; align-items:center; gap:5px; flex-shrink:0 }
+.su-tbtn{ width:28px; height:28px; border-radius:8px; border:1px solid rgba(255,255,255,.25); background:rgba(255,255,255,.12); color:#fff; font-size:13px; font-weight:800; cursor:pointer; display:grid; place-items:center; padding:0; line-height:1; transition:all .15s ease }
+.su-tbtn:hover{ background:rgba(255,255,255,.28); border-color:rgba(255,255,255,.45) }
 
 /* ------------------------------------------------------ 5. hero (compact & advanced) */
 .su-hero{ padding:12px 0 8px }
@@ -1134,14 +1136,16 @@ body.dark .mgroup a{ border-top-color:var(--line); color:var(--ink-2) }
    Idi worldclass layer (last load) — style.css ni override chestundi. */
 
 /* --- live "Latest Jobs" ticker: Telugu diacritic safe · fade edges · 44px taps · pause · reduced-motion --- */
-.tickerwrap{ position:relative; min-height:44px; display:flex; align-items:center }
-.tickerwrap .trow{ gap:10px; min-height:44px; padding:4px 0 }
+.tickerwrap{ position:relative; min-height:44px; width:100%; display:block }
+.tickerwrap .trow{ gap:12px; min-height:44px; padding:3px 0; width:100%; display:flex; align-items:center; box-sizing:border-box }
+.tickerwrap .tlabel{ flex-shrink:0 }
 /* clip edge hard ga kanipinchakunda cheyyi (chinna gradient fade) + 40px safe height for Telugu loops */
 .tickerwrap .tclip{
+  flex:1 1 0%; min-width:0; width:100%; position:relative;
   min-height:40px; height:40px; display:flex; align-items:center; overflow:hidden;
   -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 26px,#000 calc(100% - 26px),transparent 100%);
   mask-image:linear-gradient(90deg,transparent 0,#000 26px,#000 calc(100% - 26px),transparent 100%) }
-.tickerwrap .tmove{ height:44px; line-height:44px; will-change:transform; animation-duration:24s }
+.tickerwrap .tmove{ position:absolute; top:0; left:0; height:44px; line-height:44px; will-change:transform; animation:slide 24s linear infinite; display:inline-flex; align-items:center; gap:36px; white-space:nowrap }
 .tickerwrap .tmove a{ display:inline-flex; align-items:center; min-height:44px }
 /* touch/hover lo aapithe chadavadam easy — phone lo kuda pani chestundi */
 .tickerwrap .tmove:hover,.tickerwrap .tmove:focus-within,.tickerwrap .tmove:active{ animation-play-state:paused }
