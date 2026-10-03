@@ -683,6 +683,9 @@ Theme ni "world best" standards tho **repeatable ga audit** cheyyadaniki
 python3 tools/theme_audit_deep.py     # pass 1-4 · ✅ 31 pass · 0 warn · 0 fail
 node tools/php_lint.js                # 97/97
 python3 tools/build_offline_preview.py # 20-tab single-file preview (server-free)
+python run.py --verify-deploy          # v197: zip upload tarvata LIVE proof (theme · menu · quiz · poll · /daily-quiz/)
+python run.py --verify-deploy --verify-url https://studentup.in --verify-notify
+# click-by-click deploy steps: DEPLOY_v197.md
 python3 tools/build_sprite.py          # inline icon sprite (theme = single source)
 python3 tools/cwv_audit.py            # CLS/a11y static (10 pages)
 ```
@@ -879,9 +882,10 @@ bot tho draft chesi post chesthu vundali anni perfectga advanced menu build chey
 | Daily quiz | `inc/quiz.php` rebuilt: 25-question sourced bank, server-rendered questions (works with JavaScript off — form POST + nonce), Quiz JSON-LD, explained answers with source, streak + best + native share via `assets/js/studentup-engage.js`, dedicated `/daily-quiz/` page (`page-quiz.php`, created by *Run setup now*). The v123 bug (function never called → quiz missing on the live theme) is closed and gated by a test. |
 | Reader polls | `inc/polls.php` — daily poll (7-question bank + bot/owner override), one vote per device (one-way hashed voter, raw IP never stored), 20-second rate limit, counts in `wp_options` with autoload OFF, REST route `studentup/v1/poll`, and a plain form POST fallback so voting works without JavaScript. |
 | Daily bot | `autoblog/publish_lane.py` — evening auto-publish that only touches drafts clearing **every** gate (official source URL meta · 700+ words · live Rank Math score ≥ 80 · fresh · no placeholder text) and verifies the publish readback. `autoblog/engage_push.py` pushes the daily quiz post and the poll question to the theme (idempotent by poll id). CLI: `--auto-publish`, `--auto-publish-dry`, `--daily-engage`; `AUTO_PUBLISH_DAILY=1` adds the publish step to `--daily`. |
+| Deploy proof | `python run.py --verify-deploy` checks the **live** site after the zip upload: theme version 1.9.38+, mega menu markup, menu/engage JS, quiz + poll on the home, `/daily-quiz/`, served CSS classes, icon sprite, sitemap entry and the poll REST route. Every failure prints the exact next step (upload zip / Run setup now / purge cache). |
 | Preview | Mega nav rendered by the same builder for every preview page, real quiz + poll widgets on the home and on a new English `/pages/daily-quiz.html`, and `tools/build_sprite.py` generates the inline icon sprite from the theme's own icon set (no more blank icon boxes). The offline single-file bundle now has 20 tabs and no dead links. |
 
-**Proof:** `tests/v197_test.py` (9 gates) · **142/142 suites** · php-lint **97/97** · parity PIN-TO-PIN · theme audit 0/0 · deep audit 31/31 · cwv 0/0 · visual 100/100.
+**Proof:** `tests/v197_test.py` (10 gates) · **142/142 suites** · php-lint **97/97** · parity PIN-TO-PIN · theme audit 0/0 · deep audit 31/31 · cwv 0/0 · visual 100/100.
 
 ### v195 — A) PER-TEMPLATE CRITICAL CSS · B) HUB PAGES · C) AUTHOR E-E-A-T 🚀
 

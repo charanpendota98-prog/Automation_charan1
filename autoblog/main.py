@@ -2152,6 +2152,13 @@ def main() -> int:
     parser.add_argument("--live-audit", action="store_true",
                         help="v186: live site ni 16 checks tho verify (robots · sitemap · "
                              "schema · PWA · security headers · sample posts · 404)")
+    parser.add_argument("--verify-deploy", action="store_true",
+                        help="v197: zip upload tarvata live proof — theme version · "
+                             "mega menu · quiz · poll · /daily-quiz/ · assets")
+    parser.add_argument("--verify-url", default="",
+                        help="v197: --verify-deploy ki URL (default .env WP_SITE)")
+    parser.add_argument("--verify-notify", action="store_true",
+                        help="v197: deploy verify summary ni Telegram ki pampu")
     parser.add_argument("--live-url", default="",
                         help="v186: audit URL (default .env WP_SITE)")
     parser.add_argument("--live-posts", type=int, default=0,
@@ -2764,6 +2771,11 @@ def main() -> int:
         from . import link_intake as _li
         return _li.run_cli(args.links, args.links_file, args.links_limit,
                            dry_run=args.links_dry_run, notify=args.links_notify)
+
+    if getattr(args, "verify_deploy", False):
+        from . import deploy_verify as _dv
+        return _dv.run_cli(getattr(args, "verify_url", ""),
+                           notify=getattr(args, "verify_notify", False))
 
     if getattr(args, "live_audit", False):
         from . import live_audit as _la

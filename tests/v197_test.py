@@ -24,6 +24,7 @@ Ee suite aa naalugu ni permanent gate ga marchindi:
   C6  daily bot — auto-publish lane gates (source + words + Rank Math + fresh
                   + hygiene) + config knobs + CLI flags + daily flow steps.
   C7  daily engage — quiz + poll push module, weekly poll bank, idempotent.
+  C9  deploy verify
   C8  preview assets — daily-quiz page exists (English, SPONSORED, no Telugu),
                   sprite generated from theme icons (no blank boxes), offline
                   bundle has the new tab + no dead .html links.
@@ -309,6 +310,97 @@ def test_c8_preview_artifacts() -> None:
     assert sm.count("<loc>") == 19, f"sitemap locs {sm.count('<loc>')} (19 kaavali)"
     assert "daily-quiz.html" in sm, "sitemap lo quiz page ledu"
     print("  C8. preview: quiz page · sprite complete · 20-tab offline bundle · sitemap 19 ✔")
+
+
+# ------------------------------------------------------- C9 deploy verify
+def test_c9_deploy_verify() -> None:
+    """`run.py --verify-deploy` — live proof + exact next step (offline tests)."""
+    import sys
+    sys.path.insert(0, str(ROOT))
+    from autoblog import deploy_verify as dv
+
+    assert hasattr(dv, "verify") and hasattr(dv, "run_cli"), "verify API ledu"
+    assert dv.THEME_MIN == "1.9.38", "theme min pin ledu"
+
+    GOOD_HOME = """
+      <html><body>
+      <nav class="nav"><ul id="primary-menu" class="menu-primary su-has-mega">
+        <li class="menu-item menu-item-has-children su-mega-li">
+          <a href="/" aria-haspopup="true" aria-expanded="false" aria-controls="su-mega-jobs">Jobs</a>
+          <ul class="sub-menu" id="su-mega-jobs" data-su-mega>
+            <li class="su-mega-feat menu-item"><b>x</b></li></ul></li></ul></nav>
+      <svg class="su-sprite" style="display:none"><symbol id="su-i-bank" viewBox="0 0 24 24"></symbol>
+        <symbol id="su-i-check" viewBox="0 0 24 24"></symbol></svg>
+      <section class="su-quiz" id="daily-quiz">
+        <form data-su-quiz-form><input type="hidden" name="su_quiz_nonce" value="x">
+        <fieldset class="su-q">q</fieldset><p data-su-why>why</p></form></section>
+      <script type="application/ld+json">{"@type": "Quiz"}</script>
+      <section class="su-poll" data-su-poll>
+        <label class="su-poll-opt"></label><label class="su-poll-opt"></label>
+        <label class="su-poll-opt"></label></section>
+      <svg class="su-uicon"><use href="#su-i-bank"/></svg>
+      </body></html>"""
+    CSS = ".su-mega-col{a:1}.su-quiz-card{a:1}.su-poll-opt{a:1}"
+    JS_OK = "aria-expanded su_quiz_streak"
+
+    class Fake:
+        QUIZ_PAGE = ('<html><body><section class="su-quiz" data-su-quiz-form>x</section>'
+                     '<section class="su-poll" data-su-poll>x</section></body></html>')
+
+        def __init__(self, home=GOOD_HOME, version="1.9.38", css=CSS, js=JS_OK,
+                     quiz_missing=False, sitemap="<loc>https://x/daily-quiz/</loc>",
+                     poll_rest='{"question":"q","options":["a"]}', raise_on=None):
+            self.home, self.version, self.css, self.js = home, version, css, js
+            self.quiz_page = None if quiz_missing else self.QUIZ_PAGE
+            self.sitemap, self.poll_rest, self.raise_on = sitemap, poll_rest, raise_on
+
+        def get(self, url):
+            if self.raise_on and self.raise_on in url:
+                raise RuntimeError("boom")
+            if url.endswith("style.css"):
+                return 200, "/*\nTheme Name: StudentUp\nVersion: %s\n*/" % self.version, {}
+            if url.endswith("worldclass.css"):
+                return 200, self.css, {}
+            if url.endswith("studentup-menu.js") or url.endswith("studentup-engage.js"):
+                return 200, self.js, {}
+            if url.endswith("studentup.js"):
+                return 200, "themeBtn.innerHTML = dark ? SUN : MOON;", {}
+            if url.endswith("/daily-quiz/"):
+                if self.quiz_page is None:
+                    return 404, "Not found", {}
+                return 200, self.quiz_page, {}
+            if url.endswith("page-sitemap.xml"):
+                return 200, self.sitemap, {}
+            if url.endswith("/wp-json/studentup/v1/poll"):
+                return 200, self.poll_rest, {}
+            return 200, self.home, {}
+
+    rep = dv.verify("https://studentup.in", fetcher=Fake())
+    assert rep["counts"]["fail"] == 0, [c for c in rep["checks"] if c["status"] == "fail"]
+    assert rep["verdict"] == "LIVE ✔" and rep["score"] == 100, rep["verdict"]
+    assert not rep["next_steps"], rep["next_steps"]
+
+    # zip upload pending → fail + exact instruction
+    r2 = dv.verify("https://studentup.in", fetcher=Fake(version="1.9.36"))
+    v1 = [c for c in r2["checks"] if c["id"] == "V1"][0]
+    assert v1["status"] == "fail" and any("Upload Theme" in s for s in r2["next_steps"]), r2["next_steps"]
+
+    # setup not run → /daily-quiz/ 404 → fail + Run setup now
+    r3 = dv.verify("https://studentup.in", fetcher=Fake(quiz_missing=True))
+    v6 = [c for c in r3["checks"] if c["id"] == "V6"][0]
+    assert v6["status"] == "fail" and any("Run setup now" in s for s in r3["next_steps"]), r3["next_steps"]
+
+    # blank icon guard: sprite missing an icon the page uses
+    r4 = dv.verify("https://studentup.in", fetcher=Fake(
+        home=GOOD_HOME.replace('<use href="#su-i-bank"/>', '<use href="#su-i-wallet"/>')))
+    v8 = [c for c in r4["checks"] if c["id"] == "V8"][0]
+    assert v8["status"] == "fail" and "wallet" in v8["detail"], v8
+
+    # offline / SSL → clean report, no traceback, exit 2
+    r5 = dv.verify("https://studentup.in", fetcher=Fake(raise_on="/"))
+    assert r5["verdict"] == "UNREACHABLE" and r5["theme_min"] == "1.9.38", r5
+    assert dv.report_text(rep).count("✅") >= 10, "report text icons ledu"
+    print("  C9. deploy verify: live proof · zip pending · setup pending · offline-safe ✔")
 
 
 ALL = [v for k, v in sorted(globals().items())
