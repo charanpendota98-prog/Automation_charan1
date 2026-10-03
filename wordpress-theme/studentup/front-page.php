@@ -59,6 +59,14 @@ $su_is_p2 = $su_paged > 1;
 				<a class="usedcard<?php echo esc_attr( $hot ); ?>" href="<?php echo esc_url( get_category_link( $term ) ); ?>">
 					<span class="ui" aria-hidden="true"><?php echo studentup_ui_icon( $m['icon'], 22 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?></span>
 					<div><b><?php echo esc_html( $m['label'] ); ?></b><small><?php echo esc_html( $m['hint'] ); ?></small></div>
+				<?php
+				// v199: nijamaina category count (WP term count — extra query ledu).
+				// Count 0 aithe emi chupinchamu — fake number ledu, stray dash ledu.
+				$su_n = (int) $term->count;
+				if ( $su_n > 0 ) :
+					?>
+					<em class="ucount"><?php echo esc_html( sprintf( /* translators: %s: number of updates. */ __( '%s updates', 'studentup' ), number_format_i18n( $su_n ) ) ); ?></em>
+				<?php endif; ?>
 				</a>
 				<?php endforeach; ?>
 		</div>

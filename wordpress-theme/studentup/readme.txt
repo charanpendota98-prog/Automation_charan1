@@ -2,9 +2,9 @@
 Contributors: studentup
 Requires at least: 6.0
 Tested up to: 6.7
-Stable tag: 1.9.39
+Stable tag: 1.9.40
 Requires PHP: 7.4
-Version: 1.9.39
+Version: 1.9.40
 License: GNU General Public License v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Tags: news, education, blog, custom-logo, custom-menu, featured-images, translation-ready, right-sidebar, block-styles, wide-blocks
@@ -47,6 +47,10 @@ The theme ships a REST bridge (`inc/seo-bridge.php`). Use an account with `manag
 user tho App Password ivvandi (Administrator role).
 
 == Changelog ==
+
+= 1.9.40 =
+* v199 HOME PHONE-FIRST: the live "Latest Jobs" strip now fades at both edges instead of clipping text, pauses when you touch or focus it, and becomes a normal swipeable row when reduced-motion is on. Every link keeps a 44px tap height.
+* v199: "Most searched by students" now shows real per-category counts (from WordPress itself — no fake numbers, no stray dash) and lays out 2-up on phone → 3-up on tablet → 4-up on laptop, with press feedback, a clean trailing chevron and dark-mode/print coverage.
 
 = 1.9.39 =
 * v198 TOOLS ADVANCED: the Tools page is now a phone-first workbench — search box + category chips (Money · Eligibility · Exams · Career · Deadlines), a sticky tab strip with swipe, shareable ?tool= deep links, − / + stepper buttons on every number field (no keyboard needed), Copy / Share / Print / Reset row, and a "How this is calculated" panel with the source line for each tool. Works without JavaScript (all tools stay visible).

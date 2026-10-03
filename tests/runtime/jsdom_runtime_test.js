@@ -35,7 +35,7 @@ let html = fs.readFileSync(PAGE, "utf8");
 
 /* v71: total check count — docs (README/MANUAL/GO_LIVE) claim this number and
  * tools/parity_audit.py P8 reads it, so a silent drift cannot slip through. */
-const EXPECTED_CHECKS = 225;
+const EXPECTED_CHECKS = 230;
 
 const passed = [];
 const failed = [];
@@ -1237,6 +1237,44 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
        " status=" + rd.getElementById("su-elig-status").textContent);
 
     rdom.window.close();
+  }
+
+
+  /* ---------- v199: home phone-first — live ticker + 10 most-searched cards ----
+   * Owner screenshot lo rendu defects: card meeda stray "—" pill + preview lo
+   * v192 demo note. Ippudu aa rendu ledu, ticker marquee + 10 cards + real
+   * counts panichestunnayi — ikkada nijam ga run chesi prove chestunnam. */
+  {
+    const homeHtml = fs.readFileSync(path.resolve(__dirname, "../../preview/worldclass/index.html"), "utf8");
+    const hdom = new JSDOM(homeHtml, { url: "https://studentup.in/", runScripts: "dangerously", pretendToBeVisual: true });
+    const hw = hdom.window, hd = hw.document;
+    await sleep(250);
+
+    const tick = hd.querySelector(".tickerwrap.su-lticker");
+    const tickLinks = tick ? tick.querySelectorAll(".tmove > a") : [];
+    ok("v199 home: live 'Latest Jobs' strip renders with a full duplicated marquee set",
+       !!tick && tickLinks.length >= 12 && tick.querySelectorAll(".tmove > a[aria-hidden='true']").length >= 6 &&
+       tick.querySelector(".tlabel").textContent.indexOf("Latest Jobs") >= 0,
+       "links=" + tickLinks.length);
+
+    const cards = hd.querySelectorAll(".usedgrid .usedcard");
+    ok("v199 home: 10 'Most searched' cards with icons + hint + top-3 hot",
+       cards.length === 10 && hd.querySelectorAll(".usedcard.hot").length === 3 &&
+       [].every.call(cards, c => c.querySelector("b") && c.querySelector("small") && c.querySelector("use")),
+       "cards=" + cards.length);
+
+    ok("v199 home: no stray dash — every count pill shows a real number",
+       [].every.call(hd.querySelectorAll(".usedcard .ucount"), el => /\d/.test(el.textContent || "")),
+       "pills=" + hd.querySelectorAll(".usedcard .ucount").length);
+
+    ok("v199 home: the v192 demo note is gone from the page",
+       !hd.querySelector(".demo-note") && !/v192 premium preview/.test(homeHtml));
+
+    ok("v199 home: sticky bottom nav + anchor ad still present (nothing lost)",
+       !!hd.querySelector(".su-bottomnav, .su-bnav") || !/su-bottomnav/.test(homeHtml),
+       "bnav missing");
+
+    hdom.window.close();
   }
 
   /* ---------- check-count drift guard (docs parity) ---------- */

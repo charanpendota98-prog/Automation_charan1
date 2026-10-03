@@ -505,7 +505,6 @@ body.dark .su-ws-radar-item a{color:#e8f0ff}
   .su-ws-job-side{justify-items:start;grid-auto-flow:column;grid-auto-columns:max-content;align-items:center}}
 .su-pill .su-uicon{width:12px;height:12px;flex:0 0 auto}
 .su-hot-head h2 .su-uicon{width:18px;height:18px}
-.su-rail-hint .su-uicon{width:13px;height:13px}
 .su-hot-ph .su-uicon{width:22px;height:22px;opacity:.55}
 .su-kf-i .su-uicon{width:16px;height:16px}
 .usedcard .ui .su-uicon{width:22px;height:22px}
@@ -619,34 +618,9 @@ img{ background:var(--soft) }
     display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden }
   .su-adcard{ min-height:150px }}
 @media(min-width:1080px){
-  .su-layout{ display:grid; grid-template-columns:minmax(0,1fr) 316px; gap:26px; align-items:start }
-  .su-rail{ position:sticky; top:84px; display:grid; gap:16px }
-  .su-railed{ padding:14px 16px }}
-.su-railed{ background:var(--card); border:1px solid var(--line); border-radius:var(--r-lg); box-shadow:var(--sh-1) }
-.su-railed h3{ margin:0 0 10px; font-size:15px; color:var(--navy); display:flex; align-items:center; gap:8px }
-.su-railed h3::before{ content:""; width:4px; height:16px; border-radius:99px; background:var(--orange) }
-.su-mini{ list-style:none; margin:0; padding:0; display:grid; gap:9px }
-.su-mini a{ display:flex; gap:9px; align-items:flex-start; font-size:13.5px; font-weight:650; color:var(--ink-2); line-height:1.45 }
-.su-mini i{ font-style:normal; font-weight:900; color:var(--blue); font-size:12px; min-width:16px }
-.su-railad{ min-height:250px; display:grid; place-items:center; text-align:center; font-size:12px;
-  letter-spacing:.06em; text-transform:uppercase; font-weight:800; color:var(--muted);
-  border:1px dashed var(--line-2); border-radius:var(--r-lg); background:linear-gradient(180deg,#fbfdff,#f4f8fe) }
-.su-tools{ margin:26px 0 6px; background:var(--card); border:1px solid var(--line);
-  border-radius:var(--r-xl); box-shadow:var(--sh-1); overflow:hidden }
-.su-tooltabs{ display:flex; gap:8px; overflow-x:auto; padding:12px var(--gut); scrollbar-width:none;
-  border-bottom:1px solid var(--line) }
-.su-tooltabs::-webkit-scrollbar{ display:none }
+  .su-layout{ display:grid; grid-template-columns:minmax(0,1fr) 316px; gap:26px; align-items:start }}
 .su-ttab{ flex:0 0 auto; min-height:44px; padding:0 14px; border-radius:999px; border:1px solid var(--line-2);
   background:#fff; font-size:13px; font-weight:750; color:var(--ink-2); cursor:pointer; display:inline-flex; align-items:center; gap:6px }
-.su-toolpanel{ display:none; padding:16px var(--gut) 20px }
-.su-toolpanel h3{ margin:0 0 6px; font-size:18px; color:var(--navy) }
-.su-toolpanel p{ margin:0 0 12px; font-size:14px; color:var(--muted) }
-.su-fields{ display:grid; grid-template-columns:1fr 1fr; gap:10px; max-width:520px }
-.su-fields label{ font-size:12.5px; font-weight:700; color:var(--ink-2); display:grid; gap:5px }
-.su-fields input,.su-fields select{ min-height:var(--tap); border:1px solid var(--line-2); border-radius:12px;
-  padding:0 12px; font-size:15px; background:#fff; color:var(--ink) }
-.su-tout{ margin-top:12px; padding:12px 14px; border-radius:14px; background:var(--soft);
-  border:1px solid var(--line); font-size:14.5px; font-weight:700; color:var(--navy) }
 .su-quizcard,.su-callout{ border-radius:var(--r-xl); border:1px solid var(--line); box-shadow:var(--sh-1) }
 .su-callout{ background:linear-gradient(135deg,#0b2447,#164b8f); color:#fff; padding:18px var(--gut) }
 .su-callout h3{ color:#fff; margin:0 0 6px; font-size:19px }
@@ -685,7 +659,7 @@ body.dark .header{ background:rgba(13,21,36,.94) }
 body.dark .chip,body.dark .su-tab,body.dark .su-hact,body.dark .iconbtn{ background:#152137; color:var(--ink-2) }
 body.dark .su-hero-search{ background:#131f34 }
 body.dark .su-hero-search input{ color:var(--ink) }
-body.dark .news,body.dark .su-railed,body.dark .su-tools,body.dark .usedcard{ background:var(--card) }
+body.dark .news,body.dark .usedcard{ background:var(--card) }
 body.dark .su-bottomnav{ background:rgba(13,21,36,.96) }
 body.dark .su-anchor{ background:#101a2c }
 @media(prefers-reduced-motion:reduce){
@@ -797,70 +771,50 @@ input,select,textarea{ touch-action:auto }
 .su-trust .su-uicon{ margin-right:5px }
 .lastdate .su-uicon,.su-readmore .su-uicon,.su-am .su-uicon{ margin-right:4px }
 .nav .menu-primary.su-has-mega>li>a{display:inline-flex;align-items:center;gap:7px}
-.nav .su-mega-lb{white-space:nowrap}
 .nav .menu-primary>li .su-uicon{width:16px;height:16px;flex:0 0 auto;opacity:.75}
 .nav .sub-menu[data-su-mega]{
   display:grid;grid-template-columns:repeat(2,minmax(210px,1fr)) 240px;gap:6px 14px;
   min-width:min(760px,92vw);padding:14px 16px 16px;border-radius:18px;box-shadow:var(--sh-2);
 }
-.nav .sub-menu[data-su-mega] .su-mega-col{display:block}
-.nav .su-mega-title{
-  margin:2px 0 7px;padding:0 4px;font-size:11.5px;font-weight:800;letter-spacing:.06em;
-  text-transform:uppercase;color:var(--muted);
-}
-.nav .su-mega-list{list-style:none;margin:0;padding:0;display:grid;gap:2px}
-.nav .su-mega-list>li>a{
-  display:flex!important;gap:10px;align-items:flex-start;padding:8px 10px!important;border-radius:12px;
-  font-weight:700;font-size:14px;border:0!important;
-}
-.nav .su-mega-ic{
-  display:grid;place-items:center;width:30px;height:30px;flex:0 0 auto;border-radius:9px;
-  background:linear-gradient(180deg,#eaf2ff,#dbe8fd);color:var(--blue-ink);
-}
-.nav .su-mega-ic .su-uicon{width:17px;height:17px;opacity:1}
-.nav .su-mega-t{display:block;line-height:1.3;color:var(--navy)}
-.nav .su-mega-t>small{display:block;font-weight:500;font-size:11.5px;color:var(--muted);margin-top:2px}
-.nav .su-mega-feat{
-  grid-column:3;grid-row:1/span 3;border-radius:14px;padding:14px;
-  background:linear-gradient(160deg,#0b2447,#16407a);color:#dbe7f8;
-}
-.nav .su-mega-feat .su-mega-eyebrow{
-  display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;
-  color:#9dc0f0;margin-bottom:6px;
-}
-.nav .su-mega-feat b{display:block;color:#fff;font-size:15px;line-height:1.35}
-.nav .su-mega-feat small{display:block;font-size:12.5px;color:#bcd2ee;margin:6px 0 11px;line-height:1.5}
-.nav .su-mega-cta{
-  display:inline-flex!important;align-items:center;gap:6px;background:#fff!important;color:var(--navy)!important;
-  font-weight:800;font-size:12.5px;padding:9px 13px!important;border-radius:999px;
-}
-.nav .su-mega-cta .su-uicon{width:14px;height:14px}
 .nav .menu-primary>li.su-open>a{color:var(--blue-ink)}
 body.dark .nav .sub-menu[data-su-mega]{background:#101c2e;border-color:#243450}
-body.dark .nav .su-mega-t{color:#e6eefb}
-body.dark .nav .su-mega-ic{background:#16263f;color:#9dc0f0}
-body.dark .nav .su-mega-feat{background:linear-gradient(160deg,#132a4d,#1b3f74)}
-@media(max-width:1180px){ .nav .sub-menu[data-su-mega]{grid-template-columns:repeat(2,minmax(190px,1fr));min-width:min(640px,94vw)} .nav .su-mega-feat{grid-column:1/-1;grid-row:auto}}
+@media(max-width:1180px){ .nav .sub-menu[data-su-mega]{grid-template-columns:repeat(2,minmax(190px,1fr));min-width:min(640px,94vw)}}
 @media(max-width:900px){ .nav .sub-menu[data-su-mega]{display:none}}
 .header.su-head-small .headrow{height:56px}
 .header.su-head-small .logo .brand{font-size:17.5px}
-.mpanel .mgroup>summary .su-uicon{opacity:.85}
-.mpanel .mgroup[open]>summary .su-uicon:last-child{transform:rotate(180deg)}
 :root{ --tap-lg:48px; --su-top:70px }
-.su-tooltabs{ position:sticky; top:var(--su-top); z-index:22;
-  display:flex; gap:8px; overflow-x:auto; padding:10px var(--gut);
-  margin:0; background:var(--card); border-bottom:1px solid var(--line);
-  scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch;
-  scrollbar-width:none }
-.su-tooltabs::-webkit-scrollbar{ display:none }
 .su-ttab{ min-height:var(--tap-lg); padding:0 16px; white-space:nowrap;
   scroll-snap-align:start; touch-action:manipulation }
-.su-tools{ overflow:visible }
-.header.su-head-small ~ main .su-tooltabs{ top:58px }
-.su-toolpanel{ scroll-margin-top:calc(var(--su-top) + var(--tap-lg) + 10px) }
-@media(max-width:620px){
-  .su-fields{ grid-template-columns:1fr; max-width:none }
-  .su-toolpanel{ padding:14px var(--gut) 18px }}
+.tickerwrap{ position:relative }
+.tickerwrap .trow{ gap:10px }
+.tickerwrap .tclip{
+  -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 26px,#000 calc(100% - 26px),transparent 100%);
+  mask-image:linear-gradient(90deg,transparent 0,#000 26px,#000 calc(100% - 26px),transparent 100%) }
+.tickerwrap .tmove{ will-change:transform }
+.tickerwrap .tmove a{ display:inline-flex; align-items:center; min-height:44px }
+@media (prefers-reduced-motion:reduce){
+  .tickerwrap .tclip{ overflow-x:auto; scrollbar-width:none; -webkit-overflow-scrolling:touch }
+  .tickerwrap .tclip::-webkit-scrollbar{ display:none }
+  .tickerwrap .tmove{ animation:none; position:static; display:inline-flex; min-height:38px }}
+.usedgrid{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px }
+@media (min-width:768px){ .usedgrid{ grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px }}
+@media (min-width:1180px){ .usedgrid{ grid-template-columns:repeat(4,minmax(0,1fr)) }}
+.usedcard{ position:relative; min-height:72px; align-items:center; gap:11px; padding-right:38px;
+  -webkit-tap-highlight-color:transparent; touch-action:manipulation; text-decoration:none }
+.usedcard .ui{ width:40px; height:40px; border-radius:12px; flex:0 0 auto; display:grid; place-items:center }
+.usedcard b{ font-size:13.5px }
+.usedcard small{ font-size:11.5px }
+.usedcard>div{ min-width:0 }
+.usedcard .ucount{ position:absolute; top:8px; right:9px; margin:0; padding:2px 8px; border-radius:999px;
+  background:var(--soft); color:var(--ink-2); border:1px solid var(--line);
+  font-size:10.5px; font-weight:800; font-style:normal; line-height:1.5; white-space:nowrap }
+.usedcard .ucount:empty{ display:none }
+.usedcard::after{ content:""; position:absolute; right:16px; top:50%; width:8px; height:8px;
+  border-right:2px solid #94a3b8; border-top:2px solid #94a3b8;
+  transform:translateY(-50%) rotate(45deg); opacity:.5; transition:transform .18s ease, opacity .18s ease }
+@media (max-width:600px){
+  .usedcard{ padding:11px 32px 11px 11px; min-height:66px } .usedcard .ucount{ display:none }}
+body.dark .usedcard .ucount{ background:#0f2038; color:#a9c1e6; border-color:var(--line) }
 @media print{
-  .su-toolpanel{ display:block !important }
-  .su-tools{ border:0; box-shadow:none }}
+  .tickerwrap{ display:none }
+  .usedcard::after,.usedcard .ucount{ display:none }}

@@ -1,5 +1,5 @@
 /* ==========================================================================
-   StudentUp — WorldClass v2  (theme 1.9.39 · v198)
+   StudentUp — WorldClass v2  (theme 1.9.40 · v199)
    Mobile-first design layer. style.css tarvata load avutundi — kotha markup
    avasaram ledu, unna classes ne premium ga upgrade chestundi.
    Rules: 17px Telugu-friendly base · 44px tap targets · safe-area ·
@@ -832,3 +832,58 @@ body.dark .su-tact-copy{ background:#16263f; border-color:#3d6fb5; color:#cfe0f7
 @media(prefers-reduced-motion:reduce){
   .su-tstep-btn,.su-tact{ transition:none }
 }
+
+/* ================================================== 15. v199 HOME PHONE-FIRST
+   Owner: "anni phone lo advanced ga best ga chey" — home lo unna rendu modati
+   blocks (live ticker + Most searched 10 cards) ni phone-first ga polish.
+   Idi worldclass layer (last load) — style.css ni override chestundi. */
+
+/* --- live "Latest Jobs" ticker: fade edges · 44px taps · pause · reduced-motion --- */
+.tickerwrap{ position:relative }
+.tickerwrap .trow{ gap:10px }
+/* clip edge hard ga kanipinchakunda cheyyi (chinna gradient fade) */
+.tickerwrap .tclip{
+  -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 26px,#000 calc(100% - 26px),transparent 100%);
+  mask-image:linear-gradient(90deg,transparent 0,#000 26px,#000 calc(100% - 26px),transparent 100%) }
+.tickerwrap .tmove{ will-change:transform }
+.tickerwrap .tmove a{ display:inline-flex; align-items:center; min-height:44px }
+/* touch/hover lo aapithe chadavadam easy — phone lo kuda pani chestundi */
+.tickerwrap .tmove:hover,.tickerwrap .tmove:focus-within,.tickerwrap .tmove:active{ animation-play-state:paused }
+.tickerwrap a:focus-visible{ outline:2px solid #fff; outline-offset:2px; border-radius:6px }
+@media (prefers-reduced-motion:reduce){
+  .tickerwrap .tclip{ overflow-x:auto; scrollbar-width:none; -webkit-overflow-scrolling:touch }
+  .tickerwrap .tclip::-webkit-scrollbar{ display:none }
+  .tickerwrap .tmove{ animation:none; position:static; display:inline-flex; min-height:38px } }
+
+/* --- Most searched: 2-up phone → 3-up tablet → 4-up laptop, tap-easy --- */
+.usedgrid{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px }
+@media (min-width:768px){ .usedgrid{ grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px } }
+@media (min-width:1180px){ .usedgrid{ grid-template-columns:repeat(4,minmax(0,1fr)) } }
+.usedcard{ position:relative; min-height:72px; align-items:center; gap:11px; padding-right:38px;
+  -webkit-tap-highlight-color:transparent; touch-action:manipulation; text-decoration:none }
+.usedcard .ui{ width:40px; height:40px; border-radius:12px; flex:0 0 auto; display:grid; place-items:center }
+.usedcard b{ font-size:13.5px }
+.usedcard small{ font-size:11.5px }
+.usedcard>div{ min-width:0 }
+/* real count pill — number lekapote asalu kanipinchadu (:empty + JS hide) */
+.usedcard .ucount{ position:absolute; top:8px; right:9px; margin:0; padding:2px 8px; border-radius:999px;
+  background:var(--soft); color:var(--ink-2); border:1px solid var(--line);
+  font-size:10.5px; font-weight:800; font-style:normal; line-height:1.5; white-space:nowrap }
+.usedcard .ucount:empty{ display:none }
+/* trailing chevron — purathana "—" artifact badulu clean arrow */
+.usedcard::after{ content:""; position:absolute; right:16px; top:50%; width:8px; height:8px;
+  border-right:2px solid #94a3b8; border-top:2px solid #94a3b8;
+  transform:translateY(-50%) rotate(45deg); opacity:.5; transition:transform .18s ease, opacity .18s ease }
+.usedcard:focus-visible{ outline:3px solid var(--navy); outline-offset:2px }
+/* hover unnappude hover effect (phone lo sticky-hover bug ledu) */
+@media (hover:hover){
+  .usedcard:hover::after{ transform:translateY(-50%) rotate(45deg) translate(2px,-2px); opacity:.95 } }
+@media (hover:none){
+  .usedcard:active{ transform:scale(.985) }
+  .usedcard:active .ui{ filter:brightness(.96) } }
+@media (max-width:600px){
+  .usedcard{ padding:11px 32px 11px 11px; min-height:66px } .usedcard .ucount{ display:none } }
+body.dark .usedcard .ucount{ background:#0f2038; color:#a9c1e6; border-color:var(--line) }
+@media print{
+  .tickerwrap{ display:none }
+  .usedcard::after,.usedcard .ucount{ display:none } }

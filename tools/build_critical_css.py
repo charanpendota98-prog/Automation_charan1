@@ -124,6 +124,12 @@ UNION_DROPPABLE = (".su-tools", ".su-tooltabs", ".su-toolpanel", ".su-fields",
                    ".su-toolfind", ".su-toolcats", ".su-tcat", ".su-tstep",
                    ".su-tact", ".su-tnext", ".su-tools-top", ".su-tool-how")
 
+# v199: home-only blocks — 10 most-searched cards + count pill front-page lo
+# mattrame render avutayi. Single/archive inline CSS nunchi ee tokens teeyali
+# (cap guard). Ticker (.tlabel/.tclip/.tmove) CORE lo ne untundi — breaking
+# bar ki kuda kavali.
+HOME_ONLY = (".usedcard", ".usedgrid", ".usedwrap", ".usedhead", ".ucount")
+
 
 def _split_rules(css: str):
     """Yield top-level blocks: ('rule', selector, body) | ('at', head, body)."""
@@ -297,8 +303,8 @@ def main() -> int:
     # 2) Per-template files (v195) — phone lo chinnadi + exact first paint.
     for name, extra in TEMPLATES.items():
         base_out = OUT.with_name(f"critical-{name}.css")
-        t_css, t_kept = extract(extra=CORE | extra, drop=UNION_DROPPABLE,
-                                use_exact=False)
+        drop = UNION_DROPPABLE if name == "home" else UNION_DROPPABLE + HOME_ONLY
+        t_css, t_kept = extract(extra=CORE | extra, drop=drop, use_exact=False)
         t_kb = _write(base_out, t_css)
         assert t_kb * 1024 < CAP_FAIL, f"critical-{name}.min.css {t_kb:.1f} KB — cap fail"
         print(f"     · {name:<7} {t_kb:.1f} KB inline ({t_kept} rules) → "

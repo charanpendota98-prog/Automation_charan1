@@ -2,7 +2,7 @@
 # This file is distributed under the GNU GPL v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: StudentUp 1.9.39\n"
+"Project-Id-Version: StudentUp 1.9.40\n"
 "Report-Msgid-Bugs-To: https://studentup.in/\n"
 "POT-Creation-Date: 2026-01-01 00:00+0000\n"
 "MIME-Version: 1.0\n"
@@ -22,6 +22,10 @@ msgstr ""
 
 #: inc/polls.php:430
 msgid "%s readers voted — tap an option to see live results."
+msgstr ""
+
+#: front-page.php:68
+msgid "%s updates"
 msgstr ""
 
 #: inc/engage.php:158
@@ -552,19 +556,19 @@ msgstr ""
 msgid "Latest Jobs"
 msgstr ""
 
-#: front-page.php:106
+#: front-page.php:114
 msgid "Latest opportunities"
 msgstr ""
 
-#: front-page.php:102
+#: front-page.php:110
 msgid "Latest opportunities — page %d"
 msgstr ""
 
-#: front-page.php:83
+#: front-page.php:91
 msgid "Latest student updates"
 msgstr ""
 
-#: front-page.php:79
+#: front-page.php:87
 msgid "Latest student updates — page %d"
 msgstr ""
 

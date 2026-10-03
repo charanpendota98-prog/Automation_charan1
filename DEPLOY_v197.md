@@ -1,6 +1,6 @@
 # DEPLOY v197 — 10 nimushalu (click-by-click)
 
-> Theme **1.9.39** · zip: `wordpress-theme/studentup-theme.zip` (135 files · 1172 KB) — v198 tools workbench + reader utilities (compare · reminder · print)
+> Theme **1.9.39** · zip: `wordpress-theme/studentup-theme.zip` (135 files · 1173 KB) — v198 tools workbench + reader utilities (compare · reminder · print)
 > Direct download (GitHub raw):
 > `https://raw.githubusercontent.com/charanpendota98-prog/Automation_charan1/arena/01a10001-automation-charan1/wordpress-theme/studentup-theme.zip`
 

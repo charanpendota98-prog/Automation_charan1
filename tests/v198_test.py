@@ -232,10 +232,10 @@ def test_c7_reader_utils_restored() -> None:
 def test_c8_setup_all_and_kit() -> None:
     """v198: okka setup file (theme + bot) + kit fresh (puratana zip footgun ledu)."""
     setup = read(ROOT / "SETUP_ALL.md")
-    for needle in ("studentup-theme-1.9.39.zip", "studentup-bot-cron.zip",
+    for needle in ("studentup-theme-1.9.40.zip", "studentup-bot-cron.zip",
                    "Run setup now", "--verify-deploy", "WP_APP_PASSWORD",
                    "GEMINI_API_KEYS", "AUTO_PUBLISH_DAILY", "0 7 * * *",
-                   "30 6 * * *", "sha256", "rollback", "1.9.39"):
+                   "30 6 * * *", "sha256", "rollback", "1.9.40"):
         assert needle in setup, f"SETUP_ALL.md lo ledu: {needle}"
     assert "--check-wp" in setup and "--daily --daily-no-send" in setup, "verify steps ledu"
     assert "wp-cli cron event run" in setup, "WP-cron warning ledu"

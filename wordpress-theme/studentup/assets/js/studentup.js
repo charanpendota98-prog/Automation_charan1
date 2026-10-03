@@ -307,10 +307,14 @@
     });
   });
 
-  /* ---------- most-used live counts (site side, WP-print chesina numbers ki fallback) ---------- */
+  /* ---------- most-used counts: nijamaina number ledu ante pill ni HIDE cheyyandi ----------
+     v199: purathana version empty pill ki "—" pettedi — adi card meeda chinna
+     gaddi/dash la kanipinchi broken ga anipinchindi. Ippudu: number unte
+     chupinchu, lekapote asalu chupinchaku (fake count ledu). */
   Array.prototype.forEach.call(document.querySelectorAll(".ucount"), function (el) {
-    if (el.textContent.indexOf("update") === -1 && el.textContent.indexOf("Soon") === -1) {
-      el.textContent = S.i18n && S.i18n.updates ? "—" : el.textContent;
+    if (!/\d/.test(el.textContent || "")) {
+      el.hidden = true;
+      el.setAttribute("aria-hidden", "true");
     }
   });
 
