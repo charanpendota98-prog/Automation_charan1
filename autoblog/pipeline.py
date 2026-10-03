@@ -113,10 +113,11 @@ CATEGORY_RULES = [
                       "accenture", "fresher", "off campus", "private", "mnc"]),
     ("Part Time Jobs", ["part time", "part-time", "work from home",
                         "freelance", "data entry", "tutor"]),
-    ("Walkin Jobs", ["walkin", "walk-in", "walk in", "direct interview"]),
+    ("Walkin Jobs", ["walkin", "walk-in", "walk in", "direct interview",
+                     "job mela", "job fair", "rojgar mela", "జాబ్ మేళా", "వాక్ ఇన్", "రోజ్‌గార్ మేళా"]),
     ("Outsourcing Jobs", ["outsourcing", "contract basis", "contractual",
-                          "కాంట్రాక్ట్", "అవుట్‌సోర్సింగ్", "crc", "outsourced",
-                          "guest faculty", "honorarium"]),
+                          "కాంట్రాక్ట్", "అవుట్‌సోర్సింగ్", "ఔట్‌సోర్సింగ్", "crc", "outsourced",
+                          "guest faculty", "honorarium", "తాత్కాలిక ఉద్యోగాలు"]),
     ("Success Stories", ["success story", "success stories", "achiever", "topper",
                          "ranker", "selected candidate", "selected students",
                          "విజయగాథ", "సాధించిన", "టాపర్"]),
@@ -134,15 +135,17 @@ CATEGORY_RULES = [
     ("Exam Tips", ["exam tips", "preparation strategy", "study plan", "revision",
                    "పరీక్షా చిట్కాలు", "సన్నద్ధత", "how to prepare", "time table",
                    "model paper", "previous papers", "mock test"]),
-    ("Hall Tickets", ["admit card", "hall ticket", "హాల్ టికెట్", "call letter"]),
-    ("Scholarships", ["scholarship", "fellowship", "nsp", "fee reimbursement",
-                      "స్కాలర్", "రుసుము", "pragati", "saksham", "yasasvi"]),
-    ("Results", ["result", "ఫలిత", "marks list", "manabadi", "grade",
-                 "cutoff", "cut-off", "answer key"]),
-    ("Internships", ["internship", "ఇంటర్న్"]),
-    ("Online Education", ["admission", "counselling", "counseling", "web options",
-                          "dost", "eamcet", "eapcet", "icet", "pgecet", "ప్రవేశ",
-                          "online mba", "online degree", "course", "syllabus",
+    ("Hall Tickets", ["admit card", "admit cards", "hall ticket", "hall tickets", "హాల్ టికెట్", "హాల్ టికెట్లు", "call letter", "పరీక్ష హాల్ టికెట్"]),
+    ("Scholarships", ["scholarship", "scholarships", "fellowship", "nsp", "fee reimbursement",
+                      "స్కాలర్", "స్కాలర్‌షిప్", "రుసుము", "రుసుము రీయింబర్స్‌మెంట్", "pragati", "saksham", "yasasvi", "epass", "jnanabhumi", "విద్యా దీవెన"]),
+    ("Results", ["result", "results", "ఫలిత", "ఫలితాలు", "marks list", "manabadi", "grade",
+                 "cutoff", "cut-off", "answer key", "university results", "యూనివర్సిటీ ఫలితాలు", "semester results", "డిగ్రీ ఫలితాలు", "కీలు"]),
+    ("Internships", ["internship", "internships", "apprenticeship", "ఇంటర్న్"]),
+    ("Online Education", ["admission", "admissions", "counselling", "counseling", "web options",
+                          "dost", "eamcet", "eapcet", "icet", "pgecet", "neet counselling", "ప్రవేశ",
+                          "ప్రవేశ పరీక్ష", "కౌన్సిలింగ్", "అడ్మిషన్లు", "సీట్ల కేటాయింపు", "seat allotment",
+                          "entrance exam", "online mba", "online degree", "course", "syllabus",
+                          "preparation", "study plan", "exam date", "పరీక్ష"]),
                           "preparation", "study plan", "exam date", "పరీక్ష"]),
 ]
 
@@ -359,8 +362,10 @@ def classify_source_category(url: str, title: str = "", text: str = "") -> str:
                                    "indiapost.gov.in", "drdo.gov.in", "isro.gov.in",
                                    "fddiindia.com", "fddi.gov.in", "ncs.gov.in")) and has_job:
         return "Central Govt Jobs"
-    if _has_any(url_blob, ("job mela", "job fair", "walk in", "walkin")):
+    if _has_any(url_blob, ("job mela", "job fair", "walk in", "walkin", "rojgar mela")):
         return "Walkin Jobs"
+    if _has_any(url_blob, ("outsourcing", "contract", "guest faculty")):
+        return "Outsourcing Jobs"
     if _has_any(url_blob, ("infor.com", "careers.", "jobs.", "tcs.com", "infosys.com",
                            "wipro.com", "cognizant.com", "accenture.com")) and has_job:
         return "Software Jobs" if _has_any(body_blob, _SOFTWARE_SIGNALS) else "Private Jobs"
