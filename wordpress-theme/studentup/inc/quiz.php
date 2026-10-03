@@ -64,12 +64,151 @@ function studentup_quiz_bank() {
 		array( 'q' => 'Logical Reasoning: If South-East becomes North, North-East becomes West, and so on, what will West become?', 'a' => array( 'North-East', 'South-East', 'North-West', 'South-West' ), 'c' => 1, 'why' => 'Each direction is rotated 135 degrees clockwise. West rotated 135 degrees clockwise becomes South-East.', 'cat' => 'Reasoning', 'src' => 'Logical Reasoning / Directions', 'exam' => 'ssc,rrb,banking' ),
 		array( 'q' => 'Defence & Technology: The BrahMos supersonic cruise missile is a joint venture between India and which country?', 'a' => array( 'United States', 'France', 'Russia', 'Israel' ), 'c' => 2, 'why' => 'BrahMos is developed by BrahMos Aerospace, a joint venture between DRDO of India and NPOM of Russia.', 'cat' => 'Defence', 'src' => 'drdo.gov.in', 'exam' => 'rrb,tspsc,appsc,ssc' ),
 	);
+
+	// Check if external bot ingested questions for today
+	$daily_store = get_option( 'studentup_daily_quiz_store', array() );
+	$today_key   = gmdate( 'Y-m-d' );
+	if ( is_array( $daily_store ) && ! empty( $daily_store[ $today_key ] ) && is_array( $daily_store[ $today_key ] ) ) {
+		$bank = array_merge( $daily_store[ $today_key ], $bank );
+	}
+
 	/**
 	 * Filter: add your own questions (site owner / coaching partner).
 	 *
 	 * @param array<int,array<string,mixed>> $bank Question bank.
 	 */
 	return apply_filters( 'studentup_quiz_bank', $bank );
+}
+
+/**
+ * Register REST API route for external bot quiz intake.
+ */
+function studentup_quiz_register_rest_routes() {
+	register_rest_route(
+		'studentup/v1',
+		'/quiz-intake',
+		array(
+			'methods'             => 'POST',
+			'permission_callback' => 'studentup_quiz_rest_permission',
+			'callback'            => 'studentup_quiz_rest_intake',
+		)
+	);
+}
+add_action( 'rest_api_init', 'studentup_quiz_register_rest_routes' );
+
+/**
+ * REST API permission callback for quiz intake.
+ *
+ * @param WP_REST_Request $request Request.
+ * @return bool|WP_Error
+ */
+function studentup_quiz_rest_permission( $request ) {
+	if ( current_user_can( 'edit_posts' ) ) {
+		return true;
+	}
+	$key = $request->get_header( 'x-studentup-key' );
+	if ( ! empty( $key ) ) {
+		$expected = get_option( 'studentup_quiz_api_key' );
+		if ( empty( $expected ) && defined( 'AUTH_KEY' ) ) {
+			$expected = substr( hash( 'sha256', AUTH_KEY ), 0, 32 );
+		}
+		if ( ! empty( $expected ) && hash_equals( (string) $expected, (string) $key ) ) {
+			return true;
+		}
+	}
+	return new WP_Error( 'rest_forbidden', 'Unauthorized quiz intake access.', array( 'status' => 401 ) );
+}
+
+/**
+ * REST API callback: accepts 20 daily questions from external bots.
+ *
+ * @param WP_REST_Request $request Request.
+ * @return WP_REST_Response|WP_Error
+ */
+function studentup_quiz_rest_intake( $request ) {
+	$params = $request->get_json_params();
+	if ( empty( $params ) ) {
+		$params = $request->get_body_params();
+	}
+	$raw_questions = array();
+	if ( is_array( $params ) ) {
+		if ( isset( $params['questions'] ) && is_array( $params['questions'] ) ) {
+			$raw_questions = $params['questions'];
+		} else {
+			$raw_questions = $params;
+		}
+	}
+	if ( empty( $raw_questions ) ) {
+		return new WP_Error( 'invalid_data', 'No valid questions array found.', array( 'status' => 400 ) );
+	}
+
+	$normalized = array();
+	foreach ( $raw_questions as $item ) {
+		if ( ! is_array( $item ) ) {
+			continue;
+		}
+		$q_text = sanitize_text_field( $item['q'] ?? ( $item['question'] ?? '' ) );
+		if ( empty( $q_text ) ) {
+			continue;
+		}
+		$opts_raw = $item['a'] ?? ( $item['options'] ?? ( $item['choices'] ?? array() ) );
+		if ( ! is_array( $opts_raw ) || count( $opts_raw ) < 2 ) {
+			continue;
+		}
+		$opts = array();
+		foreach ( array_slice( $opts_raw, 0, 4 ) as $opt_txt ) {
+			$opts[] = sanitize_text_field( (string) $opt_txt );
+		}
+		while ( count( $opts ) < 4 ) {
+			$opts[] = 'Option ' . chr( 65 + count( $opts ) );
+		}
+
+		$c_val = $item['c'] ?? ( $item['answer'] ?? ( $item['correct'] ?? 0 ) );
+		$c_idx = 0;
+		if ( is_numeric( $c_val ) ) {
+			$c_idx = max( 0, min( 3, absint( $c_val ) ) );
+		} elseif ( is_string( $c_val ) ) {
+			$c_upper = strtoupper( trim( $c_val ) );
+			if ( in_array( $c_upper, array( 'A', 'B', 'C', 'D' ), true ) ) {
+				$c_idx = ord( $c_upper ) - ord( 'A' );
+			}
+		}
+
+		$exam = sanitize_key( $item['exam'] ?? ( $item['target_exam'] ?? 'general' ) );
+		if ( empty( $exam ) ) {
+			$exam = 'general';
+		}
+
+		$normalized[] = array(
+			'q'    => $q_text,
+			'a'    => $opts,
+			'c'    => $c_idx,
+			'why'  => sanitize_text_field( $item['why'] ?? ( $item['explanation'] ?? 'Official answer verification.' ) ),
+			'cat'  => sanitize_text_field( $item['cat'] ?? ( $item['category'] ?? 'General Studies' ) ),
+			'src'  => sanitize_text_field( $item['src'] ?? ( $item['source'] ?? 'Verified Exam Paper' ) ),
+			'exam' => $exam,
+		);
+	}
+
+	if ( empty( $normalized ) ) {
+		return new WP_Error( 'no_valid_questions', 'Failed to normalize questions.', array( 'status' => 422 ) );
+	}
+
+	$store = get_option( 'studentup_daily_quiz_store', array() );
+	if ( ! is_array( $store ) ) {
+		$store = array();
+	}
+	$today = gmdate( 'Y-m-d' );
+	$store[ $today ] = $normalized;
+	update_option( 'studentup_daily_quiz_store', $store, false );
+
+	return rest_ensure_response(
+		array(
+			'status'   => 'ok',
+			'imported' => count( $normalized ),
+			'day'      => $today,
+		)
+	);
 }
 
 /**
