@@ -164,10 +164,13 @@ def main() -> int:
     light = tokens(css, ":root")
     dark = tokens(css, r"body\.dark")
     global NUMS
-    root_block = re.search(r":root\s*\{(.*?)\}", css, re.S)
-    if root_block:
-        NUMS = {k: float(v) for k, v in re.findall(r"(--[\w-]+)\s*:\s*([\d.]+)px", root_block.group(1))}
-        NUMS.setdefault("--tap", 44)
+    # v198: :root blocks okati kanna ekkuva undachu (append-only CSS) — anni chaduvu
+    NUMS.clear()
+    for root_block in re.finditer(r":root\s*\{(.*?)\}", css, re.S):
+        NUMS.update({k: float(v) for k, v in
+                     re.findall(r"(--[\w-]+)\s*:\s*([\d.]+)px", root_block.group(1))})
+    NUMS.setdefault("--tap", 44)
+    NUMS.setdefault("--tap-lg", 48)
 
     print("=" * 74)
     print("  WORLDCLASS VISUAL CHECK — phone 390px + laptop 1440px")

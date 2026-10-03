@@ -846,3 +846,21 @@ body.dark .nav .su-mega-feat{background:linear-gradient(160deg,#132a4d,#1b3f74)}
 .header.su-head-small .logo .brand{font-size:17.5px}
 .mpanel .mgroup>summary .su-uicon{opacity:.85}
 .mpanel .mgroup[open]>summary .su-uicon:last-child{transform:rotate(180deg)}
+:root{ --tap-lg:48px; --su-top:70px }
+.su-tooltabs{ position:sticky; top:var(--su-top); z-index:22;
+  display:flex; gap:8px; overflow-x:auto; padding:10px var(--gut);
+  margin:0; background:var(--card); border-bottom:1px solid var(--line);
+  scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch;
+  scrollbar-width:none }
+.su-tooltabs::-webkit-scrollbar{ display:none }
+.su-ttab{ min-height:var(--tap-lg); padding:0 16px; white-space:nowrap;
+  scroll-snap-align:start; touch-action:manipulation }
+.su-tools{ overflow:visible }
+.header.su-head-small ~ main .su-tooltabs{ top:58px }
+.su-toolpanel{ scroll-margin-top:calc(var(--su-top) + var(--tap-lg) + 10px) }
+@media(max-width:620px){
+  .su-fields{ grid-template-columns:1fr; max-width:none }
+  .su-toolpanel{ padding:14px var(--gut) 18px }}
+@media print{
+  .su-toolpanel{ display:block !important }
+  .su-tools{ border:0; box-shadow:none }}

@@ -118,7 +118,11 @@ UNION_DROPPABLE = (".su-tools", ".su-tooltabs", ".su-toolpanel", ".su-fields",
                    # inline cap (60 KB) ninchi bayata pettali, lekunte phone lo
                    # critical CSS skip avutundi (design flash). Base .sub-menu +
                    # .su-quizcard (premium) inka CORE lo ne unnayi.
-                   ".su-mega", ".su-poll", ".su-quiz-", ".mgroup")
+                   ".su-mega", ".su-poll", ".su-quiz-", ".mgroup",
+                   # v198 tools page (sticky strip · finder · chips · steppers ·
+                   # result actions) — tools page mattrame, inline cap lo vaddhu.
+                   ".su-toolfind", ".su-toolcats", ".su-tcat", ".su-tstep",
+                   ".su-tact", ".su-tnext", ".su-tools-top", ".su-tool-how")
 
 
 def _split_rules(css: str):

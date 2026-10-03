@@ -258,6 +258,10 @@
   /* ---------------- v191: tools tabs (8 calculators → one neat card) ------- */
   function tools() {
     Array.prototype.forEach.call(document.querySelectorAll(".su-tooltabs"), function (strip) {
+      // v198: strip ni advanced engine (studentup-tools.js) handle chestundi —
+      // appudu idi duplicate ga arrow keys/selection cheyyakoodadu (hidden
+      // tabs ni select cheyyadam valla empty panel vachhe bug kuda ade).
+      if (strip.hasAttribute("data-su-tool-strip")) return;
       var tabs = Array.prototype.slice.call(strip.querySelectorAll(".su-ttab"));
       if (!tabs.length) return;
       function select(tab) {

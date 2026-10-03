@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="te" data-su-theme="light">
+<html lang="en" data-su-theme="light">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Free student tools — salary · age · score · fee · studentup.in</title>
-<meta name="description" content="Free government-job tools for TS &amp; AP students: in-hand salary estimate, age eligibility check, exam score with negative marking and fee concession.">
+<title>Free student tools — salary · age · fee · score · studentup.in</title>
+<meta name="description" content="Free government-job tools for TS &amp; AP students: in-hand salary estimate, age eligibility, fee concession, score with negative marking, admit-card checklist, resume summary and syllabus tracker.">
 <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
 <meta name="theme-color" content="#0b2447">
 <link rel="canonical" href="https://studentup.in/tools/">
@@ -16,7 +16,7 @@
 <meta property="og:url" content="https://studentup.in/tools/">
 <meta name="twitter:card" content="summary_large_image">
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"WebPage","name":"Free student tools","inLanguage":"te-IN",
+{"@context":"https://schema.org","@type":"WebPage","name":"Free student tools","inLanguage":"en-IN",
 "url":"https://studentup.in/tools/","isPartOf":{"@type":"WebSite","name":"studentup.in","url":"https://studentup.in/"}}
 </script>
 <link rel="stylesheet" href="../../wordpress-theme/studentup/style.css">
@@ -26,7 +26,7 @@
 
 <a class="skip-link screen-reader-text" href="#main">Skip to content</a>
 <div class="topbar"><div class="wrap">
-  <span>ఉద్యోగ · పరీక్షలు · స్కాలర్‌షిప్</span>
+  <span>Government jobs · exams · scholarships</span>
   <span><a href="https://wa.me/919182739312">WhatsApp</a> · <a href="https://t.me/studentup_in">Telegram</a></span>
 </div></div>
 <header class="header"><div class="headrow">
@@ -38,92 +38,245 @@
   <div class="wrap">
     <nav class="crumbs" aria-label="Breadcrumb"><a href="../worldclass/index.html">Home</a> › Tools</nav>
     <div class="sectionhead">
-      <div><h1>Free tools for students</h1><p>Salary, age, score, fee — ఒక్కో ట్యాబ్‌లో ఒక్కో టూల్. అన్నీ ఇక్కడే, ఫోన్‌లోనే పనిచేస్తాయి.</p></div>
-      <a class="su-viewall" href="../worldclass/index.html#jobs">Jobs ki vellu →</a>
+      <div><h1>Free tools for students</h1><p>Salary, age, fee, score, deadlines, admit card, resume and syllabus — one tool at a time, everything works on the phone.</p></div>
+      <a class="su-viewall" href="../worldclass/index.html#jobs">Go to job board →</a>
     </div>
 
-    <section class="su-tools" aria-label="Student tools">
-      <div class="su-tooltabs" role="tablist" aria-label="Tools">
-        <button type="button" class="su-ttab active" role="tab" id="su-ttab-salary" aria-controls="su-tool-salary" aria-selected="true" tabindex="0"><svg class="su-uicon su-uicon-wallet" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-wallet"/></svg> <span>In-hand salary</span></button>
-        <button type="button" class="su-ttab" role="tab" id="su-ttab-age" aria-controls="su-tool-age" aria-selected="false" tabindex="-1"><svg class="su-uicon su-uicon-person" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-person"/></svg> <span>Age / eligibility</span></button>
-        <button type="button" class="su-ttab" role="tab" id="su-ttab-score" aria-controls="su-tool-score" aria-selected="false" tabindex="-1"><svg class="su-uicon su-uicon-chart" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-chart"/></svg> <span>Score + negative</span></button>
-        <button type="button" class="su-ttab" role="tab" id="su-ttab-fee" aria-controls="su-tool-fee" aria-selected="false" tabindex="-1"><svg class="su-uicon su-uicon-tag" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-tag"/></svg> <span>Fee + concession</span></button>
+    <section class="su-tools" id="tools" data-su-tools aria-label="Free tools for students">
+      <noscript><style>.su-toolpanel[hidden]{display:block!important}.su-tooltabs,.su-toolcats,.su-toolfind,.su-tools-top{display:none!important}</style></noscript>
+      <div class="su-tools-head">
+        <div class="sectionhead" style="margin:0 0 6px">
+          <div><h2>8 tools, one clean card</h2><p>Search or tap a tab — one tool at a time keeps the screen readable.</p></div>
+        </div>
+
+        <div class="su-toolfind">
+          <label class="screen-reader-text" for="su-tool-search">Search tools</label>
+          <span class="su-toolfind-ic" aria-hidden="true"><svg class="su-uicon su-uicon-search" width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-search"/></svg></span>
+          <input id="su-tool-search" type="search" data-su-tool-find autocomplete="off" enterkeyhint="search"
+            placeholder="Search a tool — salary, age, fee, resume…">
+          <button type="button" class="su-toolfind-clear" data-su-tool-clear hidden aria-label="Clear search">✕</button>
+        </div>
+
+        <div class="su-toolcats" role="group" aria-label="Filter tools by category">
+          <button type="button" class="su-tcat on" data-su-tool-cat="all" aria-pressed="true">All tools <b>8</b></button>
+          <button type="button" class="su-tcat" data-su-tool-cat="money" aria-pressed="false">Money <b>2</b></button>
+          <button type="button" class="su-tcat" data-su-tool-cat="eligibility" aria-pressed="false">Eligibility <b>1</b></button>
+          <button type="button" class="su-tcat" data-su-tool-cat="exams" aria-pressed="false">Exams <b>2</b></button>
+          <button type="button" class="su-tcat" data-su-tool-cat="career" aria-pressed="false">Career <b>2</b></button>
+          <button type="button" class="su-tcat" data-su-tool-cat="deadlines" aria-pressed="false">Deadlines <b>1</b></button>
+        </div>
+        <p class="su-toolfind-none" data-su-tool-none hidden>No tool matches “<span data-su-tool-q></span>”. Try “salary”, “age” or “resume”.</p>
       </div>
-      <div class="su-toolpanel on" id="su-tool-salary" role="tabpanel" aria-labelledby="su-ttab-salary">
+
+      <div class="su-tooltabs" role="tablist" aria-label="Student tools" data-su-tool-strip>
+        <button type="button" class="su-ttab active" role="tab" id="su-ttab-salary" aria-controls="su-tool-salary" aria-selected="true" tabindex="0" data-su-cat="money" data-su-keywords="salary in hand pay gross net da hra pay slip 7th cpc"><svg class="su-uicon su-uicon-wallet" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-wallet"/></svg> <span>In-hand salary</span></button>
+        <button type="button" class="su-ttab" role="tab" id="su-ttab-age" aria-controls="su-tool-age" aria-selected="false" tabindex="-1" data-su-cat="eligibility" data-su-keywords="age eligibility dob relaxation obc sc st pwd ex servicemen cutoff"><svg class="su-uicon su-uicon-person" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-person"/></svg> <span>Age checker</span></button>
+        <button type="button" class="su-ttab" role="tab" id="su-ttab-fee" aria-controls="su-tool-fee" aria-selected="false" tabindex="-1" data-su-cat="money" data-su-keywords="fee application fee concession sc st obc ews payment challan"><svg class="su-uicon su-uicon-tag" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-tag"/></svg> <span>Fee &amp; concession</span></button>
+        <button type="button" class="su-ttab" role="tab" id="su-ttab-score" aria-controls="su-tool-score" aria-selected="false" tabindex="-1" data-su-cat="exams" data-su-keywords="score marks negative marking answer key expected cutoff"><svg class="su-uicon su-uicon-chart" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-chart"/></svg> <span>Score &amp; negative</span></button>
+        <button type="button" class="su-ttab" role="tab" id="su-ttab-calendar" aria-controls="su-tool-calendar" aria-selected="false" tabindex="-1" data-su-cat="deadlines" data-su-keywords="last date deadline calendar reminder exam date"><svg class="su-uicon su-uicon-calendar" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-calendar"/></svg> <span>Last-date calendar</span></button>
+        <button type="button" class="su-ttab" role="tab" id="su-ttab-admit" aria-controls="su-tool-admit" aria-selected="false" tabindex="-1" data-su-cat="exams" data-su-keywords="admit card hall ticket download centre instructions"><svg class="su-uicon su-uicon-ticket" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-ticket"/></svg> <span>Admit card helper</span></button>
+        <button type="button" class="su-ttab" role="tab" id="su-ttab-resume" aria-controls="su-tool-resume" aria-selected="false" tabindex="-1" data-su-cat="career" data-su-keywords="resume cv bio data government format application"><svg class="su-uicon su-uicon-doc" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-doc"/></svg> <span>Resume maker</span></button>
+        <button type="button" class="su-ttab" role="tab" id="su-ttab-syllabus" aria-controls="su-tool-syllabus" aria-selected="false" tabindex="-1" data-su-cat="career" data-su-keywords="syllabus tracker preparation progress subjects revision"><svg class="su-uicon su-uicon-book" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-book"/></svg> <span>Syllabus tracker</span></button>
+      </div>
+
+      <div class="su-toolpanels" data-su-tool-swipe>
+      <div class="su-toolpanel on" id="su-tool-salary" role="tabpanel"
+        aria-labelledby="su-ttab-salary"
+        data-su-formula="Gross = Basic × (1 + DA% + HRA%); In-hand = Gross − deductions (NPS, tax)."
+        data-su-source="7th CPC fitment table + your department pay slip">
         <h3>In-hand salary</h3>
       <div class="su-fields">
         <label>Basic pay (₹)
           <input id="t-basic" type="number" inputmode="numeric" min="0" step="100" value="18000">
         </label>
-        <label>DA % (ప్రస్తుతం)
-          <input id="t-da" type="number" inputmode="numeric" min="0" step="1" value="55">
+        <label>DA % (current rate)
+          <input id="t-da" type="number" inputmode="numeric" min="0" max="120" step="1" value="55">
         </label>
         <label>HRA % (X / Y / Z city)
-          <input id="t-hra" type="number" inputmode="numeric" min="0" step="1" value="18">
+          <input id="t-hra" type="number" inputmode="numeric" min="0" max="30" step="1" value="18">
         </label>
-        <label>Deductions (NPS + tax, ₹)
+        <label>Deductions — NPS + tax (₹)
           <input id="t-ded" type="number" inputmode="numeric" min="0" step="50" value="2200">
         </label>
       </div>
-      <p class="su-tout" id="t-salary-out" role="status">—</p>
-      <p class="su-note">ఇది అంచనా మాత్రమే. ప్రతి department pay slip + 7th CPC fitment batti మారుతుంది.</p>
+      <p class="su-tout" id="t-salary-out" data-su-result role="status">—</p>
+      <p class="su-note">Estimate only — every department pay slip and the 7th CPC fitment change the exact figure.</p>
+        <div class="su-tool-nav">
+          <button type="button" class="su-tnext" data-su-next><svg class="su-uicon su-uicon-arrow" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-arrow"/></svg> Next tool</button>
+        </div>
       </div>
-      <div class="su-toolpanel" id="su-tool-age" role="tabpanel" aria-labelledby="su-ttab-age" hidden>
-        <h3>Age / eligibility</h3>
+      <div class="su-toolpanel" id="su-tool-age" role="tabpanel"
+        aria-labelledby="su-ttab-age"
+        data-su-formula="Age is counted on the cutoff date; category relaxation is added to the upper limit."
+        data-su-source="the notification’s age table (TSPSC/APPSC/SSC)" hidden>
+        <h3>Age checker</h3>
       <div class="su-fields">
-        <label>పుట్టిన తేదీ
+        <label>Date of birth
           <input id="t-dob" type="date" value="2002-06-15">
         </label>
-        <label>అప్లై చేసే తేదీ (as on)
+        <label>As on (cutoff date)
           <input id="t-as" type="date">
         </label>
-        <label>అపర్ లిమిట్ (సంవత్సరాలు)
+        <label>Upper limit (years)
           <input id="t-max" type="number" inputmode="numeric" min="18" max="60" value="27">
         </label>
-        <label>రిజర్వేషన్ సడలింపు (సంవత్సరాలు)
+        <label>Relaxation (years)
           <input id="t-relax" type="number" inputmode="numeric" min="0" max="15" value="0">
         </label>
       </div>
-      <p class="su-tout" id="t-age-out" role="status">—</p>
-      <p class="su-note">Age అనేది నోటిఫికేషన్‌లో చెప్పిన “crucial date” నాటికి లెక్కిస్తారు — ఇక్కడ అదే చేస్తుంది.</p>
+      <p class="su-tout" id="t-age-out" data-su-result role="status">—</p>
+      <p class="su-note">Age is calculated on the “crucial date” printed in the notification — that is exactly what this does.</p>
+        <div class="su-tool-nav">
+          <button type="button" class="su-tnext" data-su-next><svg class="su-uicon su-uicon-arrow" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-arrow"/></svg> Next tool</button>
+        </div>
       </div>
-      <div class="su-toolpanel" id="su-tool-score" role="tabpanel" aria-labelledby="su-ttab-score" hidden>
-        <h3>Score + negative</h3>
+      <div class="su-toolpanel" id="su-tool-fee" role="tabpanel"
+        aria-labelledby="su-ttab-fee"
+        data-su-formula="Payable = base fee × category share; exemptions are shown as ₹0."
+        data-su-source="the official notification fee table" hidden>
+        <h3>Fee &amp; concession</h3>
       <div class="su-fields">
-        <label>మొత్తం ప్రశ్నలు
-          <input id="t-total" type="number" inputmode="numeric" min="1" value="100">
+        <label>Application fee (₹)
+          <input id="t-fee" type="number" inputmode="numeric" min="0" step="50" value="200">
         </label>
-        <label>సరైనవి
-          <input id="t-right" type="number" inputmode="numeric" min="0" value="72">
-        </label>
-        <label>తప్పులు
-          <input id="t-wrong" type="number" inputmode="numeric" min="0" value="14">
-        </label>
-        <label>Negative mark (ప్రతి తప్పుకు)
-          <input id="t-neg" type="number" inputmode="decimal" min="0" step="0.05" value="0.25">
-        </label>
-      </div>
-      <p class="su-tout" id="t-score-out" role="status">—</p>
-      <p class="su-note">TSPSC/SSC exams లో negative marking pattern నోటిఫికేషన్ లో ఉంటుంది — అదే విలువ పెట్టండి.</p>
-      </div>
-      <div class="su-toolpanel" id="su-tool-fee" role="tabpanel" aria-labelledby="su-ttab-fee" hidden>
-        <h3>Fee + concession</h3>
-      <div class="su-fields">
-        <label>అప్లికేషన్ ఫీసు (₹)
-          <input id="t-fee" type="number" inputmode="numeric" min="0" value="200">
-        </label>
-        <label>మీ category
+        <label>Your category
           <select id="t-cat">
             <option value="100">General / OBC (full fee)</option>
-            <option value="0">SC / ST (మినహాయింపు)</option>
-            <option value="60">BC / PH (సాధారణంగా తక్కువ)</option>
-            <option value="0">మహిళ (చాలా నోటిఫికేషన్‌లలో మినహాయింపు)</option>
+            <option value="0">SC / ST (exempt)</option>
+            <option value="60">BC / PH (usually reduced)</option>
+            <option value="0">Women (exempt in many notifications)</option>
           </select>
         </label>
       </div>
-      <p class="su-tout" id="t-fee-out" role="status">—</p>
-      <p class="su-note">Concession శాతం exam-wise మారుతుంది — నోటిఫికేషన్ చదివి confirm చేసుకోండి.</p>
+      <p class="su-tout" id="t-fee-out" data-su-result role="status">—</p>
+      <p class="su-note">The concession percentage changes per exam — confirm it in the notification.</p>
+        <div class="su-tool-nav">
+          <button type="button" class="su-tnext" data-su-next><svg class="su-uicon su-uicon-arrow" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-arrow"/></svg> Next tool</button>
+        </div>
       </div>
+      <div class="su-toolpanel" id="su-tool-score" role="tabpanel"
+        aria-labelledby="su-ttab-score"
+        data-su-formula="Marks = correct − (wrong × negative mark per question)."
+        data-su-source="the exam’s marking scheme" hidden>
+        <h3>Score &amp; negative</h3>
+      <div class="su-fields">
+        <label>Total questions
+          <input id="t-total" type="number" inputmode="numeric" min="1" max="250" value="100">
+        </label>
+        <label>Correct answers
+          <input id="t-right" type="number" inputmode="numeric" min="0" value="72">
+        </label>
+        <label>Wrong answers
+          <input id="t-wrong" type="number" inputmode="numeric" min="0" value="14">
+        </label>
+        <label>Negative mark (per wrong)
+          <input id="t-neg" type="number" inputmode="decimal" min="0" max="1" step="0.05" value="0.25">
+        </label>
+      </div>
+      <p class="su-tout" id="t-score-out" data-su-result role="status">—</p>
+      <p class="su-note">TSPSC / SSC negative-marking pattern is printed in the notification — use that value.</p>
+        <div class="su-tool-nav">
+          <button type="button" class="su-tnext" data-su-next><svg class="su-uicon su-uicon-arrow" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-arrow"/></svg> Next tool</button>
+        </div>
+      </div>
+      <div class="su-toolpanel" id="su-tool-calendar" role="tabpanel"
+        aria-labelledby="su-ttab-calendar"
+        data-su-formula="Only confirmed dates from published posts are listed; nothing is estimated."
+        data-su-source="every post’s verified last-date field" hidden>
+        <h3>Last-date calendar</h3>
+      <ul class="su-mini" id="t-cal-list">
+        <li><i>·</i> <span><b>28 Oct</b> — UPSC Junior Assistant 2026 (last date)</span></li>
+        <li><i>·</i> <span><b>05 Nov</b> — Engineering internships 2026</span></li>
+        <li><i>·</i> <span><b>18 Nov</b> — TSPSC Group-2 application window</span></li>
+        <li><i>·</i> <span><b>22 Nov</b> — SSC CHSL tier-1 exam date</span></li>
+      </ul>
+      <p class="su-tout" id="t-cal-out" data-su-result role="status">Next confirmed last date: 28 Oct (12 days)</p>
+      <p class="su-note">Live site: every date comes from the post itself, and one tap adds all of them to your phone calendar (.ics).</p>
+      <p><a class="su-cta" href="../pages/exam-calendar.html">Open the full calendar + .ics export</a></p>
+        <div class="su-tool-nav">
+          <button type="button" class="su-tnext" data-su-next><svg class="su-uicon su-uicon-arrow" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-arrow"/></svg> Next tool</button>
+        </div>
+      </div>
+      <div class="su-toolpanel" id="su-tool-admit" role="tabpanel"
+        aria-labelledby="su-ttab-admit"
+        data-su-formula="Checklist follows the standard hall-ticket instructions."
+        data-su-source="the exam authority’s instruction sheet" hidden>
+        <h3>Admit card helper</h3>
+      <div class="su-fields">
+        <label>Exam
+          <select id="t-admit-exam">
+            <option>SSC CGL 2026 Tier-1</option>
+            <option>TSPSC Group-2</option>
+            <option>RRB NTPC CBT-1</option>
+          </select>
+        </label>
+      </div>
+      <ul class="su-mini" id="t-admit-list">
+        <li><label><input type="checkbox" id="t-ad-1"> Printed hall ticket (2 copies)</label></li>
+        <li><label><input type="checkbox" id="t-ad-2"> Photo ID original + photocopy</label></li>
+        <li><label><input type="checkbox" id="t-ad-3"> Passport photo (same as uploaded)</label></li>
+        <li><label><input type="checkbox" id="t-ad-4"> Ballpoint pen + transparent water bottle</label></li>
+        <li><label><input type="checkbox" id="t-ad-5"> Report 90 minutes before gate closes</label></li>
+      </ul>
+      <p class="su-tout" id="t-admit-out" data-su-result role="status">0 of 5 ready</p>
+      <p class="su-note">Tick boxes as you pack — the progress line updates instantly and stays on this device only.</p>
+        <div class="su-tool-nav">
+          <button type="button" class="su-tnext" data-su-next><svg class="su-uicon su-uicon-arrow" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-arrow"/></svg> Next tool</button>
+        </div>
+      </div>
+      <div class="su-toolpanel" id="su-tool-resume" role="tabpanel"
+        aria-labelledby="su-ttab-resume"
+        data-su-formula="Fields fill a plain government-format summary — no account, nothing stored."
+        data-su-source="standard government application format" hidden>
+        <h3>Resume maker</h3>
+      <div class="su-fields">
+        <label>Name
+          <input id="t-res-name" type="text" value="Ravi Kumar" autocomplete="name">
+        </label>
+        <label>Phone
+          <input id="t-res-phone" type="tel" inputmode="tel" value="9xxxxxxxxx" autocomplete="tel">
+        </label>
+        <label>Qualification
+          <select id="t-res-qual">
+            <option>B.Com (2024)</option>
+            <option>B.Tech CSE (2024)</option>
+            <option>Intermediate (2023)</option>
+            <option>Any degree</option>
+          </select>
+        </label>
+        <label>Applying for
+          <input id="t-res-post" type="text" value="Junior Assistant">
+        </label>
+      </div>
+      <button type="button" class="su-tact su-tact-copy" id="t-res-go">Generate summary</button>
+      <p class="su-tout" id="t-res-out" data-su-result role="status">—</p>
+      <p class="su-note">Copy the summary into any government application form. Nothing leaves your phone.</p>
+        <div class="su-tool-nav">
+          <button type="button" class="su-tnext" data-su-next><svg class="su-uicon su-uicon-arrow" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-arrow"/></svg> Next tool</button>
+        </div>
+      </div>
+      <div class="su-toolpanel" id="su-tool-syllabus" role="tabpanel"
+        aria-labelledby="su-ttab-syllabus"
+        data-su-formula="Progress = ticked subjects ÷ total subjects."
+        data-su-source="the exam’s official syllabus" hidden>
+        <h3>Syllabus tracker</h3>
+      <ul class="su-mini" id="t-syl-list">
+        <li><label><input type="checkbox" id="t-sy-1"> Current affairs &amp; GK</label></li>
+        <li><label><input type="checkbox" id="t-sy-2"> Arithmetic &amp; reasoning</label></li>
+        <li><label><input type="checkbox" id="t-sy-3"> Telangana movement &amp; history</label></li>
+        <li><label><input type="checkbox" id="t-sy-4"> Polity &amp; constitution</label></li>
+        <li><label><input type="checkbox" id="t-sy-5"> English language</label></li>
+        <li><label><input type="checkbox" id="t-sy-6"> Telugu language</label></li>
+      </ul>
+      <p class="su-tout" id="t-syl-out" data-su-result role="status">0 of 6 subjects done (0%)</p>
+      <p class="su-note">Your ticks stay in this browser (localStorage) — no account, no upload.</p>
+        <div class="su-tool-nav">
+          <button type="button" class="su-tnext" data-su-next><svg class="su-uicon su-uicon-arrow" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-arrow"/></svg> Next tool</button>
+        </div>
+      </div>
+      </div>
+
+      <button type="button" class="su-tools-top" data-su-tool-top hidden>↑ Back to tools</button>
     </section>
 
     <div class="su-adbelow" aria-label="Advertisement" style="margin-top:22px">
@@ -171,54 +324,553 @@
   }
 })();
 <script>
+/* v198 preview calculators — same maths as the theme's tool modules. */
 (function(){
   var S = function(id){ return document.getElementById(id); };
   var num = function(id){ var v = parseFloat((S(id)||{}).value || 0); return isNaN(v) ? 0 : v; };
+  var set = function(id, txt){ var el = S(id); if(el) el.textContent = txt; };
   var inr = function(v){ return '\u20b9' + Math.round(v).toLocaleString('en-IN'); };
 
   function salary(){
     if(!S('t-basic')) return;
-    var basic = num('t-basic'), da = num('t-da')/100, hra = num('t-hra')/100, ded = num('t-ded');
-    var gross = basic * (1 + da + hra);
-    var net = gross - ded;
-    S('t-salary-out').textContent = 'Gross ' + inr(gross) + ' / నెల  ·  In-hand approx ' + inr(net) + ' / నెల';
+    var basic = num('t-basic'), gross = basic * (1 + num('t-da')/100 + num('t-hra')/100);
+    set('t-salary-out', 'Gross ' + inr(gross) + ' / month  ·  In-hand approx ' + inr(gross - num('t-ded')) + ' / month');
   }
   function age(){
     if(!S('t-dob')) return;
     var dob = new Date(S('t-dob').value);
     var asOn = S('t-as').value ? new Date(S('t-as').value) : new Date();
     if(!S('t-as').value) S('t-as').value = asOn.toISOString().slice(0,10);
-    if(isNaN(dob)) { S('t-age-out').textContent = 'పుట్టిన తేదీ పెట్టండి'; return; }
+    if(isNaN(dob)) { set('t-age-out', 'Enter your date of birth'); return; }
     var y = asOn.getFullYear() - dob.getFullYear();
     var m = asOn.getMonth() - dob.getMonth();
     if(m < 0 || (m === 0 && asOn.getDate() < dob.getDate())) y--;
     var limit = num('t-max') + num('t-relax');
     var ok = y <= limit && y >= 18;
-    S('t-age-out').textContent = 'మీ వయస్సు ' + y + ' సంవత్సరాలు (limit ' + limit + ') — ' +
-      (ok ? 'అర్హులు ✔ అప్లై చేయవచ్చు' : 'అర్హత లేదు ✘ (limit దాటింది)');
+    set('t-age-out', 'Your age is ' + y + ' years (limit ' + limit + ') — ' +
+      (ok ? 'eligible \u2714 you can apply' : 'not eligible \u2716 (limit crossed)'));
   }
   function score(){
     if(!S('t-total')) return;
-    var total = num('t-total'), right = num('t-right'), wrong = num('t-wrong'), neg = num('t-neg');
-    var marks = right - (wrong * neg);
-    var left = total - right - wrong;
-    S('t-score-out').textContent = 'Score approx ' + marks.toFixed(2) + ' / ' + total +
-      '  ·  attempted ' + (right+wrong) + ' · left ' + (left < 0 ? 0 : left);
+    var marks = num('t-right') - (num('t-wrong') * num('t-neg'));
+    var left = num('t-total') - num('t-right') - num('t-wrong');
+    set('t-score-out', 'Score approx ' + marks.toFixed(2) + ' / ' + num('t-total') +
+      '  ·  attempted ' + (num('t-right') + num('t-wrong')) + ' · left ' + (left < 0 ? 0 : left));
   }
   function fee(){
     if(!S('t-fee')) return;
-    var fee = num('t-fee'), pct = parseFloat(S('t-cat').value);
-    var pay = fee * pct / 100;
-    S('t-fee-out').textContent = 'మీరు చెల్లించాల్సిన ఫీసు approx ' + inr(pay) +
-      (pct === 0 ? ' (పూర్తి మినహాయింపు)' : ' (' + pct + '% of ' + inr(fee) + ')');
+    var pct = parseFloat((S('t-cat')||{}).value || 0);
+    var pay = num('t-fee') * pct / 100;
+    set('t-fee-out', 'You pay approx ' + inr(pay) +
+      (pct === 0 ? ' (full exemption)' : ' (' + pct + '% of ' + inr(num('t-fee')) + ')'));
   }
-  var ALL = [salary, age, score, fee];
-  ['t-basic','t-da','t-hra','t-ded'].forEach(function(id){ var el=S(id); if(el) el.addEventListener('input', salary); });
-  ['t-dob','t-as','t-max','t-relax'].forEach(function(id){ var el=S(id); if(el) el.addEventListener('input', age); });
-  ['t-total','t-right','t-wrong','t-neg'].forEach(function(id){ var el=S(id); if(el) el.addEventListener('input', score); });
-  ['t-fee','t-cat'].forEach(function(id){ var el=S(id); if(el) el.addEventListener('input', fee); });
-  ALL.forEach(function(fn){ fn(); });
+  function admit(){
+    var ids = ['t-ad-1','t-ad-2','t-ad-3','t-ad-4','t-ad-5'], done = 0;
+    ids.forEach(function(id){ var el = S(id); if(el && el.checked) done++; });
+    var exam = (S('t-admit-exam')||{}).value || 'your exam';
+    set('t-admit-out', done + ' of 5 ready — ' + exam + (done === 5 ? ' \u2714 packed, go score.' : ''));
+  }
+  function resume(){
+    var name = (S('t-res-name')||{}).value || '';
+    var phone = (S('t-res-phone')||{}).value || '';
+    var qual = (S('t-res-qual')||{}).value || '';
+    var post = (S('t-res-post')||{}).value || '';
+    set('t-res-out', name + ' · ' + phone + ' — ' + qual + ', applying for ' + post +
+      '. Studied from official notifications on StudentUp (studentup.in); available for joining immediately.');
+  }
+  function syllabus(){
+    var ids = ['t-sy-1','t-sy-2','t-sy-3','t-sy-4','t-sy-5','t-sy-6'], done = 0;
+    ids.forEach(function(id){ var el = S(id); if(el && el.checked) done++; });
+    var pct = Math.round(done / ids.length * 100);
+    set('t-syl-out', done + ' of ' + ids.length + ' subjects done (' + pct + '%)');
+  }
+
+  var WIRE = {
+    salary: ['t-basic','t-da','t-hra','t-ded'],
+    age: ['t-dob','t-as','t-max','t-relax'],
+    score: ['t-total','t-right','t-wrong','t-neg'],
+    fee: ['t-fee','t-cat'],
+    admit: ['t-ad-1','t-ad-2','t-ad-3','t-ad-4','t-ad-5','t-admit-exam'],
+    resume: ['t-res-name','t-res-phone','t-res-qual','t-res-post'],
+    syllabus: ['t-sy-1','t-sy-2','t-sy-3','t-sy-4','t-sy-5','t-sy-6']
+  };
+  var FN = { salary: salary, age: age, score: score, fee: fee, admit: admit,
+             resume: resume, syllabus: syllabus };
+  Object.keys(WIRE).forEach(function(k){
+    WIRE[k].forEach(function(id){
+      var el = S(id);
+      if(!el) return;
+      el.addEventListener('change', FN[k]);
+      el.addEventListener('input', FN[k]);
+    });
+  });
+  var go = S('t-res-go'); if(go) go.addEventListener('click', resume);
+  Object.keys(FN).forEach(function(k){ FN[k](); });
 })();
+</script>
+
+<!-- tools engine: theme file inline (single source of truth) -->
+<script>
+/*!
+ * v198 TOOLS ENGINE — one dependency-free layer that makes the Tools page feel
+ * advanced on a phone (~9 KB, deferred, loaded on the Tools page only).
+ *
+ * Enti add avutundi (anni progressive — JS lekapote page normal ga pani chestundi):
+ *   · TOOL FINDER   — search box + category chips → tabs filter instantly.
+ *   · STICKY STRIP  — tab bar sticks under the header; active tab auto-scrolls
+ *                     into view; phone lo swipe (left/right) tho tool maaruthundi.
+ *   · DEEP LINKS    — /tools/?tool=age shareable/bookmarkable (Back kuda pani).
+ *   · STEPPERS      — prathi number field ki − / + (48 px) buttons → phone lo
+ *                     keyboard avasaram ledu.
+ *   · RESULT CARD   — Copy result · Share · Print · Reset okka row lo.
+ *   · HOW IT WORKS  — formula + source line (details) — E-E-A-T, no guesswork.
+ *   · NO-JS SAFE    — server rendered markup; JS unte mattrame enhancement.
+ *
+ * Rules: no external requests, no cookies, no personal data, Telugu ledu (UI),
+ * 48 px tap targets, prefers-reduced-motion respect.
+ */
+(function () {
+  "use strict";
+
+  var doc = document;
+  var reduce = false;
+  try {
+    reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  } catch (e) { /* old browser */ }
+
+  function $(sel, root) { return (root || doc).querySelector(sel); }
+  function $$(sel, root) { return [].slice.call((root || doc).querySelectorAll(sel)); }
+  function on(el, ev, fn, opt) { if (el) el.addEventListener(ev, fn, opt || false); }
+
+  function smooth(el, top) {
+    if (!el) return;
+    try {
+      el.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+    } catch (e) {
+      window.scrollTo(0, top || 0);
+    }
+  }
+
+  /* ------------------------------------------------------------ result text */
+  function resultEl(panel) {
+    return $("[data-su-result]", panel) || $(".su-tout", panel) ||
+           $('[id$="-result"]', panel) || $('[id$="-out"]', panel) ||
+           $('[id$="-final-score"]', panel);
+  }
+
+  function resultText(panel) {
+    var r = resultEl(panel);
+    if (!r) return "";
+    var t = (r.textContent || "").replace(/\s+/g, " ").trim();
+    return t;
+  }
+
+  /* ---------------------------------------------------------------- steppers */
+  function addSteppers(panel) {
+    $$('input[type="number"]', panel).forEach(function (inp) {
+      if (inp.getAttribute("data-su-step-done")) return;
+      inp.setAttribute("data-su-step-done", "1");
+      var wrap = doc.createElement("span");
+      wrap.className = "su-tstep";
+      var step = parseFloat(inp.getAttribute("step")) || 1;
+      var min = inp.getAttribute("min") !== null ? parseFloat(inp.getAttribute("min")) : null;
+      var max = inp.getAttribute("max") !== null ? parseFloat(inp.getAttribute("max")) : null;
+
+      function bump(dir) {
+        var v = parseFloat(inp.value || "0");
+        if (isNaN(v)) v = 0;
+        v = v + dir * step;
+        if (min !== null && v < min) v = min;
+        if (max !== null && v > max) v = max;
+        inp.value = String(Math.round(v * 100) / 100);
+        inp.dispatchEvent(new Event("input", { bubbles: true }));
+        inp.dispatchEvent(new Event("change", { bubbles: true }));
+      }
+
+      function mk(label, dir, cls) {
+        var b = doc.createElement("button");
+        b.type = "button";
+        b.className = "su-tstep-btn " + cls;
+        b.setAttribute("aria-label", label);
+        b.textContent = dir > 0 ? "+" : "\u2212";
+        on(b, "click", function () { bump(dir); });
+        return b;
+      }
+
+      inp.parentNode.insertBefore(wrap, inp);
+      wrap.appendChild(mk("Decrease", -1, "su-tstep-minus"));
+      wrap.appendChild(inp);
+      wrap.appendChild(mk("Increase", 1, "su-tstep-plus"));
+    });
+  }
+
+  /* ----------------------------------------------------------------- actions */
+  function addActions(panel, name) {
+    if (!resultEl(panel) || $(".su-tool-actions", panel)) return;
+    var bar = doc.createElement("div");
+    bar.className = "su-tool-actions";
+    bar.setAttribute("role", "group");
+    bar.setAttribute("aria-label", "Result actions: copy, share, print, reset");
+
+    function btn(label, cls) {
+      var b = doc.createElement("button");
+      b.type = "button";
+      b.className = "su-tact " + cls;
+      b.textContent = label;
+      return b;
+    }
+
+    var copy = btn("Copy result", "su-tact-copy");
+    on(copy, "click", function () {
+      var txt = name + ": " + (resultText(panel) || "\u2014") + "\n" + location.href;
+      function done() {
+        copy.textContent = "Copied \u2713";
+        window.setTimeout(function () { copy.textContent = "Copy result"; }, 1800);
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(txt).then(done, function () { fallback(txt, done); });
+      } else { fallback(txt, done); }
+    });
+
+    function fallback(txt, done) {
+      try {
+        var ta = doc.createElement("textarea");
+        ta.value = txt;
+        ta.setAttribute("readonly", "");
+        ta.style.position = "fixed";
+        ta.style.left = "-9999px";
+        doc.body.appendChild(ta);
+        ta.select();
+        doc.execCommand("copy");
+        doc.body.removeChild(ta);
+        done();
+      } catch (e) { /* clipboard blocked — silent */ }
+    }
+
+    var share = btn("Share", "su-tact-share");
+    on(share, "click", function () {
+      var txt = name + " \u2014 " + (resultText(panel) || "") + " | StudentUp free tool: " + location.href;
+      if (navigator.share) {
+        navigator.share({ title: name + " \u00b7 StudentUp", text: txt }).catch(function () {});
+      } else {
+        window.open("https://wa.me/?text=" + encodeURIComponent(txt), "_blank",
+                    "noopener,noreferrer");
+      }
+    });
+
+    var print = btn("Print", "su-tact-print");
+    on(print, "click", function () { window.print(); });
+
+    var reset = btn("Reset", "su-tact-reset");
+    on(reset, "click", function () {
+      $$("input, select", panel).forEach(function (el) {
+        if (el.type === "checkbox" || el.type === "radio") {
+          el.checked = el.getAttribute("data-su-def-checked") === "1";
+        } else if (el.getAttribute("data-su-def") !== null) {
+          el.value = el.getAttribute("data-su-def");
+        } else if (el.type === "date" && el.getAttribute("data-su-def-date")) {
+          el.value = el.getAttribute("data-su-def-date");
+        }
+        el.dispatchEvent(new Event("input", { bubbles: true }));
+        el.dispatchEvent(new Event("change", { bubbles: true }));
+      });
+      reset.textContent = "Reset \u2713";
+      window.setTimeout(function () { reset.textContent = "Reset"; }, 1500);
+    });
+
+    bar.appendChild(copy);
+    bar.appendChild(share);
+    bar.appendChild(print);
+    bar.appendChild(reset);
+    var r = resultEl(panel);
+    r.parentNode.insertBefore(bar, r.nextSibling);
+  }
+
+  /* ------------------------------------------------------------- how it works */
+  function addHow(panel) {
+    var f = panel.getAttribute("data-su-formula");
+    var s = panel.getAttribute("data-su-source");
+    if ((!f && !s) || $(".su-tool-how", panel)) return;
+    var d = doc.createElement("details");
+    d.className = "su-tool-how";
+    var sum = doc.createElement("summary");
+    sum.textContent = "How this is calculated";
+    var p = doc.createElement("p");
+    p.className = "su-tool-how-t";
+    p.textContent = (f || "") + (s ? (f ? " " : "") + "Source: " + s + "." : "");
+    d.appendChild(sum);
+    d.appendChild(p);
+    var r = resultEl(panel);
+    (r ? r.parentNode : panel).appendChild(d);
+  }
+
+  /* ------------------------------------------------------------- default snap */
+  function snapDefaults(panel) {
+    $$("input, select", panel).forEach(function (el) {
+      if (el.type === "checkbox" || el.type === "radio") {
+        el.setAttribute("data-su-def-checked", el.checked ? "1" : "0");
+      } else if (el.getAttribute("data-su-def") === null) {
+        el.setAttribute("data-su-def", el.value || "");
+      }
+    });
+  }
+
+  /* ============================================================== main wiring */
+  // v198: `.su-tools[data-su-tools]` mattrame — single posts lo unna
+  // `.su-student-tools[data-su-tools]` (compare/reminder buttons) ki tagalakoodadu.
+  var hub = $(".su-tools[data-su-tools]") || $("[data-su-tool-strip]");
+  if (!hub) return;
+
+  var strip = $("[data-su-tool-strip]", hub) || $(".su-tooltabs", hub);
+  var tabs = strip ? $$(".su-ttab", strip) : [];
+  var find = $("[data-su-tool-find]", hub);
+  var noneMsg = $("[data-su-tool-none]", hub);
+  var topBtn = $("[data-su-tool-top]", hub);
+  var panelsBox = $("[data-su-tool-swipe]", hub) || $(".su-toolpanels", hub);
+
+  function tabLabel(t) { return (t.textContent || "").replace(/\s+/g, " ").trim(); }
+
+  function tabPanel(t) {
+    var id = t.getAttribute("aria-controls");
+    return id ? doc.getElementById(id) : null;
+  }
+
+  /* panel switching — engine self-sufficient (theme's premium.js does the same,
+     rendu okesari run aina idempotent) */
+  function select(tab) {
+    if (!tab) return;
+    tabs.forEach(function (t) {
+      var isOn = t === tab;
+      t.setAttribute("aria-selected", isOn ? "true" : "false");
+      t.tabIndex = isOn ? 0 : -1;
+      var p = tabPanel(t);
+      if (!p) return;
+      p.classList.toggle("on", isOn);
+      if (isOn) { p.removeAttribute("hidden"); } else { p.setAttribute("hidden", ""); }
+    });
+    syncHash(tab);
+    autoScroll(tab);
+  }
+
+  function activeTab() {
+    for (var i = 0; i < tabs.length; i++) {
+      if (tabs[i].getAttribute("aria-selected") === "true") return tabs[i];
+    }
+    return tabs[0] || null;
+  }
+
+  function visibleTabs() {
+    return tabs.filter(function (t) { return !t.hasAttribute("hidden"); });
+  }
+
+  /* panels: annotate + enhance (once) */
+  tabs.forEach(function (t) {
+    var p = tabPanel(t);
+    if (!p) return;
+    if (!p.getAttribute("data-su-ready")) {
+      p.setAttribute("data-su-ready", "1");
+      snapDefaults(p);
+      addSteppers(p);
+      addHow(p);
+      addActions(p, tabLabel(t));
+      on(p, "keydown", function (e) {
+        /* typing in a field is not tab navigation */
+        if (e.target && /^(INPUT|SELECT|TEXTAREA)$/.test(e.target.tagName)) return;
+        if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
+          var n = e.key === "ArrowRight" ? nextTab(t, 1) : nextTab(t, -1);
+          if (n) { e.preventDefault(); n.focus(); n.click(); }
+        }
+      });
+    }
+  });
+
+  function nextTab(from, dir) {
+    var list = visibleTabs();
+    var i = list.indexOf(from);
+    if (i < 0) i = 0;
+    return list[(i + dir + list.length) % list.length];
+  }
+
+  /* when a tab gets selected (click / deep link / swipe) keep things in sync */
+  tabs.forEach(function (t) {
+    on(t, "click", function () { select(t); });
+  });
+
+  on(strip, "keydown", function (e) {
+    var t = e.target;
+    if (!t || !t.classList || !t.classList.contains("su-ttab")) return;
+    var list = visibleTabs();
+    var i = list.indexOf(t);
+    if (i < 0) return;
+    var n = null;
+    if (e.key === "ArrowRight") n = list[(i + 1) % list.length];
+    if (e.key === "ArrowLeft") n = list[(i - 1 + list.length) % list.length];
+    if (e.key === "Home") n = list[0];
+    if (e.key === "End") n = list[list.length - 1];
+    if (n) { e.preventDefault(); n.focus(); select(n); }
+  });
+
+  function syncHash(t) {
+    var id = (t.id || "").replace("su-ttab-", "");
+    if (!id || !window.history || !history.replaceState) return;
+    try {
+      var url = location.pathname + location.search.replace(/([?&])tool=[^&]*/g, "$1")
+                                            .replace(/[?&]$/, "");
+      var sep = url.indexOf("?") >= 0 ? "&" : "?";
+      history.replaceState(null, "", url + sep + "tool=" + encodeURIComponent(id) + location.hash);
+    } catch (e) { /* file:// — ignore */ }
+  }
+
+  function autoScroll(t) {
+    if (!strip) return;
+    var left = t.offsetLeft - (strip.clientWidth - t.offsetWidth) / 2;
+    try { strip.scrollTo({ left: Math.max(0, left), behavior: reduce ? "auto" : "smooth" }); }
+    catch (e) { strip.scrollLeft = Math.max(0, left); }
+  }
+
+  /* deep link (?tool=age) — boots the right panel on load and on Back */
+  function fromHash() {
+    var m = /[?&]tool=([a-z0-9_-]+)/i.exec(location.search);
+    if (!m) return null;
+    var t = null;
+    tabs.forEach(function (x) { if (x.id === "su-ttab-" + m[1]) t = x; });
+    return t;
+  }
+  function applyDeepLink(focusIt) {
+    var t = fromHash();
+    if (!t || t.hasAttribute("hidden")) return;
+    select(t);
+    if (focusIt) t.focus();
+  }
+  applyDeepLink(false);
+  on(window, "popstate", function () { applyDeepLink(false); });
+
+  /* --------------------------------------------------------------- finder */
+  function norm(s) { return (s || "").toLowerCase().replace(/\s+/g, " ").trim(); }
+
+  function applyFilter() {
+    var q = find ? norm(find.value) : "";
+    var cat = hub.getAttribute("data-su-cat-active") || "all";
+    var shown = 0;
+    tabs.forEach(function (t) {
+      var hay = norm(tabLabel(t) + " " + (t.getAttribute("data-su-keywords") || ""));
+      var ok = (!q || hay.indexOf(q) >= 0) &&
+               (cat === "all" || t.getAttribute("data-su-cat") === cat);
+      if (ok) { t.removeAttribute("hidden"); shown++; } else { t.setAttribute("hidden", ""); }
+      var p = tabPanel(t);
+      if (p && !ok) { p.classList.remove("on"); p.setAttribute("hidden", ""); }
+    });
+    if (noneMsg) {
+      noneMsg.hidden = shown !== 0;
+      var qs = $("[data-su-tool-q]", noneMsg);
+      if (qs) qs.textContent = q || cat;
+    }
+    if ($("[data-su-tool-clear]", hub)) {
+      $("[data-su-tool-clear]", hub).hidden = !q;
+    }
+    var act = activeTab();
+    if (act && act.hasAttribute("hidden")) {
+      var first = visibleTabs()[0];
+      if (first) select(first);
+    }
+  }
+
+  if (find) {
+    var tmr = null;
+    on(find, "input", function () {
+      if (tmr) window.clearTimeout(tmr);
+      tmr = window.setTimeout(applyFilter, 120);
+    });
+    on(find, "keydown", function (e) {
+      if (e.key === "Escape") { find.value = ""; applyFilter(); }
+      if (e.key === "Enter") {
+        e.preventDefault();
+        var first = visibleTabs()[0];
+        if (first) { select(first); first.focus(); smoothTarget(); }
+      }
+    });
+  }
+
+  var clearBtn = $("[data-su-tool-clear]", hub);
+  on(clearBtn, "click", function () {
+    if (find) { find.value = ""; find.focus(); }
+    applyFilter();
+  });
+
+  $$("[data-su-tool-cat]", hub).forEach(function (c) {
+    on(c, "click", function () {
+      $$("[data-su-tool-cat]", hub).forEach(function (o) {
+        var on_ = o === c;
+        o.classList.toggle("on", on_);
+        o.setAttribute("aria-pressed", on_ ? "true" : "false");
+      });
+      hub.setAttribute("data-su-cat-active", c.getAttribute("data-su-tool-cat") || "all");
+      applyFilter();
+    });
+  });
+
+  function smoothTarget() {
+    smooth(hub, 0);
+  }
+
+  /* ------------------------------------------------------------------ swipe */
+  if (panelsBox) {
+    var x0 = null, y0 = null, lock = null;
+    on(panelsBox, "touchstart", function (e) {
+      if (e.touches.length !== 1) { x0 = null; return; }
+      x0 = e.touches[0].clientX;
+      y0 = e.touches[0].clientY;
+      lock = null;
+    }, { passive: true });
+    on(panelsBox, "touchmove", function (e) {
+      if (x0 === null || e.touches.length !== 1) return;
+      if (lock === null) {
+        var dx = e.touches[0].clientX - x0;
+        var dy = e.touches[0].clientY - y0;
+        if (Math.abs(dx) > 12 || Math.abs(dy) > 12) lock = Math.abs(dx) > Math.abs(dy) ? "x" : "y";
+      }
+    }, { passive: true });
+    on(panelsBox, "touchend", function (e) {
+      if (x0 === null || lock !== "x") { x0 = null; return; }
+      var dx = (e.changedTouches && e.changedTouches[0] ? e.changedTouches[0].clientX : x0) - x0;
+      x0 = null;
+      if (Math.abs(dx) < 55) return;
+      var cur = activeTab();
+      var n = nextTab(cur, dx < 0 ? 1 : -1);
+      if (n && n !== cur) { select(n); }
+    }, { passive: true });
+  }
+
+  /* ------------------------------------------------------------ next / top */
+  on(hub, "click", function (e) {
+    var nx = e.target && e.target.closest ? e.target.closest("[data-su-next]") : null;
+    if (nx) {
+      var cur = activeTab();
+      var n = nextTab(cur, 1);
+      if (n) { n.click(); n.focus(); smooth(hub, 0); }
+    }
+  });
+
+  on(topBtn, "click", function () { smooth(hub, 0); });
+  if (topBtn) {
+    on(window, "scroll", function () {
+      topBtn.hidden = (window.pageYOffset || doc.documentElement.scrollTop || 0) < 700;
+    }, { passive: true });
+  }
+
+  /* keyboard shortcut: "/" focuses the finder (tools page only, not in fields) */
+  on(doc, "keydown", function (e) {
+    if (e.key !== "/" || !find) return;
+    var t = e.target;
+    if (t && (/^(INPUT|SELECT|TEXTAREA)$/.test(t.tagName) || t.isContentEditable)) return;
+    if (find.offsetParent === null) return;
+    e.preventDefault();
+    find.focus();
+  });
+
+  applyFilter();
+})();
+
 </script>
 </body>
 </html>

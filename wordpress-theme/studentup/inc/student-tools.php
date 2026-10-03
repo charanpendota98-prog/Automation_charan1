@@ -82,9 +82,12 @@ function studentup_tools_assets() {
 	if ( is_admin() ) {
 		return;
 	}
+	// v198: ee layer = reader utilities (compare · reminder · print · text size ·
+	// in-article calculators). Separate file nunchi — tools-hub engine
+	// (studentup-tools.js) tools page lo mattrame load avutundi.
 	wp_enqueue_script(
-		'studentup-tools',
-		get_template_directory_uri() . '/assets/js/studentup-tools.js',
+		'studentup-reader',
+		get_template_directory_uri() . '/assets/js/studentup-reader-utils.js',
 		array(),
 		STUDENTUP_VERSION,
 		true
@@ -93,13 +96,13 @@ function studentup_tools_assets() {
 		wp_enqueue_script(
 			'studentup-opportunities',
 			get_template_directory_uri() . '/assets/js/studentup-opportunities.js',
-			array( 'studentup-tools' ),
+			array( 'studentup-reader' ),
 			STUDENTUP_VERSION,
 			true
 		);
 	}
 	wp_localize_script(
-		'studentup-tools',
+		'studentup-reader',
 		'STUDENTUP_TOOLS',
 		array(
 			'store' => 'studentup_tools_v1',

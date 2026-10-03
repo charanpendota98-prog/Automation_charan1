@@ -2,9 +2,9 @@
 Contributors: studentup
 Requires at least: 6.0
 Tested up to: 6.7
-Stable tag: 1.9.38
+Stable tag: 1.9.39
 Requires PHP: 7.4
-Version: 1.9.38
+Version: 1.9.39
 License: GNU General Public License v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Tags: news, education, blog, custom-logo, custom-menu, featured-images, translation-ready, right-sidebar, block-styles, wide-blocks
@@ -47,6 +47,10 @@ The theme ships a REST bridge (`inc/seo-bridge.php`). Use an account with `manag
 user tho App Password ivvandi (Administrator role).
 
 == Changelog ==
+
+= 1.9.39 =
+* v198 TOOLS ADVANCED: the Tools page is now a phone-first workbench — search box + category chips (Money · Eligibility · Exams · Career · Deadlines), a sticky tab strip with swipe, shareable ?tool= deep links, − / + stepper buttons on every number field (no keyboard needed), Copy / Share / Print / Reset row, and a "How this is calculated" panel with the source line for each tool. Works without JavaScript (all tools stay visible).
+* v198: eight tools in one neat card — in-hand salary, age checker, fee & concession, score with negative marking, last-date calendar, admit-card checklist, resume summary, syllabus tracker. Nothing is stored: no account, no upload, no cookie.
 
 = 1.9.38 =
 * v197 ENGAGE PACK: real daily quiz (server-rendered, works without JS, Quiz schema, streak + share) + reader polls (REST + no-JS vote, one vote per device, only counts stored).

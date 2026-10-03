@@ -1,7 +1,7 @@
 # studentup.in Auto-Blogger 🤖
 
 
-> **Verified counts (theme v1.9.38 build):** test suites **142/142** files · jsdom runtime **196/196** checks · PHP lint **97/97** files · theme audit **0/0** · **deep audit pass 1-4 31/31** · code audit **0/0**.
+> **Verified counts (theme v1.9.39 build):** test suites **143/143** files · jsdom runtime **225/225** checks · PHP lint **97/97** files · theme audit **0/0** · **deep audit pass 1-4 31/31** · code audit **0/0**.
 24/7 automatic blog posting system for **studentup.in** (WordPress) — runs on your Oracle Cloud instance.
 
 - **AI content:** Google Gemini (free tier) generates Telugu + English mix articles
@@ -882,16 +882,35 @@ bot tho draft chesi post chesthu vundali anni perfectga advanced menu build chey
 | Daily quiz | `inc/quiz.php` rebuilt: 25-question sourced bank, server-rendered questions (works with JavaScript off — form POST + nonce), Quiz JSON-LD, explained answers with source, streak + best + native share via `assets/js/studentup-engage.js`, dedicated `/daily-quiz/` page (`page-quiz.php`, created by *Run setup now*). The v123 bug (function never called → quiz missing on the live theme) is closed and gated by a test. |
 | Reader polls | `inc/polls.php` — daily poll (7-question bank + bot/owner override), one vote per device (one-way hashed voter, raw IP never stored), 20-second rate limit, counts in `wp_options` with autoload OFF, REST route `studentup/v1/poll`, and a plain form POST fallback so voting works without JavaScript. |
 | Daily bot | `autoblog/publish_lane.py` — evening auto-publish that only touches drafts clearing **every** gate (official source URL meta · 700+ words · live Rank Math score ≥ 80 · fresh · no placeholder text) and verifies the publish readback. `autoblog/engage_push.py` pushes the daily quiz post and the poll question to the theme (idempotent by poll id). CLI: `--auto-publish`, `--auto-publish-dry`, `--daily-engage`; `AUTO_PUBLISH_DAILY=1` adds the publish step to `--daily`. |
-| Deploy proof | `python run.py --verify-deploy` checks the **live** site after the zip upload: theme version 1.9.38+, mega menu markup, menu/engage JS, quiz + poll on the home, `/daily-quiz/`, served CSS classes, icon sprite, sitemap entry and the poll REST route. Every failure prints the exact next step (upload zip / Run setup now / purge cache). |
+| Deploy proof | `python run.py --verify-deploy` checks the **live** site after the zip upload: theme version 1.9.39+, mega menu markup, menu/engage JS, quiz + poll on the home, `/daily-quiz/`, served CSS classes, icon sprite, sitemap entry and the poll REST route. Every failure prints the exact next step (upload zip / Run setup now / purge cache). |
 | Preview | Mega nav rendered by the same builder for every preview page, real quiz + poll widgets on the home and on a new English `/pages/daily-quiz.html`, and `tools/build_sprite.py` generates the inline icon sprite from the theme's own icon set (no more blank icon boxes). The offline single-file bundle now has 20 tabs and no dead links. |
 
 **Proof:** `tests/v197_test.py` (10 gates) · **142/142 suites** · php-lint **97/97** · parity PIN-TO-PIN · theme audit 0/0 · deep audit 31/31 · cwv 0/0 · visual 100/100.
+
+### v198 — tools advanced (phone-first, neat, zero guesswork)
+
+Owner ask (2026-10-03): *"tools em avasaram ledu [on home], tools and UI advanced ga
+vundali neat ga phone lo easy ga click vachelaga"*.
+
+| What | Detail |
+| --- | --- |
+| One clean card, 8 tools | in-hand salary · age checker · fee & concession · score with negative marking · last-date calendar · admit-card checklist · resume summary · syllabus tracker. One tool visible at a time — no wall. |
+| Finder | search box (`/` shortcut on desktop) filters the tools as you type, with an honest empty state; category chips (Money · Eligibility · Exams · Career · Deadlines) carry live counts. |
+| Phone ergonomics | sticky tab strip under the header with scroll-snap + left/right swipe, 48 px tap targets everywhere, − / + stepper buttons on every number field so the keypad is optional, one field per row under 620 px. |
+| Result handling | Copy result · Share (native sheet, WhatsApp fallback) · Print (trimmed print stylesheet) · Reset restores your defaults — per tool. |
+| Trust (E-E-A-T) | every tool carries a "How this is calculated" panel with its formula and the official source it follows. |
+| Deep links | `/tools/?tool=age` is shareable, bookmarkable and Back/Forward-safe. |
+| No-JS + privacy | `<noscript>` fallback lists every tool when JavaScript is off; the engine stores nothing (no cookie, no localStorage, no network call). |
+| Perf | engine is ~17 KB deferred, loaded on the Tools page only; its selectors stay out of the inline critical CSS (45 KB cap respected). |
+| Nothing lost | the v120 reader utilities that shared the old file (compare rail, deadline reminder `.ics`, print/PDF, text-size buttons, in-article age/fee/syllabus calculators) now live in `assets/js/studentup-reader-utils.js` and are enqueued everywhere they render — v198 C7 + jsdom 8 checks prove each one still works. |
+
+**Proof:** `tests/v198_test.py` (7 gates) · `tests/runtime/jsdom_runtime_test.js` +29 behavioural checks (finder, chips, sticky, deep link, steppers, reset, real results + the v120 compare/reminder/print/text-size/age-calculator layer, restored in v198) · **143/143 suites** · jsdom **225/225** · php-lint **97/97**.
 
 ### v195 — A) PER-TEMPLATE CRITICAL CSS · B) HUB PAGES · C) AUTHOR E-E-A-T 🚀
 
 User ask: "A) per-template critical CSS → Speed Index fix · B) hub pages + internal links ON · C) author/editorial pages + Person schema — anni cheyu".
 
-**A. Per-template critical CSS (theme 1.9.38-dev)**
+**A. Per-template critical CSS (theme 1.9.39-dev)**
 
 | File | Inline size | Ekkada |
 |---|---|---|

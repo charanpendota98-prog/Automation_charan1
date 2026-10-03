@@ -1,5 +1,5 @@
 /* ==========================================================================
-   StudentUp — WorldClass v2  (theme 1.9.38 · v197)
+   StudentUp — WorldClass v2  (theme 1.9.39 · v198)
    Mobile-first design layer. style.css tarvata load avutundi — kotha markup
    avasaram ledu, unna classes ne premium ga upgrade chestundi.
    Rules: 17px Telugu-friendly base · 44px tap targets · safe-area ·
@@ -705,3 +705,130 @@ body.dark .su-quiz-streak{background:#241a10;border-color:#5a3a17;color:#f0b96a}
   .su-quiz-streak{margin-left:0}
 }
 @media(prefers-reduced-motion:reduce){ .su-quiz-bar>i,.su-poll-bar{transition:none} }
+
+/* ================================================================== v198 TOOLS */
+/* Tools page: advanced, neat, phone-first. Okka look lo okka tool · 48px taps ·
+   finder + chips · swipe + deep links (?tool=) · stepper buttons · result
+   actions · "how it is calculated". Engine: assets/js/studentup-tools.js. */
+:root{ --tap-lg:48px; --su-top:70px }
+
+/* ---- tool finder (search + category chips) ---- */
+.su-toolfind{ position:relative; margin:12px 0 10px }
+.su-toolfind input[type="search"],.su-toolfind input[type="text"]{
+  width:100%; min-height:var(--tap-lg); padding:0 44px 0 42px;
+  border:1px solid var(--line-2); border-radius:var(--r); background:var(--card);
+  font-size:15px; font-weight:600; color:var(--ink);
+  -webkit-appearance:none; appearance:none
+}
+.su-toolfind input[type="search"]:focus,.su-toolfind input[type="text"]:focus{
+  outline:none; border-color:var(--blue); box-shadow:0 0 0 3px rgba(31,95,191,.16)
+}
+.su-toolfind input::placeholder{ color:var(--muted); font-weight:500 }
+.su-toolfind-ic{ position:absolute; left:13px; top:50%; transform:translateY(-50%);
+  color:var(--muted); display:grid; place-items:center; pointer-events:none }
+.su-toolfind-clear{ position:absolute; right:6px; top:50%; transform:translateY(-50%);
+  width:38px; height:38px; border:0; border-radius:10px; background:var(--soft);
+  color:var(--ink-2); cursor:pointer; display:grid; place-items:center }
+.su-toolfind-clear[hidden]{ display:none }
+.su-toolfind-none{ margin:8px 2px 0; font-size:13.5px; color:var(--muted) }
+
+/* ---- category chips (scroll row on phone) ---- */
+.su-toolcats{ display:flex; gap:8px; overflow-x:auto; padding:2px 2px 8px;
+  scroll-snap-type:x proximity; -webkit-overflow-scrolling:touch;
+  scrollbar-width:none }
+.su-toolcats::-webkit-scrollbar{ display:none }
+.su-tcat{ flex:0 0 auto; min-height:var(--tap-lg); padding:0 16px; border-radius:999px;
+  border:1px solid var(--line-2); background:var(--card); color:var(--ink-2);
+  font-size:14px; font-weight:700; cursor:pointer; scroll-snap-align:start;
+  display:inline-flex; align-items:center; gap:7px; touch-action:manipulation }
+.su-tcat b{ font-weight:800; color:var(--muted); font-size:12.5px }
+.su-tcat.on,.su-tcat[aria-pressed="true"]{ background:var(--navy); border-color:var(--navy); color:#fff }
+.su-tcat.on b,.su-tcat[aria-pressed="true"] b{ color:#cfe0f7 }
+.su-tcat:focus-visible,.su-ttab:focus-visible,.su-tact:focus-visible,.su-tstep-btn:focus-visible,
+.su-tnext:focus-visible,.su-tools-top:focus-visible{
+  outline:3px solid rgba(31,95,191,.45); outline-offset:2px
+}
+
+/* ---- sticky, snap-scrolling tab strip ---- */
+.su-tooltabs{ position:sticky; top:var(--su-top); z-index:22;
+  display:flex; gap:8px; overflow-x:auto; padding:10px var(--gut);
+  margin:0; background:var(--card); border-bottom:1px solid var(--line);
+  scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch;
+  scrollbar-width:none }
+.su-tooltabs::-webkit-scrollbar{ display:none }
+.su-ttab{ min-height:var(--tap-lg); padding:0 16px; white-space:nowrap;
+  scroll-snap-align:start; touch-action:manipulation }
+.su-ttab[hidden]{ display:none }
+.su-ttab[aria-selected="true"]{ box-shadow:0 6px 16px rgba(11,36,71,.18) }
+/* v198: sticky tab strip needs the card to stop clipping (overflow:hidden
+   sticky ni champestundi). Card shape same — children have their own radii. */
+.su-tools{ overflow:visible }
+/* studentup.js header shrink aithe strip kuda kinda ki — gap ledu */
+.header.su-head-small ~ main .su-tooltabs{ top:58px }
+.su-toolpanel{ scroll-margin-top:calc(var(--su-top) + var(--tap-lg) + 10px) }
+
+/* ---- stepper buttons (− / + ) around number fields ---- */
+.su-tstep{ display:flex; align-items:stretch; gap:6px }
+.su-tstep input{ flex:1 1 auto; min-width:0; text-align:center }
+.su-tstep-btn{ flex:0 0 auto; width:var(--tap-lg); min-height:var(--tap-lg);
+  border:1px solid var(--line-2); border-radius:12px; background:var(--soft);
+  color:var(--navy); font-size:20px; font-weight:800; line-height:1; cursor:pointer;
+  display:grid; place-items:center; touch-action:manipulation;
+  -webkit-user-select:none; user-select:none }
+.su-tstep-btn:active{ transform:scale(.96); background:#e7eefb }
+
+/* ---- result actions (copy · share · print · reset) ---- */
+.su-tool-actions{ display:flex; flex-wrap:wrap; gap:8px; margin:10px 0 4px }
+.su-tact{ min-height:var(--tap-lg); padding:0 14px; border:1px solid var(--line-2);
+  border-radius:12px; background:var(--card); color:var(--ink-2);
+  font-size:13.5px; font-weight:700; cursor:pointer; display:inline-flex;
+  align-items:center; gap:7px; touch-action:manipulation }
+.su-tact:active{ transform:scale(.98) }
+.su-tact-copy{ border-color:#bcd3f2; background:#f4f8ff; color:var(--blue-ink) }
+
+/* ---- "how this is calculated" ---- */
+.su-tool-how{ margin:10px 0 0; border:1px dashed var(--line-2); border-radius:12px;
+  padding:10px 12px; background:var(--soft) }
+.su-tool-how>summary{ cursor:pointer; font-size:13.5px; font-weight:700; color:var(--blue-ink);
+  min-height:32px; display:flex; align-items:center }
+.su-tool-how-t{ margin:8px 0 0; font-size:13px; color:var(--muted); line-height:1.6 }
+
+/* ---- next tool + back-to-tools ---- */
+.su-tool-nav{ margin:14px 0 2px }
+.su-tnext{ width:100%; min-height:var(--tap-lg); border:1px dashed var(--line-2);
+  border-radius:14px; background:var(--card); color:var(--navy);
+  font-size:14.5px; font-weight:800; cursor:pointer; touch-action:manipulation }
+.su-tnext:active{ background:var(--soft) }
+.su-tools-top{ position:fixed; left:12px; z-index:30;
+  bottom:calc(env(safe-area-inset-bottom,0px) + 132px);
+  min-height:var(--tap-lg); padding:0 16px; border-radius:999px;
+  border:1px solid var(--line-2); background:var(--card); color:var(--navy);
+  font-size:13.5px; font-weight:800; cursor:pointer; box-shadow:var(--sh-1) }
+.su-tools-top[hidden]{ display:none }
+
+/* ---- phone layout: one field per row so nothing is cramped ---- */
+@media(max-width:620px){
+  .su-fields{ grid-template-columns:1fr; max-width:none }
+  .su-toolpanel{ padding:14px var(--gut) 18px }
+  .su-toolcats{ margin:0 -4px }
+  .su-tools-top{ bottom:calc(env(safe-area-inset-bottom,0px) + 148px) }
+}
+
+/* ---- dark mode ---- */
+body.dark .su-toolfind input,body.dark .su-tcat,body.dark .su-tact,
+body.dark .su-tnext,body.dark .su-tools-top{ background:var(--card); color:var(--ink) }
+body.dark .su-tstep-btn{ background:#16263f; border-color:var(--line); color:#dbe7f8 }
+body.dark .su-tool-how{ background:#111d31; border-color:#26405f }
+body.dark .su-tool-how>summary{ color:#9cc0f0 }
+body.dark .su-tact-copy{ background:#16263f; border-color:#3d6fb5; color:#cfe0f7 }
+
+/* ---- print (readers save results on paper) ---- */
+@media print{
+  .su-tooltabs,.su-toolcats,.su-toolfind,.su-tool-actions,.su-tool-nav,
+  .su-tools-top,.su-anchor,.su-bottomnav,.su-bnav{ display:none !important }
+  .su-toolpanel{ display:block !important }
+  .su-tools{ border:0; box-shadow:none }
+}
+@media(prefers-reduced-motion:reduce){
+  .su-tstep-btn,.su-tact{ transition:none }
+}

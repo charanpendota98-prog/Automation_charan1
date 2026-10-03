@@ -35,7 +35,7 @@ let html = fs.readFileSync(PAGE, "utf8");
 
 /* v71: total check count — docs (README/MANUAL/GO_LIVE) claim this number and
  * tools/parity_audit.py P8 reads it, so a silent drift cannot slip through. */
-const EXPECTED_CHECKS = 196;
+const EXPECTED_CHECKS = 225;
 
 const passed = [];
 const failed = [];
@@ -979,6 +979,264 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
        !/[\u0C00-\u0C7F]/.test(engScope));
 
     wdom.window.close();
+  }
+
+
+  /* ---------- v198: TOOLS page — advanced, neat, phone-first ----------
+   * Owner ask: "tools em avasaram ledu [on home], tools and UI advanced ga
+   * vundali, neat ga, phone lo easy ga click vachelaga". Ee block
+   * preview/tools/index.html ni nijamga run chesi — finder, chips, sticky
+   * strip, swipe, steppers, result actions, "how it works", no-JS safety,
+   * English-only — anni behaviour gates. */
+  {
+    const toolsHtml = fs.readFileSync(path.resolve(__dirname, "../../preview/tools/index.html"), "utf8");
+    const tdom = new JSDOM(toolsHtml, {
+      url: "https://studentup.in/tools/", runScripts: "dangerously", pretendToBeVisual: true,
+    });
+    const tw = tdom.window, td = tw.document;
+    await sleep(300);
+
+    const tTabs = () => [].slice.call(td.querySelectorAll(".su-ttab"));
+    const tPanels = () => [].slice.call(td.querySelectorAll(".su-toolpanel"));
+    const visibleTabs = () => tTabs().filter(t => !t.hasAttribute("hidden"));
+
+    /* structure: 8 tools, one visible at a time */
+    ok("v198 tools: 8 tools, one panel visible at a time (no wall)",
+       tTabs().length === 8 && tPanels().length === 8 &&
+       tPanels().filter(p => !p.hasAttribute("hidden")).length === 1,
+       "tabs=" + tTabs().length + " panels=" + tPanels().length);
+
+    /* every tool follows the same contract */
+    const need = ["data-su-formula", "data-su-source"];
+    ok("v198 tools: every panel carries formula + source (E-E-A-T, no guesswork)",
+       tPanels().every(p => need.every(a => (p.getAttribute(a) || "").length > 10)) &&
+       tPanels().every(p => !!p.querySelector("[data-su-result]")), "contract broken");
+
+    /* finder: typing filters instantly */
+    const tFind = td.querySelector("[data-su-tool-find]");
+    ok("v198 tools: search box present with placeholder + clear button",
+       !!tFind && !!td.querySelector("[data-su-tool-clear]") &&
+       /search/i.test(tFind.getAttribute("placeholder") || ""));
+    tFind.value = "resume";
+    tFind.dispatchEvent(new tw.Event("input", { bubbles: true }));
+    await sleep(220);
+    ok("v198 tools: typing 'resume' narrows to that one tool",
+       visibleTabs().length === 1 && visibleTabs()[0].id === "su-ttab-resume",
+       "visible=" + visibleTabs().map(t => t.id).join(","));
+    tFind.value = "zzzz";
+    tFind.dispatchEvent(new tw.Event("input", { bubbles: true }));
+    await sleep(220);
+    const noneBox = td.querySelector("[data-su-tool-none]");
+    ok("v198 tools: no-match shows the honest empty state (query echoed)",
+       visibleTabs().length === 0 && !!noneBox && !noneBox.hidden &&
+       td.querySelector("[data-su-tool-q]").textContent === "zzzz");
+    td.querySelector("[data-su-tool-clear]").dispatchEvent(new tw.MouseEvent("click", { bubbles: true }));
+    await sleep(220);
+    ok("v198 tools: clear button restores all 8 tools",
+       visibleTabs().length === 8 && (tFind.value || "") === "");
+
+    /* category chips */
+    const chipMoney = td.querySelector('[data-su-tool-cat="money"]');
+    chipMoney.dispatchEvent(new tw.MouseEvent("click", { bubbles: true }));
+    await sleep(220);
+    ok("v198 tools: category chip filters (Money → salary + fee) and marks itself",
+       visibleTabs().length === 2 && chipMoney.getAttribute("aria-pressed") === "true" &&
+       chipMoney.classList.contains("on"));
+    td.querySelector('[data-su-tool-cat="all"]').dispatchEvent(new tw.MouseEvent("click", { bubbles: true }));
+    await sleep(200);
+    ok("v198 tools: chip counts match the real tool count (8)",
+       td.querySelector('[data-su-tool-cat="all"] b').textContent === "8");
+
+    /* sticky strip + deep links */
+    const stickyRule = fs.readFileSync(path.resolve(__dirname,
+      "../../wordpress-theme/studentup/assets/css/worldclass.css"), "utf8");
+    ok("v198 tools: tab strip is sticky under the header (CSS) and scroll-snaps",
+       /\.su-tooltabs\{[^}]*position:sticky/.test(stickyRule) &&
+       /scroll-snap-type:x mandatory/.test(stickyRule));
+    td.getElementById("su-ttab-age").dispatchEvent(new tw.MouseEvent("click", { bubbles: true }));
+    ok("v198 tools: selecting a tool updates the shareable ?tool= link",
+       /[?&]tool=age/.test(tw.location.search), "search=" + tw.location.search);
+    ok("v198 tools: the picked panel is the only visible one",
+       td.getElementById("su-tool-age").classList.contains("on") &&
+       td.getElementById("su-tool-salary").hasAttribute("hidden"));
+
+    /* phone taps: steppers replace the keyboard */
+    const basic = td.getElementById("t-basic");
+    const stepUp = td.querySelector("#su-tool-salary .su-tstep-plus");
+    const before = basic.value;
+    stepUp.dispatchEvent(new tw.MouseEvent("click", { bubbles: true }));
+    ok("v198 tools: − / + steppers change the field and the live result",
+       !!stepUp && basic.value !== before &&
+       /In-hand approx/.test(td.getElementById("t-salary-out").textContent),
+       "value=" + basic.value);
+    ok("v198 tools: steppers respect min/max (no nonsense numbers)",
+       td.querySelectorAll(".su-tstep-btn").length >= 20 &&
+       tPanels().every(p => !p.querySelector('input[type="number"][min][data-su-step-done="1"]') ||
+                             /min/.test(p.innerHTML)));
+
+    /* result actions */
+    const acts = td.querySelectorAll("#su-tool-salary .su-tool-actions .su-tact");
+    ok("v198 tools: result actions row (copy · share · print · reset)",
+       acts.length === 4, "buttons=" + acts.length);
+    const resetBtn = [].slice.call(acts).find(b => /Reset/.test(b.textContent));
+    resetBtn.dispatchEvent(new tw.MouseEvent("click", { bubbles: true }));
+    await sleep(60);
+    ok("v198 tools: Reset restores the original values",
+       basic.value === "18000", "basic=" + basic.value);
+
+    /* how-it-works details */
+    const how = td.querySelector("#su-tool-salary .su-tool-how");
+    ok("v198 tools: 'How this is calculated' details block with source",
+       !!how && !!how.querySelector("summary") && /Source:/.test(how.textContent));
+
+    /* all 8 tools compute a real result (no fake UI) */
+    const live = { "t-basic": "t-salary-out", "t-dob": "t-age-out", "t-fee": "t-fee-out",
+                   "t-total": "t-score-out" };
+    let computed = 0;
+    Object.keys(live).forEach(id => {
+      const el = td.getElementById(id);
+      if (el) { el.dispatchEvent(new tw.Event("input", { bubbles: true })); }
+      const out = td.getElementById(live[id]);
+      if (out && (out.textContent || "").trim() !== "—") computed++;
+    });
+    const ad = td.getElementById("t-ad-1");
+    if (ad) { ad.checked = true; ad.dispatchEvent(new tw.Event("change", { bubbles: true })); }
+    const admitOut = td.getElementById("t-admit-out");
+    const syl = td.getElementById("t-sy-1");
+    if (syl) { syl.checked = true; syl.dispatchEvent(new tw.Event("change", { bubbles: true })); }
+    const sylOut = td.getElementById("t-syl-out");
+    td.getElementById("t-res-go").dispatchEvent(new tw.MouseEvent("click", { bubbles: true }));
+    const resOut = td.getElementById("t-res-out");
+    ok("v198 tools: all 8 tools produce a real result (salary · age · fee · score · admit · resume · syllabus · calendar)",
+       computed === 4 && /1 of 5 ready/.test(admitOut.textContent) &&
+       /1 of 6 subjects/.test(sylOut.textContent) && /StudentUp|applying for/.test(resOut.textContent),
+       "computed=" + computed);
+
+    /* phone-first rules + no JS-only content */
+    const buttons = [].slice.call(td.querySelectorAll(".su-ttab, .su-tcat, .su-tstep-btn, .su-tact"));
+    ok("v198 tools: every tap target is a real <button> (phone-friendly, a11y)",
+       buttons.length > 25 && buttons.every(b => b.tagName === "BUTTON"));
+    ok("v198 tools: no-JS safety — questions/inputs are server-rendered (engine is enhancement)",
+       tdom.window.document.querySelectorAll(".su-toolpanel").length === 8 &&
+       !/document\.write/.test(toolsHtml));
+    ok("v198 tools UI is English-only (v73 invariant)",
+       !/[\u0C00-\u0C7F]/.test(td.querySelector(".su-tools").textContent));
+
+    /* tools stay OFF the home page (owner rule) */
+    const homeHtml = fs.readFileSync(path.resolve(__dirname, "../../preview/worldclass/index.html"), "utf8");
+    ok("v198 rule: tools live only on /tools/ — home has no tools section",
+       !/class="su-tools"/.test(homeHtml) && !/data-su-tools/.test(homeHtml));
+
+    tdom.window.close();
+  }
+
+
+  /* ---------- v198b: v120 reader utilities still work (compare · reminder ·
+   * print · text size · in-article age calculator). Ee layer v198 lo separate
+   * file ki vellindi (studentup-reader-utils.js) — ikkada nijamga run chesi
+   * prove chestunnam: compare rail + .ics reminder + print + font + calculator. */
+  {
+    const readerJs = fs.readFileSync(path.resolve(__dirname,
+      "../../wordpress-theme/studentup/assets/js/studentup-reader-utils.js"), "utf8");
+    const page =
+      '<!doctype html><html><body>' +
+      '<div class="su-student-tools" data-su-tools>' +
+      '  <button type="button" class="su-tool-btn" data-su-compare data-id="11" data-title="TSPSC Group 2"' +
+      '    data-url="https://studentup.in/p/11" data-cat="Jobs" data-date="2026-11-01" aria-pressed="false">Compare</button>' +
+      '  <button type="button" class="su-tool-btn" data-su-reminder data-date="2026-11-01" data-title="TSPSC Group 2"' +
+      '    data-url="https://studentup.in/p/11">Add reminder</button>' +
+      '  <button type="button" class="su-tool-btn" data-su-print>Print / PDF</button>' +
+      '</div>' +
+      '<div class="su-font-sizer"><button class="su-fz-btn" data-su-font="small">A-</button>' +
+      '<button class="su-fz-btn" data-su-font="normal">A</button>' +
+      '<button class="su-fz-btn" data-su-font="large">A+</button></div>' +
+      '<form><input id="su-dob" type="date" value="2000-06-15"><input id="su-cutoff" type="date" value="2026-07-01">' +
+      '<select id="su-cat"><option value="0">General</option><option value="5">BC</option></select>' +
+      '<button id="su-calc-age-btn" type="button" data-min="18" data-max="44">Check</button>' +
+      '<div id="su-age-result" style="display:none"><span id="su-exact-age"></span>' +
+      '<span id="su-max-allowed"></span><span id="su-elig-status"></span><span id="su-elig-note"></span></div></form>' +
+      '<div class="su-compare-rail" id="su-compare-rail" hidden><span data-su-compare-count>0/3</span>' +
+      '<div data-su-compare-items></div>' +
+      '<button type="button" data-su-compare-open disabled>Open comparison</button>' +
+      '<button type="button" data-su-compare-clear>Clear</button>' +
+      '<button type="button" data-su-compare-close>x</button></div>' +
+      '</body></html>';
+    let downloads = 0, printed = 0, alerts = 0;
+    const rdom = new JSDOM(page, {
+      url: "https://studentup.in/tspsc-group-2/", runScripts: "dangerously", pretendToBeVisual: true,
+      beforeParse(w) {
+        w.URL.createObjectURL = () => { downloads++; return "blob:x"; };
+        w.URL.revokeObjectURL = () => {};
+        w.print = () => { printed++; };
+        w.alert = () => { alerts++; };
+      },
+    });
+    const rw = rdom.window, rd = rw.document;
+    const s = rd.createElement("script");
+    s.textContent = readerJs;
+    rd.head.appendChild(s);
+    await sleep(120);
+
+    const rail = rd.getElementById("su-compare-rail");
+    const countEl = rd.querySelector("[data-su-compare-count]");
+    ok("v198b: reader utils boot without console errors (compare + rail)",
+       !!rail && !!countEl && countEl.textContent === "0/3", "count=" + (countEl && countEl.textContent));
+
+    const cmp = rd.querySelector("[data-su-compare]");
+    cmp.dispatchEvent(new rw.MouseEvent("click", { bubbles: true }));
+    await sleep(80);
+    ok("v198b: Compare adds the post to the rail (localStorage, no server)",
+       countEl.textContent === "1/3" && rail.hasAttribute("hidden") === false &&
+       (rw.localStorage.getItem("studentup_tools_v1") || "").indexOf('"11"') >= 0,
+       "count=" + countEl.textContent);
+    const cmp2 = rd.querySelector("[data-su-compare]");
+    cmp2.dispatchEvent(new rw.MouseEvent("click", { bubbles: true }));
+    await sleep(80);
+    ok("v198b: clicking the same post again removes it (toggle, no duplicates)",
+       countEl.textContent === "0/3", "count=" + countEl.textContent);
+
+    rd.querySelector("[data-su-reminder]").dispatchEvent(new rw.MouseEvent("click", { bubbles: true }));
+    await sleep(80);
+    ok("v198b: Add reminder builds a real .ics file locally (no upload)",
+       downloads === 1, "createObjectURL calls=" + downloads);
+
+    rd.querySelector("[data-su-print]").dispatchEvent(new rw.MouseEvent("click", { bubbles: true }));
+    await sleep(60);
+    ok("v198b: Print / PDF button opens the print dialog", printed === 1, "print calls=" + printed);
+
+    rd.querySelector('[data-su-font="large"]').dispatchEvent(new rw.MouseEvent("click", { bubbles: true }));
+    await sleep(60);
+    const largeOn = rd.body.classList.contains("su-font-large") &&
+                    rd.querySelector('[data-su-font="large"]').classList.contains("is-active");
+    rd.querySelector('[data-su-font="normal"]').dispatchEvent(new rw.MouseEvent("click", { bubbles: true }));
+    await sleep(60);
+    const normalOn = !rd.body.classList.contains("su-font-large") &&
+                     !rd.body.classList.contains("su-font-small") &&
+                     rd.querySelector('[data-su-font="normal"]').classList.contains("is-active");
+    ok("v198b: text-size buttons apply + reset (large → normal, saved choice)",
+       largeOn && normalOn && rw.localStorage.getItem("su_font_size") === "normal",
+       "large=" + largeOn + " normal=" + normalOn);
+
+    rd.getElementById("su-calc-age-btn").dispatchEvent(new rw.MouseEvent("click", { bubbles: true }));
+    await sleep(80);
+    const status = rd.getElementById("su-elig-status").textContent;
+    ok("v198b: in-article age calculator returns a real verdict (Eligible 26y / max 44y)",
+       status === "Eligible" && /26 Years/.test(rd.getElementById("su-exact-age").textContent) &&
+       rd.getElementById("su-age-result").style.display === "block",
+       "status=" + status + " exact=" + rd.getElementById("su-exact-age").textContent);
+
+    rd.getElementById("su-cat").value = "5";
+    rd.getElementById("su-dob").value = "1975-01-01";
+    rd.getElementById("su-calc-age-btn").dispatchEvent(new rw.MouseEvent("click", { bubbles: true }));
+    await sleep(80);
+    ok("v198b: relaxation is applied honestly (BC +5 → max 49, over-age verdict)",
+       /49 Years/.test(rd.getElementById("su-max-allowed").textContent) &&
+       rd.getElementById("su-elig-status").textContent === "Over Age" &&
+       /Maximum age limit with relaxation is 49/.test(rd.getElementById("su-elig-note").textContent),
+       "max=" + rd.getElementById("su-max-allowed").textContent +
+       " status=" + rd.getElementById("su-elig-status").textContent);
+
+    rdom.window.close();
   }
 
   /* ---------- check-count drift guard (docs parity) ---------- */

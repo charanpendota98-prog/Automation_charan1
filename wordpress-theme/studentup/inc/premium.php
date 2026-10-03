@@ -313,25 +313,35 @@ add_action( 'wp_footer', 'studentup_bottom_nav', 5 );
 
 
 /**
- * v191 WORLDCLASS: calculator wall → ONE neat tabbed card.
+ * v191 WORLDCLASS + v198 TOOLS ADVANCED: calculator wall → ONE neat tabbed card.
  *
- * Enduku: modata home lo 8 tool blocks oka daggara oka render ayyevi
- * (salary · age · fee · score · calendar · admit card · resume · syllabus) —
- * phone lo adi "widget wall", reader 3 screens scroll chesina first job card
- * kanipinchedi kaadu. Ippudu aa 8 okate card lo tabs ga — okka sari lo okkati,
- * migatha antha neat ga hidden. Prathi tab keyboard tho kuda switch avutundi
- * (arrow keys), screen reader ki role="tab"/aria-selected correct ga untundi.
+ * v198 lo add ayyindi (owner ask: "tools and UI advanced ga vundali, neat ga,
+ * phone lo easy ga click vachelaga"):
+ *   · TOOL FINDER — search box + category chips (Money · Eligibility · Exams ·
+ *     Career · Deadlines) → 8 tools lo kavalsinadi 2 taps lo.
+ *   · STICKY STRIP — tab bar header kinda stick avutundi; active tab auto-scroll;
+ *     phone lo left/right swipe tho tool maaruthundi (engine lo untundi).
+ *   · DEEP LINK — /tools/?tool=age shareable + Back pani chestundi.
+ *   · HOW IT WORKS — prathi tool ki formula + source line (data attributes →
+ *     assets/js/studentup-tools.js renders a <details>). E-E-A-T: reader ki
+ *     "ela vachindi" telustundi.
+ *   · ACTIONS — Copy result · Share · Print · Reset (engine renders; original
+ *     tool markup as-it-is untundi, so 8 modules em marchaledu).
+ *
+ * Markup contract (parity audit + tests): .su-tools[data-su-tools] ›
+ * .su-toolfind + .su-toolcats + .su-tooltabs[data-su-tool-strip] › .su-ttab
+ * (role=tab) + .su-toolpanels[data-su-tool-swipe] › .su-toolpanel (role=tabpanel).
  */
 function studentup_tools_tabs() {
 	$tools = array(
-		array( 'id' => 'salary',   'icon' => 'wallet',   'label' => 'In-hand salary',    'fn' => 'studentup_salary_calc' ),
-		array( 'id' => 'age',      'icon' => 'person',   'label' => 'Age checker',        'fn' => 'studentup_age_calculator_block' ),
-		array( 'id' => 'fee',      'icon' => 'doc',      'label' => 'Fee & concession',   'fn' => 'studentup_fee_calculator_block' ),
-		array( 'id' => 'score',    'icon' => 'chart',    'label' => 'Score & negative',   'fn' => 'studentup_score_calculator_block' ),
-		array( 'id' => 'calendar', 'icon' => 'calendar', 'label' => 'Last-date calendar', 'fn' => 'studentup_job_calendar' ),
-		array( 'id' => 'admit',    'icon' => 'ticket',   'label' => 'Admit card helper',  'fn' => 'studentup_admit_card_block' ),
-		array( 'id' => 'resume',   'icon' => 'doc',      'label' => 'Resume maker',       'fn' => 'studentup_resume_maker_block' ),
-		array( 'id' => 'syllabus', 'icon' => 'book',     'label' => 'Syllabus tracker',   'fn' => 'studentup_syllabus_tracker_block' ),
+		array( 'id' => 'salary',   'icon' => 'wallet',   'label' => 'In-hand salary',      'fn' => 'studentup_salary_calc',              'cat' => 'money',        'keys' => 'salary in hand pay gross net da hra pay slip 7th cpc', 'formula' => 'Gross = Basic × (1 + DA% + HRA%); In-hand = Gross − deductions (NPS, tax).', 'source' => '7th CPC fitment table + your department pay slip' ),
+		array( 'id' => 'age',      'icon' => 'person',   'label' => 'Age checker',          'fn' => 'studentup_age_calculator_block',     'cat' => 'eligibility',  'keys' => 'age eligibility dob relaxation obc sc st pwd ex servicemen cutoff', 'formula' => 'Age is counted on the cutoff date; category relaxation is added to the upper limit.', 'source' => 'the notification’s age table (TSPSC/APPSC/SSC)' ),
+		array( 'id' => 'fee',      'icon' => 'doc',      'label' => 'Fee & concession',     'fn' => 'studentup_fee_calculator_block',     'cat' => 'money',        'keys' => 'fee application fee concession sc st obc ews payment challan', 'formula' => 'Payable = base fee × category share; exemptions are shown as ₹0.', 'source' => 'the official notification fee table' ),
+		array( 'id' => 'score',    'icon' => 'chart',    'label' => 'Score & negative',     'fn' => 'studentup_score_calculator_block',   'cat' => 'exams',        'keys' => 'score marks negative marking answer key expected cutoff', 'formula' => 'Marks = correct − (wrong × negative mark per question).', 'source' => 'the exam’s marking scheme' ),
+		array( 'id' => 'calendar', 'icon' => 'calendar', 'label' => 'Last-date calendar',   'fn' => 'studentup_job_calendar',             'cat' => 'deadlines',    'keys' => 'last date deadline calendar reminder exam date', 'formula' => 'Only confirmed dates from posts are listed; nothing is estimated.', 'source' => 'every post’s verified last-date field' ),
+		array( 'id' => 'admit',    'icon' => 'ticket',   'label' => 'Admit card helper',    'fn' => 'studentup_admit_card_block',         'cat' => 'exams',        'keys' => 'admit card hall ticket download centre instructions', 'formula' => 'Checklist follows the standard hall-ticket instructions.', 'source' => 'the exam authority’s instruction sheet' ),
+		array( 'id' => 'resume',   'icon' => 'doc',      'label' => 'Resume maker',         'fn' => 'studentup_resume_maker_block',       'cat' => 'career',       'keys' => 'resume cv bio data government format application', 'formula' => 'Fields fill a plain government-format summary — no account, nothing stored.', 'source' => 'standard government application format' ),
+		array( 'id' => 'syllabus', 'icon' => 'book',     'label' => 'Syllabus tracker',     'fn' => 'studentup_syllabus_tracker_block',   'cat' => 'career',       'keys' => 'syllabus tracker preparation progress subjects revision', 'formula' => 'Progress = ticked subjects ÷ total subjects.', 'source' => 'the exam’s official syllabus' ),
 	);
 	$tools = array_values(
 		array_filter(
@@ -344,32 +354,81 @@ function studentup_tools_tabs() {
 	if ( ! $tools ) {
 		return;
 	}
+	$cats   = array(
+		'all'         => __( 'All tools', 'studentup' ),
+		'money'       => __( 'Money', 'studentup' ),
+		'eligibility' => __( 'Eligibility', 'studentup' ),
+		'exams'       => __( 'Exams', 'studentup' ),
+		'career'      => __( 'Career', 'studentup' ),
+		'deadlines'   => __( 'Deadlines', 'studentup' ),
+	);
+	$counts = array( 'all' => count( $tools ) );
+	foreach ( $tools as $t ) {
+		$c            = isset( $t['cat'] ) ? $t['cat'] : 'all';
+		$counts[ $c ] = isset( $counts[ $c ] ) ? $counts[ $c ] + 1 : 1;
+	}
 	?>
-	<section class="su-tools" id="tools" aria-label="<?php esc_attr_e( 'Free tools for students', 'studentup' ); ?>">
+	<section class="su-tools" id="tools" data-su-tools aria-label="<?php esc_attr_e( 'Free tools for students', 'studentup' ); ?>">
+		<?php /* v198 no-JS: JS lekapote tabs pani cheyyavu — appudu anni tools one below one chupinchandi (hidden content eppudu undakoodadu). */ ?>
+		<noscript><style>.su-toolpanel[hidden]{display:block!important}.su-tooltabs,.su-toolcats,.su-toolfind,.su-tools-top{display:none!important}</style></noscript>
 		<div class="su-tools-head">
 			<div class="sectionhead" style="margin:0 0 6px">
 				<div>
 					<h2><?php esc_html_e( 'Free tools for students', 'studentup' ); ?></h2>
-					<p><?php esc_html_e( 'Tap a tab — okka sari lo okkati, screen clean ga untundi.', 'studentup' ); ?></p>
+					<p><?php esc_html_e( 'Search cheyandi leda tab tap cheyandi — okka sari lo okka tool, screen clean ga untundi.', 'studentup' ); ?></p>
 				</div>
 			</div>
+
+			<div class="su-toolfind">
+				<label class="screen-reader-text" for="su-tool-search"><?php esc_html_e( 'Search tools', 'studentup' ); ?></label>
+				<span class="su-toolfind-ic" aria-hidden="true"><?php echo studentup_ui_icon( 'search', 17 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?></span>
+				<input id="su-tool-search" type="search" data-su-tool-find autocomplete="off" enterkeyhint="search"
+					placeholder="<?php esc_attr_e( 'Search a tool — salary, age, fee, resume…', 'studentup' ); ?>">
+				<button type="button" class="su-toolfind-clear" data-su-tool-clear hidden
+					aria-label="<?php esc_attr_e( 'Clear search', 'studentup' ); ?>"><?php echo studentup_ui_icon( 'close', 15 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?></button>
+			</div>
+
+			<div class="su-toolcats" role="group" aria-label="<?php esc_attr_e( 'Filter tools by category', 'studentup' ); ?>">
+				<?php foreach ( $cats as $cid => $clabel ) : ?>
+					<?php if ( 'all' !== $cid && empty( $counts[ $cid ] ) ) { continue; } ?>
+					<button type="button" class="su-tcat<?php echo 'all' === $cid ? ' on' : ''; ?>" data-su-tool-cat="<?php echo esc_attr( $cid ); ?>"
+						aria-pressed="<?php echo 'all' === $cid ? 'true' : 'false'; ?>"><?php echo esc_html( $clabel ); ?> <b><?php echo (int) ( isset( $counts[ $cid ] ) ? $counts[ $cid ] : 0 ); ?></b></button>
+				<?php endforeach; ?>
+			</div>
+			<p class="su-toolfind-none" data-su-tool-none hidden>
+				<?php esc_html_e( 'Ee peru tho tool ledu:', 'studentup' ); ?> “<span data-su-tool-q></span>”.
+				<?php esc_html_e( 'Try “salary”, “age” leda “resume”.', 'studentup' ); ?>
+			</p>
 		</div>
-		<div class="su-tooltabs" role="tablist" aria-label="<?php esc_attr_e( 'Student tools', 'studentup' ); ?>">
+
+		<div class="su-tooltabs" role="tablist" aria-label="<?php esc_attr_e( 'Student tools', 'studentup' ); ?>" data-su-tool-strip>
 			<?php foreach ( $tools as $i => $t ) : ?>
 				<button type="button" class="su-ttab" role="tab"
 					id="su-ttab-<?php echo esc_attr( $t['id'] ); ?>"
 					aria-controls="su-tool-<?php echo esc_attr( $t['id'] ); ?>"
 					aria-selected="<?php echo esc_attr( 0 === $i ? 'true' : 'false' ); ?>"
-					tabindex="<?php echo esc_attr( 0 === $i ? '0' : '-1' ); ?>"><?php echo studentup_ui_icon( isset( $t['icon'] ) ? $t['icon'] : 'bolt', 16 ); // v192: emoji badulu SVG ?> <span><?php echo esc_html( $t['label'] ); ?></span></button>
+					tabindex="<?php echo esc_attr( 0 === $i ? '0' : '-1' ); ?>"
+					data-su-cat="<?php echo esc_attr( isset( $t['cat'] ) ? $t['cat'] : 'all' ); ?>"
+					data-su-keywords="<?php echo esc_attr( isset( $t['keys'] ) ? $t['keys'] : '' ); ?>"><?php echo studentup_ui_icon( isset( $t['icon'] ) ? $t['icon'] : 'bolt', 16 ); // v192: emoji badulu SVG ?> <span><?php echo esc_html( $t['label'] ); ?></span></button>
 			<?php endforeach; ?>
 		</div>
-		<?php foreach ( $tools as $i => $t ) : ?>
-			<div class="su-toolpanel<?php echo esc_attr( 0 === $i ? ' on' : '' ); ?>"
-				id="su-tool-<?php echo esc_attr( $t['id'] ); ?>" role="tabpanel"
-				aria-labelledby="su-ttab-<?php echo esc_attr( $t['id'] ); ?>"<?php echo esc_attr( 0 === $i ? '' : ' hidden' ); ?>>
-				<?php call_user_func( $t['fn'] ); ?>
-			</div>
-		<?php endforeach; ?>
+
+		<div class="su-toolpanels" data-su-tool-swipe>
+			<?php foreach ( $tools as $i => $t ) : ?>
+				<div class="su-toolpanel<?php echo esc_attr( 0 === $i ? ' on' : '' ); ?>"
+					id="su-tool-<?php echo esc_attr( $t['id'] ); ?>" role="tabpanel"
+					aria-labelledby="su-ttab-<?php echo esc_attr( $t['id'] ); ?>"
+					data-su-formula="<?php echo esc_attr( isset( $t['formula'] ) ? $t['formula'] : '' ); ?>"
+					data-su-source="<?php echo esc_attr( isset( $t['source'] ) ? $t['source'] : '' ); ?>"<?php echo esc_attr( 0 === $i ? '' : ' hidden' ); ?>>
+					<?php call_user_func( $t['fn'] ); ?>
+					<div class="su-tool-nav">
+						<button type="button" class="su-tnext" data-su-next><?php echo studentup_ui_icon( 'arrow', 15 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> <?php esc_html_e( 'Next tool', 'studentup' ); ?></button>
+					</div>
+				</div>
+			<?php endforeach; ?>
+		</div>
+
+		<button type="button" class="su-tools-top" data-su-tool-top hidden><?php echo studentup_ui_icon( 'arrow', 14 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> <?php esc_html_e( 'Back to tools', 'studentup' ); ?></button>
 	</section>
 	<?php
 }
