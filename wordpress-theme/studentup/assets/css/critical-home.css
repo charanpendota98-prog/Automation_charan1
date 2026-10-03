@@ -878,7 +878,7 @@ body.dark .menubtn{
 .usedhead{ margin-bottom:9px }
 .usedhead b{ font-size:15.5px }
 .usedcard>div{ min-width:0 }
-.usedcard .ucount{ position:absolute; top:8px; right:9px; margin:0; padding:2px 8px; border-radius:999px;
+.usedcard .ucount{ display:none!important; position:absolute; top:8px; right:9px; margin:0; padding:2px 8px; border-radius:999px;
   background:var(--soft); color:var(--ink-2); border:1px solid var(--line);
   font-size:10.5px; font-weight:800; font-style:normal; line-height:1.5; white-space:nowrap }
 .usedcard .ucount:empty{ display:none }
