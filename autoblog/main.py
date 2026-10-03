@@ -1875,6 +1875,10 @@ def main() -> int:
                         help="v149: command finish ayyaka Telegram alert pampu (--daily-quiz tho)")
     parser.add_argument("--daily-quiz", action="store_true",
                         help="v148: prepare today's quiz as a WordPress DRAFT (never publishes)")
+    parser.add_argument("--import-quiz", default="", metavar="FILE",
+                        help="v200: intake daily 20 exam-wise questions (JSON/list) from external bot into quiz bank")
+    parser.add_argument("--export-quiz-channel", default="", choices=["telegram", "whatsapp"],
+                        help="v200: export today's 20 questions formatted for Telegram or WhatsApp channel broadcast")
     parser.add_argument("--daily-engage", action="store_true",
                         help="v197: roju quiz post + reader poll ni site ki push chey (daily engage)")
     parser.add_argument("--publish", action="store_true",
@@ -2314,6 +2318,18 @@ def main() -> int:
             pass
         if report.get("error"):
             return 2
+        return 0
+
+    if getattr(args, "import_quiz", None):
+        from . import quiz_intake
+        res = quiz_intake.ingest_questions(args.import_quiz)
+        print(f"  ✅ Ingested {res['count']} exam-wise questions for {res['day']}")
+        return 0
+
+    if getattr(args, "export_quiz_channel", None):
+        from . import quiz_intake
+        output = quiz_intake.export_channel_broadcast(target_channel=args.export_quiz_channel)
+        print(output)
         return 0
 
     if args.daily_quiz or args.daily_quiz_dry:

@@ -1399,6 +1399,64 @@ body.dark .su-viral-btn{ background:rgba(22,101,52,.2); border-color:#166534; co
 body.dark .su-float-bar{ background:#0f1c30; border-color:#1e3355 }
 body.dark .su-fb-title{ color:#e2e8f0 }
 
+/* Exam-Wise Quiz Tabs */
+.su-quiz-exams{ display:flex; gap:6px; overflow-x:auto; padding:6px 0 12px; margin:0 0 10px; scrollbar-width:none; -webkit-overflow-scrolling:touch }
+.su-quiz-exams::-webkit-scrollbar{ display:none }
+.su-qtab{ appearance:none; border:1px solid var(--line-2,#e2e8f0); background:var(--soft,#f8fafc); color:var(--ink,#1e293b); font-size:12px; font-weight:750; padding:5px 13px; border-radius:999px; cursor:pointer; white-space:nowrap; transition:all .15s ease }
+.su-qtab:hover{ border-color:var(--blue,#2563eb); color:var(--blue,#2563eb); background:#fff }
+.su-qtab.active{ background:var(--navy,#0b2447); border-color:var(--navy,#0b2447); color:#fff; box-shadow:0 3px 10px rgba(11,36,71,.20) }
+body.dark .su-qtab{ background:#14243c; border-color:#1e3355; color:#cbd5e1 }
+body.dark .su-qtab.active{ background:var(--blue,#2563eb); border-color:var(--blue,#2563eb); color:#fff }
+
+/* Advanced Mock Exam & Aspirant Suite */
+.su-mock-bar{ display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:10px; background:var(--soft,#f8fafc); border:1px solid var(--line-2,#e2e8f0); border-radius:12px; padding:10px 14px; margin-bottom:12px }
+.su-mock-left, .su-mock-right{ display:flex; align-items:center; gap:8px; flex-wrap:wrap }
+.su-mock-timer{ display:inline-flex; align-items:center; gap:5px; font-size:12.5px; font-weight:800; font-variant-numeric:tabular-nums; background:#fff; border:1px solid var(--line,#cbd5e1); border-radius:8px; padding:4px 10px; color:var(--ink,#1e293b) }
+.su-mock-timer.urgent{ color:#dc2626; border-color:#fca5a5; background:#fef2f2; animation:su-pulse 1s infinite }
+.su-mock-toggle{ display:inline-flex; align-items:center; gap:6px; font-size:11.5px; font-weight:700; color:var(--muted,#64748b); cursor:pointer; user-select:none }
+.su-mock-toggle input{ margin:0; cursor:pointer }
+.su-mock-btn{ appearance:none; border:1px solid var(--line-2,#e2e8f0); background:#fff; color:var(--ink,#1e293b); font-size:11.5px; font-weight:750; border-radius:8px; padding:5px 10px; cursor:pointer; display:inline-flex; align-items:center; gap:4px; transition:all .15s ease }
+.su-mock-btn:hover{ border-color:var(--blue,#2563eb); color:var(--blue,#2563eb) }
+.su-mock-btn.active{ background:var(--blue,#2563eb); border-color:var(--blue,#2563eb); color:#fff }
+.su-palette{ display:flex; flex-wrap:wrap; gap:5px; padding:10px 0; border-top:1px dashed var(--line-2,#e2e8f0); margin-top:10px }
+.su-palette-pill{ appearance:none; width:28px; height:28px; border-radius:6px; border:1px solid var(--line,#cbd5e1); background:var(--soft,#f8fafc); color:var(--muted,#64748b); font-size:11px; font-weight:800; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; transition:all .15s }
+.su-palette-pill:hover{ border-color:var(--blue,#2563eb); color:var(--blue,#2563eb) }
+.su-palette-pill.correct{ background:#ecfdf5; border-color:#10b981; color:#047857 }
+.su-palette-pill.wrong{ background:#fef2f2; border-color:#ef4444; color:#b91c1c }
+.su-palette-pill.starred{ border-color:#f59e0b; box-shadow:inset 0 0 0 1px #f59e0b }
+.su-palette-pill.current{ border-color:var(--navy,#0b2447); outline:2px solid var(--blue,#2563eb) }
+.su-q-meta{ display:flex; align-items:center; justify-content:space-between; gap:6px; margin-bottom:8px }
+.su-q-tags{ display:inline-flex; align-items:center; gap:5px; flex-wrap:wrap }
+.su-q-badge{ font-size:10.5px; font-weight:800; text-transform:uppercase; letter-spacing:.03em; padding:2px 8px; border-radius:6px; background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe }
+.su-q-diff{ font-size:10px; font-weight:750; padding:2px 6px; border-radius:4px; background:#f1f5f9; color:#475569 }
+.su-q-diff.moderate{ background:#fef3c7; color:#92400e }
+.su-q-diff.hard{ background:#fee2e2; color:#991b1b }
+.su-q-star{ appearance:none; border:0; background:transparent; font-size:14px; color:#94a3b8; cursor:pointer; padding:2px 6px; border-radius:4px; line-height:1; transition:color .15s }
+.su-q-star:hover, .su-q-star.active{ color:#f59e0b }
+.su-scorecard{ display:none; background:linear-gradient(135deg,#0b2447,#1e3a8a); color:#fff; border-radius:16px; padding:20px; margin:16px 0; box-shadow:0 10px 25px rgba(11,36,71,.25) }
+.su-scorecard.visible{ display:block; animation:su-fade 0.25s ease-out }
+.su-scorecard-head{ display:flex; align-items:baseline; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,.15); padding-bottom:10px; margin-bottom:14px }
+.su-scorecard-title{ font-size:16px; font-weight:850; margin:0 }
+.su-scorecard-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(110px,1fr)); gap:10px; margin-bottom:14px }
+.su-scorecard-stat{ background:rgba(255,255,255,.08); border-radius:10px; padding:10px; text-align:center }
+.su-scorecard-stat b{ font-size:20px; font-weight:900; display:block; line-height:1.2 }
+.su-scorecard-stat span{ font-size:11px; opacity:.85; font-weight:600; text-transform:uppercase; letter-spacing:.02em }
+.su-scorecard-advice{ font-size:12.5px; line-height:1.5; background:rgba(255,255,255,.12); border-radius:10px; padding:10px 14px; margin-bottom:14px }
+.su-scorecard-acts{ display:flex; gap:8px; flex-wrap:wrap }
+body.dark .su-mock-bar{ background:#14243c; border-color:#1e3355 }
+body.dark .su-mock-timer{ background:#0b192e; border-color:#2a4365; color:#e2e8f0 }
+body.dark .su-mock-btn{ background:#0b192e; border-color:#2a4365; color:#cbd5e1 }
+body.dark .su-palette-pill{ background:#0b192e; border-color:#2a4365; color:#94a3b8 }
+body.dark .su-q-badge{ background:#1e3a8a; color:#93c5fd; border-color:#2563eb }
+body.dark .su-q-diff{ background:#1e293b; color:#cbd5e1 }
+@media print{
+  .su-mock-bar, .su-quiz-exams, .su-quiz-foot, .su-poll, .headactions, .site-header, .site-footer, .su-bottomnav{ display:none !important }
+  .su-q{ break-inside:avoid; border:1px solid #ccc !important; margin-bottom:12px !important }
+  .su-why{ display:block !important }
+}
+
+
+
 
 
 
