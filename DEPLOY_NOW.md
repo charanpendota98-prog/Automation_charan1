@@ -39,6 +39,19 @@ https://github.com/charanpendota98-prog/Automation_charan1/blob/arena/01a10001-a
 3. **Appearance → StudentUp Setup → Run setup now** (ఉన్నవి touch చేయదు, కొత్తవి సృష్టిస్తుంది)
 4. ✅ Verify (`view-source:` లో `studentup/style.css?ver=1.9.37`)
 
+## STEP 3b — Run setup (hub pages + editorial page) (2 నిమిషాలు) 🆕 v195
+
+After activating the theme: **Appearance → StudentUp Setup → Run setup now**.
+Idi ee kotha pages ni create chestundi (delete/overwrite cheyyadu):
+- Hub pages: `/ts-jobs-hub/` · `/ap-jobs-hub/` · `/central-jobs-hub/` · `/results-hub/` · `/scholarships-hub/` (footer menu lo links kuda)
+- `/editorial-team/` — author profile + verification process (E-E-A-T; AdSense/Google News reviewers idi chustaru)
+- Person schema + Organization.founder automatic ga vastayi.
+
+**Tarvata 3 నిమిషాలు:** Appearance → **StudentUp** → ఇవి నింపండి:
+- `Author name` = మీ నిజమైన పేరు · `Author role` (v195) · `Author expertise` (v195) · `Publishing since` (v195)
+- `Reviewer name` (v195) = draft review chesina నిజమైన వ్యక్తి పేరు (ఖాళీగా ఉంచితే "Sources verified: <date>" అని మాత్రమే చూపిస్తుంది — తప్పుడు "reviewed by" claim ఉండదు)
+- `Author photo URL` — Media Library లో ఫోటో upload చేసి URL paste చేయండి
+
 ## STEP 4 — Repair live pages (2 నిమిషాలు) ⭐ — ఒక్క click
 
 **Appearance → StudentUp Setup** → కింద **"Repair live pages (older sites)"** → **Repair live pages**
@@ -125,8 +138,9 @@ venv/bin/python run.py --daily --daily-no-send      # dry run
 | 5 | `/3452-2/` | 404 (delete అయ్యింది) |
 | 6 | `/ads.txt` | `google.com, pub-…` line |
 | 7 | `/privacy-policy/` | draft/redirect (canonical `/privacy/`) |
-| 8 | Lighthouse (mobile) | Speed Index ≤ 4.0s · `PAGE_HUNG` లేదు |
-| 9 | GSC | sitemap "Success" · indexed pages పెరుగుతున్నాయి |
+| 8 | `/ts-jobs-hub/` + `/editorial-team/` | pages load · footer లో hub links · Person/ItemList schema (`view-source` లో `"@type":"Person"`) |
+| 9 | Lighthouse (mobile) | Speed Index ≤ 4.0s · `PAGE_HUNG` లేదు (per-template critical CSS kotha inline layer) |
+| 10 | GSC | sitemap "Success" · indexed pages పెరుగుతున్నాయి |
 
 ## ROLLBACK (ఏదైనా తప్పు జరిగితే)
 

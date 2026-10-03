@@ -592,6 +592,93 @@ ADVERTISE = '''
   follow AdSense policies and limits.</div>
 '''
 
+
+# ---------------------------------------------------------------------------
+# v195: HUB pages + EDITORIAL TEAM page (theme inc/hubs.php + author-profile.php
+# design ne — so preview == real theme). Static list of the same posts the post
+# builder writes, so preview lo reader flow (hub → post) కనిపిస్తుంది.
+# ---------------------------------------------------------------------------
+HUB_CARDS = [
+    ("Telangana Government Jobs 2026", "ts-jobs",
+     "TSPSC, TS Police, DSC, Gurukulam and every Telangana state notification - latest first, with the official source link.",
+     [("TS Police Constable 2026: 8,400 posts notification details",
+       "../posts/upsc-junior-assistant-2026.html", "Official notification · apply dates"),
+      ("TSPSC Group 2 2026: hall ticket and exam pattern",
+       "../posts/upsc-junior-assistant-2026.html", "Hall ticket · preparation guide")]),
+    ("Andhra Pradesh Government Jobs 2026", "ap-jobs",
+     "APPSC, AP Police, AP DSC and AP state government notifications - apply dates, eligibility, official links.",
+     [("APPSC Group 1 2026: notification, vacancies and syllabus",
+       "../posts/engineering-internships-2026.html", "Notification · syllabus"),
+      ("AP Police SI 2026: physical test and eligibility",
+       "../posts/engineering-internships-2026.html", "Eligibility · physical test")]),
+    ("Central Government Jobs 2026", "central-jobs",
+     "SSC, UPSC, Railway, Bank, Defence and central government job notifications for Telugu students.",
+     [("UPSC Junior Assistant 2026: complete notification guide",
+       "../posts/upsc-junior-assistant-2026.html", "Notification · apply online"),
+      ("Engineering internships 2026: government openings",
+       "../posts/engineering-internships-2026.html", "Internship · stipend")]),
+    ("Exam Results & Hall Tickets 2026", "results",
+     "Every result and hall ticket link - TS, AP and central exams, updated as soon as the official site publishes.",
+     [("Hall ticket verification 2026: exam centre guidelines",
+       "../posts/upsc-junior-assistant-2026.html", "Hall ticket · centre rules")]),
+    ("Scholarships 2026 - Telangana, AP & Central", "scholarships",
+     "NSP, ePASS, AICTE and private scholarships with amounts, eligibility and last dates.",
+     [("NMMS scholarship 2026: amount, eligibility and last date",
+       "../posts/engineering-internships-2026.html", "Scholarship · official portal"),
+      ("Post-matric scholarship 2026: how to apply on ePASS",
+       "../posts/upsc-junior-assistant-2026.html", "ePASS · documents list")]),
+]
+
+
+def _hub_card(title: str, href: str, meta: str) -> str:
+    return (
+        '<article class="news su-hub-card"><a class="thumb thumb--auto" href="%s" aria-hidden="true" tabindex="-1">'
+        '<span class="su-cov"><span class="su-cov-cat">StudentUp</span><span class="su-cov-brand">StudentUp</span></span></a>'
+        '<div class="newsbody"><h3><a href="%s">%s</a></h3>'
+        '<div class="newsfoot"><span class="su-date">%s</span>'
+        '<a class="su-readmore" href="%s">View details →</a></div></div></article>'
+    ) % (href, href, title, meta, href)
+
+
+def _hub_body(entries) -> str:
+    out = ['<p>New notifications are added every day. Every entry links back to the official notification - always confirm the details there before applying.</p>']
+    for label, _slug, intro, cards in entries:
+        out.append('<h2 class="su-hub-h">%s</h2>' % label)
+        out.append('<p>%s</p>' % intro)
+        out.append('<div class="newsgrid">%s</div>' % "".join(_hub_card(t, h, m) for t, h, m in cards))
+        out.append('<p class="su-hub-more"><a class="su-viewall" href="../posts/upsc-junior-assistant-2026.html">See all %s →</a></p>' % label)
+    return "".join(out)
+
+
+HUBS_BODY = _hub_body(HUB_CARDS[:3])
+RESULTS_BODY = _hub_body(HUB_CARDS[3:4])
+SCHOLARSHIPS_BODY = _hub_body(HUB_CARDS[4:5])
+
+EDITORIAL_BODY = """
+<div class="su-ab su-ab--page" itemscope itemtype="https://schema.org/Person">
+  <div class="su-ab-body">
+    <h2 itemprop="name">Charan Pendota</h2>
+    <p class="su-ab-role" itemprop="jobTitle">Founder &amp; Content Writer</p>
+    <p itemprop="description">Charan Pendota writes and verifies government job, scholarship and exam updates for Telangana and Andhra Pradesh students. Every post starts from the official notification, and the source link stays visible so readers can check it themselves.</p>
+    <ul class="su-trust su-trust--expertise">
+      <li>Telangana &amp; AP government jobs</li><li>Exam patterns</li>
+      <li>Scholarships</li><li>Eligibility rules</li>
+    </ul>
+    <p class="su-ab-links"><a href="mailto:studentupinformative@gmail.com">Email</a> · <a href="https://t.me/studentup_in" rel="me noopener" target="_blank">Telegram channel</a></p>
+    <p class="su-ab-since">Publishing since 2026</p>
+  </div>
+</div>
+<h3>How every update is verified</h3>
+<ol class="su-ab-steps">
+  <li>We start from the official notification or the department website only.</li>
+  <li>Dates, fees, vacancies and eligibility go into the post exactly as published - nothing is estimated.</li>
+  <li>Every post links the official source so you can check it yourself.</li>
+  <li>A reader correction is published publicly with the updated date.</li>
+</ol>
+<h3>Corrections</h3>
+<p>Found a mistake? Write to the email above with the page link. Verified corrections are published with the updated date, and the post keeps a correction note.</p>
+"""
+
 PAGE_DEFS = [
     ("advertise", "Partner with us",
      "Advertise on studentup.in — labelled SPONSORED placements read by Telangana & Andhra Pradesh students. Availability and pricing shared personally on WhatsApp.",
@@ -614,6 +701,19 @@ PAGE_DEFS = [
     ("editorial-policy", "Editorial policy",
      "The 5 verification gates, official-source policy, correction deadline and advertising rules — how every studentup.in post is made.",
      "Editorial policy", "Every post is published only after clearing these 5 gates", EDITORIAL),
+    # v195: hubs (topic clusters) + editorial team (E-E-A-T) — theme inc/hubs.php.
+    ("ts-jobs-hub", "Telangana Government Jobs 2026",
+     "TSPSC, TS Police, DSC and every Telangana government job notification for 2026 — apply dates, eligibility and official links in one place.",
+     "Telangana Government Jobs 2026", "Every Telangana notification, latest first", HUBS_BODY),
+    ("results-hub", "Exam Results &amp; Hall Tickets 2026",
+     "TS, AP and central exam results plus hall ticket download links 2026 — updated as soon as the official website publishes them.",
+     "Exam Results &amp; Hall Tickets 2026", "Result and hall ticket links, latest first", RESULTS_BODY),
+    ("scholarships-hub", "Scholarships 2026 — Telangana, AP &amp; Central",
+     "NMMS, NSP, ePASS, AICTE and private scholarships 2026 with amounts, eligibility and last dates for Telugu students.",
+     "Scholarships 2026", "Amount, eligibility and last date — one page", SCHOLARSHIPS_BODY),
+    ("editorial-team", "Editorial team &amp; fact-checking",
+     "Who writes and verifies studentup.in — author profile, verification process and the public correction policy readers can hold us to.",
+     "Editorial team &amp; fact-checking", "Who writes, who verifies, how to report a mistake", EDITORIAL_BODY),
 ]
 
 FAVICON = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
@@ -663,6 +763,10 @@ SITEMAP = """<?xml version="1.0" encoding="UTF-8"?>
   <url><loc>https://studentup.in/pages/disclaimer.html</loc><lastmod>{d}</lastmod><priority>0.5</priority></url>
   <url><loc>https://studentup.in/pages/terms.html</loc><lastmod>{d}</lastmod><priority>0.5</priority></url>
   <url><loc>https://studentup.in/pages/editorial-policy.html</loc><lastmod>{d}</lastmod><priority>0.6</priority></url>
+  <url><loc>https://studentup.in/pages/ts-jobs-hub.html</loc><lastmod>{d}</lastmod><changefreq>daily</changefreq><priority>0.9</priority></url>
+  <url><loc>https://studentup.in/pages/results-hub.html</loc><lastmod>{d}</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://studentup.in/pages/scholarships-hub.html</loc><lastmod>{d}</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://studentup.in/pages/editorial-team.html</loc><lastmod>{d}</lastmod><priority>0.6</priority></url>
   <url><loc>https://studentup.in/tools/</loc><lastmod>{d}</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://studentup.in/posts/upsc-junior-assistant-2026.html</loc><lastmod>{d}</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://studentup.in/posts/engineering-internships-2026.html</loc><lastmod>{d}</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>

@@ -85,6 +85,8 @@ require_once get_template_directory() . '/inc/workspace.php'; // v172: My Worksp
 require_once get_template_directory() . '/inc/quiz.php';    // v123: real daily quiz
 require_once get_template_directory() . '/inc/shortlinks.php'; // v122: first-party /slug redirects + click counts
 require_once get_template_directory() . '/inc/livefix.php';   // v194: demo page noindex, attachment/empty-search 301 (live audit fixes)
+require_once get_template_directory() . '/inc/hubs.php';      // v195: hub pages (topic clusters) + ItemList schema + autolink targets
+require_once get_template_directory() . '/inc/author-profile.php'; // v195: Person/ProfilePage schema + editorial profile shortcode
 
 /**
  * "Most searched by students" — order okkate source (bot lo autoblog/breaking.py

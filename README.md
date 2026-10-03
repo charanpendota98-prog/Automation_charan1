@@ -1,7 +1,7 @@
 # studentup.in Auto-Blogger 🤖
 
 
-> **Verified counts (theme v1.9.37 build):** test suites **139/139** files · jsdom runtime **177/177** checks · PHP lint **88/88** files · theme audit **0/0** · **deep audit pass 1-4 31/31** · code audit **0/0**.
+> **Verified counts (theme v1.9.37 build):** test suites **140/140** files · jsdom runtime **177/177** checks · PHP lint **90/90** files · theme audit **0/0** · **deep audit pass 1-4 31/31** · code audit **0/0**.
 24/7 automatic blog posting system for **studentup.in** (WordPress) — runs on your Oracle Cloud instance.
 
 - **AI content:** Google Gemini (free tier) generates Telugu + English mix articles
@@ -681,7 +681,7 @@ Theme ni "world best" standards tho **repeatable ga audit** cheyyadaniki
 
 ```bash
 python3 tools/theme_audit_deep.py     # pass 1-4 · ✅ 31 pass · 0 warn · 0 fail
-node tools/php_lint.js                # 88/88
+node tools/php_lint.js                # 90/90
 python3 tools/cwv_audit.py            # CLS/a11y static (10 pages)
 ```
 
@@ -851,6 +851,40 @@ python run.py --forward-morning --forward-no-whatsapp       # Telegram mattrame
 | Cron | `30 6 * * *` (6:30 AM) — `crontab.example` lo line ready |
 
 Proof: `python tests/v189_test.py` (5 groups).
+
+### v195 — A) PER-TEMPLATE CRITICAL CSS · B) HUB PAGES · C) AUTHOR E-E-A-T 🚀
+
+User ask: "A) per-template critical CSS → Speed Index fix · B) hub pages + internal links ON · C) author/editorial pages + Person schema — anni cheyu".
+
+**A. Per-template critical CSS (theme 1.9.38-dev)**
+
+| File | Inline size | Ekkada |
+|---|---|---|
+| `critical-home.min.css` | **46.9 KB** | front page / blog home |
+| `critical-single.min.css` | 55.9 KB | single post (article head · apply bar · author box) |
+| `critical-archive.min.css` | **46.6 KB** | category · search · archive · 404 |
+| `critical.min.css` (union) | 51.1 KB | fallback (file lekapote / SCRIPT_DEBUG) |
+
+`inc/critical-css.php` → `studentup_critical_context()` batti pick chestundi; context file lekapote union file (theme eppudu break avvadu).
+**Fonts (honest note):** theme lo **webfont ledu** — `system-ui` + `Noto Sans Telugu` system fallback, so *subsetting avasaram ledu* (0 font bytes = 0 font delay). Test tho lock chesanu (`v195 A3`).
+
+**B. Hub pages + internal links**
+
+- `inc/hubs.php` — 5 hubs: `ts-jobs-hub` · `ap-jobs-hub` · `central-jobs-hub` · `results-hub` · `scholarships-hub`
+- `[studentup_hub cats="ts-jobs,results"]` shortcode — server-side cards (same `news` classes = pin-to-pin), 15-min transient cache, empty-hub honest fallback (dead-end ledu)
+- `CollectionPage` + `ItemList` JSON-LD (Google list identity)
+- Internal links: `the_content` engine **default ON** (max 3, ≥14-char phrase matches, headings/links/code protected) + `studentup_autolink_map` filter → hub pages kuda link targets (orphan fix)
+- Setup run: hub pages auto-create + footer menu lo link (`Run setup now` — idempotent)
+
+**C. Author / editorial E-E-A-T pack**
+
+- `/editorial-team/` page + `[studentup_author_profile]` shortcode → profile card (name · role · photo · bio · expertise chips · since · socials) + "How every update is verified" 4-gate list
+- `Person` schema (`#founder`, knowsAbout, sameAs, image, email) + `ProfilePage` (author archive) + `Organization.founder` + editorial `ContactPoint`
+- Reviewer honesty: `author_reviewer` option lo **nijamaina peru** unte "Reviewed by X"; lekapote "Sources verified: <date>" — fake review claim eppudu ledu
+
+**Proof:** `tests/v195_test.py` (9 gates) · `--test-all` **140/140** · php-lint **90/90** · parity **PIN-TO-PIN** · cwv **0/0** · visual **100/100** · zip **125 files · 1120 KB**.
+
+**Preview lo chudandi:** `/preview/pages/ts-jobs-hub.html` · `results-hub.html` · `scholarships-hub.html` · `editorial-team.html` (same shell + same CSS = real theme design).
 
 ### v194 — LIVE SITE AUDIT + CODE FIXES (studentup.in, 2026-10-03) 🔍
 

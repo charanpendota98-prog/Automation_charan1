@@ -1835,6 +1835,24 @@ body.dark .su-sidebar-ad{ background:#111c2f; border-color:var(--line-2) }
 /* v193: empty state for the category filter (honest UX — never a blank grid) */
 .su-empty{margin:14px 0 0;padding:14px 16px;border:1px dashed var(--line-2);border-radius:var(--r-lg);
   background:var(--soft);color:var(--muted);font-size:14.5px;text-align:center}
+
+/* ===== v195: HUB PAGES + EDITORIAL PROFILE (same tokens, no new design) ===== */
+.su-hub-h{margin:26px 0 12px;font-size:19px;color:var(--navy);position:relative;padding-left:13px}
+.su-hub-h::before{content:"";position:absolute;left:0;top:.16em;bottom:.16em;width:4px;border-radius:3px;background:linear-gradient(180deg,var(--orange),#e2701a)}
+.su-hub-more{margin:14px 0 4px}
+.su-hub-card .newsfoot{display:flex;justify-content:space-between;gap:10px;align-items:center}
+.su-hub-card .su-readmore{font-weight:800;font-size:12.5px;color:var(--navy)}
+.su-ab--page{display:flex;gap:16px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:var(--shadow)}
+.su-ab--page .su-ab-img{width:96px;height:96px;border-radius:16px;object-fit:cover;flex:0 0 auto}
+.su-ab--page h2{margin:0 0 2px;font-size:20px;color:var(--navy)}
+.su-ab-role{margin:0 0 8px;font-size:13px;font-weight:700;color:var(--muted)}
+.su-ab-steps{margin:6px 0 0 18px;padding:0}
+.su-ab-steps li{margin:6px 0;font-size:14.5px;color:var(--ink)}
+.su-trust--expertise{flex-wrap:wrap;overflow:visible;padding:8px 0 0}
+.su-ab-links{margin:10px 0 0;font-size:13.5px}
+.su-ab-since{margin:6px 0 0;font-size:12.5px;color:var(--muted)}
+@media(max-width:600px){.su-ab--page{flex-direction:column}}
+body.dark .su-ab--page{background:var(--card);border-color:var(--line)}
 </style>
 <style>
   /* demo-only helpers — WP theme lo ivi template nunchi vastayi */

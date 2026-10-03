@@ -40,6 +40,21 @@ function studentup_schema_head() {
 	if ( $desc ) {
 		$org['description'] = $desc;
 	}
+	// v195 (E-E-A-T): publisher identity ki nijamaina founder + review contact.
+	$org['founder'] = array( '@id' => $home . '#founder' );
+	if ( function_exists( 'studentup_contact_email' ) ) {
+		$mail = studentup_contact_email();
+		if ( $mail ) {
+			$org['contactPoint'] = array(
+				array(
+					'@type'       => 'ContactPoint',
+					'contactType' => 'editorial',
+					'email'       => $mail,
+					'availableLanguage' => array( 'te', 'en' ),
+				),
+			);
+		}
+	}
 	$site = array(
 		'@type'           => 'WebSite',
 		'@id'             => $home . '#website',

@@ -234,6 +234,36 @@ function studentup_repair_pages_run() {
 }
 
 /**
+ * v195: hub page body — [studentup_hub] shortcode + honest intro.
+ *
+ * @param string $slug Hub slug.
+ * @return string
+ */
+function studentup_setup_hub_body( $slug ) {
+	$plan = function_exists( 'studentup_hub_plan' ) ? studentup_hub_plan() : array();
+	if ( ! isset( $plan[ $slug ] ) ) {
+		return '<p>' . esc_html__( 'New notifications are added every day.', 'studentup' ) . '</p>';
+	}
+	$info = $plan[ $slug ];
+	$cats = implode( ',', (array) $info[1] );
+	return '<p>' . esc_html( $info[2] ) . '</p>' . "\n\n"
+		. '[studentup_hub cats="' . esc_attr( $cats ) . '"]' . "\n\n"
+		. '<p><em>' . esc_html__( 'Every entry links back to the official notification — always confirm the details there before applying.', 'studentup' ) . '</em></p>';
+}
+
+/**
+ * v195: editorial team page body — real person + verification process.
+ *
+ * @return string
+ */
+function studentup_setup_editorial_body() {
+	return '<p>' . esc_html__( 'StudentUp publishes government job, result, hall ticket and scholarship updates for Telangana and Andhra Pradesh students. This page names who writes and verifies them.', 'studentup' ) . '</p>'
+		. "\n\n[studentup_author_profile]\n\n"
+		. '<h3>' . esc_html__( 'Corrections', 'studentup' ) . '</h3>'
+		. '<p>' . esc_html__( 'Found a mistake? Write to the email above with the page link. Verified corrections are published with the updated date, and the post keeps a correction note.', 'studentup' ) . '</p>';
+}
+
+/**
  * Menu blueprint: header/mobile menu items in student-first order.
  *
  * @return array Items with type + key + label.
@@ -310,6 +340,44 @@ function studentup_run_first_setup() {
 	}
 	$report[] = sprintf( 'Policy pages ready (%d new).', $made );
 
+	// 2b. v195: hub pages + editorial team page (topic clusters + E-E-A-T).
+	$hubs = 0;
+	if ( function_exists( 'studentup_hub_plan' ) ) {
+		foreach ( studentup_hub_plan() as $hslug => $hinfo ) {
+			if ( get_page_by_path( $hslug ) instanceof WP_Post ) {
+				continue;
+			}
+			$hid = wp_insert_post(
+				array(
+					'post_title'   => $hinfo[0],
+					'post_name'    => $hslug,
+					'post_content' => studentup_setup_hub_body( $hslug ),
+					'post_status'  => 'publish',
+					'post_type'    => 'page',
+				)
+			);
+			if ( $hid && ! is_wp_error( $hid ) ) {
+				$pages[ $hslug ] = (int) $hid;
+				++$hubs;
+			}
+		}
+	}
+	if ( ! ( get_page_by_path( 'editorial-team' ) instanceof WP_Post ) ) {
+		$eid = wp_insert_post(
+			array(
+				'post_title'   => 'Editorial Team & Fact-checking',
+				'post_name'    => 'editorial-team',
+				'post_content' => studentup_setup_editorial_body(),
+				'post_status'  => 'publish',
+				'post_type'    => 'page',
+			)
+		);
+		if ( $eid && ! is_wp_error( $eid ) ) {
+			$pages['editorial-team'] = (int) $eid;
+		}
+	}
+	$report[] = sprintf( 'Hub pages ready (%d new) + editorial team page.', $hubs );
+
 	// 3. Header + mobile menu.
 	$menu_name = 'StudentUp Main';
 	$menu      = wp_get_nav_menu_object( $menu_name );
@@ -364,7 +432,14 @@ function studentup_run_first_setup() {
 		foreach ( (array) wp_get_nav_menu_items( $foot_id ) as $item ) {
 			$have[] = strtolower( $item->title );
 		}
-		foreach ( studentup_setup_pages() as $slug => $title ) {
+		$foot_items = studentup_setup_pages();
+		if ( function_exists( 'studentup_hub_plan' ) ) {
+			foreach ( studentup_hub_plan() as $hslug => $hinfo ) {
+				$foot_items[ $hslug ] = $hinfo[0];
+			}
+		}
+		$foot_items['editorial-team'] = 'Editorial Team & Fact-checking';
+		foreach ( $foot_items as $slug => $title ) {
 			if ( ! isset( $pages[ $slug ] ) || in_array( strtolower( $title ), $have, true ) ) {
 				continue;
 			}

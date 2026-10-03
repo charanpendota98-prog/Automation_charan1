@@ -44,6 +44,10 @@ msgstr ""
 msgid "4 · Deadline radar"
 msgstr ""
 
+#: inc/author-profile.php:120
+msgid "A reader correction is published publicly with the updated date."
+msgstr ""
+
 #: inc/workspace.php:170
 msgid "Active jobs board"
 msgstr ""
@@ -206,6 +210,14 @@ msgstr ""
 msgid "Copy link"
 msgstr ""
 
+#: inc/firstrun.php:262
+msgid "Corrections"
+msgstr ""
+
+#: inc/author-profile.php:118
+msgid "Dates, fees, vacancies and eligibility go into the post exactly as published — nothing is estimated."
+msgstr ""
+
 #: inc/workspace.php:125
 msgid "days left"
 msgstr ""
@@ -234,12 +246,21 @@ msgstr ""
 msgid "Eligible for you"
 msgstr ""
 
+#: inc/author-profile.php:88
 #: inc/cta.php:54
 msgid "Email"
 msgstr ""
 
+#: inc/firstrun.php:251
+msgid "Every entry links back to the official notification — always confirm the details there before applying."
+msgstr ""
+
 #: inc/cta.php:69
 msgid "Every job, exam date and result — first on your phone"
+msgstr ""
+
+#: inc/author-profile.php:119
+msgid "Every post links the official source so you can check it yourself."
 msgstr ""
 
 #: inc/workspace.php:167
@@ -252,6 +273,10 @@ msgstr ""
 
 #: inc/firstrun.php:129
 msgid "Fees, documents and eligibility for any government application are always as per the official notification."
+msgstr ""
+
+#: inc/firstrun.php:263
+msgid "Found a mistake? Write to the email above with the page link. Verified corrections are published with the updated date, and the post keeps a correction note."
 msgstr ""
 
 #: inc/cta.php:70
@@ -282,6 +307,10 @@ msgstr ""
 
 #: inc/template.php:375
 msgid "Home"
+msgstr ""
+
+#: inc/author-profile.php:115
+msgid "How every update is verified"
 msgstr ""
 
 #: inc/workspace.php:169
@@ -365,6 +394,10 @@ msgstr ""
 msgid "Latest updates"
 msgstr ""
 
+#: inc/hubs.php:189
+msgid "latest updates on the home page"
+msgstr ""
+
 #: inc/share.php:123
 msgid "More"
 msgstr ""
@@ -379,6 +412,14 @@ msgstr ""
 
 #: inc/template.php:173
 msgid "NEW"
+msgstr ""
+
+#: inc/firstrun.php:245
+msgid "New notifications are added every day."
+msgstr ""
+
+#: inc/hubs.php:188
+msgid "New notifications are added every day. Meanwhile:"
 msgstr ""
 
 #: comments.php:46
@@ -640,6 +681,10 @@ msgstr ""
 msgid "Social media"
 msgstr ""
 
+#: inc/author-box.php:45
+msgid "Sources verified:"
+msgstr ""
+
 #: inc/personal.php:45
 #: inc/workspace.php:143
 #: inc/workspace.php:201
@@ -664,6 +709,10 @@ msgstr ""
 
 #: inc/editor.php:49
 msgid "StudentUp blocks"
+msgstr ""
+
+#: inc/firstrun.php:260
+msgid "StudentUp publishes government job, result, hall ticket and scholarship updates for Telangana and Andhra Pradesh students. This page names who writes and verifies them."
 msgstr ""
 
 #: inc/premium.php:146
@@ -720,8 +769,16 @@ msgstr ""
 msgid "Vacancies"
 msgstr ""
 
+#: inc/hubs.php:153
+msgid "View details"
+msgstr ""
+
 #: inc/saved.php:220
 msgid "View saved here"
+msgstr ""
+
+#: inc/author-profile.php:117
+msgid "We start from the official notification or the department website only."
 msgstr ""
 
 #: inc/cta.php:74

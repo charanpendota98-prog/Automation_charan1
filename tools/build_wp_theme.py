@@ -37,7 +37,8 @@ REQUIRED = [
 ]
 SKIP_DIRS = {"__pycache__", ".git", "node_modules"}
 # v171: unminified critical.css build intermediate — zip lo critical.min.css ye ship
-PACKAGE_SKIP = {"critical.css"}
+PACKAGE_SKIP = {"critical.css", "critical-home.css", "critical-single.css",
+                "critical-archive.css"}   # v195: raw intermediates — .min.css ships
 # v175: packaging rules ni autoblog/theme_pack.py nunchi teesukuntunnam —
 # guardian + suites kuda same rules vadutayi (drift ledu). Fallback kinda undi.
 if str(ROOT) not in sys.path:

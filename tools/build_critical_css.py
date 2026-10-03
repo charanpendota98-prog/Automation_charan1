@@ -63,6 +63,57 @@ PREFIX = (
 KEYFRAMES = {"slide", "blip", "suPulse", "suSresIn"}
 MEDIA_KEEP = ("screen", "all", "print")
 
+# v195: per-template above-fold extras. Build-time ki teliyadu "home vs post" —
+# anduke moodu separate files: prathi template ki aa template first-paint lo
+# kanipinche components matrame (+ shared base). Result: phone lo inline CSS
+# chinnadi (fast FCP) + sariyaina look (no flash).
+# v195 CORE: anni templates ki nijamaina above-fold (header/nav/ticker/cards/
+# bottom nav/ad labels). Template files = CORE + aa template extras → inline
+# CSS chinnadi (fast FCP) + flash ledu. Union (critical.min.css) purathana
+# pedda list ne vadutundi — backward compat + fallback.
+CORE = {
+    ":root", ".wrap", ".screen-reader-text", ".skip-link", ".topbar", ".header",
+    ".headrow", ".logo", ".custom-logo", ".nav", ".menu-primary", ".sub-menu",
+    ".headactions", ".iconbtn", ".callbtn", ".menubtn", ".searchpanel",
+    ".bluebtn", ".tickerwrap", ".tclip", ".tmove", ".tlabel", ".sectionhead",
+    ".chips", ".chip", ".crumbs", ".newsgrid", ".news", ".news--lead",
+    ".su-progress", ".su-social", ".su-uicon", ".su-cta", ".su-viewall",
+    ".su-trust", ".su-adleader", ".su-adcard", ".su-adbelow", ".su-bottomnav",
+    ".su-bi", ".su-anchor", ".su-anchor-ad", ".su-tab", ".su-close",
+    ".su-hdr-saved", ".su-saved-count",
+}
+
+HOME_EXTRA = {
+    ".newsgrid", ".news", ".news--lead", ".su-hero", ".su-hero-in",
+    ".su-hero-title", ".su-hero-sub", ".su-hero-kicker", ".su-hero-stats",
+    ".chips", ".chip", ".sectionhead", ".su-trust", ".su-adleader",
+    ".su-adbelow", ".su-viewall", ".su-cta", ".su-bottomnav", ".su-bi",
+    ".su-anchor", ".su-anchor-ad", ".su-quizcard", ".usedwrap", ".usedhead",
+    ".usedgrid", ".usedcard", ".su-rail", ".su-railed", ".su-railad",
+}
+SINGLE_EXTRA = {
+    ".article-head", ".article-meta", ".article-content", ".crumbs",
+    ".su-apply", ".su-quickfacts", ".su-figure", ".su-tldr", ".su-author-meta",
+    ".su-ab", ".su-toc", ".su-byline", ".su-source", ".su-faq", ".su-adcard",
+    ".su-bottomnav", ".su-bi", ".su-quizcard", ".usedgrid", ".usedcard",
+    ".su-rail", ".su-railed",
+}
+ARCHIVE_EXTRA = {
+    ".newsgrid", ".news", ".news--lead", ".chips", ".chip", ".sectionhead",
+    ".su-sres", ".su-statebar", ".su-trend", ".su-live-dot", ".su-viewall",
+    ".su-adleader", ".su-cta", ".su-bottomnav", ".su-bi", ".su-page",
+    ".su-trust", ".usedgrid", ".usedcard",
+}
+TEMPLATES = {
+    "home": HOME_EXTRA,
+    "single": SINGLE_EXTRA,
+    "archive": ARCHIVE_EXTRA,
+}
+# Union (critical.min.css — template file lekapote fallback). 60 KB inline cap
+# dhaatithe ee tokens teesi malli build chestam (theme eppudu break avvadu).
+UNION_DROPPABLE = (".su-tools", ".su-tooltabs", ".su-toolpanel", ".su-fields",
+                   ".su-tout", ".su-mini", ".su-rail", ".su-railed", ".su-railad")
+
 
 def _split_rules(css: str):
     """Yield top-level blocks: ('rule', selector, body) | ('at', head, body)."""
@@ -116,7 +167,7 @@ def _norm(tok: str) -> str:
     return tok if tok.startswith(":") else tok.split(":")[0].split("::")[0]
 
 
-def _match(selector: str) -> bool:
+def _match(selector: str, extra=None, use_exact: bool = True) -> bool:
     """Above-fold selector aa?
 
     * class/id unna selector → component token (header/hero/news/…) undali.
@@ -135,6 +186,8 @@ def _match(selector: str) -> bool:
         return False
     if len(toks) == 1 and toks[0] in BODY_KEEP:
         return True
+    extra = extra or ()
+    exacts = EXACT if use_exact else ()
     classes = [t for t in toks if t.startswith(".") or t.startswith("#") or "[" in t]
     plain = {_norm(t) for t in toks if t not in classes}
     plain_ok = plain <= PLAIN_ELEMENTS
@@ -142,15 +195,23 @@ def _match(selector: str) -> bool:
         return plain_ok
     for tok in toks:
         base = _norm(tok)
-        if base in EXACT:
+        if base in exacts or base in extra:
             return True
         for p in PREFIX:
             if base.startswith(p):
                 return True
+        for p in extra:
+            if base.startswith(p + "-"):
+                return True
     return False
 
 
-def extract() -> tuple[str, int]:
+def extract(extra=None, drop=(), use_exact: bool = True) -> tuple[str, int]:
+    """Rules extract — extra tokens (template-specific) + drop list (cap guard).
+
+    use_exact=False → purathana broad EXACT list ni skip (template builds:
+    CORE + extras matrame, so inline CSS chinnadi).
+    """
     out, kept, total = [], 0, 0
     for src in SRC:
         for head, body in _split_rules(src.read_text(encoding="utf-8")):
@@ -166,7 +227,8 @@ def extract() -> tuple[str, int]:
                 continue
             if head_l.startswith("@media"):
                 inner_rules = re.findall(r"([^{}]+)\{([^{}]*)\}", body)
-                keep = [f"{sel}{{{inner}}}" for sel, inner in inner_rules if _match(sel)]
+                keep = [f"{sel}{{{inner}}}" for sel, inner in inner_rules
+                    if _match(sel, extra, use_exact) and not _dropped(sel, drop)]
                 if keep:
                     out.append(f"{head}{{{''.join(keep)}}}")
                     kept += 1
@@ -174,7 +236,8 @@ def extract() -> tuple[str, int]:
             if head_l.startswith("@supports") or head_l.startswith("@font-face"):
                 continue                 # below-fold / no webfonts
             # plain rule — selector list split on commas
-            parts = [s for s in head.split(",") if _match(s.strip())]
+            parts = [s for s in head.split(",")
+                 if _match(s.strip(), extra, use_exact) and not _dropped(s.strip(), drop)]
             if parts:
                 out.append(",".join(parts) + "{" + body + "}")
                 kept += 1
@@ -187,17 +250,49 @@ CAP_WARN = 56000   # inc/critical-css.php hard cap 60000 — inka dhaatithe inli
 CAP_FAIL = 59000   # build kuda fail — malli rule add cheyyakoodadu
 
 
-def main() -> int:
-    css, kept = extract()
-    OUT.write_text(css, encoding="utf-8")
-    # minify in place (reuse the conservative minifier)
+def _dropped(selector: str, drop) -> bool:
+    """Cap guard — drop list lo unna component tokens ni vaddu."""
+    if not drop:
+        return False
+    for tok in _tokens(selector):
+        base = _norm(tok)
+        for d in drop:
+            if base.startswith(d):
+                return True
+    return False
+
+
+def _write(path: Path, css: str) -> float:
+    """Write raw + min file, return min size in KB."""
     sys.path.insert(0, str(ROOT / "tools"))
     from minify_assets import minify_css  # noqa: E402
-    OUT_MIN.write_text(minify_css(css), encoding="utf-8")
-    raw_kb = OUT.stat().st_size / 1024
-    min_kb = OUT_MIN.stat().st_size / 1024
-    print(f"  ✅ critical.css  {raw_kb:.1f} KB raw → {min_kb:.1f} KB inline "
-          f"({kept} rules kept) → {OUT.relative_to(ROOT)}")
+    path.write_text(css, encoding="utf-8")
+    minp = path.with_name(path.stem + ".min.css")
+    minp.write_text(minify_css(css), encoding="utf-8")
+    return minp.stat().st_size / 1024
+
+
+def main() -> int:
+    # 1) Union file (fallback + backward compat) — cap guarded.
+    css, kept = extract()
+    min_kb = _write(OUT, css)
+    if min_kb * 1024 > CAP_WARN:
+        css, kept = extract(drop=UNION_DROPPABLE)
+        min_kb = _write(OUT, css)
+        print("  ⚠️  union cap guard: tool tokens dropped (inline < 60 KB)")
+    assert min_kb * 1024 < CAP_FAIL, f"critical.min.css {min_kb:.1f} KB — cap fail"
+    print(f"  ✅ critical.css  {min_kb:.1f} KB inline ({kept} rules) → "
+          f"{OUT.relative_to(ROOT)} (union fallback)")
+
+    # 2) Per-template files (v195) — phone lo chinnadi + exact first paint.
+    for name, extra in TEMPLATES.items():
+        base_out = OUT.with_name(f"critical-{name}.css")
+        t_css, t_kept = extract(extra=CORE | extra, drop=UNION_DROPPABLE,
+                                use_exact=False)
+        t_kb = _write(base_out, t_css)
+        assert t_kb * 1024 < CAP_FAIL, f"critical-{name}.min.css {t_kb:.1f} KB — cap fail"
+        print(f"     · {name:<7} {t_kb:.1f} KB inline ({t_kept} rules) → "
+              f"{base_out.relative_to(ROOT)}")
     # v192: cap guard — inc/critical-css.php 60000 B dhaatithe silent ga inline
     # skip chestundi (phone lo purathana design flash). Ippude aapi cheptham.
     size = OUT_MIN.stat().st_size
