@@ -27,8 +27,8 @@ https://raw.githubusercontent.com/charanpendota98-prog/Automation_charan1/arena/
 | Zip | size | sha256 (mundu 16) |
 | --- | --- | --- |
 | studentup-theme-1.9.39.zip | 135 files · 1172 KB | `91bbb167dd023788` |
-| studentup-bot-cron.zip | 355 files · 3949 KB | `a50d067ed67e989b` |
-| studentup-static-site.zip (optional) | 36 files · 562 KB | `a56fb690535fda6c` |
+| studentup-bot-cron.zip | 356 files · 3950 KB | `677e06cf3ffe8333` |
+| studentup-static-site.zip (optional) | 36 files · 579 KB | `5ae02ef8884caec4` |
 | studentup-seo-bridge-1.1.0.zip (optional) | 2 files | `2132fbe7d9653dfd` |
 
 > Puratana **1.9.36 zip** ippudu kit lo ledu (v198 lo auto-purge) — porapatuna puratana
@@ -147,7 +147,7 @@ Reudu clean ga pass aithe → bot complete. Telegram lo **✅ Publish** button k
 
 | Enti | State |
 | --- | --- |
-| Theme code (1.9.39) | ✅ complete + 143/143 suites · jsdom 225/225 · php-lint 97/97 · parity PIN-TO-PIN |
+| Theme code (1.9.39) | ✅ complete + 143/143 suites · jsdom 225/225 · php-lint 97/97 · parity PIN-TO-PIN · sprite gate (blank icons = build fail) |
 | Bot code | ✅ complete — offline dry-run lo anni network steps graceful ga skip (no crash, no fake success) |
 | Zip kit | ✅ fresh (theme 1.9.39 + bot v197/v198 modules) |
 | **Live site** | ⏳ inka **1.9.36** — mee **zip upload** tarvate 1.9.39 avutundi (ee file A section) |

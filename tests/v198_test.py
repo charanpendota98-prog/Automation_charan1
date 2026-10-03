@@ -156,6 +156,15 @@ def test_c5_preview_parity() -> None:
     assert html.count("data-su-result") >= 9, "result hooks ledu"
     assert html.count('data-su-tool-cat="') >= 6, "chips ledu"
     assert "<noscript><style>.su-toolpanel[hidden]" in html, "preview no-JS fallback ledu"
+    # v198.2: icons blank ga undakoodadu — prathi <use href="#su-i-X"> ki symbol
+    used = set(re.findall(r'<use href="#(su-i-[a-z0-9_-]+)"', html))
+    have = set(re.findall(r'<symbol id="(su-i-[a-z0-9_-]+)"', html))
+    assert used and not (used - have), f"blank icons: {sorted(used - have)}"
+    assert "su-uicon-search" in html, "search icon ledu (comment placeholder)"
+    # builder must generate the sprite from the theme source + refuse blank icons
+    build = read(ROOT / "tools" / "build_preview_tools.py")
+    assert "build_sprite" in build and "sprite_svg(_SPR.icon_paths())" in build, "sprite source ledu"
+    assert "blank icons" in build, "builder gate ledu (missing symbol → SystemExit)"
     # the engine on the page IS the theme file (single source of truth)
     engine = read(ENGINE)
     assert engine in html, "preview engine theme file kaadu (copy drift!)"

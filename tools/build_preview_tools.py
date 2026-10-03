@@ -13,6 +13,7 @@ kuda ade pani chestundi.
   salary · age · fee · score · calendar · admit · resume · syllabus
 """
 from pathlib import Path
+import re
 import sys
 
 ROOT = Path("/home/user/Automation_charan1")
@@ -23,7 +24,15 @@ OUT = ROOT / "preview" / "tools"
 THEME_CSS = "../../wordpress-theme/studentup"
 THEME_JS = ROOT / "wordpress-theme" / "studentup" / "assets" / "js" / "studentup-tools.js"
 
-SPRITE = B.SPRITE if hasattr(B, "SPRITE") else ""
+# v198.2: sprite ni theme icon source nunchi generate cheyyali — leda preview
+# page lo icons BLANK ga kanipistayi (bare `<use href="#su-i-...">`, symbol ledu).
+# v197 lo ide bug offline bundle ki fix ayyindi; ippudu tools page ki kuda.
+try:
+    import build_sprite as _SPR
+
+    SPRITE = _SPR.sprite_svg(_SPR.icon_paths())
+except Exception:  # noqa: BLE001 - builder standalone ga kuda run avvali
+    SPRITE = ""
 
 # (id, label, icon, cat, keywords, formula, source, body)
 TABS = [
@@ -234,7 +243,7 @@ PAGE = '''<!DOCTYPE html>
 
         <div class="su-toolfind">
           <label class="screen-reader-text" for="su-tool-search">Search tools</label>
-          <span class="su-toolfind-ic" aria-hidden="true"><!--SEARCHICON--></span>
+          <span class="su-toolfind-ic" aria-hidden="true"><svg class="su-uicon su-uicon-search" width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-search"/></svg></span>
           <input id="su-tool-search" type="search" data-su-tool-find autocomplete="off" enterkeyhint="search"
             placeholder="Search a tool — salary, age, fee, resume…">
           <button type="button" class="su-toolfind-clear" data-su-tool-clear hidden aria-label="Clear search">✕</button>
@@ -412,6 +421,15 @@ def main() -> int:
             + "\n<!-- tools engine: theme file inline (single source of truth) -->\n<script>\n"
             + engine + "\n</script>\n</body>\n</html>\n")
     out = OUT / "index.html"
+    # v198.2 gate: prathi `<use href="#su-i-X">` ki symbol undali — leda blank icons.
+    used = set(re.findall(r'<use href="#(su-i-[a-z0-9_-]+)"', html))
+    have = set(re.findall(r'<symbol id="(su-i-[a-z0-9_-]+)"', html))
+    missing = sorted(used - have)
+    if missing:
+        raise SystemExit(f"⛔ tools preview lo blank icons: {', '.join(missing)} — "
+                         f"sprite inject avvaledu (tools/build_sprite.py chudu)")
+    if not SPRITE:
+        raise SystemExit("⛔ sprite generate avvaledu — icons blank ga untayi")
     out.write_text(html, encoding="utf-8")
     print(f"  wrote tools/index.html ({len(html.encode())} bytes · {len(TABS)} tools · engine {len(engine.encode())} B)")
     return 0
