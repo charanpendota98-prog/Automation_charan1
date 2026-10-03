@@ -55,6 +55,7 @@ STYLES = [
 def body_inner(html: str) -> str:
     m = re.search(r"<body[^>]*>(.*?)</body>", html, re.S | re.I)
     body = m.group(1) if m else html
+    body = re.sub(r'src="\.\./assets/img/', 'src="assets/img/', body)
     return inline_theme_scripts(body)
 
 
