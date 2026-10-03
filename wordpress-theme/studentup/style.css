@@ -646,7 +646,7 @@ body.dark .su-lticker{background:linear-gradient(90deg,#081120,#0f1f38)}
 body.dark .tlabel-blue{background:linear-gradient(135deg,#1d4ed8,#2563eb);color:#fff}
 
 /* --- nav polish: current page pill + animated submenu + safe laptop scroll --- */
-.menu-primary{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}
+.menu-primary{flex-wrap:nowrap;overflow:visible;scrollbar-width:none;-ms-overflow-style:none}
 .menu-primary::-webkit-scrollbar{display:none}
 .nav a{white-space:nowrap;transition:background .18s,color .18s,transform .15s}
 .nav a:hover{background:#eef4ff}
@@ -655,7 +655,8 @@ body.dark .tlabel-blue{background:linear-gradient(135deg,#1d4ed8,#2563eb);color:
 .menu-primary .sub-menu{display:block;visibility:hidden;opacity:0;transform:translateY(8px);
   transition:opacity .18s ease,transform .18s ease,visibility .18s}
 .menu-primary .menu-item-has-children:hover>.sub-menu,
-.menu-primary .menu-item-has-children:focus-within>.sub-menu{visibility:visible;opacity:1;transform:translateY(0)}
+.menu-primary .menu-item-has-children:focus-within>.sub-menu,
+.menu-primary>li.su-open>.sub-menu{visibility:visible;opacity:1;transform:translateY(0)}
 .menu-primary .menu-item-has-children>a::after{content:"";display:inline-block;margin-left:6px;width:7px;height:7px;
   border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg) translateY(-2px);
   transition:transform .18s}

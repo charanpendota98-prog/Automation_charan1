@@ -67,22 +67,33 @@
       var sub = subOf(li);
       if (!sub) return;
 
-      /* touch / click: first tap opens, second tap follows the link */
+      /* touch / click: click toggles the dropdown, prevent hash jump */
       a.addEventListener("click", function (e) {
         var isTouch = window.matchMedia && window.matchMedia("(hover: none)").matches;
-        if (!li.classList.contains("su-open") && (isTouch || e.detail === 0)) {
-          e.preventDefault();
-          closeAll(li);
+        e.preventDefault();
+        var wasOpen = li.classList.contains("su-open");
+        closeAll(li);
+        if (!wasOpen) {
           setOpen(li, true);
           var f = focusables(li);
           if (f[0] && !isTouch) f[0].focus();
-        } else if (isTouch && !a.getAttribute("data-su-go")) {
-          e.preventDefault();
+        } else {
+          setOpen(li, false);
+        }
+      });
+
+      /* hover on desktop */
+      li.addEventListener("mouseenter", function () {
+        var isTouch = window.matchMedia && window.matchMedia("(hover: none)").matches;
+        if (!isTouch) {
           closeAll(li);
           setOpen(li, true);
-          a.setAttribute("data-su-go", "1");
-        } else {
-          a.removeAttribute("data-su-go");
+        }
+      });
+      li.addEventListener("mouseleave", function () {
+        var isTouch = window.matchMedia && window.matchMedia("(hover: none)").matches;
+        if (!isTouch) {
+          setOpen(li, false);
         }
       });
 
@@ -140,9 +151,72 @@
     });
   }
 
-  /* -------------------------------------------------- mobile accordion */
+  /* -------------------------------------------------- mobile drawer & accordion */
   function wireMobile() {
     if (!panel) return;
+    var backdrop = document.getElementById("mbackdrop");
+    var panelClose = document.getElementById("mpanelclose");
+    var bnavMenu = document.getElementById("su-bnav-menu");
+
+    function setDrawer(open) {
+      panel.classList.toggle("open", open);
+      panel.setAttribute("aria-hidden", open ? "false" : "true");
+      if (backdrop) {
+        backdrop.classList.toggle("show", open);
+        backdrop.classList.toggle("open", open);
+      }
+      document.body.classList.toggle("mlock", open);
+      if (btn) {
+        btn.setAttribute("aria-expanded", open ? "true" : "false");
+        btn.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+      }
+      if (open && panelClose) {
+        window.setTimeout(function () { panelClose.focus(); }, 60);
+      }
+    }
+
+    if (btn) {
+      btn.addEventListener("click", function (e) {
+        e.preventDefault();
+        setDrawer(!panel.classList.contains("open"));
+      });
+    }
+
+    if (bnavMenu) {
+      bnavMenu.addEventListener("click", function (e) {
+        e.preventDefault();
+        setDrawer(!panel.classList.contains("open"));
+      });
+    }
+
+    if (backdrop) {
+      backdrop.addEventListener("click", function () {
+        setDrawer(false);
+      });
+    }
+
+    if (panelClose) {
+      panelClose.addEventListener("click", function (e) {
+        e.preventDefault();
+        setDrawer(false);
+        if (btn) btn.focus();
+      });
+    }
+
+    /* any link clicked inside panel closes drawer */
+    panel.addEventListener("click", function (e) {
+      if (e.target && (e.target.tagName === "A" || e.target.closest("a"))) {
+        setDrawer(false);
+      }
+    });
+
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && panel.classList.contains("open")) {
+        setDrawer(false);
+        if (btn) btn.focus();
+      }
+    });
+
     /* active group (or first) auto-open — reader 2 taps save chestadu */
     var groups = [].slice.call(panel.querySelectorAll("details.mgroup"));
     if (!groups.length) return;
@@ -162,14 +236,6 @@
         });
       });
     });
-
-    /* panel open ayyaka focus search ki (keyboard) */
-    if (btn) {
-      btn.addEventListener("click", function () {
-        var first = panel.querySelector("a, summary, button");
-        if (first) window.setTimeout(function () { first.focus(); }, 60);
-      });
-    }
   }
 
   /* ---------------------------------------------------------- sticky */

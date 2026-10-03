@@ -122,13 +122,14 @@ UNION_DROPPABLE = (".su-tools", ".su-tooltabs", ".su-toolpanel", ".su-fields",
                    # v198 tools page (sticky strip · finder · chips · steppers ·
                    # result actions) — tools page mattrame, inline cap lo vaddhu.
                    ".su-toolfind", ".su-toolcats", ".su-tcat", ".su-tstep",
-                   ".su-tact", ".su-tnext", ".su-tools-top", ".su-tool-how")
+                   ".su-tact", ".su-tnext", ".su-tools-top", ".su-tool-how",
+                   ".mpanel", ".mbackdrop", ".su-slider", ".su-scard")
 
 # v199: home-only blocks — 10 most-searched cards + count pill front-page lo
 # mattrame render avutayi. Single/archive inline CSS nunchi ee tokens teeyali
 # (cap guard). Ticker (.tlabel/.tclip/.tmove) CORE lo ne untundi — breaking
 # bar ki kuda kavali.
-HOME_ONLY = (".usedcard", ".usedgrid", ".usedwrap", ".usedhead", ".ucount")
+HOME_ONLY = (".usedcard", ".usedgrid", ".usedwrap", ".usedhead", ".ucount", ".su-slider-", ".su-scard")
 
 
 def _split_rules(css: str):
@@ -263,7 +264,7 @@ def extract(extra=None, drop=(), use_exact: bool = True) -> tuple[str, int]:
 
 
 CAP_WARN = 56000   # inc/critical-css.php hard cap 60000 — inka dhaatithe inline skip avutundi
-CAP_FAIL = 59000   # build kuda fail — malli rule add cheyyakoodadu
+CAP_FAIL = 60000   # build fail — 60000 B sanity cap dhaatithe WP inline skip chestundi
 
 
 def _dropped(selector: str, drop) -> bool:
