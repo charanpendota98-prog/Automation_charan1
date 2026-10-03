@@ -838,7 +838,7 @@ body.dark .su-resume-input,body.dark .su-resume-select{background:#1e293b;border
 
 /* 1. High-RPM Contextual Sponsor Box */
 .su-sponsor-box{margin:18px 0 22px;padding:16px 18px;border-radius:16px;background:linear-gradient(135deg,rgba(234,88,12,.08),rgba(245,158,11,.08));border:1.5px solid rgba(234,88,12,.25);box-shadow:0 4px 16px rgba(234,88,12,.06)}
-.su-sponsor-kicker{font-size:10.5px;font-weight:900;letter-spacing:.06em;color:#ea580c;text-transform:uppercase;margin-bottom:8px}
+.su-sponsor-kicker{font-size:10.5px;font-weight:900;letter-spacing:.06em;color:#b45309;text-transform:uppercase;margin-bottom:8px}  /* v200: 4.5:1 AA (was 3.35) */
 .su-sponsor-card{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;padding:12px 14px;border-radius:12px;background:#fff;border:1px solid rgba(15,23,42,.06)}
 .su-sponsor-icon{font-size:32px;line-height:1}
 .su-sponsor-info{flex:1 1 220px}
