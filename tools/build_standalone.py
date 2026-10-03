@@ -41,12 +41,23 @@ def main() -> int:
     out = out.replace(links[1], f"<style>\n{wc_css}\n</style>\n", 1)
     out = re.sub(r"<title>[^<]*</title>", f"<title>{title}</title>", out, count=1)
 
+    # v197: theme JS bhi inline — single-file page must not fetch anything.
+    def _inline_script(m: "re.Match[str]") -> str:
+        src = m.group(1)
+        target = (ROOT / src).resolve()
+        if not target.exists() or THEME not in target.parents:
+            return m.group(0)
+        js = target.read_text(encoding="utf-8").rstrip("\n")
+        return "<script>\n" + js + "\n</script>"
+
+    out, n_js = re.subn(r'<script src="([^"]+)"[^>]*></script>', _inline_script, out)
+
     # a single-file page must not fetch external CSS/JS
     if 'rel="stylesheet"' in out:
         print("  ❌ standalone lo inka stylesheet link undi")
         return 1
     OUT.write_text(out, encoding="utf-8")
-    print(f"  ✅ standalone.html  {len(out.encode()) / 1024:.0f} KB · CSS inline · "
+    print(f"  ✅ standalone.html  {len(out.encode()) / 1024:.0f} KB · CSS+JS inline ({n_js} script) · "
           f"demo tho 100% sync → {OUT.relative_to(ROOT)}")
     return 0
 

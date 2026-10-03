@@ -536,6 +536,51 @@ class WordPressClient:
             log.debug("block skip: %s", exc)
         return None
 
+    def list_drafts(self, per_page: int = 10) -> List[Dict]:
+        """v197: review queue — newest drafts first (auto-publish lane input).
+
+        `context=edit` so content.raw + meta (studentup_source_url) vastayi —
+        gate ee fields meeda ne decide chestundi.
+        """
+        resp = self._request("GET", "posts", params={
+            "status": "draft", "per_page": max(1, min(50, int(per_page))),
+            "orderby": "date", "order": "desc", "context": "edit",
+        })
+        if resp.status_code != 200:
+            raise WordPressError(
+                f"Draft list fail: HTTP {resp.status_code}: {resp.text[:200]}")
+        out = []
+        for post in resp.json():
+            out.append({
+                "id": post.get("id"),
+                "title": post.get("title") or {},
+                "content": post.get("content") or {},
+                "excerpt": post.get("excerpt") or {},
+                "date": post.get("date", ""),
+                "date_gmt": post.get("date_gmt", ""),
+                "link": post.get("link", ""),
+                "meta": post.get("meta") or {},
+                "status": post.get("status", "draft"),
+            })
+        return out
+
+    def set_theme_options(self, values: Dict[str, object]) -> Dict:
+        """v197: StudentUp theme options ki push (bot → daily quiz/poll).
+
+        Route: `/wp-json/studentup/v1/options` (POST = manage_options mattrame).
+        Poll question/options ni bot roju push cheyyadaniki vaadutundi.
+        """
+        url = f"{self.site}/wp-json/studentup/v1/options"
+        resp = self.session.post(url, json=values, timeout=config.HTTP_TIMEOUT)
+        if resp.status_code in (401, 403):
+            raise WordPressAuthError(
+                f"Theme options push ki permission ledu ({resp.status_code}) — "
+                "app password admin user di ayyi undali.")
+        if resp.status_code not in (200, 201):
+            raise WordPressError(
+                f"Theme options push fail: HTTP {resp.status_code}: {resp.text[:200]}")
+        return resp.json() if resp.content else {}
+
     def get_post(self, post_id: int) -> Dict:
         """Edit context lo post teesukovali (update flow kosam)."""
         resp = self._request("GET", f"posts/{post_id}", params={"context": "edit"})

@@ -112,7 +112,13 @@ TEMPLATES = {
 # Union (critical.min.css — template file lekapote fallback). 60 KB inline cap
 # dhaatithe ee tokens teesi malli build chestam (theme eppudu break avvadu).
 UNION_DROPPABLE = (".su-tools", ".su-tooltabs", ".su-toolpanel", ".su-fields",
-                   ".su-tout", ".su-mini", ".su-rail", ".su-railed", ".su-railad")
+                   ".su-tout", ".su-mini", ".su-rail", ".su-railed", ".su-railad",
+                   # v197: mega panel + daily quiz + poll blocks. Avi hover/tap ki
+                   # matrame kanipistayi (mega) leda page mid/below-fold lo untayi —
+                   # inline cap (60 KB) ninchi bayata pettali, lekunte phone lo
+                   # critical CSS skip avutundi (design flash). Base .sub-menu +
+                   # .su-quizcard (premium) inka CORE lo ne unnayi.
+                   ".su-mega", ".su-poll", ".su-quiz-", ".mgroup")
 
 
 def _split_rules(css: str):

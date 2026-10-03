@@ -189,6 +189,10 @@ $su_is_p2 = $su_paged > 1;
 			studentup_hot_jobs( 10 );        // TOP 10 HOT JOBS TODAY (return visits)
 			studentup_closing_week( 7 );     // urgency (last dates) — real meta mattrame
 			studentup_personal_picks();      // local-only personalised top 5
+			// v197: engagement block — real daily quiz + reader poll (v123 quiz
+			// eppudu render avvaledu; ippudu server-rendered, JS-enhanced).
+			studentup_daily_quiz( array( 'id' => 'daily-quiz', 'heading' => 'Daily quiz — 5 questions, 2 minutes' ) );
+			studentup_daily_poll();
 			studentup_ad( 'below-content' ); // slot 3 — finish chesina reader ki
 			?>
 		<?php endif; ?>

@@ -2,9 +2,9 @@
 Contributors: studentup
 Requires at least: 6.0
 Tested up to: 6.7
-Stable tag: 1.9.37
+Stable tag: 1.9.38
 Requires PHP: 7.4
-Version: 1.9.37
+Version: 1.9.38
 License: GNU General Public License v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Tags: news, education, blog, custom-logo, custom-menu, featured-images, translation-ready, right-sidebar, block-styles, wide-blocks
@@ -47,6 +47,12 @@ The theme ships a REST bridge (`inc/seo-bridge.php`). Use an account with `manag
 user tho App Password ivvandi (Administrator role).
 
 == Changelog ==
+
+= 1.9.38 =
+* v197 ENGAGE PACK: real daily quiz (server-rendered, works without JS, Quiz schema, streak + share) + reader polls (REST + no-JS vote, one vote per device, only counts stored).
+* v197 ADVANCED MENU: mega panel with columns + icons + recommended card (404-free — real terms/pages only) and a mobile accordion; keyboard, aria and touch support.
+* v197 EDITORIAL: quiz + poll page created by Setup (slug daily-quiz, template page-quiz.php); front page renders both blocks after the personal picks.
+* v197 TOOLING: icon sprite generated from the theme icons (build_sprite.py) so preview pages can never show blank icon boxes.
 
 = 1.9.37 =
 

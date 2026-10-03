@@ -35,7 +35,7 @@ let html = fs.readFileSync(PAGE, "utf8");
 
 /* v71: total check count — docs (README/MANUAL/GO_LIVE) claim this number and
  * tools/parity_audit.py P8 reads it, so a silent drift cannot slip through. */
-const EXPECTED_CHECKS = 177;
+const EXPECTED_CHECKS = 196;
 
 const passed = [];
 const failed = [];
@@ -815,7 +815,10 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
        !!cdoc.querySelector('a.wa-box[href*="wa.me"]'));
     ok("contact page: call link (tel:) + email link",
        !!cdoc.querySelector('a[href^="tel:"]') && !!cdoc.querySelector('a[href^="mailto:"]'));
-    ok("contact page: no public rate card (no ₹ pricing)", !/₹\s?\d/.test(contactHtml));
+    const contactBody = contactHtml.replace(/<nav[\s\S]*?<\/nav>/g, "")
+      .replace(/<ul class="sub-menu"[\s\S]*?<\/li><\/ul>/g, "");
+    ok("contact page: no public ad rate card in the page body (service price list is v196 public)",
+       !/₹\s?\d/.test(contactBody) && !/rate card|per post|sponsor rate/i.test(contactBody));
     if (cform) {
       let sent = false;
       cform.addEventListener("submit", () => { sent = true; }, true);
@@ -833,15 +836,149 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
     cdom.window.close();
 
     const advHtml = fs.readFileSync(path.resolve(__dirname, "../../preview/pages/advertise.html"), "utf8");
-    ok("partner page: no public price table / booking flow",
-       !/₹\s?\d/.test(advHtml) && !/<table[\s\S]{0,400}₹/.test(advHtml) &&
-       !/Booking/.test(advHtml));
+    const advBody = advHtml.replace(/<nav[\s\S]*?<\/nav>/g, "")
+      .replace(/<ul class="sub-menu"[\s\S]*?<\/li><\/ul>/g, "");
+    ok("partner page: no public ad price table / booking flow in the body",
+       !/₹\s?\d/.test(advBody) && !/<table[\s\S]{0,400}₹/.test(advBody) &&
+       !/Booking/.test(advBody));
     ok("partner page: WhatsApp + email contact routes",
        /wa\.me\/\d{6,}/.test(advHtml) && /mailto:/.test(advHtml));
     ok("partner page: SPONSORED labelling + policy rules kept",
        /SPONSORED/.test(advHtml) && /rel="sponsored nofollow"/.test(advHtml));
     ok("partner page: rates shared personally (honest note)",
        /shared personally|personally/i.test(advHtml) && /never guarantee/i.test(advHtml));
+  }
+
+
+  /* ---------- v197: advanced mega menu + daily quiz + reader poll ----------
+   * Owner ask (2026-10-03): "quiz polls daily advancedga ... advanced menu
+   * build cheyu". Ee block preview/worldclass/index.html (real-theme mirror)
+   * ni jsdom lo run chesi — mega panel behaviour, quiz grading, poll vote,
+   * sprite completeness mariyu "raw SVG text" regression ni gate chestundi. */
+  {
+    const wcHtml = fs.readFileSync(path.resolve(__dirname, "../../preview/worldclass/index.html"), "utf8");
+    const menuJs = fs.readFileSync(path.resolve(__dirname,
+      "../../wordpress-theme/studentup/assets/js/studentup-menu.js"), "utf8");
+    const wdom = new JSDOM(wcHtml, {
+      url: "https://studentup.in/", runScripts: "dangerously", pretendToBeVisual: true,
+    });
+    const w = wdom.window, wd = w.document;
+    await sleep(250);
+    try { w.eval(menuJs); } catch (e) { failed.push("v197 menu JS eval: " + e.message); }
+
+    /* --- mega nav structure --- */
+    const navEl = wd.querySelector("nav.nav");
+    const primary = wd.querySelector("ul.menu-primary");
+    const topLis = primary ? [].slice.call(primary.children).filter(n => n.tagName === "LI") : [];
+    const megaLis = topLis.filter(li => li.querySelector("[data-su-mega]"));
+    ok("v197 mega nav: 5 advanced groups (Jobs · Exams · Scholarships · Tools · More)",
+       megaLis.length >= 5, "groups=" + megaLis.length);
+
+    let wiredOk = megaLis.length > 0;
+    let colsOk = true, featOk = true;
+    megaLis.forEach(li => {
+      const a = li.querySelector("a[aria-haspopup]");
+      const panel = li.querySelector("[data-su-mega]");
+      if (!a || !panel) { wiredOk = false; return; }
+      const id = a.getAttribute("aria-controls");
+      if (!id || !wd.getElementById(id) || id !== panel.id) wiredOk = false;
+      if (a.getAttribute("aria-expanded") !== "false") wiredOk = false;
+      if (panel.querySelectorAll(".su-mega-col").length < 2) colsOk = false;
+      if (!panel.querySelector(".su-mega-feat") || !panel.querySelector(".su-mega-cta")) featOk = false;
+      if (!panel.querySelector(".su-mega-list a")) colsOk = false;
+    });
+    ok("v197 mega nav: every trigger wired (aria-haspopup/expanded/controls → real panel)", wiredOk);
+    ok("v197 mega nav: panels have 2+ columns with links + recommended card", colsOk && featOk);
+
+    /* --- keyboard: ArrowDown opens, Escape closes --- */
+    const firstLi = megaLis[0];
+    const firstA = firstLi ? firstLi.querySelector("a[aria-haspopup]") : null;
+    if (firstA) {
+      firstA.dispatchEvent(new w.KeyboardEvent("keydown", { key: "ArrowDown", bubbles: true }));
+    }
+    ok("v197 menu: ArrowDown opens the group (aria-expanded=true)",
+       !!firstLi && firstLi.classList.contains("su-open") &&
+       firstA.getAttribute("aria-expanded") === "true");
+    if (firstA) firstA.dispatchEvent(new w.KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+    ok("v197 menu: Escape closes it again (aria-expanded=false, class removed)",
+       !!firstLi && !firstLi.classList.contains("su-open") &&
+       firstA.getAttribute("aria-expanded") === "false");
+
+    /* --- outside click closes an open panel --- */
+    if (firstA) firstA.dispatchEvent(new w.KeyboardEvent("keydown", { key: "ArrowDown", bubbles: true }));
+    wd.body.dispatchEvent(new w.MouseEvent("click", { bubbles: true }));
+    ok("v197 menu: outside click closes every panel", !firstLi.classList.contains("su-open"));
+
+    /* --- regression: theme toggle must render real SVG, never raw markup --- */
+    const themeBtn = wd.getElementById("su-theme");
+    ok("v197 theme toggle: renders an inline <svg> child (no raw markup text)",
+       !!themeBtn && !!themeBtn.querySelector("svg") && themeBtn.textContent.indexOf("<svg") === -1,
+       themeBtn ? themeBtn.textContent.slice(0, 30) : "no button");
+
+    /* --- daily quiz: server-rendered + JS grading --- */
+    const qForm = wd.querySelector("[data-su-quiz-form]");
+    const qFields = qForm ? [].slice.call(qForm.querySelectorAll("fieldset.su-q")) : [];
+    ok("v197 quiz: 5 questions server-rendered with answer keys (data-c)",
+       qFields.length === 5 && qFields.every(f => /^\d+$/.test(f.getAttribute("data-c") || "")));
+    ok("v197 quiz: options + explanation markup pre-rendered (no-JS readable)",
+       !!qForm && qForm.querySelectorAll(".su-opt").length >= 20 &&
+       qForm.querySelectorAll("[data-su-why]").length === qFields.length);
+
+    let rightMarked = 0, wrongMarked = 0;
+    qFields.forEach(fs => {
+      const lab = fs.querySelector(".su-opt");
+      if (lab) lab.dispatchEvent(new w.MouseEvent("click", { bubbles: true }));
+      if (fs.querySelector(".su-opt.right")) rightMarked++;
+      if (fs.querySelector(".su-opt.wrong")) wrongMarked++;
+    });
+    const scoreEl = wd.querySelector("[data-su-quiz-score]");
+    ok("v197 quiz: instant grading marks right + wrong options",
+       rightMarked === 5 && wrongMarked === 4, "right=" + rightMarked + " wrong=" + wrongMarked);
+    ok("v197 quiz: score + progress bar update after answering",
+       !!scoreEl && scoreEl.textContent === "1" &&
+       /100%/.test((wd.querySelector("[data-su-quiz-bar]") || {}).getAttribute
+         ? wd.querySelector("[data-su-quiz-bar]").getAttribute("style") : ""),
+       "score=" + (scoreEl ? scoreEl.textContent : "?"));
+    ok("v197 quiz: every explanation is revealed after answering",
+       qFields.every(fs => { const p = fs.querySelector("[data-su-why]"); return p && !p.hasAttribute("hidden"); }));
+    const shareEl = wd.querySelector("[data-su-quiz-share]");
+    ok("v197 quiz: share link appears with the real score (wa.me)",
+       !!shareEl && !shareEl.hasAttribute("hidden") && /wa\.me\/\?text=/.test(shareEl.getAttribute("href") || "") &&
+       /1\/5/.test(decodeURIComponent(shareEl.getAttribute("href") || "")));
+    const streakEl = wd.querySelector("[data-su-quiz-streak]");
+    ok("v197 quiz: streak line shows after finishing (device-only, no server)",
+       !!streakEl && !streakEl.hasAttribute("hidden") && /done today/.test(streakEl.textContent));
+
+    /* --- poll: JS vote path + no-JS fallback --- */
+    const pollBox = wd.querySelector("[data-su-poll]");
+    const pollForm = pollBox ? pollBox.querySelector("[data-su-poll-form]") : null;
+    const pollOpts = pollBox ? [].slice.call(pollBox.querySelectorAll(".su-poll-opt")) : [];
+    ok("v197 poll: 4 options + form present (server can count a plain POST)",
+       pollOpts.length === 4 && !!pollForm &&
+       pollForm.getAttribute("method") === "post" && !!pollForm.querySelector("input[name=su_poll_opt]"));
+    if (pollOpts[1]) pollOpts[1].dispatchEvent(new w.MouseEvent("click", { bubbles: true }));
+    ok("v197 poll: selecting an option marks it (keyboard/touch friendly)",
+       pollOpts.length > 1 && pollOpts[1].classList.contains("on"));
+    if (pollForm) pollForm.dispatchEvent(new w.Event("submit", { bubbles: true, cancelable: true }));
+    const pcts = pollBox ? [].slice.call(pollBox.querySelectorAll("[data-su-pct]")) : [];
+    ok("v197 poll: vote shows percentages and locks the ballot (no double vote)",
+       pcts.length === 4 && /%/.test(pcts[1].textContent) &&
+       pollOpts.every(o => { const i = o.querySelector("input"); return !i || i.disabled; }) &&
+       !pollBox.querySelector("[data-su-poll-vote]"));
+
+    /* --- sprite completeness (no blank icon boxes) --- */
+    const symbols = {};
+    [].slice.call(wd.querySelectorAll("symbol[id]")).forEach(s => { symbols[s.id] = 1; });
+    const uses = [].slice.call(wd.querySelectorAll("use")).map(u => (u.getAttribute("href") || "").replace("#", ""));
+    ok("v197 preview: every <use> icon resolves to a sprite symbol",
+       uses.length > 0 && uses.every(k => symbols[k]), "uses=" + uses.length + " symbols=" + Object.keys(symbols).length);
+
+    /* --- quiz/poll UI stays English (v73 invariant) --- */
+    const engScope = (qForm ? qForm.textContent : "") + (pollBox ? pollBox.textContent : "");
+    ok("v197 quiz/poll UI is English-only (v73 invariant)",
+       !/[\u0C00-\u0C7F]/.test(engScope));
+
+    wdom.window.close();
   }
 
   /* ---------- check-count drift guard (docs parity) ---------- */

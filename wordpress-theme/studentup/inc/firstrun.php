@@ -62,6 +62,8 @@ return array(
 	'exam-calendar'    => 'Exam & Application Calendar',
 	'internet-center'  => 'Students Internet Center',
 	'corrections'      => 'Corrections & Updates',
+	// v197: daily quiz + reader poll page (page-quiz.php template).
+	'daily-quiz'       => 'Daily Quiz & Polls',
 );
 }
 
@@ -264,6 +266,9 @@ function studentup_setup_page_content_for( $slug, $title ) {
 	if ( 'corrections' === $slug ) {
 		return studentup_setup_corrections_body();
 	}
+	if ( 'daily-quiz' === $slug ) {
+		return '<p>' . esc_html__( 'Five fresh practice questions every morning with explained answers, plus one reader poll. Free, no login, and nothing about you is stored.', 'studentup' ) . '</p>';
+	}
 	return studentup_setup_page_body( $slug, $title );
 }
 
@@ -279,6 +284,7 @@ function studentup_setup_assign_template( $id, $slug ) {
 		'exam-calendar'   => 'page-exam-calendar.php',
 		'internet-center' => 'page-internet-center.php',
 		'corrections'     => 'page-corrections.php',
+		'daily-quiz'      => 'page-quiz.php',
 	);
 	if ( isset( $map[ $slug ] ) ) {
 		update_post_meta( (int) $id, '_wp_page_template', $map[ $slug ] );

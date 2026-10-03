@@ -63,6 +63,8 @@ def test_flags_duplicate_ids(tmp_path):
 def test_preview_pages_are_clean():
     bad = []
     for path in sorted(PREVIEW.rglob("*.html")):
+        if path.name in getattr(cwv_audit, "BUNDLES", set()):
+            continue                      # v197.1: single-file bundle (20 docs)
         rep = cwv_audit.audit_file(path)
         if rep["errors"] or rep["warnings"]:
             bad.append((rep["file"], rep["errors"], rep["warnings"]))

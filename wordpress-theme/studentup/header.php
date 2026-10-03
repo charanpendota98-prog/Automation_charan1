@@ -117,7 +117,14 @@ studentup_breaking_ticker();
 	<?php if ( function_exists( 'studentup_workspace_on' ) && studentup_workspace_on() && studentup_workspace_url() ) : ?>
 		<a href="<?php echo esc_url( studentup_workspace_url() ); ?>"><?php echo studentup_ui_icon( 'person' ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> My Workspace</a>
 	<?php endif; ?>
-	<a href="<?php echo esc_url( home_url( '/#daily-quiz' ) ); ?>"><?php echo studentup_ui_icon( 'chart' ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Daily Quiz</a>
+	<?php
+	// v197: quiz + poll ki dedicated page undi (lekapote front-page anchor).
+	$su_quiz_url = function_exists( 'studentup_mega_page_url' )
+		? studentup_mega_page_url( array( 'daily-quiz', 'quiz' ) )
+		: '';
+	$su_quiz_url = $su_quiz_url ? $su_quiz_url : home_url( '/#daily-quiz' );
+	?>
+	<a href="<?php echo esc_url( $su_quiz_url ); ?>"><?php echo studentup_ui_icon( 'chart' ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Daily Quiz &amp; Polls</a>
 	<a href="<?php echo esc_url( home_url( '/#age-calculator' ) ); ?>"><?php echo studentup_ui_icon( 'person' ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Age Calculator</a>
 	<a href="<?php echo esc_url( home_url( '/#fee-calculator' ) ); ?>"><?php echo studentup_ui_icon( 'card' ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Fee Calculator</a>
 	<a href="<?php echo esc_url( home_url( '/#syllabus-tracker' ) ); ?>"><?php echo studentup_ui_icon( 'book' ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Syllabus Tracker</a>
@@ -129,6 +136,14 @@ studentup_breaking_ticker();
 	if ( $su_schol ) :
 		?>
 		<a href="<?php echo esc_url( get_category_link( $su_schol ) ); ?>"><?php echo studentup_ui_icon( 'school' ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Scholarships</a>
+	<?php endif; ?>
+	<?php if ( function_exists( 'studentup_mega_mobile_groups' ) ) : ?>
+		<div class="mlabel">Browse everything</div>
+		<?php
+		foreach ( studentup_mega_mobile_groups() as $su_gi => $su_group ) {
+			studentup_mega_mobile_accordion( $su_group, 0 === $su_gi );
+		}
+		?>
 	<?php endif; ?>
 	<div class="mlabel">Most searched by students</div>
 	<?php foreach ( studentup_most_used() as $m ) : ?>

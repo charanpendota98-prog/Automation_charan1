@@ -101,12 +101,13 @@ SHELL = """<!DOCTYPE html>
 </script>
 <link rel="stylesheet" href="../../wordpress-theme/studentup/style.css">
 <link rel="stylesheet" href="../../wordpress-theme/studentup/assets/css/worldclass.css">
+<script src="../../wordpress-theme/studentup/assets/js/studentup-menu.js" defer></script>
 <style>
 {css}
 </style>
 </head>
 <body>
-<svg style="display:none" aria-hidden="true" focusable="false"><symbol id="su-i-sun" viewBox="0 0 24 24"><path d="M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10Z"/></symbol><symbol id="su-i-moon" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9 7.2 7.2 0 0 1-9-9Z"/></symbol><symbol id="su-i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V21H3z"/></symbol><symbol id="su-i-work" viewBox="0 0 24 24"><path d="M3 7h18v13H3zM9 7V5h6v2"/></symbol><symbol id="su-i-chart" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></symbol><symbol id="su-i-bell" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0-6 6v3l-2 3h16l-2-3V9a6 6 0 0 0-6-6Zm-2 15a2 2 0 0 0 4 0"/></symbol><symbol id="su-i-close" viewBox="0 0 24 24"><path d="M19 6.4 17.6 5 12 10.6 6.4 5 5 6.4l5.6 5.6L5 17.6 6.4 19l5.6-5.6 5.6 5.6 1.4-1.4-5.6-5.6Z"/></symbol></svg>
+{sprite}
 {header}
 <main id="main">
   <div class="wrap">
@@ -161,10 +162,114 @@ PAGE_JS = """(function(){
 })();"""
 
 
+def mega_nav_html(home: str = "../worldclass/index.html", pfx: str = "../") -> str:
+    """v197: the SAME mega markup the WP theme renders (inc/megamenu.php).
+
+    Pin-to-pin rule: classes/attrs/id prefixes match the theme exactly, so the
+    theme CSS + studentup-menu.js work on the preview without a single change.
+    """
+    cat = pfx + "pages/"
+    groups = [
+        ("Jobs", home + "#jobs", "bank", [
+            ("Telangana & Andhra Pradesh", [
+                ("TS Government Jobs", cat + "ts-jobs-hub.html", "TSPSC · Police · Gurukul", "bank"),
+                ("AP Government Jobs", home + "#jobs", "APPSC · Police · DSC · Secretariat", "bank"),
+                ("Jobs by qualification", home + "#jobs", "10th · Inter · Degree · PG", "school"),
+            ]),
+            ("Central & private", [
+                ("Central Govt Jobs", home + "#jobs", "SSC · UPSC · Railways · Banks", "flag"),
+                ("Private Jobs", home + "#jobs", "Off-campus · fresher drives", "building"),
+                ("Software Jobs", home + "#jobs", "IT · developer · support", "laptop"),
+                ("Walk-in Interviews", home + "#jobs", "This week drives · venues", "walk"),
+                ("Internships", home + "#jobs", "Stipend · remote · college", "work"),
+            ]),
+        ], ("Latest active jobs", "Only notices with live dates — no expired lists.", home + "#jobs", "Open the board")),
+        ("Exams", cat + "results-hub.html", "board", [
+            ("Updates", [
+                ("Results", cat + "results-hub.html", "Board · competitive · keys", "doc"),
+                ("Hall Tickets", cat + "results-hub.html", "Admit card · instructions", "ticket"),
+                ("Exam Calendar", cat + "exam-calendar.html", "Confirmed last dates + .ics", "calendar"),
+            ]),
+            ("Practice", [
+                ("Daily Quiz & Polls", cat + "daily-quiz.html", "Fresh questions every day", "chart"),
+                ("Current Affairs", home + "#jobs", "Daily GK for exams", "news"),
+                ("Free exam tools", pfx + "tools/index.html", "Track subject-wise progress", "book"),
+                ("Answer keys", cat + "results-hub.html", "Keys after every exam", "key"),
+            ]),
+        ], ("Exam calendar 2026", "Add every confirmed last date to your phone in one tap.", cat + "exam-calendar.html", "Open calendar")),
+        ("Scholarships", cat + "scholarships-hub.html", "school", [
+            ("Find money", [
+                ("Scholarships", cat + "scholarships-hub.html", "NSP · ePASS · state schemes", "school"),
+                ("Scholarships 2026 hub", cat + "scholarships-hub.html", "Amounts, eligibility, last dates", "doc"),
+                ("Success Stories", home + "#jobs", "Verified journeys · lessons", "trophy"),
+            ]),
+            ("By level", [
+                ("Pre-matric (Class 9-10)", cat + "scholarships-hub.html", "School-level schemes", "book"),
+                ("Post-matric (Inter · Degree)", cat + "scholarships-hub.html", "The biggest State schemes", "school"),
+                ("Minority & overseas", cat + "scholarships-hub.html", "NSP minority + abroad aid", "flag"),
+            ]),
+        ], ("Free Internet Center", "Form filling at a fixed, published price — what we do and never do.", cat + "internet-center.html", "See the price list")),
+        ("Tools", pfx + "tools/index.html", "key", [
+            ("Calculators", [
+                ("Age Eligibility", pfx + "tools/index.html", "With reservation relaxation", "person"),
+                ("Fee Calculator", pfx + "tools/index.html", "Application + exam fee", "card"),
+                ("Salary / In-hand", pfx + "tools/index.html", "7th Pay Commission", "wallet"),
+            ]),
+            ("Career tools", [
+                ("Resume Maker", pfx + "tools/index.html", "Govt-format resume, free", "doc"),
+                ("Compare Jobs", pfx + "tools/index.html", "Side-by-side up to 3 posts", "swap"),
+                ("Saved Posts", pfx + "tools/index.html", "Read later, on this device", "bookmark"),
+            ]),
+        ], ("All free tools", "No signup, no phone number — works on any phone.", pfx + "tools/index.html", "Open Tools")),
+        ("More", cat + "about.html", "help", [
+            ("Site", [
+                ("About StudentUp", cat + "about.html", "Who writes and verifies", "person"),
+                ("Editorial Team", cat + "editorial-team.html", "Standards + sources", "shield"),
+                ("Corrections Log", cat + "corrections.html", "Public fixes · 48h SLA", "refresh"),
+                ("Contact", cat + "contact.html", "Corrections · suggestions", "phone"),
+                ("Advertise", cat + "advertise.html", "Sponsorship slots", "tag"),
+            ]),
+            ("Policies", [
+                ("Privacy Policy", cat + "privacy.html", "What we store (very little)", "shield"),
+                ("Terms of Use", cat + "terms.html", "Rules for using the site", "doc"),
+                ("Disclaimer", cat + "disclaimer.html", "Not a government website", "alert"),
+                ("Editorial Policy", cat + "editorial-policy.html", "How we verify every update", "check"),
+            ]),
+        ], ("Telegram channel", "Job alerts reach you first — no spam, leave anytime.", "https://t.me/studentup_in", "Join channel")),
+    ]
+
+    out = ['<ul id="primary-menu" class="menu-primary su-has-mega">',
+           '<li class="menu-item"><a href="%s">Home</a></li>' % home]
+    for label, url, icon, cols, feat in groups:
+        key = label.lower()
+        out.append('<li class="menu-item menu-item-has-children su-mega-li">')
+        out.append('<a href="%s" aria-haspopup="true" aria-expanded="false" aria-controls="su-mega-%s">'
+                   '<span class="su-mega-lb">%s</span></a>' % (url, key, label))
+        out.append('<ul class="sub-menu" id="su-mega-%s" data-su-mega aria-label="%s">' % (key, label))
+        for title, items in cols:
+            out.append('<li class="su-mega-col menu-item" role="none">')
+            if title:
+                out.append('<p class="su-mega-title">%s</p>' % title)
+            out.append('<ul class="su-mega-list">')
+            for ilabel, iurl, idesc, iicon in items:
+                out.append('<li class="menu-item" role="none"><a role="menuitem" href="%s">'
+                           '<span class="su-mega-ic"><svg class="su-uicon su-uicon-%s" width="18" height="18" '
+                           'viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">'
+                           '<use href="#su-i-%s"/></svg></span><span class="su-mega-t">%s<small>%s</small>'
+                           '</span></a></li>' % (iurl, iicon, iicon, ilabel, idesc))
+            out.append('</ul></li>')
+        ftitle, fdesc, furl, fcta = feat
+        out.append('<li class="su-mega-feat menu-item" role="none">'
+                   '<span class="su-mega-eyebrow">Recommended</span><b>%s</b><small>%s</small>'
+                   '<a class="su-mega-cta" href="%s">%s →</a></li>' % (ftitle, fdesc, furl, fcta))
+        out.append('</ul></li>')
+    out.append('</ul>')
+    return "".join(out)
+
+
 def header_html(home: str = "../worldclass/index.html", topbar: str = "Government jobs \u00b7 Exams \u00b7 Scholarships") -> str:
     """Shared header — the SAME classes as the WP theme header.php."""
-    nav = [("Home", home), ("Jobs", home + "#jobs"), ("Tools", "../tools/index.html"), ("Alerts", home + "#alerts")]
-    links = "".join('<a href="%s">%s</a>' % (h, t) for t, h in nav)
+    links = mega_nav_html(home, "../")
     return ('<a class="skip-link screen-reader-text" href="#main">Skip to content</a>\n'
             '<div class="topbar"><div class="wrap">\n'
             '  <span>' + topbar + '</span>\n'
@@ -173,7 +278,7 @@ def header_html(home: str = "../worldclass/index.html", topbar: str = "Governmen
             '<header class="header"><div class="headrow">\n'
             '  <a class="logo" href="' + home + '"><span class="mark">SU</span><span><span class="brand">StudentUp</span><small>studentup.in</small></span></a>\n'
             '  <nav class="nav" aria-label="Main">' + links + '</nav>\n'
-            '  <div class="headactions"><button class="iconbtn" id="su-theme" type="button" aria-label="Dark mode toggle"></button></div>\n'
+            '  <div class="headactions"><button class="iconbtn" id="su-theme" type="button" aria-label="Dark mode toggle"><svg class="su-uicon su-uicon-moon" width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-moon"/></svg></button></div>\n'
             '</div></header>')
 
 
@@ -217,8 +322,21 @@ def build(slug: str, title: str, desc: str, h1: str, sub: str, body: str,
         body = body.replace(marker, AD_SLOT + marker, 1)
     else:
         body = body + "\n" + AD_SLOT
-    return SHELL.format(title=title, desc=desc, slug=slug, h1=h1, sub=sub,
-                        body=body, css=CSS, nav=nav_html(), email=EMAIL, updated=UPDATED,
+    try:
+        import build_sprite  # noqa: PLC0415 — same tools/ dir, single source of truth
+        _paths = build_sprite.icon_paths()
+    except Exception:  # pragma: no cover — never break a page build for an icon
+        _paths = {}
+    _nav = nav_html()
+    _keys = set(build_sprite.used_icon_keys(_nav + body + script if _paths else ""))
+    _keys |= {"moon", "sun", "home", "work", "chart", "bell", "close", "search",
+              "bank", "flag", "school", "ticket", "doc", "calendar", "news", "key",
+              "trophy", "person", "card", "wallet", "swap", "bookmark", "shield",
+              "refresh", "phone", "tag", "alert", "check", "arrow", "building",
+              "laptop", "walk", "work", "help", "board", "book", "arrow", "external"}
+    _sprite = build_sprite.sprite_svg(_paths, sorted(_keys)) if _paths else ""
+    return SHELL.format(sprite=_sprite, title=title, desc=desc, slug=slug, h1=h1, sub=sub,
+                        body=body, css=CSS, nav=_nav, email=EMAIL, updated=UPDATED,
                         wa=WA_LINK, phone=PHONE, script=script, pagejs=PAGE_JS,
                         header=header_html(), footerbar=footer_html(pfx=""),
                         bottomnav=bottom_html())
@@ -790,6 +908,228 @@ CORRECTIONS_BODY = """
 </ol>
 """ % {"email": EMAIL}
 
+QUIZ_BODY = """
+  <h2>Today&rsquo;s 5 questions</h2>
+  <p>Tap an option — the answer and the reason appear instantly. Every question comes from an
+  official notification, so the same facts help you in the real exam.</p>
+
+  <form method="post" class="su-quiz-form" data-su-quiz-form>
+    <fieldset class="su-q" data-c="1" data-i="0">
+      <legend class="su-q-title"><span class="su-q-n">1</span> Telangana state formation day?</legend>
+      <div class="su-q-opts">
+        <label class="su-opt"><input type="radio" name="q0" value="0"><span class="su-opt-key">A</span><span class="su-opt-t">1 November 1956</span></label>
+        <label class="su-opt"><input type="radio" name="q0" value="1"><span class="su-opt-key">B</span><span class="su-opt-t">2 June 2014</span></label>
+        <label class="su-opt"><input type="radio" name="q0" value="2"><span class="su-opt-key">C</span><span class="su-opt-t">15 August 1947</span></label>
+        <label class="su-opt"><input type="radio" name="q0" value="3"><span class="su-opt-key">D</span><span class="su-opt-t">26 January 1950</span></label>
+      </div>
+      <p class="su-why" data-su-why hidden><strong>Why:</strong> Telangana became India&rsquo;s 29th state on 2 June 2014. <em>&middot; Telangana government</em></p>
+    </fieldset>
+
+    <fieldset class="su-q" data-c="1" data-i="1">
+      <legend class="su-q-title"><span class="su-q-n">2</span> SSC CGL is conducted by?</legend>
+      <div class="su-q-opts">
+        <label class="su-opt"><input type="radio" name="q1" value="0"><span class="su-opt-key">A</span><span class="su-opt-t">UPSC</span></label>
+        <label class="su-opt"><input type="radio" name="q1" value="1"><span class="su-opt-key">B</span><span class="su-opt-t">Staff Selection Commission</span></label>
+        <label class="su-opt"><input type="radio" name="q1" value="2"><span class="su-opt-key">C</span><span class="su-opt-t">RRB</span></label>
+        <label class="su-opt"><input type="radio" name="q1" value="3"><span class="su-opt-key">D</span><span class="su-opt-t">IBPS</span></label>
+      </div>
+      <p class="su-why" data-su-why hidden><strong>Why:</strong> SSC conducts CGL for Group B and C central posts. <em>&middot; ssc.gov.in</em></p>
+    </fieldset>
+
+    <fieldset class="su-q" data-c="2" data-i="2">
+      <legend class="su-q-title"><span class="su-q-n">3</span> Which bank is India&rsquo;s central bank?</legend>
+      <div class="su-q-opts">
+        <label class="su-opt"><input type="radio" name="q2" value="0"><span class="su-opt-key">A</span><span class="su-opt-t">State Bank of India</span></label>
+        <label class="su-opt"><input type="radio" name="q2" value="1"><span class="su-opt-key">B</span><span class="su-opt-t">NABARD</span></label>
+        <label class="su-opt"><input type="radio" name="q2" value="2"><span class="su-opt-key">C</span><span class="su-opt-t">Reserve Bank of India</span></label>
+        <label class="su-opt"><input type="radio" name="q2" value="3"><span class="su-opt-key">D</span><span class="su-opt-t">ICICI Bank</span></label>
+      </div>
+      <p class="su-why" data-su-why hidden><strong>Why:</strong> RBI, established 1935, is the central bank. <em>&middot; rbi.org.in</em></p>
+    </fieldset>
+
+    <fieldset class="su-q" data-c="0" data-i="3">
+      <legend class="su-q-title"><span class="su-q-n">4</span> Which article deals with the Right to Education?</legend>
+      <div class="su-q-opts">
+        <label class="su-opt"><input type="radio" name="q3" value="0"><span class="su-opt-key">A</span><span class="su-opt-t">Article 21A</span></label>
+        <label class="su-opt"><input type="radio" name="q3" value="1"><span class="su-opt-key">B</span><span class="su-opt-t">Article 19</span></label>
+        <label class="su-opt"><input type="radio" name="q3" value="2"><span class="su-opt-key">C</span><span class="su-opt-t">Article 32</span></label>
+        <label class="su-opt"><input type="radio" name="q3" value="3"><span class="su-opt-key">D</span><span class="su-opt-t">Article 44</span></label>
+      </div>
+      <p class="su-why" data-su-why hidden><strong>Why:</strong> Article 21A guarantees free education for ages 6&ndash;14. <em>&middot; Constitution of India</em></p>
+    </fieldset>
+
+    <fieldset class="su-q" data-c="1" data-i="4">
+      <legend class="su-q-title"><span class="su-q-n">5</span> Longest river in South India?</legend>
+      <div class="su-q-opts">
+        <label class="su-opt"><input type="radio" name="q4" value="0"><span class="su-opt-key">A</span><span class="su-opt-t">Krishna</span></label>
+        <label class="su-opt"><input type="radio" name="q4" value="1"><span class="su-opt-key">B</span><span class="su-opt-t">Godavari</span></label>
+        <label class="su-opt"><input type="radio" name="q4" value="2"><span class="su-opt-key">C</span><span class="su-opt-t">Kaveri</span></label>
+        <label class="su-opt"><input type="radio" name="q4" value="3"><span class="su-opt-key">D</span><span class="su-opt-t">Tungabhadra</span></label>
+      </div>
+      <p class="su-why" data-su-why hidden><strong>Why:</strong> Godavari is the longest peninsular river. <em>&middot; NCERT</em></p>
+    </fieldset>
+
+    <div class="su-quiz-foot">
+      <button type="submit" class="su-quiz-restart" data-su-quiz-check><svg class="su-uicon su-uicon-check" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-check"/></svg> Check answers</button>
+      <button type="button" class="su-quiz-restart" data-su-quiz-restart hidden><svg class="su-uicon su-uicon-refresh" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-refresh"/></svg> Restart</button>
+      <a class="su-quiz-more su-quiz-share" data-su-quiz-share rel="nofollow noopener" target="_blank" href="https://wa.me/?text=StudentUp%20Daily%20Quiz" hidden>Share my score</a>
+      <span class="su-quiz-streak" data-su-quiz-streak hidden></span>
+      <a class="su-quiz-more" href="ts-jobs-hub.html">More practice questions &rarr;</a>
+    </div>
+  </form>
+
+  <h2>Reader poll</h2>
+  <section class="su-poll" id="su-poll-preview" data-su-poll="preview" aria-label="Reader poll">
+    <p class="su-poll-kick">READER POLL</p>
+    <h3>Which update do you want first on WhatsApp?</h3>
+    <p class="su-poll-sub">Your answer decides what the morning list leads with. Live site: one vote per device, only the count is stored.</p>
+    <form method="post" class="su-poll-form" data-su-poll-form>
+      <div class="su-poll-opts">
+        <label class="su-poll-opt" data-opt="0"><span class="su-poll-bar" data-su-bar style="width:0%"></span><input type="radio" name="su_poll_opt" value="0"><span class="su-poll-radio" aria-hidden="true"></span><span class="su-poll-lbl">New job notifications</span><span class="su-poll-pct" data-su-pct></span></label>
+        <label class="su-poll-opt" data-opt="1"><span class="su-poll-bar" data-su-bar style="width:0%"></span><input type="radio" name="su_poll_opt" value="1"><span class="su-poll-radio" aria-hidden="true"></span><span class="su-poll-lbl">Exam date changes</span><span class="su-poll-pct" data-su-pct></span></label>
+        <label class="su-poll-opt" data-opt="2"><span class="su-poll-bar" data-su-bar style="width:0%"></span><input type="radio" name="su_poll_opt" value="2"><span class="su-poll-radio" aria-hidden="true"></span><span class="su-poll-lbl">Results &amp; hall tickets</span><span class="su-poll-pct" data-su-pct></span></label>
+        <label class="su-poll-opt" data-opt="3"><span class="su-poll-bar" data-su-bar style="width:0%"></span><input type="radio" name="su_poll_opt" value="3"><span class="su-poll-radio" aria-hidden="true"></span><span class="su-poll-lbl">Scholarship deadlines</span><span class="su-poll-pct" data-su-pct></span></label>
+      </div>
+      <div class="su-poll-foot">
+        <button type="submit" class="su-poll-vote" data-su-poll-vote>Vote</button>
+        <span>No login. One vote per device.</span>
+      </div>
+    </form>
+    <p class="su-quiz-legend">Open poll, not a scientific survey. In this offline preview the vote is kept on your device; the live site stores only the count &mdash; never who voted.</p>
+  </section>
+
+  <h2>How the daily quiz works</h2>
+  <ul>
+    <li>Questions rotate every day and come from official notifications (SSC, TSPSC, APPSC, IBPS, Railways).</li>
+    <li>Every answer carries a one-line explanation and its source &mdash; you learn, not just guess.</li>
+    <li>Your score and streak stay in your browser. We never see them and never ask for a phone number.</li>
+    <li>The quiz works even with JavaScript off: pick answers, press &ldquo;Check answers&rdquo;, and the server marks them.</li>
+  </ul>
+
+  <p><a class="cta" href="ts-jobs-hub.html">Today&rsquo;s Telangana jobs &rarr;</a>
+     <a class="cta" href="exam-calendar.html">Exam calendar 2026 &rarr;</a></p>
+"""
+
+
+QUIZ_SCRIPT = """<script>
+/* v197 — quiz + poll preview behaviour (same rules as the theme's
+   studentup-engage.js). Offline file lo poll vote localStorage lo — live site
+   lo REST endpoint count mattrame store chestundi (no personal data). */
+(function(){
+  var form=document.querySelector('[data-su-quiz-form]');
+  if(form){
+    var scoreEl=document.querySelector('[data-su-quiz-score]'),
+        barEl=document.querySelector('[data-su-quiz-bar]'),
+        checkBtn=document.querySelector('[data-su-quiz-check]'),
+        restart=document.querySelector('[data-su-quiz-restart]'),
+        share=document.querySelector('[data-su-quiz-share]'),
+        streakEl=document.querySelector('[data-su-quiz-streak]'),
+        qs=[].slice.call(form.querySelectorAll('fieldset.su-q')), total=qs.length,
+        score=0, picked={};
+    if(checkBtn) checkBtn.hidden=true;
+    function paint(){
+      if(scoreEl) scoreEl.textContent=String(score);
+      if(barEl) barEl.style.width=Math.round((Object.keys(picked).length/total)*100)+'%';
+    }
+    function mark(fs,chosen){
+      var right=parseInt(fs.getAttribute('data-c'),10);
+      [].forEach.call(fs.querySelectorAll('.su-opt'),function(lab){
+        var input=lab.querySelector('input'), val=parseInt(input.value,10);
+        lab.classList.remove('right','wrong','on'); input.disabled=true;
+        if(val===right) lab.classList.add('right');
+        if(val===chosen&&chosen!==right) lab.classList.add('wrong');
+      });
+      var why=fs.querySelector('[data-su-why]'); if(why) why.hidden=false;
+    }
+    function finish(){
+      if(share){
+        share.hidden=false;
+        share.href='https://wa.me/?text='+encodeURIComponent("I scored "+score+"/"+total+" in the StudentUp Daily Quiz. Practice free: https://studentup.in/");
+      }
+      if(streakEl){ streakEl.hidden=false; streakEl.textContent='5 questions done today'; }
+    }
+    form.addEventListener('click',function(e){
+      var lab=e.target.closest?e.target.closest('.su-opt'):null;
+      if(!lab) return;
+      var input=lab.querySelector('input'), fs=lab.closest('fieldset.su-q');
+      if(!input||!fs||input.disabled) return;
+      e.preventDefault(); input.checked=true;
+      var i=fs.getAttribute('data-i'); if(picked[i]!==undefined) return;
+      picked[i]=parseInt(input.value,10);
+      if(picked[i]===parseInt(fs.getAttribute('data-c'),10)) score++;
+      mark(fs,picked[i]); paint();
+      if(Object.keys(picked).length===total) finish();
+    });
+    if(restart){
+      restart.hidden=false;
+      restart.addEventListener('click',function(){
+        picked={}; score=0;
+        qs.forEach(function(fs){
+          [].forEach.call(fs.querySelectorAll('.su-opt'),function(lab){
+            lab.classList.remove('right','wrong','on');
+            var input=lab.querySelector('input'); if(input){ input.disabled=false; input.checked=false; }
+          });
+          var why=fs.querySelector('[data-su-why]'); if(why) why.hidden=true;
+        });
+        if(share) share.hidden=true; if(streakEl) streakEl.hidden=true; paint();
+      });
+    }
+    paint();
+  }
+
+  var box=document.querySelector('[data-su-poll]');
+  if(box){
+    var pform=box.querySelector('[data-su-poll-form]');
+    var labels=[].slice.call(box.querySelectorAll('.su-poll-opt'));
+    labels.forEach(function(lab){
+      lab.addEventListener('click',function(){
+        labels.forEach(function(o){ o.classList.remove('on'); });
+        lab.classList.add('on');
+      });
+    });
+    if(pform){
+      pform.addEventListener('submit',function(e){
+        e.preventDefault();
+        var chosen=pform.querySelector('input[name=su_poll_opt]:checked');
+        if(!chosen){ if(labels[0]) labels[0].classList.add('on'); return; }
+        var counts=[0,0,0,0]; counts[parseInt(chosen.value,10)]=1;
+        try{
+          var prev=JSON.parse(localStorage.getItem('su_poll_preview')||'null');
+          if(prev){ counts=prev; counts[parseInt(chosen.value,10)]++; }
+          localStorage.setItem('su_poll_preview',JSON.stringify(counts));
+        }catch(err){}
+        var total=counts.reduce(function(a,b){ return a+b; },0)||1;
+        labels.forEach(function(lab,i){
+          var pct=Math.round((counts[i]/total)*100);
+          var bar=lab.querySelector('[data-su-bar]'), p=lab.querySelector('[data-su-pct]');
+          if(bar) bar.style.width=pct+'%';
+          if(p) p.textContent=pct+'%';
+          var input=lab.querySelector('input'); if(input) input.disabled=true;
+        });
+        var foot=box.querySelector('.su-poll-foot'), btn=box.querySelector('[data-su-poll-vote]');
+        if(btn) btn.remove();
+        if(foot){ var s=foot.querySelector('span'); if(s) s.textContent='Thanks — your vote is counted (on this device in the offline preview).'; }
+      });
+      try{
+        var saved=JSON.parse(localStorage.getItem('su_poll_preview')||'null');
+        if(saved){
+          var t=saved.reduce(function(a,b){ return a+b; },0)||1;
+          labels.forEach(function(lab,i){
+            var pct=Math.round((saved[i]/t)*100);
+            var bar=lab.querySelector('[data-su-bar]'), p=lab.querySelector('[data-su-pct]');
+            if(bar) bar.style.width=pct+'%';
+            if(p) p.textContent=pct+'%';
+            var input=lab.querySelector('input'); if(input) input.disabled=true;
+          });
+          var btn=box.querySelector('[data-su-poll-vote]'); if(btn) btn.remove();
+        }
+      }catch(err){}
+    }
+  }
+})();
+</script>"""
+
+
 PAGE_DEFS = [
     ("advertise", "Partner with us",
      "Advertise on studentup.in — labelled SPONSORED placements read by Telangana & Andhra Pradesh students. Availability and pricing shared personally on WhatsApp.",
@@ -837,6 +1177,9 @@ PAGE_DEFS = [
      "The public correction log — every fixed mistake stays visible with its date, and readers can report errors with the official notification.",
      "Corrections &amp; updates",
      "What changed, when, and how to report a mistake", CORRECTIONS_BODY),
+    ("daily-quiz", "Daily quiz &amp; reader polls",
+     "Five fresh government-exam practice questions every morning with explained answers, plus one reader poll — free, no login, and nothing about you is stored.",
+     "Daily quiz &amp; reader polls", "Five questions every day, explained — plus one poll that decides what we build next", QUIZ_BODY),
 ]
 
 FAVICON = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
@@ -893,6 +1236,7 @@ SITEMAP = """<?xml version="1.0" encoding="UTF-8"?>
   <url><loc>https://studentup.in/pages/results-hub.html</loc><lastmod>{d}</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
   <url><loc>https://studentup.in/pages/scholarships-hub.html</loc><lastmod>{d}</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
   <url><loc>https://studentup.in/pages/editorial-team.html</loc><lastmod>{d}</lastmod><priority>0.6</priority></url>
+  <url><loc>https://studentup.in/pages/daily-quiz.html</loc><lastmod>{d}</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
   <url><loc>https://studentup.in/tools/</loc><lastmod>{d}</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://studentup.in/posts/upsc-junior-assistant-2026.html</loc><lastmod>{d}</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://studentup.in/posts/engineering-internships-2026.html</loc><lastmod>{d}</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
@@ -989,15 +1333,38 @@ def write_keyword_csv(limit: int = 200) -> str:
     return "%d rows · universe %d" % (len(rows), len(uni))
 
 
+def sync_home_nav() -> str:
+    """v197: home demo nav ni IDE generator nunchi rasthundi (pin-to-pin).
+
+    Mundu index.html nav ni chey-adi ga copy cheyyadam valla theme builder ki,
+    preview ki madhya drift vachedi. Ippudu okkate source: `mega_nav_html()`.
+    """
+    home_page = OUT / "worldclass" / "index.html"
+    if not home_page.exists():
+        return "index.html ledu"
+    html = home_page.read_text(encoding="utf-8")
+    nav = ('<nav class="nav" aria-label="Main menu">'
+           + mega_nav_html(home="index.html", pfx="../") + "</nav>")
+    new, n = re.subn(r'<nav class="nav" aria-label="Main menu">.*?</nav>',
+                     lambda _m: nav, html, count=1, flags=re.S)
+    if not n:
+        return "nav block dhorakaledu"
+    if new != html:
+        home_page.write_text(new, encoding="utf-8")
+        return "nav updated (%d -> %d bytes)" % (len(html), len(new))
+    return "already in sync"
+
+
 def main() -> None:
     PAGES.mkdir(parents=True, exist_ok=True)
-    scripts = {"contact": CONTACT_SCRIPT}
+    scripts = {"contact": CONTACT_SCRIPT, "daily-quiz": QUIZ_SCRIPT}
     for slug, title, desc, h1, sub, body in PAGE_DEFS:
         filled = (body.replace("{email}", EMAIL).replace("{tg}", TG)
                       .replace("{wa}", WA_LINK).replace("{phone}", PHONE))
         html = build(slug, title, desc, h1, sub, filled, script=scripts.get(slug, ""))
         (PAGES / ("%s.html" % slug)).write_text(html, encoding="utf-8")
         print("  wrote pages/%s.html (%d bytes)" % (slug, len(html)))
+    print("  home nav: %s" % sync_home_nav())
     (OUT / "favicon.svg").write_text(FAVICON, encoding="utf-8")
     (OUT / "robots.txt").write_text(ROBOTS, encoding="utf-8")
     (OUT / "sitemap.xml").write_text(SITEMAP.format(d=UPDATED), encoding="utf-8")

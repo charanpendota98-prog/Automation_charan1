@@ -1,7 +1,7 @@
 # studentup.in Auto-Blogger 🤖
 
 
-> **Verified counts (theme v1.9.37 build):** test suites **141/141** files · jsdom runtime **177/177** checks · PHP lint **94/94** files · theme audit **0/0** · **deep audit pass 1-4 31/31** · code audit **0/0**.
+> **Verified counts (theme v1.9.38 build):** test suites **142/142** files · jsdom runtime **196/196** checks · PHP lint **97/97** files · theme audit **0/0** · **deep audit pass 1-4 31/31** · code audit **0/0**.
 24/7 automatic blog posting system for **studentup.in** (WordPress) — runs on your Oracle Cloud instance.
 
 - **AI content:** Google Gemini (free tier) generates Telugu + English mix articles
@@ -681,7 +681,9 @@ Theme ni "world best" standards tho **repeatable ga audit** cheyyadaniki
 
 ```bash
 python3 tools/theme_audit_deep.py     # pass 1-4 · ✅ 31 pass · 0 warn · 0 fail
-node tools/php_lint.js                # 94/94
+node tools/php_lint.js                # 97/97
+python3 tools/build_offline_preview.py # 20-tab single-file preview (server-free)
+python3 tools/build_sprite.py          # inline icon sprite (theme = single source)
 python3 tools/cwv_audit.py            # CLS/a11y static (10 pages)
 ```
 
@@ -864,6 +866,22 @@ Audit gaps that were still open (#9 deadlines useless · #12 hidden price · #41
 
 Setup (`Run setup now`) ee 3 pages ni create chesi **template auto-assign** chestundi (idempotent). Preview: `pages/exam-calendar.html` · `internet-center.html` · `corrections.html` · sitemap **18 locs**.
 **Proof:** `tests/v196_test.py` (6 gates) · **141/141 suites** · php-lint **94/94** · parity PIN-TO-PIN · cwv 0/0 · visual 100/100.
+
+### v197 — engage pack + advanced menu + daily bot publish lane
+
+Owner ask (2026-10-03): *"fix cheyu anni perfectgaa quiz polls daily advancedga
+bot tho draft chesi post chesthu vundali anni perfectga advanced menu build cheyu"*.
+
+| Area | What shipped |
+| --- | --- |
+| Bug (screenshot) | Theme toggle showed raw `<svg …>` text because the preview assigned markup to `textContent`. Fixed to `innerHTML` in the demo + standalone, and a regression gate now fails any `textContent = …<svg` in the theme or preview. |
+| Advanced menu | `inc/megamenu.php` — 5 groups (Jobs · Exams · Scholarships · Tools · More) rendered as a mega panel with columns, icons and a recommended card. Every link is a real term / published page / front-page anchor, so a missing section simply drops out (no 404s). Mobile panel gets a `<details>` accordion. `assets/js/studentup-menu.js` adds keyboard (arrows, Escape), aria-expanded sync, touch behaviour and a sticky-header shrink. `mega_menu` option can switch back to the v93 dropdown. |
+| Daily quiz | `inc/quiz.php` rebuilt: 25-question sourced bank, server-rendered questions (works with JavaScript off — form POST + nonce), Quiz JSON-LD, explained answers with source, streak + best + native share via `assets/js/studentup-engage.js`, dedicated `/daily-quiz/` page (`page-quiz.php`, created by *Run setup now*). The v123 bug (function never called → quiz missing on the live theme) is closed and gated by a test. |
+| Reader polls | `inc/polls.php` — daily poll (7-question bank + bot/owner override), one vote per device (one-way hashed voter, raw IP never stored), 20-second rate limit, counts in `wp_options` with autoload OFF, REST route `studentup/v1/poll`, and a plain form POST fallback so voting works without JavaScript. |
+| Daily bot | `autoblog/publish_lane.py` — evening auto-publish that only touches drafts clearing **every** gate (official source URL meta · 700+ words · live Rank Math score ≥ 80 · fresh · no placeholder text) and verifies the publish readback. `autoblog/engage_push.py` pushes the daily quiz post and the poll question to the theme (idempotent by poll id). CLI: `--auto-publish`, `--auto-publish-dry`, `--daily-engage`; `AUTO_PUBLISH_DAILY=1` adds the publish step to `--daily`. |
+| Preview | Mega nav rendered by the same builder for every preview page, real quiz + poll widgets on the home and on a new English `/pages/daily-quiz.html`, and `tools/build_sprite.py` generates the inline icon sprite from the theme's own icon set (no more blank icon boxes). The offline single-file bundle now has 20 tabs and no dead links. |
+
+**Proof:** `tests/v197_test.py` (9 gates) · **142/142 suites** · php-lint **97/97** · parity PIN-TO-PIN · theme audit 0/0 · deep audit 31/31 · cwv 0/0 · visual 100/100.
 
 ### v195 — A) PER-TEMPLATE CRITICAL CSS · B) HUB PAGES · C) AUTHOR E-E-A-T 🚀
 

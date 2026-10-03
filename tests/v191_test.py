@@ -90,11 +90,16 @@ def test_money_layout():
 
 def test_home_is_neat():
     fp = (THEME / "front-page.php").read_text(encoding="utf-8")
-    banned = ["studentup_tools_tabs", "studentup_daily_quiz", "studentup_stories",
+    # v197.1: owner ippudu quiz + poll ni EXPLICIT ga adigaru (engagement content,
+    # calculator kaadu) — anduke avi banned list nunchi teesam. Kaani wall
+    # avvakoodadu: oke quiz call + oke poll call, migilinavi anni banned.
+    banned = ["studentup_tools_tabs", "studentup_stories",
               "studentup_for_you", "studentup_scholarship_strip", "studentup_salary_calc",
               "studentup_age_calculator_block", "studentup_resume_maker_block"]
     found = [b for b in banned if b in fp]
     assert not found, f"home lo widget wall inka undi: {found}"
+    assert fp.count("studentup_daily_quiz(") == 1, "home lo quiz call okkate undali (wall vaddhu)"
+    assert fp.count("studentup_daily_poll(") == 1, "home lo poll call okkate undali (wall vaddhu)"
     tools = THEME / "page-tools.php"
     assert tools.exists(), "page-tools.php ledu (tools ki separate page)"
     ts = tools.read_text(encoding="utf-8")

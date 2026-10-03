@@ -250,6 +250,18 @@ function studentup_menu_fallback() {
 		return studentup_used_term( $slug );
 	};
 
+	/*
+	 * v197 MEGA PANEL — terms/pages nijamga unte mattrame (404 ledu). Module
+	 * lekunda (purana install) kinda v93 dropdown body ne pani chestundi.
+	 */
+	if ( function_exists( 'studentup_mega_render' ) && '0' !== (string) studentup_opt( 'mega_menu', '1' ) ) {
+		$su_mega = studentup_mega_ready();
+		if ( $su_mega ) {
+			studentup_mega_render( $su_mega, $home );
+			return;
+		}
+	}
+
 	// Dropdown group definitions (preview design order).
 	$groups = array(
 		array(

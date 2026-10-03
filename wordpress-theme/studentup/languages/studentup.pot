@@ -2,7 +2,7 @@
 # This file is distributed under the GNU GPL v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: StudentUp 1.9.37\n"
+"Project-Id-Version: StudentUp 1.9.38\n"
 "Report-Msgid-Bugs-To: https://studentup.in/\n"
 "POT-Creation-Date: 2026-01-01 00:00+0000\n"
 "MIME-Version: 1.0\n"
@@ -18,6 +18,10 @@ msgstr ""
 
 #: author.php:45
 msgid "%s articles"
+msgstr ""
+
+#: inc/polls.php:430
+msgid "%s readers voted — tap an option to see live results."
 msgstr ""
 
 #: inc/engage.php:158
@@ -107,6 +111,10 @@ msgstr ""
 msgid "Andhra Pradesh"
 msgstr ""
 
+#: inc/quiz.php:291
+msgid "Answers are explained, not just marked. Score stays on your device — we do not store it."
+msgstr ""
+
 #: inc/workspace.php:113
 #: inc/workspace.php:190
 msgid "Any qualification"
@@ -139,6 +147,10 @@ msgstr ""
 
 #: author.php:69
 msgid "Author website / profile"
+msgstr ""
+
+#: inc/polls.php:434
+msgid "Be the first to vote — results show as soon as people answer."
 msgstr ""
 
 #: inc/personal.php:53
@@ -238,12 +250,20 @@ msgstr ""
 msgid "Copy the page link (or the headline) that looks wrong."
 msgstr ""
 
-#: inc/firstrun.php:333
+#: inc/firstrun.php:339
 msgid "Corrections"
 msgstr ""
 
 #: page-corrections.php:35
 msgid "Corrections &amp; updates"
+msgstr ""
+
+#: page-quiz.php:89
+msgid "Daily current affairs →"
+msgstr ""
+
+#: inc/quiz.php:213
+msgid "Daily quiz"
 msgstr ""
 
 #: inc/author-profile.php:118
@@ -256,6 +276,10 @@ msgstr ""
 
 #: inc/workspace.php:124
 msgid "Deadline"
+msgstr ""
+
+#: inc/quiz.php:283
+msgid "Decent start. Read the "why" lines once and retry."
 msgstr ""
 
 #: inc/remind.php:52
@@ -283,11 +307,15 @@ msgstr ""
 msgid "Email"
 msgstr ""
 
+#: page-quiz.php:78
+msgid "Every answer has a one-line explanation and the source — so you learn, not just guess."
+msgstr ""
+
 #: page-corrections.php:36
 msgid "Every correction we make is listed here with what changed and when. If you find a mistake, write to us with the page link and we will publish the fix on this page as well."
 msgstr ""
 
-#: inc/firstrun.php:322
+#: inc/firstrun.php:328
 msgid "Every entry links back to the official notification — always confirm the details there before applying."
 msgstr ""
 
@@ -315,8 +343,16 @@ msgstr ""
 msgid "Fee & concession calculator"
 msgstr ""
 
-#: inc/firstrun.php:133
+#: inc/firstrun.php:135
 msgid "Fees, documents and eligibility for any government application are always as per the official notification."
+msgstr ""
+
+#: inc/firstrun.php:270
+msgid "Five fresh practice questions every morning with explained answers, plus one reader poll. Free, no login, and nothing about you is stored."
+msgstr ""
+
+#: page-quiz.php:32
+msgid "Five fresh questions every morning, explained answers, and one reader poll that decides what we build next. Free, no login, nothing stored about you."
 msgstr ""
 
 #: page-internet-center.php:56
@@ -331,12 +367,16 @@ msgstr ""
 msgid "Form, photo/signature work and a single PDF pack of the documents the notification asks for"
 msgstr ""
 
-#: inc/firstrun.php:334
+#: inc/firstrun.php:340
 msgid "Found a mistake? Write to the email above with the page link. Verified corrections are published with the updated date, and the post keeps a correction note."
 msgstr ""
 
 #: inc/cta.php:70
 msgid "Free daily updates for Telangana & Andhra Pradesh students. No spam calls, leave anytime."
+msgstr ""
+
+#: page-quiz.php:96
+msgid "Free exam tools →"
 msgstr ""
 
 #: inc/cta.php:101
@@ -373,7 +413,8 @@ msgstr ""
 msgid "Hide social icons"
 msgstr ""
 
-#: inc/template.php:375
+#: inc/megamenu.php:351
+#: inc/template.php:387
 msgid "Home"
 msgstr ""
 
@@ -383,6 +424,18 @@ msgstr ""
 
 #: page-internet-center.php:79
 msgid "How it works"
+msgstr ""
+
+#: page-quiz.php:62
+msgid "How readers voted this week"
+msgstr ""
+
+#: page-quiz.php:75
+msgid "How the daily quiz works"
+msgstr ""
+
+#: page-quiz.php:74
+msgid "How this works"
 msgstr ""
 
 #: page-corrections.php:62
@@ -503,7 +556,7 @@ msgstr ""
 msgid "NEW"
 msgstr ""
 
-#: inc/firstrun.php:316
+#: inc/firstrun.php:322
 msgid "New notifications are added every day."
 msgstr ""
 
@@ -527,12 +580,20 @@ msgstr ""
 msgid "No last dates are confirmed yet. Dates appear here only after the official notification is published - we never estimate a deadline."
 msgstr ""
 
+#: inc/polls.php:462
+msgid "No login. One vote per device."
+msgstr ""
+
 #: inc/workspace.php:122
 msgid "No matching posts yet — relax the filters or check back after the next update."
 msgstr ""
 
 #: inc/security.php:130
 msgid "No more than 3 links in one comment."
+msgstr ""
+
+#: inc/quiz.php:285
+msgid "No problem — practice is the point. Try again tomorrow."
 msgstr ""
 
 #: search.php:33
@@ -567,12 +628,16 @@ msgstr ""
 msgid "Only %d days left"
 msgstr ""
 
-#: inc/firstrun.php:132
+#: inc/firstrun.php:134
 msgid "Only for that offline service, documents are shared on WhatsApp at"
 msgstr ""
 
 #: inc/student-tools.php:74
 msgid "Open comparison"
+msgstr ""
+
+#: inc/polls.php:472
+msgid "Open poll, not a scientific survey. We store only the count — never who voted."
 msgstr ""
 
 #: inc/workspace.php:140
@@ -592,7 +657,7 @@ msgstr ""
 msgid "Our service charge"
 msgstr ""
 
-#: inc/firstrun.php:131
+#: inc/firstrun.php:133
 msgid "Outside this website we run a small offline Students Internet Center that helps students fill government application forms. This is optional: every job, result, hall ticket and scholarship update on this website is free to read and you never need this service to use the site."
 msgstr ""
 
@@ -606,6 +671,10 @@ msgstr ""
 
 #: inc/workspace.php:129
 msgid "Pay"
+msgstr ""
+
+#: page-quiz.php:80
+msgid "Polls are open (not scientific): only the count is stored, never who voted."
 msgstr ""
 
 #: comments.php:61
@@ -660,6 +729,10 @@ msgstr ""
 msgid "Qualification"
 msgstr ""
 
+#: page-quiz.php:77
+msgid "Questions rotate every day and are sourced from official notifications (SSC, TSPSC, APPSC, IBPS, Railways)."
+msgstr ""
+
 #: inc/workspace.php:233
 msgid "Quick tools"
 msgstr ""
@@ -676,6 +749,10 @@ msgstr ""
 msgid "Read our editorial policy"
 msgstr ""
 
+#: inc/polls.php:422
+msgid "Reader poll"
+msgstr ""
+
 #: page-internet-center.php:37
 msgid "Reading this website, getting job alerts and using every tool here is free. You never need this service to use StudentUp."
 msgstr ""
@@ -684,8 +761,16 @@ msgstr ""
 msgid "Recent articles"
 msgstr ""
 
+#: page-quiz.php:61
+msgid "Recent poll results"
+msgstr ""
+
 #: inc/saved.php:303
 msgid "Recently read"
+msgstr ""
+
+#: inc/megamenu.php:392
+msgid "Recommended"
 msgstr ""
 
 #: inc/remind.php:56
@@ -844,6 +929,10 @@ msgstr ""
 msgid "Storage is not available in this browser (private mode?) — saving is off."
 msgstr ""
 
+#: inc/quiz.php:281
+msgid "Strong — keep this streak alive tomorrow."
+msgstr ""
+
 #: inc/premium.php:357
 msgid "Student tools"
 msgstr ""
@@ -852,7 +941,7 @@ msgstr ""
 msgid "Students Internet Center"
 msgstr ""
 
-#: inc/firstrun.php:130
+#: inc/firstrun.php:132
 msgid "Students Internet Center (separate offline service)"
 msgstr ""
 
@@ -864,11 +953,11 @@ msgstr ""
 msgid "StudentUp blocks"
 msgstr ""
 
-#: inc/firstrun.php:304
+#: inc/firstrun.php:310
 msgid "StudentUp publishes a correction log. Every fixed mistake stays visible with its date instead of being silently edited."
 msgstr ""
 
-#: inc/firstrun.php:331
+#: inc/firstrun.php:337
 msgid "StudentUp publishes government job, result, hall ticket and scholarship updates for Telangana and Andhra Pradesh students. This page names who writes and verifies them."
 msgstr ""
 
@@ -901,6 +990,10 @@ msgstr ""
 msgid "Tell us what the official notification says instead - a screenshot or the official link helps most."
 msgstr ""
 
+#: inc/polls.php:464
+msgid "Thanks — your vote is counted."
+msgstr ""
+
 #: author.php:63
 msgid "The StudentUp editorial team — honest articles for Telangana & Andhra Pradesh students, based on official sources."
 msgstr ""
@@ -911,6 +1004,10 @@ msgstr ""
 
 #: page-internet-center.php:103
 msgid "This service is a private offline service. It is not connected to any government department, and paying us gives you no advantage in any selection process."
+msgstr ""
+
+#: page-quiz.php:92
+msgid "Today's Telangana jobs →"
 msgstr ""
 
 #: inc/cta.php:28
@@ -954,6 +1051,10 @@ msgstr ""
 msgid "View saved here"
 msgstr ""
 
+#: inc/polls.php:461
+msgid "Vote"
+msgstr ""
+
 #: page-internet-center.php:83
 msgid "We fill the form, share a draft PDF with you, and submit only after you approve it."
 msgstr ""
@@ -970,7 +1071,7 @@ msgstr ""
 msgid "We never promise a job, a rank, a seat or a selection - no one can."
 msgstr ""
 
-#: inc/firstrun.php:295
+#: inc/firstrun.php:301
 msgid "We run a small offline Students Internet Center that helps students fill government application forms. This page shows the exact price list, what is included, what we never do and how to cancel - so you can decide before you pay anything."
 msgstr ""
 
@@ -998,6 +1099,10 @@ msgstr ""
 msgid "WhatsApp లో documents పంపండి"
 msgstr ""
 
+#: inc/quiz.php:256
+msgid "Why:"
+msgstr ""
+
 #: comments.php:59
 msgid "Write your comment"
 msgstr ""
@@ -1008,6 +1113,10 @@ msgstr ""
 
 #: comments.php:64
 msgid "Your email will not be published. Share personal details only for official information."
+msgstr ""
+
+#: page-quiz.php:79
+msgid "Your score and streak stay in your browser. We never see them and never ask for a phone number."
 msgstr ""
 
 #: inc/cta.php:39

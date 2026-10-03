@@ -114,7 +114,7 @@ def test_corrections_log() -> None:
 
 
 def test_preview_pages_and_sitemap() -> None:
-    """Preview pages shipped (pin-to-pin classes) + sitemap 18 locs."""
+    """Preview pages shipped (pin-to-pin classes) + sitemap 19 locs (v197: +quiz)."""
     prev = ROOT / "preview" / "pages"
     for slug, tokens in (
         ("exam-calendar", ("su-cal-list", "su-cal-badge", ".ics")),
@@ -128,10 +128,11 @@ def test_preview_pages_and_sitemap() -> None:
             assert tok in body, f"{slug}.html lo {tok} ledu"
         assert "worldclass.css" in body, f"{slug}.html lo theme CSS ledu (pin-to-pin break)"
     sm = read(ROOT / "preview" / "sitemap.xml")
-    assert len(re.findall(r"<loc>", sm)) == 18, f"sitemap locs {len(re.findall(r'<loc>', sm))} (18 expect)"
-    for slug in ("exam-calendar", "internet-center", "corrections"):
+    # v197: +1 loc — Daily Quiz & Polls page (owner ask)
+    assert len(re.findall(r"<loc>", sm)) == 19, f"sitemap locs {len(re.findall(r'<loc>', sm))} (19 expect)"
+    for slug in ("exam-calendar", "internet-center", "corrections", "daily-quiz"):
         assert f"pages/{slug}.html" in sm, f"sitemap lo {slug} ledu"
-    print("  C5. preview pages + sitemap 18 locs (pin-to-pin) ✔")
+    print("  C5. preview pages + sitemap 19 locs (pin-to-pin) ✔")
 
 
 def test_v196_css() -> None:

@@ -5,7 +5,7 @@ import sys
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT))
 from autoblog import config  # noqa: E402
-SUITES_EXPECTED=141
+SUITES_EXPECTED=142
 
 def test_scheduler_wiring():
  src=(ROOT/"autoblog/main.py").read_text(encoding="utf-8")
@@ -28,7 +28,7 @@ def test_failures_nonfatal():
 
 def test_docs():
  r=(ROOT/"README.md").read_text(encoding="utf-8");m=(ROOT/"MANUAL_ADVANCED_CHECKLIST.md").read_text(encoding="utf-8")
- assert "### v114" in r and "PART 71" in m and "141/141" in r and "141/141" in m
+ assert "### v114" in r and "PART 71" in m and "142/142" in r and "142/142" in m
  print("      README v114 + PART 71 + 96/96 pinned ✔")
 TESTS=[("wiring",test_scheduler_wiring),("config",test_config_env),("safe",test_failures_nonfatal),("docs",test_docs)]
 def main():

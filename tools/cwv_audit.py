@@ -152,7 +152,17 @@ class Auditor(HTMLParser):
             self.warnings.append("@font-face without font-display:swap")
 
 
+# v197.1: single-file preview bundles (OFFLINE_PREVIEW) = 20 full documents
+# okkate file lo. Duplicate-id / one-H1 / meta-description rules aa file ki
+# vartinchavu — bundle ni static audit nunchi teseestham (content checks
+# tests/v197_test.py lo untayi).
+BUNDLES = {"OFFLINE_PREVIEW.html"}
+
+
 def audit_file(path: Path) -> Dict:
+    if path.name in BUNDLES:
+        return {"file": str(path.relative_to(ROOT)), "errors": [], "warnings": [],
+                "images": 0, "bundled": True}
     html = path.read_text(encoding="utf-8", errors="ignore")
     a = Auditor()
     a.feed(html)

@@ -1118,23 +1118,49 @@ def daily_run(send: bool = True, whatsapp: bool = True, telegram: bool = True,
     print("=" * 62)
     if drafts:
         try:
-            print("\n[1/3] DRAFTS (radar + queue → separate drafts, hook lead tho)")
+            print("\n[1/5] DRAFTS (radar + queue → separate drafts, hook lead tho)")
             rc = radar_run(process_posts=True)
             if rc not in (0, None):
                 print(f"  ⚠️ draft step rc={rc} — list step continue avutundi")
         except Exception as exc:  # noqa: BLE001 — drafts fail aina list aagakudadu
             log.exception("daily drafts step failed (non-fatal): %s", exc)
     else:
-        print("\n[1/3] DRAFTS — skip (--daily-no-drafts)")
+        print("\n[1/5] DRAFTS — skip (--daily-no-drafts)")
     if guardian_check:
         try:
-            print("\n[2/3] GUARDIAN (system health)")
+            print("\n[2/5] GUARDIAN (system health)")
             guardian_run(quiet=True)
         except Exception as exc:  # noqa: BLE001
             log.info("guardian step skip (safe): %s", exc)
     else:
-        print("\n[2/3] GUARDIAN — skip")
-    print("\n[3/3] DAILY LIST (Telugu · hook items · mana blog links) + SEND")
+        print("\n[2/5] GUARDIAN — skip")
+    # v197: [3/5] daily engage — quiz post + reader poll (config: DAILY_ENGAGE=1)
+    if str(getattr(config, "DAILY_ENGAGE", "1")) not in ("0", "false", "False", ""):
+        try:
+            print("\n[3/5] DAILY ENGAGE (quiz post + reader poll push)")
+            from . import engage_push
+            engage_push.run(client=None)
+        except Exception as exc:  # noqa: BLE001 — engage fail aina daily list aagakudadu
+            log.info("daily engage step skip (safe): %s", exc)
+    else:
+        print("\n[3/5] DAILY ENGAGE — skip (DAILY_ENGAGE=0)")
+
+    # v197: [4/5] AUTO-PUBLISH LANE — gate-passed drafts mattrame live
+    if str(getattr(config, "AUTO_PUBLISH_DAILY", "0")) in ("1", "true", "True"):
+        try:
+            print("\n[4/5] AUTO-PUBLISH (source + words + Rank Math gate)")
+            from . import publish_lane
+            report = publish_lane.run(dry=False)
+            try:
+                publish_lane.notify(report)
+            except Exception:  # noqa: BLE001
+                pass
+        except Exception as exc:  # noqa: BLE001
+            log.info("auto-publish step skip (safe): %s", exc)
+    else:
+        print("\n[4/5] AUTO-PUBLISH — OFF (AUTO_PUBLISH_DAILY=1 tho on cheyyandi)")
+
+    print("\n[5/5] DAILY LIST (Telugu · hook items · mana blog links) + SEND")
     from . import forward_list as _fl
 
     return _fl.run_morning(save_files=save_files, send=send,
@@ -1849,6 +1875,15 @@ def main() -> int:
                         help="v149: command finish ayyaka Telegram alert pampu (--daily-quiz tho)")
     parser.add_argument("--daily-quiz", action="store_true",
                         help="v148: prepare today's quiz as a WordPress DRAFT (never publishes)")
+    parser.add_argument("--daily-engage", action="store_true",
+                        help="v197: roju quiz post + reader poll ni site ki push chey (daily engage)")
+    parser.add_argument("--publish", action="store_true",
+                        help="v197: --daily-engage tho quiz ni direct publish "
+                             "(gate-safe content, default draft)")
+    parser.add_argument("--auto-publish", action="store_true",
+                        help="v197: gate-passed drafts ni publish chey (source + words + Rank Math >= 80 + fresh)")
+    parser.add_argument("--auto-publish-dry", action="store_true",
+                        help="v197: auto-publish lane report mattrame — emi publish cheyyadu")
     parser.add_argument("--daily-quiz-dry", action="store_true",
                         help="v148: show today's quiz plan without touching WordPress")
     parser.add_argument("--control-center", action="store_true",
@@ -2256,6 +2291,24 @@ def main() -> int:
         from . import ctr_boost as _cb
 
         return _cb.run_cli(args.ctr_boost, args.ctr_min_impressions)
+    if args.daily_engage:
+        from . import engage_push
+        res = engage_push.run(publish_quiz=bool(getattr(args, "publish", False)))
+        ok = bool(res.get("quiz", {}).get("ok")) and bool(res.get("poll", {}).get("ok"))
+        return 0 if ok else 1
+
+    if args.auto_publish or args.auto_publish_dry:
+        from . import publish_lane
+        dry = bool(args.auto_publish_dry)
+        report = publish_lane.run(dry=dry)
+        try:
+            publish_lane.notify(report)
+        except Exception:  # noqa: BLE001 — notify is best-effort
+            pass
+        if report.get("error"):
+            return 2
+        return 0
+
     if args.daily_quiz or args.daily_quiz_dry:
         from . import daily_quiz as _dq
 

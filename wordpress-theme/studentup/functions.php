@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'STUDENTUP_VERSION', '1.9.37' );  // v188 HOOK LEAD: 'main enti' first line (su-hook, dark/print safe) + Telugu daily list hooks; v185 WORLD-CLASS PASS: no-flash dark mode (pre-paint) + color-scheme (native controls) + single H1 per view + card containment + fresh min.css; v184 ACTIVE BOARD HYGIENE: expired out + stale sweep (120d) + same-recruitment dedupe (site ↔ bot parity); v183 FORWARD LIST: outsourcing/contract board section (site + bot daily list align); v181 SEARCH-DEMAND LOG (readers' queries → content gaps); v180 SVG SPRITE (home -30KB) + live-JS-clean; v179 ATTACHMENT-REDIRECT + RICH FEEDS; v178 ALIAS-MERGE ARCHIVES + PWA icons; v177 SHARE-CARD + ICONS: og/twitter for home+archives, archive canonicals, favicon fallback, llms tools; v176 REAL-INSTALL AUDIT: home pagination + og:image guarantee + baseSalary; v175 CONTEXT-AWARE CTAs + schema gates; v174 BOARD RICHNESS + pretty labels; v173 REAL-INSTALL FIXES (hot rail meta keys + days-left, paginate null fatal, saved page auto-create); v172 COMMAND CENTER: My Workspace (profile → eligible jobs → application pipeline → deadline radar); v171 SVG icons + critical CSS + apply tracker; v170 phone mode
+define( 'STUDENTUP_VERSION', '1.9.38' );  // v188 HOOK LEAD: 'main enti' first line (su-hook, dark/print safe) + Telugu daily list hooks; v185 WORLD-CLASS PASS: no-flash dark mode (pre-paint) + color-scheme (native controls) + single H1 per view + card containment + fresh min.css; v184 ACTIVE BOARD HYGIENE: expired out + stale sweep (120d) + same-recruitment dedupe (site ↔ bot parity); v183 FORWARD LIST: outsourcing/contract board section (site + bot daily list align); v181 SEARCH-DEMAND LOG (readers' queries → content gaps); v180 SVG SPRITE (home -30KB) + live-JS-clean; v179 ATTACHMENT-REDIRECT + RICH FEEDS; v178 ALIAS-MERGE ARCHIVES + PWA icons; v177 SHARE-CARD + ICONS: og/twitter for home+archives, archive canonicals, favicon fallback, llms tools; v176 REAL-INSTALL AUDIT: home pagination + og:image guarantee + baseSalary; v175 CONTEXT-AWARE CTAs + schema gates; v174 BOARD RICHNESS + pretty labels; v173 REAL-INSTALL FIXES (hot rail meta keys + days-left, paginate null fatal, saved page auto-create); v172 COMMAND CENTER: My Workspace (profile → eligible jobs → application pipeline → deadline radar); v171 SVG icons + critical CSS + apply tracker; v170 phone mode
 
 require_once get_template_directory() . '/inc/options.php';
 require_once get_template_directory() . '/inc/icons.php';        // v171: pro SVG UI icons (emoji UI badulu).
@@ -20,6 +20,7 @@ require_once get_template_directory() . '/inc/critical-css.php'; // v171: above-
 require_once get_template_directory() . '/inc/qual-filter.php';  // v72: 10th/Inter/Degree/PG filter (auto tags)
 require_once get_template_directory() . '/inc/breaking.php';
 require_once get_template_directory() . '/inc/ads.php';
+require_once get_template_directory() . '/inc/megamenu.php';
 require_once get_template_directory() . '/inc/template.php';
 require_once get_template_directory() . '/inc/jobtable.php'; // v142: FreeJobAlert-style scannable table
 require_once get_template_directory() . '/inc/engage.php'; // v144: freshness stamp + helpful box
@@ -83,6 +84,7 @@ require_once get_template_directory() . '/inc/compare-page.php'; // v126: compar
 require_once get_template_directory() . '/inc/smart.php';   // v124: AI job match, eligibility, salary calc, calendar
 require_once get_template_directory() . '/inc/workspace.php'; // v172: My Workspace command center (profile · pipeline · radar)
 require_once get_template_directory() . '/inc/quiz.php';    // v123: real daily quiz
+require_once get_template_directory() . '/inc/polls.php';   // v197: reader polls (real votes, REST + no-JS)
 require_once get_template_directory() . '/inc/shortlinks.php'; // v122: first-party /slug redirects + click counts
 require_once get_template_directory() . '/inc/livefix.php';   // v194: demo page noindex, attachment/empty-search 301 (live audit fixes)
 require_once get_template_directory() . '/inc/hubs.php';      // v195: hub pages (topic clusters) + ItemList schema + autolink targets
@@ -420,7 +422,13 @@ function studentup_assets() {
 	// style.css + premium.css tarvata load → overrides safe.
 	wp_enqueue_style( 'studentup-worldclass', studentup_css_url( 'assets/css/worldclass.css' ), array( 'studentup-premium' ), STUDENTUP_VERSION );
 	wp_enqueue_script( 'studentup', get_template_directory_uri() . '/assets/js/studentup.js', array(), STUDENTUP_VERSION, true );
+	// v197: quiz + poll instant layer (only where they render — tiny file, defer).
+	if ( is_front_page() || is_page_template( 'page-quiz.php' ) || is_home() ) {
+		wp_enqueue_script( 'studentup-engage', get_template_directory_uri() . '/assets/js/studentup-engage.js', array(), STUDENTUP_VERSION, true );
+	}
 	wp_enqueue_script( 'studentup-premium', get_template_directory_uri() . '/assets/js/studentup-premium.js', array( 'studentup' ), STUDENTUP_VERSION, true );
+	// v197: advanced menu — keyboard/aria/touch accordion (tiny, no deps).
+	wp_enqueue_script( 'studentup-menu', get_template_directory_uri() . '/assets/js/studentup-menu.js', array(), STUDENTUP_VERSION, true );
 	// v127: command palette (Ctrl/⌘+K). v191.4 PERF: phone ki idi nishprayojanam
 	// (keyboard ledu) — 9 KB mattrame save avutundi; desktop ki mattrame load.
 	if ( ! wp_is_mobile() ) {
