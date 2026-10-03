@@ -103,20 +103,27 @@ CATEGORY_RULES = [
     ("AP Govt Jobs", ["appsc", "andhra", "ap police", "apsrtc", "ap genco",
                       "ఆంధ్రప్రదేశ్", "ap dsc", "grama sachivalayam"]),
     ("Central Govt Jobs", ["ssc", "upsc", "rrb", "ibps", "sbi po", "sbi clerk",
-                           "india post", "agniveer", "job", "vacancy",
-                           "recruitment", "bharti", "notification", "posts",
-                           "ఉద్యోగ", "నియామక", "ఖాళీల", "si ", "constable"]),
+                           "india post", "agniveer", "drdo", "isro", "railway",
+                           "central govt", "central government",
+                           "కేంద్ర ప్రభుత్వం", "కేంద్ర ఉద్యోగ", "si ", "constable"]),
     ("Software Jobs", ["software", "developer", "engineer", "it jobs",
                        "coding", "full stack", "data analyst", "devops",
-                       "testing"]),
+                       "testing", "infor", "oracle", "sap", "salesforce",
+                       "servicenow", "capgemini", "tech mahindra", "genpact",
+                       "virtusa", "hexaware", "zoho", "freshworks", "ibm",
+                       "సాఫ్ట్‌వేర్", "సాఫ్ట్‌వేర్ ఇంజనీర్", "సాఫ్ట్‌వేర్ డెవలపర్",
+                       "సాఫ్ట్‌వేర్ జాబ్స్", "ఇంజనీర్", "డెవలపర్"]),
     ("Private Jobs", ["tcs", "infosys", "wipro", "hcl", "cognizant",
-                      "accenture", "fresher", "off campus", "private", "mnc"]),
+                      "accenture", "amazon", "deloitte", "microsoft",
+                      "fresher", "off campus", "private", "mnc",
+                      "ప్రైవేట్ ఉద్యోగ", "ప్రైవేట్ జాబ్స్", "ప్రైవేట్ కంపెనీ", "ప్రైవేట్"]),
     ("Part Time Jobs", ["part time", "part-time", "work from home",
                         "freelance", "data entry", "tutor"]),
-    ("Walkin Jobs", ["walkin", "walk-in", "walk in", "direct interview"]),
+    ("Walkin Jobs", ["walkin", "walk-in", "walk in", "direct interview",
+                     "job mela", "job fair", "rojgar mela", "జాబ్ మేళా", "వాక్ ఇన్", "రోజ్‌గార్ మేళా"]),
     ("Outsourcing Jobs", ["outsourcing", "contract basis", "contractual",
-                          "కాంట్రాక్ట్", "అవుట్‌సోర్సింగ్", "crc", "outsourced",
-                          "guest faculty", "honorarium"]),
+                          "కాంట్రాక్ట్", "అవుట్‌సోర్సింగ్", "ఔట్‌సోర్సింగ్", "crc", "outsourced",
+                          "guest faculty", "honorarium", "తాత్కాలిక ఉద్యోగాలు"]),
     ("Success Stories", ["success story", "success stories", "achiever", "topper",
                          "ranker", "selected candidate", "selected students",
                          "విజయగాథ", "సాధించిన", "టాపర్"]),
@@ -133,16 +140,19 @@ CATEGORY_RULES = [
                         "recruitment calendar", "పరీక్షల క్యాలెండర్"]),
     ("Exam Tips", ["exam tips", "preparation strategy", "study plan", "revision",
                    "పరీక్షా చిట్కాలు", "సన్నద్ధత", "how to prepare", "time table",
-                   "model paper", "previous papers", "mock test"]),
-    ("Hall Tickets", ["admit card", "hall ticket", "హాల్ టికెట్", "call letter"]),
-    ("Scholarships", ["scholarship", "fellowship", "nsp", "fee reimbursement",
-                      "స్కాలర్", "రుసుము", "pragati", "saksham", "yasasvi"]),
-    ("Results", ["result", "ఫలిత", "marks list", "manabadi", "grade",
-                 "cutoff", "cut-off", "answer key"]),
-    ("Internships", ["internship", "ఇంటర్న్"]),
-    ("Online Education", ["admission", "counselling", "counseling", "web options",
-                          "dost", "eamcet", "eapcet", "icet", "pgecet", "ప్రవేశ",
-                          "online mba", "online degree", "course", "syllabus",
+                   "model paper", "model papers", "previous papers", "mock test",
+                   "study material", "materials", "material pdf", "question papers",
+                   "స్టడీ మెటీరియల్", "మోడల్ పేపర్లు", "మునుపటి పేపర్లు"]),
+    ("Hall Tickets", ["admit card", "admit cards", "hall ticket", "hall tickets", "హాల్ టికెట్", "హాల్ టికెట్లు", "call letter", "పరీక్ష హాల్ టికెట్"]),
+    ("Scholarships", ["scholarship", "scholarships", "fellowship", "nsp", "fee reimbursement",
+                      "స్కాలర్", "స్కాలర్‌షిప్", "రుసుము", "రుసుము రీయింబర్స్‌మెంట్", "pragati", "saksham", "yasasvi", "epass", "jnanabhumi", "విద్యా దీవెన"]),
+    ("Results", ["result", "results", "ఫలిత", "ఫలితాలు", "marks list", "manabadi", "grade",
+                 "cutoff", "cut-off", "answer key", "university results", "యూనివర్సిటీ ఫలితాలు", "semester results", "డిగ్రీ ఫలితాలు", "కీలు"]),
+    ("Internships", ["internship", "internships", "apprenticeship", "ఇంటర్న్"]),
+    ("Online Education", ["admission", "admissions", "counselling", "counseling", "web options",
+                          "dost", "eamcet", "eapcet", "icet", "pgecet", "neet counselling", "ప్రవేశ",
+                          "ప్రవేశ పరీక్ష", "కౌన్సిలింగ్", "అడ్మిషన్లు", "సీట్ల కేటాయింపు", "seat allotment",
+                          "entrance exam", "online mba", "online degree", "course", "syllabus",
                           "preparation", "study plan", "exam date", "పరీక్ష"]),
 ]
 
@@ -177,17 +187,27 @@ _SOFTWARE_SIGNALS = (
     "data analyst", "data scientist", "machine learning", "devops", "qa tester",
     "software testing", "automation tester", "programmer", "coding job",
     "it job", "it jobs", "python developer", "java developer", "android developer",
-    "ఫుల్ స్టాక్", "డెవలపర్", "సాఫ్ట్‌వేర్ ఉద్యోగ",
+    "software trainee", "associate engineer", "cloud engineer", "system engineer",
+    "software", "infor", "oracle", "sap", "salesforce", "servicenow",
+    "capgemini", "tech mahindra", "genpact", "virtusa", "hexaware", "zoho",
+    "freshworks", "ibm", "ltimindtree", "mphasis", "birlasoft",
+    "ఫుల్ స్టాక్", "డెవలపర్", "సాఫ్ట్‌వేర్", "సాఫ్ట్‌వేర్ ఉద్యోగ",
+    "సాఫ్ట్‌వేర్ ఇంజనీర్", "సాఫ్ట్‌వేర్ డెవలపర్", "సాఫ్ట్‌వేర్ జాబ్స్", "ఇంజనీర్",
 )
 _PRIVATE_SIGNALS = (
     "tcs", "infosys", "wipro", "hcl", "cognizant", "accenture", "amazon",
     "deloitte", "microsoft", "google careers", "private company", "private job",
-    "mnc", "off campus", "campus hiring", "fresher hiring",
+    "mnc", "off campus", "campus hiring", "fresher hiring", "infor", "oracle",
+    "sap", "salesforce", "servicenow", "capgemini", "tech mahindra", "genpact",
+    "virtusa", "hexaware", "zoho", "freshworks", "ibm", "private",
+    "ప్రైవేట్ ఉద్యోగ", "ప్రైవేట్ జాబ్స్", "ప్రైవేట్ కంపెనీ", "ప్రైవేట్",
 )
 _JOB_CONTEXT = (
     "job", "jobs", "vacancy", "vacancies", "recruitment", "notification",
     "hiring", "career", "careers", "opening", "role", "roles", "apply",
-    "salary", "walk-in", "walkin", "భర్తీ", "ఉద్యోగ", "నియామక", "ఖాళీ",
+    "salary", "walk-in", "walkin", "engineer", "developer", "trainee",
+    "fresher", "drive", "భర్తీ", "ఉద్యోగ", "నియామక", "ఖాళీ",
+    "ఇంజనీర్", "డెవలపర్", "సాఫ్ట్‌వేర్", "టెక్",
 )
 
 
@@ -288,14 +308,17 @@ def classify_category(title: str, text: str = "") -> str:
     # A software role is its own job intent. Government signals are allowed to
     # override it only when the organisation/exam is explicit (e.g. DRDO
     # Software Engineer), never because the text says "notification".
-    if has_software and (has_central or has_ts or has_ap) and has_job:
-        if has_ts and not has_ap and not has_central:
-            return "TS Govt Jobs"
-        if has_ap and not has_ts and not has_central:
-            return "AP Govt Jobs"
-        if has_central and not has_ts and not has_ap:
-            return "Central Govt Jobs"
-    if has_software and has_job:
+    if has_software:
+        explicit_govt = any(g in blob for g in ("drdo", "isro", "bel ", "bhel",
+                                                "tspsc", "appsc", "upsc", "ssc",
+                                                "rrb", "railway", "ibps", "sbi"))
+        if explicit_govt:
+            if has_ts and not has_ap and not has_central:
+                return "TS Govt Jobs"
+            if has_ap and not has_ts and not has_central:
+                return "AP Govt Jobs"
+            if has_central and not has_ts and not has_ap:
+                return "Central Govt Jobs"
         return "Software Jobs"
 
     # Generic government employment is classified only by a verifiable
@@ -311,7 +334,7 @@ def classify_category(title: str, text: str = "") -> str:
                        "agriculture", "women welfare", "ప్రస్తుతాంశాలు", "కరెంట్ అఫైర్స్",
                        "పథకం", "రైతు", "మహిళ")) and not has_job:
         return "Current Affairs"
-    if has_job and _has_any(blob, _PRIVATE_SIGNALS):
+    if (has_job or _has_any(blob, ("hiring", "drive", "careers", "fresher", "recruit"))) and _has_any(blob, _PRIVATE_SIGNALS):
         return "Private Jobs"
 
     # Conservative compatibility fallback for older sources. It cannot select
@@ -359,8 +382,10 @@ def classify_source_category(url: str, title: str = "", text: str = "") -> str:
                                    "indiapost.gov.in", "drdo.gov.in", "isro.gov.in",
                                    "fddiindia.com", "fddi.gov.in", "ncs.gov.in")) and has_job:
         return "Central Govt Jobs"
-    if _has_any(url_blob, ("job mela", "job fair", "walk in", "walkin")):
+    if _has_any(url_blob, ("job mela", "job fair", "walk in", "walkin", "rojgar mela")):
         return "Walkin Jobs"
+    if _has_any(url_blob, ("outsourcing", "contract", "guest faculty")):
+        return "Outsourcing Jobs"
     if _has_any(url_blob, ("infor.com", "careers.", "jobs.", "tcs.com", "infosys.com",
                            "wipro.com", "cognizant.com", "accenture.com")) and has_job:
         return "Software Jobs" if _has_any(body_blob, _SOFTWARE_SIGNALS) else "Private Jobs"
@@ -442,15 +467,33 @@ def suggest_tags(article: Dict) -> list:
     return tags
 
 
+def clean_title_text(title: str) -> str:
+    """Clean artificial suffixes, unescape entities, and normalize whitespace."""
+    if not title:
+        return ""
+    import html as _html
+    t = _html.unescape(str(title).strip())
+    # Strip artificial promotional/guide suffixes: "— Best Guide", "– Complete Guide", etc.
+    t = re.sub(r"\s*(?:[—–-]\s*)?(?:Best|Complete|Ultimate|A to Z|Full)\s+(?:Guide|Details|Update|Information)\b", "", t, flags=re.I)
+    t = re.sub(r"\s*[—–-]\s*$", "", t).strip()
+    return re.sub(r"\s+", " ", t).strip()
+
+
 def _hygiene(article: Dict) -> Dict:
     """Chinna chinna quality fixes publish mundhe."""
     reconcile_category(article)
     article["tags"] = suggest_tags(article)  # v78 auto-tags (hygiene dedupes)
+
+    # Clean artificial filler suffixes from titles
+    title = clean_title_text(article.get("title", ""))
+    seo_title = clean_title_text(article.get("seo_title", ""))
     # title too long -> seo_title use cheyi (Rank Math 60-75 chars ideal)
-    title = article.get("title", "")
-    seo_title = article.get("seo_title", "")
     if len(title) > 85 and seo_title and 20 <= len(seo_title) <= 85:
         article["title"] = seo_title
+    else:
+        article["title"] = title
+    if seo_title:
+        article["seo_title"] = seo_title
     # tags: remove a different canonical category tag (e.g. Central Govt Jobs
     # accidentally returned for a Software Jobs article), then dedupe/cap.
     # Category and tags serve different jobs: keep the selected category tag,
@@ -962,6 +1005,7 @@ def publish_article(article: Dict, day: Optional[date] = None) -> Dict:
         fk = article.get("focus_keyword") or article["banner_text"]
         year = article.get("year", date.today().year)
         if image_gen.generate_featured_image(article["banner_text"], article["category"], image_path):
+            article["_image_path"] = str(image_path)
             alt_text = seo.image_alt(fk, article.get("category", ""), year)
             # v96: SEO thumbnail FILE NAME (keyword-category-year.webp) —
             # slug-only name kanna Google Images/Discover ki better context.

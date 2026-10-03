@@ -48,6 +48,17 @@ $su_is_p2 = $su_paged > 1;
 			<span>One tap to the sections TS & AP students open most</span>
 		</div>
 		<div class="usedgrid">
+			<a class="su-used-breaking" href="<?php echo esc_url( home_url( '/#jobs' ) ); ?>" aria-label="Breaking News - Live Flash Updates">
+				<span class="ui ui--breaking" aria-hidden="true"><?php echo studentup_ui_icon( 'bolt', 20 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?></span>
+				<div class="su-ub-body">
+					<div class="su-ub-top">
+						<span class="su-ub-tag"><span class="su-pulse-dot"></span> LIVE FLASH</span>
+						<b>Breaking News</b>
+					</div>
+					<small><?php esc_html_e( 'Latest notifications · hall tickets & exam alerts', 'studentup' ); ?></small>
+				</div>
+				<em class="ucount ucount--brk"><?php esc_html_e( 'Flash Updates →', 'studentup' ); ?></em>
+			</a>
 			<?php
 			foreach ( studentup_most_used() as $i => $m ) :
 				$term = studentup_used_term( $m['slug'] );

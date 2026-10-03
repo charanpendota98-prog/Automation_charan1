@@ -1,0 +1,304 @@
+{
+  "2026-10-03": [
+    {
+      "id": 1,
+      "exam": "tspsc",
+      "q": "Who was the founder of the Asaf Jahi dynasty in Hyderabad Deccan?",
+      "a": [
+        "Mir Qamar-ud-din Khan (Nizam-ul-Mulk)",
+        "Nasir Jung",
+        "Salabat Jung",
+        "Afzal-ud-Daula"
+      ],
+      "c": 0,
+      "why": "Nizam-ul-Mulk founded the Asaf Jahi dynasty in 1724 after defeating Mubariz Khan at the Battle of Shakar Kheda.",
+      "cat": "Telangana History",
+      "src": "TSPSC Group 1 & 2 Syllabus"
+    },
+    {
+      "id": 2,
+      "exam": "tspsc",
+      "q": "Under which Article of the Indian Constitution was the state of Telangana formed in 2014?",
+      "a": [
+        "Article 2",
+        "Article 3",
+        "Article 4",
+        "Article 371-D"
+      ],
+      "c": 1,
+      "why": "Article 3 empowers Parliament to form new States and alter areas, boundaries, or names of existing States by law.",
+      "cat": "Indian Polity & Telangana",
+      "src": "Constitution of India"
+    },
+    {
+      "id": 3,
+      "exam": "tspsc",
+      "q": "The iconic Telangana Martyrs Memorial (Amaraveerula Stupa) located at Gun Park, Hyderabad was sculpted by which renowned artist?",
+      "a": [
+        "Aekka Yadagiri Rao",
+        "Kapu Rajaiah",
+        "Thota Vaikuntam",
+        "Laxma Goud"
+      ],
+      "c": 0,
+      "why": "Prof. Aekka Yadagiri Rao sculpted the historic Gun Park Martyrs Memorial in memory of martyrs of the 1969 Telangana agitation.",
+      "cat": "Telangana Culture",
+      "src": "Telangana Sahitya Akademi"
+    },
+    {
+      "id": 4,
+      "exam": "tspsc",
+      "q": "Which is the first barrage of the Kaleshwaram Lift Irrigation Project located at the confluence of the Godavari and Pranahita rivers?",
+      "a": [
+        "Sundilla Barrage",
+        "Annaram Barrage",
+        "Medigadda (Lakshmi) Barrage",
+        "Yellampalli Barrage"
+      ],
+      "c": 2,
+      "why": "Medigadda (Lakshmi) Barrage is the headworks where water is pumped from the Pranahita-Godavari confluence.",
+      "cat": "Telangana Geography & Projects",
+      "src": "Irrigation & CAD Dept"
+    },
+    {
+      "id": 5,
+      "exam": "appsc",
+      "q": "The Polavaram Multi-Purpose National Irrigation Project is being constructed across which river in Andhra Pradesh?",
+      "a": [
+        "Krishna River",
+        "Godavari River",
+        "Pennar River",
+        "Nagavali River"
+      ],
+      "c": 1,
+      "why": "Polavaram Project is built across the Godavari River in Eluru and Alluri Sitharama Raju districts of AP.",
+      "cat": "AP Geography",
+      "src": "APPSC Group 1 Syllabus"
+    },
+    {
+      "id": 6,
+      "exam": "appsc",
+      "q": "Under which section of the AP Reorganisation Act, 2014 does the Governor have special responsibilities for Hyderabad as the common capital?",
+      "a": [
+        "Section 5",
+        "Section 8",
+        "Section 12",
+        "Section 24"
+      ],
+      "c": 1,
+      "why": "Section 8 of the Andhra Pradesh Reorganisation Act, 2014 vests special responsibility in the Governor for law and order in the common capital.",
+      "cat": "AP Polity & Reorganisation",
+      "src": "AP Reorganisation Act Gazette"
+    },
+    {
+      "id": 7,
+      "exam": "appsc",
+      "q": "According to the Right of Children to Free and Compulsory Education (RTE) Act, 2009, what is the pupil-teacher ratio for primary schools (classes 1 to 5)?",
+      "a": [
+        "25:1",
+        "30:1",
+        "35:1",
+        "40:1"
+      ],
+      "c": 1,
+      "why": "The RTE Act norms specify a Pupil-Teacher Ratio (PTR) of 30:1 for primary schools up to 200 enrolled students.",
+      "cat": "Education & DSC",
+      "src": "Ministry of Education / RTE Act"
+    },
+    {
+      "id": 8,
+      "exam": "ssc",
+      "q": "A train 240 m long crosses a telegraph pole in 12 seconds. What is the speed of the train in km/h?",
+      "a": [
+        "60 km/h",
+        "72 km/h",
+        "54 km/h",
+        "80 km/h"
+      ],
+      "c": 1,
+      "why": "Speed = Distance / Time = 240 m / 12 s = 20 m/s. In km/h: 20 * (18 / 5) = 72 km/h.",
+      "cat": "Quantitative Aptitude",
+      "src": "SSC CGL / CHSL"
+    },
+    {
+      "id": 9,
+      "exam": "ssc",
+      "q": "In a certain code language, if 'PAPER' is written as 'QBQFS', how is 'OFFICE' written in that code?",
+      "a": [
+        "PGGIDF",
+        "PGGJDF",
+        "NFFHBD",
+        "QHHJEG"
+      ],
+      "c": 1,
+      "why": "Each letter is shifted forward by +1: O->P, F->G, F->G, I->J, C->D, E->F.",
+      "cat": "Logical Reasoning",
+      "src": "SSC CGL / GD"
+    },
+    {
+      "id": 10,
+      "exam": "ssc",
+      "q": "A sum of money invested at compound interest amounts to Rs. 4,840 in 2 years and Rs. 5,324 in 3 years. Find the annual rate of interest.",
+      "a": [
+        "8%",
+        "10%",
+        "12%",
+        "15%"
+      ],
+      "c": 1,
+      "why": "Interest for the 3rd year = Rs. 5324 - 4840 = Rs. 484. Rate = (484 / 4840) * 100 = 10% per annum.",
+      "cat": "Quantitative Aptitude",
+      "src": "SSC CGL Tier 1"
+    },
+    {
+      "id": 11,
+      "exam": "ssc",
+      "q": "Which prominent Indus Valley Civilization site features the world's earliest known tidal dockyard?",
+      "a": [
+        "Kalibangan",
+        "Lothal",
+        "Rakhigarhi",
+        "Banawali"
+      ],
+      "c": 1,
+      "why": "Lothal in Gujarat had a sophisticated tidal dockyard connected to the Sabarmati river basin for maritime trade.",
+      "cat": "Ancient Indian History",
+      "src": "Archaeological Survey of India"
+    },
+    {
+      "id": 12,
+      "exam": "banking",
+      "q": "Which key policy interest rate is adjusted by the Reserve Bank of India (RBI) to inject short-term liquidity into commercial banks?",
+      "a": [
+        "Reverse Repo Rate",
+        "Cash Reserve Ratio (CRR)",
+        "Repo Rate",
+        "Statutory Liquidity Ratio (SLR)"
+      ],
+      "c": 2,
+      "why": "Repo Rate is the interest rate at which RBI lends short-term liquidity to commercial banks against government securities.",
+      "cat": "Banking & Monetary Policy",
+      "src": "Reserve Bank of India (rbi.org.in)"
+    },
+    {
+      "id": 13,
+      "exam": "banking",
+      "q": "What is the maximum deposit insurance coverage provided by DICGC per depositor per insured bank in India?",
+      "a": [
+        "Rs. 1,00,000",
+        "Rs. 2,00,000",
+        "Rs. 5,00,000",
+        "Rs. 10,00,000"
+      ],
+      "c": 2,
+      "why": "The Deposit Insurance and Credit Guarantee Corporation (DICGC) insures bank deposits up to Rs. 5 Lakhs (principal + interest).",
+      "cat": "Banking Awareness",
+      "src": "DICGC / Ministry of Finance"
+    },
+    {
+      "id": 14,
+      "exam": "banking",
+      "q": "In the Union Budget of India, how is the 'Primary Deficit' calculated?",
+      "a": [
+        "Fiscal Deficit - Interest Payments",
+        "Revenue Deficit - Capital Expenditure",
+        "Fiscal Deficit + Borrowings",
+        "Budget Deficit - Subsidies"
+      ],
+      "c": 0,
+      "why": "Primary Deficit = Fiscal Deficit - Interest Payments. It indicates government borrowing requirements excluding past interest obligations.",
+      "cat": "Indian Economy",
+      "src": "Ministry of Finance Budget Division"
+    },
+    {
+      "id": 15,
+      "exam": "rrb",
+      "q": "Which is the longest running passenger train route by both distance and time in the Indian Railways network?",
+      "a": [
+        "Himsagar Express (Kanyakumari to Shri Mata Vaishno Devi Katra)",
+        "Vivek Express (Dibrugarh to Kanyakumari)",
+        "Navyug Express (Mangaluru to Shri Mata Vaishno Devi Katra)",
+        "Grand Trunk Express (New Delhi to Chennai Central)"
+      ],
+      "c": 1,
+      "why": "Vivek Express covers approximately 4,189 km from Dibrugarh in Assam to Kanyakumari in Tamil Nadu over 75 hours.",
+      "cat": "Indian Railways GK",
+      "src": "Indian Railways / RRB NTPC"
+    },
+    {
+      "id": 16,
+      "exam": "rrb",
+      "q": "What propellants are utilized in the indigenous CE-20 Cryogenic Upper Stage of ISRO's LVM3 (Launch Vehicle Mark-3)?",
+      "a": [
+        "Liquid Hydrogen (LH2) and Liquid Oxygen (LOX)",
+        "Liquid Methane and Liquid Oxygen",
+        "Kerosene and Liquid Oxygen",
+        "Hydrazine and Nitrogen Tetroxide"
+      ],
+      "c": 0,
+      "why": "CE-20 operates on a gas-generator cycle burning cryogenic Liquid Hydrogen (fuel at -253C) and Liquid Oxygen (oxidizer at -183C).",
+      "cat": "Science & Space Technology",
+      "src": "ISRO Technical Reports"
+    },
+    {
+      "id": 17,
+      "exam": "rrb",
+      "q": "What is the SI unit of electrical resistance in the International System of Units?",
+      "a": [
+        "Volt",
+        "Ohm",
+        "Ampere",
+        "Watt"
+      ],
+      "c": 1,
+      "why": "The SI unit of electrical resistance is the Ohm (represented by Greek letter Omega), named after Georg Simon Ohm.",
+      "cat": "General Science (Physics)",
+      "src": "NCERT Class 10 Science"
+    },
+    {
+      "id": 18,
+      "exam": "general",
+      "q": "Under which Article of the Constitution can a citizen approach the Supreme Court directly for the enforcement of Fundamental Rights?",
+      "a": [
+        "Article 32",
+        "Article 226",
+        "Article 131",
+        "Article 44"
+      ],
+      "c": 0,
+      "why": "Article 32 confers the Right to Constitutional Remedies, famously described by Dr. B.R. Ambedkar as the 'heart and soul of the Constitution'.",
+      "cat": "Indian Polity",
+      "src": "Constitution of India"
+    },
+    {
+      "id": 19,
+      "exam": "general",
+      "q": "Which Constitutional Amendment Act introduced the nationwide Goods and Services Tax (GST) in India?",
+      "a": [
+        "100th Amendment Act",
+        "101st Amendment Act",
+        "102nd Amendment Act",
+        "103rd Amendment Act"
+      ],
+      "c": 1,
+      "why": "The 101st Constitutional Amendment Act, 2016 introduced the unified Goods and Services Tax (GST) nationwide effective 1 July 2017.",
+      "cat": "Indian Economy & Polity",
+      "src": "Ministry of Finance"
+    },
+    {
+      "id": 20,
+      "exam": "general",
+      "q": "What is the chemical name of Vitamin C, a water-soluble antioxidant vitamin that helps prevent scurvy?",
+      "a": [
+        "Retinol",
+        "Ascorbic Acid",
+        "Calciferol",
+        "Tocopherol"
+      ],
+      "c": 1,
+      "why": "Vitamin C is chemically known as Ascorbic Acid; deficiency causes scurvy with bleeding gums and slow wound healing.",
+      "cat": "General Science (Biology)",
+      "src": "NCERT Biology"
+    }
+  ]
+}

@@ -90,6 +90,7 @@ PAGE = '''<!DOCTYPE html>
 <link rel="stylesheet" href="''' + THEME_CSS + '''/assets/css/worldclass.css">
 </head>
 <body class="single">
+<div class="su-progress" aria-hidden="true"><span id="su-progress-bar"></span></div>
 ''' + SPRITE + '''
 {header}
 <main id="main">
@@ -106,6 +107,18 @@ PAGE = '''<!DOCTYPE html>
               <span class="su-am"><svg class="su-uicon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><use href="#su-i-check"/></svg> Official notification నుంచి చెక్ చేశాం</span>
               <span class="su-am">{read} చదువు</span>
             </div>
+          </div>
+
+          <div class="su-trust-banner">
+            <span class="su-tb-badge"><svg class="su-uicon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><use href="#su-i-check"/></svg> 100% అధికారిక ధృవీకరణ (Verified)</span>
+            <span class="su-tb-meta">మూలం: అధికారిక నోటిఫికేషన్ గెజిట్ · పరిశీలించిన తేదీ: {date_te}</span>
+          </div>
+
+          <div class="su-jump-row" aria-label="Jump to section">
+            <a href="#su-details" class="su-jump-pill">📋 ముఖ్య వివరాలు</a>
+            <a href="#su-details" class="su-jump-pill">🎓 అర్హతలు</a>
+            <a href="#su-details" class="su-jump-pill">📝 అప్లై విధానం</a>
+            <a href="#su-details" class="su-jump-pill">❓ FAQs</a>
           </div>
 
           <p class="su-hook">{hook}</p>
@@ -139,6 +152,22 @@ PAGE = '''<!DOCTYPE html>
 </main>
 {footerbar}
 {bottomnav}
+
+<!-- ================= Floating Action Bar for Mobile ================= -->
+<div class="su-float-bar" id="su-float-bar" hidden>
+  <div class="su-fb-in">
+    <div class="su-fb-info">
+      <span class="su-fb-title">{short}</span>
+      <span class="su-fb-deadline">⏳ దరఖాస్తు గడువు సమీపిస్తోంది</span>
+    </div>
+    <div class="su-fb-actions">
+      <a class="su-fb-apply" href="#su-details">Apply Details →</a>
+      <button type="button" class="su-fb-close" id="su-fb-close" aria-label="Close action bar">✕</button>
+    </div>
+  </div>
+</div>
+
+<div id="su-toast" class="su-toast" role="status" aria-live="polite" hidden></div>
 {pagejs}
 </body>
 </html>

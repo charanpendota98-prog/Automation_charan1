@@ -188,6 +188,8 @@ function studentup_option_fields() {
 				'hsts_enforce' => array( 'HSTS enforce (HTTPS only)', 'check', '0', 'v81: SSL live confirm ayyaka matrame ON (HTTP staging lo lock risk)' ),
 				'content_visibility' => array( 'content-visibility (below-fold render skip → fast)', 'check', '1', 'LCP/INP improvement — modern browsers lo mattrame' ),
 				'indexnow_key' => array( 'IndexNow key (hex, 8+ chars)', 'text', '', 'Bot nimpustundi — /<key>.key file automatic ga serve avutundi (Bing/Yandex instant indexing)' ),
+				'quiz_api_key' => array( 'Quiz REST Intake API Key', 'text', '', 'External bots / scripts authentication key for POST /wp-json/studentup/v1/quiz-intake' ),
+				'daily_quiz_store' => array( 'Daily Quiz JSON Store', 'textarea', '', 'Managed automatically by quiz intake engine or external bot REST intake. Leave as is unless manually resetting questions.' ),
 				'redirects_json' => array( '301 redirects (JSON)', 'textarea', '', 'v80: {"/old-url/": "/new-url/"} — slug marina old links 404 kakunda 301 (chain/loop safe, relative paths only)' ),
 				'ga4_id' => array( 'GA4 Measurement ID', 'text', '', 'v80: G-XXXXXXXXXX — consent-aware analytics (EEA regions lo consent varaku hold, India lo direct)' ),
 				'gsc_verify'  => array( 'Search Console verification', 'text', '', 'v80: GSC → Settings → Ownership verification → HTML tag content value (meta tag auto)' ),

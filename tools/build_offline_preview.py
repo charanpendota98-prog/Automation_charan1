@@ -55,6 +55,7 @@ STYLES = [
 def body_inner(html: str) -> str:
     m = re.search(r"<body[^>]*>(.*?)</body>", html, re.S | re.I)
     body = m.group(1) if m else html
+    body = re.sub(r'src="\.\./assets/img/', 'src="assets/img/', body)
     return inline_theme_scripts(body)
 
 
@@ -84,6 +85,7 @@ LINK_TABS = {
     "../worldclass/index.html": "home", "index.html": "home",
     "../worldclass/devices.html": "devices",
     "../tools/index.html": "tools", "tools/index.html": "tools",
+    "../tools/index.html?tool=age": "tools", "../tools/index.html?tool=salary": "tools",
     "../pages/ts-jobs-hub.html": "hub", "ts-jobs-hub.html": "hub",
     "../pages/daily-quiz.html": "quiz", "daily-quiz.html": "quiz",
     "../pages/exam-calendar.html": "calendar", "exam-calendar.html": "calendar",
@@ -103,6 +105,14 @@ LINK_TABS = {
     "standalone.html": "home", "../worldclass/standalone.html": "home",
     "../posts/upsc-junior-assistant-2026.html": "post1",
     "../posts/engineering-internships-2026.html": "post2",
+    "../posts/post-office-gds-2026.html": "post1",
+    "../posts/ibps-clerk-2026.html": "post1",
+    "../posts/rrb-ntpc-2026.html": "post1",
+    "../posts/ap-police-constable-2026.html": "post1",
+    "post-office-gds-2026.html": "post1",
+    "ibps-clerk-2026.html": "post1",
+    "rrb-ntpc-2026.html": "post1",
+    "ap-police-constable-2026.html": "post1",
 }
 
 
@@ -114,13 +124,13 @@ def retarget_links(html: str) -> str:
     """
     def repl(m: "re.Match[str]") -> str:
         href = m.group(1)
-        base, _, _frag = href.partition("#")
+        base = href.split("?")[0].split("#")[0]
         tab = LINK_TABS.get(href) or LINK_TABS.get(base)
         if not tab:
             return m.group(0)
         return 'href="#of-%s"' % tab
 
-    return re.sub(r'href="([^"]+\.html(?:#[^"]*)?)"', repl, html)
+    return re.sub(r'href="([^"]+\.html(?:\?[^"#]*)?(?:#[^"]*)?)"', repl, html)
 
 
 def main() -> int:

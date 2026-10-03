@@ -162,6 +162,26 @@ PAGE_JS = """(function(){
     var c=anchor.querySelector('button');
     if(c) c.addEventListener('click',function(){ try{ localStorage.setItem('su_anchor_closed','1'); }catch(e){} });
   }
+
+  /* Scroll Progress Bar & Floating Action Bar */
+  var pBar = document.getElementById('su-progress-bar');
+  var fBar = document.getElementById('su-float-bar');
+  var fClosed = false;
+  window.addEventListener('scroll', function(){
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    var pct = h > 0 ? (window.scrollY / h) * 100 : 0;
+    if(pBar) pBar.style.width = Math.min(100, Math.max(0, pct)) + '%';
+    if(fBar && !fClosed && window.innerWidth < 800){
+      fBar.hidden = window.scrollY < 260 || pct > 94;
+    }
+  }, { passive: true });
+  var fbClose = document.getElementById('su-fb-close');
+  if(fbClose){
+    fbClose.addEventListener('click', function(){
+      fClosed = true;
+      if(fBar) fBar.hidden = true;
+    });
+  }
 })();"""
 
 
@@ -914,65 +934,470 @@ CORRECTIONS_BODY = """
 """ % {"email": EMAIL}
 
 QUIZ_BODY = """
-  <h2>Today&rsquo;s 5 questions</h2>
-  <p>Tap an option — the answer and the reason appear instantly. Every question comes from an
-  official notification, so the same facts help you in the real exam.</p>
+  <h2>Daily Exam-Wise Mock Test &amp; Reader Polls</h2>
+  <p>Authentic competitive exam practice questions from official notifications — TSPSC, APPSC, SSC, Banking, and Railways. Instant grading, official source verification, and zero login required.</p>
+
+  <!-- Aspirant Mock Test Bar: Timer, Negative Marking, Starred Filter & Print -->
+  <div class="su-mock-bar" role="toolbar" aria-label="Mock test tools">
+    <div class="su-mock-left">
+      <span class="su-mock-timer" id="su-timer" title="Exam Countdown Timer" aria-live="polite">
+        <svg class="su-uicon su-uicon-clock" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-clock"/></svg>
+        <span id="su-timer-display">15:00</span>
+      </span>
+      <button type="button" class="su-mock-btn" id="su-timer-btn" aria-label="Pause or resume timer">Pause</button>
+      <label class="su-mock-toggle" title="Enable competitive exam negative marking penalty">
+        <input type="checkbox" id="su-neg-toggle">
+        <span>Negative marking (-0.25)</span>
+      </label>
+    </div>
+    <div class="su-mock-right">
+      <button type="button" class="su-mock-btn" id="su-btn-starred" aria-label="Filter bookmarked questions">
+        <svg class="su-uicon su-uicon-star" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-star"/></svg>
+        <span>Saved (<b id="su-starred-count">0</b>)</span>
+      </button>
+      <button type="button" class="su-mock-btn" onclick="window.print()" aria-label="Print question paper">
+        <svg class="su-uicon su-uicon-print" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-print"/></svg>
+        <span>Print Paper</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="su-quiz-head">
+    <div>
+      <p class="su-quiz-kick">20 DAILY QUESTIONS &middot; TARGET EXAMS</p>
+    </div>
+    <div class="su-quiz-score" role="status" aria-live="polite"><b data-su-quiz-score>0</b><span id="su-total-label">/ 20</span></div>
+  </div>
+  <div class="su-quiz-bar"><i data-su-quiz-bar style="width:0%"></i></div>
+
+  <!-- Target Exam Tabs -->
+  <div class="su-quiz-exams" role="tablist" aria-label="Select target exam">
+    <button type="button" class="su-qtab active" data-exam="all" role="tab" aria-selected="true">All Exams (20 Qs)</button>
+    <button type="button" class="su-qtab" data-exam="tspsc" role="tab" aria-selected="false">TSPSC (Group 1-4 / Police)</button>
+    <button type="button" class="su-qtab" data-exam="appsc" role="tab" aria-selected="false">APPSC / DSC</button>
+    <button type="button" class="su-qtab" data-exam="ssc" role="tab" aria-selected="false">SSC (CGL &middot; CHSL &middot; GD)</button>
+    <button type="button" class="su-qtab" data-exam="banking" role="tab" aria-selected="false">Banking (IBPS &middot; SBI)</button>
+    <button type="button" class="su-qtab" data-exam="rrb" role="tab" aria-selected="false">Railways (RRB NTPC)</button>
+  </div>
+
+  <!-- Question Navigator Palette (1-20) -->
+  <div class="su-palette" id="su-q-palette" aria-label="Question Navigator">
+    <!-- Pills generated dynamically for visible questions -->
+  </div>
 
   <form method="post" class="su-quiz-form" data-su-quiz-form>
-    <fieldset class="su-q" data-c="1" data-i="0">
-      <legend class="su-q-title"><span class="su-q-n">1</span> Telangana state formation day?</legend>
-      <div class="su-q-opts">
-        <label class="su-opt"><input type="radio" name="q0" value="0"><span class="su-opt-key">A</span><span class="su-opt-t">1 November 1956</span></label>
-        <label class="su-opt"><input type="radio" name="q0" value="1"><span class="su-opt-key">B</span><span class="su-opt-t">2 June 2014</span></label>
-        <label class="su-opt"><input type="radio" name="q0" value="2"><span class="su-opt-key">C</span><span class="su-opt-t">15 August 1947</span></label>
-        <label class="su-opt"><input type="radio" name="q0" value="3"><span class="su-opt-key">D</span><span class="su-opt-t">26 January 1950</span></label>
+    <!-- Q1 -->
+    <fieldset class="su-q" data-c="1" data-i="0" data-exam="all,ssc,banking,rrb,tspsc,appsc" data-diff="moderate">
+      <div class="su-q-meta">
+        <div class="su-q-tags">
+          <span class="su-q-badge">Aptitude &middot; SSC / Banking</span>
+          <span class="su-q-diff moderate">Moderate</span>
+        </div>
+        <button type="button" class="su-q-star" data-star="0" title="Save question for revision" aria-label="Save question 1">&#9734; Save</button>
       </div>
-      <p class="su-why" data-su-why hidden><strong>Why:</strong> Telangana became India&rsquo;s 29th state on 2 June 2014. <em>&middot; Telangana government</em></p>
+      <legend class="su-q-title"><span class="su-q-n">1</span> A train 240 m long crosses a telegraph pole in 12 seconds. What is the speed of the train in km/h?</legend>
+      <div class="su-q-opts">
+        <label class="su-opt"><input type="radio" name="q0" value="0"><span class="su-opt-key">A</span><span class="su-opt-t">60 km/h</span></label>
+        <label class="su-opt"><input type="radio" name="q0" value="1"><span class="su-opt-key">B</span><span class="su-opt-t">72 km/h</span></label>
+        <label class="su-opt"><input type="radio" name="q0" value="2"><span class="su-opt-key">C</span><span class="su-opt-t">54 km/h</span></label>
+        <label class="su-opt"><input type="radio" name="q0" value="3"><span class="su-opt-key">D</span><span class="su-opt-t">80 km/h</span></label>
+      </div>
+      <p class="su-why" data-su-why hidden><strong>Why:</strong> Speed = Distance / Time = 240 m / 12 s = 20 m/s. Converting to km/h: 20 &times; (18 / 5) = 72 km/h. <em>&middot; Quantitative Aptitude (SSC &amp; Banking)</em></p>
     </fieldset>
 
-    <fieldset class="su-q" data-c="1" data-i="1">
-      <legend class="su-q-title"><span class="su-q-n">2</span> SSC CGL is conducted by?</legend>
-      <div class="su-q-opts">
-        <label class="su-opt"><input type="radio" name="q1" value="0"><span class="su-opt-key">A</span><span class="su-opt-t">UPSC</span></label>
-        <label class="su-opt"><input type="radio" name="q1" value="1"><span class="su-opt-key">B</span><span class="su-opt-t">Staff Selection Commission</span></label>
-        <label class="su-opt"><input type="radio" name="q1" value="2"><span class="su-opt-key">C</span><span class="su-opt-t">RRB</span></label>
-        <label class="su-opt"><input type="radio" name="q1" value="3"><span class="su-opt-key">D</span><span class="su-opt-t">IBPS</span></label>
+    <!-- Q2 -->
+    <fieldset class="su-q" data-c="1" data-i="1" data-exam="all,ssc,rrb,banking,tspsc,appsc" data-diff="easy">
+      <div class="su-q-meta">
+        <div class="su-q-tags">
+          <span class="su-q-badge">Reasoning &middot; SSC CGL</span>
+          <span class="su-q-diff">Easy</span>
+        </div>
+        <button type="button" class="su-q-star" data-star="1" title="Save question for revision" aria-label="Save question 2">&#9734; Save</button>
       </div>
-      <p class="su-why" data-su-why hidden><strong>Why:</strong> SSC conducts CGL for Group B and C central posts. <em>&middot; ssc.gov.in</em></p>
+      <legend class="su-q-title"><span class="su-q-n">2</span> In a certain code language, if 'PAPER' is written as 'QBQFS', how is 'OFFICE' written in that code?</legend>
+      <div class="su-q-opts">
+        <label class="su-opt"><input type="radio" name="q1" value="0"><span class="su-opt-key">A</span><span class="su-opt-t">PGGIDF</span></label>
+        <label class="su-opt"><input type="radio" name="q1" value="1"><span class="su-opt-key">B</span><span class="su-opt-t">PGGJDF</span></label>
+        <label class="su-opt"><input type="radio" name="q1" value="2"><span class="su-opt-key">C</span><span class="su-opt-t">NFFHBD</span></label>
+        <label class="su-opt"><input type="radio" name="q1" value="3"><span class="su-opt-key">D</span><span class="su-opt-t">QHHJEG</span></label>
+      </div>
+      <p class="su-why" data-su-why hidden><strong>Why:</strong> Each letter is shifted forward by +1: O(+1)=P, F(+1)=G, F(+1)=G, I(+1)=J, C(+1)=D, E(+1)=F. <em>&middot; Logical Reasoning (SSC CGL &amp; RRB)</em></p>
     </fieldset>
 
-    <fieldset class="su-q" data-c="2" data-i="2">
-      <legend class="su-q-title"><span class="su-q-n">3</span> Which bank is India&rsquo;s central bank?</legend>
-      <div class="su-q-opts">
-        <label class="su-opt"><input type="radio" name="q2" value="0"><span class="su-opt-key">A</span><span class="su-opt-t">State Bank of India</span></label>
-        <label class="su-opt"><input type="radio" name="q2" value="1"><span class="su-opt-key">B</span><span class="su-opt-t">NABARD</span></label>
-        <label class="su-opt"><input type="radio" name="q2" value="2"><span class="su-opt-key">C</span><span class="su-opt-t">Reserve Bank of India</span></label>
-        <label class="su-opt"><input type="radio" name="q2" value="3"><span class="su-opt-key">D</span><span class="su-opt-t">ICICI Bank</span></label>
+    <!-- Q3 -->
+    <fieldset class="su-q" data-c="2" data-i="2" data-exam="all,banking,ssc,tspsc,appsc" data-diff="moderate">
+      <div class="su-q-meta">
+        <div class="su-q-tags">
+          <span class="su-q-badge">Banking &middot; RBI Policy</span>
+          <span class="su-q-diff moderate">Moderate</span>
+        </div>
+        <button type="button" class="su-q-star" data-star="2" title="Save question for revision" aria-label="Save question 3">&#9734; Save</button>
       </div>
-      <p class="su-why" data-su-why hidden><strong>Why:</strong> RBI, established 1935, is the central bank. <em>&middot; rbi.org.in</em></p>
+      <legend class="su-q-title"><span class="su-q-n">3</span> Which key policy rate does the Reserve Bank of India (RBI) adjust to inject short-term liquidity into commercial banks?</legend>
+      <div class="su-q-opts">
+        <label class="su-opt"><input type="radio" name="q2" value="0"><span class="su-opt-key">A</span><span class="su-opt-t">Reverse Repo Rate</span></label>
+        <label class="su-opt"><input type="radio" name="q2" value="1"><span class="su-opt-key">B</span><span class="su-opt-t">Cash Reserve Ratio (CRR)</span></label>
+        <label class="su-opt"><input type="radio" name="q2" value="2"><span class="su-opt-key">C</span><span class="su-opt-t">Repo Rate</span></label>
+        <label class="su-opt"><input type="radio" name="q2" value="3"><span class="su-opt-key">D</span><span class="su-opt-t">Statutory Liquidity Ratio (SLR)</span></label>
+      </div>
+      <p class="su-why" data-su-why hidden><strong>Why:</strong> Repo Rate is the interest rate at which RBI lends short-term funds to commercial banks against government securities to infuse liquidity. <em>&middot; rbi.org.in</em></p>
     </fieldset>
 
-    <fieldset class="su-q" data-c="0" data-i="3">
-      <legend class="su-q-title"><span class="su-q-n">4</span> Which article deals with the Right to Education?</legend>
+    <!-- Q4 -->
+    <fieldset class="su-q" data-c="0" data-i="3" data-exam="all,tspsc,appsc,ssc" data-diff="easy">
+      <div class="su-q-meta">
+        <div class="su-q-tags">
+          <span class="su-q-badge">Polity &middot; Supreme Court</span>
+          <span class="su-q-diff">Easy</span>
+        </div>
+        <button type="button" class="su-q-star" data-star="3" title="Save question for revision" aria-label="Save question 4">&#9734; Save</button>
+      </div>
+      <legend class="su-q-title"><span class="su-q-n">4</span> Under which Article of the Constitution can a citizen approach the Supreme Court directly for the enforcement of Fundamental Rights?</legend>
       <div class="su-q-opts">
-        <label class="su-opt"><input type="radio" name="q3" value="0"><span class="su-opt-key">A</span><span class="su-opt-t">Article 21A</span></label>
-        <label class="su-opt"><input type="radio" name="q3" value="1"><span class="su-opt-key">B</span><span class="su-opt-t">Article 19</span></label>
-        <label class="su-opt"><input type="radio" name="q3" value="2"><span class="su-opt-key">C</span><span class="su-opt-t">Article 32</span></label>
+        <label class="su-opt"><input type="radio" name="q3" value="0"><span class="su-opt-key">A</span><span class="su-opt-t">Article 32</span></label>
+        <label class="su-opt"><input type="radio" name="q3" value="1"><span class="su-opt-key">B</span><span class="su-opt-t">Article 226</span></label>
+        <label class="su-opt"><input type="radio" name="q3" value="2"><span class="su-opt-key">C</span><span class="su-opt-t">Article 131</span></label>
         <label class="su-opt"><input type="radio" name="q3" value="3"><span class="su-opt-key">D</span><span class="su-opt-t">Article 44</span></label>
       </div>
-      <p class="su-why" data-su-why hidden><strong>Why:</strong> Article 21A guarantees free education for ages 6&ndash;14. <em>&middot; Constitution of India</em></p>
+      <p class="su-why" data-su-why hidden><strong>Why:</strong> Article 32 gives the right to move the Supreme Court by appropriate proceedings for enforcement of Fundamental Rights (empowering it to issue writs). <em>&middot; Constitution of India</em></p>
     </fieldset>
 
-    <fieldset class="su-q" data-c="1" data-i="4">
-      <legend class="su-q-title"><span class="su-q-n">5</span> Longest river in South India?</legend>
-      <div class="su-q-opts">
-        <label class="su-opt"><input type="radio" name="q4" value="0"><span class="su-opt-key">A</span><span class="su-opt-t">Krishna</span></label>
-        <label class="su-opt"><input type="radio" name="q4" value="1"><span class="su-opt-key">B</span><span class="su-opt-t">Godavari</span></label>
-        <label class="su-opt"><input type="radio" name="q4" value="2"><span class="su-opt-key">C</span><span class="su-opt-t">Kaveri</span></label>
-        <label class="su-opt"><input type="radio" name="q4" value="3"><span class="su-opt-key">D</span><span class="su-opt-t">Tungabhadra</span></label>
+    <!-- Q5 -->
+    <fieldset class="su-q" data-c="1" data-i="4" data-exam="all,ssc,tspsc,appsc,banking,rrb" data-diff="moderate">
+      <div class="su-q-meta">
+        <div class="su-q-tags">
+          <span class="su-q-badge">Economy &middot; GST</span>
+          <span class="su-q-diff moderate">Moderate</span>
+        </div>
+        <button type="button" class="su-q-star" data-star="4" title="Save question for revision" aria-label="Save question 5">&#9734; Save</button>
       </div>
-      <p class="su-why" data-su-why hidden><strong>Why:</strong> Godavari is the longest peninsular river. <em>&middot; NCERT</em></p>
+      <legend class="su-q-title"><span class="su-q-n">5</span> Which Constitutional Amendment Act introduced the nationwide Goods and Services Tax (GST) in India?</legend>
+      <div class="su-q-opts">
+        <label class="su-opt"><input type="radio" name="q4" value="0"><span class="su-opt-key">A</span><span class="su-opt-t">100th Amendment Act</span></label>
+        <label class="su-opt"><input type="radio" name="q4" value="1"><span class="su-opt-key">B</span><span class="su-opt-t">101st Amendment Act</span></label>
+        <label class="su-opt"><input type="radio" name="q4" value="2"><span class="su-opt-key">C</span><span class="su-opt-t">102nd Amendment Act</span></label>
+        <label class="su-opt"><input type="radio" name="q4" value="3"><span class="su-opt-key">D</span><span class="su-opt-t">103rd Amendment Act</span></label>
+      </div>
+      <p class="su-why" data-su-why hidden><strong>Why:</strong> The 101st Constitutional Amendment Act, 2016 introduced the unified Goods and Services Tax (GST) nationwide with effect from 1 July 2017. <em>&middot; Ministry of Finance</em></p>
     </fieldset>
+
+    <!-- Q6 (TSPSC) -->
+    <fieldset class="su-q" data-c="0" data-i="5" data-exam="tspsc" data-diff="hard">
+      <div class="su-q-meta">
+        <div class="su-q-tags">
+          <span class="su-q-badge">TSPSC Group 1/2 &middot; History</span>
+          <span class="su-q-diff hard">Advanced</span>
+        </div>
+        <button type="button" class="su-q-star" data-star="5" title="Save question for revision" aria-label="Save question 6">&#9734; Save</button>
+      </div>
+      <legend class="su-q-title"><span class="su-q-n">6</span> Who was the founder of the Asaf Jahi dynasty in Hyderabad Deccan?</legend>
+      <div class="su-q-opts">
+        <label class="su-opt"><input type="radio" name="q5" value="0"><span class="su-opt-key">A</span><span class="su-opt-t">Mir Qamar-ud-din Khan (Nizam-ul-Mulk)</span></label>
+        <label class="su-opt"><input type="radio" name="q5" value="1"><span class="su-opt-key">B</span><span class="su-opt-t">Nasir Jung</span></label>
+        <label class="su-opt"><input type="radio" name="q5" value="2"><span class="su-opt-key">C</span><span class="su-opt-t">Salabat Jung</span></label>
+        <label class="su-opt"><input type="radio" name="q5" value="3"><span class="su-opt-key">D</span><span class="su-opt-t">Afzal-ud-Daula</span></label>
+      </div>
+      <p class="su-why" data-su-why hidden><strong>Why:</strong> Nizam-ul-Mulk founded the Asaf Jahi dynasty in 1724 after defeating Mubariz Khan at the Battle of Shakar Kheda. <em>&middot; TSPSC Syllabus / State History</em></p>
+    </fieldset>
+
+    <!-- Q7 (TSPSC) -->
+    <fieldset class="su-q" data-c="1" data-i="6" data-exam="tspsc" data-diff="moderate">
+      <div class="su-q-meta">
+        <div class="su-q-tags">
+          <span class="su-q-badge">TSPSC &middot; Polity</span>
+          <span class="su-q-diff moderate">Moderate</span>
+        </div>
+        <button type="button" class="su-q-star" data-star="6" title="Save question for revision" aria-label="Save question 7">&#9734; Save</button>
+      </div>
+      <legend class="su-q-title"><span class="su-q-n">7</span> Under which Article of the Indian Constitution was the state of Telangana formed in 2014?</legend>
+      <div class="su-q-opts">
+        <label class="su-opt"><input type="radio" name="q6" value="0"><span class="su-opt-key">A</span><span class="su-opt-t">Article 2</span></label>
+        <label class="su-opt"><input type="radio" name="q6" value="1"><span class="su-opt-key">B</span><span class="su-opt-t">Article 3</span></label>
+        <label class="su-opt"><input type="radio" name="q6" value="2"><span class="su-opt-key">C</span><span class="su-opt-t">Article 4</span></label>
+        <label class="su-opt"><input type="radio" name="q6" value="3"><span class="su-opt-key">D</span><span class="su-opt-t">Article 371-D</span></label>
+      </div>
+      <p class="su-why" data-su-why hidden><strong>Why:</strong> Article 3 empowers Parliament to form new States and alter boundaries or names of existing States by law. <em>&middot; Constitution of India</em></p>
+    </fieldset>
+
+    <!-- Q8 (TSPSC) -->
+    <fieldset class="su-q" data-c="0" data-i="7" data-exam="tspsc" data-diff="hard">
+      <div class="su-q-meta">
+        <div class="su-q-tags">
+          <span class="su-q-badge">TSPSC &middot; Culture</span>
+          <span class="su-q-diff hard">Advanced</span>
+        </div>
+        <button type="button" class="su-q-star" data-star="7" title="Save question for revision" aria-label="Save question 8">&#9734; Save</button>
+      </div>
+      <legend class="su-q-title"><span class="su-q-n">8</span> The iconic Telangana Martyrs Memorial at Gun Park, Hyderabad was sculpted by which renowned artist?</legend>
+      <div class="su-q-opts">
+        <label class="su-opt"><input type="radio" name="q7" value="0"><span class="su-opt-key">A</span><span class="su-opt-t">Aekka Yadagiri Rao</span></label>
+        <label class="su-opt"><input type="radio" name="q7" value="1"><span class="su-opt-key">B</span><span class="su-opt-t">Kapu Rajaiah</span></label>
+        <label class="su-opt"><input type="radio" name="q7" value="2"><span class="su-opt-key">C</span><span class="su-opt-t">Thota Vaikuntam</span></label>
+        <label class="su-opt"><input type="radio" name="q7" value="3"><span class="su-opt-key">D</span><span class="su-opt-t">Laxma Goud</span></label>
+      </div>
+      <p class="su-why" data-su-why hidden><strong>Why:</strong> Prof. Aekka Yadagiri Rao sculpted the historic Gun Park Martyrs Memorial in memory of the 1969 agitation martyrs. <em>&middot; Telangana Sahitya Akademi</em></p>
+    </fieldset>
+
+    <!-- Q9 (TSPSC) -->
+    <fieldset class="su-q" data-c="2" data-i="8" data-exam="tspsc" data-diff="moderate">
+      <div class="su-q-meta">
+        <div class="su-q-tags">
+          <span class="su-q-badge">TSPSC &middot; Projects</span>
+          <span class="su-q-diff moderate">Moderate</span>
+        </div>
+        <button type="button" class="su-q-star" data-star="8" title="Save question for revision" aria-label="Save question 9">&#9734; Save</button>
+      </div>
+      <legend class="su-q-title"><span class="su-q-n">9</span> Which is the first barrage of the Kaleshwaram Lift Irrigation Project located at the Godavari-Pranahita confluence?</legend>
+      <div class="su-q-opts">
+        <label class="su-opt"><input type="radio" name="q8" value="0"><span class="su-opt-key">A</span><span class="su-opt-t">Sundilla Barrage</span></label>
+        <label class="su-opt"><input type="radio" name="q8" value="1"><span class="su-opt-key">B</span><span class="su-opt-t">Annaram Barrage</span></label>
+        <label class="su-opt"><input type="radio" name="q8" value="2"><span class="su-opt-key">C</span><span class="su-opt-t">Medigadda (Lakshmi) Barrage</span></label>
+        <label class="su-opt"><input type="radio" name="q8" value="3"><span class="su-opt-key">D</span><span class="su-opt-t">Yellampalli Barrage</span></label>
+      </div>
+      <p class="su-why" data-su-why hidden><strong>Why:</strong> Medigadda (Lakshmi) Barrage is the headworks where water is lifted from the Pranahita-Godavari confluence. <em>&middot; Irrigation &amp; CAD Dept</em></p>
+    </fieldset>
+
+    <!-- Q10 (APPSC) -->
+    <fieldset class="su-q" data-c="1" data-i="9" data-exam="appsc" data-diff="moderate">
+      <div class="su-q-meta">
+        <div class="su-q-tags">
+          <span class="su-q-badge">APPSC Group 1/2 &middot; Geography</span>
+          <span class="su-q-diff moderate">Moderate</span>
+        </div>
+        <button type="button" class="su-q-star" data-star="9" title="Save question for revision" aria-label="Save question 10">&#9734; Save</button>
+      </div>
+      <legend class="su-q-title"><span class="su-q-n">10</span> The Polavaram Multi-Purpose National Irrigation Project is being constructed across which river in Andhra Pradesh?</legend>
+      <div class="su-q-opts">
+        <label class="su-opt"><input type="radio" name="q9" value="0"><span class="su-opt-key">A</span><span class="su-opt-t">Krishna River</span></label>
+        <label class="su-opt"><input type="radio" name="q9" value="1"><span class="su-opt-key">B</span><span class="su-opt-t">Godavari River</span></label>
+        <label class="su-opt"><input type="radio" name="q9" value="2"><span class="su-opt-key">C</span><span class="su-opt-t">Pennar River</span></label>
+        <label class="su-opt"><input type="radio" name="q9" value="3"><span class="su-opt-key">D</span><span class="su-opt-t">Nagavali River</span></label>
+      </div>
+      <p class="su-why" data-su-why hidden><strong>Why:</strong> Polavaram Project is built across the Godavari River in Eluru and Alluri Sitharama Raju districts of AP. <em>&middot; AP Water Resources Dept</em></p>
+    </fieldset>
+
+    <!-- Q11 (APPSC) -->
+    <fieldset class="su-q" data-c="1" data-i="10" data-exam="appsc" data-diff="hard">
+      <div class="su-q-meta">
+        <div class="su-q-tags">
+          <span class="su-q-badge">APPSC &middot; Reorganisation</span>
+          <span class="su-q-diff hard">Advanced</span>
+        </div>
+        <button type="button" class="su-q-star" data-star="10" title="Save question for revision" aria-label="Save question 11">&#9734; Save</button>
+      </div>
+      <legend class="su-q-title"><span class="su-q-n">11</span> Under which section of the AP Reorganisation Act, 2014 does the Governor have special responsibilities for Hyderabad as common capital?</legend>
+      <div class="su-q-opts">
+        <label class="su-opt"><input type="radio" name="q10" value="0"><span class="su-opt-key">A</span><span class="su-opt-t">Section 5</span></label>
+        <label class="su-opt"><input type="radio" name="q10" value="1"><span class="su-opt-key">B</span><span class="su-opt-t">Section 8</span></label>
+        <label class="su-opt"><input type="radio" name="q10" value="2"><span class="su-opt-key">C</span><span class="su-opt-t">Section 12</span></label>
+        <label class="su-opt"><input type="radio" name="q10" value="3"><span class="su-opt-key">D</span><span class="su-opt-t">Section 24</span></label>
+      </div>
+      <p class="su-why" data-su-why hidden><strong>Why:</strong> Section 8 of the AP Reorganisation Act, 2014 vests special responsibility in the Governor for law and order in the common capital. <em>&middot; AP Reorganisation Gazette</em></p>
+    </fieldset>
+
+    <!-- Q12 (APPSC / DSC) -->
+    <fieldset class="su-q" data-c="1" data-i="11" data-exam="appsc" data-diff="moderate">
+      <div class="su-q-meta">
+        <div class="su-q-tags">
+          <span class="su-q-badge">AP DSC &middot; Education</span>
+          <span class="su-q-diff moderate">Moderate</span>
+        </div>
+        <button type="button" class="su-q-star" data-star="11" title="Save question for revision" aria-label="Save question 12">&#9734; Save</button>
+      </div>
+      <legend class="su-q-title"><span class="su-q-n">12</span> According to the RTE Act, 2009, what is the pupil-teacher ratio for primary schools (classes 1 to 5)?</legend>
+      <div class="su-q-opts">
+        <label class="su-opt"><input type="radio" name="q11" value="0"><span class="su-opt-key">A</span><span class="su-opt-t">25:1</span></label>
+        <label class="su-opt"><input type="radio" name="q11" value="1"><span class="su-opt-key">B</span><span class="su-opt-t">30:1</span></label>
+        <label class="su-opt"><input type="radio" name="q11" value="2"><span class="su-opt-key">C</span><span class="su-opt-t">35:1</span></label>
+        <label class="su-opt"><input type="radio" name="q11" value="3"><span class="su-opt-key">D</span><span class="su-opt-t">40:1</span></label>
+      </div>
+      <p class="su-why" data-su-why hidden><strong>Why:</strong> The RTE Act specifies a Pupil-Teacher Ratio (PTR) of 30:1 for primary schools up to 200 enrolled students. <em>&middot; Ministry of Education</em></p>
+    </fieldset>
+
+    <!-- Q13 (SSC) -->
+    <fieldset class="su-q" data-c="1" data-i="12" data-exam="ssc" data-diff="hard">
+      <div class="su-q-meta">
+        <div class="su-q-tags">
+          <span class="su-q-badge">SSC CGL &middot; Mathematics</span>
+          <span class="su-q-diff hard">Advanced</span>
+        </div>
+        <button type="button" class="su-q-star" data-star="12" title="Save question for revision" aria-label="Save question 13">&#9734; Save</button>
+      </div>
+      <legend class="su-q-title"><span class="su-q-n">13</span> A sum of money invested at compound interest amounts to Rs. 4,840 in 2 years and Rs. 5,324 in 3 years. Find the rate of interest.</legend>
+      <div class="su-q-opts">
+        <label class="su-opt"><input type="radio" name="q12" value="0"><span class="su-opt-key">A</span><span class="su-opt-t">8%</span></label>
+        <label class="su-opt"><input type="radio" name="q12" value="1"><span class="su-opt-key">B</span><span class="su-opt-t">10%</span></label>
+        <label class="su-opt"><input type="radio" name="q12" value="2"><span class="su-opt-key">C</span><span class="su-opt-t">12%</span></label>
+        <label class="su-opt"><input type="radio" name="q12" value="3"><span class="su-opt-key">D</span><span class="su-opt-t">15%</span></label>
+      </div>
+      <p class="su-why" data-su-why hidden><strong>Why:</strong> Interest for 3rd year = Rs. 5324 - 4840 = Rs. 484. Rate = (484 / 4840) * 100 = 10% per annum. <em>&middot; SSC CGL Tier 1</em></p>
+    </fieldset>
+
+    <!-- Q14 (SSC) -->
+    <fieldset class="su-q" data-c="1" data-i="13" data-exam="ssc" data-diff="moderate">
+      <div class="su-q-meta">
+        <div class="su-q-tags">
+          <span class="su-q-badge">SSC &middot; History</span>
+          <span class="su-q-diff moderate">Moderate</span>
+        </div>
+        <button type="button" class="su-q-star" data-star="13" title="Save question for revision" aria-label="Save question 14">&#9734; Save</button>
+      </div>
+      <legend class="su-q-title"><span class="su-q-n">14</span> Which Indus Valley Civilization site features the world's earliest known tidal dockyard?</legend>
+      <div class="su-q-opts">
+        <label class="su-opt"><input type="radio" name="q13" value="0"><span class="su-opt-key">A</span><span class="su-opt-t">Kalibangan</span></label>
+        <label class="su-opt"><input type="radio" name="q13" value="1"><span class="su-opt-key">B</span><span class="su-opt-t">Lothal</span></label>
+        <label class="su-opt"><input type="radio" name="q13" value="2"><span class="su-opt-key">C</span><span class="su-opt-t">Rakhigarhi</span></label>
+        <label class="su-opt"><input type="radio" name="q13" value="3"><span class="su-opt-key">D</span><span class="su-opt-t">Banawali</span></label>
+      </div>
+      <p class="su-why" data-su-why hidden><strong>Why:</strong> Lothal in Gujarat had a tidal dockyard connected to the ancient Sabarmati river channels for sea trade. <em>&middot; Archaeological Survey of India</em></p>
+    </fieldset>
+
+    <!-- Q15 (Banking) -->
+    <fieldset class="su-q" data-c="2" data-i="14" data-exam="banking" data-diff="moderate">
+      <div class="su-q-meta">
+        <div class="su-q-tags">
+          <span class="su-q-badge">Banking &middot; DICGC</span>
+          <span class="su-q-diff moderate">Moderate</span>
+        </div>
+        <button type="button" class="su-q-star" data-star="14" title="Save question for revision" aria-label="Save question 15">&#9734; Save</button>
+      </div>
+      <legend class="su-q-title"><span class="su-q-n">15</span> What is the maximum deposit insurance coverage provided by DICGC per depositor per insured bank in India?</legend>
+      <div class="su-q-opts">
+        <label class="su-opt"><input type="radio" name="q14" value="0"><span class="su-opt-key">A</span><span class="su-opt-t">Rs. 1,00,000</span></label>
+        <label class="su-opt"><input type="radio" name="q14" value="1"><span class="su-opt-key">B</span><span class="su-opt-t">Rs. 2,00,000</span></label>
+        <label class="su-opt"><input type="radio" name="q14" value="2"><span class="su-opt-key">C</span><span class="su-opt-t">Rs. 5,00,000</span></label>
+        <label class="su-opt"><input type="radio" name="q14" value="3"><span class="su-opt-key">D</span><span class="su-opt-t">Rs. 10,00,000</span></label>
+      </div>
+      <p class="su-why" data-su-why hidden><strong>Why:</strong> DICGC insures savings, fixed, current and recurring deposits up to Rs. 5 Lakhs (principal + interest). <em>&middot; DICGC / RBI</em></p>
+    </fieldset>
+
+    <!-- Q16 (Banking) -->
+    <fieldset class="su-q" data-c="0" data-i="15" data-exam="banking" data-diff="moderate">
+      <div class="su-q-meta">
+        <div class="su-q-tags">
+          <span class="su-q-badge">Banking &middot; Union Budget</span>
+          <span class="su-q-diff moderate">Moderate</span>
+        </div>
+        <button type="button" class="su-q-star" data-star="15" title="Save question for revision" aria-label="Save question 16">&#9734; Save</button>
+      </div>
+      <legend class="su-q-title"><span class="su-q-n">16</span> In the Union Budget of India, how is the 'Primary Deficit' calculated?</legend>
+      <div class="su-q-opts">
+        <label class="su-opt"><input type="radio" name="q15" value="0"><span class="su-opt-key">A</span><span class="su-opt-t">Fiscal Deficit - Interest Payments</span></label>
+        <label class="su-opt"><input type="radio" name="q15" value="1"><span class="su-opt-key">B</span><span class="su-opt-t">Revenue Deficit - Capital Expenditure</span></label>
+        <label class="su-opt"><input type="radio" name="q15" value="2"><span class="su-opt-key">C</span><span class="su-opt-t">Fiscal Deficit + Borrowings</span></label>
+        <label class="su-opt"><input type="radio" name="q15" value="3"><span class="su-opt-key">D</span><span class="su-opt-t">Budget Deficit - Subsidies</span></label>
+      </div>
+      <p class="su-why" data-su-why hidden><strong>Why:</strong> Primary Deficit = Fiscal Deficit - Interest Payments. It indicates government borrowing requirements excluding past interest obligations. <em>&middot; Ministry of Finance</em></p>
+    </fieldset>
+
+    <!-- Q17 (Railways) -->
+    <fieldset class="su-q" data-c="1" data-i="16" data-exam="rrb" data-diff="moderate">
+      <div class="su-q-meta">
+        <div class="su-q-tags">
+          <span class="su-q-badge">RRB NTPC &middot; Railways GK</span>
+          <span class="su-q-diff moderate">Moderate</span>
+        </div>
+        <button type="button" class="su-q-star" data-star="16" title="Save question for revision" aria-label="Save question 17">&#9734; Save</button>
+      </div>
+      <legend class="su-q-title"><span class="su-q-n">17</span> Which is the longest running passenger train route by both distance and time in Indian Railways?</legend>
+      <div class="su-q-opts">
+        <label class="su-opt"><input type="radio" name="q16" value="0"><span class="su-opt-key">A</span><span class="su-opt-t">Himsagar Express (Kanyakumari to Katra)</span></label>
+        <label class="su-opt"><input type="radio" name="q16" value="1"><span class="su-opt-key">B</span><span class="su-opt-t">Vivek Express (Dibrugarh to Kanyakumari)</span></label>
+        <label class="su-opt"><input type="radio" name="q16" value="2"><span class="su-opt-key">C</span><span class="su-opt-t">Navyug Express (Mangaluru to Katra)</span></label>
+        <label class="su-opt"><input type="radio" name="q16" value="3"><span class="su-opt-key">D</span><span class="su-opt-t">Grand Trunk Express (Delhi to Chennai)</span></label>
+      </div>
+      <p class="su-why" data-su-why hidden><strong>Why:</strong> Vivek Express covers 4,189 km from Dibrugarh in Assam to Kanyakumari over approximately 75 hours. <em>&middot; Indian Railways / RRB</em></p>
+    </fieldset>
+
+    <!-- Q18 (Railways) -->
+    <fieldset class="su-q" data-c="0" data-i="17" data-exam="rrb" data-diff="hard">
+      <div class="su-q-meta">
+        <div class="su-q-tags">
+          <span class="su-q-badge">RRB &middot; Space Tech</span>
+          <span class="su-q-diff hard">Advanced</span>
+        </div>
+        <button type="button" class="su-q-star" data-star="17" title="Save question for revision" aria-label="Save question 18">&#9734; Save</button>
+      </div>
+      <legend class="su-q-title"><span class="su-q-n">18</span> What propellants are utilized in the indigenous CE-20 Cryogenic Upper Stage of ISRO's LVM3 rocket?</legend>
+      <div class="su-q-opts">
+        <label class="su-opt"><input type="radio" name="q17" value="0"><span class="su-opt-key">A</span><span class="su-opt-t">Liquid Hydrogen (LH2) and Liquid Oxygen (LOX)</span></label>
+        <label class="su-opt"><input type="radio" name="q17" value="1"><span class="su-opt-key">B</span><span class="su-opt-t">Liquid Methane and Liquid Oxygen</span></label>
+        <label class="su-opt"><input type="radio" name="q17" value="2"><span class="su-opt-key">C</span><span class="su-opt-t">Kerosene and Liquid Oxygen</span></label>
+        <label class="su-opt"><input type="radio" name="q17" value="3"><span class="su-opt-key">D</span><span class="su-opt-t">Hydrazine and Nitrogen Tetroxide</span></label>
+      </div>
+      <p class="su-why" data-su-why hidden><strong>Why:</strong> CE-20 operates burning cryogenic Liquid Hydrogen (fuel at -253 deg C) and Liquid Oxygen (oxidizer at -183 deg C). <em>&middot; ISRO Technical Reports</em></p>
+    </fieldset>
+
+    <!-- Q19 (Railways / Science) -->
+    <fieldset class="su-q" data-c="1" data-i="18" data-exam="rrb" data-diff="easy">
+      <div class="su-q-meta">
+        <div class="su-q-tags">
+          <span class="su-q-badge">RRB Group D &middot; Physics</span>
+          <span class="su-q-diff">Easy</span>
+        </div>
+        <button type="button" class="su-q-star" data-star="18" title="Save question for revision" aria-label="Save question 19">&#9734; Save</button>
+      </div>
+      <legend class="su-q-title"><span class="su-q-n">19</span> What is the SI unit of electrical resistance in the International System of Units?</legend>
+      <div class="su-q-opts">
+        <label class="su-opt"><input type="radio" name="q18" value="0"><span class="su-opt-key">A</span><span class="su-opt-t">Volt</span></label>
+        <label class="su-opt"><input type="radio" name="q18" value="1"><span class="su-opt-key">B</span><span class="su-opt-t">Ohm</span></label>
+        <label class="su-opt"><input type="radio" name="q18" value="2"><span class="su-opt-key">C</span><span class="su-opt-t">Ampere</span></label>
+        <label class="su-opt"><input type="radio" name="q18" value="3"><span class="su-opt-key">D</span><span class="su-opt-t">Watt</span></label>
+      </div>
+      <p class="su-why" data-su-why hidden><strong>Why:</strong> The SI unit of electrical resistance is the Ohm (Omega), named after German physicist Georg Simon Ohm. <em>&middot; NCERT Class 10 Science</em></p>
+    </fieldset>
+
+    <!-- Q20 (General Science) -->
+    <fieldset class="su-q" data-c="1" data-i="19" data-exam="all,tspsc,appsc,ssc,rrb" data-diff="easy">
+      <div class="su-q-meta">
+        <div class="su-q-tags">
+          <span class="su-q-badge">General Science &middot; Biology</span>
+          <span class="su-q-diff">Easy</span>
+        </div>
+        <button type="button" class="su-q-star" data-star="19" title="Save question for revision" aria-label="Save question 20">&#9734; Save</button>
+      </div>
+      <legend class="su-q-title"><span class="su-q-n">20</span> What is the chemical name of Vitamin C, an essential water-soluble antioxidant vitamin?</legend>
+      <div class="su-q-opts">
+        <label class="su-opt"><input type="radio" name="q19" value="0"><span class="su-opt-key">A</span><span class="su-opt-t">Retinol</span></label>
+        <label class="su-opt"><input type="radio" name="q19" value="1"><span class="su-opt-key">B</span><span class="su-opt-t">Ascorbic Acid</span></label>
+        <label class="su-opt"><input type="radio" name="q19" value="2"><span class="su-opt-key">C</span><span class="su-opt-t">Calciferol</span></label>
+        <label class="su-opt"><input type="radio" name="q19" value="3"><span class="su-opt-key">D</span><span class="su-opt-t">Tocopherol</span></label>
+      </div>
+      <p class="su-why" data-su-why hidden><strong>Why:</strong> Vitamin C is chemically known as Ascorbic Acid; deficiency causes scurvy characterized by bleeding gums and fatigue. <em>&middot; NCERT Biology</em></p>
+    </fieldset>
+
+    <!-- Performance Scorecard Modal Box -->
+    <div class="su-scorecard" id="su-scorecard" role="dialog" aria-label="Exam Performance Scorecard">
+      <div class="su-scorecard-head">
+        <h3 class="su-scorecard-title">Exam Performance Scorecard</h3>
+        <span id="su-scorecard-date">Today's Test</span>
+      </div>
+      <div class="su-scorecard-grid">
+        <div class="su-scorecard-stat">
+          <b id="su-sc-score">0</b>
+          <span>Net Marks</span>
+        </div>
+        <div class="su-scorecard-stat">
+          <b id="su-sc-accuracy">0%</b>
+          <span>Accuracy</span>
+        </div>
+        <div class="su-scorecard-stat">
+          <b id="su-sc-time">0m 0s</b>
+          <span>Time Taken</span>
+        </div>
+        <div class="su-scorecard-stat">
+          <b id="su-sc-speed">0s</b>
+          <span>Avg Pace / Q</span>
+        </div>
+      </div>
+      <div class="su-scorecard-advice" id="su-sc-verdict">
+        Great effort! Review the detailed explanations below to improve your target exam score.
+      </div>
+      <div class="su-scorecard-acts">
+        <a class="su-quiz-restart" id="su-sc-share" target="_blank" rel="noopener nofollow" href="https://wa.me/?text=StudentUp%20Daily%20Mock%20Test">Share Score on WhatsApp</a>
+        <button type="button" class="su-quiz-restart" id="su-sc-retake">Retake Test</button>
+      </div>
+    </div>
 
     <div class="su-quiz-foot">
       <button type="submit" class="su-quiz-restart" data-su-quiz-check><svg class="su-uicon su-uicon-check" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-check"/></svg> Check answers</button>
@@ -1017,116 +1442,334 @@ QUIZ_BODY = """
 
 
 QUIZ_SCRIPT = """<script>
-/* v197 — quiz + poll preview behaviour (same rules as the theme's
-   studentup-engage.js). Offline file lo poll vote localStorage lo — live site
-   lo REST endpoint count mattrame store chestundi (no personal data). */
+/* v200 — advanced mock exam + timer + question palette + scorecard behaviour */
 (function(){
-  var form=document.querySelector('[data-su-quiz-form]');
+  var form = document.querySelector('[data-su-quiz-form]');
   if(form){
-    var scoreEl=document.querySelector('[data-su-quiz-score]'),
-        barEl=document.querySelector('[data-su-quiz-bar]'),
-        checkBtn=document.querySelector('[data-su-quiz-check]'),
-        restart=document.querySelector('[data-su-quiz-restart]'),
-        share=document.querySelector('[data-su-quiz-share]'),
-        streakEl=document.querySelector('[data-su-quiz-streak]'),
-        qs=[].slice.call(form.querySelectorAll('fieldset.su-q')), total=qs.length,
-        score=0, picked={};
-    if(checkBtn) checkBtn.hidden=true;
-    function paint(){
-      if(scoreEl) scoreEl.textContent=String(score);
-      if(barEl) barEl.style.width=Math.round((Object.keys(picked).length/total)*100)+'%';
-    }
-    function mark(fs,chosen){
-      var right=parseInt(fs.getAttribute('data-c'),10);
-      [].forEach.call(fs.querySelectorAll('.su-opt'),function(lab){
-        var input=lab.querySelector('input'), val=parseInt(input.value,10);
-        lab.classList.remove('right','wrong','on'); input.disabled=true;
-        if(val===right) lab.classList.add('right');
-        if(val===chosen&&chosen!==right) lab.classList.add('wrong');
-      });
-      var why=fs.querySelector('[data-su-why]'); if(why) why.hidden=false;
-    }
-    function finish(){
-      if(share){
-        share.hidden=false;
-        share.href='https://wa.me/?text='+encodeURIComponent("I scored "+score+"/"+total+" in the StudentUp Daily Quiz. Practice free: https://studentup.in/");
+    var scoreEl = document.querySelector('[data-su-quiz-score]'),
+        totalLabel = document.getElementById('su-total-label'),
+        barEl = document.querySelector('[data-su-quiz-bar]'),
+        checkBtn = document.querySelector('[data-su-quiz-check]'),
+        restart = document.querySelector('[data-su-quiz-restart]'),
+        share = document.querySelector('[data-su-quiz-share]'),
+        streakEl = document.querySelector('[data-su-quiz-streak]'),
+        qs = [].slice.call(form.querySelectorAll('fieldset.su-q')),
+        allTotal = qs.length,
+        score = 0, picked = {}, starred = {};
+
+    /* LocalStorage for Starred/Bookmarked questions */
+    try{
+      starred = JSON.parse(localStorage.getItem('su_starred_quiz') || '{}');
+    }catch(e){ starred = {}; }
+
+    /* Timer state */
+    var timeRemaining = 15 * 60; // 15 mins
+    var timerRunning = true;
+    var timerDisplay = document.getElementById('su-timer-display');
+    var timerBtn = document.getElementById('su-timer-btn');
+    var timerEl = document.getElementById('su-timer');
+    var startTime = Date.now();
+
+    function updateTimer(){
+      if(!timerRunning) return;
+      if(timeRemaining > 0){
+        timeRemaining--;
+        var m = Math.floor(timeRemaining / 60);
+        var s = timeRemaining % 60;
+        if(timerDisplay) timerDisplay.textContent = (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+        if(timeRemaining <= 120 && timerEl) timerEl.classList.add('urgent');
+      } else {
+        timerRunning = false;
+        if(timerDisplay) timerDisplay.textContent = "00:00";
+        finish();
       }
-      if(streakEl){ streakEl.hidden=false; streakEl.textContent='5 questions done today'; }
     }
-    form.addEventListener('click',function(e){
-      var lab=e.target.closest?e.target.closest('.su-opt'):null;
-      if(!lab) return;
-      var input=lab.querySelector('input'), fs=lab.closest('fieldset.su-q');
-      if(!input||!fs||input.disabled) return;
-      e.preventDefault(); input.checked=true;
-      var i=fs.getAttribute('data-i'); if(picked[i]!==undefined) return;
-      picked[i]=parseInt(input.value,10);
-      if(picked[i]===parseInt(fs.getAttribute('data-c'),10)) score++;
-      mark(fs,picked[i]); paint();
-      if(Object.keys(picked).length===total) finish();
-    });
-    if(restart){
-      restart.hidden=false;
-      restart.addEventListener('click',function(){
-        picked={}; score=0;
-        qs.forEach(function(fs){
-          [].forEach.call(fs.querySelectorAll('.su-opt'),function(lab){
-            lab.classList.remove('right','wrong','on');
-            var input=lab.querySelector('input'); if(input){ input.disabled=false; input.checked=false; }
-          });
-          var why=fs.querySelector('[data-su-why]'); if(why) why.hidden=true;
-        });
-        if(share) share.hidden=true; if(streakEl) streakEl.hidden=true; paint();
+    var timerInterval = setInterval(updateTimer, 1000);
+
+    if(timerBtn){
+      timerBtn.addEventListener('click', function(){
+        timerRunning = !timerRunning;
+        timerBtn.textContent = timerRunning ? 'Pause' : 'Resume';
       });
     }
+
+    /* Starred count label update */
+    function updateStarredCount(){
+      var cnt = Object.keys(starred).filter(function(k){ return starred[k]; }).length;
+      var el = document.getElementById('su-starred-count');
+      if(el) el.textContent = String(cnt);
+    }
+    updateStarredCount();
+
+    /* Render Palette */
+    var palette = document.getElementById('su-q-palette');
+    function renderPalette(){
+      if(!palette) return;
+      palette.innerHTML = '';
+      var visibleQs = qs.filter(function(fs){ return fs.style.display !== 'none'; });
+      visibleQs.forEach(function(fs, idx){
+        var qIdx = fs.getAttribute('data-i');
+        var pill = document.createElement('button');
+        pill.type = 'button';
+        pill.className = 'su-palette-pill';
+        pill.textContent = String(idx + 1);
+        pill.setAttribute('aria-label', 'Go to question ' + (idx + 1));
+        if(picked[qIdx] !== undefined){
+          var right = parseInt(fs.getAttribute('data-c'), 10);
+          pill.classList.add(picked[qIdx] === right ? 'correct' : 'wrong');
+        }
+        if(starred[qIdx]){
+          pill.classList.add('starred');
+        }
+        pill.addEventListener('click', function(){
+          fs.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          var firstOpt = fs.querySelector('.su-opt');
+          if(firstOpt) firstOpt.focus();
+        });
+        palette.appendChild(pill);
+      });
+    }
+
+    /* Star bookmark button click listener */
+    form.addEventListener('click', function(e){
+      var starBtn = e.target.closest ? e.target.closest('.su-q-star') : null;
+      if(!starBtn) return;
+      e.preventDefault();
+      var qIdx = starBtn.getAttribute('data-star');
+      starred[qIdx] = !starred[qIdx];
+      starBtn.classList.toggle('active', starred[qIdx]);
+      starBtn.innerHTML = starred[qIdx] ? '&#9733; Saved' : '&#9734; Save';
+      try{ localStorage.setItem('su_starred_quiz', JSON.stringify(starred)); }catch(err){}
+      updateStarredCount();
+      renderPalette();
+    });
+
+    /* Starred filter button */
+    var starredFilterBtn = document.getElementById('su-btn-starred');
+    var showingOnlyStarred = false;
+    if(starredFilterBtn){
+      starredFilterBtn.addEventListener('click', function(){
+        showingOnlyStarred = !showingOnlyStarred;
+        starredFilterBtn.classList.toggle('active', showingOnlyStarred);
+        qs.forEach(function(fs){
+          var qIdx = fs.getAttribute('data-i');
+          if(showingOnlyStarred){
+            fs.style.display = starred[qIdx] ? '' : 'none';
+          } else {
+            fs.style.display = '';
+          }
+        });
+        updateVisibleCounts();
+        renderPalette();
+      });
+    }
+
+    function updateVisibleCounts(){
+      var visibleQs = qs.filter(function(fs){ return fs.style.display !== 'none'; });
+      if(totalLabel) totalLabel.textContent = '/ ' + visibleQs.length;
+    }
+
+    /* Exam Tabs Filter */
+    var examTabs = [].slice.call(document.querySelectorAll('.su-qtab'));
+    if(examTabs.length){
+      examTabs.forEach(function(btn){
+        btn.addEventListener('click', function(){
+          examTabs.forEach(function(b){ b.classList.remove('active'); b.setAttribute('aria-selected', 'false'); });
+          btn.classList.add('active'); btn.setAttribute('aria-selected', 'true');
+          var targetExam = (btn.getAttribute('data-exam') || 'all').toLowerCase();
+          qs.forEach(function(fs){
+            var ex = (fs.getAttribute('data-exam') || 'all').toLowerCase().split(',');
+            if(targetExam === 'all' || ex.indexOf(targetExam) !== -1 || ex.indexOf('all') !== -1){
+              fs.style.display = '';
+            } else {
+              fs.style.display = 'none';
+            }
+          });
+          updateVisibleCounts();
+          renderPalette();
+          paint();
+        });
+      });
+    }
+
+    function paint(){
+      var visibleQs = qs.filter(function(fs){ return fs.style.display !== 'none'; });
+      var visibleTotal = visibleQs.length || 1;
+      var answeredVisible = visibleQs.filter(function(fs){ return picked[fs.getAttribute('data-i')] !== undefined; }).length;
+      if(scoreEl) scoreEl.textContent = String(score);
+      if(barEl) barEl.style.width = Math.round((answeredVisible / visibleTotal) * 100) + '%';
+    }
+
+    function mark(fs, chosen){
+      var right = parseInt(fs.getAttribute('data-c'), 10);
+      [].forEach.call(fs.querySelectorAll('.su-opt'), function(lab){
+        var input = lab.querySelector('input'), val = parseInt(input.value, 10);
+        lab.classList.remove('right', 'wrong', 'on');
+        input.disabled = true;
+        if(val === right) lab.classList.add('right');
+        if(val === chosen && chosen !== right) lab.classList.add('wrong');
+      });
+      var why = fs.querySelector('[data-su-why]');
+      if(why) why.hidden = false;
+    }
+
+    function finish(){
+      timerRunning = false;
+      var elapsedSec = Math.max(1, Math.round((Date.now() - startTime) / 1000));
+      var visibleQs = qs.filter(function(fs){ return fs.style.display !== 'none'; });
+      var visibleTotal = visibleQs.length || 1;
+      var correctCount = 0, wrongCount = 0;
+      visibleQs.forEach(function(fs){
+        var qIdx = fs.getAttribute('data-i');
+        var right = parseInt(fs.getAttribute('data-c'), 10);
+        if(picked[qIdx] !== undefined){
+          if(picked[qIdx] === right) correctCount++;
+          else wrongCount++;
+        }
+      });
+
+      var useNeg = (document.getElementById('su-neg-toggle') || {}).checked;
+      var netScore = useNeg ? Math.max(0, correctCount - (wrongCount * 0.25)) : correctCount;
+      var accuracy = Math.round((correctCount / Math.max(1, correctCount + wrongCount)) * 100);
+      var avgSec = Math.round(elapsedSec / Math.max(1, correctCount + wrongCount));
+
+      var scBox = document.getElementById('su-scorecard');
+      if(scBox){
+        scBox.classList.add('visible');
+        var elSc = document.getElementById('su-sc-score');
+        var elAcc = document.getElementById('su-sc-accuracy');
+        var elTime = document.getElementById('su-sc-time');
+        var elSpd = document.getElementById('su-sc-speed');
+        var elVerd = document.getElementById('su-sc-verdict');
+        var elShare = document.getElementById('su-sc-share');
+        if(elSc) elSc.textContent = netScore + ' / ' + visibleTotal;
+        if(elAcc) elAcc.textContent = accuracy + '%';
+        if(elTime) elTime.textContent = Math.floor(elapsedSec / 60) + 'm ' + (elapsedSec % 60) + 's';
+        if(elSpd) elSpd.textContent = avgSec + 's';
+        if(elVerd){
+          if(accuracy >= 80) elVerd.textContent = "Outstanding accuracy! You are scoring in the top percentile of competitive aspirants.";
+          else if(accuracy >= 50) elVerd.textContent = "Good progress! Focus on reviewing the negative-marked questions below.";
+          else elVerd.textContent = "Keep practicing! Review each official explanation to master difficult concepts.";
+        }
+        if(elShare){
+          elShare.href = 'https://wa.me/?text=' + encodeURIComponent("I scored " + netScore + "/" + visibleTotal + " (" + accuracy + "% accuracy) in the StudentUp Mock Exam. Practice free: https://studentup.in/pages/daily-quiz.html");
+        }
+      }
+
+      if(share){
+        share.hidden = false;
+        share.href = 'https://wa.me/?text=' + encodeURIComponent("I scored " + netScore + "/" + visibleTotal + " in the StudentUp Daily Mock Test. Practice free: https://studentup.in/pages/daily-quiz.html");
+      }
+      if(streakEl){
+        streakEl.hidden = false;
+        streakEl.textContent = visibleTotal + ' questions completed';
+      }
+    }
+
+    form.addEventListener('click', function(e){
+      var lab = e.target.closest ? e.target.closest('.su-opt') : null;
+      if(!lab) return;
+      var input = lab.querySelector('input'), fs = lab.closest('fieldset.su-q');
+      if(!input || !fs || input.disabled) return;
+      e.preventDefault();
+      input.checked = true;
+      var i = fs.getAttribute('data-i');
+      if(picked[i] !== undefined) return;
+      picked[i] = parseInt(input.value, 10);
+      if(picked[i] === parseInt(fs.getAttribute('data-c'), 10)) score++;
+      mark(fs, picked[i]);
+      paint();
+      renderPalette();
+      var visibleQs = qs.filter(function(fs){ return fs.style.display !== 'none'; });
+      var visibleDone = visibleQs.filter(function(fs){ return picked[fs.getAttribute('data-i')] !== undefined; }).length;
+      if(visibleDone === visibleQs.length) finish();
+    });
+
+    if(restart){
+      restart.hidden = false;
+      restart.addEventListener('click', resetQuiz);
+    }
+    var retakeBtn = document.getElementById('su-sc-retake');
+    if(retakeBtn) retakeBtn.addEventListener('click', resetQuiz);
+
+    function resetQuiz(){
+      picked = {};
+      score = 0;
+      timeRemaining = 15 * 60;
+      timerRunning = true;
+      startTime = Date.now();
+      var scBox = document.getElementById('su-scorecard');
+      if(scBox) scBox.classList.remove('visible');
+      qs.forEach(function(fs){
+        [].forEach.call(fs.querySelectorAll('.su-opt'), function(lab){
+          lab.classList.remove('right', 'wrong', 'on');
+          var input = lab.querySelector('input');
+          if(input){ input.disabled = false; input.checked = false; }
+        });
+        var why = fs.querySelector('[data-su-why]');
+        if(why) why.hidden = true;
+      });
+      if(share) share.hidden = true;
+      if(streakEl) streakEl.hidden = true;
+      paint();
+      renderPalette();
+    }
+
+    // Initialize state
+    updateVisibleCounts();
+    renderPalette();
     paint();
   }
 
-  var box=document.querySelector('[data-su-poll]');
+  var box = document.querySelector('[data-su-poll]');
   if(box){
-    var pform=box.querySelector('[data-su-poll-form]');
-    var labels=[].slice.call(box.querySelectorAll('.su-poll-opt'));
+    var pform = box.querySelector('[data-su-poll-form]');
+    var labels = [].slice.call(box.querySelectorAll('.su-poll-opt'));
     labels.forEach(function(lab){
-      lab.addEventListener('click',function(){
+      lab.addEventListener('click', function(){
         labels.forEach(function(o){ o.classList.remove('on'); });
         lab.classList.add('on');
       });
     });
     if(pform){
-      pform.addEventListener('submit',function(e){
+      pform.addEventListener('submit', function(e){
         e.preventDefault();
-        var chosen=pform.querySelector('input[name=su_poll_opt]:checked');
+        var chosen = pform.querySelector('input[name=su_poll_opt]:checked');
         if(!chosen){ if(labels[0]) labels[0].classList.add('on'); return; }
-        var counts=[0,0,0,0]; counts[parseInt(chosen.value,10)]=1;
+        var counts = [0, 0, 0, 0];
+        counts[parseInt(chosen.value, 10)] = 1;
         try{
-          var prev=JSON.parse(localStorage.getItem('su_poll_preview')||'null');
-          if(prev){ counts=prev; counts[parseInt(chosen.value,10)]++; }
-          localStorage.setItem('su_poll_preview',JSON.stringify(counts));
+          var prev = JSON.parse(localStorage.getItem('su_poll_preview') || 'null');
+          if(prev){ counts = prev; counts[parseInt(chosen.value, 10)]++; }
+          localStorage.setItem('su_poll_preview', JSON.stringify(counts));
         }catch(err){}
-        var total=counts.reduce(function(a,b){ return a+b; },0)||1;
-        labels.forEach(function(lab,i){
-          var pct=Math.round((counts[i]/total)*100);
-          var bar=lab.querySelector('[data-su-bar]'), p=lab.querySelector('[data-su-pct]');
-          if(bar) bar.style.width=pct+'%';
-          if(p) p.textContent=pct+'%';
-          var input=lab.querySelector('input'); if(input) input.disabled=true;
+        var total = counts.reduce(function(a, b){ return a + b; }, 0) || 1;
+        labels.forEach(function(lab, i){
+          var pct = Math.round((counts[i] / total) * 100);
+          var bar = lab.querySelector('[data-su-bar]'), p = lab.querySelector('[data-su-pct]');
+          if(bar) bar.style.width = pct + '%';
+          if(p) p.textContent = pct + '%';
+          var input = lab.querySelector('input');
+          if(input) input.disabled = true;
         });
-        var foot=box.querySelector('.su-poll-foot'), btn=box.querySelector('[data-su-poll-vote]');
+        var foot = box.querySelector('.su-poll-foot'), btn = box.querySelector('[data-su-poll-vote]');
         if(btn) btn.remove();
-        if(foot){ var s=foot.querySelector('span'); if(s) s.textContent='Thanks — your vote is counted (on this device in the offline preview).'; }
+        if(foot){ var s = foot.querySelector('span'); if(s) s.textContent = 'Thanks — your vote is counted (on this device in the offline preview).'; }
       });
       try{
-        var saved=JSON.parse(localStorage.getItem('su_poll_preview')||'null');
+        var saved = JSON.parse(localStorage.getItem('su_poll_preview') || 'null');
         if(saved){
-          var t=saved.reduce(function(a,b){ return a+b; },0)||1;
-          labels.forEach(function(lab,i){
-            var pct=Math.round((saved[i]/t)*100);
-            var bar=lab.querySelector('[data-su-bar]'), p=lab.querySelector('[data-su-pct]');
-            if(bar) bar.style.width=pct+'%';
-            if(p) p.textContent=pct+'%';
-            var input=lab.querySelector('input'); if(input) input.disabled=true;
+          var t = saved.reduce(function(a, b){ return a + b; }, 0) || 1;
+          labels.forEach(function(lab, i){
+            var pct = Math.round((saved[i] / t) * 100);
+            var bar = lab.querySelector('[data-su-bar]'), p = lab.querySelector('[data-su-pct]');
+            if(bar) bar.style.width = pct + '%';
+            if(p) p.textContent = pct + '%';
+            var input = lab.querySelector('input');
+            if(input) input.disabled = true;
           });
-          var btn=box.querySelector('[data-su-poll-vote]'); if(btn) btn.remove();
+          var btn = box.querySelector('[data-su-poll-vote]');
+          if(btn) btn.remove();
         }
       }catch(err){}
     }

@@ -125,8 +125,8 @@ Detail docs: `DEPLOY_MILESWEB.md` (cPanel steps) · `DEPLOY_ORACLE_CLOUD.md` (VM
 - [ ] **2. WordPress setup** — Rank Math; theme install (**v172**: theme **1.9.23** —
       `python tools/build_wp_theme.py` (CSS minify + `tools/build_critical_css.py` above-fold layer + reproducible zip)
       → zip → Appearance → Themes → Upload → Activate);
-      **zip:** 135 files · 1174 KB · theme **1.9.41** · sha256
-      `b585f83174e589bbe62d2d9ab7487d457488d4c0765ad01e5b0aa7ac3af8f032`
+      **zip:** 135 files · 1185 KB · theme **1.9.41** · sha256
+      `6f09b027316831c9de76e4fca69fe2c44a44331a6bffbf8b24841bd3bfddfb23`
       (`sha256sum wordpress-theme/studentup-theme.zip` — upload chesina zip ide ani verify cheyandi;
       build ippudu **fully reproducible** — POT date kuda fixed (v175), same content ⇒ same sha
       **prathi machine/CI lo**, mtimes tho sambandham ledu)

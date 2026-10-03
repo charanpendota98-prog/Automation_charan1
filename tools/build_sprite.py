@@ -50,7 +50,7 @@ def icon_paths() -> dict[str, str]:
     return paths
 
 
-def sprite_svg(paths: dict[str, str], keys: list[str] | None = None) -> str:
+def sprite_svg(paths: dict[str, str], keys: list[str] | None = None, social_paths: dict[str, str] | None = None) -> str:
     """<svg class="su-sprite"> block — same attributes the theme uses."""
     items = []
     for key in (keys or sorted(paths)):
@@ -60,6 +60,11 @@ def sprite_svg(paths: dict[str, str], keys: list[str] | None = None) -> str:
         items.append(
             '<symbol id="su-i-%s" viewBox="0 0 24 24"><path d="%s"/></symbol>' % (key, d)
         )
+    if social_paths:
+        for sk, sv in sorted(social_paths.items()):
+            items.append(
+                '<symbol id="su-s-%s" viewBox="0 0 24 24"><path d="%s"/></symbol>' % (sk, sv)
+            )
     return (
         '<svg class="su-sprite" aria-hidden="true" focusable="false" style="display:none">'
         + "".join(items)
@@ -75,6 +80,7 @@ def used_icon_keys(html: str) -> list[str]:
 
 
 def main() -> int:
+    social_dict = _php_paths(THEME / "inc" / "options.php", "studentup_social_icon_paths")
     paths = icon_paths()
     if len(paths) < 40:
         print(f"  ❌ icon source lo {len(paths)} icons mattrame — icons.php parse fail?")
@@ -92,7 +98,9 @@ def main() -> int:
         for extra in ("moon", "sun"):
             if extra not in keys:
                 keys.append(extra)
-        block = sprite_svg(paths, sorted(set(keys)))
+        has_social_uses = bool(re.search(r'href="#su-s-', html))
+        active_social = social_dict if has_social_uses else None
+        block = sprite_svg(paths, sorted(set(keys)), active_social)
         # v197.1: page lo okkati kanna ekkuva icon containers unte (legacy
         # preview/index.html), motham okkate canonical block ki merge cheyyali —
         # lekapote same id rendu saarlu define ayyi duplicate-id audit fail avutundi.

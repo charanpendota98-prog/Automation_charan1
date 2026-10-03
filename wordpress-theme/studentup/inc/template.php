@@ -186,6 +186,13 @@ $label = $terms ? $terms[0]->name : 'Update';
 				}
 				?>
 				<a class="su-readmore" href="<?php the_permalink(); ?>"><?php echo esc_html__( 'Read more', 'studentup' ) . ' →'; ?></a>
+				<?php
+				$su_share_title = rawurlencode( get_the_title() );
+				$su_share_url   = rawurlencode( get_permalink() );
+				?>
+				<a class="su-card-wa" href="https://wa.me/?text=<?php echo esc_attr( $su_share_title . '%20' . $su_share_url ); ?>" target="_blank" rel="noopener" title="Share on WhatsApp">
+					<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.36 3.45 16.86L2.05 22L7.3 20.62C8.75 21.41 10.38 21.83 12.04 21.83C17.5 21.83 21.95 17.38 21.95 11.92C21.95 9.27 20.92 6.78 19.05 4.91C17.18 3.03 14.69 2 12.04 2Z"/></svg> Share
+				</a>
 				<?php echo studentup_save_button( 0, 'su-save-card' ); // v92: 🔖 save-for-later (escaped in helper) ?>
 				<?php if ( function_exists( 'studentup_tool_buttons' ) ) : ?>
 					<?php echo wp_kses_post( studentup_tool_buttons( 0, 'card' ) ); ?>

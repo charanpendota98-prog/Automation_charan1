@@ -93,12 +93,6 @@ function studentup_hero_premium() {
 				studentup_state_switch();     // v124: state-first dynamic homepage
 			}
 			?>
-
-			<ul class="su-hero-stats">
-				<li><b><?php echo esc_html( number_format_i18n( $posts_count ) ); ?></b><span>Updates published</span></li>
-				<li><b><?php echo esc_html( number_format_i18n( $today ) ); ?></b><span>Added in 24 hours</span></li>
-				<li><b>100%</b><span>Official source links</span></li>
-			</ul>
 		</div>
 	</section>
 	<?php

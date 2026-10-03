@@ -53,6 +53,30 @@
     var picked = saved.picked || {};
     var score = 0;
 
+    /* Exam filter pills */
+    var examTabs = $$(".su-qtab");
+    if (examTabs.length) {
+      examTabs.forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          examTabs.forEach(function (b) {
+            b.classList.remove("active");
+            b.setAttribute("aria-selected", "false");
+          });
+          btn.classList.add("active");
+          btn.setAttribute("aria-selected", "true");
+          var targetExam = (btn.getAttribute("data-exam") || "all").toLowerCase();
+          qs.forEach(function (fs) {
+            var ex = (fs.getAttribute("data-exam") || "all").toLowerCase().split(",");
+            if (targetExam === "all" || ex.indexOf(targetExam) !== -1 || ex.indexOf("all") !== -1) {
+              fs.style.display = "";
+            } else {
+              fs.style.display = "none";
+            }
+          });
+        });
+      });
+    }
+
     if (checkBtn) checkBtn.hidden = true; /* JS unte submit avasaram ledu */
 
     function paintScore(animate) {

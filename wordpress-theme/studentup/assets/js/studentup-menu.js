@@ -67,22 +67,33 @@
       var sub = subOf(li);
       if (!sub) return;
 
-      /* touch / click: first tap opens, second tap follows the link */
+      /* touch / click: click toggles the dropdown, prevent hash jump */
       a.addEventListener("click", function (e) {
         var isTouch = window.matchMedia && window.matchMedia("(hover: none)").matches;
-        if (!li.classList.contains("su-open") && (isTouch || e.detail === 0)) {
-          e.preventDefault();
-          closeAll(li);
+        e.preventDefault();
+        var wasOpen = li.classList.contains("su-open");
+        closeAll(li);
+        if (!wasOpen) {
           setOpen(li, true);
           var f = focusables(li);
           if (f[0] && !isTouch) f[0].focus();
-        } else if (isTouch && !a.getAttribute("data-su-go")) {
-          e.preventDefault();
+        } else {
+          setOpen(li, false);
+        }
+      });
+
+      /* hover on desktop */
+      li.addEventListener("mouseenter", function () {
+        var isTouch = window.matchMedia && window.matchMedia("(hover: none)").matches;
+        if (!isTouch) {
           closeAll(li);
           setOpen(li, true);
-          a.setAttribute("data-su-go", "1");
-        } else {
-          a.removeAttribute("data-su-go");
+        }
+      });
+      li.addEventListener("mouseleave", function () {
+        var isTouch = window.matchMedia && window.matchMedia("(hover: none)").matches;
+        if (!isTouch) {
+          setOpen(li, false);
         }
       });
 
@@ -140,9 +151,72 @@
     });
   }
 
-  /* -------------------------------------------------- mobile accordion */
+  /* -------------------------------------------------- mobile drawer & accordion */
   function wireMobile() {
     if (!panel) return;
+    var backdrop = document.getElementById("mbackdrop");
+    var panelClose = document.getElementById("mpanelclose");
+    var bnavMenu = document.getElementById("su-bnav-menu");
+
+    function setDrawer(open) {
+      panel.classList.toggle("open", open);
+      panel.setAttribute("aria-hidden", open ? "false" : "true");
+      if (backdrop) {
+        backdrop.classList.toggle("show", open);
+        backdrop.classList.toggle("open", open);
+      }
+      document.body.classList.toggle("mlock", open);
+      if (btn) {
+        btn.setAttribute("aria-expanded", open ? "true" : "false");
+        btn.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+      }
+      if (open && panelClose) {
+        window.setTimeout(function () { panelClose.focus(); }, 60);
+      }
+    }
+
+    if (btn) {
+      btn.addEventListener("click", function (e) {
+        e.preventDefault();
+        setDrawer(!panel.classList.contains("open"));
+      });
+    }
+
+    if (bnavMenu) {
+      bnavMenu.addEventListener("click", function (e) {
+        e.preventDefault();
+        setDrawer(!panel.classList.contains("open"));
+      });
+    }
+
+    if (backdrop) {
+      backdrop.addEventListener("click", function () {
+        setDrawer(false);
+      });
+    }
+
+    if (panelClose) {
+      panelClose.addEventListener("click", function (e) {
+        e.preventDefault();
+        setDrawer(false);
+        if (btn) btn.focus();
+      });
+    }
+
+    /* any link clicked inside panel closes drawer */
+    panel.addEventListener("click", function (e) {
+      if (e.target && (e.target.tagName === "A" || e.target.closest("a"))) {
+        setDrawer(false);
+      }
+    });
+
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && panel.classList.contains("open")) {
+        setDrawer(false);
+        if (btn) btn.focus();
+      }
+    });
+
     /* active group (or first) auto-open — reader 2 taps save chestadu */
     var groups = [].slice.call(panel.querySelectorAll("details.mgroup"));
     if (!groups.length) return;
@@ -162,14 +236,6 @@
         });
       });
     });
-
-    /* panel open ayyaka focus search ki (keyboard) */
-    if (btn) {
-      btn.addEventListener("click", function () {
-        var first = panel.querySelector("a, summary, button");
-        if (first) window.setTimeout(function () { first.focus(); }, 60);
-      });
-    }
   }
 
   /* ---------------------------------------------------------- sticky */
@@ -187,10 +253,142 @@
     }, { passive: true });
   }
 
+  /* ---------------------------------------------------------- floating social rail (right side · 5-min dismiss) */
+  function wireSocialRail() {
+    var rail = document.getElementById("surail");
+    var railTab = document.getElementById("sutab");
+    var railClose = document.getElementById("suclose");
+    if (!rail) return;
+
+    var DURATION_5MIN = 5 * 60 * 1000;
+    var SU_DISMISS_KEY = "su_social_dismissed";
+    var timer = null;
+
+    function show() {
+      if (timer) clearTimeout(timer);
+      rail.classList.remove("su-out");
+      rail.removeAttribute("aria-hidden");
+      if (railTab) railTab.classList.remove("on");
+    }
+
+    function hide(userInitiated) {
+      if (timer) clearTimeout(timer);
+      rail.classList.add("su-out");
+      rail.setAttribute("aria-hidden", "true");
+      if (railTab) railTab.classList.add("on");
+
+      if (userInitiated) {
+        try { localStorage.setItem(SU_DISMISS_KEY, Date.now().toString()); } catch (e) {}
+      }
+      timer = setTimeout(show, DURATION_5MIN);
+    }
+
+    /* Check previous dismissal timestamp */
+    try {
+      var dismissed = parseInt(localStorage.getItem(SU_DISMISS_KEY) || "0", 10);
+      var elapsed = Date.now() - dismissed;
+      if (dismissed && elapsed < DURATION_5MIN) {
+        hide(false);
+        timer = setTimeout(show, DURATION_5MIN - elapsed);
+      } else {
+        show();
+      }
+    } catch (e) {
+      show();
+    }
+
+    if (railClose) {
+      railClose.addEventListener("click", function (e) {
+        e.preventDefault();
+        hide(true);
+      });
+    }
+
+    if (railTab) {
+      railTab.addEventListener("click", function (e) {
+        e.preventDefault();
+        try { localStorage.removeItem(SU_DISMISS_KEY); } catch (e) {}
+        show();
+      });
+    }
+
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && !rail.classList.contains("su-out")) {
+        hide(true);
+      }
+    });
+  }
+
+  /* ---------------------------------------------------------- ticker controls */
+  function wireTicker() {
+    var tmove = document.querySelector(".tickerwrap .tmove");
+    var tToggle = document.getElementById("su-t-toggle");
+    var tPrev = document.getElementById("su-t-prev");
+    var tNext = document.getElementById("su-t-next");
+    if (!tmove) return;
+
+    var tPaused = false;
+    var tickerTimer = null;
+
+    function getTransformX(el) {
+      var st = window.getComputedStyle(el);
+      var tr = st.transform || st.webkitTransform;
+      if (!tr || tr === "none") return 0;
+      var values = tr.split("(")[1].split(")")[0].split(",");
+      return parseFloat(values[4]) || 0;
+    }
+
+    function nudgeTicker(direction) {
+      var curX = getTransformX(tmove);
+      var step = 180;
+      var newX = curX + (direction * step);
+      var half = tmove.scrollWidth / 2;
+      if (newX > 0) newX = -half + step;
+      if (newX < -half) newX = 0;
+
+      tmove.style.animation = "none";
+      tmove.style.transform = "translateX(" + newX + "px)";
+
+      clearTimeout(tickerTimer);
+      tickerTimer = setTimeout(function () {
+        if (!tPaused) {
+          tmove.style.animation = "";
+          tmove.style.transform = "";
+        }
+      }, 2800);
+    }
+
+    if (tToggle) {
+      tToggle.addEventListener("click", function (e) {
+        e.preventDefault();
+        tPaused = !tPaused;
+        tmove.style.animationPlayState = tPaused ? "paused" : "running";
+        tToggle.textContent = tPaused ? "▶" : "⏸";
+        tToggle.setAttribute("aria-label", tPaused ? "Resume ticker" : "Pause ticker");
+      });
+    }
+
+    if (tPrev) {
+      tPrev.addEventListener("click", function (e) {
+        e.preventDefault();
+        nudgeTicker(1);
+      });
+    }
+
+    if (tNext) {
+      tNext.addEventListener("click", function (e) {
+        e.preventDefault();
+        nudgeTicker(-1);
+      });
+    }
+  }
+
   function boot() {
     wireDesktop();
     wireMobile();
     wireSticky();
+    wireSocialRail();
+    wireTicker();
   }
 
   if (document.readyState !== "loading") boot();
