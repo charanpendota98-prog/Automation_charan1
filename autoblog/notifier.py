@@ -22,6 +22,12 @@ log = logging.getLogger("autoblog.notify")
 
 # ------------------------------------------------------------------ helpers
 
+def is_channel_chat(chat_id: object) -> bool:
+    """Return True if chat_id represents a Telegram channel or broadcast target."""
+    s = str(chat_id or "").strip()
+    return s.startswith("-100") or s.startswith("@")
+
+
 def _tg_api(token: str, method: str) -> str:
     return f"{config.TELEGRAM_API_BASE}/bot{token}/{method}"
 
@@ -42,15 +48,24 @@ def send_telegram(
     if not token or not chat:
         log.info("Telegram not configured — skipping notification")
         return False
+
+    # Channel chats forbid callback_data buttons; swap with channel URL buttons
+    if buttons and is_channel_chat(chat):
+        rows = buttons.get("inline_keyboard", [])
+        has_cb = any("callback_data" in b for r in rows for b in r)
+        if has_cb:
+            buttons = post_buttons(0, "", chat_id=chat)
+
     # v84: Telegram 4096-char hard limit — long reports cut kakunda truncate
     # (reject ayithe alert motham pothundi — approval miss = money loss).
     if len(text_html) > 4000:
         text_html = text_html[:3950] + "\n…(cut — log lo full undi)"
+    disable_preview = "true" if len(text_html) > 2800 else "false"
     payload = {
         "chat_id": chat,
         "text": text_html,
         "parse_mode": "HTML",
-        "disable_web_page_preview": "true",
+        "disable_web_page_preview": disable_preview,
     }
     if buttons:
         payload["reply_markup"] = buttons
@@ -59,6 +74,16 @@ def send_telegram(
                              timeout=config.HTTP_TIMEOUT)
         if resp.status_code == 200 and resp.json().get("ok"):
             return True
+        # If Telegram rejected due to invalid button types in channel, retry without reply_markup
+        if resp.status_code == 400 and ("BUTTON_TYPE_INVALID" in resp.text or
+                                        "reply_markup" in resp.text or
+                                        "BUTTON_URL_INVALID" in resp.text):
+            log.warning("Retrying Telegram sendMessage without reply_markup for %s", chat)
+            payload.pop("reply_markup", None)
+            retry_resp = requests.post(_tg_api(token, "sendMessage"), json=payload,
+                                       timeout=config.HTTP_TIMEOUT)
+            if retry_resp.status_code == 200 and retry_resp.json().get("ok"):
+                return True
         log.error("Telegram sendMessage failed: %s", resp.text[:300])
     except Exception:
         log.exception("Telegram sendMessage error")
@@ -221,8 +246,32 @@ def esc(text: str) -> str:
     return html.escape(str(text or ""), quote=True)
 
 
-def post_buttons(post_id: int, link: str) -> dict:
-    """Inline keyboard for a draft post awaiting review."""
+def post_buttons(post_id: int, link: str, chat_id: Optional[str] = None) -> dict:
+    """Inline keyboard for a draft post awaiting review.
+
+    If chat_id is a channel, URL buttons are used to prevent Telegram
+    BUTTON_TYPE_INVALID rejection.
+    """
+    site = (config.WP_SITE or "https://studentup.in").rstrip("/")
+    if is_channel_chat(chat_id):
+        wp_edit = f"{site}/wp-admin/post.php?post={post_id}&action=edit" if post_id else site
+        share_text = quote(link) if link else quote(site)
+        wa_share = f"https://api.whatsapp.com/send?text={share_text}"
+        tg_channel = getattr(config, "TELEGRAM_CHANNEL_URL", "") or "https://t.me/studentup_in"
+        rows = []
+        if link:
+            rows.append([
+                {"text": "📖 పూర్తి వివరాలు & Preview", "url": link},
+                {"text": "✏️ Edit in WP", "url": wp_edit},
+            ])
+        else:
+            rows.append([{"text": "✏️ Edit in WP", "url": wp_edit}])
+        rows.append([
+            {"text": "📲 WhatsApp లో షేర్ చేయండి", "url": wa_share},
+            {"text": "📢 StudentUp ఛానల్", "url": tg_channel},
+        ])
+        return {"inline_keyboard": rows}
+
     return {
         "inline_keyboard": [
             [
@@ -231,8 +280,8 @@ def post_buttons(post_id: int, link: str) -> dict:
             ],
             [
                 {"text": "✏️ Edit in WordPress",
-                 "url": f"{config.WP_SITE}/wp-admin/post.php?post={post_id}&action=edit"},
-                {"text": "🏠 Site", "url": config.WP_SITE},
+                 "url": f"{site}/wp-admin/post.php?post={post_id}&action=edit"},
+                {"text": "🏠 Site", "url": site},
             ],
             [
                 {"text": "🔄️ Improve + Research (kotha info add)",
@@ -647,17 +696,44 @@ def notify_new_post(article: dict, result: dict) -> None:
     if status == "draft":
         emoji = "📝"
         head = "NEW DRAFT — Review cheyandi"
+        subhead = "కొత్త పోస్ట్ డ్రాఫ్ట్ సిద్ధమైంది (Review Pending)"
     else:
         emoji = "🚀"
         head = "PUBLISHED — Live ayyindi!"
+        subhead = "కొత్త నోటిఫికేషన్ లైవ్ అయింది (Published)"
+
+    rec = article.get("recruitment") or {}
+    org = _source_fact(rec, article, "org_name", "company")
+    role = _source_fact(rec, article, "role", "designation")
+    vacancies = _source_fact(rec, article, "vacancies", "vacancy", "post_count")
+    qual = _source_fact(rec, article, "qualification", "eligibility")
+    loc = _source_fact(rec, article, "location")
+    sal = _source_fact(rec, article, "salary")
+    deadline = _safe_iso_date(rec.get("apply_end") or article.get("apply_end") or article.get("last_date"))
 
     lines = [
         f"{emoji} <b>{esc(head)}</b>",
+        f"<i>{esc(subhead)}</i>",
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
+        f"🌟 <b>{esc(title)}</b>",
         "",
-        f"<b>{esc(title)}</b>",
-        f"📂 Category: {esc(cat)}",
-        f"🏷️ Tags: {esc(tags)}",
+        f"📂 <b>కేటగిరీ (Category):</b> {esc(cat)}",
+        f"🏷️ <b>Tags:</b> {esc(tags)}",
     ]
+    if org:
+        lines.append(f"🏢 <b>సంస్థ (Company/Org):</b> {esc(org)}")
+    if role:
+        lines.append(f"💼 <b>ఉద్యోగం (Role):</b> {esc(role)}")
+    if vacancies:
+        lines.append(f"👉 <b>Vacancies:</b> {esc(vacancies)}")
+    if qual:
+        lines.append(f"🎓 <b>విద్యార్హత (Eligibility):</b> {esc(qual)}")
+    if loc:
+        lines.append(f"📍 <b>లొకేషన్ (Location):</b> {esc(loc)}")
+    if sal:
+        lines.append(f"💰 <b>వేతనం (Salary):</b> {esc(sal)}")
+    if deadline:
+        lines.append(f"⏳ <b>చివరి తేదీ (Last Date):</b> {esc(deadline)}")
     # QA report — review easy ga avtaniki
     qa = article.get("_qa") or {}
     qa_bits = []
@@ -723,8 +799,9 @@ def notify_new_post(article: dict, result: dict) -> None:
 
     # Telegram with buttons (draft) or plain (published)
     if config.TELEGRAM_BOT_TOKEN and (config.TELEGRAM_CHAT_ID or status == "draft"):
-        buttons = post_buttons(post_id, result.get("link", "")) if status == "draft" else None
-        send_telegram(text, buttons=buttons)
+        target_chat = config.TELEGRAM_CHAT_ID or ""
+        buttons = post_buttons(post_id, result.get("link", ""), chat_id=target_chat) if status == "draft" else None
+        send_telegram(text, chat_id=target_chat, buttons=buttons)
 
     # Public channel: exactly one attractive broadcast, and only after live
     # approval. Drafts/mocks never reach students. The featured image is
