@@ -208,6 +208,26 @@ th{background:var(--soft);color:var(--navy);font-size:13px}
     var c=anchor.querySelector('button');
     if(c) c.addEventListener('click',function(){ try{ localStorage.setItem('su_anchor_closed','1'); }catch(e){} });
   }
+
+  /* Scroll Progress Bar & Floating Action Bar */
+  var pBar = document.getElementById('su-progress-bar');
+  var fBar = document.getElementById('su-float-bar');
+  var fClosed = false;
+  window.addEventListener('scroll', function(){
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    var pct = h > 0 ? (window.scrollY / h) * 100 : 0;
+    if(pBar) pBar.style.width = Math.min(100, Math.max(0, pct)) + '%';
+    if(fBar && !fClosed && window.innerWidth < 800){
+      fBar.hidden = window.scrollY < 260 || pct > 94;
+    }
+  }, { passive: true });
+  var fbClose = document.getElementById('su-fb-close');
+  if(fbClose){
+    fbClose.addEventListener('click', function(){
+      fClosed = true;
+      if(fBar) fBar.hidden = true;
+    });
+  }
 })();
 </body>
 </html>
