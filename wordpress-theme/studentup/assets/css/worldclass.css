@@ -462,19 +462,63 @@ body.dark .su-sidebar-ad{ background:#111c2f; border-color:var(--line-2) }
 .news .thumb::after{ content:""; position:absolute; inset:0; pointer-events:none;
   background:linear-gradient(180deg,rgba(11,36,71,0) 62%,rgba(11,36,71,.10)) }
 
-/* ---------- (b) hero: Telugu-first, calmer ---------- */
-.su-hero{ background:
-  radial-gradient(1200px 420px at 12% -10%,rgba(36,99,183,.20),transparent 60%),
-  radial-gradient(900px 360px at 92% 0%,rgba(240,138,36,.16),transparent 62%),
-  linear-gradient(180deg,#0b2447,#123a75) }
-.su-hero-title{ font-size:clamp(22px,4.9vw,38px); line-height:1.42; letter-spacing:-.005em;
-  font-weight:800; max-width:27ch }
-.su-hero-title span{ color:#ffb765 }
-.su-hero-sub{ font-size:clamp(13.5px,3.5vw,16px); line-height:1.65; color:#cfe0f7; max-width:52ch }
-.su-hero-kicker{ letter-spacing:.02em }
-.su-hero-stats li{ color:#c7d9f2 }
-.su-hero-stats b{ font-size:19px }
-@media(min-width:900px){ .su-hero-in{ padding:40px 0 30px } }
+/* ---------- (b) hero: Telugu-first, high contrast, clean & compact ---------- */
+.su-hero{
+  background:
+    radial-gradient(1200px 420px at 12% -10%,rgba(36,99,183,.25),transparent 60%),
+    radial-gradient(900px 360px at 92% 0%,rgba(240,138,36,.20),transparent 62%),
+    linear-gradient(180deg,#071a36 0%,#0e2a56 60%,#0b2447 100%);
+  color:#fff;
+  padding:16px 0 12px;
+}
+.su-hero-in{ padding:0 var(--gut); position:relative; z-index:2 }
+.su-hero-title{
+  color:#ffffff !important;
+  font-size:clamp(22px,4.9vw,38px);
+  line-height:1.42;
+  letter-spacing:-.005em;
+  font-weight:800;
+  max-width:27ch;
+}
+.su-hero-title span{
+  color:#ffb765 !important;
+  background:linear-gradient(135deg,#ffb765,#f59e0b);
+  -webkit-background-clip:text;
+  background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+.su-hero-sub{
+  font-size:clamp(13.5px,3.5vw,16px);
+  line-height:1.65;
+  color:#cfe0f7 !important;
+  max-width:52ch;
+}
+.su-hero-kicker{
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.16);
+  color:#9ec3ff !important;
+  letter-spacing:.02em;
+  border-radius:999px;
+  padding:4px 12px;
+  font-size:12px;
+  font-weight:700;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+}
+.su-hero-stats li{
+  background:rgba(255,255,255,.09) !important;
+  border:1px solid rgba(255,255,255,.16) !important;
+  color:#c7d9f2 !important;
+}
+.su-hero-stats b{
+  font-size:19px;
+  color:#ffffff !important;
+}
+.su-hero-stats span{
+  color:#9ec3ff !important;
+}
+@media(min-width:900px){ .su-hero-in{ padding:32px 0 24px } }
 
 /* ---------- (c) section accent bar + calm headings ---------- */
 .sectionhead h2{ position:relative; padding-left:13px }
@@ -573,12 +617,10 @@ body.dark .su-cal-item.su-cal-urgent{background:#241a10;border-color:#5a3a17}
 .nav .menu-primary.su-has-mega>li>a:hover,
 .nav .menu-primary.su-has-mega>li.su-open>a{background:var(--soft);color:var(--navy)}
 .nav .su-mega-lb{white-space:nowrap}
-.nav .su-nav-arr,
-.nav .su-mega-li>a::after{content:"▾";font-size:10px;margin-left:3px;opacity:.65;transition:transform .2s ease;display:inline-block}
+.nav .su-nav-arr{display:none !important}
+.nav .su-mega-li>a::after{content:"▾";font-size:10px;margin-left:4px;opacity:.65;transition:transform .2s ease;display:inline-block}
 .nav .menu-primary>li.su-open>a::after,
-.nav .menu-primary>li:hover>a::after,
-.nav .menu-primary>li.su-open>a .su-nav-arr,
-.nav .menu-primary>li:hover>a .su-nav-arr{transform:rotate(180deg);opacity:1}
+.nav .menu-primary>li:hover>a::after{transform:rotate(180deg);opacity:1}
 .nav .menu-primary>li .su-uicon{width:16px;height:16px;flex:0 0 auto;opacity:.75}
 .nav .sub-menu[data-su-mega]{
   position: absolute !important;
@@ -1004,14 +1046,15 @@ body.dark .mgroup a{ border-top-color:var(--line); color:var(--ink-2) }
    blocks (live ticker + Most searched 10 cards) ni phone-first ga polish.
    Idi worldclass layer (last load) — style.css ni override chestundi. */
 
-/* --- live "Latest Jobs" ticker: fade edges · 44px taps · pause · reduced-motion --- */
-.tickerwrap{ position:relative }
-.tickerwrap .trow{ gap:10px }
-/* clip edge hard ga kanipinchakunda cheyyi (chinna gradient fade) */
+/* --- live "Latest Jobs" ticker: Telugu diacritic safe · fade edges · 44px taps · pause · reduced-motion --- */
+.tickerwrap{ position:relative; min-height:44px; display:flex; align-items:center }
+.tickerwrap .trow{ gap:10px; min-height:44px; padding:4px 0 }
+/* clip edge hard ga kanipinchakunda cheyyi (chinna gradient fade) + 40px safe height for Telugu loops */
 .tickerwrap .tclip{
+  min-height:40px; height:40px; display:flex; align-items:center; overflow:hidden;
   -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 26px,#000 calc(100% - 26px),transparent 100%);
   mask-image:linear-gradient(90deg,transparent 0,#000 26px,#000 calc(100% - 26px),transparent 100%) }
-.tickerwrap .tmove{ will-change:transform; animation-duration:24s }
+.tickerwrap .tmove{ height:44px; line-height:44px; will-change:transform; animation-duration:24s }
 .tickerwrap .tmove a{ display:inline-flex; align-items:center; min-height:44px }
 /* touch/hover lo aapithe chadavadam easy — phone lo kuda pani chestundi */
 .tickerwrap .tmove:hover,.tickerwrap .tmove:focus-within,.tickerwrap .tmove:active{ animation-play-state:paused }
@@ -1062,3 +1105,28 @@ body.dark .usedcard .ucount{ background:#0f2038; color:#a9c1e6; border-color:var
 @media print{
   .tickerwrap{ display:none }
   .usedcard::after,.usedcard .ucount{ display:none } }
+
+/* ==========================================================================
+   16. FLOATING SOCIAL RAIL (Right side on mobile · 5-min dismissal)
+   ========================================================================== */
+@media(max-width:980px){
+  .su-social{ top:50% !important; bottom:auto !important; transform:translateY(-50%) !important; flex-direction:column !important; right:10px !important }
+  .su-social.su-out{ transform:translate(135%,-50%) !important }
+}
+@media(max-width:600px){
+  .su-social{ right:8px !important; top:48% !important; gap:6px !important; padding:7px 5px !important }
+  .su-social a{ width:33px !important; height:33px !important }
+  .su-social a svg{ width:16px !important; height:16px !important }
+  .su-tab{ top:48% !important; bottom:auto !important; width:20px !important; height:40px !important }
+}
+
+/* ==========================================================================
+   17. RICH POST THUMBNAILS (Crop-proof · Zoom on hover)
+   ========================================================================== */
+.news .thumb-img{ display:block; padding:0; overflow:hidden; position:relative }
+.news .thumb-img img{ width:100%; height:100%; object-fit:cover; display:block; transition:transform .35s cubic-bezier(.2,.7,.3,1) }
+.news:hover .thumb-img img{ transform:scale(1.045) }
+@media(prefers-reduced-motion:reduce){
+  .news .thumb-img img{ transition:none }
+  .news:hover .thumb-img img{ transform:none } }
+

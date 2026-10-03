@@ -318,27 +318,30 @@
     }
   });
 
-  /* ---------- v71: floating social rail — show, auto-hide, return every 2 minutes ----------
-     Eppudu kanipisthe mobile lo article chadavadam kastam — anduku 9s chupi, pakkaki
-     velli, prati 2 nimishalaki malli vastundi. Close = ventane hide, 2 min tarvata malli. */
+  /* ---------- v71/v200: floating social rail — right side, dismiss (✕) + returns after 5 minutes ----------
+     Owner feedback: phone lo side icons ravali (whatsapp, insta, telegram, youtube),
+     wrong click (✕) cheste vellipovali, next 5 minutes tarvata malli ravali. */
   var rail = document.getElementById("surail"), railTab = document.getElementById("sutab"),
       railClose = document.getElementById("suclose");
   if (rail && railTab) {
-    var SU_AUTOHIDE = false, SU_SHOW = 9000, SU_CYCLE = 120000, SU_HOVER = 3500, suHideT = null, suCycleT = null;
+    var SU_AUTOHIDE = false, SU_SHOW = 9000, SU_CYCLE = 300000, SU_HOVER = 3500, suHideT = null, suCycleT = null;
+    var SU_DISMISS_KEY = "su_social_dismissed";
+
     var suShow = function () {
       clearTimeout(suHideT);
       rail.classList.remove("su-out");
       rail.removeAttribute("aria-hidden");
       railTab.classList.remove("on");
-      /* v123: rail eppudu right-middle lo kanipistundi. User ✕ click cheste
-         mattrame hide — auto-hide ledu (phone lo icons ravatledu ane problem fix). */
       if (SU_AUTOHIDE) suHideT = setTimeout(suHide, SU_SHOW);
     };
-    var suHide = function () {
+    var suHide = function (userInitiated) {
       clearTimeout(suHideT);
       rail.classList.add("su-out");
       rail.setAttribute("aria-hidden", "true");
       railTab.classList.add("on");
+      if (userInitiated) {
+        try { localStorage.setItem(SU_DISMISS_KEY, Date.now().toString()); } catch (e) {}
+      }
     };
     var suRestart = function () {
       clearInterval(suCycleT);
@@ -347,17 +350,36 @@
         suShow();
       }, SU_CYCLE);
     };
-    if (railClose) {
-      railClose.addEventListener("click", function () { suHide(); suRestart(); });
+
+    /* Check 5-minute dismissal window on load */
+    try {
+      var dismissed = parseInt(localStorage.getItem(SU_DISMISS_KEY) || "0", 10);
+      var elapsed = Date.now() - dismissed;
+      if (dismissed && elapsed < SU_CYCLE) {
+        suHide(false);
+        setTimeout(function () { suShow(); suRestart(); }, SU_CYCLE - elapsed);
+      } else {
+        suShow();
+        suRestart();
+      }
+    } catch (e) {
+      suShow();
+      suRestart();
     }
-    railTab.addEventListener("click", function () { suShow(); suRestart(); });
-    document.addEventListener("keydown", function (e) { if (e.key === "Escape") { suHide(); suRestart(); } });
+
+    if (railClose) {
+      railClose.addEventListener("click", function () { suHide(true); suRestart(); });
+    }
+    railTab.addEventListener("click", function () {
+      try { localStorage.removeItem(SU_DISMISS_KEY); } catch (e) {}
+      suShow();
+      suRestart();
+    });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape") { suHide(true); suRestart(); } });
     rail.addEventListener("mouseenter", function () { clearTimeout(suHideT); });
     rail.addEventListener("mouseleave", function () { clearTimeout(suHideT); if (SU_AUTOHIDE) suHideT = setTimeout(suHide, SU_HOVER); });
     rail.addEventListener("focusin", function () { clearTimeout(suHideT); });
     rail.addEventListener("focusout", function () { clearTimeout(suHideT); if (SU_AUTOHIDE) suHideT = setTimeout(suHide, SU_HOVER); });
-    suShow();
-    suRestart();
   }
 
 

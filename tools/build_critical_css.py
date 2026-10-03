@@ -129,7 +129,7 @@ UNION_DROPPABLE = (".su-tools", ".su-tooltabs", ".su-toolpanel", ".su-fields",
 # mattrame render avutayi. Single/archive inline CSS nunchi ee tokens teeyali
 # (cap guard). Ticker (.tlabel/.tclip/.tmove) CORE lo ne untundi — breaking
 # bar ki kuda kavali.
-HOME_ONLY = (".usedcard", ".usedgrid", ".usedwrap", ".usedhead", ".ucount", ".su-slider-", ".su-scard")
+HOME_ONLY = (".usedcard", ".usedgrid", ".usedwrap", ".usedhead", ".ucount", ".su-slider", ".su-scard", ".su-sbtn", ".su-hero")
 
 
 def _split_rules(css: str):

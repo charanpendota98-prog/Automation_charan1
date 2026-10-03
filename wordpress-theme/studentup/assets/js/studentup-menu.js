@@ -253,10 +253,77 @@
     }, { passive: true });
   }
 
+  /* ---------------------------------------------------------- floating social rail (right side · 5-min dismiss) */
+  function wireSocialRail() {
+    var rail = document.getElementById("surail");
+    var railTab = document.getElementById("sutab");
+    var railClose = document.getElementById("suclose");
+    if (!rail) return;
+
+    var DURATION_5MIN = 5 * 60 * 1000;
+    var SU_DISMISS_KEY = "su_social_dismissed";
+    var timer = null;
+
+    function show() {
+      if (timer) clearTimeout(timer);
+      rail.classList.remove("su-out");
+      rail.removeAttribute("aria-hidden");
+      if (railTab) railTab.classList.remove("on");
+    }
+
+    function hide(userInitiated) {
+      if (timer) clearTimeout(timer);
+      rail.classList.add("su-out");
+      rail.setAttribute("aria-hidden", "true");
+      if (railTab) railTab.classList.add("on");
+
+      if (userInitiated) {
+        try { localStorage.setItem(SU_DISMISS_KEY, Date.now().toString()); } catch (e) {}
+      }
+      timer = setTimeout(show, DURATION_5MIN);
+    }
+
+    /* Check previous dismissal timestamp */
+    try {
+      var dismissed = parseInt(localStorage.getItem(SU_DISMISS_KEY) || "0", 10);
+      var elapsed = Date.now() - dismissed;
+      if (dismissed && elapsed < DURATION_5MIN) {
+        hide(false);
+        timer = setTimeout(show, DURATION_5MIN - elapsed);
+      } else {
+        show();
+      }
+    } catch (e) {
+      show();
+    }
+
+    if (railClose) {
+      railClose.addEventListener("click", function (e) {
+        e.preventDefault();
+        hide(true);
+      });
+    }
+
+    if (railTab) {
+      railTab.addEventListener("click", function (e) {
+        e.preventDefault();
+        try { localStorage.removeItem(SU_DISMISS_KEY); } catch (e) {}
+        show();
+      });
+    }
+
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && !rail.classList.contains("su-out")) {
+        hide(true);
+      }
+    });
+  }
+
   function boot() {
     wireDesktop();
     wireMobile();
     wireSticky();
+    wireSocialRail();
   }
 
   if (document.readyState !== "loading") boot();
