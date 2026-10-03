@@ -275,13 +275,13 @@ def test_update_freshness_chain():
 
 def test_docs_v77():
     suites = len(list((ROOT / "tests").glob("*_test.py")))
-    assert suites == 137, f"suites {suites} (v116 tho 137 expect)"
+    assert suites == 139, f"suites {suites} (v116 tho 139 expect)"
     readme = read(ROOT / "README.md")
     manual = read(ROOT / "MANUAL_ADVANCED_CHECKLIST.md")
     go_live = read(ROOT / "GO_LIVE_CHECKLIST.md")
-    assert "### v77" in readme and "137/137" in readme
-    assert "PART 36" in manual and "v77" in manual and "137/137" in manual
-    assert "137/137" in go_live
+    assert "### v77" in readme and "139/139" in readme
+    assert "PART 36" in manual and "v77" in manual and "139/139" in manual
+    assert "139/139" in go_live
     kit = read(ROOT / "AD_NETWORKS_APPLICATION_KIT.md")
     for needle in ("Ezoic", "Mediavine", "Media.net", "AdSense",
                    "APPLY FIRST", "Honest note"):

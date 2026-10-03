@@ -2,9 +2,9 @@
 Contributors: studentup
 Requires at least: 6.0
 Tested up to: 6.7
-Stable tag: 1.9.36
+Stable tag: 1.9.37
 Requires PHP: 7.4
-Version: 1.9.26
+Version: 1.9.37
 License: GNU General Public License v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Tags: news, education, blog, custom-logo, custom-menu, featured-images, translation-ready, right-sidebar, block-styles, wide-blocks
@@ -47,6 +47,13 @@ The theme ships a REST bridge (`inc/seo-bridge.php`). Use an account with `manag
 user tho App Password ivvandi (Administrator role).
 
 == Changelog ==
+
+= 1.9.37 =
+
+* WORLDCLASS v2 DESIGN LAYER (assets/css/worldclass.css, loaded after style.css + premium.css): mobile-first rebuild of the visual layer with zero template risk. On phones the post grid becomes horizontal "scan cards" (thumbnail + text side by side, title clamped to 3 lines) so twice as many updates fit on one screen; on laptops it becomes 3-column image tiles plus a sticky right rail (300x250 slot, top jobs, closing this week). Telugu-friendly 17px base type, 44px tap targets, safe-area aware sticky bottom nav, native-looking in-feed ad cards, dark-mode parity, reduced-motion and print rules.
+* HOME ORDER (front-page.php): content now comes first - hero, ticker, most-searched tiles, leaderboard, breaking news, qualification filters, the LATEST OPPORTUNITIES grid, jobs table, popular searches and pagination, and only then the engagement and utility blocks (hot 10, closing this week, job finder, mid ad, daily quiz, alerts, tools). Earlier eight calculator blocks plus eight widgets rendered before the grid, so a phone reader scrolled three or four screens before seeing the first job card.
+* TOOLS TABS (studentup_tools_tabs()): the eight calculator blocks (in-hand salary, age checker, fee and concession, score and negative marking, last-date calendar, admit card helper, resume maker, syllabus tracker) now live in one card as accessible tabs - one visible at a time. Full keyboard support (arrow keys, Home, End) with role=tab, aria-selected and hidden panel parity.
+* BUILD: worldclass.min.css (14 KB to 12 KB) added to the minify pipeline; theme parity pins moved to 1.9.37.
 
 = 1.9.31 =
 

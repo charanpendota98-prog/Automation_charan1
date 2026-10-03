@@ -25,51 +25,36 @@ PHONE = "9182739312"
 WA_LINK = "https://wa.me/919182739312?text=StudentUp%20Students%20Internet%20Center"
 UPDATED = "2026-09-18"
 
-CSS = """
-:root{--navy:#0f2e62;--blue:#2463b7;--orange:#ed8a32;--ink:#122036;--muted:#5b6b85;
---line:#dbe4f0;--card:#fff;--soft:#f4f8ff}
-*{box-sizing:border-box}
-body{margin:0;font-family:system-ui,-apple-system,"Noto Sans Telugu","Segoe UI",Roboto,sans-serif;
-background:linear-gradient(180deg,#eef4ff,#f8fbff 320px);color:var(--ink);line-height:1.75}
-a{color:var(--blue)}
-.top{background:var(--navy);color:#fff}
-.wrap{max-width:900px;margin:0 auto;padding:0 18px}
-.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 18px;flex-wrap:wrap}
-.brand{font-weight:900;font-size:19px;color:#fff;text-decoration:none;letter-spacing:-.02em}
-.brand span{color:var(--orange)}
-.top a.back{color:#cfe0fb;text-decoration:none;font-size:13.5px;font-weight:700;border:1px solid rgba(255,255,255,.28);
-border-radius:99px;padding:7px 14px}
-.top a.back:hover{background:rgba(255,255,255,.12)}
-main{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:0 14px 34px rgba(15,46,98,.07);
-margin:22px auto;padding:30px 32px;max-width:900px}
-h1{margin:0 0 6px;font-size:27px;color:var(--navy);letter-spacing:-.02em;line-height:1.35}
-.sub{color:var(--muted);font-size:13px;margin:0 0 22px;padding-bottom:16px;border-bottom:1px solid var(--line)}
-h2{font-size:18.5px;color:var(--navy);margin:26px 0 8px}
-p,li{font-size:15px}
-ul{padding-left:22px;margin:8px 0}
-li{margin:5px 0}
-.note{background:var(--soft);border-left:4px solid var(--blue);border-radius:10px;padding:13px 16px;margin:16px 0;font-size:14px}
+CSS = """/* v193 PIN-TO-PIN: the real theme CSS is linked above (style.css + worldclass.css),
+   so these pages ARE the site design. Only legal-page specifics live here. */
+.su-legal{max-width:900px;background:var(--card);border:1px solid var(--line);border-radius:var(--r-lg);
+  box-shadow:var(--sh-1);margin:20px auto;padding:26px 30px}
+.su-legal .crumbs{margin:0 0 10px}
+.su-legal h1{margin:0 0 6px;font-size:clamp(22px,4.6vw,30px);color:var(--navy);line-height:1.35;letter-spacing:-.015em}
+.su-legal .sub{color:var(--muted);font-size:13px;margin:0 0 20px;padding-bottom:14px;border-bottom:1px solid var(--line)}
+.su-legal h2{font-size:19.5px;color:var(--navy);margin:26px 0 8px}
+.su-legal h3{font-size:16.5px;color:var(--navy);margin:20px 0 6px}
+.su-legal p,.su-legal li{font-size:15.5px;line-height:1.8}
+.su-legal ul{padding-left:22px;margin:8px 0}
+.su-legal li{margin:5px 0}
+.note{background:var(--soft);border-left:4px solid var(--blue);border-radius:0 12px 12px 0;padding:13px 16px;margin:16px 0;font-size:14.5px}
 .warn{background:#fff6ec;border-left-color:var(--orange)}
 .grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));margin:14px 0}
 .tile{background:var(--soft);border:1px solid var(--line);border-radius:13px;padding:14px}
 .tile b{display:block;color:var(--navy);font-size:15px;margin-bottom:3px}
 .tile span{font-size:13px;color:var(--muted)}
-.su-ad{background:var(--soft);border:1px dashed #bfd2ee;border-radius:13px;padding:14px 16px;margin:20px 0}
+.su-ad{background:linear-gradient(180deg,#fbfdff,#f2f7fd);border:1px dashed var(--line-2);border-radius:var(--r-lg);padding:14px 16px;margin:20px 0}
 .su-ad-kicker{font-size:10.5px;letter-spacing:.09em;font-weight:800;color:var(--orange);margin-bottom:6px}
 .su-ad-title{font-weight:800;color:var(--navy);font-size:15px}
-.su-ad-desc{font-size:13px;color:var(--muted);margin:4px 0 10px}
-.su-ad a.go{background:var(--blue);color:#fff;text-decoration:none;font-weight:800;border-radius:9px;padding:9px 15px;font-size:13px;display:inline-block}
-.cta{display:inline-block;background:var(--orange);color:#fff;text-decoration:none;font-weight:800;
-border-radius:11px;padding:12px 20px;margin:6px 8px 6px 0;font-size:14.5px}
-.cta.alt{background:var(--navy)}
-table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}
-th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line)}
+.su-ad-desc{font-size:13.5px;color:var(--muted);margin:4px 0 10px}
+.su-ad a.go{background:var(--blue);color:#fff;text-decoration:none;font-weight:800;border-radius:10px;padding:10px 16px;font-size:13.5px;display:inline-block}
+.su-legal .cta{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--orange),#e2701a);color:#fff;
+  text-decoration:none;font-weight:800;border-radius:13px;padding:0 18px;min-height:var(--tap);margin:6px 8px 6px 0;font-size:15px}
+.su-legal .cta.alt{background:linear-gradient(135deg,var(--blue),var(--navy-2))}
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14.5px}
+th,td{text-align:left;padding:10px;border-bottom:1px solid var(--line)}
 th{background:var(--soft);color:var(--navy);font-size:13px}
-footer{border-top:1px solid var(--line);margin-top:8px;padding:18px 0 30px;font-size:13px;color:var(--muted)}
-footer .wrap{display:flex;flex-wrap:wrap;gap:8px 18px;max-width:900px;margin:0 auto}
-footer a{color:var(--blue);text-decoration:none}
-footer .fine{width:100%;font-size:12px;line-height:1.7;margin-top:6px}
-.steps{margin:10px 0 12px;padding-left:20px;line-height:1.7}
+.steps{margin:10px 0 12px;padding-left:20px;line-height:1.8}
 .steps li{margin-bottom:5px}
 .wa-box{display:inline-block;background:linear-gradient(135deg,#25d366,#128c7e);color:#fff!important;
   border-radius:13px;padding:12px 16px;text-decoration:none;font-weight:800;margin:4px 8px 4px 0;
@@ -78,18 +63,7 @@ footer .fine{width:100%;font-size:12px;line-height:1.7;margin-top:6px}
 .leadgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0 0}
 .leadgrid input,.leadgrid select{width:100%;padding:11px 12px;border:1px solid var(--line);
   border-radius:11px;font:inherit;background:var(--card);color:inherit}
-.leadgrid input:focus,.leadgrid select:focus{outline:2px solid var(--blue);outline-offset:1px}
-.lead-hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
-.leadbtn{margin-top:12px;width:100%;padding:13px;border:0;border-radius:12px;background:var(--blue);
-  color:#fff;font-weight:700;font-size:14.5px;cursor:pointer}
-.leadbtn:disabled{opacity:.6;cursor:default}
-.leadnote{font-size:12px;color:var(--muted);margin:10px 0 0;line-height:1.6}
-.leadmsg{margin-top:11px;font-size:13px;font-weight:600;display:none}
-.leadmsg.ok{display:block;color:#0a7a3d}
-.leadmsg.err{display:block;color:#b3261e}
-@media(max-width:620px){main{margin:12px;padding:20px 18px;border-radius:14px}h1{font-size:22px}
-  .leadgrid{grid-template-columns:1fr}}
-""".strip()
+@media(max-width:600px){.su-legal{padding:20px 16px;margin:14px auto;border-radius:14px}.leadgrid{grid-template-columns:1fr}}""".strip()
 
 NAV = [
     ("about.html", "About us"),
@@ -105,11 +79,11 @@ SHELL = """<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>{title} · studentup.in</title>
 <meta name="description" content="{desc}">
 <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
-<meta name="theme-color" content="#0f2e62">
+<meta name="theme-color" content="#0b2447">
 <link rel="canonical" href="https://studentup.in/pages/{slug}.html">
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
 <meta property="og:type" content="website">
@@ -125,27 +99,29 @@ SHELL = """<!DOCTYPE html>
 "url":"https://studentup.in/"}},"publisher":{{"@type":"Organization","name":"studentup.in",
 "email":"{email}"}},"dateModified":"{updated}"}}
 </script>
+<link rel="stylesheet" href="../../wordpress-theme/studentup/style.css">
+<link rel="stylesheet" href="../../wordpress-theme/studentup/assets/css/worldclass.css">
 <style>
 {css}
 </style>
 </head>
 <body>
-<header class="top"><div class="wrap">
-  <a class="brand" href="../index.html">studentup<span>.</span>in</a>
-  <a class="back" href="../index.html">← Back to home</a>
-</div></header>
-<main>
-  <h1>{h1}</h1>
-  <p class="sub">{sub}</p>
+<svg style="display:none" aria-hidden="true" focusable="false"><symbol id="su-i-sun" viewBox="0 0 24 24"><path d="M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10Z"/></symbol><symbol id="su-i-moon" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9 7.2 7.2 0 0 1-9-9Z"/></symbol><symbol id="su-i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V21H3z"/></symbol><symbol id="su-i-work" viewBox="0 0 24 24"><path d="M3 7h18v13H3zM9 7V5h6v2"/></symbol><symbol id="su-i-chart" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></symbol><symbol id="su-i-bell" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0-6 6v3l-2 3h16l-2-3V9a6 6 0 0 0-6-6Zm-2 15a2 2 0 0 0 4 0"/></symbol><symbol id="su-i-close" viewBox="0 0 24 24"><path d="M19 6.4 17.6 5 12 10.6 6.4 5 5 6.4l5.6 5.6L5 17.6 6.4 19l5.6-5.6 5.6 5.6 1.4-1.4-5.6-5.6Z"/></symbol></svg>
+{header}
+<main id="main">
+  <div class="wrap">
+    <div class="su-legal">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="../worldclass/index.html">Home</a> › {title}</nav>
+      <h1>{h1}</h1>
+      <p class="sub">{sub}</p>
 {body}
+    </div>
+  </div>
 </main>
 {script}
-<footer><div class="wrap">
-  {nav}
-  <p class="fine">© 2026 studentup.in · For Telangana &amp; Andhra Pradesh students.
-  Ad revenue, rankings and job results are never guaranteed — always confirm the real information in the official notification.
-  Corrections: <a href="mailto:{email}">{email}</a> · This page last updated: {updated}</p>
-</div></footer>
+{footerbar}
+{bottomnav}
+{pagejs}
 </body>
 </html>
 """
@@ -162,7 +138,75 @@ AD_SLOT = """  <aside class="su-ad" aria-label="Sponsored content" data-slot="po
 """
 
 
+PAGE_JS = """(function(){
+  var b=document.body, btn=document.getElementById('su-theme');
+  if(btn){
+    var MOON='<svg class="su-uicon" width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><use href="#su-i-moon"/></svg>';
+    var SUN='<svg class="su-uicon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.2 5.2l1.4 1.4M17.4 17.4l1.4 1.4M18.8 5.2l-1.4 1.4M6.6 17.4l-1.4 1.4"/></svg>';
+    function paint(){ btn.innerHTML = b.classList.contains('dark') ? SUN : MOON; }
+    try{ if(localStorage.getItem('su_theme')==='dark') b.classList.add('dark'); }catch(e){}
+    paint();
+    btn.addEventListener('click',function(){
+      b.classList.toggle('dark');
+      try{ localStorage.setItem('su_theme', b.classList.contains('dark')?'dark':'light'); }catch(e){}
+      paint();
+    });
+  }
+  var anchor=document.getElementById('su-anchor');
+  if(anchor && window.innerWidth<900){
+    try{ if(!localStorage.getItem('su_anchor_closed')) setTimeout(function(){ anchor.hidden=false; },6000); }catch(e){}
+    var c=anchor.querySelector('button');
+    if(c) c.addEventListener('click',function(){ try{ localStorage.setItem('su_anchor_closed','1'); }catch(e){} });
+  }
+})();"""
+
+
+def header_html(home: str = "../worldclass/index.html", topbar: str = "Government jobs \u00b7 Exams \u00b7 Scholarships") -> str:
+    """Shared header — the SAME classes as the WP theme header.php."""
+    nav = [("Home", home), ("Jobs", home + "#jobs"), ("Tools", "../tools/index.html"), ("Alerts", home + "#alerts")]
+    links = "".join('<a href="%s">%s</a>' % (h, t) for t, h in nav)
+    return ('<a class="skip-link screen-reader-text" href="#main">Skip to content</a>\n'
+            '<div class="topbar"><div class="wrap">\n'
+            '  <span>' + topbar + '</span>\n'
+            '  <span><a href="https://wa.me/919182739312">WhatsApp</a> \u00b7 <a href="https://t.me/studentup_in">Telegram</a></span>\n'
+            '</div></div>\n'
+            '<header class="header"><div class="headrow">\n'
+            '  <a class="logo" href="' + home + '"><span class="mark">SU</span><span><span class="brand">StudentUp</span><small>studentup.in</small></span></a>\n'
+            '  <nav class="nav" aria-label="Main">' + links + '</nav>\n'
+            '  <div class="headactions"><button class="iconbtn" id="su-theme" type="button" aria-label="Dark mode toggle"></button></div>\n'
+            '</div></header>')
+
+
+def footer_html(home: str = "../worldclass/index.html", pfx: str = "") -> str:
+    """Shared footer — same 4-column grid as the WP theme footer.php."""
+    return ('<footer class="su-foot"><div class="su-foot-grid">\n'
+            '  <div><h4>StudentUp</h4><p style="margin:0;color:#a9bfdd">Verified government job, exam and scholarship updates for Telangana &amp; AP students.</p></div>\n'
+            '  <div><h4>Jobs</h4><ul><li><a href="' + home + '#jobs">TS Jobs</a></li><li><a href="' + home + '#jobs">AP Jobs</a></li><li><a href="' + home + '#jobs">Central Govt</a></li><li><a href="' + home + '#jobs">Bank Jobs</a></li></ul></div>\n'
+            '  <div><h4>Site</h4><ul><li><a href="' + pfx + 'about.html">About us</a></li><li><a href="' + pfx + 'contact.html">Contact</a></li><li><a href="' + pfx + 'advertise.html">Advertise</a></li><li><a href="' + pfx + 'editorial-policy.html">Editorial policy</a></li></ul></div>\n'
+            '  <div><h4>Legal</h4><ul><li><a href="' + pfx + 'privacy.html">Privacy</a></li><li><a href="' + pfx + 'disclaimer.html">Disclaimer</a></li><li><a href="' + pfx + 'terms.html">Terms</a></li><li><a href="https://t.me/studentup_in">Telegram</a></li></ul></div>\n'
+            '</div>\n'
+            '<div class="su-foot-bottom">\u00a9 2026 studentup.in \u00b7 Sources: official notifications only. '
+            'Ad revenue, rankings and job results are never guaranteed \u2014 always confirm the real information in the official notification. '
+            'We are not a government website. '
+            '\u00b7 <a href="../index.html">Static HTML version</a></div></footer>')
+
+
+def bottom_html(home: str = "../worldclass/index.html") -> str:
+    """Phone bottom nav + dismissible sticky ad — same as the WP theme."""
+    return ('<nav class="su-bottomnav" aria-label="Quick nav">\n'
+            '  <a href="' + home + '"><span class="su-bi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><use href="#su-i-home"/></svg></span>Home</a>\n'
+            '  <a href="' + home + '#jobs"><span class="su-bi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><use href="#su-i-work"/></svg></span>Jobs</a>\n'
+            '  <a href="../tools/index.html"><span class="su-bi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><use href="#su-i-chart"/></svg></span>Tools</a>\n'
+            '  <a href="' + home + '#alerts"><span class="su-bi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><use href="#su-i-bell"/></svg></span>Alerts</a>\n'
+            '</nav>\n'
+            '<div class="su-anchor" id="su-anchor" hidden>\n'
+            '  <div class="su-anchor-ad">Advertisement \u00b7 sticky slot</div>\n'
+            '  <button type="button" aria-label="Close advertisement" onclick="document.getElementById(\'su-anchor\').hidden=true">\u2715</button>\n'
+            '</div>')
+
+
 def nav_html() -> str:
+
     return "".join('<a href="%s">%s</a>' % (h, t) for h, t in NAV)
 
 
@@ -175,7 +219,9 @@ def build(slug: str, title: str, desc: str, h1: str, sub: str, body: str,
         body = body + "\n" + AD_SLOT
     return SHELL.format(title=title, desc=desc, slug=slug, h1=h1, sub=sub,
                         body=body, css=CSS, nav=nav_html(), email=EMAIL, updated=UPDATED,
-                        wa=WA_LINK, phone=PHONE, script=script)
+                        wa=WA_LINK, phone=PHONE, script=script, pagejs=PAGE_JS,
+                        header=header_html(), footerbar=footer_html(pfx=""),
+                        bottomnav=bottom_html())
 
 
 ABOUT = """
@@ -617,6 +663,9 @@ SITEMAP = """<?xml version="1.0" encoding="UTF-8"?>
   <url><loc>https://studentup.in/pages/disclaimer.html</loc><lastmod>{d}</lastmod><priority>0.5</priority></url>
   <url><loc>https://studentup.in/pages/terms.html</loc><lastmod>{d}</lastmod><priority>0.5</priority></url>
   <url><loc>https://studentup.in/pages/editorial-policy.html</loc><lastmod>{d}</lastmod><priority>0.6</priority></url>
+  <url><loc>https://studentup.in/tools/</loc><lastmod>{d}</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://studentup.in/posts/upsc-junior-assistant-2026.html</loc><lastmod>{d}</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://studentup.in/posts/engineering-internships-2026.html</loc><lastmod>{d}</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
 </urlset>
 """
 
@@ -727,6 +776,17 @@ def main() -> None:
     kw_state = write_keyword_csv()
     print("  wrote keyword-universe-top200.csv (%s)" % kw_state)
     print("ALL POLICY PAGES BUILT ✔")
+
+    # v193: article pages kuda ide shell nunchi (okate design anta preview lo).
+    try:
+        import build_preview_posts  # noqa: PLC0415  (circular safe: module already loaded)
+        build_preview_posts.main()
+        import build_preview_tools  # noqa: PLC0415
+        build_preview_tools.main()
+        import build_standalone  # noqa: PLC0415
+        build_standalone.main()
+    except Exception as exc:  # pragma: no cover - build helper
+        print(f"  \u26a0\ufe0f  posts build skip: {exc}")
 
 
 if __name__ == "__main__":

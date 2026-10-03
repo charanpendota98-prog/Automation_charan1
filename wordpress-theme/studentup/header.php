@@ -18,15 +18,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 <head>
 <meta charset="<?php bloginfo( 'charset' ); ?>">
 <meta name="color-scheme" content="light dark">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <script>
-/* v170: phone accidental zoom OFF — iOS Safari viewport meta ni ignore chestundi,
-   anduke pinch gesture ni JS tho block chestundi (double-tap zoom: CSS touch-action). */
-(function () {
-  function stop(e) { e.preventDefault(); }
-  document.addEventListener('gesturestart', stop, { passive: false });
-  document.addEventListener('gesturechange', stop, { passive: false });
-})();
+/* v191.3 A11Y FIX: pinch-zoom block TEESESAAM (WCAG 1.4.4 — users zoom cheyyali
+   anukune hakku undali; paatha zoom-block meta + gesture JS valla phone lo
+   text peddaga cheyyadam impossible ayyedi). Double-tap zoom ki mattrame CSS
+   touch-action chestundi (worldclass.css), so accidental zoom inka undadu. */
 </script>
 <link rel="profile" href="https://gmpg.org/xfn/11">
 <?php wp_head(); ?>

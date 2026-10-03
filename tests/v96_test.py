@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""v96 tests — COVERAGE + SESSION DEPTH + REAL BUG FIXES (theme 1.9.36).
+"""v96 tests — COVERAGE + SESSION DEPTH + REAL BUG FIXES (theme 1.9.37).
 
 Mee brief (2026-09-22): "ts and ap studentski em em posts vasthunnai … anni
 … job melas … every district pages jobs … university results … daily current
@@ -59,7 +59,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 THEME = ROOT / "wordpress-theme" / "studentup"
-SUITES_EXPECTED = 137  # v96 tho
+SUITES_EXPECTED = 139  # v96 tho
 
 
 def read(rel: "Path | str") -> str:
@@ -259,7 +259,11 @@ def test_image_filename_and_alt() -> None:
     # extension follows caller
     assert seo.image_filename("ssc cgl", ext="jpg").endswith(".jpg")
     alt = seo.image_alt("SSC CGL 2026", "Central Govt Jobs", 2026)
-    assert alt.startswith("SSC CGL 2026") and alt.endswith("| studentup.in")
+    # v194: default brand "studentup.in" → "StudentUp" (screen-reader/TTS lo
+    # "studentup dot in" keyword-stuffing laga vinipistundi).
+    assert alt.startswith("SSC CGL 2026") and alt.endswith("| StudentUp"), alt
+    assert seo.image_alt("SSC CGL 2026", "Central Govt Jobs", 2026,
+                         brand="my site").endswith("| my site")
     print(f"      thumbnail name/alt: {name} ✔")
 
 
@@ -405,16 +409,16 @@ def test_theme_version_and_zip() -> None:
                     read(THEME / "functions.php")).group(1)
     stable = re.search(r"Stable tag:\s*([0-9.]+)",
                        read(THEME / "readme.txt")).group(1)
-    assert css == php == stable == "1.9.36", f"parity tappu: {css}·{php}·{stable}"
+    assert css == php == stable == "1.9.37", f"parity tappu: {css}·{php}·{stable}"
     assert "= 1.9.7" in read(THEME / "readme.txt"), "changelog entry ledu"
     zpath = ROOT / "wordpress-theme" / "studentup-theme.zip"
     with zipfile.ZipFile(zpath) as z:
         names = z.namelist()
         assert "studentup/inc/upnext.php" in names, "zip lo upnext.php ledu"
         style = z.read("studentup/style.css").decode("utf-8")
-    assert "Version: 1.9.36" in style, "zip stale (build_wp_theme.py run cheyandi)"
+    assert "Version: 1.9.37" in style, "zip stale (build_wp_theme.py run cheyandi)"
     assert ".su-upnext" in style and ".su-join-strip" in style
-    print(f"      theme 1.9.36 · zip {len(names)} files · upnext + CSS inside ✔")
+    print(f"      theme 1.9.37 · zip {len(names)} files · upnext + CSS inside ✔")
 
 
 def test_suite_pins_and_docs() -> None:
@@ -449,7 +453,7 @@ TESTS = [
     ("district hub coverage data-driven", test_district_hub_coverage_is_data_driven),
     ("district hub thin-page guard", test_district_hubs_thin_page_guard),
     ("district hubs CLI + docs", test_district_hubs_cli_wired),
-    ("theme 1.9.36 + zip", test_theme_version_and_zip),
+    ("theme 1.9.37 + zip", test_theme_version_and_zip),
     ("suite pins + docs", test_suite_pins_and_docs),
 ]
 
@@ -457,7 +461,7 @@ TESTS = [
 def main() -> None:
     os.chdir(ROOT)
     print("=" * 70)
-    print("v96 COVERAGE + SESSION DEPTH + REAL BUG FIXES (theme 1.9.36)")
+    print("v96 COVERAGE + SESSION DEPTH + REAL BUG FIXES (theme 1.9.37)")
     print("=" * 70)
     failed = 0
     for name, fn in TESTS:

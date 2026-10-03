@@ -206,7 +206,7 @@ def test_theme_version_parity_v72():
     css = re.search(r"^Version:\s*(\S+)", read(THEME / "style.css"), re.M).group(1)
     php = re.search(r"STUDENTUP_VERSION',\s*'([^']+)'", read(THEME / "functions.php")).group(1)
     stable = re.search(r"^Stable tag:\s*(\S+)", read(THEME / "readme.txt"), re.M).group(1)
-    assert css == php == stable == "1.9.36", f"version parity tappu: {css} · {php} · {stable}"
+    assert css == php == stable == "1.9.37", f"version parity tappu: {css} · {php} · {stable}"
     for entry in ("= 1.9.0", "= 1.9.1", "= 1.9.2", "= 1.9.3", "= 1.9.4", "= 1.9.5", "= 1.9.6", "= 1.9.7", "= 1.9.8"):
         assert entry in read(THEME / "readme.txt")
     assert "v72" in read(THEME / "README-THEME.md")
@@ -329,8 +329,9 @@ def test_app_download_is_always_visible():
     html = read(PREVIEW / "index.html")
     m = re.search(r'<button[^>]*id="installbtn"[^>]*>', html)
     assert m and "hidden" not in m.group(0), "download button inka hidden"
-    # v73: English UI copy
-    assert "⬇️ Download App" in html and 'class="ibadge"' in html
+    # v73: English UI copy · v193: icon premium UI (emoji badulu SVG — theme la ne)
+    assert "Download App" in html and 'class="ibadge"' in html
+    assert ("su-i-download" in html or "⬇️" in html), "download button icon ledu"
     assert 'id="installhint"' in html and html.count('id="isteps"') == 1
     assert "openSheet" in html and "beforeinstallprompt" in html
     theme_footer = read(THEME / "footer.php")
@@ -357,7 +358,7 @@ def test_theme_version_1721():
     css = re.search(r"^Version:\s*(\S+)", read(THEME / "style.css"), re.M).group(1)
     php = re.search(r"STUDENTUP_VERSION',\s*'([^']+)'", read(THEME / "functions.php")).group(1)
     stable = re.search(r"^Stable tag:\s*(\S+)", read(THEME / "readme.txt"), re.M).group(1)
-    assert css == php == stable == "1.9.36", f"version parity tappu: {css} · {php} · {stable}"
+    assert css == php == stable == "1.9.37", f"version parity tappu: {css} · {php} · {stable}"
     for entry in ("= 1.9.0", "= 1.9.1", "= 1.9.2", "= 1.9.3", "= 1.9.4", "= 1.9.5", "= 1.9.6", "= 1.9.7", "= 1.9.8"):
         assert entry in read(THEME / "readme.txt")
 
@@ -375,7 +376,7 @@ TESTS = [
     ("యాప్గా ఇన్స్టాల్ (preview PWA)", test_pwa_preview),
     ("యాప్గా ఇన్స్టాల్ (theme PWA + install prompt)", test_pwa_theme),
     ("mobile icons chinna ga (neat)", test_mobile_icon_sizes_neat),
-    ("theme version parity 1.9.36", test_theme_version_parity_v72),
+    ("theme version parity 1.9.37", test_theme_version_parity_v72),
     ("theme zip fresh + v72 files", test_theme_zip_fresh_and_complete),
     ("php-lint clean (real PHP 8 grammar)", test_php_lint_clean),
     ("theme deep audit 0 errors", test_theme_audit_deep_clean),
@@ -388,7 +389,7 @@ TESTS = [
     ("v73: fake countdown + deadline plumbing ledu", test_countdown_is_data_driven),
     ("v72.1: Download App button prathi visit lo (English copy)", test_app_download_is_always_visible),
     ("v72.1: అర్హత ప్రకారం విభాగాలు automatic (preview + theme)", test_qualification_directory_automatic),
-    ("v93: theme version 1.9.36 parity", test_theme_version_1721),
+    ("v93: theme version 1.9.37 parity", test_theme_version_1721),
 ]
 
 

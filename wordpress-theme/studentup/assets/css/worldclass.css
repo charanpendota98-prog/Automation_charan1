@@ -1,0 +1,485 @@
+/* ==========================================================================
+   StudentUp — WorldClass v2  (theme 1.9.37 · v191)
+   Mobile-first design layer. style.css tarvata load avutundi — kotha markup
+   avasaram ledu, unna classes ne premium ga upgrade chestundi.
+   Rules: 17px Telugu-friendly base · 44px tap targets · safe-area ·
+   reduced-motion · dark mode · ad slots native look.
+   ========================================================================== */
+
+/* ---------------------------------------------------------------- 1. tokens */
+:root{
+  --navy:#0b2447; --navy-2:#123a6b; --blue:#1f5fbf; --blue-ink:#1b4f9c;
+  --orange:#f08a24; --orange-2:#c2620d;
+  --ink:#0f1a2b; --ink-2:#31405a; --muted:#64748b;
+  --line:#e6ecf6; --line-2:#d5e0f0; --soft:#f3f7fd; --card:#fff; --bg:#f6f9fd;
+  --green:#0f7a4a; --red:#c02626; --gold:#9a5b06;
+  --r-sm:10px; --r:14px; --r-lg:18px; --r-xl:24px;
+  --sh-1:0 1px 2px rgba(11,36,71,.06),0 10px 24px rgba(11,36,71,.07);
+  --sh-2:0 2px 6px rgba(11,36,71,.09),0 22px 48px rgba(11,36,71,.13);
+  --tap:44px; --wrap:1180px; --gut:16px;
+  --fs:17px; --lh:1.62;
+}
+@media(min-width:900px){ :root{--fs:16.5px; --gut:22px; --lh:1.68} }
+
+/* ------------------------------------------------------------- 2. base type */
+body{
+  font-size:var(--fs); line-height:var(--lh); letter-spacing:.001em;
+  text-rendering:optimizeLegibility; -webkit-text-size-adjust:100%;
+}
+h1,h2,h3,h4,.sectionhead h2,.news h3,.su-hero-title{ text-wrap:balance; letter-spacing:-.011em }
+img{ background:var(--soft) }
+:focus-visible{ outline:3px solid #7fb0ff; outline-offset:2px; border-radius:8px }
+::selection{ background:#cfe0ff }
+
+/* ------------------------------------------------------ 3. header (sticky) */
+.header{ backdrop-filter:saturate(180%) blur(10px); background:rgba(255,255,255,.92) }
+.headrow{ height:64px; gap:12px }
+.logo .mark{ width:36px;height:36px;border-radius:12px;box-shadow:0 8px 18px rgba(31,95,191,.28) }
+.logo .brand{ font-size:19px }
+.iconbtn{ width:var(--tap); height:var(--tap); border-radius:12px; display:grid; place-items:center }
+.iconbtn:active{ transform:scale(.96) }
+.callbtn{ min-height:38px; display:inline-flex; align-items:center; padding:0 14px; border-radius:12px;
+  box-shadow:0 8px 18px rgba(11,36,71,.22) }
+
+/* --------------------------------------------- 4. ticker (quiet, readable) */
+.su-lticker .trow{ min-height:40px }
+.su-lticker .tmove a{ font-size:13.5px; letter-spacing:.002em }
+
+/* ------------------------------------------------------ 5. hero (compact) */
+.su-hero{ padding:18px 0 14px }
+.su-hero-in{ padding:0 var(--gut) }
+.su-hero-kicker{ font-size:12.5px; margin:0 0 8px }
+.su-hero-title{ font-size:clamp(22px,6.4vw,34px); line-height:1.24; margin:0 0 8px }
+.su-hero-sub{ font-size:14.5px; max-width:60ch; margin:0 0 14px }
+.su-hero-search{
+  display:flex; gap:8px; align-items:center; background:#fff;
+  border:1px solid var(--line-2); border-radius:16px; padding:6px 6px 6px 12px;
+  box-shadow:var(--sh-1); min-height:56px;
+}
+.su-hero-search input{ flex:1; min-width:0; min-height:44px; border:0; background:transparent; font-size:16px; color:var(--ink) }
+.su-hero-search input::placeholder{ color:#8b9ab3 }
+.su-hero-search button{
+  min-height:var(--tap); padding:0 20px; border:0; border-radius:12px; font-weight:800; font-size:15px;
+  background:linear-gradient(135deg,var(--blue),var(--navy-2)); color:#fff; cursor:pointer;
+  box-shadow:0 10px 22px rgba(31,95,191,.30);
+}
+.su-hero-search button:active{ transform:translateY(1px) }
+.su-hero-acts{ display:flex; gap:8px; overflow-x:auto; padding:12px 0 4px; margin:0; scrollbar-width:none }
+.su-hero-acts::-webkit-scrollbar{ display:none }
+.su-hact{ flex:0 0 auto; min-height:44px; display:inline-flex; align-items:center; gap:6px;
+  padding:0 13px; border-radius:999px; font-size:13px; font-weight:750;
+  background:#fff; border:1px solid var(--line-2); color:var(--ink-2) }
+.su-hero-stats{ display:flex; gap:18px; flex-wrap:wrap; margin:14px 0 0; padding:0; list-style:none }
+.su-hero-stats b{ font-size:19px; color:var(--navy); display:block; line-height:1.2 }
+.su-hero-stats span{ font-size:12px; color:var(--muted) }
+
+/* ---------------------------------------------- 6. section rhythm + heads */
+.sectionhead{ margin:22px 0 12px; align-items:center }
+.sectionhead h1,.sectionhead h2{
+  font-size:21px; display:flex; align-items:center; gap:10px; line-height:1.25;
+}
+.sectionhead h1::before,.sectionhead h2::before{
+  content:""; width:5px; height:22px; border-radius:99px; flex:0 0 auto;
+  background:linear-gradient(180deg,var(--orange),var(--blue));
+}
+.sectionhead p{ font-size:13px; margin-top:3px }
+.su-board-link{ font-size:13.5px; font-weight:800; white-space:nowrap }
+
+/* ------------------------------------------- 7. chips = scrollable strip */
+.chips{ flex-wrap:nowrap; overflow-x:auto; gap:8px; padding:2px 0 10px; margin-bottom:12px;
+  scrollbar-width:none; -webkit-overflow-scrolling:touch }
+.chips::-webkit-scrollbar{ display:none }
+.chip{ flex:0 0 auto; min-height:44px; padding:0 15px; border-radius:999px; font-size:13px;
+  display:inline-flex; align-items:center; background:#fff; border:1px solid var(--line-2) }
+.chip.active{ box-shadow:0 8px 18px rgba(11,36,71,.20) }
+
+/* ------------------------------------------------- 8. "most used" tiles */
+.usedgrid{ gap:12px; grid-template-columns:repeat(2,minmax(0,1fr)) }
+.usedcard{ min-height:76px; border-radius:var(--r-lg); padding:12px; gap:11px; box-shadow:var(--sh-1) }
+.usedcard b{ font-size:14px; line-height:1.3 }
+.usedcard small{ font-size:11.5px; line-height:1.35 }
+@media(min-width:900px){ .usedgrid{grid-template-columns:repeat(4,minmax(0,1fr))} .usedcard{min-height:84px} }
+
+/* ============================================================ 9. THE CARDS */
+/* Phone: horizontal scan-card (thumb | text) — ekkuva posts, thakkuva scroll */
+.newsgrid{ grid-template-columns:1fr; gap:12px }
+.news{
+  flex-direction:row; align-items:stretch; border-radius:var(--r-lg);
+  border:1px solid var(--line); box-shadow:var(--sh-1); overflow:hidden; min-height:112px;
+}
+.news .thumb{
+  width:108px; min-width:108px; height:auto; min-height:112px; border-radius:0;
+  font-size:12.5px; line-height:1.3; padding:8px; align-content:center;
+}
+.news .thumb img{ width:108px; height:100%; min-height:112px; object-fit:cover }
+.newsbody{ padding:11px 13px 11px; gap:5px; justify-content:center }
+.news h3{ font-size:15.4px; line-height:1.4; margin:0;
+  display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden }
+.news p{ display:none }
+.tagrow{ gap:6px; flex-wrap:wrap }
+.tag,.su-fresh,.statechip{ font-size:10.5px; padding:3px 8px; border-radius:999px; line-height:1.35 }
+.newsfoot{ padding-top:2px; gap:8px; font-size:11px }
+.su-readmore{ font-size:12.5px }
+
+/* In-feed ad card — native look, telisi telisi label tho (policy-safe) */
+.su-adcard{ border:1px dashed var(--line-2); background:linear-gradient(180deg,#fbfdff,#f4f8fe);
+  min-height:96px; align-items:center; justify-content:center; text-align:center; color:var(--muted);
+  font-size:12px; letter-spacing:.06em; text-transform:uppercase; font-weight:800 }
+
+/* Laptop: 3-col tiles + right rail */
+@media(min-width:900px){
+  .newsgrid{ grid-template-columns:repeat(3,minmax(0,1fr)); gap:20px }
+  .news{ flex-direction:column; min-height:0 }
+  .news .thumb{ width:100%; min-width:0; height:172px; min-height:0 }
+  .news .thumb img{ width:100%; height:172px; min-height:0 }
+  .newsbody{ padding:14px 16px 15px; gap:8px; justify-content:flex-start }
+  .news h3{ font-size:17px; -webkit-line-clamp:2 }
+  .news p{ display:block; font-size:13.5px; line-height:1.55; color:var(--muted);
+    display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden }
+  .su-adcard{ min-height:150px }
+}
+
+/* --------------------------------------------------- 10. content + rail */
+@media(min-width:1080px){
+  .su-layout{ display:grid; grid-template-columns:minmax(0,1fr) 316px; gap:26px; align-items:start }
+  .su-rail{ position:sticky; top:84px; display:grid; gap:16px }
+  .su-railed{ padding:14px 16px }
+}
+.su-railed{ background:var(--card); border:1px solid var(--line); border-radius:var(--r-lg); box-shadow:var(--sh-1) }
+.su-railed h3{ margin:0 0 10px; font-size:15px; color:var(--navy); display:flex; align-items:center; gap:8px }
+.su-railed h3::before{ content:""; width:4px; height:16px; border-radius:99px; background:var(--orange) }
+.su-mini{ list-style:none; margin:0; padding:0; display:grid; gap:9px }
+.su-mini a{ display:flex; gap:9px; align-items:flex-start; font-size:13.5px; font-weight:650; color:var(--ink-2); line-height:1.45 }
+.su-mini i{ font-style:normal; font-weight:900; color:var(--blue); font-size:12px; min-width:16px }
+.su-railad{ min-height:250px; display:grid; place-items:center; text-align:center; font-size:12px;
+  letter-spacing:.06em; text-transform:uppercase; font-weight:800; color:var(--muted);
+  border:1px dashed var(--line-2); border-radius:var(--r-lg); background:linear-gradient(180deg,#fbfdff,#f4f8fe) }
+
+/* ------------------------------------------------------- 11. tools (tabs) */
+.su-tools{ margin:26px 0 6px; background:var(--card); border:1px solid var(--line);
+  border-radius:var(--r-xl); box-shadow:var(--sh-1); overflow:hidden }
+.su-tools-head{ padding:16px var(--gut) 0 }
+.su-tooltabs{ display:flex; gap:8px; overflow-x:auto; padding:12px var(--gut); scrollbar-width:none;
+  border-bottom:1px solid var(--line) }
+.su-tooltabs::-webkit-scrollbar{ display:none }
+.su-ttab{ flex:0 0 auto; min-height:44px; padding:0 14px; border-radius:999px; border:1px solid var(--line-2);
+  background:#fff; font-size:13px; font-weight:750; color:var(--ink-2); cursor:pointer; display:inline-flex; align-items:center; gap:6px }
+.su-ttab[aria-selected="true"]{ background:var(--navy); border-color:var(--navy); color:#fff }
+.su-toolpanel{ display:none; padding:16px var(--gut) 20px }
+.su-toolpanel.on{ display:block }
+.su-toolpanel h3{ margin:0 0 6px; font-size:18px; color:var(--navy) }
+.su-toolpanel p{ margin:0 0 12px; font-size:14px; color:var(--muted) }
+.su-fields{ display:grid; grid-template-columns:1fr 1fr; gap:10px; max-width:520px }
+.su-fields label{ font-size:12.5px; font-weight:700; color:var(--ink-2); display:grid; gap:5px }
+.su-fields input,.su-fields select{ min-height:var(--tap); border:1px solid var(--line-2); border-radius:12px;
+  padding:0 12px; font-size:15px; background:#fff; color:var(--ink) }
+.su-tout{ margin-top:12px; padding:12px 14px; border-radius:14px; background:var(--soft);
+  border:1px solid var(--line); font-size:14.5px; font-weight:700; color:var(--navy) }
+
+/* ------------------------------------------------------- 12. quiz + cards */
+.su-quizcard,.su-callout{ border-radius:var(--r-xl); border:1px solid var(--line); box-shadow:var(--sh-1) }
+.su-callout{ background:linear-gradient(135deg,#0b2447,#164b8f); color:#fff; padding:18px var(--gut) }
+.su-callout h3{ color:#fff; margin:0 0 6px; font-size:19px }
+.su-callout p{ color:#d7e6ff; margin:0 0 12px; font-size:14px }
+
+/* ------------------------------------------------------- 13. buttons/a11y */
+.su-cta{ display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  min-height:var(--tap); padding:0 18px; border-radius:13px; font-weight:800; font-size:15px;
+  background:linear-gradient(135deg,var(--orange),#e2701a); color:#fff; border:0; cursor:pointer;
+  box-shadow:0 12px 26px rgba(224,112,26,.28) }
+.su-cta--ink{ background:linear-gradient(135deg,var(--blue),var(--navy-2)); box-shadow:0 12px 26px rgba(31,95,191,.28) }
+.su-cta--ghost{ background:transparent; border:1.5px solid rgba(255,255,255,.5); box-shadow:none; color:#fff }
+
+/* ------------------------------------------- 14. mobile bottom nav + anchor */
+.su-bottomnav{ position:fixed; left:0; right:0; bottom:0; z-index:70; display:grid;
+  grid-template-columns:repeat(4,1fr); gap:2px;
+  background:rgba(255,255,255,.97); backdrop-filter:blur(14px);
+  border-top:1px solid var(--line); padding:6px 6px calc(6px + env(safe-area-inset-bottom));
+  box-shadow:0 -8px 30px rgba(11,36,71,.10) }
+.su-bottomnav a{ display:grid; justify-items:center; gap:3px; padding:6px 2px; border-radius:12px;
+  font-size:10.5px; font-weight:750; color:#5a6980; min-height:var(--tap) }
+.su-bottomnav a[aria-current="page"]{ color:var(--navy) }
+.su-bottomnav a[aria-current="page"] span.su-bi{ background:linear-gradient(135deg,var(--blue),var(--navy-2)); color:#fff }
+.su-bi{ width:34px; height:26px; border-radius:9px; display:grid; place-items:center; background:var(--soft) }
+.su-bi svg{ width:18px; height:18px }
+.su-anchor{ position:fixed; left:8px; right:8px; bottom:calc(66px + env(safe-area-inset-bottom)); z-index:69;
+  background:#fff; border:1px solid var(--line); border-radius:16px; box-shadow:var(--sh-2);
+  padding:10px; display:flex; align-items:center; gap:10px }
+.su-anchor .su-anchor-ad{ flex:1; min-height:62px; display:grid; place-items:center; border-radius:12px;
+  background:linear-gradient(180deg,#fbfdff,#eef4fc); border:1px dashed var(--line-2);
+  font-size:11px; letter-spacing:.06em; text-transform:uppercase; font-weight:800; color:var(--muted) }
+.su-anchor button{ width:34px; height:34px; border-radius:10px; border:1px solid var(--line);
+  background:#fff; cursor:pointer; font-size:15px; color:var(--muted) }
+@media(min-width:900px){ .su-bottomnav,.su-anchor{ display:none } }
+@media(max-width:899px){ body{ padding-bottom:78px } }
+
+/* ------------------------------------------------------------ 15. dark mode */
+body.dark{
+  --bg:#0b1220; --card:#101a2c; --soft:#16233a; --line:#1e2b45; --line-2:#26364f;
+  --ink:#e8eefc; --ink-2:#c3cfe4; --muted:#93a3bd; --navy:#dbe7ff;
+  --sh-1:0 1px 2px rgba(0,0,0,.5),0 12px 28px rgba(0,0,0,.35);
+  --sh-2:0 4px 10px rgba(0,0,0,.55),0 24px 50px rgba(0,0,0,.45);
+}
+body.dark .header{ background:rgba(13,21,36,.94) }
+body.dark .chip,body.dark .su-tab,body.dark .su-hact,body.dark .iconbtn{ background:#152137; color:var(--ink-2) }
+body.dark .su-hero-search{ background:#131f34 }
+body.dark .su-hero-search input{ color:var(--ink) }
+body.dark .news,body.dark .su-railed,body.dark .su-tools,body.dark .usedcard{ background:var(--card) }
+body.dark .su-bottomnav{ background:rgba(13,21,36,.96) }
+body.dark .su-anchor{ background:#101a2c }
+
+/* ------------------------------------------------- 16. motion + a11y prefs */
+@media(prefers-reduced-motion:reduce){
+  *{ animation-duration:.001ms!important; animation-iteration-count:1!important;
+     transition-duration:.001ms!important; scroll-behavior:auto!important }
+}
+@media print{
+  .su-bottomnav,.su-anchor,.header,.su-hero-acts,.chips{ display:none!important }
+  .news{ break-inside:avoid }
+}
+
+/* ==========================================================================
+   17. v191.1 — editorial hierarchy + trust + revenue slots
+   Lead story · trust bar · labelled ad slots · category accents
+   ========================================================================== */
+
+/* ---- lead (featured) story: page ki okka peddha card ---- */
+.news--lead{ flex-direction:column; grid-column:1 / -1; min-height:0 }
+.news--lead .thumb{ width:100%; min-width:0; height:186px; min-height:0; border-radius:0;
+  font-size:15px; letter-spacing:.02em }
+.news--lead .thumb img{ width:100%; height:186px; min-height:0 }
+.news--lead .newsbody{ padding:14px 16px 16px }
+.news--lead h3{ font-size:20px; line-height:1.32; -webkit-line-clamp:3 }
+.news--lead p{ font-size:14.5px }
+.news--lead .newsfoot{ padding-top:4px }
+.news--lead::after{ content:""; position:absolute; inset:auto 0 0 0; height:3px;
+  background:linear-gradient(90deg,var(--orange),var(--blue)); opacity:.9 }
+.news{ position:relative }
+@media(min-width:900px){
+  .news--lead{ flex-direction:row; min-height:296px; align-items:stretch }
+  .news--lead .thumb{ width:54%; min-width:54%; height:auto }
+  .news--lead .thumb img{ width:100%; height:100% }
+  .news--lead .newsbody{ justify-content:center; padding:20px 22px }
+  .news--lead h3{ font-size:26px; letter-spacing:-.015em; -webkit-line-clamp:4 }
+  .news--lead p{ font-size:15px; -webkit-line-clamp:3 }
+}
+
+/* ---- trust bar (E-E-A-T signals, scrollable on phone) ---- */
+.su-trust{ display:flex; gap:8px; overflow-x:auto; padding:12px 0 2px; margin:0; list-style:none;
+  scrollbar-width:none; -webkit-overflow-scrolling:touch }
+.su-trust::-webkit-scrollbar{ display:none }
+.su-trust li{ flex:0 0 auto; display:inline-flex; align-items:center; gap:6px;
+  background:#fff; border:1px solid var(--line); border-radius:999px; padding:7px 12px;
+  font-size:12.5px; font-weight:700; color:var(--ink-2) }
+.su-trust li b{ color:var(--navy) }
+.su-trust .su-ok{ color:var(--green) }
+body.dark .su-trust li{ background:#131f34; border-color:var(--line-2); color:var(--ink-2) }
+
+/* ---- labelled ad slots (revenue map — native, policy-safe) ---- */
+.su-adleader,.su-adbelow{ display:grid; place-items:center; text-align:center; color:var(--muted);
+  background:linear-gradient(180deg,#fbfdff,#f2f7fd); border:1px dashed var(--line-2);
+  border-radius:var(--r-lg); font-size:11px; letter-spacing:.07em; text-transform:uppercase;
+  font-weight:800; padding:10px }
+.su-adleader{ min-height:96px; margin:14px 0 4px }
+.su-adbelow{ min-height:110px; margin:22px 0 4px }
+.su-adleader small,.su-adbelow small{ display:block; letter-spacing:0; text-transform:none;
+  font-weight:600; font-size:12px; color:#8394ad; margin-top:5px }
+@media(min-width:900px){ .su-adleader{ min-height:104px } }
+body.dark .su-adleader,body.dark .su-adbelow{ background:#111c2f; border-color:var(--line-2) }
+
+/* ---- category accent (card left edge — instant scan) ---- */
+.news[data-accent]{ border-left:3px solid var(--line) }
+.news[data-accent="update"]{ border-left-color:var(--line) }
+.news[data-accent="ts"]{ border-left-color:#f08a24 }
+.news[data-accent="ap"]{ border-left-color:#0f7a4a }
+.news[data-accent="central"]{ border-left-color:#1f5fbf }
+.news[data-accent="result"]{ border-left-color:#7c3aed }
+.news[data-accent="scholarship"]{ border-left-color:#c2620d }
+@media(min-width:900px){ .news[data-accent]{ border-left-width:1px } .news[data-accent]{ border-top:3px solid var(--line) }
+  .news[data-accent="ts"]{ border-top-color:#f08a24 } .news[data-accent="ap"]{ border-top-color:#0f7a4a }
+  .news[data-accent="central"]{ border-top-color:#1f5fbf } .news[data-accent="result"]{ border-top-color:#7c3aed }
+  .news[data-accent="scholarship"]{ border-top-color:#c2620d } }
+
+/* ---- view-all pill ---- */
+.su-viewall{ display:inline-flex; align-items:center; gap:6px; min-height:34px; padding:0 13px;
+  border-radius:999px; background:var(--soft); border:1px solid var(--line); font-size:12.5px;
+  font-weight:800; color:var(--navy) }
+.su-viewall:hover{ background:#e9f1ff }
+body.dark .su-viewall{ background:#152137 }
+
+
+/* ==========================================================================
+   18. v191.3 — real theme bottom nav (.su-bnav) + article polish + a11y
+   Demo lo unna look ne real theme class ki apply (markup marchakunda).
+   ========================================================================== */
+
+/* double-tap zoom off, pinch-zoom ON (WCAG 1.4.4) */
+a,button,.chip,.su-hact,.su-ttab,.su-bnav a,.su-bnav button{ touch-action:manipulation }
+input,select,textarea{ touch-action:auto }
+
+/* ---- real bottom nav: navy pill design (purple legacy → brand) ---- */
+@media(max-width:980px){
+  .su-bnav{
+    left:8px; right:8px; bottom:calc(8px + env(safe-area-inset-bottom));
+    padding:6px 6px calc(6px + 0px); border-radius:18px;
+    background:rgba(255,255,255,.97); border:1px solid var(--line);
+    box-shadow:0 -6px 24px rgba(11,36,71,.14)
+  }
+  .su-bnav a,.su-bnav button{
+    color:#5a6980; font-size:10.5px; font-weight:800; min-height:44px;
+    padding:6px 2px; border-radius:13px; gap:3px
+  }
+  .su-bnav a.on,.su-bnav a:hover,.su-bnav button:hover{
+    color:var(--navy); background:var(--soft)
+  }
+  .su-bnav a.on span,.su-bnav a[aria-current="page"] span{
+    background:linear-gradient(135deg,var(--blue),var(--navy-2)); color:#fff;
+    border-radius:9px; padding:3px 6px
+  }
+  body.dark .su-bnav{ background:rgba(13,21,36,.96); border-color:var(--line-2) }
+  body.dark .su-bnav a.on,body.dark .su-bnav button:hover{ color:var(--ink); background:#152137 }
+}
+
+/* ---- article (single) polish: comfortable reading + clear hierarchy ---- */
+.single .article-content,.article-content{ font-size:17.5px; line-height:1.85; color:#1b2740 }
+.article-content p{ margin:0 0 1.15em }
+.article-content h2{ font-size:23px; margin:1.6em 0 .5em; color:var(--navy) }
+.article-content h3{ font-size:19.5px; margin:1.35em 0 .45em; color:var(--navy) }
+.article-content ul,.article-content ol{ padding-left:1.25em; margin:0 0 1.15em }
+.article-content li{ margin:.35em 0 }
+.article-content a{ text-decoration:underline; text-underline-offset:2px }
+.article-content table{ width:100%; border-collapse:collapse; font-size:14.5px }
+.article-content th,.article-content td{ border:1px solid var(--line); padding:9px 10px; text-align:left }
+.article-content th{ background:var(--soft); color:var(--navy) }
+.article-content blockquote{ margin:1.2em 0; padding:12px 16px; border-left:4px solid var(--orange);
+  background:var(--soft); border-radius:0 12px 12px 0 }
+@media(min-width:900px){
+  .article-content{ font-size:18px }
+  .article-content h2{ font-size:26px }
+}
+body.dark .article-content{ color:#dbe4f5 }
+
+/* ---- hook lead (v188) premium ---- */
+.su-hook{ font-size:18.5px; line-height:1.7; font-weight:650; color:var(--navy);
+  background:linear-gradient(180deg,#f7fbff,#eef5ff); border:1px solid var(--line);
+  border-left:4px solid var(--orange); border-radius:0 14px 14px 0; padding:14px 16px; margin:0 0 18px }
+body.dark .su-hook{ background:#131f34; color:var(--ink) }
+
+/* ---- related / archive cards: same language as home ---- */
+.su-upnext,.related-posts{ display:grid; gap:12px }
+@media(min-width:900px){ .su-upnext,.related-posts{ grid-template-columns:repeat(3,1fr); gap:16px } }
+
+/* ---- tables on phone: scroll cheyyali, break avvakoodadu ---- */
+.article-content table{ display:block; overflow-x:auto; -webkit-overflow-scrolling:touch }
+@media(min-width:900px){ .article-content table{ display:table } }
+
+/* ============================================================
+   §19 v191.5 — Desktop 2-column layout + STICKY SIDEBAR
+   Article/archive/search pages: 300×250 sidebar slot user ki
+   kanipisthu untundi (viewability ↑ = RPM ↑), content neat ga
+   760px reading width lo untundi. Phone lo single column (fast).
+   ============================================================ */
+.su-layout{ display:grid; gap:22px; align-items:start }
+@media(min-width:1080px){
+  .su-layout{ grid-template-columns:minmax(0,1fr) }              /* fallback: sidebar lekapote */
+  .su-layout:has(> .su-sidebar){ grid-template-columns:minmax(0,1fr) 316px; gap:26px }
+}
+.su-sidebar{ display:grid; gap:14px; min-width:0 }
+@media(min-width:1080px){ .su-sidebar{ position:sticky; top:84px } }
+.su-sidebar .sidecard,.su-sidebar .widget{
+  background:var(--card); border:1px solid var(--line); border-radius:var(--r-lg);
+  box-shadow:var(--sh-1); padding:14px 16px }
+.su-sidebar .sidecard h3,.su-sidebar .widget h3{ margin:0 0 10px; font-size:15px; color:var(--navy) }
+.su-sidebar .widget ul{ list-style:none; margin:0; padding:0; display:grid; gap:8px }
+.su-sidebar .widget li a{ font-weight:700; font-size:14px; color:var(--navy) }
+.su-sidebar .widget li a:hover{ color:var(--blue) }
+.su-sidebar-ad{
+  background:linear-gradient(180deg,#fbfdff,#f2f7fd); border:1px dashed var(--line-2);
+  border-radius:var(--r-lg); display:grid; place-items:center; text-align:center;
+  min-height:110px; padding:10px; font-size:11px; letter-spacing:.07em;
+  text-transform:uppercase; font-weight:800; color:var(--muted) }
+@media(min-width:1080px){ .su-sidebar-ad{ min-height:250px } }
+body.dark .su-sidebar .sidecard,body.dark .su-sidebar .widget{ background:var(--card) }
+body.dark .su-sidebar-ad{ background:#111c2f; border-color:var(--line-2) }
+
+/* ============================================================
+   §20 v192 — EDITORIAL PREMIUM
+   (a) Designed COVER ART for posts with no photo: category
+       gradient + dot grid + monogram + category pill. A brand
+       new site has no images yet — every card still has to look
+       designed, never like a plain text box.
+   (b) Telugu-first hero, calmer type, real accents.
+   (c) Card polish: image zoom on hover, section accent bar.
+   ============================================================ */
+
+/* ---------- (a) cover art ---------- */
+.news .thumb{ position:relative; overflow:hidden;
+  background:linear-gradient(135deg,#24344d,#3d5578) }
+.news .thumb--auto{border-radius:0}
+.news .thumb--auto .su-cov{ position:absolute; inset:0; display:block }
+.news .thumb--auto .su-cov::before{
+  content:""; position:absolute; inset:0; opacity:.5;
+  background-image:radial-gradient(rgba(255,255,255,.20) 1px,transparent 1.2px);
+  background-size:9px 9px }
+.news .thumb--auto .su-cov::after{
+  content:""; position:absolute; top:-60%; right:-30%; width:78%; height:230%;
+  transform:rotate(18deg);
+  background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.15)) }
+.su-cov-mono{ position:absolute; left:10px; top:7px; line-height:1;
+  font-size:31px; font-weight:900; letter-spacing:-.035em; color:rgba(255,255,255,.34);
+  text-shadow:0 1px 0 rgba(0,0,0,.10) }
+.su-cov-cat{ position:absolute; left:10px; bottom:9px; z-index:2;
+  background:rgba(255,255,255,.95); color:#16233a; font-size:10.5px; font-weight:800;
+  letter-spacing:.01em; padding:3px 9px; border-radius:999px;
+  max-width:calc(100% - 18px); white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
+.su-cov-brand{ position:absolute; right:9px; top:9px; z-index:2;
+  font-size:8px; letter-spacing:.17em; text-transform:uppercase; font-weight:800;
+  color:rgba(255,255,255,.60) }
+.news[data-accent="ts"] .thumb--auto{ background:linear-gradient(135deg,#8a3f06,#f08a24) }
+.news[data-accent="ap"] .thumb--auto{ background:linear-gradient(135deg,#0a5c3c,#16a06a) }
+.news[data-accent="central"] .thumb--auto{ background:linear-gradient(135deg,#123a75,#2f74d8) }
+.news[data-accent="result"] .thumb--auto{ background:linear-gradient(135deg,#4c1d95,#8b5cf6) }
+.news[data-accent="scholarship"] .thumb--auto{ background:linear-gradient(135deg,#8a4405,#d9822b) }
+.news[data-accent="update"] .thumb--auto{ background:linear-gradient(135deg,#24344d,#456088) }
+/* lead card cover: banner proportions */
+.news--lead .thumb--auto .su-cov-mono{ font-size:56px; left:14px; top:10px }
+.news--lead .thumb--auto .su-cov-cat{ left:14px; bottom:12px; font-size:11.5px; padding:4px 11px }
+@media(min-width:900px){ .news--lead .thumb--auto .su-cov-mono{ font-size:78px } }
+
+/* photo thumbnails: quiet zoom, no layout shift */
+.news .thumb img{ transition:transform .45s cubic-bezier(.2,.7,.3,1) }
+.news:hover .thumb img{ transform:scale(1.045) }
+.news .thumb::after{ content:""; position:absolute; inset:0; pointer-events:none;
+  background:linear-gradient(180deg,rgba(11,36,71,0) 62%,rgba(11,36,71,.10)) }
+
+/* ---------- (b) hero: Telugu-first, calmer ---------- */
+.su-hero{ background:
+  radial-gradient(1200px 420px at 12% -10%,rgba(36,99,183,.20),transparent 60%),
+  radial-gradient(900px 360px at 92% 0%,rgba(240,138,36,.16),transparent 62%),
+  linear-gradient(180deg,#0b2447,#123a75) }
+.su-hero-title{ font-size:clamp(22px,4.9vw,38px); line-height:1.42; letter-spacing:-.005em;
+  font-weight:800; max-width:27ch }
+.su-hero-title span{ color:#ffb765 }
+.su-hero-sub{ font-size:clamp(13.5px,3.5vw,16px); line-height:1.65; color:#cfe0f7; max-width:52ch }
+.su-hero-kicker{ letter-spacing:.02em }
+.su-hero-stats li{ color:#c7d9f2 }
+.su-hero-stats b{ font-size:19px }
+@media(min-width:900px){ .su-hero-in{ padding:40px 0 30px } }
+
+/* ---------- (c) section accent bar + calm headings ---------- */
+.sectionhead h2{ position:relative; padding-left:13px }
+.sectionhead h2::before{ content:""; position:absolute; left:0; top:.16em; bottom:.16em;
+  width:4px; border-radius:3px; background:linear-gradient(180deg,var(--orange),#e2701a) }
+.sectionhead p{ max-width:60ch }
+.tagrow .tag{ border-radius:999px }
+.su-uicon{ display:inline-block; vertical-align:-.16em; flex:0 0 auto }
+.su-hact .su-uicon,.chip .su-uicon,.su-cta .su-uicon,.su-trust .su-uicon{ opacity:.95 }
+@media(prefers-reduced-motion:reduce){ .news:hover .thumb img{ transform:none } }
+.su-ttab .su-uicon{ margin-right:5px }
+.su-hact .su-uicon,.su-cta .su-uicon{ margin-right:6px }
+.su-trust .su-uicon{ margin-right:5px }
+.lastdate .su-uicon,.su-readmore .su-uicon,.su-am .su-uicon{ margin-right:4px }
+
+/* v193: empty state for the category filter (honest UX — never a blank grid) */
+.su-empty{margin:14px 0 0;padding:14px 16px;border:1px dashed var(--line-2);border-radius:var(--r-lg);
+  background:var(--soft);color:var(--muted);font-size:14.5px;text-align:center}

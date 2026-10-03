@@ -31,6 +31,7 @@ THEME = ROOT / "wordpress-theme" / "studentup"
 TARGETS = [
     THEME / "style.css",
     THEME / "assets" / "css" / "premium.css",
+    THEME / "assets" / "css" / "worldclass.css",  # v191: WorldClass v2 design layer
 ]
 
 

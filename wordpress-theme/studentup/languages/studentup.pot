@@ -2,7 +2,7 @@
 # This file is distributed under the GNU GPL v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: StudentUp 1.9.36\n"
+"Project-Id-Version: StudentUp 1.9.37\n"
 "Report-Msgid-Bugs-To: https://studentup.in/\n"
 "POT-Creation-Date: 2026-01-01 00:00+0000\n"
 "MIME-Version: 1.0\n"
@@ -16,7 +16,7 @@ msgstr ""
 msgid "%d days left"
 msgstr ""
 
-#: author.php:43
+#: author.php:45
 msgid "%s articles"
 msgstr ""
 
@@ -121,7 +121,7 @@ msgstr ""
 msgid "Apply actions"
 msgstr ""
 
-#: author.php:67
+#: author.php:69
 msgid "Author website / profile"
 msgstr ""
 
@@ -222,6 +222,10 @@ msgstr ""
 msgid "Downloads a calendar file with an alarm one day before."
 msgstr ""
 
+#: page-tools.php:61
+msgid "Ee page ki content add cheyyandi (WP Admin → Pages → Tools). Tools anni kinda unnayi."
+msgstr ""
+
 #: inc/workspace.php:120
 msgid "Eligible by age"
 msgstr ""
@@ -246,6 +250,10 @@ msgstr ""
 msgid "Fee & concession calculator"
 msgstr ""
 
+#: inc/firstrun.php:129
+msgid "Fees, documents and eligibility for any government application are always as per the official notification."
+msgstr ""
+
 #: inc/cta.php:70
 msgid "Free daily updates for Telangana & Andhra Pradesh students. No spam calls, leave anytime."
 msgstr ""
@@ -254,11 +262,17 @@ msgstr ""
 msgid "Free job alerts on your phone"
 msgstr ""
 
+#: inc/premium.php:348
+#: inc/premium.php:352
+#: page-tools.php:36
+msgid "Free tools for students"
+msgstr ""
+
 #: inc/apply.php:238
 msgid "Full details"
 msgstr ""
 
-#: search.php:34
+#: search.php:36
 msgid "Go to home"
 msgstr ""
 
@@ -266,7 +280,7 @@ msgstr ""
 msgid "Hide social icons"
 msgstr ""
 
-#: inc/template.php:310
+#: inc/template.php:375
 msgid "Home"
 msgstr ""
 
@@ -331,19 +345,19 @@ msgstr ""
 msgid "Latest Jobs"
 msgstr ""
 
-#: front-page.php:126
+#: front-page.php:106
 msgid "Latest opportunities"
 msgstr ""
 
-#: front-page.php:122
+#: front-page.php:102
 msgid "Latest opportunities — page %d"
 msgstr ""
 
-#: front-page.php:103
+#: front-page.php:83
 msgid "Latest student updates"
 msgstr ""
 
-#: front-page.php:99
+#: front-page.php:79
 msgid "Latest student updates — page %d"
 msgstr ""
 
@@ -363,7 +377,7 @@ msgstr ""
 msgid "My Workspace"
 msgstr ""
 
-#: inc/template.php:108
+#: inc/template.php:173
 msgid "NEW"
 msgstr ""
 
@@ -383,7 +397,7 @@ msgstr ""
 msgid "No more than 3 links in one comment."
 msgstr ""
 
-#: search.php:31
+#: search.php:33
 msgid "No results — try a different word."
 msgstr ""
 
@@ -411,6 +425,10 @@ msgstr ""
 msgid "Only %d days left"
 msgstr ""
 
+#: inc/firstrun.php:128
+msgid "Only for that offline service, documents are shared on WhatsApp at"
+msgstr ""
+
 #: inc/student-tools.php:74
 msgid "Open comparison"
 msgstr ""
@@ -424,7 +442,11 @@ msgstr ""
 msgid "Open the saved page"
 msgstr ""
 
-#: author.php:97
+#: inc/firstrun.php:127
+msgid "Outside this website we run a small offline Students Internet Center that helps students fill government application forms. This is optional: every job, result, hall ticket and scholarship update on this website is free to read and you never need this service to use the site."
+msgstr ""
+
+#: author.php:99
 msgid "Pages"
 msgstr ""
 
@@ -469,7 +491,7 @@ msgstr ""
 msgid "Profile is stored in this browser only — no account, nothing sent to the server."
 msgstr ""
 
-#: author.php:52
+#: author.php:54
 msgid "Published articles: %d"
 msgstr ""
 
@@ -484,7 +506,7 @@ msgstr ""
 msgid "Quick tools"
 msgstr ""
 
-#: inc/template.php:123
+#: inc/template.php:188
 msgid "Read more"
 msgstr ""
 
@@ -492,11 +514,11 @@ msgstr ""
 msgid "Read next"
 msgstr ""
 
-#: author.php:73
+#: author.php:75
 msgid "Read our editorial policy"
 msgstr ""
 
-#: author.php:81
+#: author.php:83
 msgid "Recent articles"
 msgstr ""
 
@@ -537,6 +559,10 @@ msgstr ""
 msgid "Result"
 msgstr ""
 
+#: page-tools.php:40
+msgid "Salaries, age limits, fees, scores, admit cards, resumes and syllabus — official rules batti calculate cheyandi."
+msgstr ""
+
 #: inc/keyfacts.php:28
 msgid "Salary"
 msgstr ""
@@ -560,7 +586,7 @@ msgstr ""
 msgid "Save this post for later"
 msgstr ""
 
-#: header.php:118
+#: header.php:115
 #: inc/saved.php:209
 #: inc/saved.php:294
 #: inc/saved.php:304
@@ -576,7 +602,7 @@ msgstr ""
 msgid "Saved jobs with deadlines will show up here, most urgent first."
 msgstr ""
 
-#: header.php:81
+#: header.php:78
 #: inc/saved.php:203
 #: inc/saved.php:207
 msgid "Saved posts"
@@ -624,6 +650,14 @@ msgstr ""
 msgid "Storage is not available in this browser (private mode?) — saving is off."
 msgstr ""
 
+#: inc/premium.php:357
+msgid "Student tools"
+msgstr ""
+
+#: inc/firstrun.php:126
+msgid "Students Internet Center (separate offline service)"
+msgstr ""
+
 #: inc/cta.php:30
 msgid "Students Internet Center · Telangana & Andhra Pradesh"
 msgstr ""
@@ -640,6 +674,10 @@ msgstr ""
 msgid "Syllabus tracker"
 msgstr ""
 
+#: inc/premium.php:353
+msgid "Tap a tab — okka sari lo okkati, screen clean ga untundi."
+msgstr ""
+
 #: inc/cta.php:47
 msgid "Tap చేస్తే మా WhatsApp open అవుతుంది — వెంటనే reply"
 msgstr ""
@@ -653,7 +691,7 @@ msgstr ""
 msgid "Telegram channel"
 msgstr ""
 
-#: author.php:61
+#: author.php:63
 msgid "The StudentUp editorial team — honest articles for Telangana & Andhra Pradesh students, based on official sources."
 msgstr ""
 

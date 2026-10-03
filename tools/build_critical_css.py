@@ -24,12 +24,14 @@ Run: python3 tools/build_critical_css.py
 from __future__ import annotations
 
 import re
+import re as _re
 import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 THEME = ROOT / "wordpress-theme" / "studentup"
-SRC = [THEME / "style.css", THEME / "assets" / "css" / "premium.css"]
+SRC = [THEME / "style.css", THEME / "assets" / "css" / "premium.css",
+       THEME / "assets" / "css" / "worldclass.css"]  # v191.3: new design above-fold
 OUT = THEME / "assets" / "css" / "critical.css"
 OUT_MIN = THEME / "assets" / "css" / "critical.min.css"
 
@@ -46,6 +48,12 @@ EXACT = {
     ".newsgrid", ".news", ".crumbs", ".article-head", ".article-meta",
     ".su-progress", ".su-social", ".su-tab", ".su-close", ".su-bnav",
     ".su-hdr-saved", ".su-saved-count", ".su-uicon",
+    # v191.3 WORLDCLASS above-fold: lead card, trust, ad slots, fixed bottom nav
+    ".news--lead", ".su-trust", ".su-viewall", ".su-bottomnav", ".su-anchor",
+    ".su-anchor-ad", ".su-adleader", ".su-adcard", ".su-adbelow", ".su-bi",
+    ".su-cta", ".su-ttab", ".su-tools", ".su-tooltabs", ".su-toolpanel",
+    ".su-fields", ".su-tout", ".su-mini", ".su-rail", ".su-railed",
+    ".su-railad", ".su-callout", ".su-layout", ".su-quizcard",
 }
 PREFIX = (
     ".su-hero", ".su-hs", ".su-live-dot", ".su-trend", ".su-statebar",
@@ -117,6 +125,11 @@ def _match(selector: str) -> bool:
     * class leni plain selector (`a`, `img`, `*`, `:root`, `h1`…) → keep (base).
     * `body.dark{…}` / `body.su-has-applybar{…}` — dark base + CLS padding.
     """
+    # v192: first paint ki hover/focus states avasaram ledu — avi user interact
+    # chesaka matrame kanipistayi, appatiki full CSS already load ayyi untundi.
+    # (idi phone lo inline CSS bytes thagginchadam — FCP fast.)
+    if _re.search(r":(hover|focus|focus-visible|focus-within|active)\b", selector):
+        return False
     toks = _tokens(selector)
     if not toks:
         return False
@@ -170,6 +183,10 @@ def extract() -> tuple[str, int]:
     return header + "\n".join(out) + "\n", kept
 
 
+CAP_WARN = 56000   # inc/critical-css.php hard cap 60000 — inka dhaatithe inline skip avutundi
+CAP_FAIL = 59000   # build kuda fail — malli rule add cheyyakoodadu
+
+
 def main() -> int:
     css, kept = extract()
     OUT.write_text(css, encoding="utf-8")
@@ -181,6 +198,16 @@ def main() -> int:
     min_kb = OUT_MIN.stat().st_size / 1024
     print(f"  ✅ critical.css  {raw_kb:.1f} KB raw → {min_kb:.1f} KB inline "
           f"({kept} rules kept) → {OUT.relative_to(ROOT)}")
+    # v192: cap guard — inc/critical-css.php 60000 B dhaatithe silent ga inline
+    # skip chestundi (phone lo purathana design flash). Ippude aapi cheptham.
+    size = OUT_MIN.stat().st_size
+    if size >= CAP_FAIL:
+        print(f"  ❌ FAIL: critical.min.css {size} B ≥ {CAP_FAIL} — inline CAP 60000 ni "
+              f"dhaatuthundi. Above-fold rule thagginchandi (hover/transition vaddu).")
+        return 1
+    if size >= CAP_WARN:
+        print(f"  ⚠️  WARN: critical.min.css {size} B — CAP 60000 ki daggarlo undi "
+              f"(ika {60000 - size} B migilinayi).")
     return 0
 
 

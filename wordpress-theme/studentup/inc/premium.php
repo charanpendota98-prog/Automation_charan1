@@ -310,3 +310,66 @@ function studentup_bottom_nav() {
 	<?php
 }
 add_action( 'wp_footer', 'studentup_bottom_nav', 5 );
+
+
+/**
+ * v191 WORLDCLASS: calculator wall → ONE neat tabbed card.
+ *
+ * Enduku: modata home lo 8 tool blocks oka daggara oka render ayyevi
+ * (salary · age · fee · score · calendar · admit card · resume · syllabus) —
+ * phone lo adi "widget wall", reader 3 screens scroll chesina first job card
+ * kanipinchedi kaadu. Ippudu aa 8 okate card lo tabs ga — okka sari lo okkati,
+ * migatha antha neat ga hidden. Prathi tab keyboard tho kuda switch avutundi
+ * (arrow keys), screen reader ki role="tab"/aria-selected correct ga untundi.
+ */
+function studentup_tools_tabs() {
+	$tools = array(
+		array( 'id' => 'salary',   'icon' => 'wallet',   'label' => 'In-hand salary',    'fn' => 'studentup_salary_calc' ),
+		array( 'id' => 'age',      'icon' => 'person',   'label' => 'Age checker',        'fn' => 'studentup_age_calculator_block' ),
+		array( 'id' => 'fee',      'icon' => 'doc',      'label' => 'Fee & concession',   'fn' => 'studentup_fee_calculator_block' ),
+		array( 'id' => 'score',    'icon' => 'chart',    'label' => 'Score & negative',   'fn' => 'studentup_score_calculator_block' ),
+		array( 'id' => 'calendar', 'icon' => 'calendar', 'label' => 'Last-date calendar', 'fn' => 'studentup_job_calendar' ),
+		array( 'id' => 'admit',    'icon' => 'ticket',   'label' => 'Admit card helper',  'fn' => 'studentup_admit_card_block' ),
+		array( 'id' => 'resume',   'icon' => 'doc',      'label' => 'Resume maker',       'fn' => 'studentup_resume_maker_block' ),
+		array( 'id' => 'syllabus', 'icon' => 'book',     'label' => 'Syllabus tracker',   'fn' => 'studentup_syllabus_tracker_block' ),
+	);
+	$tools = array_values(
+		array_filter(
+			$tools,
+			static function ( $t ) {
+				return function_exists( $t['fn'] );
+			}
+		)
+	);
+	if ( ! $tools ) {
+		return;
+	}
+	?>
+	<section class="su-tools" id="tools" aria-label="<?php esc_attr_e( 'Free tools for students', 'studentup' ); ?>">
+		<div class="su-tools-head">
+			<div class="sectionhead" style="margin:0 0 6px">
+				<div>
+					<h2><?php esc_html_e( 'Free tools for students', 'studentup' ); ?></h2>
+					<p><?php esc_html_e( 'Tap a tab — okka sari lo okkati, screen clean ga untundi.', 'studentup' ); ?></p>
+				</div>
+			</div>
+		</div>
+		<div class="su-tooltabs" role="tablist" aria-label="<?php esc_attr_e( 'Student tools', 'studentup' ); ?>">
+			<?php foreach ( $tools as $i => $t ) : ?>
+				<button type="button" class="su-ttab" role="tab"
+					id="su-ttab-<?php echo esc_attr( $t['id'] ); ?>"
+					aria-controls="su-tool-<?php echo esc_attr( $t['id'] ); ?>"
+					aria-selected="<?php echo esc_attr( 0 === $i ? 'true' : 'false' ); ?>"
+					tabindex="<?php echo esc_attr( 0 === $i ? '0' : '-1' ); ?>"><?php echo studentup_ui_icon( isset( $t['icon'] ) ? $t['icon'] : 'bolt', 16 ); // v192: emoji badulu SVG ?> <span><?php echo esc_html( $t['label'] ); ?></span></button>
+			<?php endforeach; ?>
+		</div>
+		<?php foreach ( $tools as $i => $t ) : ?>
+			<div class="su-toolpanel<?php echo esc_attr( 0 === $i ? ' on' : '' ); ?>"
+				id="su-tool-<?php echo esc_attr( $t['id'] ); ?>" role="tabpanel"
+				aria-labelledby="su-ttab-<?php echo esc_attr( $t['id'] ); ?>"<?php echo esc_attr( 0 === $i ? '' : ' hidden' ); ?>>
+				<?php call_user_func( $t['fn'] ); ?>
+			</div>
+		<?php endforeach; ?>
+	</section>
+	<?php
+}

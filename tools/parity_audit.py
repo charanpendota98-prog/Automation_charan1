@@ -107,7 +107,10 @@ def p4_preview_meta(rep: dict) -> None:
             continue
         for cand in (PREVIEW / rel / "index.html", PREVIEW / f"{rel}.html",
                      PREVIEW / rel, PREVIEW / "pages" / f"{rel}.html"):
-            if cand.exists():
+            # v193 fix: `PREVIEW / rel` ippudu okka DIRECTORY kuda avvochu
+            # (tools/), adi "page" ga count avvakoodadu — <title> ledu ani
+            # false error vachedi.
+            if cand.is_file():
                 deployed.add(cand)
     for html in sorted(deployed):
         text = _read(html)

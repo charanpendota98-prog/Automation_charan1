@@ -1,7 +1,7 @@
 # studentup.in Auto-Blogger 🤖
 
 
-> **Verified counts (theme v1.9.36 build):** test suites **137/137** files · jsdom runtime **177/177** checks · PHP lint **86/86** files · theme audit **0/0** · **deep audit pass 1-4 31/31** · code audit **0/0**.
+> **Verified counts (theme v1.9.37 build):** test suites **139/139** files · jsdom runtime **177/177** checks · PHP lint **88/88** files · theme audit **0/0** · **deep audit pass 1-4 31/31** · code audit **0/0**.
 24/7 automatic blog posting system for **studentup.in** (WordPress) — runs on your Oracle Cloud instance.
 
 - **AI content:** Google Gemini (free tier) generates Telugu + English mix articles
@@ -681,7 +681,7 @@ Theme ni "world best" standards tho **repeatable ga audit** cheyyadaniki
 
 ```bash
 python3 tools/theme_audit_deep.py     # pass 1-4 · ✅ 31 pass · 0 warn · 0 fail
-node tools/php_lint.js                # 86/86
+node tools/php_lint.js                # 88/88
 python3 tools/cwv_audit.py            # CLS/a11y static (10 pages)
 ```
 
@@ -792,7 +792,7 @@ python run.py --links-file links.txt --links-dry-run     # plan mattrame
 - **Prathi item kinda mee site link** — readers anni links open cheyyachu (truncation unte `… ఇంకా N ఉద్యోగాలు` line)
 - Expired/stale/superseded gating same (v184) · Telegram digest format marchaledu (backward compatible)
 
-Proof: `python tests/v187_test.py` (6 groups) · `--test-all` **137/137** · jsdom **177/177** · php-lint **86/86** · deep theme **31/0/0** · parity/code **0/0**.
+Proof: `python tests/v187_test.py` (6 groups) · `--test-all` **138/138** · jsdom **177/177** · php-lint **86/86** · deep theme **31/0/0** · parity/code **0/0**.
 
 v187 flags: `--links-file` · `--links` · `--links-limit` · `--links-dry-run` · `--links-notify`
 
@@ -829,7 +829,7 @@ SSC CHSL 2026 recruitment — eligibility, important dates, vacancy details and 
 - **Chips** = `2,000+ పోస్టులు` (comma formatting) · `💰 pay` · `⏰ 2 రోజులు మాత్రమే`.
 - **Mana blog links mattrame** — external source domains (ssc.gov.in, ecil.co.in) list lo eppudu raavu.
 
-Proof: `python tests/v188_test.py` (5 groups) · `--test-all` **137/137**.
+Proof: `python tests/v188_test.py` (5 groups) · `--test-all` **138/138**.
 
 ### v189 — DAILY MORNING SEND 🌅 (roju udayam automatic)
 
@@ -851,6 +851,58 @@ python run.py --forward-morning --forward-no-whatsapp       # Telegram mattrame
 | Cron | `30 6 * * *` (6:30 AM) — `crontab.example` lo line ready |
 
 Proof: `python tests/v189_test.py` (5 groups).
+
+### v194 — LIVE SITE AUDIT + CODE FIXES (studentup.in, 2026-10-03) 🔍
+
+**Audit (brutally critical, 19 sections):** [`LIVE_SITE_AUDIT_2026-10.md`](LIVE_SITE_AUDIT_2026-10.md) — 12 scores /100 (final **41/100** · verdict **NOT READY**), six Top-50 lists, AdSense approval **8–12% → 70–80%** after fixes, 100-QA-tester simulation.
+**Fix steps (Telugu, click-level):** [`LIVE_FIX_GUIDE.md`](LIVE_FIX_GUIDE.md) — A1–A6 WP admin · B1–B4 File Manager · C theme upload · D bot/cron · E GSC+AdSense.
+
+Live lo kanipinchina, **code nunchi** fix chesina defects:
+
+| # | Defect (live evidence) | Fix (v194) |
+|---|---|---|
+| 1 | `/about/` lo "theme was activated … replace before applying to any ad network" | `inc/firstrun.php`: `$base = ''` + **Repair live pages** button (existing pages nunchi note teestundi) |
+| 2 | Students Internet Center (paid service) block publisher content nunchi separate ledu, price ledu | `studentup_setup_service_block()` — "separate offline service · optional · website content free" disclosure |
+| 3 | Duplicate policy pages (privacy ×3, terms ×2, contact ×2) | Repair run: duplicates → **draft** (delete kaadu) + 301 note |
+| 4 | Byline lo "Source-backed draft; verify the official notice" | `autoblog/seo.py`: "Every fact is linked to the official notification" (reviewer unte "Reviewed by X") |
+| 5 | `image_alt()` brand `studentup.in` (TTS "studentup dot in") | brand default → **StudentUp** |
+| 6 | Demo/junk pages (Gutenberg placeholder + internal checklist) index avutunnayi | `inc/livefix.php` (NEW): marker pages **noindex**, attachment → 301, empty search → noindex |
+
+Proof: `tests/v194_test.py` (7 gates) · `--test-all` **139/139** · parity **PIN-TO-PIN** · php-lint **88/88** · zip **117 files · 1042 KB** (sha `4fa81c83bf42…`).
+Owner steps: [`LIVE_FIX_GUIDE.md`](LIVE_FIX_GUIDE.md) → A1 (demo pages delete) → A3 (Repair button) → B1 (ads.txt) → C (theme upload).
+
+### v191 — WORLDCLASS v2: phone-first home + neat tools (theme 1.9.37)
+
+User brief: "worst theme aindi ... world best ga, neat ga, phone lo advanced ga, laptop lo best ga, highest revenue".
+
+**New design layer** `wordpress-theme/studentup/assets/css/worldclass.css` (enqueued after style.css + premium.css — kotha markup avasaram ledu, template risk zero):
+phone lo post cards ippudu horizontal **scan cards** (thumb + text side-by-side, title 3-line clamp) → oke screen lo ~2× updates;
+laptop lo 3-column tiles + **sticky right rail** (300×250 slot · top jobs · closing this week);
+17px Telugu-friendly base type; 44px tap targets; chips = swipe strip (wrap spam ledu); native-looking in-feed
+ad cards; dark-mode parity; reduced-motion + print rules. CSS 199 KB → 179 KB minified (-11%).
+
+**Home order** (`front-page.php`): content first — hero → ticker → most-searched → leaderboard → breaking → filters →
+**latest-opportunities grid** → jobs table → popular searches → pagination → tarvata engagement (hot-10, closing week,
+job finder, mid ad, quiz, alerts) → tools. Modata 8 calculator blocks + 8 widgets grid ki MUNDU render ayyevi —
+phone reader 3-4 screens scroll chesina first job card kanipinchedi kaadu (bounce ↑, viewability ↓).
+
+**Tools tabs** (`studentup_tools_tabs()` + premium.js): 8 calculators (in-hand salary · age · fee · score · last-date
+calendar · admit card · resume · syllabus) ippudu OKATE card lo accessible tabs ga — arrow/Home/End keys +
+role=tab/aria-selected/hidden parity.
+
+Proof: --test-all **138/138** · theme audit 0 errors 0 warnings · deep audit **31/31** · parity **PIN-TO-PIN** ·
+code audit 0/0 · php-lint 86/86 · CWV/a11y static 0/0 · zip 115 files · 1029 KB · sha `0715c79cbf1a…`.
+**v191.2 (MONEY EDITION, user brief: "tools em avasaram ledu · neat ga · highest revenue"):** home nunchi
+widget wall (8 calculators + quiz/alerts/stories/scholarship/for-you) **teesesamu** — avi ippudu `/tools/`
+page template (`page-tools.php`) lo mattrame. New home flow: hero → ticker → most-searched → **leaderboard ad** →
+breaking → filters → **latest grid** (lead card + category accents + native in-feed ads) → jobs table →
+popular searches → **mid ad** → hot-10 → closing-week → personal picks → **below-content ad**.
+New gates: `tools/visual_check.py` (phone 390 + laptop 1440 — visibility map · 44px tap targets · type scale ·
+WCAG AA contrast light+dark · single H1 · ad/card ratio ≤0.8 · labelled ads · CLS · dark mode) + `tools/preview_server.py`
+(HTTP/1.1 proxy-safe, port 8123) + `preview/worldclass/devices.html` (phone+laptop side-by-side) + `tests/v191_test.py` (6 groups).
+
+Chudataniki: `python3 tools/preview_server.py` (phone + laptop live preview) leda `preview/worldclass/standalone.html` (server ledu).
+
 
 ### v190 — `--daily`: OKE COMMAND (anni nene set chesanu) 🌅
 

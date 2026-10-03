@@ -71,8 +71,11 @@ return array(
 function studentup_setup_page_body( $slug, $title ) {
 	$site = get_bloginfo( 'name' );
 	$mail = get_option( 'admin_email' );
-	$base = '<p>This page was created automatically when the StudentUp theme was activated. ' .
-		'Please replace this text with your own details before applying to any ad network.</p>';
+	// v194: AdSense/News reviewers read these pages literally. The old auto note
+	// ("theme was activated ... replace before applying to any ad network") made
+	// every policy page look like an untouched template. Slug-wise copy is real,
+	// so the note stays blank; workspace/saved/compare have their own builders.
+	$base = '';
 
 	$map = array(
 		'about'            => '<p>' . esc_html( $site ) . ' publishes government job notifications, results, hall tickets, ' .
@@ -93,7 +96,37 @@ function studentup_setup_page_body( $slug, $title ) {
 	);
 
 	$body = isset( $map[ $slug ] ) ? $map[ $slug ] : '<p>' . esc_html( $title ) . '</p>';
-	return $body . "\n" . $base;
+	$svc  = studentup_setup_service_block();
+	if ( '' !== $svc && in_array( $slug, array( 'about', 'contact', 'privacy', 'disclaimer', 'terms', 'editorial-policy' ), true ) ) {
+		$body .= "\n" . $svc;
+	}
+	return $base ? $body . "\n\n" . $base : $body;
+}
+
+/**
+ * v194: Students Internet Center disclosure — separated from the publisher.
+ *
+ * Enduku: live site lo ee offline paid service block e page meeda padindi
+ * (About/Privacy kuda), kaani "StudentUp website content" ki "paid form
+ * filling service" ki madhya distinction ledu. AdSense reviewer ki ee
+ * separation kaavali — so ee block 4 sangati clear ga cheptundi:
+ *   1. Service website content kaadu, separate/optional.
+ *   2. Fee gurinchi, documents WhatsApp lo — service ki matrame.
+ *   3. StudentUp content chadavatam/alert ravadam ki em fee ledu, documents ledu.
+ *   4. Anni details official notification ne follow avutayi.
+ *
+ * @return string HTML block (khali = WhatsApp number set cheyyaledu).
+ */
+function studentup_setup_service_block() {
+	$raw = (string) studentup_opt( 'social_whatsapp', '9182739312' );
+	$wa  = function_exists( 'studentup_wa_number' ) ? studentup_wa_number( $raw ) : preg_replace( '/\D/', '', $raw );
+	if ( '' === $wa ) {
+		return '';
+	}
+	return '<h2>' . esc_html__( 'Students Internet Center (separate offline service)', 'studentup' ) . '</h2>' .
+		'<p>' . esc_html__( 'Outside this website we run a small offline Students Internet Center that helps students fill government application forms. This is optional: every job, result, hall ticket and scholarship update on this website is free to read and you never need this service to use the site.', 'studentup' ) . '</p>' .
+		'<p>' . esc_html__( 'Only for that offline service, documents are shared on WhatsApp at', 'studentup' ) . ' <a href="https://wa.me/' . esc_attr( $wa ) . '" rel="nofollow noopener" target="_blank">+' . esc_html( $wa ) . '</a>. ' .
+		esc_html__( 'Fees, documents and eligibility for any government application are always as per the official notification.', 'studentup' ) . '</p>';
 }
 
 /**
@@ -113,6 +146,91 @@ function studentup_setup_workspace_body() {
  */
 function studentup_setup_saved_body() {
 	return '<p>Everything you save with the Save button is kept in this browser — no account needed. Your application status (Applied / Interview / Result) is tracked here too.</p>' . "\n\n" . '[studentup_saved]';
+}
+
+/**
+ * v194: repair a site that an OLDER theme version set up.
+ *
+ * Live audit (studentup.in) lo kanipinchina 3 problems ni okka click tho fix
+ * chestundi — read-only checks tho, delete cheyyadu:
+ *   1. "This page was created automatically..." template note (Google/AdSense
+ *      reviewer ee note chusi "template site" ani decide chestadu).
+ *   2. Students Internet Center disclosure ledu → publisher vs paid service
+ *      separation clear ga cheyyali.
+ *   3. Duplicate policy pages (/privacy/ vs /privacy-policy/ vs -2,
+ *      /terms/ vs /terms-conditions/, /contact/ vs /contact-us/) → thin
+ *      duplicate content. Canonical page unte, duplicate ni DRAFT loki
+ *      pampistundi (trash kaadu — malli publish cheyyachu) + redirect note.
+ *
+ * @return array Human readable report lines.
+ */
+function studentup_repair_pages_run() {
+	$report = array();
+	$stale  = 'This page was created automatically when the StudentUp theme was activated.';
+	$stale2 = 'Please replace this text with your own details before applying to any ad network.';
+
+	// 1 + 2: stale note teyyadam, missing di service block add cheyyadam.
+	$fixed = 0;
+	$svc   = studentup_setup_service_block();
+	$pages = get_posts(
+		array(
+			'post_type'      => 'page',
+			'post_status'    => array( 'publish', 'draft' ),
+			'posts_per_page' => 200,
+			'fields'         => 'ids',
+		)
+	);
+	foreach ( $pages as $pid ) {
+		$content = (string) get_post_field( 'post_content', $pid );
+		$before  = $content;
+		if ( false !== strpos( $content, $stale ) ) {
+			$content = str_replace( array( '<p>' . $stale . ' ' . $stale2 . '</p>', $stale, $stale2, '(undefined)' ), '', $content );
+			$content = trim( preg_replace( "/\n{3,}/", "\n\n", $content ) );
+		}
+		$slug = (string) get_post_field( 'post_name', $pid );
+		if ( '' !== $svc && ! in_array( $slug, array( 'workspace', 'saved', 'compare' ), true )
+			&& false === strpos( $content, 'Students Internet Center' )
+			&& in_array( $slug, array( 'about', 'contact', 'contact-us', 'privacy', 'privacy-policy', 'privacy-policy-2', 'disclaimer', 'terms', 'terms-conditions', 'editorial-policy' ), true ) ) {
+			$content .= "\n" . $svc;
+		}
+		if ( $content !== $before ) {
+			wp_update_post( array( 'ID' => (int) $pid, 'post_content' => $content ) );
+			++$fixed;
+		}
+	}
+	$report[] = sprintf( 'Policy/About pages cleaned: %d updated (template note removed, service disclosure added).', $fixed );
+
+	// 3: duplicate policy pages → draft (canonical version publish lo untundi).
+	$dupes = array(
+		'privacy-policy'   => 'privacy',
+		'privacy-policy-2' => 'privacy',
+		'terms-conditions' => 'terms',
+		'contact-us'       => 'contact',
+	);
+	$drafted = 0;
+	foreach ( $dupes as $dup => $canon ) {
+		$d = get_page_by_path( $dup );
+		$c = get_page_by_path( $canon );
+		if ( $d instanceof WP_Post && $c instanceof WP_Post && 'publish' === $d->post_status
+			&& 'publish' === $c->post_status && strlen( trim( (string) $c->post_content ) ) > 40 ) {
+			wp_update_post( array( 'ID' => (int) $d->ID, 'post_status' => 'draft' ) );
+			$report[] = sprintf( 'Duplicate page /%s/ → draft (canonical /%s/). Redirect 301 pettandi: Rank Math → Redirections.', $dup, $canon );
+			++$drafted;
+		}
+	}
+	if ( 0 === $drafted ) {
+		$report[] = 'Duplicate policy pages: emi ledu (already clean).';
+	}
+
+	// 4: compare page ki template assign (shortcode unna, layout onte).
+	$cmp = get_page_by_path( 'compare' );
+	if ( $cmp instanceof WP_Post && 'page-compare.php' !== (string) get_post_meta( $cmp->ID, '_wp_page_template', true ) ) {
+		update_post_meta( $cmp->ID, '_wp_page_template', 'page-compare.php' );
+		$report[] = 'Compare Jobs page template set (page-compare.php).';
+	}
+
+	$report[] = 'Next: demo/junk Gutenberg blocks (placeholder text) + internal checklist pages ni delete cheyyandi — avi sitemap lo unte AdSense review fail avutundi.';
+	return $report;
 }
 
 /**
@@ -346,6 +464,10 @@ function studentup_setup_page_render() {
 		check_admin_referer( 'studentup_setup', 'studentup_setup_nonce' ) ) {
 		$lines = studentup_run_first_setup();
 	}
+	if ( isset( $_POST['studentup_repair_run'] ) &&
+		check_admin_referer( 'studentup_setup', 'studentup_setup_nonce' ) ) {
+		$lines = studentup_repair_pages_run();
+	}
 	$done = (string) get_option( 'su_firstrun_stamp', '' );
 	?>
 	<div class="wrap">
@@ -367,6 +489,16 @@ function studentup_setup_page_render() {
 			<?php wp_nonce_field( 'studentup_setup', 'studentup_setup_nonce' ); ?>
 			<p><button type="submit" name="studentup_setup_run" value="1" class="button button-primary">
 				Run setup now</button></p>
+		</form>
+		<h2>Repair live pages (older sites)</h2>
+		<p>Already-running site ki ee button okkasari kottandi: policy/about pages nunchi
+			&ldquo;created automatically&rdquo; template note teestundi, Students Internet Center
+			disclosure add chestundi, duplicate privacy/terms/contact pages ni draft loki
+			pampistundi. Emi delete cheyyadu.</p>
+		<form method="post">
+			<?php wp_nonce_field( 'studentup_setup', 'studentup_setup_nonce' ); ?>
+			<p><button type="submit" name="studentup_repair_run" value="1" class="button">
+				Repair live pages</button></p>
 		</form>
 		<h2>After setup</h2>
 		<ol>

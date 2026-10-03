@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="te" data-su-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>StudentUp — WorldClass v2 preview (jobs · results · scholarships)</title>
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#0b2447">
+<meta name="description" content="StudentUp — Telangana and Andhra Pradesh students ki government job, exam, result, hall ticket and scholarship updates. Verified from official notifications.">
+<link rel="stylesheet" href="../../wordpress-theme/studentup/style.css">
+<link rel="stylesheet" href="../../wordpress-theme/studentup/assets/css/worldclass.css">
+<style>
+  /* demo-only helpers — WP theme lo ivi template nunchi vastayi */
+  .demo-note{max-width:var(--wrap);margin:10px auto 0;padding:10px 14px;border-radius:12px;
+    background:#fff8ec;border:1px solid #ffe0b2;color:#7a4b06;font-size:12.5px;font-weight:700}
+  .topbar .wrap{display:flex;justify-content:space-between;gap:12px;padding:7px 16px}
+  .headrow{display:flex;align-items:center;gap:12px;max-width:var(--wrap);margin:0 auto;padding:0 16px}
+  .nav{flex:1;display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
+  .newsfoot{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .lastdate{font-size:11px;font-weight:800;padding:3px 9px;border-radius:999px;background:#fef2f2;color:#b91c1c;border:1px solid #fecaca}
+  .lastdate.soon{background:#fff7ed;color:#b45309;border-color:#fed7aa}
+  .su-foot{background:var(--navy);color:#c6d7ef;margin-top:28px;padding:26px 0 18px;font-size:13.5px}
+  .su-foot a{color:#dbe7f8}
+  .su-foot-grid{display:grid;grid-template-columns:1fr;gap:18px;max-width:var(--wrap);margin:0 auto;padding:0 16px}
+  @media(min-width:760px){.su-foot-grid{grid-template-columns:repeat(4,1fr)}}
+  .su-foot h4{color:#fff;margin:0 0 8px;font-size:14px}
+  .su-foot ul{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+  .su-foot-bottom{border-top:1px solid rgba(255,255,255,.14);margin:18px auto 0;padding:12px 16px 0;
+    max-width:var(--wrap);font-size:12px;color:#9fb6d6}
+  .su-lticker a{text-decoration:none}
+</style>
+</head>
+<body>
+<svg class="su-sprite" aria-hidden="true" focusable="false" style="display:none"><symbol id="su-i-calendar" viewBox="0 0 24 24"><path d="M7 2v2h10V2h2v2h1a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1V2h2Zm13 8H4v9h16v-9ZM6 12h5v4H6v-4Z"/></symbol><symbol id="su-i-search" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 4.99L20.49 19l-4.99-5Zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14Z"/></symbol><symbol id="su-i-moon" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9 7.2 7.2 0 0 1-9-9Z"/></symbol><symbol id="su-i-sun" viewBox="0 0 24 24"><path d="M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10Zm0-5h.01M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M19.1 4.9l-1.4 1.4M6.3 17.7l-1.4 1.4"/></symbol><symbol id="su-i-bolt" viewBox="0 0 24 24"><path d="M11 21h-1l1-7H7.5c-.58 0-.57-.32-.38-.66l.07-.12C8.48 10.94 10.42 7.54 13 3h1l-1 7h3.5c.49 0 .56.33.47.51l-.07.15C12.96 17.55 11 21 11 21Z"/></symbol><symbol id="su-i-school" viewBox="0 0 24 24"><path d="M12 3 1 9l11 6 9-4.91V17h2V9L12 3ZM5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82Z"/></symbol><symbol id="su-i-board" viewBox="0 0 24 24"><path d="M4 3h16a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1h-6l2.5 3h-2.4L11.6 16H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Zm1 2v9h14V5H5Z"/></symbol><symbol id="su-i-bank" viewBox="0 0 24 24"><path d="M12 2 2 8v3h20V8L12 2Zm-8 11h3v5H4v-5Zm6.5 0h3v5h-3v-5ZM2 20h20v2H2v-2Zm14.5-7h3v5h-3v-5Z"/></symbol><symbol id="su-i-ticket" viewBox="0 0 24 24"><path d="M4 5h16a1 1 0 0 1 1 1v3a2.5 2.5 0 0 0 0 5v3a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-3a2.5 2.5 0 0 0 0-5V6a1 1 0 0 1 1-1Zm3 3v8h2V8H7Zm4 0v8h2V8h-2Zm4 0v8h2V8h-2Z"/></symbol><symbol id="su-i-chart" viewBox="0 0 24 24"><path d="M4 19h16v2H2V3h2v16Zm3-2V9h3v8H7Zm5 0V5h3v12h-3Zm5 0v-6h3v6h-3Z"/></symbol><symbol id="su-i-check" viewBox="0 0 24 24"><path d="M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17Z"/></symbol><symbol id="su-i-refresh" viewBox="0 0 24 24"><path d="M17.65 6.35A8 8 0 1 0 19.73 14h-2.08a6 6 0 1 1-1.42-6.22L13 11h7V4l-2.35 2.35Z"/></symbol><symbol id="su-i-doc" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6Zm2 16H8v-2h8v2Zm0-4H8v-2h8v2Zm-3-5V3.5L18.5 9H13Z"/></symbol><symbol id="su-i-tag" viewBox="0 0 24 24"><path d="M21.41 11.58l-9-9A2 2 0 0 0 11 2H4a2 2 0 0 0-2 2v7a2 2 0 0 0 .59 1.42l9 9A2 2 0 0 0 13 22a2 2 0 0 0 1.41-.59l7-7A2 2 0 0 0 22 13a2 2 0 0 0-.59-1.42ZM6.5 8A1.5 1.5 0 1 1 8 6.5 1.5 1.5 0 0 1 6.5 8Z"/></symbol><symbol id="su-i-pin" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7Zm0 9.5A2.5 2.5 0 1 1 14.5 9 2.5 2.5 0 0 1 12 11.5Z"/></symbol><symbol id="su-i-building" viewBox="0 0 24 24"><path d="M12 7V3H2v18h20V7H12Zm-8 14V5h6v16H4Zm8 0v-4h2v-4h-2v-2h8v10h-8Z"/></symbol><symbol id="su-i-flag" viewBox="0 0 24 24"><path d="M14.4 6 14 4H5v18h2v-8h5.6l.4 2h7V6h-5.6Z"/></symbol><symbol id="su-i-clock" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2Zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8Zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7Z"/></symbol><symbol id="su-i-bell" viewBox="0 0 24 24"><path d="M12 22a2 2 0 0 0 2-2h-4a2 2 0 0 0 2 2Zm6-6V11a6 6 0 0 0-5-5.91V4a1 1 0 0 0-2 0v1.09A6 6 0 0 0 6 11v5l-2 2v1h16v-1l-2-2Z"/></symbol><symbol id="su-i-help" viewBox="0 0 24 24"><path d="M11 18h2v-2h-2v2Zm1-16a10 10 0 1 0 10 10A10 10 0 0 0 12 2Zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8Zm0-14a4 4 0 0 0-4 4h2a2 2 0 1 1 2 2c-1 0-1.5.6-1.5 2h2c0-1 .5-1 1.5-1.2A4 4 0 0 0 12 6Z"/></symbol><symbol id="su-i-trophy" viewBox="0 0 24 24"><path d="M19 5h-2V3H7v2H5a2 2 0 0 0-2 2v1a5 5 0 0 0 4 4.9A4 4 0 0 0 11 16v3H8v2h8v-2h-3v-3a4 4 0 0 0 4-3.1A5 5 0 0 0 21 8V7a2 2 0 0 0-2-2ZM5 8V7h2v3.8A3 3 0 0 1 5 8Zm14 0a3 3 0 0 1-2 2.8V7h2Z"/></symbol><symbol id="su-i-close" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></symbol><symbol id="su-i-arrow" viewBox="0 0 24 24"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8-8-8Z"/></symbol></svg>
+
+<div class="demo-note"><b>v192 premium preview:</b> cover art, Telugu-first hero, real icons. Phone + laptop lo chudandi — scroll, dark mode, chips swipe, bottom nav, sticky ad try cheyyandi.</div>
+
+<!-- ============================ topbar ============================ -->
+<div class="topbar">
+  <div class="wrap">
+    <span><svg class="su-uicon su-uicon-calendar" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-calendar"/></svg> <b id="today">—</b> · Telangana · Andhra Pradesh · Central</span>
+    <span><a href="https://wa.me/919182739312">WhatsApp</a> · <a href="https://t.me/studentup_in">Telegram</a> · <a href="../pages/about.html">About</a></span>
+  </div>
+</div>
+
+<!-- ============================ header ============================ -->
+<header class="header">
+  <div class="headrow">
+    <a class="logo" href="index.html"><span class="mark">SU</span><span><span class="brand">StudentUp</span><small>ఉద్యోగ · పరీక్షలు · స్కాలర్‌షిప్</small></span></a>
+    <nav class="nav" aria-label="Main">
+      <a class="current" href="index.html">Home</a>
+      <a href="#jobs">TS Jobs</a>
+      <a href="#jobs">AP Jobs</a>
+      <a href="#jobs">Central</a>
+      <a href="#jobs">Results</a>
+      <a href="#jobs">Hall Tickets</a>
+      <a href="#jobs">Scholarships</a>
+    </nav>
+    <div class="headactions" style="display:flex;gap:8px;align-items:center">
+      <button class="iconbtn" id="su-theme" type="button" aria-label="Dark mode toggle"><svg class="su-uicon su-uicon-moon" width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-moon"/></svg></button>
+      <a class="callbtn" href="index.html"><svg class="su-uicon su-uicon-search" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-search"/></svg> Search</a>
+    </div>
+  </div>
+</header>
+
+<!-- ============================ ticker ============================ -->
+<div class="su-lticker">
+  <div class="wrap trow" style="display:flex;align-items:center;gap:10px;padding:0 16px">
+    <span class="tlabel tlabel-blue" style="flex:0 0 auto;padding:5px 10px;border-radius:8px;font-size:11.5px;font-weight:800"><i style="display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:6px"></i>LIVE</span>
+    <div style="overflow:hidden;flex:1;white-space:nowrap;text-overflow:ellipsis">
+      <a href="../posts/upsc-junior-assistant-2026.html">SSC CHSL 2026 notification released — 3,712 posts</a>
+      <span style="opacity:.6;margin:0 10px">•</span>
+      <a href="../posts/engineering-internships-2026.html">TSPSC Group 2 last date 28 Oct</a>
+      <span style="opacity:.6;margin:0 10px">•</span>
+      <a href="#jobs">IBPS Clerk apply online — 4,520 posts</a>
+    </div>
+  </div>
+</div>
+
+<!-- ============================ hero ============================ -->
+<section class="su-hero" aria-label="Search and quick links">
+  <div class="wrap su-hero-in">
+    <p class="su-hero-kicker"><span class="su-live-dot" aria-hidden="true"></span> ఈరోజు 42 కొత్త అప్‌డేట్‌లు · తెలంగాణ · ఆంధ్రప్రదేశ్ · కేంద్రం</p>
+    <h1 class="su-hero-title">ప్రభుత్వ ఉద్యోగం, పరీక్షలు, స్కాలర్‌షిప్ — <span>అన్నీ ఒక్క చోట</span></h1>
+    <p class="su-hero-sub">అఫీషియల్ నోటిఫికేషన్ నుంచి నేరుగా: లాస్ట్ డేట్, హాల్ టికెట్, రిజల్ట్, అప్లై లింక్ — ప్రతి పోస్ట్ చెక్ చేసిన తర్వాతే.</p>
+
+    <form class="su-hero-search" role="search" method="get" action="index.html">
+      <svg class="su-uicon su-uicon-search" width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-search"/></svg>
+      <label class="screen-reader-text" for="su-q">StudentUp లో వెతకండి</label>
+      <input id="su-q" type="search" name="s" placeholder="SSC, TSPSC, హాల్ టికెట్, స్కాలర్‌షిప్…">
+      <button type="submit">వెతకండి</button>
+    </form>
+
+    <div class="su-hero-acts">
+      <a class="su-hact" href="#jobs"><svg class="su-uicon su-uicon-bolt" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-bolt"/></svg> తాజా ఉద్యోగాలు</a>
+      <a class="su-hact" href="#jobs"><svg class="su-uicon su-uicon-school" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-school"/></svg> 10వ / ఇంటర్</a>
+      <a class="su-hact" href="#jobs"><svg class="su-uicon su-uicon-board" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-board"/></svg> డిగ్రీ / PG</a>
+      <a class="su-hact" href="#jobs"><svg class="su-uicon su-uicon-bank" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-bank"/></svg> కేంద్ర ప్రభుత్వం</a>
+      <a class="su-hact" href="#jobs"><svg class="su-uicon su-uicon-ticket" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-ticket"/></svg> హాల్ టికెట్‌లు</a>
+      <a class="su-hact" href="../tools/index.html"><svg class="su-uicon su-uicon-chart" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-chart"/></svg> కాలిక్యులేటర్లు</a>
+    </div>
+
+    <ul class="su-hero-stats">
+      <li><b>1,284</b><span>మొత్తం అప్‌డేట్‌లు</span></li>
+      <li><b>42</b><span>24 గంటల్లో కొత్తవి</span></li>
+      <li><b>9,640</b><span>ఈరోజు చదివిన విద్యార్థులు</span></li>
+    </ul>
+  </div>
+</section>
+
+<div class="wrap">
+
+  <!-- ---------- trust signals (E-E-A-T) ---------- -->
+  <ul class="su-trust" aria-label="Why students trust StudentUp">
+    <li><span class="su-ok" aria-hidden="true"><svg class="su-uicon su-uicon-check" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-check"/></svg></span> <b>Official notifications</b> only</li>
+    <li><span aria-hidden="true"><svg class="su-uicon su-uicon-refresh" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-refresh"/></svg></span> Updated <b>today</b></li>
+    <li><span aria-hidden="true"><svg class="su-uicon su-uicon-doc" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-doc"/></svg></span> Source link <b>every post</b></li>
+    <li><span aria-hidden="true"><svg class="su-uicon su-uicon-tag" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-tag"/></svg></span> <b>100% free</b> — no signup</li>
+    <li><span aria-hidden="true"><svg class="su-uicon su-uicon-pin" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-pin"/></svg></span> TS · AP · Central</li>
+  </ul>
+
+  <!-- ======================= most searched ======================= -->
+  <section aria-label="Most searched by students">
+    <div class="sectionhead" style="margin-top:20px">
+      <div><h2>Most searched by students</h2><p>One tap to the sections TS &amp; AP students open most</p></div>
+      <a class="su-viewall" href="#jobs">All sections →</a>
+    </div>
+    <div class="usedgrid" style="display:grid">
+      <a class="usedcard" href="#jobs"><span class="ui" aria-hidden="true"><svg class="su-uicon su-uicon-bank" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-bank"/></svg></span><div><b>TS Government Jobs</b><small>TSPSC · Gurukulam · Police</small></div></a>
+      <a class="usedcard" href="#jobs"><span class="ui" aria-hidden="true"><svg class="su-uicon su-uicon-building" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-building"/></svg></span><div><b>AP Government Jobs</b><small>APPSC · DSC · Warder</small></div></a>
+      <a class="usedcard" href="#jobs"><span class="ui" aria-hidden="true"><svg class="su-uicon su-uicon-flag" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-flag"/></svg></span><div><b>Central Govt Jobs</b><small>SSC · RRB · Defence</small></div></a>
+      <a class="usedcard" href="#jobs"><span class="ui" aria-hidden="true"><svg class="su-uicon su-uicon-school" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-school"/></svg></span><div><b>Scholarships</b><small>Post-matric · ePASS</small></div></a>
+    </div>
+  </section>
+
+  <!-- ================== content + rail (laptop) ================== -->
+  <div class="su-layout" style="margin-top:6px">
+    <main id="main">
+      <div class="sectionhead" id="jobs">
+        <div><h2>Latest opportunities</h2><p>Filter by qualification — Telangana · Andhra Pradesh · Central</p></div>
+        <a class="su-board-link" href="#jobs">All active sections →</a>
+      </div>
+
+      <div class="chips" role="tablist" aria-label="Category filters">
+        <button class="chip active" type="button" role="tab" aria-selected="true">All</button>
+        <button class="chip" type="button" role="tab" aria-selected="false">TS Jobs</button>
+        <button class="chip" type="button" role="tab" aria-selected="false">AP Jobs</button>
+        <button class="chip" type="button" role="tab" aria-selected="false">Central</button>
+        <button class="chip" type="button" role="tab" aria-selected="false">Results</button>
+        <button class="chip" type="button" role="tab" aria-selected="false">Hall Tickets</button>
+        <button class="chip" type="button" role="tab" aria-selected="false">Scholarships</button>
+      </div>
+
+      <div class="su-adleader" aria-label="Advertisement">
+        Advertisement · leaderboard (728×90 / responsive)
+        <small>Highest-paying slot — first view, no CLS (height reserved)</small>
+      </div>
+
+      <div class="newsgrid" id="grid">
+
+        <article class="news news--lead" data-accent="central" data-su-card data-cat="central">
+          <a class="thumb thumb--auto" href="../posts/upsc-junior-assistant-2026.html" aria-hidden="true" tabindex="-1"><span class="su-cov"><b class="su-cov-mono">SS</b><span class="su-cov-cat">SSC CHSL</span><span class="su-cov-brand">StudentUp</span></span></a>
+          <div class="newsbody">
+            <div class="tagrow"><span class="tag">Central</span><span class="su-fresh">NEW</span><span class="statechip">12 min ago</span></div>
+            <h3><a href="../posts/upsc-junior-assistant-2026.html">SSC CHSL 2026 Notification — 3,712 Posts, Apply Online</a></h3>
+            <p>10th / Inter pass candidates eligible. Tier-1 exam August 2026. Application window opened today.</p>
+            <div class="newsfoot"><span>3 min read</span><span class="lastdate"><svg class="su-uicon su-uicon-clock" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-clock"/></svg> Last date 28 Oct · 5 days left</span><a class="su-readmore" href="../posts/upsc-junior-assistant-2026.html">Read more →</a></div>
+          </div>
+        </article>
+
+        <article class="news" data-accent="ts" data-su-card data-cat="ts">
+          <a class="thumb thumb--auto t2" href="../posts/engineering-internships-2026.html" aria-hidden="true" tabindex="-1"><span class="su-cov"><b class="su-cov-mono">TS</b><span class="su-cov-cat">TSPSC</span><span class="su-cov-brand">StudentUp</span></span></a>
+          <div class="newsbody">
+            <div class="tagrow"><span class="tag">TS Jobs</span><span class="statechip">1 hr ago</span></div>
+            <h3><a href="../posts/engineering-internships-2026.html">TSPSC Group 2 Recruitment 2026 — 783 Vacancies, Degree Pass</a></h3>
+            <p>Online application reopened for leftover posts. Fee ₹200, age 18–44 with relaxations.</p>
+            <div class="newsfoot"><span>4 min read</span><span class="lastdate soon"><svg class="su-uicon su-uicon-clock" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-clock"/></svg> Last date 05 Nov</span><a class="su-readmore" href="../posts/engineering-internships-2026.html">Read more →</a></div>
+          </div>
+        </article>
+
+        <article class="news su-adcard" aria-label="Advertisement">
+          <div style="text-align:center">
+            <div style="font-size:11px;letter-spacing:.08em">Advertisement</div>
+            <div style="text-transform:none;letter-spacing:0;font-weight:600;font-size:13px;margin-top:6px;color:#7b8aa3">AdSense / sponsor slot — in-feed, highest viewability</div>
+          </div>
+        </article>
+
+        <article class="news" data-accent="central" data-su-card data-cat="central">
+          <a class="thumb thumb--auto t3" href="#jobs" aria-hidden="true" tabindex="-1"><span class="su-cov"><b class="su-cov-mono">IB</b><span class="su-cov-cat">IBPS Clerk</span><span class="su-cov-brand">StudentUp</span></span></a>
+          <div class="newsbody">
+            <div class="tagrow"><span class="tag">Central</span><span class="statechip">2 hrs ago</span></div>
+            <h3><a href="#jobs">IBPS Clerk 2026 — 4,520 Posts, Any Degree, All India</a></h3>
+            <p>Prelims November. Salary ₹29,000–₹35,000 in-hand with DA. Apply before 5 Nov.</p>
+            <div class="newsfoot"><span>3 min read</span><span class="lastdate soon"><svg class="su-uicon su-uicon-clock" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-clock"/></svg> Last date 05 Nov</span><a class="su-readmore" href="#jobs">Read more →</a></div>
+          </div>
+        </article>
+
+        <article class="news" data-accent="central" data-su-card data-cat="central">
+          <a class="thumb thumb--auto" href="#jobs" aria-hidden="true" tabindex="-1"><span class="su-cov"><b class="su-cov-mono">RR</b><span class="su-cov-cat">RRB NTPC</span><span class="su-cov-brand">StudentUp</span></span></a>
+          <div class="newsbody">
+            <div class="tagrow"><span class="tag">Central</span><span class="statechip">4 hrs ago</span></div>
+            <h3><a href="#jobs">RRB NTPC 2026 — 11,558 Posts, 10th / Inter / Degree</a></h3>
+            <p>Zone-wise vacancy list released. CBT-1 expected December. Free travel pass for exam.</p>
+            <div class="newsfoot"><span>5 min read</span><span class="lastdate"><svg class="su-uicon su-uicon-clock" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-clock"/></svg> Last date 18 Nov</span><a class="su-readmore" href="#jobs">Read more →</a></div>
+          </div>
+        </article>
+
+        <article class="news" data-accent="ap" data-su-card data-cat="ap">
+          <a class="thumb thumb--auto t2" href="#jobs" aria-hidden="true" tabindex="-1"><span class="su-cov"><b class="su-cov-mono">AP</b><span class="su-cov-cat">AP Police</span><span class="su-cov-brand">StudentUp</span></span></a>
+          <div class="newsbody">
+            <div class="tagrow"><span class="tag">AP Jobs</span><span class="statechip">6 hrs ago</span></div>
+            <h3><a href="#jobs">AP Police Constable 2026 — 6,100 Posts, Inter Pass</a></h3>
+            <p>Physical test dates announced district-wise. Height 162cm (men) / 152cm (women).</p>
+            <div class="newsfoot"><span>4 min read</span><span class="lastdate"><svg class="su-uicon su-uicon-clock" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-clock"/></svg> Last date 22 Nov</span><a class="su-readmore" href="#jobs">Read more →</a></div>
+          </div>
+        </article>
+
+        <article class="news" data-accent="result" data-su-card data-cat="result">
+          <a class="thumb thumb--auto t3" href="../posts/upsc-junior-assistant-2026.html" aria-hidden="true" tabindex="-1"><span class="su-cov"><b class="su-cov-mono">EA</b><span class="su-cov-cat">EAMCET</span><span class="su-cov-brand">StudentUp</span></span></a>
+          <div class="newsbody">
+            <div class="tagrow"><span class="tag">Results</span><span class="statechip">8 hrs ago</span></div>
+            <h3><a href="../posts/upsc-junior-assistant-2026.html">TS EAMCET 2026 Counselling Schedule Released</a></h3>
+            <p>Certificate verification from 12 Nov. Web options, seat allotment dates full list.</p>
+            <div class="newsfoot"><span>2 min read</span><a class="su-readmore" href="../posts/upsc-junior-assistant-2026.html">Read more →</a></div>
+          </div>
+        </article>
+      </div>
+      <p id="su-empty" class="su-empty" hidden>ఈ category లో ఇప్పుడు కొత్త అప్‌డేట్‌లు లేవు — “All” నొక్కి మొత్తం చూడండి.</p>
+
+      <div class="su-adbelow" aria-label="Advertisement">
+        Advertisement · below-content (in-article quality)
+        <small>Readers who finished the list convert best here</small>
+      </div>
+
+      <div class="newsgrid" id="grid-more" style="margin-top:16px">
+        <article class="news" data-accent="ts" data-su-card data-cat="ts">
+          <a class="thumb thumb--auto" href="#jobs" aria-hidden="true" tabindex="-1"><span class="su-cov"><b class="su-cov-mono">PO</b><span class="su-cov-cat">Post Office</span><span class="su-cov-brand">StudentUp</span></span></a>
+          <div class="newsbody">
+            <div class="tagrow"><span class="tag">TS Jobs</span><span class="statechip">10 hrs ago</span></div>
+            <h3><a href="#jobs">Post Office GDS 2026 — 21,413 Posts, 10th Pass</a></h3>
+            <p>Telangana circle lo 2,180 vacancies. Merit based, no exam — last date 30 Nov.</p>
+            <div class="newsfoot"><span>3 min read</span><span class="lastdate"><svg class="su-uicon su-uicon-clock" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-clock"/></svg> Last date 30 Nov</span><a class="su-readmore" href="#jobs">Read more →</a></div>
+          </div>
+        </article>
+
+        <article class="news" data-accent="central" data-su-card data-cat="central">
+          <a class="thumb thumb--auto t2" href="#jobs" aria-hidden="true" tabindex="-1"><span class="su-cov"><b class="su-cov-mono">SS</b><span class="su-cov-cat">SSC GD</span><span class="su-cov-brand">StudentUp</span></span></a>
+          <div class="newsbody">
+            <div class="tagrow"><span class="tag">Central</span><span class="statechip">12 hrs ago</span></div>
+            <h3><a href="#jobs">SSC GD Constable 2026 — 39,481 Posts, 10th Pass</a></h3>
+            <p>Physical test (PST/PET) details released. Salary ₹21,700–₹69,100 (Level 3).</p>
+            <div class="newsfoot"><span>4 min read</span><span class="lastdate"><svg class="su-uicon su-uicon-clock" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-clock"/></svg> Last date 12 Dec</span><a class="su-readmore" href="#jobs">Read more →</a></div>
+          </div>
+        </article>
+
+        <article class="news" data-accent="ap" data-su-card data-cat="ap">
+          <a class="thumb thumb--auto t3" href="#jobs" aria-hidden="true" tabindex="-1"><span class="su-cov"><b class="su-cov-mono">AP</b><span class="su-cov-cat">APPSC</span><span class="su-cov-brand">StudentUp</span></span></a>
+          <div class="newsbody">
+            <div class="tagrow"><span class="tag">AP Jobs</span><span class="statechip">1 day ago</span></div>
+            <h3><a href="#jobs">APPSC Group 1 2026 — 92 Posts, Any Degree</a></h3>
+            <p>Prelims syllabus + previous papers link. Age 18–42, fee ₹250.</p>
+            <div class="newsfoot"><span>5 min read</span><span class="lastdate soon"><svg class="su-uicon su-uicon-clock" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-clock"/></svg> Last date 20 Dec</span><a class="su-readmore" href="#jobs">Read more →</a></div>
+          </div>
+        </article>
+      </div>
+
+      <!-- ======================= quiz + alerts ======================= -->
+      <section class="su-callout" id="quiz" style="margin-top:22px" aria-label="Daily quiz">
+        <h3><svg class="su-uicon su-uicon-help" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-help"/></svg> Daily quiz — 7 questions</h3>
+        <p>Roju kotha current affairs. Streak build chesi exam ki ready avvandi.</p>
+        <a class="su-cta" href="#quiz">Quiz start cheyyi · 2 min</a>
+        <a class="su-cta su-cta--ghost" href="#quiz" style="margin-left:8px"><svg class="su-uicon su-uicon-bolt" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-bolt"/></svg> 4-day streak</a>
+      </section>
+
+      <section class="su-railed" id="alerts" style="margin-top:22px" aria-label="Alerts">
+        <h3><svg class="su-uicon su-uicon-bell" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-bell"/></svg> Alerts — miss avvakandi</h3>
+        <p style="margin:0 0 12px;font-size:14px;color:var(--muted)">Last date, hall ticket, result — WhatsApp / Telegram lo instant.</p>
+        <a class="su-cta su-cta--ink" href="https://wa.me/919182739312">WhatsApp alerts ON</a>
+        <a class="su-cta" href="https://t.me/studentup_in" style="margin-left:8px">Telegram</a>
+      </section>
+
+      <div class="su-railad" style="margin-top:22px;min-height:120px" aria-label="Advertisement">Advertisement · responsive slot</div>
+    </main>
+
+    <!-- ============================ rail ============================ -->
+    <aside class="su-rail" aria-label="Sidebar">
+      <div class="su-railad" aria-label="Advertisement">Advertisement · 300×250</div>
+      <div class="su-railed">
+        <h3>Top jobs this week</h3>
+        <ul class="su-mini">
+          <li><a href="../posts/upsc-junior-assistant-2026.html"><i>1</i> SSC CHSL 2026 — 3,712 posts</a></li>
+          <li><a href="#jobs"><i>2</i> RRB NTPC — 11,558 posts</a></li>
+          <li><a href="#jobs"><i>3</i> AP Police Constable — 6,100 posts</a></li>
+          <li><a href="../posts/engineering-internships-2026.html"><i>4</i> TSPSC Group 2 — 783 posts</a></li>
+          <li><a href="#jobs"><i>5</i> Post Office GDS — 21,413 posts</a></li>
+        </ul>
+      </div>
+      <div class="su-railed">
+        <h3>Closing this week</h3>
+        <ul class="su-mini">
+          <li><a href="../posts/upsc-junior-assistant-2026.html"><i><svg class="su-uicon su-uicon-clock" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-clock"/></svg></i> SSC CHSL — 28 Oct</a></li>
+          <li><a href="../posts/engineering-internships-2026.html"><i><svg class="su-uicon su-uicon-clock" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-clock"/></svg></i> TSPSC Group 2 — 05 Nov</a></li>
+          <li><a href="#jobs"><i><svg class="su-uicon su-uicon-clock" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-clock"/></svg></i> IBPS Clerk — 05 Nov</a></li>
+        </ul>
+      </div>
+      <div class="su-railed" style="background:linear-gradient(135deg,#0b2447,#164b8f);border:0;color:#fff">
+        <h3 style="color:#fff"><svg class="su-uicon su-uicon-bank" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-bank"/></svg> Sponsor slot</h3>
+        <p style="margin:0 0 10px;font-size:13.5px;color:#d7e6ff">Coaching institutes / books — native card, ₹8,000–₹15,000 per month.</p>
+        <a class="su-cta" href="../pages/advertise.html" style="width:100%">Advertise here</a>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<!-- ============================ footer ============================ -->
+<footer class="su-foot">
+  <div class="su-foot-grid">
+    <div><h4>StudentUp</h4><p style="margin:0;color:#a9bfdd">Verified government job, exam and scholarship updates for Telangana &amp; AP students.</p><p style="margin:8px 0 0"><a href="../pages/about.html">About</a> · <a href="../pages/contact.html">Contact</a> · <a href="../pages/advertise.html">Advertise</a> · <a href="../pages/editorial-policy.html">Editorial policy</a></p></div>
+    <div><h4>Jobs</h4><ul><li><a href="#jobs">TS Jobs</a></li><li><a href="#jobs">AP Jobs</a></li><li><a href="#jobs">Central Govt</a></li><li><a href="#jobs">Bank Jobs</a></li></ul></div>
+    <div><h4>Exams</h4><ul><li><a href="#jobs">Results</a></li><li><a href="#jobs">Hall Tickets</a></li><li><a href="#jobs">Syllabus</a></li><li><a href="#jobs">Previous papers</a></li></ul></div>
+    <div><h4>Follow</h4><ul><li><a href="https://wa.me/919182739312">WhatsApp channel</a></li><li><a href="https://t.me/studentup_in">Telegram</a></li><li><a href="https://www.instagram.com/studentup.in">Instagram</a></li><li><a href="https://www.youtube.com/@studentupin">YouTube</a></li></ul></div>
+  </div>
+  <div class="su-foot-bottom">© 2026 StudentUp.in · Sources: official notifications only · <a href="../pages/privacy.html">Privacy</a> · <a href="../pages/disclaimer.html">Disclaimer</a> · We are not a government website.</div>
+</footer>
+
+<!-- ================= mobile bottom nav (app feel) ================= -->
+<nav class="su-bottomnav" aria-label="Quick nav">
+  <a href="index.html" aria-current="page"><span class="su-bi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V21H3z"/></svg></span>Home</a>
+  <a href="#jobs"><span class="su-bi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5h6v2"/></svg></span>Jobs</a>
+  <a href="../tools/index.html"><span class="su-bi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10"/></svg></span>Tools</a>
+  <a href="#alerts"><span class="su-bi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3a6 6 0 0 0-6 6v3l-2 3h16l-2-3V9a6 6 0 0 0-6-6Zm-2 15a2 2 0 0 0 4 0"/></svg></span>Alerts</a>
+</nav>
+
+<!-- ================= sticky anchor ad (mobile revenue) ================= -->
+<div class="su-anchor" id="su-anchor" hidden>
+  <div class="su-anchor-ad">Advertisement · sticky slot</div>
+  <button type="button" aria-label="Close advertisement" onclick="document.getElementById('su-anchor').hidden=true"><svg class="su-uicon su-uicon-close" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-close"/></svg></button>
+</div>
+
+<script>
+(function(){
+  try{ document.getElementById('today').textContent = new Date().toLocaleDateString('te-IN',{day:'numeric',month:'short',year:'numeric'}); }catch(e){}
+
+  var b=document.body, btn=document.getElementById('su-theme');
+  function paint(){ btn.textContent = b.classList.contains('dark') ? '<svg class="su-uicon su-uicon-sun" width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-sun"/></svg>' : '<svg class="su-uicon su-uicon-moon" width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-moon"/></svg>'; }
+  if(localStorage.getItem('su_theme')==='dark') b.classList.add('dark');
+  paint();
+  btn.addEventListener('click',function(){
+    b.classList.toggle('dark');
+    localStorage.setItem('su_theme', b.classList.contains('dark')?'dark':'light');
+    paint();
+  });
+
+  /* v193: chips ippudu NIJAMGA filter chestayi (mundu highlight matrame — tap cheste
+     emi jaragaledu, "broken" feel vachedi). */
+  var CHIPS = {'All':'', 'TS Jobs':'ts', 'AP Jobs':'ap', 'Central':'central', 'Results':'result',
+               'Hall Tickets':'central', 'Scholarships':'scholarship'};
+  var cards = [].slice.call(document.querySelectorAll('[data-su-card]'));
+  var grid  = document.getElementById('grid');
+  var empty = document.getElementById('su-empty');
+  document.querySelectorAll('.chip').forEach(function(c){
+    c.addEventListener('click',function(){
+      document.querySelectorAll('.chip').forEach(function(x){x.classList.remove('active');x.setAttribute('aria-selected','false');});
+      c.classList.add('active'); c.setAttribute('aria-selected','true');
+      var want = CHIPS[c.textContent.trim()] || '';
+      var shown = 0;
+      cards.forEach(function(el){
+        var ok = !want || el.getAttribute('data-accent') === want;
+        el.hidden = !ok;
+        if(ok){ shown++; }
+      });
+      if(empty){ empty.hidden = shown > 0; }
+    });
+  });
+
+  document.querySelectorAll('.su-ttab').forEach(function(t){
+    t.addEventListener('click',function(){
+      document.querySelectorAll('.su-ttab').forEach(function(x){x.setAttribute('aria-selected','false');});
+      t.setAttribute('aria-selected','true');
+      document.querySelectorAll('.su-toolpanel').forEach(function(p){p.classList.remove('on');p.setAttribute('hidden','');});
+      var el=document.getElementById(t.getAttribute('aria-controls'));
+      if(el){ el.classList.add('on'); el.removeAttribute('hidden'); }
+    });
+  });
+
+  var basic=document.getElementById('calc-basic'), out=document.getElementById('calc-out');
+  function calc(){ if(!basic||!out) return; var v=parseFloat(basic.value||0); out.textContent='₹'+Math.round(v*1.21-1800).toLocaleString('en-IN'); }
+  if(basic){ basic.addEventListener('input',calc); calc(); }
+
+  if(!localStorage.getItem('su_anchor_closed') && window.innerWidth<900){
+    setTimeout(function(){ document.getElementById('su-anchor').hidden=false; },6000);
+  }
+  var closeBtn=document.querySelector('#su-anchor button');
+  if(closeBtn){ closeBtn.addEventListener('click',function(){ localStorage.setItem('su_anchor_closed','1'); }); }
+})();
+</script>
+</body>
+</html>
