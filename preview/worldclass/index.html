@@ -1045,6 +1045,11 @@
 (function(){
   var form=document.querySelector('[data-su-quiz-form]');
   if(form){
+    var qDateEl=document.getElementById('su-quiz-date');
+    if(qDateEl){
+      var d=new Date(), ms=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      qDateEl.textContent=d.getDate()+' '+ms[d.getMonth()]+' '+d.getFullYear();
+    }
     var scoreEl=document.querySelector('[data-su-quiz-score]'),
         barEl=document.querySelector('[data-su-quiz-bar]'),
         checkBtn=document.querySelector('[data-su-quiz-check]'),
