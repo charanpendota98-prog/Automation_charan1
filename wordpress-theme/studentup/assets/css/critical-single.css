@@ -240,6 +240,8 @@ body.dark .article-content blockquote{background:#16243b;border-left-color:#f0a2
 .dark .su-source-trust{border-color:rgba(129,220,157,.3);background:#173b29;color:#ccebd4}
 @media print{
 	body{background:#fff;color:#000;font-size:12pt}}
+.su-trust-banner{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin:10px 0 16px;padding:10px 14px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;font-size:12.5px;color:#166534}
+body.dark .su-trust-banner{background:rgba(22,101,52,.15);border-color:#166534;color:#86efac}
 :root{
   --su-g1:#4f46e5; --su-g2:#7c3aed; --su-g3:#ec4899;
   --su-amber:#f59e0b; --su-mint:#10b981; --su-sky:#0ea5e9;
@@ -832,3 +834,5 @@ body.dark .menubtn{
 .news .thumb-img img{ width:100%; height:100%; object-fit:cover; display:block; transition:transform .35s cubic-bezier(.2,.7,.3,1) }
 @media(prefers-reduced-motion:reduce){
   .news .thumb-img img{ transition:none }}
+.su-trust-banner{ display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; margin:10px 0 16px; padding:10px 14px; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:10px; font-size:12.5px; color:#166534 }
+body.dark .su-trust-banner{ background:rgba(22,101,52,.15); border-color:#166534; color:#86efac }

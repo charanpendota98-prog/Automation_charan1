@@ -223,6 +223,7 @@
         <svg class="su-uicon su-uicon-search" width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-search"/></svg>
         <label class="screen-reader-text" for="su-q">Search StudentUp</label>
         <input id="su-q" type="search" name="s" autocomplete="off" placeholder="Search TSPSC, APPSC, SSC, Hall Tickets, Results, Scholarships…">
+        <kbd class="su-kbd" title="Press / to search">/</kbd>
         <button type="submit">Search</button>
       </form>
       <div class="su-suggest-box" id="su-suggest-box" role="listbox" aria-label="Search suggestions" hidden></div>
@@ -1213,6 +1214,20 @@
   });
   window.addEventListener('online', function(){
     showToast('🟢 ఆన్‌లైన్‌కి తిరిగి వచ్చారు');
+  });
+
+  /* Keyboard shortcut '/' to search, 'Escape' to blur/clear */
+  document.addEventListener('keydown', function(e){
+    if(e.key === '/' && !['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName)){
+      e.preventDefault();
+      var q = document.getElementById('su-q');
+      if(q){ q.focus(); q.select(); }
+    } else if(e.key === 'Escape'){
+      var q = document.getElementById('su-q');
+      if(q && document.activeElement === q){ q.blur(); }
+      var sug = document.getElementById('su-suggest-box');
+      if(sug) sug.hidden = true;
+    }
   });
 
   updateSavedState();

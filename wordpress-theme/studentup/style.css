@@ -1397,4 +1397,45 @@ body.dark .su-sheet-head{border-color:#1e3355}
 body.dark .su-saved-item{background:#14243c;border-color:#1e3355}
 body.dark .su-saved-item-title{color:#cfe1ff}
 
+/* ==========================================================================
+   20. GOOGLE E-E-A-T TRUST BANNER, JUMP PILLS & VIRAL SHARE
+   ========================================================================== */
+.su-trust-banner{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin:10px 0 16px;padding:10px 14px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;font-size:12.5px;color:#166534}
+.su-tb-badge{font-weight:800;display:inline-flex;align-items:center;gap:5px;color:#15803d}
+.su-tb-meta{font-size:12px;color:#14532d;opacity:.9}
+body.dark .su-trust-banner{background:rgba(22,101,52,.15);border-color:#166534;color:#86efac}
+body.dark .su-tb-badge{color:#4ade80}
+body.dark .su-tb-meta{color:#bbf7d0}
+
+.su-jump-row{display:flex;gap:6px;overflow-x:auto;padding:4px 0 14px;margin:0 0 12px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.su-jump-row::-webkit-scrollbar{display:none}
+.su-jump-pill{flex:0 0 auto;min-height:32px;padding:4px 12px;background:var(--soft,#f8fafc);border:1px solid var(--line-2,#e2e8f0);border-radius:999px;font-size:12px;font-weight:700;color:var(--ink,#1e293b);text-decoration:none;display:inline-flex;align-items:center;transition:all .15s ease}
+.su-jump-pill:hover{border-color:var(--blue,#2563eb);color:var(--blue,#2563eb);background:#fff}
+body.dark .su-jump-pill{background:#14243c;border-color:#1e3355;color:#cbd5e1}
+body.dark .su-jump-pill:hover{border-color:#60a5fa;color:#93c5fd}
+
+.su-viral-btn{appearance:none;width:100%;border:1px solid #86efac;background:#f0fdf4;color:#166534;font-size:13px;font-weight:800;padding:10px 16px;border-radius:10px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;margin:14px 0;transition:all .18s ease}
+.su-viral-btn:hover{background:#dcfce7;border-color:#4ade80;color:#14532d}
+body.dark .su-viral-btn{background:rgba(22,101,52,.2);border-color:#166534;color:#86efac}
+
+/* ==========================================================================
+   21. HIGH-CONVERTING MOBILE STICKY ACTION BAR (Google Safe)
+   ========================================================================== */
+.su-float-bar{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line-2,#e2e8f0);box-shadow:0 -6px 25px rgba(0,0,0,.12);z-index:85;padding:8px 14px;transition:transform .25s ease}
+.su-float-bar[hidden]{display:none}
+.su-fb-in{max-width:1180px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.su-fb-info{min-width:0;flex:1}
+.su-fb-title{font-size:12.5px;font-weight:800;color:var(--navy,#0b2447);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+.su-fb-deadline{font-size:11px;font-weight:750;color:#dc2626;display:block;margin-top:1px}
+.su-fb-actions{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.su-fb-apply{appearance:none;background:linear-gradient(135deg,#2563eb,#0b2447);color:#fff;text-decoration:none;font-size:12px;font-weight:800;padding:8px 14px;border-radius:8px;box-shadow:0 3px 10px rgba(37,99,235,.25);white-space:nowrap;display:inline-flex;align-items:center}
+.su-fb-apply:hover{transform:translateY(-1px);color:#fff}
+.su-fb-close{appearance:none;border:0;background:transparent;color:#94a3b8;font-size:14px;padding:4px 6px;cursor:pointer}
+.su-kbd{display:none;padding:2px 6px;font-size:11px;font-family:inherit;font-weight:700;color:var(--muted,#64748b);background:var(--soft,#f8fafc);border:1px solid var(--line,#cbd5e1);border-radius:4px;line-height:1}
+@media(min-width:900px){.su-kbd{display:inline-block}}
+@media(min-width:800px){.su-float-bar{display:none !important}}
+body.dark .su-float-bar{background:#0f1c30;border-color:#1e3355}
+body.dark .su-fb-title{color:#e2e8f0}
+
+
 
