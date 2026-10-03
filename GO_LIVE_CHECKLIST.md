@@ -1,7 +1,7 @@
 # GO-LIVE CHECKLIST (v60) — deploy cheyocha? Enti migilindi?
 
 
-> **Verified counts (theme v1.9.36 build):** test suites **137/137** files · jsdom runtime **177/177** checks · PHP lint **86/86** files · theme audit **0/0** · **deep audit pass 1-4 31/31** · code audit **0/0**.
+> **Verified counts (theme v1.9.41 build):** test suites **144/144** files · jsdom runtime **230/230** checks · PHP lint **97/97** files · theme audit **0/0** · **deep audit pass 1-4 31/31** · code audit **0/0**.
 **Short answer: CODE ready ✅ · DEPLOY ready ✅ · 5 panulu MEE accounts lo cheyyali ⏳.**
 Ee doc = okka page lo motham. Kramam ga cheyyandi.
 
@@ -125,8 +125,8 @@ Detail docs: `DEPLOY_MILESWEB.md` (cPanel steps) · `DEPLOY_ORACLE_CLOUD.md` (VM
 - [ ] **2. WordPress setup** — Rank Math; theme install (**v172**: theme **1.9.23** —
       `python tools/build_wp_theme.py` (CSS minify + `tools/build_critical_css.py` above-fold layer + reproducible zip)
       → zip → Appearance → Themes → Upload → Activate);
-      **zip:** 113 files · 1019 KB · theme **1.9.36** · sha256
-      `eea8a787fa4095cc7a3aaed908766438f25a0ea72f2fc0f1d77a78f552830de7`
+      **zip:** 135 files · 1174 KB · theme **1.9.41** · sha256
+      `b585f83174e589bbe62d2d9ab7487d457488d4c0765ad01e5b0aa7ac3af8f032`
       (`sha256sum wordpress-theme/studentup-theme.zip` — upload chesina zip ide ani verify cheyandi;
       build ippudu **fully reproducible** — POT date kuda fixed (v175), same content ⇒ same sha
       **prathi machine/CI lo**, mtimes tho sambandham ledu)
@@ -159,6 +159,10 @@ Detail docs: `DEPLOY_MILESWEB.md` (cPanel steps) · `DEPLOY_ORACLE_CLOUD.md` (VM
 - [ ] **2d. 25k pageviews tarvata** — `python tools/ad_network_plan.py --views 50k --tier1 0.3`
       → Raptive/Ezoic ki apply (detail: AD_NETWORKS_PLAN.md). Partner lines ni
       `ads/ads_txt_extra.txt` lo paste chesi `python tools/build_policy_pages.py` run cheyyandi.
+
+      > Preview article pages (posts/*.html) kuda kavali ante:
+      > `python tools/build_preview_posts.py` (and `python tools/build_preview_tools.py` for the tools page, plus `python tools/build_standalone.py` for the single-file demo) — adi policy pages shell ne reuse chestundi
+      > (same header/footer/bottom nav + real theme CSS), so preview anta okate design.
 - [ ] **3b. Pin-to-pin gate + trends** — prathi post ki certificate
       (`output/certificates/`) automatic ga untundi; critical fail unte publish aagutundi
       (`PIN_GATE_BLOCK=1`). `python run.py --pin-check` tho gate proof;

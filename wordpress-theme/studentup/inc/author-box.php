@@ -32,12 +32,18 @@ function studentup_last_updated() {
  */
 function studentup_author_meta() {
 	$name = (string) studentup_opt( 'author_name', 'Charan Pendota' );
-	$rev  = get_the_modified_date();
+	// v195: reviewer peru unte mattrame "Reviewed by X" — leda date line.
+	$who  = trim( (string) studentup_opt( 'author_reviewer', '' ) );
+	$rev  = $who ? $who : get_the_modified_date();
 	?>
 	<div class="su-author-meta" itemprop="author" itemscope itemtype="https://schema.org/Person">
 		<span><?php echo studentup_ui_icon( 'person', 14 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> <strong itemprop="name"><?php echo esc_html( $name ); ?></strong></span>
 		<?php if ( $rev ) : ?>
-			<span>Reviewed: <time itemprop="dateModified" datetime="<?php echo esc_attr( get_the_modified_date( 'c' ) ); ?>"><?php echo esc_html( $rev ); ?></time></span>
+			<?php if ( $who ) : ?>
+				<span>Reviewed by <strong itemprop="reviewedBy"><?php echo esc_html( $who ); ?></strong> · <time itemprop="dateModified" datetime="<?php echo esc_attr( get_the_modified_date( 'c' ) ); ?>"><?php echo esc_html( get_the_modified_date() ); ?></time></span>
+			<?php else : ?>
+				<span><?php esc_html_e( 'Sources verified:', 'studentup' ); ?> <time itemprop="dateModified" datetime="<?php echo esc_attr( get_the_modified_date( 'c' ) ); ?>"><?php echo esc_html( $rev ); ?></time></span>
+			<?php endif; ?>
 		<?php endif; ?>
 	</div>
 	<?php

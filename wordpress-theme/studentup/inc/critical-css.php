@@ -23,22 +23,52 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
+ * v195: Inline CSS context — home / single / archive.
+ *
+ * Enduku: okate pedda "critical" file anni pages ki inline cheyyadam waste
+ * (phone lo prathi pageload ~51 KB inline). Ippudu template batti chinna file
+ * vastundi (home ~47 KB, archive ~47 KB), lekapote union file fallback.
+ *
+ * @return string
+ */
+function studentup_critical_context() {
+	if ( is_front_page() || is_home() ) {
+		return 'home';
+	}
+	if ( is_singular( 'post' ) ) {
+		return 'single';
+	}
+	return 'archive';
+}
+
+/**
  * Critical CSS file path — SCRIPT_DEBUG / file lekapothe null (safe fallback).
+ *
+ * v195: template file (critical-home/single/archive) unte adi, lekapote
+ * critical.min.css (union) — theme eppudu break avvadu.
  *
  * @return string|null
  */
 function studentup_critical_css_file() {
-	static $cache = null;
-	if ( null !== $cache ) {
-		return $cache;
-	}
+	static $cache = array();
 	if ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) {
-		$cache = false;
-		return $cache;
+		return false;
 	}
-	$file = get_template_directory() . '/assets/css/critical.min.css';
-	$cache = is_readable( $file ) ? $file : false;
-	return $cache;
+	$ctx = studentup_critical_context();
+	if ( array_key_exists( $ctx, $cache ) ) {
+		return $cache[ $ctx ];
+	}
+	$dir      = get_template_directory() . '/assets/css/';
+	$specific = $dir . 'critical-' . $ctx . '.min.css';
+	$union    = $dir . 'critical.min.css';
+	$pick     = false;
+	if ( is_readable( $specific ) ) {
+		$pick = $specific;
+	} elseif ( is_readable( $union ) ) {
+		$pick = $union;
+	}
+	$cache[ $ctx ] = $pick;
+	return $pick;
 }
 
 /**

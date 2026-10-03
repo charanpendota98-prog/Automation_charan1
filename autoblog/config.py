@@ -41,6 +41,19 @@ WP_APP_PASSWORD = _get("WP_APP_PASSWORD", "")
 # "draft" = review flow (Telegram lo approve cheyandi tarvata publish).
 # "publish" = posts direct ga live avtavvi.
 DEFAULT_POST_STATUS = _get("DEFAULT_POST_STATUS", "draft")
+
+# --- v197 AUTO-PUBLISH LANE -------------------------------------------------
+# "daily ga draft chesi post chesthu vundali" — kaani **gate tho mattrame**.
+# 0 = drafts ne untayi (owner WordPress lo publish chestadu).
+# 1 = evening lane gate-passed drafts ni automatic ga publish chestundi
+#     (source URL + 700 words + Rank Math >= 80 + fresh + no placeholders).
+AUTO_PUBLISH_DAILY = _get("AUTO_PUBLISH_DAILY", "0")
+AUTO_PUBLISH_MIN_SCORE = _get("AUTO_PUBLISH_MIN_SCORE", "80")
+AUTO_PUBLISH_MIN_WORDS = _get("AUTO_PUBLISH_MIN_WORDS", "700")
+AUTO_PUBLISH_MAX = _get("AUTO_PUBLISH_MAX", "3")
+AUTO_PUBLISH_MAX_AGE_DAYS = _get("AUTO_PUBLISH_MAX_AGE_DAYS", "1")
+# Daily quiz + poll push (theme options) — "quiz polls daily advanced ga"
+DAILY_ENGAGE = _get("DAILY_ENGAGE", "1")
 # Automated discovery/research always creates a review draft. Publishing is a
 # separate owner action in WordPress; changing DEFAULT_POST_STATUS alone cannot
 # accidentally bypass this protection.

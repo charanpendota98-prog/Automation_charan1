@@ -15,6 +15,8 @@ get_header();
 <div class="su-progress" aria-hidden="true"><span id="su-progress-bar"></span></div>
 <main id="main">
 	<div class="wrap">
+		<div class="su-layout">
+			<div class="su-main">
 		<?php
 		while ( have_posts() ) :
 			the_post();
@@ -201,6 +203,9 @@ get_header();
 			}
 			?>
 		<?php endwhile; ?>
+			</div><!-- /.su-main -->
+			<?php get_sidebar(); // v191.5: article sidebar (300x250) — highest viewability ?>
+		</div><!-- /.su-layout -->
 	</div>
 </main>
 <?php

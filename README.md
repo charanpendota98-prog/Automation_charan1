@@ -1,7 +1,7 @@
 # studentup.in Auto-Blogger 🤖
 
 
-> **Verified counts (theme v1.9.36 build):** test suites **137/137** files · jsdom runtime **177/177** checks · PHP lint **86/86** files · theme audit **0/0** · **deep audit pass 1-4 31/31** · code audit **0/0**.
+> **Verified counts (theme v1.9.41 build):** test suites **144/144** files · jsdom runtime **230/230** checks · PHP lint **97/97** files · theme audit **0/0** · **deep audit pass 1-4 31/31** · code audit **0/0**.
 24/7 automatic blog posting system for **studentup.in** (WordPress) — runs on your Oracle Cloud instance.
 
 - **AI content:** Google Gemini (free tier) generates Telugu + English mix articles
@@ -681,7 +681,12 @@ Theme ni "world best" standards tho **repeatable ga audit** cheyyadaniki
 
 ```bash
 python3 tools/theme_audit_deep.py     # pass 1-4 · ✅ 31 pass · 0 warn · 0 fail
-node tools/php_lint.js                # 86/86
+node tools/php_lint.js                # 97/97
+python3 tools/build_offline_preview.py # 20-tab single-file preview (server-free)
+python run.py --verify-deploy          # v197: zip upload tarvata LIVE proof (theme · menu · quiz · poll · /daily-quiz/)
+python run.py --verify-deploy --verify-url https://studentup.in --verify-notify
+# click-by-click deploy steps: DEPLOY_v197.md
+python3 tools/build_sprite.py          # inline icon sprite (theme = single source)
 python3 tools/cwv_audit.py            # CLS/a11y static (10 pages)
 ```
 
@@ -792,7 +797,7 @@ python run.py --links-file links.txt --links-dry-run     # plan mattrame
 - **Prathi item kinda mee site link** — readers anni links open cheyyachu (truncation unte `… ఇంకా N ఉద్యోగాలు` line)
 - Expired/stale/superseded gating same (v184) · Telegram digest format marchaledu (backward compatible)
 
-Proof: `python tests/v187_test.py` (6 groups) · `--test-all` **137/137** · jsdom **177/177** · php-lint **86/86** · deep theme **31/0/0** · parity/code **0/0**.
+Proof: `python tests/v187_test.py` (6 groups) · `--test-all` **138/138** · jsdom **177/177** · php-lint **86/86** · deep theme **31/0/0** · parity/code **0/0**.
 
 v187 flags: `--links-file` · `--links` · `--links-limit` · `--links-dry-run` · `--links-notify`
 
@@ -829,7 +834,7 @@ SSC CHSL 2026 recruitment — eligibility, important dates, vacancy details and 
 - **Chips** = `2,000+ పోస్టులు` (comma formatting) · `💰 pay` · `⏰ 2 రోజులు మాత్రమే`.
 - **Mana blog links mattrame** — external source domains (ssc.gov.in, ecil.co.in) list lo eppudu raavu.
 
-Proof: `python tests/v188_test.py` (5 groups) · `--test-all` **137/137**.
+Proof: `python tests/v188_test.py` (5 groups) · `--test-all` **138/138**.
 
 ### v189 — DAILY MORNING SEND 🌅 (roju udayam automatic)
 
@@ -851,6 +856,160 @@ python run.py --forward-morning --forward-no-whatsapp       # Telegram mattrame
 | Cron | `30 6 * * *` (6:30 AM) — `crontab.example` lo line ready |
 
 Proof: `python tests/v189_test.py` (5 groups).
+
+### v196 — ADVANCED PACK: exam calendar · transparent pricing · corrections log 🗓️
+
+Audit gaps that were still open (#9 deadlines useless · #12 hidden price · #41 no correction log):
+
+| Feature | File | Emi chestundi |
+|---|---|---|
+| **Exam calendar + .ics** | `inc/calendar.php` · `page-exam-calendar.php` | Confirmed last-dates month-wise, closing-soon order, **one-tap "Add all dates to my calendar"** (.ics with 1-day alarm, server-side), ItemList+Event schema, honest empty state ("we never estimate a deadline") |
+| **Transparent pricing** | `page-internet-center.php` | Price list (₹50/₹100/₹150 — admin options), what's included, "what we never do" (no job promise · no Aadhaar/PAN/OTP), govt-fee separation, 24h turnaround, refund rule, independence line |
+| **Corrections log** | `page-corrections.php` | Public correction list (meta `studentup_correction_note`), updated dates, "report a mistake" flow with 48h SLA, honest empty state |
+
+Setup (`Run setup now`) ee 3 pages ni create chesi **template auto-assign** chestundi (idempotent). Preview: `pages/exam-calendar.html` · `internet-center.html` · `corrections.html` · sitemap **18 locs**.
+**Proof:** `tests/v196_test.py` (6 gates) · **141/141 suites** · php-lint **94/94** · parity PIN-TO-PIN · cwv 0/0 · visual 100/100.
+
+### v197 — engage pack + advanced menu + daily bot publish lane
+
+Owner ask (2026-10-03): *"fix cheyu anni perfectgaa quiz polls daily advancedga
+bot tho draft chesi post chesthu vundali anni perfectga advanced menu build cheyu"*.
+
+| Area | What shipped |
+| --- | --- |
+| Bug (screenshot) | Theme toggle showed raw `<svg …>` text because the preview assigned markup to `textContent`. Fixed to `innerHTML` in the demo + standalone, and a regression gate now fails any `textContent = …<svg` in the theme or preview. |
+| Advanced menu | `inc/megamenu.php` — 5 groups (Jobs · Exams · Scholarships · Tools · More) rendered as a mega panel with columns, icons and a recommended card. Every link is a real term / published page / front-page anchor, so a missing section simply drops out (no 404s). Mobile panel gets a `<details>` accordion. `assets/js/studentup-menu.js` adds keyboard (arrows, Escape), aria-expanded sync, touch behaviour and a sticky-header shrink. `mega_menu` option can switch back to the v93 dropdown. |
+| Daily quiz | `inc/quiz.php` rebuilt: 25-question sourced bank, server-rendered questions (works with JavaScript off — form POST + nonce), Quiz JSON-LD, explained answers with source, streak + best + native share via `assets/js/studentup-engage.js`, dedicated `/daily-quiz/` page (`page-quiz.php`, created by *Run setup now*). The v123 bug (function never called → quiz missing on the live theme) is closed and gated by a test. |
+| Reader polls | `inc/polls.php` — daily poll (7-question bank + bot/owner override), one vote per device (one-way hashed voter, raw IP never stored), 20-second rate limit, counts in `wp_options` with autoload OFF, REST route `studentup/v1/poll`, and a plain form POST fallback so voting works without JavaScript. |
+| Daily bot | `autoblog/publish_lane.py` — evening auto-publish that only touches drafts clearing **every** gate (official source URL meta · 700+ words · live Rank Math score ≥ 80 · fresh · no placeholder text) and verifies the publish readback. `autoblog/engage_push.py` pushes the daily quiz post and the poll question to the theme (idempotent by poll id). CLI: `--auto-publish`, `--auto-publish-dry`, `--daily-engage`; `AUTO_PUBLISH_DAILY=1` adds the publish step to `--daily`. |
+| Deploy proof | `python run.py --verify-deploy` checks the **live** site after the zip upload: theme version 1.9.41+, mega menu markup, menu/engage JS, quiz + poll on the home, `/daily-quiz/`, served CSS classes, icon sprite, sitemap entry and the poll REST route. Every failure prints the exact next step (upload zip / Run setup now / purge cache). |
+| Preview | Mega nav rendered by the same builder for every preview page, real quiz + poll widgets on the home and on a new English `/pages/daily-quiz.html`, and `tools/build_sprite.py` generates the inline icon sprite from the theme's own icon set (no more blank icon boxes). The offline single-file bundle now has 20 tabs and no dead links. |
+
+**Proof:** `tests/v197_test.py` (10 gates) · **142/142 suites** · php-lint **97/97** · parity PIN-TO-PIN · theme audit 0/0 · deep audit 31/31 · cwv 0/0 · visual 100/100.
+
+### v198 — tools advanced (phone-first, neat, zero guesswork)
+
+Owner ask (2026-10-03): *"tools em avasaram ledu [on home], tools and UI advanced ga
+vundali neat ga phone lo easy ga click vachelaga"*.
+
+| What | Detail |
+| --- | --- |
+| One clean card, 8 tools | in-hand salary · age checker · fee & concession · score with negative marking · last-date calendar · admit-card checklist · resume summary · syllabus tracker. One tool visible at a time — no wall. |
+| Finder | search box (`/` shortcut on desktop) filters the tools as you type, with an honest empty state; category chips (Money · Eligibility · Exams · Career · Deadlines) carry live counts. |
+| Phone ergonomics | sticky tab strip under the header with scroll-snap + left/right swipe, 48 px tap targets everywhere, − / + stepper buttons on every number field so the keypad is optional, one field per row under 620 px. |
+| Result handling | Copy result · Share (native sheet, WhatsApp fallback) · Print (trimmed print stylesheet) · Reset restores your defaults — per tool. |
+| Trust (E-E-A-T) | every tool carries a "How this is calculated" panel with its formula and the official source it follows. |
+| Deep links | `/tools/?tool=age` is shareable, bookmarkable and Back/Forward-safe. |
+| No-JS + privacy | `<noscript>` fallback lists every tool when JavaScript is off; the engine stores nothing (no cookie, no localStorage, no network call). |
+| Perf | engine is ~17 KB deferred, loaded on the Tools page only; its selectors stay out of the inline critical CSS (45 KB cap respected). |
+| Build stamp | every preview page ends with an honest `Preview build 1.9.41` line, so a cached/old page is instantly recognisable (v199.1). |
+| Nothing lost | the v120 reader utilities that shared the old file (compare rail, deadline reminder `.ics`, print/PDF, text-size buttons, in-article age/fee/syllabus calculators) now live in `assets/js/studentup-reader-utils.js` and are enqueued everywhere they render — v198 C7 + jsdom 8 checks prove each one still works. |
+
+**Set up (theme + bot, okka file):** [`SETUP_ALL.md`](SETUP_ALL.md) — zip download → theme upload → `Run setup now` → bot `.env` + 5 cron lines → `--verify-deploy`.
+
+### v199 — home phone-first (live strip + most-searched cards)
+
+Owner screenshot review (2026-10-03): *"idi ravoddu, inka inka best ga anni features
+build cheyu, anni phone lo advanced ga best ga"*.
+
+| What | Detail |
+| --- | --- |
+| Stray "—" fixed | the count pill used to fall back to an em-dash on the live home (visible as a small mark on every card). Now a pill only renders when WordPress has a **real** category count, empty pills are hidden (`:empty`) and the JS hides anything without a digit — no fake numbers. |
+| v192 demo note removed | "v192 premium preview…" banner is gone from the demo, the standalone file and the 20-tab offline bundle. |
+| Live "Latest Jobs" strip | fades at both edges instead of clipping text, pauses when you press/hover/focus it, 44 px tap height on every headline, and becomes a normal swipeable row under `prefers-reduced-motion`. |
+| Most searched | the 10 sections fill **exactly**: 2-up on phone (5 clean rows) and 5-up on laptop (2 clean rows) — no empty cells, no wasted space (v199.1). Cards are tighter (70 px, 38 px icon) with press feedback, a clean trailing chevron, focus ring, dark-mode count pills and print rules. |
+| Build stamp | every preview page ends with an honest `Preview build 1.9.41` line, so a cached/old page is instantly recognisable (v199.1). |
+| Nothing lost | quiz, polls, mega menu, bottom nav, sticky ad and the tools page are untouched; home still carries no calculators (v191 rule). |
+
+**Proof:** `tests/v199_test.py` (5 gates) · jsdom +5 checks (ticker set, 10 cards, real pills, demo note gone) · **144/144 suites** · jsdom **230/230**.
+
+**Proof:** `tests/v198_test.py` (8 gates) · `tests/runtime/jsdom_runtime_test.js` +34 behavioural checks (finder, chips, sticky, deep link, steppers, reset, real results + the v120 compare/reminder/print/text-size/age-calculator layer, restored in v198) · **144/144 suites** · jsdom **230/230** · php-lint **97/97**.
+
+### v195 — A) PER-TEMPLATE CRITICAL CSS · B) HUB PAGES · C) AUTHOR E-E-A-T 🚀
+
+User ask: "A) per-template critical CSS → Speed Index fix · B) hub pages + internal links ON · C) author/editorial pages + Person schema — anni cheyu".
+
+**A. Per-template critical CSS (theme 1.9.41-dev)**
+
+| File | Inline size | Ekkada |
+|---|---|---|
+| `critical-home.min.css` | **46.9 KB** | front page / blog home |
+| `critical-single.min.css` | 55.9 KB | single post (article head · apply bar · author box) |
+| `critical-archive.min.css` | **46.6 KB** | category · search · archive · 404 |
+| `critical.min.css` (union) | 51.1 KB | fallback (file lekapote / SCRIPT_DEBUG) |
+
+`inc/critical-css.php` → `studentup_critical_context()` batti pick chestundi; context file lekapote union file (theme eppudu break avvadu).
+**Fonts (honest note):** theme lo **webfont ledu** — `system-ui` + `Noto Sans Telugu` system fallback, so *subsetting avasaram ledu* (0 font bytes = 0 font delay). Test tho lock chesanu (`v195 A3`).
+
+**B. Hub pages + internal links**
+
+- `inc/hubs.php` — 5 hubs: `ts-jobs-hub` · `ap-jobs-hub` · `central-jobs-hub` · `results-hub` · `scholarships-hub`
+- `[studentup_hub cats="ts-jobs,results"]` shortcode — server-side cards (same `news` classes = pin-to-pin), 15-min transient cache, empty-hub honest fallback (dead-end ledu)
+- `CollectionPage` + `ItemList` JSON-LD (Google list identity)
+- Internal links: `the_content` engine **default ON** (max 3, ≥14-char phrase matches, headings/links/code protected) + `studentup_autolink_map` filter → hub pages kuda link targets (orphan fix)
+- Setup run: hub pages auto-create + footer menu lo link (`Run setup now` — idempotent)
+
+**C. Author / editorial E-E-A-T pack**
+
+- `/editorial-team/` page + `[studentup_author_profile]` shortcode → profile card (name · role · photo · bio · expertise chips · since · socials) + "How every update is verified" 4-gate list
+- `Person` schema (`#founder`, knowsAbout, sameAs, image, email) + `ProfilePage` (author archive) + `Organization.founder` + editorial `ContactPoint`
+- Reviewer honesty: `author_reviewer` option lo **nijamaina peru** unte "Reviewed by X"; lekapote "Sources verified: <date>" — fake review claim eppudu ledu
+
+**Proof:** `tests/v195_test.py` (9 gates) · `--test-all` **140/140** · php-lint **90/90** · parity **PIN-TO-PIN** · cwv **0/0** · visual **100/100** · zip **125 files · 1120 KB**.
+
+**Preview lo chudandi:** `/preview/pages/ts-jobs-hub.html` · `results-hub.html` · `scholarships-hub.html` · `editorial-team.html` (same shell + same CSS = real theme design).
+
+### v194 — LIVE SITE AUDIT + CODE FIXES (studentup.in, 2026-10-03) 🔍
+
+**Audit (brutally critical, 19 sections):** [`LIVE_SITE_AUDIT_2026-10.md`](LIVE_SITE_AUDIT_2026-10.md) — 12 scores /100 (final **41/100** · verdict **NOT READY**), six Top-50 lists, AdSense approval **8–12% → 70–80%** after fixes, 100-QA-tester simulation.
+**Fix steps (Telugu, click-level):** [`LIVE_FIX_GUIDE.md`](LIVE_FIX_GUIDE.md) — A1–A6 WP admin · B1–B4 File Manager · C theme upload · D bot/cron · E GSC+AdSense.
+
+Live lo kanipinchina, **code nunchi** fix chesina defects:
+
+| # | Defect (live evidence) | Fix (v194) |
+|---|---|---|
+| 1 | `/about/` lo "theme was activated … replace before applying to any ad network" | `inc/firstrun.php`: `$base = ''` + **Repair live pages** button (existing pages nunchi note teestundi) |
+| 2 | Students Internet Center (paid service) block publisher content nunchi separate ledu, price ledu | `studentup_setup_service_block()` — "separate offline service · optional · website content free" disclosure |
+| 3 | Duplicate policy pages (privacy ×3, terms ×2, contact ×2) | Repair run: duplicates → **draft** (delete kaadu) + 301 note |
+| 4 | Byline lo "Source-backed draft; verify the official notice" | `autoblog/seo.py`: "Every fact is linked to the official notification" (reviewer unte "Reviewed by X") |
+| 5 | `image_alt()` brand `studentup.in` (TTS "studentup dot in") | brand default → **StudentUp** |
+| 6 | Demo/junk pages (Gutenberg placeholder + internal checklist) index avutunnayi | `inc/livefix.php` (NEW): marker pages **noindex**, attachment → 301, empty search → noindex |
+
+Proof: `tests/v194_test.py` (7 gates) · `--test-all` **139/139** · parity **PIN-TO-PIN** · php-lint **88/88** · zip **117 files · 1042 KB** (sha `4fa81c83bf42…`).
+Owner steps: [`LIVE_FIX_GUIDE.md`](LIVE_FIX_GUIDE.md) → A1 (demo pages delete) → A3 (Repair button) → B1 (ads.txt) → C (theme upload).
+
+### v191 — WORLDCLASS v2: phone-first home + neat tools (theme 1.9.37)
+
+User brief: "worst theme aindi ... world best ga, neat ga, phone lo advanced ga, laptop lo best ga, highest revenue".
+
+**New design layer** `wordpress-theme/studentup/assets/css/worldclass.css` (enqueued after style.css + premium.css — kotha markup avasaram ledu, template risk zero):
+phone lo post cards ippudu horizontal **scan cards** (thumb + text side-by-side, title 3-line clamp) → oke screen lo ~2× updates;
+laptop lo 3-column tiles + **sticky right rail** (300×250 slot · top jobs · closing this week);
+17px Telugu-friendly base type; 44px tap targets; chips = swipe strip (wrap spam ledu); native-looking in-feed
+ad cards; dark-mode parity; reduced-motion + print rules. CSS 199 KB → 179 KB minified (-11%).
+
+**Home order** (`front-page.php`): content first — hero → ticker → most-searched → leaderboard → breaking → filters →
+**latest-opportunities grid** → jobs table → popular searches → pagination → tarvata engagement (hot-10, closing week,
+job finder, mid ad, quiz, alerts) → tools. Modata 8 calculator blocks + 8 widgets grid ki MUNDU render ayyevi —
+phone reader 3-4 screens scroll chesina first job card kanipinchedi kaadu (bounce ↑, viewability ↓).
+
+**Tools tabs** (`studentup_tools_tabs()` + premium.js): 8 calculators (in-hand salary · age · fee · score · last-date
+calendar · admit card · resume · syllabus) ippudu OKATE card lo accessible tabs ga — arrow/Home/End keys +
+role=tab/aria-selected/hidden parity.
+
+Proof: --test-all **138/138** · theme audit 0 errors 0 warnings · deep audit **31/31** · parity **PIN-TO-PIN** ·
+code audit 0/0 · php-lint 86/86 · CWV/a11y static 0/0 · zip 115 files · 1029 KB · sha `0715c79cbf1a…`.
+**v191.2 (MONEY EDITION, user brief: "tools em avasaram ledu · neat ga · highest revenue"):** home nunchi
+widget wall (8 calculators + quiz/alerts/stories/scholarship/for-you) **teesesamu** — avi ippudu `/tools/`
+page template (`page-tools.php`) lo mattrame. New home flow: hero → ticker → most-searched → **leaderboard ad** →
+breaking → filters → **latest grid** (lead card + category accents + native in-feed ads) → jobs table →
+popular searches → **mid ad** → hot-10 → closing-week → personal picks → **below-content ad**.
+New gates: `tools/visual_check.py` (phone 390 + laptop 1440 — visibility map · 44px tap targets · type scale ·
+WCAG AA contrast light+dark · single H1 · ad/card ratio ≤0.8 · labelled ads · CLS · dark mode) + `tools/preview_server.py`
+(HTTP/1.1 proxy-safe, port 8123) + `preview/worldclass/devices.html` (phone+laptop side-by-side) + `tests/v191_test.py` (6 groups).
+
+Chudataniki: `python3 tools/preview_server.py` (phone + laptop live preview) leda `preview/worldclass/standalone.html` (server ledu).
+
 
 ### v190 — `--daily`: OKE COMMAND (anni nene set chesanu) 🌅
 

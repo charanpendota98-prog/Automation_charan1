@@ -14,7 +14,7 @@ Cover:
   4. ensure_lead: idempotent · intro lo subject already unte skip · empty title safe
   5. Daily list items: hook main line + 'N పోస్టులు' chips + mana blog link mattrame
      (external source URL eppudu list lo ledu)
-  6. Theme + docs wiring (su-hook CSS, version 1.9.36, README/MANUAL)
+  6. Theme + docs wiring (su-hook CSS, version 1.9.41, README/MANUAL)
 """
 from __future__ import annotations
 
@@ -117,15 +117,15 @@ def test_theme_and_docs_wiring():
     css = (ROOT / "wordpress-theme/studentup/style.css").read_text(encoding="utf-8")
     assert ".su-hook{" in css and ".su-hook strong" in css, "hook CSS ledu"
     assert "body.dark .su-hook" in css, "dark mode hook style ledu"
-    assert "Version: 1.9.36" in css
+    assert "Version: 1.9.41" in css
     func = (ROOT / "wordpress-theme/studentup/functions.php").read_text(encoding="utf-8")
-    assert "STUDENTUP_VERSION', '1.9.36'" in func
+    assert "STUDENTUP_VERSION', '1.9.41'" in func
     min_css = (ROOT / "wordpress-theme/studentup/style.min.css").read_text(encoding="utf-8")
     assert ".su-hook" in min_css, "min.css lo hook style ledu (build skip ayyindi)"
     for name in ("README.md", "MANUAL_ADVANCED_CHECKLIST.md"):
         doc = (ROOT / name).read_text(encoding="utf-8")
         assert "su-hook" in doc or "hook" in doc.lower(), f"{name} lo hook docs ledu"
-    print("  5. theme (.su-hook CSS · 1.9.36 · min) + docs ✔")
+    print("  5. theme (.su-hook CSS · 1.9.41 · min) + docs ✔")
 
 
 def main() -> None:

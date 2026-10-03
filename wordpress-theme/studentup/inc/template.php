@@ -47,6 +47,60 @@ function studentup_card_cat( $post_id = 0 ) {
  *
  * @param int $idx index (thumb colour rotation).
  */
+/**
+ * v191.1 WORLDCLASS: card category accent (left/top edge colour).
+ *
+ * Enduku: list lo okka look tho "TS job aa, AP job aa, result aa" teliyali —
+ * reader scan speed perigutundi, bounce taggutundi. Guess ledu: mee category
+ * peru nunchi mattrame decide chestundi.
+ *
+ * @param string $label first category name.
+ * @return string accent slug.
+ */
+function studentup_card_accent( $label = '' ) {
+	$key = strtolower( (string) $label );
+	if ( false !== strpos( $key, 'result' ) ) {
+		return 'result';
+	}
+	if ( false !== strpos( $key, 'scholarship' ) ) {
+		return 'scholarship';
+	}
+	if ( false !== strpos( $key, 'central' ) || false !== strpos( $key, 'ssc' ) || false !== strpos( $key, 'rrb' ) ) {
+		return 'central';
+	}
+	if ( false !== strpos( $key, 'ap ' ) || false !== strpos( $key, 'andhra' ) ) {
+		return 'ap';
+	}
+	if ( false !== strpos( $key, 'ts ' ) || false !== strpos( $key, 'telangana' ) ) {
+		return 'ts';
+	}
+	return 'update';
+}
+
+/**
+ * v192: monogram for the designed cover art ("Central Govt" → "CG", "TS Jobs" → "TS").
+ *
+ * @param string $label Category label.
+ * @return string 1-3 uppercase characters.
+ */
+function studentup_card_monogram( $label ) {
+	$label = trim( preg_replace( '/\s+/u', ' ', (string) $label ) );
+	if ( '' === $label ) {
+		return 'SU';
+	}
+	$words = preg_split( '/\s+/u', $label );
+	$first = mb_strtoupper( $words[0] );
+	// "SSC CHSL" → SSC · "TSPSC Group" → TSP · "Central Govt" → CG · "Results" → RE
+	if ( mb_strlen( $first ) <= 3 ) {
+		return $first;
+	}
+	$mono = mb_substr( $first, 0, 2 );
+	if ( isset( $words[1] ) && mb_strlen( $mono ) < 2 ) {
+		$mono .= mb_strtoupper( mb_substr( $words[1], 0, 1 ) );
+	}
+	return $mono;
+}
+
 function studentup_card( $idx = 0 ) {
 	$cat   = studentup_card_cat();
 	$terms = get_the_category();
@@ -73,8 +127,11 @@ $label = $terms ? $terms[0]->name : 'Update';
 		}
 	}
 	$su_states = implode( ' ', array_unique( $su_states ) );
+	// v191.1: home first card = editorial lead (peddha card) + category accent.
+	$su_accent = studentup_card_accent( $label );
+	$su_lead   = ( 0 === (int) $idx && ( is_front_page() || is_home() ) ) ? ' news--lead' : '';
 	?>
-	<article <?php post_class( 'news' ); ?> data-su-card data-cat="<?php echo esc_attr( $cat ); ?>"
+	<article <?php post_class( 'news' . $su_lead ); ?> data-accent="<?php echo esc_attr( $su_accent ); ?>" data-su-card data-cat="<?php echo esc_attr( $cat ); ?>"
 		data-qual="<?php echo esc_attr( $su_qual_raw ); ?>"
 		data-state="<?php echo esc_attr( $su_states ); ?>"
 		data-last="<?php echo esc_attr( $su_last_raw ); ?>"
@@ -96,7 +153,15 @@ $label = $terms ? $terms[0]->name : 'Update';
 				?>
 			</a>
 		<?php else : ?>
-			<a class="thumb <?php echo esc_attr( $tone ); ?>" href="<?php the_permalink(); ?>" aria-hidden="true" tabindex="-1"><?php echo esc_html( wp_trim_words( get_the_title(), 5, '…' ) ); ?></a>
+			<?php // v192: photo lekapote DESIGNED cover (gradient + monogram + category pill) —
+			// purathana version post title ni plain text box lo print chesedi, adi wireframe la kanipinchedi. ?>
+			<a class="thumb thumb--auto <?php echo esc_attr( $tone ); ?>" href="<?php the_permalink(); ?>" aria-hidden="true" tabindex="-1">
+				<span class="su-cov">
+					<b class="su-cov-mono"><?php echo esc_html( studentup_card_monogram( $label ) ); ?></b>
+					<span class="su-cov-cat"><?php echo esc_html( $label ); ?></span>
+					<span class="su-cov-brand">StudentUp</span>
+				</span>
+			</a>
 		<?php endif; ?>
 		<div class="newsbody">
 			<div class="tagrow">
@@ -184,6 +249,18 @@ function studentup_menu_fallback() {
 	$term_of = static function ( $slug ) {
 		return studentup_used_term( $slug );
 	};
+
+	/*
+	 * v197 MEGA PANEL — terms/pages nijamga unte mattrame (404 ledu). Module
+	 * lekunda (purana install) kinda v93 dropdown body ne pani chestundi.
+	 */
+	if ( function_exists( 'studentup_mega_render' ) && '0' !== (string) studentup_opt( 'mega_menu', '1' ) ) {
+		$su_mega = studentup_mega_ready();
+		if ( $su_mega ) {
+			studentup_mega_render( $su_mega, $home );
+			return;
+		}
+	}
 
 	// Dropdown group definitions (preview design order).
 	$groups = array(

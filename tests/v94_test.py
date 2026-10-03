@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""v94 tests — ADSENSE READINESS + DISCOVER + CWV (theme 1.9.36).
+"""v94 tests — ADSENSE READINESS + DISCOVER + CWV (theme 1.9.41).
 
 Brief: "posts publish cheste AdSense approval ki problem leda? google lo suggest
 avvali ante em miss avutunnam? anni fix cheyu".
@@ -35,7 +35,7 @@ Deep audit lo kanukkunna **nijamaina gaps** (ivi fix ayyayi):
 Checks: module API · verdict logic · false-positive guards · CLI wiring + docs
 parity · privacy disclosure · footer links · theme discover.php · schema image +
 attach helper (idempotent/safe) · client media-url capture · pipeline wiring ·
-version parity 1.9.36 · suite pins 74.
+version parity 1.9.41 · suite pins 74.
 
 Run: python tests/v94_test.py   (also via python run.py --test-all)
 """
@@ -51,7 +51,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 THEME = ROOT / "wordpress-theme" / "studentup"
-SUITES_EXPECTED = 137  # v95 tho
+SUITES_EXPECTED = 144  # v95 tho
 
 
 def read(rel: Path | str) -> str:
@@ -233,11 +233,11 @@ def test_version_parity_195() -> None:
     php = re.search(r"STUDENTUP_VERSION',\s*'([^']+)'", read(THEME / "functions.php")).group(1)
     css = re.search(r"Version:\s*([0-9.]+)", read(THEME / "style.css")).group(1)
     stable = re.search(r"Stable tag:\s*([0-9.]+)", read(THEME / "readme.txt")).group(1)
-    assert php == css == stable == "1.9.36", f"parity tappu: {php}·{css}·{stable}"
+    assert php == css == stable == "1.9.41", f"parity tappu: {php}·{css}·{stable}"
     rd = read(THEME / "readme.txt")
     for entry in ("= 1.9.0", "= 1.9.1", "= 1.9.2", "= 1.9.3", "= 1.9.4", "= 1.9.5", "= 1.9.6", "= 1.9.7", "= 1.9.8"):
         assert entry in rd, f"changelog {entry} ledu"
-    print("      version parity 1.9.36 + changelog ✔")
+    print("      version parity 1.9.41 + changelog ✔")
 
 
 def test_suite_pins_and_docs() -> None:
@@ -268,8 +268,8 @@ def test_zip_packaged() -> None:
     assert "studentup/inc/discover.php" in names, "zip lo discover.php ledu"
     assert all(n.startswith("studentup/") for n in names), "zip root tappu"
     css = z.read("studentup/style.css").decode("utf-8")
-    assert re.search(r"Version:\s*1\.9\.36", css), "zip css version 1.9.36 kaadu"
-    print("      zip: discover.php + 1.9.36 ✔")
+    assert re.search(r"Version:\s*1\.9\.41", css), "zip css version 1.9.41 kaadu"
+    print("      zip: discover.php + 1.9.41 ✔")
 
 
 TESTS = [
@@ -283,7 +283,7 @@ TESTS = [
     ("Article schema image", test_schema_has_image_property),
     ("attach image safe", test_attach_schema_image_safe_and_idempotent),
     ("client + pipeline wiring", test_client_and_pipeline_wiring),
-    ("version parity 1.9.36", test_version_parity_195),
+    ("version parity 1.9.41", test_version_parity_195),
     ("suite pins + docs", test_suite_pins_and_docs),
     ("zip packaged", test_zip_packaged),
 ]
@@ -292,7 +292,7 @@ TESTS = [
 def main() -> None:
     os.chdir(ROOT)
     print("=" * 70)
-    print("v94 ADSENSE READINESS + DISCOVER + CWV (theme 1.9.36)")
+    print("v94 ADSENSE READINESS + DISCOVER + CWV (theme 1.9.41)")
     print("=" * 70)
     failed = 0
     for name, fn in TESTS:

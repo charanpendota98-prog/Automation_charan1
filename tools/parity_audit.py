@@ -70,7 +70,12 @@ def p3_preview_links(rep: dict) -> None:
     checked = broken = 0
     # v70: dev archive ippudu docs/design-archive/ lo undi (website meeda serve avvadu) —
     # _dev/ skip safety-net (purana deploy lo aa folder unte aa links ni audit cheyyamu)
-    for html in sorted(h for h in PREVIEW.rglob("*.html") if "_dev" not in h.parts):
+    # v197: OFFLINE_PREVIEW.html = single-file bundle — lopala unna relative links
+    # aa file ni open chesina chota resolve avutayi (pages/ depth), kabatti ee
+    # generated artifact ni link-scan nunchi teesesaam. Danni build chese tool ni
+    # v197 test suite verify chestundi (links + tabs + inline CSS).
+    for html in sorted(h for h in PREVIEW.rglob("*.html")
+                       if "_dev" not in h.parts and h.name != "OFFLINE_PREVIEW.html"):
         text = _read(html)
         body = re.sub(r"<script.*?</script>", "", text, flags=re.S)  # JS templates skip
         for m in re.finditer(r'(?:href|src)="([^"#][^"]*)"', body):
@@ -107,7 +112,10 @@ def p4_preview_meta(rep: dict) -> None:
             continue
         for cand in (PREVIEW / rel / "index.html", PREVIEW / f"{rel}.html",
                      PREVIEW / rel, PREVIEW / "pages" / f"{rel}.html"):
-            if cand.exists():
+            # v193 fix: `PREVIEW / rel` ippudu okka DIRECTORY kuda avvochu
+            # (tools/), adi "page" ga count avvakoodadu — <title> ledu ani
+            # false error vachedi.
+            if cand.is_file():
                 deployed.add(cand)
     for html in sorted(deployed):
         text = _read(html)

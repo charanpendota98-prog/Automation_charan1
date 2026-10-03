@@ -72,7 +72,13 @@ function studentup_autolink_map() {
 			return mb_strlen( $b ) - mb_strlen( $a );
 		}
 	);
-	return $map;
+	/**
+	 * v195: hub pages (TS/AP/Central/Results/Scholarships) kuda link targets —
+	 * purathana posts nunchi hub pages ki links vastayi (orphan fix).
+	 *
+	 * @param array $map phrase => url.
+	 */
+	return (array) apply_filters( 'studentup_autolink_map', $map );
 }
 
 /**

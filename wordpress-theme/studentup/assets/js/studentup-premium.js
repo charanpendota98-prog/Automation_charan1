@@ -255,7 +255,42 @@
     });
   }
 
-  function init() { quiz(); alerts(); bnav(); rail(); }
+  /* ---------------- v191: tools tabs (8 calculators → one neat card) ------- */
+  function tools() {
+    Array.prototype.forEach.call(document.querySelectorAll(".su-tooltabs"), function (strip) {
+      // v198: strip ni advanced engine (studentup-tools.js) handle chestundi —
+      // appudu idi duplicate ga arrow keys/selection cheyyakoodadu (hidden
+      // tabs ni select cheyyadam valla empty panel vachhe bug kuda ade).
+      if (strip.hasAttribute("data-su-tool-strip")) return;
+      var tabs = Array.prototype.slice.call(strip.querySelectorAll(".su-ttab"));
+      if (!tabs.length) return;
+      function select(tab) {
+        tabs.forEach(function (t) {
+          var on = t === tab;
+          t.setAttribute("aria-selected", on ? "true" : "false");
+          t.tabIndex = on ? 0 : -1;
+          var panel = document.getElementById(t.getAttribute("aria-controls"));
+          if (!panel) return;
+          panel.classList.toggle("on", on);
+          if (on) panel.removeAttribute("hidden");
+          else panel.setAttribute("hidden", "");
+        });
+      }
+      tabs.forEach(function (t, i) {
+        t.addEventListener("click", function () { select(t); });
+        t.addEventListener("keydown", function (e) {
+          var n = null;
+          if (e.key === "ArrowRight") n = tabs[(i + 1) % tabs.length];
+          if (e.key === "ArrowLeft") n = tabs[(i - 1 + tabs.length) % tabs.length];
+          if (e.key === "Home") n = tabs[0];
+          if (e.key === "End") n = tabs[tabs.length - 1];
+          if (n) { e.preventDefault(); n.focus(); select(n); }
+        });
+      });
+    });
+  }
+
+  function init() { quiz(); alerts(); bnav(); rail(); tools(); }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
   else init();
 })();

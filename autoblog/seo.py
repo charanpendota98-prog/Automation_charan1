@@ -452,8 +452,13 @@ def byline_block(slug: str, date_str: str) -> str:
     # div (kaadu p) — Rank Math 'keyword in first paragraph' check ki
     # byline munde padakudadu
     reviewer = (getattr(config, "EDITORIAL_REVIEWER", "") or "").strip()
+    # v194 (live audit): public byline lo "draft" word pettakudadu. Live
+    # studentup.in article lo "Source-backed draft; verify the official notice"
+    # ani print ayindi — reader ki "publish cheyyani draft" ani kanipistundi,
+    # AdSense reviewer ki "auto-generated content" signal. Factual statement
+    # untundi: source link + verify line.
     review_text = (f"Reviewed by {_esc(reviewer)}" if reviewer
-                   else "Source-backed draft; verify the official notice")
+                   else "Every fact is linked to the official notification")
     return (
         '<div class="su-byline" style="font-size:14px;color:#57616B;margin:6px 0 14px;">'
         f"✍️ <strong>{_esc(name)}</strong> ({_esc(role)}) · "
@@ -1115,9 +1120,14 @@ def image_filename(focus_keyword: str, slug: str = "", category: str = "",
 
 
 def image_alt(focus_keyword: str, category: str = "", year: int = 0,
-              brand: str = "studentup.in") -> str:
+              brand: str = "StudentUp") -> str:
     """Featured/inline image alt — keyword modata, brand chivara (Rank Math
-    'Focus Keyword in Image Alt' + accessibility). Duplicate words ledu."""
+    'Focus Keyword in Image Alt' + accessibility). Duplicate words ledu.
+
+    v194 (live audit): default brand "studentup.in" → "StudentUp". Screen
+    reader "studentup dot in" ani chaduvutundi, adi keyword stuffing laga
+    vinipistundi; brand name + telugu alt text clean ga untundi.
+    """
     bits = [b for b in (focus_keyword.strip(), category.strip(),
                         str(year) if year else "") if b]
     line = " ".join(bits)

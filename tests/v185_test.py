@@ -98,7 +98,7 @@ def test_docs_wiring():
     manual = (ROOT / "MANUAL_ADVANCED_CHECKLIST.md").read_text(encoding="utf-8")
     assert "PART 78" in manual and "v185" in manual, "MANUAL PART 78 ledu"
     changelog = _read("readme.txt")
-    assert "= 1.9.35" in changelog, "theme changelog 1.9.36 ledu"
+    assert "= 1.9.35" in changelog, "theme changelog 1.9.41 ledu"
     print("  5. docs wiring (README · MANUAL PART 78 · changelog) ✔")
 
 

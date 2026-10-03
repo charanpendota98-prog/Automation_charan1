@@ -16,6 +16,9 @@ import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+
+# v199.1: preview build stamp — purathana cached preview ni ventane gurtinchadaniki.
+PREVIEW_BUILD = "1.9.41"
 OUT = ROOT / "preview"
 PAGES = OUT / "pages"
 EMAIL = "studentupinformative@gmail.com"
@@ -25,51 +28,36 @@ PHONE = "9182739312"
 WA_LINK = "https://wa.me/919182739312?text=StudentUp%20Students%20Internet%20Center"
 UPDATED = "2026-09-18"
 
-CSS = """
-:root{--navy:#0f2e62;--blue:#2463b7;--orange:#ed8a32;--ink:#122036;--muted:#5b6b85;
---line:#dbe4f0;--card:#fff;--soft:#f4f8ff}
-*{box-sizing:border-box}
-body{margin:0;font-family:system-ui,-apple-system,"Noto Sans Telugu","Segoe UI",Roboto,sans-serif;
-background:linear-gradient(180deg,#eef4ff,#f8fbff 320px);color:var(--ink);line-height:1.75}
-a{color:var(--blue)}
-.top{background:var(--navy);color:#fff}
-.wrap{max-width:900px;margin:0 auto;padding:0 18px}
-.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 18px;flex-wrap:wrap}
-.brand{font-weight:900;font-size:19px;color:#fff;text-decoration:none;letter-spacing:-.02em}
-.brand span{color:var(--orange)}
-.top a.back{color:#cfe0fb;text-decoration:none;font-size:13.5px;font-weight:700;border:1px solid rgba(255,255,255,.28);
-border-radius:99px;padding:7px 14px}
-.top a.back:hover{background:rgba(255,255,255,.12)}
-main{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:0 14px 34px rgba(15,46,98,.07);
-margin:22px auto;padding:30px 32px;max-width:900px}
-h1{margin:0 0 6px;font-size:27px;color:var(--navy);letter-spacing:-.02em;line-height:1.35}
-.sub{color:var(--muted);font-size:13px;margin:0 0 22px;padding-bottom:16px;border-bottom:1px solid var(--line)}
-h2{font-size:18.5px;color:var(--navy);margin:26px 0 8px}
-p,li{font-size:15px}
-ul{padding-left:22px;margin:8px 0}
-li{margin:5px 0}
-.note{background:var(--soft);border-left:4px solid var(--blue);border-radius:10px;padding:13px 16px;margin:16px 0;font-size:14px}
+CSS = """/* v193 PIN-TO-PIN: the real theme CSS is linked above (style.css + worldclass.css),
+   so these pages ARE the site design. Only legal-page specifics live here. */
+.su-legal{max-width:900px;background:var(--card);border:1px solid var(--line);border-radius:var(--r-lg);
+  box-shadow:var(--sh-1);margin:20px auto;padding:26px 30px}
+.su-legal .crumbs{margin:0 0 10px}
+.su-legal h1{margin:0 0 6px;font-size:clamp(22px,4.6vw,30px);color:var(--navy);line-height:1.35;letter-spacing:-.015em}
+.su-legal .sub{color:var(--muted);font-size:13px;margin:0 0 20px;padding-bottom:14px;border-bottom:1px solid var(--line)}
+.su-legal h2{font-size:19.5px;color:var(--navy);margin:26px 0 8px}
+.su-legal h3{font-size:16.5px;color:var(--navy);margin:20px 0 6px}
+.su-legal p,.su-legal li{font-size:15.5px;line-height:1.8}
+.su-legal ul{padding-left:22px;margin:8px 0}
+.su-legal li{margin:5px 0}
+.note{background:var(--soft);border-left:4px solid var(--blue);border-radius:0 12px 12px 0;padding:13px 16px;margin:16px 0;font-size:14.5px}
 .warn{background:#fff6ec;border-left-color:var(--orange)}
 .grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));margin:14px 0}
 .tile{background:var(--soft);border:1px solid var(--line);border-radius:13px;padding:14px}
 .tile b{display:block;color:var(--navy);font-size:15px;margin-bottom:3px}
 .tile span{font-size:13px;color:var(--muted)}
-.su-ad{background:var(--soft);border:1px dashed #bfd2ee;border-radius:13px;padding:14px 16px;margin:20px 0}
+.su-ad{background:linear-gradient(180deg,#fbfdff,#f2f7fd);border:1px dashed var(--line-2);border-radius:var(--r-lg);padding:14px 16px;margin:20px 0}
 .su-ad-kicker{font-size:10.5px;letter-spacing:.09em;font-weight:800;color:var(--orange);margin-bottom:6px}
 .su-ad-title{font-weight:800;color:var(--navy);font-size:15px}
-.su-ad-desc{font-size:13px;color:var(--muted);margin:4px 0 10px}
-.su-ad a.go{background:var(--blue);color:#fff;text-decoration:none;font-weight:800;border-radius:9px;padding:9px 15px;font-size:13px;display:inline-block}
-.cta{display:inline-block;background:var(--orange);color:#fff;text-decoration:none;font-weight:800;
-border-radius:11px;padding:12px 20px;margin:6px 8px 6px 0;font-size:14.5px}
-.cta.alt{background:var(--navy)}
-table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}
-th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line)}
+.su-ad-desc{font-size:13.5px;color:var(--muted);margin:4px 0 10px}
+.su-ad a.go{background:var(--blue);color:#fff;text-decoration:none;font-weight:800;border-radius:10px;padding:10px 16px;font-size:13.5px;display:inline-block}
+.su-legal .cta{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--orange),#e2701a);color:#fff;
+  text-decoration:none;font-weight:800;border-radius:13px;padding:0 18px;min-height:var(--tap);margin:6px 8px 6px 0;font-size:15px}
+.su-legal .cta.alt{background:linear-gradient(135deg,var(--blue),var(--navy-2))}
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14.5px}
+th,td{text-align:left;padding:10px;border-bottom:1px solid var(--line)}
 th{background:var(--soft);color:var(--navy);font-size:13px}
-footer{border-top:1px solid var(--line);margin-top:8px;padding:18px 0 30px;font-size:13px;color:var(--muted)}
-footer .wrap{display:flex;flex-wrap:wrap;gap:8px 18px;max-width:900px;margin:0 auto}
-footer a{color:var(--blue);text-decoration:none}
-footer .fine{width:100%;font-size:12px;line-height:1.7;margin-top:6px}
-.steps{margin:10px 0 12px;padding-left:20px;line-height:1.7}
+.steps{margin:10px 0 12px;padding-left:20px;line-height:1.8}
 .steps li{margin-bottom:5px}
 .wa-box{display:inline-block;background:linear-gradient(135deg,#25d366,#128c7e);color:#fff!important;
   border-radius:13px;padding:12px 16px;text-decoration:none;font-weight:800;margin:4px 8px 4px 0;
@@ -78,18 +66,7 @@ footer .fine{width:100%;font-size:12px;line-height:1.7;margin-top:6px}
 .leadgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0 0}
 .leadgrid input,.leadgrid select{width:100%;padding:11px 12px;border:1px solid var(--line);
   border-radius:11px;font:inherit;background:var(--card);color:inherit}
-.leadgrid input:focus,.leadgrid select:focus{outline:2px solid var(--blue);outline-offset:1px}
-.lead-hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
-.leadbtn{margin-top:12px;width:100%;padding:13px;border:0;border-radius:12px;background:var(--blue);
-  color:#fff;font-weight:700;font-size:14.5px;cursor:pointer}
-.leadbtn:disabled{opacity:.6;cursor:default}
-.leadnote{font-size:12px;color:var(--muted);margin:10px 0 0;line-height:1.6}
-.leadmsg{margin-top:11px;font-size:13px;font-weight:600;display:none}
-.leadmsg.ok{display:block;color:#0a7a3d}
-.leadmsg.err{display:block;color:#b3261e}
-@media(max-width:620px){main{margin:12px;padding:20px 18px;border-radius:14px}h1{font-size:22px}
-  .leadgrid{grid-template-columns:1fr}}
-""".strip()
+@media(max-width:600px){.su-legal{padding:20px 16px;margin:14px auto;border-radius:14px}.leadgrid{grid-template-columns:1fr}}""".strip()
 
 NAV = [
     ("about.html", "About us"),
@@ -105,11 +82,11 @@ SHELL = """<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>{title} · studentup.in</title>
 <meta name="description" content="{desc}">
 <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
-<meta name="theme-color" content="#0f2e62">
+<meta name="theme-color" content="#0b2447">
 <link rel="canonical" href="https://studentup.in/pages/{slug}.html">
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
 <meta property="og:type" content="website">
@@ -125,27 +102,30 @@ SHELL = """<!DOCTYPE html>
 "url":"https://studentup.in/"}},"publisher":{{"@type":"Organization","name":"studentup.in",
 "email":"{email}"}},"dateModified":"{updated}"}}
 </script>
+<link rel="stylesheet" href="../../wordpress-theme/studentup/style.css">
+<link rel="stylesheet" href="../../wordpress-theme/studentup/assets/css/worldclass.css">
+<script src="../../wordpress-theme/studentup/assets/js/studentup-menu.js" defer></script>
 <style>
 {css}
 </style>
 </head>
 <body>
-<header class="top"><div class="wrap">
-  <a class="brand" href="../index.html">studentup<span>.</span>in</a>
-  <a class="back" href="../index.html">← Back to home</a>
-</div></header>
-<main>
-  <h1>{h1}</h1>
-  <p class="sub">{sub}</p>
+{sprite}
+{header}
+<main id="main">
+  <div class="wrap">
+    <div class="su-legal">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="../worldclass/index.html">Home</a> › {title}</nav>
+      <h1>{h1}</h1>
+      <p class="sub">{sub}</p>
 {body}
+    </div>
+  </div>
 </main>
 {script}
-<footer><div class="wrap">
-  {nav}
-  <p class="fine">© 2026 studentup.in · For Telangana &amp; Andhra Pradesh students.
-  Ad revenue, rankings and job results are never guaranteed — always confirm the real information in the official notification.
-  Corrections: <a href="mailto:{email}">{email}</a> · This page last updated: {updated}</p>
-</div></footer>
+{footerbar}
+{bottomnav}
+{pagejs}
 </body>
 </html>
 """
@@ -162,7 +142,181 @@ AD_SLOT = """  <aside class="su-ad" aria-label="Sponsored content" data-slot="po
 """
 
 
+PAGE_JS = """(function(){
+  var b=document.body, btn=document.getElementById('su-theme');
+  if(btn){
+    var MOON='<svg class="su-uicon" width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><use href="#su-i-moon"/></svg>';
+    var SUN='<svg class="su-uicon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.2 5.2l1.4 1.4M17.4 17.4l1.4 1.4M18.8 5.2l-1.4 1.4M6.6 17.4l-1.4 1.4"/></svg>';
+    function paint(){ btn.innerHTML = b.classList.contains('dark') ? SUN : MOON; }
+    try{ if(localStorage.getItem('su_theme')==='dark') b.classList.add('dark'); }catch(e){}
+    paint();
+    btn.addEventListener('click',function(){
+      b.classList.toggle('dark');
+      try{ localStorage.setItem('su_theme', b.classList.contains('dark')?'dark':'light'); }catch(e){}
+      paint();
+    });
+  }
+  var anchor=document.getElementById('su-anchor');
+  if(anchor && window.innerWidth<900){
+    try{ if(!localStorage.getItem('su_anchor_closed')) setTimeout(function(){ anchor.hidden=false; },6000); }catch(e){}
+    var c=anchor.querySelector('button');
+    if(c) c.addEventListener('click',function(){ try{ localStorage.setItem('su_anchor_closed','1'); }catch(e){} });
+  }
+})();"""
+
+
+def mega_nav_html(home: str = "../worldclass/index.html", pfx: str = "../") -> str:
+    """v197: the SAME mega markup the WP theme renders (inc/megamenu.php).
+
+    Pin-to-pin rule: classes/attrs/id prefixes match the theme exactly, so the
+    theme CSS + studentup-menu.js work on the preview without a single change.
+    """
+    cat = pfx + "pages/"
+    groups = [
+        ("Jobs", home + "#jobs", "bank", [
+            ("Telangana & Andhra Pradesh", [
+                ("TS Government Jobs", cat + "ts-jobs-hub.html", "TSPSC · Police · Gurukul", "bank"),
+                ("AP Government Jobs", home + "#jobs", "APPSC · Police · DSC · Secretariat", "bank"),
+                ("Jobs by qualification", home + "#jobs", "10th · Inter · Degree · PG", "school"),
+            ]),
+            ("Central & private", [
+                ("Central Govt Jobs", home + "#jobs", "SSC · UPSC · Railways · Banks", "flag"),
+                ("Private Jobs", home + "#jobs", "Off-campus · fresher drives", "building"),
+                ("Software Jobs", home + "#jobs", "IT · developer · support", "laptop"),
+                ("Walk-in Interviews", home + "#jobs", "This week drives · venues", "walk"),
+                ("Internships", home + "#jobs", "Stipend · remote · college", "work"),
+            ]),
+        ], ("Latest active jobs", "Only notices with live dates — no expired lists.", home + "#jobs", "Open the board")),
+        ("Exams", cat + "results-hub.html", "board", [
+            ("Updates", [
+                ("Results", cat + "results-hub.html", "Board · competitive · keys", "doc"),
+                ("Hall Tickets", cat + "results-hub.html", "Admit card · instructions", "ticket"),
+                ("Exam Calendar", cat + "exam-calendar.html", "Confirmed last dates + .ics", "calendar"),
+            ]),
+            ("Practice", [
+                ("Daily Quiz & Polls", cat + "daily-quiz.html", "Fresh questions every day", "chart"),
+                ("Current Affairs", home + "#jobs", "Daily GK for exams", "news"),
+                ("Free exam tools", pfx + "tools/index.html", "Track subject-wise progress", "book"),
+                ("Answer keys", cat + "results-hub.html", "Keys after every exam", "key"),
+            ]),
+        ], ("Exam calendar 2026", "Add every confirmed last date to your phone in one tap.", cat + "exam-calendar.html", "Open calendar")),
+        ("Scholarships", cat + "scholarships-hub.html", "school", [
+            ("Find money", [
+                ("Scholarships", cat + "scholarships-hub.html", "NSP · ePASS · state schemes", "school"),
+                ("Scholarships 2026 hub", cat + "scholarships-hub.html", "Amounts, eligibility, last dates", "doc"),
+                ("Success Stories", home + "#jobs", "Verified journeys · lessons", "trophy"),
+            ]),
+            ("By level", [
+                ("Pre-matric (Class 9-10)", cat + "scholarships-hub.html", "School-level schemes", "book"),
+                ("Post-matric (Inter · Degree)", cat + "scholarships-hub.html", "The biggest State schemes", "school"),
+                ("Minority & overseas", cat + "scholarships-hub.html", "NSP minority + abroad aid", "flag"),
+            ]),
+        ], ("Free Internet Center", "Form filling at a fixed, published price — what we do and never do.", cat + "internet-center.html", "See the price list")),
+        ("Tools", pfx + "tools/index.html", "key", [
+            ("Calculators", [
+                ("Age Eligibility", pfx + "tools/index.html", "With reservation relaxation", "person"),
+                ("Fee Calculator", pfx + "tools/index.html", "Application + exam fee", "card"),
+                ("Salary / In-hand", pfx + "tools/index.html", "7th Pay Commission", "wallet"),
+            ]),
+            ("Career tools", [
+                ("Resume Maker", pfx + "tools/index.html", "Govt-format resume, free", "doc"),
+                ("Compare Jobs", pfx + "tools/index.html", "Side-by-side up to 3 posts", "swap"),
+                ("Saved Posts", pfx + "tools/index.html", "Read later, on this device", "bookmark"),
+            ]),
+        ], ("All free tools", "No signup, no phone number — works on any phone.", pfx + "tools/index.html", "Open Tools")),
+        ("More", cat + "about.html", "help", [
+            ("Site", [
+                ("About StudentUp", cat + "about.html", "Who writes and verifies", "person"),
+                ("Editorial Team", cat + "editorial-team.html", "Standards + sources", "shield"),
+                ("Corrections Log", cat + "corrections.html", "Public fixes · 48h SLA", "refresh"),
+                ("Contact", cat + "contact.html", "Corrections · suggestions", "phone"),
+                ("Advertise", cat + "advertise.html", "Sponsorship slots", "tag"),
+            ]),
+            ("Policies", [
+                ("Privacy Policy", cat + "privacy.html", "What we store (very little)", "shield"),
+                ("Terms of Use", cat + "terms.html", "Rules for using the site", "doc"),
+                ("Disclaimer", cat + "disclaimer.html", "Not a government website", "alert"),
+                ("Editorial Policy", cat + "editorial-policy.html", "How we verify every update", "check"),
+            ]),
+        ], ("Telegram channel", "Job alerts reach you first — no spam, leave anytime.", "https://t.me/studentup_in", "Join channel")),
+    ]
+
+    out = ['<ul id="primary-menu" class="menu-primary su-has-mega">',
+           '<li class="menu-item"><a href="%s">Home</a></li>' % home]
+    for label, url, icon, cols, feat in groups:
+        key = label.lower()
+        out.append('<li class="menu-item menu-item-has-children su-mega-li">')
+        out.append('<a href="%s" aria-haspopup="true" aria-expanded="false" aria-controls="su-mega-%s">'
+                   '<span class="su-mega-lb">%s</span></a>' % (url, key, label))
+        out.append('<ul class="sub-menu" id="su-mega-%s" data-su-mega aria-label="%s">' % (key, label))
+        for title, items in cols:
+            out.append('<li class="su-mega-col menu-item" role="none">')
+            if title:
+                out.append('<p class="su-mega-title">%s</p>' % title)
+            out.append('<ul class="su-mega-list">')
+            for ilabel, iurl, idesc, iicon in items:
+                out.append('<li class="menu-item" role="none"><a role="menuitem" href="%s">'
+                           '<span class="su-mega-ic"><svg class="su-uicon su-uicon-%s" width="18" height="18" '
+                           'viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">'
+                           '<use href="#su-i-%s"/></svg></span><span class="su-mega-t">%s<small>%s</small>'
+                           '</span></a></li>' % (iurl, iicon, iicon, ilabel, idesc))
+            out.append('</ul></li>')
+        ftitle, fdesc, furl, fcta = feat
+        out.append('<li class="su-mega-feat menu-item" role="none">'
+                   '<span class="su-mega-eyebrow">Recommended</span><b>%s</b><small>%s</small>'
+                   '<a class="su-mega-cta" href="%s">%s →</a></li>' % (ftitle, fdesc, furl, fcta))
+        out.append('</ul></li>')
+    out.append('</ul>')
+    return "".join(out)
+
+
+def header_html(home: str = "../worldclass/index.html", topbar: str = "Government jobs \u00b7 Exams \u00b7 Scholarships") -> str:
+    """Shared header — the SAME classes as the WP theme header.php."""
+    links = mega_nav_html(home, "../")
+    return ('<a class="skip-link screen-reader-text" href="#main">Skip to content</a>\n'
+            '<div class="topbar"><div class="wrap">\n'
+            '  <span>' + topbar + '</span>\n'
+            '  <span><a href="https://wa.me/919182739312">WhatsApp</a> \u00b7 <a href="https://t.me/studentup_in">Telegram</a></span>\n'
+            '</div></div>\n'
+            '<header class="header"><div class="headrow">\n'
+            '  <a class="logo" href="' + home + '"><span class="mark">SU</span><span><span class="brand">StudentUp</span><small>studentup.in</small></span></a>\n'
+            '  <nav class="nav" aria-label="Main">' + links + '</nav>\n'
+            '  <div class="headactions"><button class="iconbtn" id="su-theme" type="button" aria-label="Dark mode toggle"><svg class="su-uicon su-uicon-moon" width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-moon"/></svg></button></div>\n'
+            '</div></header>')
+
+
+def footer_html(home: str = "../worldclass/index.html", pfx: str = "") -> str:
+    """Shared footer — same 4-column grid as the WP theme footer.php."""
+    return ('<footer class="su-foot"><div class="su-foot-grid">\n'
+            '  <div><h4>StudentUp</h4><p style="margin:0;color:#a9bfdd">Verified government job, exam and scholarship updates for Telangana &amp; AP students.</p></div>\n'
+            '  <div><h4>Jobs</h4><ul><li><a href="' + home + '#jobs">TS Jobs</a></li><li><a href="' + home + '#jobs">AP Jobs</a></li><li><a href="' + home + '#jobs">Central Govt</a></li><li><a href="' + home + '#jobs">Bank Jobs</a></li></ul></div>\n'
+            '  <div><h4>Site</h4><ul><li><a href="' + pfx + 'about.html">About us</a></li><li><a href="' + pfx + 'contact.html">Contact</a></li><li><a href="' + pfx + 'advertise.html">Advertise</a></li><li><a href="' + pfx + 'editorial-policy.html">Editorial policy</a></li></ul></div>\n'
+            '  <div><h4>Legal</h4><ul><li><a href="' + pfx + 'privacy.html">Privacy</a></li><li><a href="' + pfx + 'disclaimer.html">Disclaimer</a></li><li><a href="' + pfx + 'terms.html">Terms</a></li><li><a href="https://t.me/studentup_in">Telegram</a></li></ul></div>\n'
+            '</div>\n'
+            '<div class="preview-stamp" style="max-width:1180px;margin:0 auto;padding:0 16px 14px;'
+            'font-size:11.5px;color:#7b8aa3">Preview build <b>' + PREVIEW_BUILD + '</b> · theme + bot deploy-ready</div>\n'
+            '<div class="su-foot-bottom">\u00a9 2026 studentup.in \u00b7 Sources: official notifications only. '
+            'Ad revenue, rankings and job results are never guaranteed \u2014 always confirm the real information in the official notification. '
+            'We are not a government website. '
+            '\u00b7 <a href="../index.html">Static HTML version</a></div></footer>')
+
+
+def bottom_html(home: str = "../worldclass/index.html") -> str:
+    """Phone bottom nav + dismissible sticky ad — same as the WP theme."""
+    return ('<nav class="su-bottomnav" aria-label="Quick nav">\n'
+            '  <a href="' + home + '"><span class="su-bi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><use href="#su-i-home"/></svg></span>Home</a>\n'
+            '  <a href="' + home + '#jobs"><span class="su-bi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><use href="#su-i-work"/></svg></span>Jobs</a>\n'
+            '  <a href="../tools/index.html"><span class="su-bi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><use href="#su-i-chart"/></svg></span>Tools</a>\n'
+            '  <a href="' + home + '#alerts"><span class="su-bi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><use href="#su-i-bell"/></svg></span>Alerts</a>\n'
+            '</nav>\n'
+            '<div class="su-anchor" id="su-anchor" hidden>\n'
+            '  <div class="su-anchor-ad">Advertisement \u00b7 sticky slot</div>\n'
+            '  <button type="button" aria-label="Close advertisement" onclick="document.getElementById(\'su-anchor\').hidden=true">\u2715</button>\n'
+            '</div>')
+
+
 def nav_html() -> str:
+
     return "".join('<a href="%s">%s</a>' % (h, t) for h, t in NAV)
 
 
@@ -173,9 +327,24 @@ def build(slug: str, title: str, desc: str, h1: str, sub: str, body: str,
         body = body.replace(marker, AD_SLOT + marker, 1)
     else:
         body = body + "\n" + AD_SLOT
-    return SHELL.format(title=title, desc=desc, slug=slug, h1=h1, sub=sub,
-                        body=body, css=CSS, nav=nav_html(), email=EMAIL, updated=UPDATED,
-                        wa=WA_LINK, phone=PHONE, script=script)
+    try:
+        import build_sprite  # noqa: PLC0415 — same tools/ dir, single source of truth
+        _paths = build_sprite.icon_paths()
+    except Exception:  # pragma: no cover — never break a page build for an icon
+        _paths = {}
+    _nav = nav_html()
+    _keys = set(build_sprite.used_icon_keys(_nav + body + script if _paths else ""))
+    _keys |= {"moon", "sun", "home", "work", "chart", "bell", "close", "search",
+              "bank", "flag", "school", "ticket", "doc", "calendar", "news", "key",
+              "trophy", "person", "card", "wallet", "swap", "bookmark", "shield",
+              "refresh", "phone", "tag", "alert", "check", "arrow", "building",
+              "laptop", "walk", "work", "help", "board", "book", "arrow", "external"}
+    _sprite = build_sprite.sprite_svg(_paths, sorted(_keys)) if _paths else ""
+    return SHELL.format(sprite=_sprite, title=title, desc=desc, slug=slug, h1=h1, sub=sub,
+                        body=body, css=CSS, nav=_nav, email=EMAIL, updated=UPDATED,
+                        wa=WA_LINK, phone=PHONE, script=script, pagejs=PAGE_JS,
+                        header=header_html(), footerbar=footer_html(pfx=""),
+                        bottomnav=bottom_html())
 
 
 ABOUT = """
@@ -546,6 +715,426 @@ ADVERTISE = '''
   follow AdSense policies and limits.</div>
 '''
 
+
+# ---------------------------------------------------------------------------
+# v195: HUB pages + EDITORIAL TEAM page (theme inc/hubs.php + author-profile.php
+# design ne — so preview == real theme). Static list of the same posts the post
+# builder writes, so preview lo reader flow (hub → post) కనిపిస్తుంది.
+# ---------------------------------------------------------------------------
+HUB_CARDS = [
+    ("Telangana Government Jobs 2026", "ts-jobs",
+     "TSPSC, TS Police, DSC, Gurukulam and every Telangana state notification - latest first, with the official source link.",
+     [("TS Police Constable 2026: 8,400 posts notification details",
+       "../posts/upsc-junior-assistant-2026.html", "Official notification · apply dates"),
+      ("TSPSC Group 2 2026: hall ticket and exam pattern",
+       "../posts/upsc-junior-assistant-2026.html", "Hall ticket · preparation guide")]),
+    ("Andhra Pradesh Government Jobs 2026", "ap-jobs",
+     "APPSC, AP Police, AP DSC and AP state government notifications - apply dates, eligibility, official links.",
+     [("APPSC Group 1 2026: notification, vacancies and syllabus",
+       "../posts/engineering-internships-2026.html", "Notification · syllabus"),
+      ("AP Police SI 2026: physical test and eligibility",
+       "../posts/engineering-internships-2026.html", "Eligibility · physical test")]),
+    ("Central Government Jobs 2026", "central-jobs",
+     "SSC, UPSC, Railway, Bank, Defence and central government job notifications for Telugu students.",
+     [("UPSC Junior Assistant 2026: complete notification guide",
+       "../posts/upsc-junior-assistant-2026.html", "Notification · apply online"),
+      ("Engineering internships 2026: government openings",
+       "../posts/engineering-internships-2026.html", "Internship · stipend")]),
+    ("Exam Results & Hall Tickets 2026", "results",
+     "Every result and hall ticket link - TS, AP and central exams, updated as soon as the official site publishes.",
+     [("Hall ticket verification 2026: exam centre guidelines",
+       "../posts/upsc-junior-assistant-2026.html", "Hall ticket · centre rules")]),
+    ("Scholarships 2026 - Telangana, AP & Central", "scholarships",
+     "NSP, ePASS, AICTE and private scholarships with amounts, eligibility and last dates.",
+     [("NMMS scholarship 2026: amount, eligibility and last date",
+       "../posts/engineering-internships-2026.html", "Scholarship · official portal"),
+      ("Post-matric scholarship 2026: how to apply on ePASS",
+       "../posts/upsc-junior-assistant-2026.html", "ePASS · documents list")]),
+]
+
+
+def _hub_card(title: str, href: str, meta: str) -> str:
+    return (
+        '<article class="news su-hub-card"><a class="thumb thumb--auto" href="%s" aria-hidden="true" tabindex="-1">'
+        '<span class="su-cov"><span class="su-cov-cat">StudentUp</span><span class="su-cov-brand">StudentUp</span></span></a>'
+        '<div class="newsbody"><h3><a href="%s">%s</a></h3>'
+        '<div class="newsfoot"><span class="su-date">%s</span>'
+        '<a class="su-readmore" href="%s">View details →</a></div></div></article>'
+    ) % (href, href, title, meta, href)
+
+
+def _hub_body(entries) -> str:
+    out = ['<p>New notifications are added every day. Every entry links back to the official notification - always confirm the details there before applying.</p>']
+    for label, _slug, intro, cards in entries:
+        out.append('<h2 class="su-hub-h">%s</h2>' % label)
+        out.append('<p>%s</p>' % intro)
+        out.append('<div class="newsgrid">%s</div>' % "".join(_hub_card(t, h, m) for t, h, m in cards))
+        out.append('<p class="su-hub-more"><a class="su-viewall" href="../posts/upsc-junior-assistant-2026.html">See all %s →</a></p>' % label)
+    return "".join(out)
+
+
+HUBS_BODY = _hub_body(HUB_CARDS[:3])
+RESULTS_BODY = _hub_body(HUB_CARDS[3:4])
+SCHOLARSHIPS_BODY = _hub_body(HUB_CARDS[4:5])
+
+EDITORIAL_BODY = """
+<div class="su-ab su-ab--page" itemscope itemtype="https://schema.org/Person">
+  <div class="su-ab-body">
+    <h2 itemprop="name">Charan Pendota</h2>
+    <p class="su-ab-role" itemprop="jobTitle">Founder &amp; Content Writer</p>
+    <p itemprop="description">Charan Pendota writes and verifies government job, scholarship and exam updates for Telangana and Andhra Pradesh students. Every post starts from the official notification, and the source link stays visible so readers can check it themselves.</p>
+    <ul class="su-trust su-trust--expertise">
+      <li>Telangana &amp; AP government jobs</li><li>Exam patterns</li>
+      <li>Scholarships</li><li>Eligibility rules</li>
+    </ul>
+    <p class="su-ab-links"><a href="mailto:studentupinformative@gmail.com">Email</a> · <a href="https://t.me/studentup_in" rel="me noopener" target="_blank">Telegram channel</a></p>
+    <p class="su-ab-since">Publishing since 2026</p>
+  </div>
+</div>
+<h3>How every update is verified</h3>
+<ol class="su-ab-steps">
+  <li>We start from the official notification or the department website only.</li>
+  <li>Dates, fees, vacancies and eligibility go into the post exactly as published - nothing is estimated.</li>
+  <li>Every post links the official source so you can check it yourself.</li>
+  <li>A reader correction is published publicly with the updated date.</li>
+</ol>
+<h3>Corrections</h3>
+<p>Found a mistake? Write to the email above with the page link. Verified corrections are published with the updated date, and the post keeps a correction note.</p>
+"""
+
+
+# ---------------------------------------------------------------------------
+# v196: EXAM CALENDAR · INTERNET CENTER (transparent pricing) · CORRECTIONS
+# (theme: page-exam-calendar.php / page-internet-center.php / page-corrections.php)
+# ---------------------------------------------------------------------------
+CAL_ITEMS = [
+    ("2026-10-08", "TS Police Constable 2026 - online application last date",
+     "posts/upsc-junior-assistant-2026.html", "Telangana Jobs", 5),
+    ("2026-10-14", "NMMS Scholarship 2026 - school submission last date",
+     "posts/engineering-internships-2026.html", "Scholarships", 11),
+    ("2026-10-21", "UPSC Junior Assistant 2026 - application window closes",
+     "posts/upsc-junior-assistant-2026.html", "Central Govt Jobs", 18),
+    ("2026-10-30", "Post-matric scholarship 2026 - ePASS last date",
+     "posts/upsc-junior-assistant-2026.html", "Scholarships", 27),
+    ("2026-11-12", "Engineering internships 2026 - government portal deadline",
+     "posts/engineering-internships-2026.html", "Internships", 40),
+]
+
+
+def _cal_month(ymd: str) -> str:
+    months = ["January", "February", "March", "April", "May", "June", "July",
+              "August", "September", "October", "November", "December"]
+    y, m, _d = ymd.split("-")
+    return "%s %s" % (months[int(m) - 1], y)
+
+
+def _cal_body() -> str:
+    out = ['<div class="su-cal"><div class="su-cal-head">'
+           '<p class="su-cal-count" role="status">%d dated notifications are open right now.</p>'
+           '<a class="su-cta" href="?su_ics=1" rel="nofollow">Add all dates to my calendar (.ics)</a>'
+           '<p class="su-cal-hint">Opens in Google Calendar, Apple Calendar or any phone calendar. '
+           'One alarm one day before each last date.</p></div>' % len(CAL_ITEMS)]
+    months = {}
+    for ymd, title, href, cat, days in CAL_ITEMS:
+        months.setdefault(_cal_month(ymd), []).append((ymd, title, href, cat, days))
+    for month, rows in months.items():
+        out.append('<section class="su-cal-month"><h2 class="su-hub-h">%s</h2><ul class="su-cal-list">' % month)
+        for ymd, title, href, cat, days in rows:
+            urgent = " su-cal-urgent" if days <= 3 else ""
+            badge = "%d days left" % days
+            due = "%s %s %s" % (ymd[8:10], month[:3], ymd[:4])
+            out.append(
+                '<li class="su-cal-item%s"><span class="su-cal-date" aria-hidden="true">%s</span>'
+                '<span class="su-cal-body"><a class="su-cal-title" href="../%s">%s</a>'
+                '<span class="su-cal-meta">%s · Last date: %s</span></span>'
+                '<span class="su-cal-badge%s">%s</span></li>' % (urgent, due, href, title, cat, due, urgent, badge)
+            )
+        out.append("</ul></section>")
+    out.append("</div>")
+    return "".join(out)
+
+
+CALENDAR_BODY = _cal_body()
+
+IC_BODY = """
+<div class="su-ic-note"><strong>This is optional.</strong> Reading this website, getting job alerts and using every tool here is free. You never need this service to use StudentUp.</div>
+<h2>Price list (2026)</h2>
+<table class="su-ic-price">
+  <thead><tr><th scope="col">Service</th><th scope="col">What you get</th><th scope="col">Our service charge</th></tr></thead>
+  <tbody>
+    <tr><td>Single application form</td><td>One online form filled, checked and returned as a PDF</td><td><b>&#8377;50</b></td></tr>
+    <tr><td>Form + photo &amp; signature formatting</td><td>Form filling plus resizing/renaming of your photo and signature to the official size</td><td><b>&#8377;100</b></td></tr>
+    <tr><td>Application + document pack</td><td>Form, photo/signature work and a single PDF pack of the documents the notification asks for</td><td><b>&#8377;150</b></td></tr>
+  </tbody>
+</table>
+<p class="su-ic-price-note">Government application fee, exam fee or any official payment is separate and is never collected by us - you pay the department directly on the official portal. Prices are shown here permanently and do not change based on who calls.</p>
+<h2>What we never do</h2>
+<ul>
+  <li>We never promise a job, a rank, a seat or a selection - no one can.</li>
+  <li>We never ask for Aadhaar, PAN, bank details, OTPs or passwords.</li>
+  <li>We never fill a form with guessed details. If a document is missing, we tell you instead of inventing it.</li>
+</ul>
+<h2>How it works</h2>
+<ol class="su-ab-steps">
+  <li>Send the job or scholarship name on WhatsApp, and ask for the price before paying.</li>
+  <li>Send only the documents the notification asks for.</li>
+  <li>We fill the form, share a draft PDF with you, and submit only after you approve it.</li>
+  <li>Turnaround: typically the same day, at most 24 hours on working days.</li>
+</ol>
+<h2>Cancellation and refund</h2>
+<p>If we cannot submit your application, the service charge is returned in full. If you cancel before we start filling, nothing is charged. Government fees paid on the official portal are between you and the department.</p>
+<h2>Contact the center</h2>
+<p class="su-ic-page-actions">
+  <a class="su-cta" href="https://wa.me/919182739312" rel="nofollow noopener" target="_blank">WhatsApp the center</a>
+  <a class="su-ic-alt" href="tel:+919182739312">Call +91 91827 39312</a>
+</p>
+<p class="su-ic-page-legal">This service is a private offline service. It is not connected to any government department, and paying us gives you no advantage in any selection process.</p>
+"""
+
+CORRECTIONS_BODY = """
+<p>Every correction we make is listed here with what changed and when. If you find a mistake, write to us with the page link and we will publish the fix on this page as well.</p>
+<ul class="su-corr-list">
+  <li class="su-corr-item">
+    <a class="su-corr-title" href="../posts/upsc-junior-assistant-2026.html">UPSC Junior Assistant 2026 - complete notification guide</a>
+    <span class="su-corr-meta">Updated: <time datetime="2026-09-24">September 24, 2026</time></span>
+    <p class="su-corr-note">Fee for the general category corrected to the figure printed in the official notification (earlier draft said a different amount).</p>
+  </li>
+  <li class="su-corr-item">
+    <a class="su-corr-title" href="../posts/engineering-internships-2026.html">Engineering internships 2026 - government openings</a>
+    <span class="su-corr-meta">Updated: <time datetime="2026-09-12">September 12, 2026</time></span>
+    <p class="su-corr-note">Stipend range updated after the department released the revised internship circular.</p>
+  </li>
+</ul>
+<h2>How to report a mistake</h2>
+<ol class="su-ab-steps">
+  <li>Copy the page link (or the headline) that looks wrong.</li>
+  <li>Tell us what the official notification says instead - a screenshot or the official link helps most.</li>
+  <li>Send it to <a href="mailto:%(email)s">%(email)s</a>. Verified corrections are published within 48 hours.</li>
+</ol>
+""" % {"email": EMAIL}
+
+QUIZ_BODY = """
+  <h2>Today&rsquo;s 5 questions</h2>
+  <p>Tap an option — the answer and the reason appear instantly. Every question comes from an
+  official notification, so the same facts help you in the real exam.</p>
+
+  <form method="post" class="su-quiz-form" data-su-quiz-form>
+    <fieldset class="su-q" data-c="1" data-i="0">
+      <legend class="su-q-title"><span class="su-q-n">1</span> Telangana state formation day?</legend>
+      <div class="su-q-opts">
+        <label class="su-opt"><input type="radio" name="q0" value="0"><span class="su-opt-key">A</span><span class="su-opt-t">1 November 1956</span></label>
+        <label class="su-opt"><input type="radio" name="q0" value="1"><span class="su-opt-key">B</span><span class="su-opt-t">2 June 2014</span></label>
+        <label class="su-opt"><input type="radio" name="q0" value="2"><span class="su-opt-key">C</span><span class="su-opt-t">15 August 1947</span></label>
+        <label class="su-opt"><input type="radio" name="q0" value="3"><span class="su-opt-key">D</span><span class="su-opt-t">26 January 1950</span></label>
+      </div>
+      <p class="su-why" data-su-why hidden><strong>Why:</strong> Telangana became India&rsquo;s 29th state on 2 June 2014. <em>&middot; Telangana government</em></p>
+    </fieldset>
+
+    <fieldset class="su-q" data-c="1" data-i="1">
+      <legend class="su-q-title"><span class="su-q-n">2</span> SSC CGL is conducted by?</legend>
+      <div class="su-q-opts">
+        <label class="su-opt"><input type="radio" name="q1" value="0"><span class="su-opt-key">A</span><span class="su-opt-t">UPSC</span></label>
+        <label class="su-opt"><input type="radio" name="q1" value="1"><span class="su-opt-key">B</span><span class="su-opt-t">Staff Selection Commission</span></label>
+        <label class="su-opt"><input type="radio" name="q1" value="2"><span class="su-opt-key">C</span><span class="su-opt-t">RRB</span></label>
+        <label class="su-opt"><input type="radio" name="q1" value="3"><span class="su-opt-key">D</span><span class="su-opt-t">IBPS</span></label>
+      </div>
+      <p class="su-why" data-su-why hidden><strong>Why:</strong> SSC conducts CGL for Group B and C central posts. <em>&middot; ssc.gov.in</em></p>
+    </fieldset>
+
+    <fieldset class="su-q" data-c="2" data-i="2">
+      <legend class="su-q-title"><span class="su-q-n">3</span> Which bank is India&rsquo;s central bank?</legend>
+      <div class="su-q-opts">
+        <label class="su-opt"><input type="radio" name="q2" value="0"><span class="su-opt-key">A</span><span class="su-opt-t">State Bank of India</span></label>
+        <label class="su-opt"><input type="radio" name="q2" value="1"><span class="su-opt-key">B</span><span class="su-opt-t">NABARD</span></label>
+        <label class="su-opt"><input type="radio" name="q2" value="2"><span class="su-opt-key">C</span><span class="su-opt-t">Reserve Bank of India</span></label>
+        <label class="su-opt"><input type="radio" name="q2" value="3"><span class="su-opt-key">D</span><span class="su-opt-t">ICICI Bank</span></label>
+      </div>
+      <p class="su-why" data-su-why hidden><strong>Why:</strong> RBI, established 1935, is the central bank. <em>&middot; rbi.org.in</em></p>
+    </fieldset>
+
+    <fieldset class="su-q" data-c="0" data-i="3">
+      <legend class="su-q-title"><span class="su-q-n">4</span> Which article deals with the Right to Education?</legend>
+      <div class="su-q-opts">
+        <label class="su-opt"><input type="radio" name="q3" value="0"><span class="su-opt-key">A</span><span class="su-opt-t">Article 21A</span></label>
+        <label class="su-opt"><input type="radio" name="q3" value="1"><span class="su-opt-key">B</span><span class="su-opt-t">Article 19</span></label>
+        <label class="su-opt"><input type="radio" name="q3" value="2"><span class="su-opt-key">C</span><span class="su-opt-t">Article 32</span></label>
+        <label class="su-opt"><input type="radio" name="q3" value="3"><span class="su-opt-key">D</span><span class="su-opt-t">Article 44</span></label>
+      </div>
+      <p class="su-why" data-su-why hidden><strong>Why:</strong> Article 21A guarantees free education for ages 6&ndash;14. <em>&middot; Constitution of India</em></p>
+    </fieldset>
+
+    <fieldset class="su-q" data-c="1" data-i="4">
+      <legend class="su-q-title"><span class="su-q-n">5</span> Longest river in South India?</legend>
+      <div class="su-q-opts">
+        <label class="su-opt"><input type="radio" name="q4" value="0"><span class="su-opt-key">A</span><span class="su-opt-t">Krishna</span></label>
+        <label class="su-opt"><input type="radio" name="q4" value="1"><span class="su-opt-key">B</span><span class="su-opt-t">Godavari</span></label>
+        <label class="su-opt"><input type="radio" name="q4" value="2"><span class="su-opt-key">C</span><span class="su-opt-t">Kaveri</span></label>
+        <label class="su-opt"><input type="radio" name="q4" value="3"><span class="su-opt-key">D</span><span class="su-opt-t">Tungabhadra</span></label>
+      </div>
+      <p class="su-why" data-su-why hidden><strong>Why:</strong> Godavari is the longest peninsular river. <em>&middot; NCERT</em></p>
+    </fieldset>
+
+    <div class="su-quiz-foot">
+      <button type="submit" class="su-quiz-restart" data-su-quiz-check><svg class="su-uicon su-uicon-check" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-check"/></svg> Check answers</button>
+      <button type="button" class="su-quiz-restart" data-su-quiz-restart hidden><svg class="su-uicon su-uicon-refresh" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-refresh"/></svg> Restart</button>
+      <a class="su-quiz-more su-quiz-share" data-su-quiz-share rel="nofollow noopener" target="_blank" href="https://wa.me/?text=StudentUp%20Daily%20Quiz" hidden>Share my score</a>
+      <span class="su-quiz-streak" data-su-quiz-streak hidden></span>
+      <a class="su-quiz-more" href="ts-jobs-hub.html">More practice questions &rarr;</a>
+    </div>
+  </form>
+
+  <h2>Reader poll</h2>
+  <section class="su-poll" id="su-poll-preview" data-su-poll="preview" aria-label="Reader poll">
+    <p class="su-poll-kick">READER POLL</p>
+    <h3>Which update do you want first on WhatsApp?</h3>
+    <p class="su-poll-sub">Your answer decides what the morning list leads with. Live site: one vote per device, only the count is stored.</p>
+    <form method="post" class="su-poll-form" data-su-poll-form>
+      <div class="su-poll-opts">
+        <label class="su-poll-opt" data-opt="0"><span class="su-poll-bar" data-su-bar style="width:0%"></span><input type="radio" name="su_poll_opt" value="0"><span class="su-poll-radio" aria-hidden="true"></span><span class="su-poll-lbl">New job notifications</span><span class="su-poll-pct" data-su-pct></span></label>
+        <label class="su-poll-opt" data-opt="1"><span class="su-poll-bar" data-su-bar style="width:0%"></span><input type="radio" name="su_poll_opt" value="1"><span class="su-poll-radio" aria-hidden="true"></span><span class="su-poll-lbl">Exam date changes</span><span class="su-poll-pct" data-su-pct></span></label>
+        <label class="su-poll-opt" data-opt="2"><span class="su-poll-bar" data-su-bar style="width:0%"></span><input type="radio" name="su_poll_opt" value="2"><span class="su-poll-radio" aria-hidden="true"></span><span class="su-poll-lbl">Results &amp; hall tickets</span><span class="su-poll-pct" data-su-pct></span></label>
+        <label class="su-poll-opt" data-opt="3"><span class="su-poll-bar" data-su-bar style="width:0%"></span><input type="radio" name="su_poll_opt" value="3"><span class="su-poll-radio" aria-hidden="true"></span><span class="su-poll-lbl">Scholarship deadlines</span><span class="su-poll-pct" data-su-pct></span></label>
+      </div>
+      <div class="su-poll-foot">
+        <button type="submit" class="su-poll-vote" data-su-poll-vote>Vote</button>
+        <span>No login. One vote per device.</span>
+      </div>
+    </form>
+    <p class="su-quiz-legend">Open poll, not a scientific survey. In this offline preview the vote is kept on your device; the live site stores only the count &mdash; never who voted.</p>
+  </section>
+
+  <h2>How the daily quiz works</h2>
+  <ul>
+    <li>Questions rotate every day and come from official notifications (SSC, TSPSC, APPSC, IBPS, Railways).</li>
+    <li>Every answer carries a one-line explanation and its source &mdash; you learn, not just guess.</li>
+    <li>Your score and streak stay in your browser. We never see them and never ask for a phone number.</li>
+    <li>The quiz works even with JavaScript off: pick answers, press &ldquo;Check answers&rdquo;, and the server marks them.</li>
+  </ul>
+
+  <p><a class="cta" href="ts-jobs-hub.html">Today&rsquo;s Telangana jobs &rarr;</a>
+     <a class="cta" href="exam-calendar.html">Exam calendar 2026 &rarr;</a></p>
+"""
+
+
+QUIZ_SCRIPT = """<script>
+/* v197 — quiz + poll preview behaviour (same rules as the theme's
+   studentup-engage.js). Offline file lo poll vote localStorage lo — live site
+   lo REST endpoint count mattrame store chestundi (no personal data). */
+(function(){
+  var form=document.querySelector('[data-su-quiz-form]');
+  if(form){
+    var scoreEl=document.querySelector('[data-su-quiz-score]'),
+        barEl=document.querySelector('[data-su-quiz-bar]'),
+        checkBtn=document.querySelector('[data-su-quiz-check]'),
+        restart=document.querySelector('[data-su-quiz-restart]'),
+        share=document.querySelector('[data-su-quiz-share]'),
+        streakEl=document.querySelector('[data-su-quiz-streak]'),
+        qs=[].slice.call(form.querySelectorAll('fieldset.su-q')), total=qs.length,
+        score=0, picked={};
+    if(checkBtn) checkBtn.hidden=true;
+    function paint(){
+      if(scoreEl) scoreEl.textContent=String(score);
+      if(barEl) barEl.style.width=Math.round((Object.keys(picked).length/total)*100)+'%';
+    }
+    function mark(fs,chosen){
+      var right=parseInt(fs.getAttribute('data-c'),10);
+      [].forEach.call(fs.querySelectorAll('.su-opt'),function(lab){
+        var input=lab.querySelector('input'), val=parseInt(input.value,10);
+        lab.classList.remove('right','wrong','on'); input.disabled=true;
+        if(val===right) lab.classList.add('right');
+        if(val===chosen&&chosen!==right) lab.classList.add('wrong');
+      });
+      var why=fs.querySelector('[data-su-why]'); if(why) why.hidden=false;
+    }
+    function finish(){
+      if(share){
+        share.hidden=false;
+        share.href='https://wa.me/?text='+encodeURIComponent("I scored "+score+"/"+total+" in the StudentUp Daily Quiz. Practice free: https://studentup.in/");
+      }
+      if(streakEl){ streakEl.hidden=false; streakEl.textContent='5 questions done today'; }
+    }
+    form.addEventListener('click',function(e){
+      var lab=e.target.closest?e.target.closest('.su-opt'):null;
+      if(!lab) return;
+      var input=lab.querySelector('input'), fs=lab.closest('fieldset.su-q');
+      if(!input||!fs||input.disabled) return;
+      e.preventDefault(); input.checked=true;
+      var i=fs.getAttribute('data-i'); if(picked[i]!==undefined) return;
+      picked[i]=parseInt(input.value,10);
+      if(picked[i]===parseInt(fs.getAttribute('data-c'),10)) score++;
+      mark(fs,picked[i]); paint();
+      if(Object.keys(picked).length===total) finish();
+    });
+    if(restart){
+      restart.hidden=false;
+      restart.addEventListener('click',function(){
+        picked={}; score=0;
+        qs.forEach(function(fs){
+          [].forEach.call(fs.querySelectorAll('.su-opt'),function(lab){
+            lab.classList.remove('right','wrong','on');
+            var input=lab.querySelector('input'); if(input){ input.disabled=false; input.checked=false; }
+          });
+          var why=fs.querySelector('[data-su-why]'); if(why) why.hidden=true;
+        });
+        if(share) share.hidden=true; if(streakEl) streakEl.hidden=true; paint();
+      });
+    }
+    paint();
+  }
+
+  var box=document.querySelector('[data-su-poll]');
+  if(box){
+    var pform=box.querySelector('[data-su-poll-form]');
+    var labels=[].slice.call(box.querySelectorAll('.su-poll-opt'));
+    labels.forEach(function(lab){
+      lab.addEventListener('click',function(){
+        labels.forEach(function(o){ o.classList.remove('on'); });
+        lab.classList.add('on');
+      });
+    });
+    if(pform){
+      pform.addEventListener('submit',function(e){
+        e.preventDefault();
+        var chosen=pform.querySelector('input[name=su_poll_opt]:checked');
+        if(!chosen){ if(labels[0]) labels[0].classList.add('on'); return; }
+        var counts=[0,0,0,0]; counts[parseInt(chosen.value,10)]=1;
+        try{
+          var prev=JSON.parse(localStorage.getItem('su_poll_preview')||'null');
+          if(prev){ counts=prev; counts[parseInt(chosen.value,10)]++; }
+          localStorage.setItem('su_poll_preview',JSON.stringify(counts));
+        }catch(err){}
+        var total=counts.reduce(function(a,b){ return a+b; },0)||1;
+        labels.forEach(function(lab,i){
+          var pct=Math.round((counts[i]/total)*100);
+          var bar=lab.querySelector('[data-su-bar]'), p=lab.querySelector('[data-su-pct]');
+          if(bar) bar.style.width=pct+'%';
+          if(p) p.textContent=pct+'%';
+          var input=lab.querySelector('input'); if(input) input.disabled=true;
+        });
+        var foot=box.querySelector('.su-poll-foot'), btn=box.querySelector('[data-su-poll-vote]');
+        if(btn) btn.remove();
+        if(foot){ var s=foot.querySelector('span'); if(s) s.textContent='Thanks — your vote is counted (on this device in the offline preview).'; }
+      });
+      try{
+        var saved=JSON.parse(localStorage.getItem('su_poll_preview')||'null');
+        if(saved){
+          var t=saved.reduce(function(a,b){ return a+b; },0)||1;
+          labels.forEach(function(lab,i){
+            var pct=Math.round((saved[i]/t)*100);
+            var bar=lab.querySelector('[data-su-bar]'), p=lab.querySelector('[data-su-pct]');
+            if(bar) bar.style.width=pct+'%';
+            if(p) p.textContent=pct+'%';
+            var input=lab.querySelector('input'); if(input) input.disabled=true;
+          });
+          var btn=box.querySelector('[data-su-poll-vote]'); if(btn) btn.remove();
+        }
+      }catch(err){}
+    }
+  }
+})();
+</script>"""
+
+
 PAGE_DEFS = [
     ("advertise", "Partner with us",
      "Advertise on studentup.in — labelled SPONSORED placements read by Telangana & Andhra Pradesh students. Availability and pricing shared personally on WhatsApp.",
@@ -568,6 +1157,34 @@ PAGE_DEFS = [
     ("editorial-policy", "Editorial policy",
      "The 5 verification gates, official-source policy, correction deadline and advertising rules — how every studentup.in post is made.",
      "Editorial policy", "Every post is published only after clearing these 5 gates", EDITORIAL),
+    # v195: hubs (topic clusters) + editorial team (E-E-A-T) — theme inc/hubs.php.
+    ("ts-jobs-hub", "Telangana Government Jobs 2026",
+     "TSPSC, TS Police, DSC and every Telangana government job notification for 2026 — apply dates, eligibility and official links in one place.",
+     "Telangana Government Jobs 2026", "Every Telangana notification, latest first", HUBS_BODY),
+    ("results-hub", "Exam Results &amp; Hall Tickets 2026",
+     "TS, AP and central exam results plus hall ticket download links 2026 — updated as soon as the official website publishes them.",
+     "Exam Results &amp; Hall Tickets 2026", "Result and hall ticket links, latest first", RESULTS_BODY),
+    ("scholarships-hub", "Scholarships 2026 — Telangana, AP &amp; Central",
+     "NMMS, NSP, ePASS, AICTE and private scholarships 2026 with amounts, eligibility and last dates for Telugu students.",
+     "Scholarships 2026", "Amount, eligibility and last date — one page", SCHOLARSHIPS_BODY),
+    ("editorial-team", "Editorial team &amp; fact-checking",
+     "Who writes and verifies studentup.in — author profile, verification process and the public correction policy readers can hold us to.",
+     "Editorial team &amp; fact-checking", "Who writes, who verifies, how to report a mistake", EDITORIAL_BODY),    # v196: calendar (deadline intelligence) · IC price list · corrections log.
+    ("exam-calendar", "Exam &amp; application calendar 2026",
+     "Every confirmed government job, scholarship and exam last date in one calendar — sorted by month, closing-soon first, with a one-tap .ics export to your phone calendar.",
+     "Exam &amp; application calendar 2026",
+     "Every last date we have confirmed, in one list — sorted by month", CALENDAR_BODY),
+    ("internet-center", "Students Internet Center",
+     "The full price list and rules for our offline form-filling service — what is included, what is never included, government fee separation, turnaround and refund policy.",
+     "Students Internet Center",
+     "Separate offline service &middot; transparent price list &middot; optional", IC_BODY),
+    ("corrections", "Corrections &amp; updates",
+     "The public correction log — every fixed mistake stays visible with its date, and readers can report errors with the official notification.",
+     "Corrections &amp; updates",
+     "What changed, when, and how to report a mistake", CORRECTIONS_BODY),
+    ("daily-quiz", "Daily quiz &amp; reader polls",
+     "Five fresh government-exam practice questions every morning with explained answers, plus one reader poll — free, no login, and nothing about you is stored.",
+     "Daily quiz &amp; reader polls", "Five questions every day, explained — plus one poll that decides what we build next", QUIZ_BODY),
 ]
 
 FAVICON = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
@@ -617,6 +1234,17 @@ SITEMAP = """<?xml version="1.0" encoding="UTF-8"?>
   <url><loc>https://studentup.in/pages/disclaimer.html</loc><lastmod>{d}</lastmod><priority>0.5</priority></url>
   <url><loc>https://studentup.in/pages/terms.html</loc><lastmod>{d}</lastmod><priority>0.5</priority></url>
   <url><loc>https://studentup.in/pages/editorial-policy.html</loc><lastmod>{d}</lastmod><priority>0.6</priority></url>
+  <url><loc>https://studentup.in/pages/exam-calendar.html</loc><lastmod>{d}</lastmod><changefreq>daily</changefreq><priority>0.9</priority></url>
+  <url><loc>https://studentup.in/pages/internet-center.html</loc><lastmod>{d}</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://studentup.in/pages/corrections.html</loc><lastmod>{d}</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://studentup.in/pages/ts-jobs-hub.html</loc><lastmod>{d}</lastmod><changefreq>daily</changefreq><priority>0.9</priority></url>
+  <url><loc>https://studentup.in/pages/results-hub.html</loc><lastmod>{d}</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://studentup.in/pages/scholarships-hub.html</loc><lastmod>{d}</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://studentup.in/pages/editorial-team.html</loc><lastmod>{d}</lastmod><priority>0.6</priority></url>
+  <url><loc>https://studentup.in/pages/daily-quiz.html</loc><lastmod>{d}</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://studentup.in/tools/</loc><lastmod>{d}</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://studentup.in/posts/upsc-junior-assistant-2026.html</loc><lastmod>{d}</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://studentup.in/posts/engineering-internships-2026.html</loc><lastmod>{d}</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
 </urlset>
 """
 
@@ -710,15 +1338,38 @@ def write_keyword_csv(limit: int = 200) -> str:
     return "%d rows · universe %d" % (len(rows), len(uni))
 
 
+def sync_home_nav() -> str:
+    """v197: home demo nav ni IDE generator nunchi rasthundi (pin-to-pin).
+
+    Mundu index.html nav ni chey-adi ga copy cheyyadam valla theme builder ki,
+    preview ki madhya drift vachedi. Ippudu okkate source: `mega_nav_html()`.
+    """
+    home_page = OUT / "worldclass" / "index.html"
+    if not home_page.exists():
+        return "index.html ledu"
+    html = home_page.read_text(encoding="utf-8")
+    nav = ('<nav class="nav" aria-label="Main menu">'
+           + mega_nav_html(home="index.html", pfx="../") + "</nav>")
+    new, n = re.subn(r'<nav class="nav" aria-label="Main menu">.*?</nav>',
+                     lambda _m: nav, html, count=1, flags=re.S)
+    if not n:
+        return "nav block dhorakaledu"
+    if new != html:
+        home_page.write_text(new, encoding="utf-8")
+        return "nav updated (%d -> %d bytes)" % (len(html), len(new))
+    return "already in sync"
+
+
 def main() -> None:
     PAGES.mkdir(parents=True, exist_ok=True)
-    scripts = {"contact": CONTACT_SCRIPT}
+    scripts = {"contact": CONTACT_SCRIPT, "daily-quiz": QUIZ_SCRIPT}
     for slug, title, desc, h1, sub, body in PAGE_DEFS:
         filled = (body.replace("{email}", EMAIL).replace("{tg}", TG)
                       .replace("{wa}", WA_LINK).replace("{phone}", PHONE))
         html = build(slug, title, desc, h1, sub, filled, script=scripts.get(slug, ""))
         (PAGES / ("%s.html" % slug)).write_text(html, encoding="utf-8")
         print("  wrote pages/%s.html (%d bytes)" % (slug, len(html)))
+    print("  home nav: %s" % sync_home_nav())
     (OUT / "favicon.svg").write_text(FAVICON, encoding="utf-8")
     (OUT / "robots.txt").write_text(ROBOTS, encoding="utf-8")
     (OUT / "sitemap.xml").write_text(SITEMAP.format(d=UPDATED), encoding="utf-8")
@@ -727,6 +1378,17 @@ def main() -> None:
     kw_state = write_keyword_csv()
     print("  wrote keyword-universe-top200.csv (%s)" % kw_state)
     print("ALL POLICY PAGES BUILT ✔")
+
+    # v193: article pages kuda ide shell nunchi (okate design anta preview lo).
+    try:
+        import build_preview_posts  # noqa: PLC0415  (circular safe: module already loaded)
+        build_preview_posts.main()
+        import build_preview_tools  # noqa: PLC0415
+        build_preview_tools.main()
+        import build_standalone  # noqa: PLC0415
+        build_standalone.main()
+    except Exception as exc:  # pragma: no cover - build helper
+        print(f"  \u26a0\ufe0f  posts build skip: {exc}")
 
 
 if __name__ == "__main__":

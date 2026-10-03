@@ -3,7 +3,7 @@
 > **Idi em doc:** mee site ni **world-class** ga nadapadaniki — **mee side cheyyalsina
 > pani motham** (setup + daily rhythm + SEO + money + honest limits) — okate chota.
 >
-> **Nijam ga cheppali:** code/automation side **137 test suites + 8 audits** tho lock chesanu
+> **Nijam ga cheppali:** code/automation side **138 test suites + 8 audits** tho lock chesanu
 > (nijaalu kinda "Verification" lo unnayi). Kani **Google ranking, traffic, AdSense approval,
 > revenue** — avi Google + mee accounts + **time** batti untayi. Ee guide aa pani ni
 > **systematic** ga cheyyadaniki, tappulu taggadaniki — guarantee icche doc kaadu.
@@ -15,7 +15,7 @@
 | # | Pani | Ekkada | Guide |
 |---|---|---|---|
 | 1 | Kit SHA verify | mee laptop | [B1](#b1-kit--sha-verify-5-nimishalu) |
-| 2 | WordPress + **theme 1.9.36** upload → Activate | WP Admin | [B2](#b2-wordpress--theme-19.36-30-nimishalu) |
+| 2 | WordPress + **theme 1.9.37** upload → Activate | WP Admin | [B2](#b2-wordpress--theme-19.36-30-nimishalu) |
 | 3 | **SEO bridge plugin** upload → Activate | WP Admin | [B3](#b3-plugins-15-nimishalu) |
 | 4 | Bot → `~/bot` + `.env` keys (5 must) | cPanel | [B4](#b4-bot-setup-40-nimishalu) · [B5](#b5-env-keys--emi-pettali-exact-ga) |
 | 5 | `--deploy-check` + `--check-wp` (0 fail) | Terminal | B4 |
@@ -61,7 +61,7 @@ sha256sum -c SHA256SUMS.txt          # 4 zips · anni "OK" ravali
 | `studentup-seo-bridge-1.1.0.zip` | `2132fbe7d9653dfd…` | WP → Plugins |
 | `studentup-static-site.zip` | `2430d8cc90065014…` | optional (static mirror) |
 
-### B2) WordPress + theme 1.9.36 (30 nimishalu)
+### B2) WordPress + theme 1.9.37 (30 nimishalu)
 ```
 cPanel → Softaculous → WordPress install (domain)   # SSL already ACTIVE ✓
 WP Admin → Appearance → Themes → Add New → Upload Theme → studentup-theme-1.9.36.zip
@@ -304,7 +304,7 @@ run.py --search-demand --notify · --trends · --breaking-feed
 
 # SAFETY
 run.py --rollback-post <id> · --rollback-backup · --corrections-audit
-run.py --test-all                    # 137 suites (code health)
+run.py --test-all                    # 138 suites (code health)
 ```
 
 ---
@@ -313,9 +313,9 @@ run.py --test-all                    # 137 suites (code health)
 
 | Check | Command | Ippati result |
 |---|---|---|
-| Test suites | `run.py --test-all` | **137/137** ✔ |
+| Test suites | `run.py --test-all` | **144/144** ✔ |
 | JS runtime | `node tests/runtime/jsdom_runtime_test.js` | **177/177** ✔ |
-| PHP lint | `node tools/php_lint.js` | **86/86** ✔ |
+| PHP lint | `node tools/php_lint.js` | **97/97** ✔ |
 | Theme deep audit | `python3 tools/theme_audit_deep.py` | **31 pass · 0 warn · 0 fail** |
 | Parity (docs↔code) | `python3 tools/parity_audit.py` | **PIN-TO-PIN OK** |
 | Code audit | `python3 tools/code_audit.py` | **0 errors · 0 warnings** |

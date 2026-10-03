@@ -19,6 +19,8 @@ get_header();
 ?>
 <main id="main">
 	<div class="wrap">
+		<div class="su-layout">
+			<div class="su-main">
 		<div class="crumbs"><?php echo wp_kses_post( studentup_breadcrumbs() ); ?></div>
 		<div class="sectionhead">
 			<div>
@@ -49,8 +51,10 @@ get_header();
 		</div>
 		<?php studentup_ad( 'mid' ); ?>
 		<nav class="sectionhead" aria-label="Pages"><div><?php echo wp_kses_post( paginate_links() ?? '' ); // v173 REAL FIX: single page unte paginate_links() NULL → wp_kses_post(null) PHP 8.1+ fatal ?></div></nav>
+			</div><!-- /.su-main -->
+			<?php get_sidebar(); ?>
+		</div><!-- /.su-layout -->
 	</div>
-	<?php get_sidebar(); ?>
 </main>
 <?php
 get_footer();

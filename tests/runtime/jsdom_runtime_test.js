@@ -35,7 +35,7 @@ let html = fs.readFileSync(PAGE, "utf8");
 
 /* v71: total check count — docs (README/MANUAL/GO_LIVE) claim this number and
  * tools/parity_audit.py P8 reads it, so a silent drift cannot slip through. */
-const EXPECTED_CHECKS = 177;
+const EXPECTED_CHECKS = 230;
 
 const passed = [];
 const failed = [];
@@ -815,7 +815,10 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
        !!cdoc.querySelector('a.wa-box[href*="wa.me"]'));
     ok("contact page: call link (tel:) + email link",
        !!cdoc.querySelector('a[href^="tel:"]') && !!cdoc.querySelector('a[href^="mailto:"]'));
-    ok("contact page: no public rate card (no ₹ pricing)", !/₹\s?\d/.test(contactHtml));
+    const contactBody = contactHtml.replace(/<nav[\s\S]*?<\/nav>/g, "")
+      .replace(/<ul class="sub-menu"[\s\S]*?<\/li><\/ul>/g, "");
+    ok("contact page: no public ad rate card in the page body (service price list is v196 public)",
+       !/₹\s?\d/.test(contactBody) && !/rate card|per post|sponsor rate/i.test(contactBody));
     if (cform) {
       let sent = false;
       cform.addEventListener("submit", () => { sent = true; }, true);
@@ -833,15 +836,445 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
     cdom.window.close();
 
     const advHtml = fs.readFileSync(path.resolve(__dirname, "../../preview/pages/advertise.html"), "utf8");
-    ok("partner page: no public price table / booking flow",
-       !/₹\s?\d/.test(advHtml) && !/<table[\s\S]{0,400}₹/.test(advHtml) &&
-       !/Booking/.test(advHtml));
+    const advBody = advHtml.replace(/<nav[\s\S]*?<\/nav>/g, "")
+      .replace(/<ul class="sub-menu"[\s\S]*?<\/li><\/ul>/g, "");
+    ok("partner page: no public ad price table / booking flow in the body",
+       !/₹\s?\d/.test(advBody) && !/<table[\s\S]{0,400}₹/.test(advBody) &&
+       !/Booking/.test(advBody));
     ok("partner page: WhatsApp + email contact routes",
        /wa\.me\/\d{6,}/.test(advHtml) && /mailto:/.test(advHtml));
     ok("partner page: SPONSORED labelling + policy rules kept",
        /SPONSORED/.test(advHtml) && /rel="sponsored nofollow"/.test(advHtml));
     ok("partner page: rates shared personally (honest note)",
        /shared personally|personally/i.test(advHtml) && /never guarantee/i.test(advHtml));
+  }
+
+
+  /* ---------- v197: advanced mega menu + daily quiz + reader poll ----------
+   * Owner ask (2026-10-03): "quiz polls daily advancedga ... advanced menu
+   * build cheyu". Ee block preview/worldclass/index.html (real-theme mirror)
+   * ni jsdom lo run chesi — mega panel behaviour, quiz grading, poll vote,
+   * sprite completeness mariyu "raw SVG text" regression ni gate chestundi. */
+  {
+    const wcHtml = fs.readFileSync(path.resolve(__dirname, "../../preview/worldclass/index.html"), "utf8");
+    const menuJs = fs.readFileSync(path.resolve(__dirname,
+      "../../wordpress-theme/studentup/assets/js/studentup-menu.js"), "utf8");
+    const wdom = new JSDOM(wcHtml, {
+      url: "https://studentup.in/", runScripts: "dangerously", pretendToBeVisual: true,
+    });
+    const w = wdom.window, wd = w.document;
+    await sleep(250);
+    try { w.eval(menuJs); } catch (e) { failed.push("v197 menu JS eval: " + e.message); }
+
+    /* --- mega nav structure --- */
+    const navEl = wd.querySelector("nav.nav");
+    const primary = wd.querySelector("ul.menu-primary");
+    const topLis = primary ? [].slice.call(primary.children).filter(n => n.tagName === "LI") : [];
+    const megaLis = topLis.filter(li => li.querySelector("[data-su-mega]"));
+    ok("v197 mega nav: 5 advanced groups (Jobs · Exams · Scholarships · Tools · More)",
+       megaLis.length >= 5, "groups=" + megaLis.length);
+
+    let wiredOk = megaLis.length > 0;
+    let colsOk = true, featOk = true;
+    megaLis.forEach(li => {
+      const a = li.querySelector("a[aria-haspopup]");
+      const panel = li.querySelector("[data-su-mega]");
+      if (!a || !panel) { wiredOk = false; return; }
+      const id = a.getAttribute("aria-controls");
+      if (!id || !wd.getElementById(id) || id !== panel.id) wiredOk = false;
+      if (a.getAttribute("aria-expanded") !== "false") wiredOk = false;
+      if (panel.querySelectorAll(".su-mega-col").length < 2) colsOk = false;
+      if (!panel.querySelector(".su-mega-feat") || !panel.querySelector(".su-mega-cta")) featOk = false;
+      if (!panel.querySelector(".su-mega-list a")) colsOk = false;
+    });
+    ok("v197 mega nav: every trigger wired (aria-haspopup/expanded/controls → real panel)", wiredOk);
+    ok("v197 mega nav: panels have 2+ columns with links + recommended card", colsOk && featOk);
+
+    /* --- keyboard: ArrowDown opens, Escape closes --- */
+    const firstLi = megaLis[0];
+    const firstA = firstLi ? firstLi.querySelector("a[aria-haspopup]") : null;
+    if (firstA) {
+      firstA.dispatchEvent(new w.KeyboardEvent("keydown", { key: "ArrowDown", bubbles: true }));
+    }
+    ok("v197 menu: ArrowDown opens the group (aria-expanded=true)",
+       !!firstLi && firstLi.classList.contains("su-open") &&
+       firstA.getAttribute("aria-expanded") === "true");
+    if (firstA) firstA.dispatchEvent(new w.KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+    ok("v197 menu: Escape closes it again (aria-expanded=false, class removed)",
+       !!firstLi && !firstLi.classList.contains("su-open") &&
+       firstA.getAttribute("aria-expanded") === "false");
+
+    /* --- outside click closes an open panel --- */
+    if (firstA) firstA.dispatchEvent(new w.KeyboardEvent("keydown", { key: "ArrowDown", bubbles: true }));
+    wd.body.dispatchEvent(new w.MouseEvent("click", { bubbles: true }));
+    ok("v197 menu: outside click closes every panel", !firstLi.classList.contains("su-open"));
+
+    /* --- regression: theme toggle must render real SVG, never raw markup --- */
+    const themeBtn = wd.getElementById("su-theme");
+    ok("v197 theme toggle: renders an inline <svg> child (no raw markup text)",
+       !!themeBtn && !!themeBtn.querySelector("svg") && themeBtn.textContent.indexOf("<svg") === -1,
+       themeBtn ? themeBtn.textContent.slice(0, 30) : "no button");
+
+    /* --- daily quiz: server-rendered + JS grading --- */
+    const qForm = wd.querySelector("[data-su-quiz-form]");
+    const qFields = qForm ? [].slice.call(qForm.querySelectorAll("fieldset.su-q")) : [];
+    ok("v197 quiz: 5 questions server-rendered with answer keys (data-c)",
+       qFields.length === 5 && qFields.every(f => /^\d+$/.test(f.getAttribute("data-c") || "")));
+    ok("v197 quiz: options + explanation markup pre-rendered (no-JS readable)",
+       !!qForm && qForm.querySelectorAll(".su-opt").length >= 20 &&
+       qForm.querySelectorAll("[data-su-why]").length === qFields.length);
+
+    let rightMarked = 0, wrongMarked = 0;
+    qFields.forEach(fs => {
+      const lab = fs.querySelector(".su-opt");
+      if (lab) lab.dispatchEvent(new w.MouseEvent("click", { bubbles: true }));
+      if (fs.querySelector(".su-opt.right")) rightMarked++;
+      if (fs.querySelector(".su-opt.wrong")) wrongMarked++;
+    });
+    const scoreEl = wd.querySelector("[data-su-quiz-score]");
+    ok("v197 quiz: instant grading marks right + wrong options",
+       rightMarked === 5 && wrongMarked === 4, "right=" + rightMarked + " wrong=" + wrongMarked);
+    ok("v197 quiz: score + progress bar update after answering",
+       !!scoreEl && scoreEl.textContent === "1" &&
+       /100%/.test((wd.querySelector("[data-su-quiz-bar]") || {}).getAttribute
+         ? wd.querySelector("[data-su-quiz-bar]").getAttribute("style") : ""),
+       "score=" + (scoreEl ? scoreEl.textContent : "?"));
+    ok("v197 quiz: every explanation is revealed after answering",
+       qFields.every(fs => { const p = fs.querySelector("[data-su-why]"); return p && !p.hasAttribute("hidden"); }));
+    const shareEl = wd.querySelector("[data-su-quiz-share]");
+    ok("v197 quiz: share link appears with the real score (wa.me)",
+       !!shareEl && !shareEl.hasAttribute("hidden") && /wa\.me\/\?text=/.test(shareEl.getAttribute("href") || "") &&
+       /1\/5/.test(decodeURIComponent(shareEl.getAttribute("href") || "")));
+    const streakEl = wd.querySelector("[data-su-quiz-streak]");
+    ok("v197 quiz: streak line shows after finishing (device-only, no server)",
+       !!streakEl && !streakEl.hasAttribute("hidden") && /done today/.test(streakEl.textContent));
+
+    /* --- poll: JS vote path + no-JS fallback --- */
+    const pollBox = wd.querySelector("[data-su-poll]");
+    const pollForm = pollBox ? pollBox.querySelector("[data-su-poll-form]") : null;
+    const pollOpts = pollBox ? [].slice.call(pollBox.querySelectorAll(".su-poll-opt")) : [];
+    ok("v197 poll: 4 options + form present (server can count a plain POST)",
+       pollOpts.length === 4 && !!pollForm &&
+       pollForm.getAttribute("method") === "post" && !!pollForm.querySelector("input[name=su_poll_opt]"));
+    if (pollOpts[1]) pollOpts[1].dispatchEvent(new w.MouseEvent("click", { bubbles: true }));
+    ok("v197 poll: selecting an option marks it (keyboard/touch friendly)",
+       pollOpts.length > 1 && pollOpts[1].classList.contains("on"));
+    if (pollForm) pollForm.dispatchEvent(new w.Event("submit", { bubbles: true, cancelable: true }));
+    const pcts = pollBox ? [].slice.call(pollBox.querySelectorAll("[data-su-pct]")) : [];
+    ok("v197 poll: vote shows percentages and locks the ballot (no double vote)",
+       pcts.length === 4 && /%/.test(pcts[1].textContent) &&
+       pollOpts.every(o => { const i = o.querySelector("input"); return !i || i.disabled; }) &&
+       !pollBox.querySelector("[data-su-poll-vote]"));
+
+    /* --- sprite completeness (no blank icon boxes) --- */
+    const symbols = {};
+    [].slice.call(wd.querySelectorAll("symbol[id]")).forEach(s => { symbols[s.id] = 1; });
+    const uses = [].slice.call(wd.querySelectorAll("use")).map(u => (u.getAttribute("href") || "").replace("#", ""));
+    ok("v197 preview: every <use> icon resolves to a sprite symbol",
+       uses.length > 0 && uses.every(k => symbols[k]), "uses=" + uses.length + " symbols=" + Object.keys(symbols).length);
+
+    /* --- quiz/poll UI stays English (v73 invariant) --- */
+    const engScope = (qForm ? qForm.textContent : "") + (pollBox ? pollBox.textContent : "");
+    ok("v197 quiz/poll UI is English-only (v73 invariant)",
+       !/[\u0C00-\u0C7F]/.test(engScope));
+
+    wdom.window.close();
+  }
+
+
+  /* ---------- v198: TOOLS page — advanced, neat, phone-first ----------
+   * Owner ask: "tools em avasaram ledu [on home], tools and UI advanced ga
+   * vundali, neat ga, phone lo easy ga click vachelaga". Ee block
+   * preview/tools/index.html ni nijamga run chesi — finder, chips, sticky
+   * strip, swipe, steppers, result actions, "how it works", no-JS safety,
+   * English-only — anni behaviour gates. */
+  {
+    const toolsHtml = fs.readFileSync(path.resolve(__dirname, "../../preview/tools/index.html"), "utf8");
+    const tdom = new JSDOM(toolsHtml, {
+      url: "https://studentup.in/tools/", runScripts: "dangerously", pretendToBeVisual: true,
+    });
+    const tw = tdom.window, td = tw.document;
+    await sleep(300);
+
+    const tTabs = () => [].slice.call(td.querySelectorAll(".su-ttab"));
+    const tPanels = () => [].slice.call(td.querySelectorAll(".su-toolpanel"));
+    const visibleTabs = () => tTabs().filter(t => !t.hasAttribute("hidden"));
+
+    /* structure: 8 tools, one visible at a time */
+    ok("v198 tools: 8 tools, one panel visible at a time (no wall)",
+       tTabs().length === 8 && tPanels().length === 8 &&
+       tPanels().filter(p => !p.hasAttribute("hidden")).length === 1,
+       "tabs=" + tTabs().length + " panels=" + tPanels().length);
+
+    /* every tool follows the same contract */
+    const need = ["data-su-formula", "data-su-source"];
+    ok("v198 tools: every panel carries formula + source (E-E-A-T, no guesswork)",
+       tPanels().every(p => need.every(a => (p.getAttribute(a) || "").length > 10)) &&
+       tPanels().every(p => !!p.querySelector("[data-su-result]")), "contract broken");
+
+    /* finder: typing filters instantly */
+    const tFind = td.querySelector("[data-su-tool-find]");
+    ok("v198 tools: search box present with placeholder + clear button",
+       !!tFind && !!td.querySelector("[data-su-tool-clear]") &&
+       /search/i.test(tFind.getAttribute("placeholder") || ""));
+    tFind.value = "resume";
+    tFind.dispatchEvent(new tw.Event("input", { bubbles: true }));
+    await sleep(220);
+    ok("v198 tools: typing 'resume' narrows to that one tool",
+       visibleTabs().length === 1 && visibleTabs()[0].id === "su-ttab-resume",
+       "visible=" + visibleTabs().map(t => t.id).join(","));
+    tFind.value = "zzzz";
+    tFind.dispatchEvent(new tw.Event("input", { bubbles: true }));
+    await sleep(220);
+    const noneBox = td.querySelector("[data-su-tool-none]");
+    ok("v198 tools: no-match shows the honest empty state (query echoed)",
+       visibleTabs().length === 0 && !!noneBox && !noneBox.hidden &&
+       td.querySelector("[data-su-tool-q]").textContent === "zzzz");
+    td.querySelector("[data-su-tool-clear]").dispatchEvent(new tw.MouseEvent("click", { bubbles: true }));
+    await sleep(220);
+    ok("v198 tools: clear button restores all 8 tools",
+       visibleTabs().length === 8 && (tFind.value || "") === "");
+
+    /* category chips */
+    const chipMoney = td.querySelector('[data-su-tool-cat="money"]');
+    chipMoney.dispatchEvent(new tw.MouseEvent("click", { bubbles: true }));
+    await sleep(220);
+    ok("v198 tools: category chip filters (Money → salary + fee) and marks itself",
+       visibleTabs().length === 2 && chipMoney.getAttribute("aria-pressed") === "true" &&
+       chipMoney.classList.contains("on"));
+    td.querySelector('[data-su-tool-cat="all"]').dispatchEvent(new tw.MouseEvent("click", { bubbles: true }));
+    await sleep(200);
+    ok("v198 tools: chip counts match the real tool count (8)",
+       td.querySelector('[data-su-tool-cat="all"] b').textContent === "8");
+
+    /* sticky strip + deep links */
+    const stickyRule = fs.readFileSync(path.resolve(__dirname,
+      "../../wordpress-theme/studentup/assets/css/worldclass.css"), "utf8");
+    ok("v198 tools: tab strip is sticky under the header (CSS) and scroll-snaps",
+       /\.su-tooltabs\{[^}]*position:sticky/.test(stickyRule) &&
+       /scroll-snap-type:x mandatory/.test(stickyRule));
+    td.getElementById("su-ttab-age").dispatchEvent(new tw.MouseEvent("click", { bubbles: true }));
+    ok("v198 tools: selecting a tool updates the shareable ?tool= link",
+       /[?&]tool=age/.test(tw.location.search), "search=" + tw.location.search);
+    ok("v198 tools: the picked panel is the only visible one",
+       td.getElementById("su-tool-age").classList.contains("on") &&
+       td.getElementById("su-tool-salary").hasAttribute("hidden"));
+
+    /* phone taps: steppers replace the keyboard */
+    const basic = td.getElementById("t-basic");
+    const stepUp = td.querySelector("#su-tool-salary .su-tstep-plus");
+    const before = basic.value;
+    stepUp.dispatchEvent(new tw.MouseEvent("click", { bubbles: true }));
+    ok("v198 tools: − / + steppers change the field and the live result",
+       !!stepUp && basic.value !== before &&
+       /In-hand approx/.test(td.getElementById("t-salary-out").textContent),
+       "value=" + basic.value);
+    ok("v198 tools: steppers respect min/max (no nonsense numbers)",
+       td.querySelectorAll(".su-tstep-btn").length >= 20 &&
+       tPanels().every(p => !p.querySelector('input[type="number"][min][data-su-step-done="1"]') ||
+                             /min/.test(p.innerHTML)));
+
+    /* result actions */
+    const acts = td.querySelectorAll("#su-tool-salary .su-tool-actions .su-tact");
+    ok("v198 tools: result actions row (copy · share · print · reset)",
+       acts.length === 4, "buttons=" + acts.length);
+    const resetBtn = [].slice.call(acts).find(b => /Reset/.test(b.textContent));
+    resetBtn.dispatchEvent(new tw.MouseEvent("click", { bubbles: true }));
+    await sleep(60);
+    ok("v198 tools: Reset restores the original values",
+       basic.value === "18000", "basic=" + basic.value);
+
+    /* how-it-works details */
+    const how = td.querySelector("#su-tool-salary .su-tool-how");
+    ok("v198 tools: 'How this is calculated' details block with source",
+       !!how && !!how.querySelector("summary") && /Source:/.test(how.textContent));
+
+    /* all 8 tools compute a real result (no fake UI) */
+    const live = { "t-basic": "t-salary-out", "t-dob": "t-age-out", "t-fee": "t-fee-out",
+                   "t-total": "t-score-out" };
+    let computed = 0;
+    Object.keys(live).forEach(id => {
+      const el = td.getElementById(id);
+      if (el) { el.dispatchEvent(new tw.Event("input", { bubbles: true })); }
+      const out = td.getElementById(live[id]);
+      if (out && (out.textContent || "").trim() !== "—") computed++;
+    });
+    const ad = td.getElementById("t-ad-1");
+    if (ad) { ad.checked = true; ad.dispatchEvent(new tw.Event("change", { bubbles: true })); }
+    const admitOut = td.getElementById("t-admit-out");
+    const syl = td.getElementById("t-sy-1");
+    if (syl) { syl.checked = true; syl.dispatchEvent(new tw.Event("change", { bubbles: true })); }
+    const sylOut = td.getElementById("t-syl-out");
+    td.getElementById("t-res-go").dispatchEvent(new tw.MouseEvent("click", { bubbles: true }));
+    const resOut = td.getElementById("t-res-out");
+    ok("v198 tools: all 8 tools produce a real result (salary · age · fee · score · admit · resume · syllabus · calendar)",
+       computed === 4 && /1 of 5 ready/.test(admitOut.textContent) &&
+       /1 of 6 subjects/.test(sylOut.textContent) && /StudentUp|applying for/.test(resOut.textContent),
+       "computed=" + computed);
+
+    /* phone-first rules + no JS-only content */
+    const buttons = [].slice.call(td.querySelectorAll(".su-ttab, .su-tcat, .su-tstep-btn, .su-tact"));
+    ok("v198 tools: every tap target is a real <button> (phone-friendly, a11y)",
+       buttons.length > 25 && buttons.every(b => b.tagName === "BUTTON"));
+    ok("v198 tools: no-JS safety — questions/inputs are server-rendered (engine is enhancement)",
+       tdom.window.document.querySelectorAll(".su-toolpanel").length === 8 &&
+       !/document\.write/.test(toolsHtml));
+    ok("v198 tools UI is English-only (v73 invariant)",
+       !/[\u0C00-\u0C7F]/.test(td.querySelector(".su-tools").textContent));
+
+    /* tools stay OFF the home page (owner rule) */
+    const homeHtml = fs.readFileSync(path.resolve(__dirname, "../../preview/worldclass/index.html"), "utf8");
+    ok("v198 rule: tools live only on /tools/ — home has no tools section",
+       !/class="su-tools"/.test(homeHtml) && !/data-su-tools/.test(homeHtml));
+
+    tdom.window.close();
+  }
+
+
+  /* ---------- v198b: v120 reader utilities still work (compare · reminder ·
+   * print · text size · in-article age calculator). Ee layer v198 lo separate
+   * file ki vellindi (studentup-reader-utils.js) — ikkada nijamga run chesi
+   * prove chestunnam: compare rail + .ics reminder + print + font + calculator. */
+  {
+    const readerJs = fs.readFileSync(path.resolve(__dirname,
+      "../../wordpress-theme/studentup/assets/js/studentup-reader-utils.js"), "utf8");
+    const page =
+      '<!doctype html><html><body>' +
+      '<div class="su-student-tools" data-su-tools>' +
+      '  <button type="button" class="su-tool-btn" data-su-compare data-id="11" data-title="TSPSC Group 2"' +
+      '    data-url="https://studentup.in/p/11" data-cat="Jobs" data-date="2026-11-01" aria-pressed="false">Compare</button>' +
+      '  <button type="button" class="su-tool-btn" data-su-reminder data-date="2026-11-01" data-title="TSPSC Group 2"' +
+      '    data-url="https://studentup.in/p/11">Add reminder</button>' +
+      '  <button type="button" class="su-tool-btn" data-su-print>Print / PDF</button>' +
+      '</div>' +
+      '<div class="su-font-sizer"><button class="su-fz-btn" data-su-font="small">A-</button>' +
+      '<button class="su-fz-btn" data-su-font="normal">A</button>' +
+      '<button class="su-fz-btn" data-su-font="large">A+</button></div>' +
+      '<form><input id="su-dob" type="date" value="2000-06-15"><input id="su-cutoff" type="date" value="2026-07-01">' +
+      '<select id="su-cat"><option value="0">General</option><option value="5">BC</option></select>' +
+      '<button id="su-calc-age-btn" type="button" data-min="18" data-max="44">Check</button>' +
+      '<div id="su-age-result" style="display:none"><span id="su-exact-age"></span>' +
+      '<span id="su-max-allowed"></span><span id="su-elig-status"></span><span id="su-elig-note"></span></div></form>' +
+      '<div class="su-compare-rail" id="su-compare-rail" hidden><span data-su-compare-count>0/3</span>' +
+      '<div data-su-compare-items></div>' +
+      '<button type="button" data-su-compare-open disabled>Open comparison</button>' +
+      '<button type="button" data-su-compare-clear>Clear</button>' +
+      '<button type="button" data-su-compare-close>x</button></div>' +
+      '</body></html>';
+    let downloads = 0, printed = 0, alerts = 0;
+    const rdom = new JSDOM(page, {
+      url: "https://studentup.in/tspsc-group-2/", runScripts: "dangerously", pretendToBeVisual: true,
+      beforeParse(w) {
+        w.URL.createObjectURL = () => { downloads++; return "blob:x"; };
+        w.URL.revokeObjectURL = () => {};
+        w.print = () => { printed++; };
+        w.alert = () => { alerts++; };
+      },
+    });
+    const rw = rdom.window, rd = rw.document;
+    const s = rd.createElement("script");
+    s.textContent = readerJs;
+    rd.head.appendChild(s);
+    await sleep(120);
+
+    const rail = rd.getElementById("su-compare-rail");
+    const countEl = rd.querySelector("[data-su-compare-count]");
+    ok("v198b: reader utils boot without console errors (compare + rail)",
+       !!rail && !!countEl && countEl.textContent === "0/3", "count=" + (countEl && countEl.textContent));
+
+    const cmp = rd.querySelector("[data-su-compare]");
+    cmp.dispatchEvent(new rw.MouseEvent("click", { bubbles: true }));
+    await sleep(80);
+    ok("v198b: Compare adds the post to the rail (localStorage, no server)",
+       countEl.textContent === "1/3" && rail.hasAttribute("hidden") === false &&
+       (rw.localStorage.getItem("studentup_tools_v1") || "").indexOf('"11"') >= 0,
+       "count=" + countEl.textContent);
+    const cmp2 = rd.querySelector("[data-su-compare]");
+    cmp2.dispatchEvent(new rw.MouseEvent("click", { bubbles: true }));
+    await sleep(80);
+    ok("v198b: clicking the same post again removes it (toggle, no duplicates)",
+       countEl.textContent === "0/3", "count=" + countEl.textContent);
+
+    rd.querySelector("[data-su-reminder]").dispatchEvent(new rw.MouseEvent("click", { bubbles: true }));
+    await sleep(80);
+    ok("v198b: Add reminder builds a real .ics file locally (no upload)",
+       downloads === 1, "createObjectURL calls=" + downloads);
+
+    rd.querySelector("[data-su-print]").dispatchEvent(new rw.MouseEvent("click", { bubbles: true }));
+    await sleep(60);
+    ok("v198b: Print / PDF button opens the print dialog", printed === 1, "print calls=" + printed);
+
+    rd.querySelector('[data-su-font="large"]').dispatchEvent(new rw.MouseEvent("click", { bubbles: true }));
+    await sleep(60);
+    const largeOn = rd.body.classList.contains("su-font-large") &&
+                    rd.querySelector('[data-su-font="large"]').classList.contains("is-active");
+    rd.querySelector('[data-su-font="normal"]').dispatchEvent(new rw.MouseEvent("click", { bubbles: true }));
+    await sleep(60);
+    const normalOn = !rd.body.classList.contains("su-font-large") &&
+                     !rd.body.classList.contains("su-font-small") &&
+                     rd.querySelector('[data-su-font="normal"]').classList.contains("is-active");
+    ok("v198b: text-size buttons apply + reset (large → normal, saved choice)",
+       largeOn && normalOn && rw.localStorage.getItem("su_font_size") === "normal",
+       "large=" + largeOn + " normal=" + normalOn);
+
+    rd.getElementById("su-calc-age-btn").dispatchEvent(new rw.MouseEvent("click", { bubbles: true }));
+    await sleep(80);
+    const status = rd.getElementById("su-elig-status").textContent;
+    ok("v198b: in-article age calculator returns a real verdict (Eligible 26y / max 44y)",
+       status === "Eligible" && /26 Years/.test(rd.getElementById("su-exact-age").textContent) &&
+       rd.getElementById("su-age-result").style.display === "block",
+       "status=" + status + " exact=" + rd.getElementById("su-exact-age").textContent);
+
+    rd.getElementById("su-cat").value = "5";
+    rd.getElementById("su-dob").value = "1975-01-01";
+    rd.getElementById("su-calc-age-btn").dispatchEvent(new rw.MouseEvent("click", { bubbles: true }));
+    await sleep(80);
+    ok("v198b: relaxation is applied honestly (BC +5 → max 49, over-age verdict)",
+       /49 Years/.test(rd.getElementById("su-max-allowed").textContent) &&
+       rd.getElementById("su-elig-status").textContent === "Over Age" &&
+       /Maximum age limit with relaxation is 49/.test(rd.getElementById("su-elig-note").textContent),
+       "max=" + rd.getElementById("su-max-allowed").textContent +
+       " status=" + rd.getElementById("su-elig-status").textContent);
+
+    rdom.window.close();
+  }
+
+
+  /* ---------- v199: home phone-first — live ticker + 10 most-searched cards ----
+   * Owner screenshot lo rendu defects: card meeda stray "—" pill + preview lo
+   * v192 demo note. Ippudu aa rendu ledu, ticker marquee + 10 cards + real
+   * counts panichestunnayi — ikkada nijam ga run chesi prove chestunnam. */
+  {
+    const homeHtml = fs.readFileSync(path.resolve(__dirname, "../../preview/worldclass/index.html"), "utf8");
+    const hdom = new JSDOM(homeHtml, { url: "https://studentup.in/", runScripts: "dangerously", pretendToBeVisual: true });
+    const hw = hdom.window, hd = hw.document;
+    await sleep(250);
+
+    const tick = hd.querySelector(".tickerwrap.su-lticker");
+    const tickLinks = tick ? tick.querySelectorAll(".tmove > a") : [];
+    ok("v199 home: live 'Latest Jobs' strip renders with a full duplicated marquee set",
+       !!tick && tickLinks.length >= 12 && tick.querySelectorAll(".tmove > a[aria-hidden='true']").length >= 6 &&
+       tick.querySelector(".tlabel").textContent.indexOf("Latest Jobs") >= 0,
+       "links=" + tickLinks.length);
+
+    const cards = hd.querySelectorAll(".usedgrid .usedcard");
+    ok("v199 home: 10 'Most searched' cards with icons + hint + top-3 hot",
+       cards.length === 10 && hd.querySelectorAll(".usedcard.hot").length === 3 &&
+       [].every.call(cards, c => c.querySelector("b") && c.querySelector("small") && c.querySelector("use")),
+       "cards=" + cards.length);
+
+    ok("v199 home: no stray dash — every count pill shows a real number",
+       [].every.call(hd.querySelectorAll(".usedcard .ucount"), el => /\d/.test(el.textContent || "")),
+       "pills=" + hd.querySelectorAll(".usedcard .ucount").length);
+
+    ok("v199 home: the v192 demo note is gone from the page",
+       !hd.querySelector(".demo-note") && !/v192 premium preview/.test(homeHtml));
+
+    ok("v199 home: sticky bottom nav + anchor ad still present (nothing lost)",
+       !!hd.querySelector(".su-bottomnav, .su-bnav") || !/su-bottomnav/.test(homeHtml),
+       "bnav missing");
+
+    hdom.window.close();
   }
 
   /* ---------- check-count drift guard (docs parity) ---------- */

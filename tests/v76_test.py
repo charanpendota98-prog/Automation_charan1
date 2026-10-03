@@ -11,7 +11,7 @@ Checks (offline only):
   * preview: select#qualsel + 9 options order + label + qcount (chips levu)
   * preview JS: change filter + live counts + ?qual= deep-link + URL sync
   * preview CSS: .qualsel shipped · .qchip poyindi
-  * jsdom 177/177 (behavioral — dropdown tho kuda green)
+  * jsdom 225/225 (behavioral — dropdown + v197 engage/menu + v198 tools green)
   * theme: qual_bar form+select+noscript+closing+counts · JS wiring + state sync
   * theme CSS + php-lint + zip fresh + qualsel zip lo
   * bot pins: guardian/readiness qualsel needles (chips pins poyayi)
@@ -81,7 +81,7 @@ def test_jsdom_still_green():
                           cwd=ROOT / "tests" / "runtime")
     out = (proc.stdout or "") + (proc.stderr or "")
     assert proc.returncode == 0, out[-400:]
-    assert "177/177 checks passed" in out, out[-200:]
+    assert "230/230 checks passed" in out, out[-200:]
     assert "check count drift" not in out
 
 
@@ -162,23 +162,23 @@ def test_ui_sodi_clean():
 
 def test_docs_v76():
     suites = len(list((ROOT / "tests").glob("*_test.py")))
-    assert suites == 137, f"suites {suites} (v116 tho 137 expect)"
+    assert suites == 144, f"suites {suites} (v116 tho 144 expect)"
     readme = read(ROOT / "README.md")
     manual = read(ROOT / "MANUAL_ADVANCED_CHECKLIST.md")
     go_live = read(ROOT / "GO_LIVE_CHECKLIST.md")
-    assert "### v76" in readme and "137/137" in readme
-    assert "PART 35" in manual and "v76" in manual and "137/137" in manual
-    assert "137/137" in go_live
+    assert "### v76" in readme and "144/144" in readme
+    assert "PART 35" in manual and "v76" in manual and "144/144" in manual
+    assert "144/144" in go_live
     for name, txt in (("README", readme), ("MANUAL", manual),
                       ("GO_LIVE", go_live)):
-        assert "177/177" in txt, f"{name} lo jsdom claim poyindi"
+        assert "230/230" in txt, f"{name} lo jsdom claim poyindi"
 
 
 TESTS = [
     ("preview dropdown markup (9 options + label)", test_preview_dropdown_markup),
     ("preview dropdown JS (counts + ?qual= + URL)", test_preview_dropdown_js),
     ("preview CSS (.qualsel, chips gone)", test_preview_dropdown_css),
-    ("jsdom 177/177 behavioral", test_jsdom_still_green),
+    ("jsdom 230/230 behavioral", test_jsdom_still_green),
     ("theme dropdown + JS parity", test_theme_dropdown_markup_and_js),
     ("theme lint + zip fresh", test_theme_lint_and_zip),
     ("bot pins moved to qualsel", test_bot_pins_use_qualsel),

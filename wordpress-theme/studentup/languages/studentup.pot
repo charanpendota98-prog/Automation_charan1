@@ -2,7 +2,7 @@
 # This file is distributed under the GNU GPL v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: StudentUp 1.9.36\n"
+"Project-Id-Version: StudentUp 1.9.41\n"
 "Report-Msgid-Bugs-To: https://studentup.in/\n"
 "POT-Creation-Date: 2026-01-01 00:00+0000\n"
 "MIME-Version: 1.0\n"
@@ -16,8 +16,16 @@ msgstr ""
 msgid "%d days left"
 msgstr ""
 
-#: author.php:43
+#: author.php:45
 msgid "%s articles"
+msgstr ""
+
+#: inc/polls.php:430
+msgid "%s readers voted — tap an option to see live results."
+msgstr ""
+
+#: front-page.php:68
+msgid "%s updates"
 msgstr ""
 
 #: inc/engage.php:158
@@ -44,12 +52,20 @@ msgstr ""
 msgid "4 · Deadline radar"
 msgstr ""
 
+#: inc/author-profile.php:120
+msgid "A reader correction is published publicly with the updated date."
+msgstr ""
+
 #: inc/workspace.php:170
 msgid "Active jobs board"
 msgstr ""
 
 #: inc/slotlab.php:87
 msgid "Ad slot A/B test is running"
+msgstr ""
+
+#: inc/calendar.php:104
+msgid "Add all dates to my calendar (.ics)"
 msgstr ""
 
 #: inc/student-tools.php:55
@@ -68,7 +84,7 @@ msgstr ""
 msgid "Add this post to compare"
 msgstr ""
 
-#: inc/student-tools.php:109
+#: inc/student-tools.php:112
 msgid "Added"
 msgstr ""
 
@@ -94,14 +110,26 @@ msgstr ""
 msgid "All states"
 msgstr ""
 
+#: inc/premium.php:358
+msgid "All tools"
+msgstr ""
+
 #: inc/workspace.php:115
 #: inc/workspace.php:205
 msgid "Andhra Pradesh"
 msgstr ""
 
+#: inc/quiz.php:291
+msgid "Answers are explained, not just marked. Score stays on your device — we do not store it."
+msgstr ""
+
 #: inc/workspace.php:113
 #: inc/workspace.php:190
 msgid "Any qualification"
+msgstr ""
+
+#: page-internet-center.php:61
+msgid "Application + document pack"
 msgstr ""
 
 #: inc/cta.php:38
@@ -121,16 +149,40 @@ msgstr ""
 msgid "Apply actions"
 msgstr ""
 
-#: author.php:67
+#: inc/calendar.php:192
+msgid "Apply today - last date tomorrow"
+msgstr ""
+
+#: author.php:69
 msgid "Author website / profile"
+msgstr ""
+
+#: inc/premium.php:431
+msgid "Back to tools"
+msgstr ""
+
+#: inc/polls.php:434
+msgid "Be the first to vote — results show as soon as people answer."
 msgstr ""
 
 #: inc/personal.php:53
 msgid "Build my list"
 msgstr ""
 
+#: page-internet-center.php:96
+msgid "Call"
+msgstr ""
+
 #: inc/cta.php:51
 msgid "Call now"
+msgstr ""
+
+#: page-internet-center.php:87
+msgid "Cancellation and refund"
+msgstr ""
+
+#: inc/premium.php:362
+msgid "Career"
 msgstr ""
 
 #: inc/workspace.php:116
@@ -144,6 +196,10 @@ msgstr ""
 
 #: inc/saved.php:222
 msgid "Clear all"
+msgstr ""
+
+#: inc/premium.php:388
+msgid "Clear search"
 msgstr ""
 
 #: inc/engage.php:221
@@ -190,7 +246,7 @@ msgid "Comments are closed."
 msgstr ""
 
 #: inc/student-tools.php:53
-#: inc/student-tools.php:108
+#: inc/student-tools.php:111
 msgid "Compare"
 msgstr ""
 
@@ -198,12 +254,40 @@ msgstr ""
 msgid "Compare posts"
 msgstr ""
 
-#: inc/student-tools.php:110
+#: inc/student-tools.php:113
 msgid "Compare up to three posts."
+msgstr ""
+
+#: page-internet-center.php:90
+msgid "Contact the center"
 msgstr ""
 
 #: inc/share.php:125
 msgid "Copy link"
+msgstr ""
+
+#: page-corrections.php:64
+msgid "Copy the page link (or the headline) that looks wrong."
+msgstr ""
+
+#: inc/firstrun.php:339
+msgid "Corrections"
+msgstr ""
+
+#: page-corrections.php:35
+msgid "Corrections &amp; updates"
+msgstr ""
+
+#: page-quiz.php:89
+msgid "Daily current affairs →"
+msgstr ""
+
+#: inc/quiz.php:213
+msgid "Daily quiz"
+msgstr ""
+
+#: inc/author-profile.php:118
+msgid "Dates, fees, vacancies and eligibility go into the post exactly as published — nothing is estimated."
 msgstr ""
 
 #: inc/workspace.php:125
@@ -214,12 +298,32 @@ msgstr ""
 msgid "Deadline"
 msgstr ""
 
+#: inc/premium.php:363
+msgid "Deadlines"
+msgstr ""
+
+#: inc/quiz.php:283
+msgid "Decent start. Read the "why" lines once and retry."
+msgstr ""
+
 #: inc/remind.php:52
 msgid "Dismiss"
 msgstr ""
 
 #: inc/personal.php:149
 msgid "Downloads a calendar file with an alarm one day before."
+msgstr ""
+
+#: page-tools.php:61
+msgid "Ee page ki content add cheyyandi (WP Admin → Pages → Tools). Tools anni kinda unnayi."
+msgstr ""
+
+#: inc/premium.php:399
+msgid "Ee peru tho tool ledu:"
+msgstr ""
+
+#: inc/premium.php:360
+msgid "Eligibility"
 msgstr ""
 
 #: inc/workspace.php:120
@@ -230,44 +334,156 @@ msgstr ""
 msgid "Eligible for you"
 msgstr ""
 
+#: inc/author-profile.php:88
 #: inc/cta.php:54
 msgid "Email"
+msgstr ""
+
+#: page-quiz.php:78
+msgid "Every answer has a one-line explanation and the source — so you learn, not just guess."
+msgstr ""
+
+#: page-corrections.php:36
+msgid "Every correction we make is listed here with what changed and when. If you find a mistake, write to us with the page link and we will publish the fix on this page as well."
+msgstr ""
+
+#: inc/firstrun.php:328
+msgid "Every entry links back to the official notification — always confirm the details there before applying."
 msgstr ""
 
 #: inc/cta.php:69
 msgid "Every job, exam date and result — first on your phone"
 msgstr ""
 
+#: page-exam-calendar.php:19
+msgid "Every last date we have confirmed from an official notification, in one list - sorted by month, with the closing-soon ones first."
+msgstr ""
+
+#: inc/author-profile.php:119
+msgid "Every post links the official source so you can check it yourself."
+msgstr ""
+
+#: page-exam-calendar.php:18
+msgid "Exam &amp; application calendar 2026"
+msgstr ""
+
 #: inc/workspace.php:167
 msgid "Exam score calculator"
+msgstr ""
+
+#: inc/premium.php:361
+msgid "Exams"
 msgstr ""
 
 #: inc/workspace.php:166
 msgid "Fee & concession calculator"
 msgstr ""
 
+#: inc/firstrun.php:135
+msgid "Fees, documents and eligibility for any government application are always as per the official notification."
+msgstr ""
+
+#: inc/premium.php:391
+msgid "Filter tools by category"
+msgstr ""
+
+#: inc/firstrun.php:270
+msgid "Five fresh practice questions every morning with explained answers, plus one reader poll. Free, no login, and nothing about you is stored."
+msgstr ""
+
+#: page-quiz.php:32
+msgid "Five fresh questions every morning, explained answers, and one reader poll that decides what we build next. Free, no login, nothing stored about you."
+msgstr ""
+
+#: page-internet-center.php:56
+msgid "Form + photo &amp; signature formatting"
+msgstr ""
+
+#: page-internet-center.php:57
+msgid "Form filling plus resizing/renaming of your photo and signature to the official size"
+msgstr ""
+
+#: page-internet-center.php:62
+msgid "Form, photo/signature work and a single PDF pack of the documents the notification asks for"
+msgstr ""
+
+#: inc/firstrun.php:340
+msgid "Found a mistake? Write to the email above with the page link. Verified corrections are published with the updated date, and the post keeps a correction note."
+msgstr ""
+
 #: inc/cta.php:70
 msgid "Free daily updates for Telangana & Andhra Pradesh students. No spam calls, leave anytime."
+msgstr ""
+
+#: page-quiz.php:96
+msgid "Free exam tools →"
 msgstr ""
 
 #: inc/cta.php:101
 msgid "Free job alerts on your phone"
 msgstr ""
 
+#: inc/premium.php:371
+#: inc/premium.php:377
+#: page-tools.php:36
+msgid "Free tools for students"
+msgstr ""
+
 #: inc/apply.php:238
 msgid "Full details"
 msgstr ""
 
-#: search.php:34
+#: inc/calendar.php:187
+msgid "Full details and official apply link"
+msgstr ""
+
+#: search.php:36
 msgid "Go to home"
+msgstr ""
+
+#: page-internet-center.php:68
+msgid "Government application fee, exam fee or any official payment is separate and is never collected by us - you pay the department directly on the official portal."
+msgstr ""
+
+#: inc/calendar.php:173
+msgid "Government job & exam last dates"
 msgstr ""
 
 #: footer.php:100
 msgid "Hide social icons"
 msgstr ""
 
-#: inc/template.php:310
+#: inc/megamenu.php:351
+#: inc/template.php:387
 msgid "Home"
+msgstr ""
+
+#: inc/author-profile.php:115
+msgid "How every update is verified"
+msgstr ""
+
+#: page-internet-center.php:79
+msgid "How it works"
+msgstr ""
+
+#: page-quiz.php:62
+msgid "How readers voted this week"
+msgstr ""
+
+#: page-quiz.php:75
+msgid "How the daily quiz works"
+msgstr ""
+
+#: page-quiz.php:74
+msgid "How this works"
+msgstr ""
+
+#: page-corrections.php:62
+msgid "How to report a mistake"
+msgstr ""
+
+#: page-internet-center.php:88
+msgid "If we cannot submit your application, the service charge is returned in full. If you cancel before we start filling, nothing is charged. Government fees paid on the official portal are between you and the department."
 msgstr ""
 
 #: inc/workspace.php:169
@@ -307,12 +523,21 @@ msgstr ""
 msgid "Key details"
 msgstr ""
 
+#: inc/calendar.php:186
 #: inc/keyfacts.php:29
 msgid "Last date"
 msgstr ""
 
 #: inc/apply.php:199
 msgid "Last date over"
+msgstr ""
+
+#: inc/calendar.php:124
+msgid "Last date today"
+msgstr ""
+
+#: inc/calendar.php:134
+msgid "Last date:"
 msgstr ""
 
 #: inc/engage.php:140
@@ -331,24 +556,32 @@ msgstr ""
 msgid "Latest Jobs"
 msgstr ""
 
-#: front-page.php:126
+#: front-page.php:114
 msgid "Latest opportunities"
 msgstr ""
 
-#: front-page.php:122
+#: front-page.php:110
 msgid "Latest opportunities — page %d"
 msgstr ""
 
-#: front-page.php:103
+#: front-page.php:91
 msgid "Latest student updates"
 msgstr ""
 
-#: front-page.php:99
+#: front-page.php:87
 msgid "Latest student updates — page %d"
 msgstr ""
 
 #: index.php:26
 msgid "Latest updates"
+msgstr ""
+
+#: inc/hubs.php:189
+msgid "latest updates on the home page"
+msgstr ""
+
+#: inc/premium.php:359
+msgid "Money"
 msgstr ""
 
 #: inc/share.php:123
@@ -363,16 +596,40 @@ msgstr ""
 msgid "My Workspace"
 msgstr ""
 
-#: inc/template.php:108
+#: inc/template.php:173
 msgid "NEW"
+msgstr ""
+
+#: inc/firstrun.php:322
+msgid "New notifications are added every day."
+msgstr ""
+
+#: inc/hubs.php:188
+msgid "New notifications are added every day. Meanwhile:"
 msgstr ""
 
 #: comments.php:46
 msgid "Newer comments"
 msgstr ""
 
-#: inc/student-tools.php:112
+#: inc/premium.php:425
+msgid "Next tool"
+msgstr ""
+
+#: inc/student-tools.php:115
 msgid "No confirmed date is available for this post."
+msgstr ""
+
+#: page-corrections.php:58
+msgid "No corrections have been needed so far. When one happens, it will be listed here with the date - we do not silently edit published facts."
+msgstr ""
+
+#: inc/calendar.php:110
+msgid "No last dates are confirmed yet. Dates appear here only after the official notification is published - we never estimate a deadline."
+msgstr ""
+
+#: inc/polls.php:462
+msgid "No login. One vote per device."
 msgstr ""
 
 #: inc/workspace.php:122
@@ -383,7 +640,11 @@ msgstr ""
 msgid "No more than 3 links in one comment."
 msgstr ""
 
-#: search.php:31
+#: inc/quiz.php:285
+msgid "No problem — practice is the point. Try again tomorrow."
+msgstr ""
+
+#: search.php:33
 msgid "No results — try a different word."
 msgstr ""
 
@@ -407,12 +668,24 @@ msgstr ""
 msgid "Older comments"
 msgstr ""
 
+#: page-internet-center.php:52
+msgid "One online form filled, checked and returned as a PDF"
+msgstr ""
+
 #: inc/apply.php:206
 msgid "Only %d days left"
 msgstr ""
 
+#: inc/firstrun.php:134
+msgid "Only for that offline service, documents are shared on WhatsApp at"
+msgstr ""
+
 #: inc/student-tools.php:74
 msgid "Open comparison"
+msgstr ""
+
+#: inc/polls.php:472
+msgid "Open poll, not a scientific survey. We store only the count — never who voted."
 msgstr ""
 
 #: inc/workspace.php:140
@@ -424,7 +697,19 @@ msgstr ""
 msgid "Open the saved page"
 msgstr ""
 
-#: author.php:97
+#: inc/calendar.php:105
+msgid "Opens in Google Calendar, Apple Calendar or any phone calendar. One alarm one day before each last date."
+msgstr ""
+
+#: page-internet-center.php:46
+msgid "Our service charge"
+msgstr ""
+
+#: inc/firstrun.php:133
+msgid "Outside this website we run a small offline Students Internet Center that helps students fill government application forms. This is optional: every job, result, hall ticket and scholarship update on this website is free to read and you never need this service to use the site."
+msgstr ""
+
+#: author.php:99
 msgid "Pages"
 msgstr ""
 
@@ -434,6 +719,10 @@ msgstr ""
 
 #: inc/workspace.php:129
 msgid "Pay"
+msgstr ""
+
+#: page-quiz.php:80
+msgid "Polls are open (not scientific): only the count is stored, never who voted."
 msgstr ""
 
 #: comments.php:61
@@ -456,6 +745,14 @@ msgstr ""
 msgid "Preparation Group"
 msgstr ""
 
+#: page-internet-center.php:40
+msgid "Price list (2026)"
+msgstr ""
+
+#: page-internet-center.php:69
+msgid "Prices are shown here permanently and do not change based on who calls."
+msgstr ""
+
 #: inc/student-tools.php:58
 msgid "Print / PDF"
 msgstr ""
@@ -469,7 +766,7 @@ msgstr ""
 msgid "Profile is stored in this browser only — no account, nothing sent to the server."
 msgstr ""
 
-#: author.php:52
+#: author.php:54
 msgid "Published articles: %d"
 msgstr ""
 
@@ -480,11 +777,15 @@ msgstr ""
 msgid "Qualification"
 msgstr ""
 
+#: page-quiz.php:77
+msgid "Questions rotate every day and are sourced from official notifications (SSC, TSPSC, APPSC, IBPS, Railways)."
+msgstr ""
+
 #: inc/workspace.php:233
 msgid "Quick tools"
 msgstr ""
 
-#: inc/template.php:123
+#: inc/template.php:188
 msgid "Read more"
 msgstr ""
 
@@ -492,23 +793,39 @@ msgstr ""
 msgid "Read next"
 msgstr ""
 
-#: author.php:73
+#: author.php:75
 msgid "Read our editorial policy"
 msgstr ""
 
-#: author.php:81
+#: inc/polls.php:422
+msgid "Reader poll"
+msgstr ""
+
+#: page-internet-center.php:37
+msgid "Reading this website, getting job alerts and using every tool here is free. You never need this service to use StudentUp."
+msgstr ""
+
+#: author.php:83
 msgid "Recent articles"
+msgstr ""
+
+#: page-quiz.php:61
+msgid "Recent poll results"
 msgstr ""
 
 #: inc/saved.php:303
 msgid "Recently read"
 msgstr ""
 
+#: inc/megamenu.php:392
+msgid "Recommended"
+msgstr ""
+
 #: inc/remind.php:56
 msgid "Remind me in the browser too"
 msgstr ""
 
-#: inc/student-tools.php:111
+#: inc/student-tools.php:114
 msgid "Reminder file downloaded. Add it to your calendar."
 msgstr ""
 
@@ -537,6 +854,10 @@ msgstr ""
 msgid "Result"
 msgstr ""
 
+#: page-tools.php:40
+msgid "Salaries, age limits, fees, scores, admit cards, resumes and syllabus — official rules batti calculate cheyandi."
+msgstr ""
+
 #: inc/keyfacts.php:28
 msgid "Salary"
 msgstr ""
@@ -560,7 +881,7 @@ msgstr ""
 msgid "Save this post for later"
 msgstr ""
 
-#: header.php:118
+#: header.php:115
 #: inc/saved.php:209
 #: inc/saved.php:294
 #: inc/saved.php:304
@@ -576,14 +897,50 @@ msgstr ""
 msgid "Saved jobs with deadlines will show up here, most urgent first."
 msgstr ""
 
-#: header.php:81
+#: header.php:78
 #: inc/saved.php:203
 #: inc/saved.php:207
 msgid "Saved posts"
 msgstr ""
 
-#: inc/student-tools.php:113
+#: inc/premium.php:386
+msgid "Search a tool — salary, age, fee, resume…"
+msgstr ""
+
+#: inc/premium.php:378
+msgid "Search cheyandi leda tab tap cheyandi — okka sari lo okka tool, screen clean ga untundi."
+msgstr ""
+
+#: inc/premium.php:383
+msgid "Search tools"
+msgstr ""
+
+#: inc/student-tools.php:116
 msgid "Select at least two posts to compare."
+msgstr ""
+
+#: page-corrections.php:71
+msgid "Send it to %s. Verified corrections are published within 48 hours."
+msgstr ""
+
+#: page-corrections.php:75
+msgid "Send it to us on WhatsApp or Telegram. Verified corrections are published within 48 hours."
+msgstr ""
+
+#: page-internet-center.php:82
+msgid "Send only the documents the notification asks for."
+msgstr ""
+
+#: page-internet-center.php:81
+msgid "Send the job or scholarship name on WhatsApp, and ask for the price before paying."
+msgstr ""
+
+#: page-internet-center.php:33
+msgid "Separate offline service · Telangana & Andhra Pradesh · run by the same team that publishes this website"
+msgstr ""
+
+#: page-internet-center.php:44
+msgid "Service"
 msgstr ""
 
 #: inc/workspace.php:180
@@ -610,8 +967,16 @@ msgstr ""
 msgid "Sidebar"
 msgstr ""
 
+#: page-internet-center.php:51
+msgid "Single application form"
+msgstr ""
+
 #: footer.php:99
 msgid "Social media"
+msgstr ""
+
+#: inc/author-box.php:45
+msgid "Sources verified:"
 msgstr ""
 
 #: inc/personal.php:45
@@ -624,12 +989,36 @@ msgstr ""
 msgid "Storage is not available in this browser (private mode?) — saving is off."
 msgstr ""
 
+#: inc/quiz.php:281
+msgid "Strong — keep this streak alive tomorrow."
+msgstr ""
+
+#: inc/premium.php:404
+msgid "Student tools"
+msgstr ""
+
+#: page-internet-center.php:32
+msgid "Students Internet Center"
+msgstr ""
+
+#: inc/firstrun.php:132
+msgid "Students Internet Center (separate offline service)"
+msgstr ""
+
 #: inc/cta.php:30
 msgid "Students Internet Center · Telangana & Andhra Pradesh"
 msgstr ""
 
 #: inc/editor.php:49
 msgid "StudentUp blocks"
+msgstr ""
+
+#: inc/firstrun.php:310
+msgid "StudentUp publishes a correction log. Every fixed mistake stays visible with its date instead of being silently edited."
+msgstr ""
+
+#: inc/firstrun.php:337
+msgid "StudentUp publishes government job, result, hall ticket and scholarship updates for Telangana and Andhra Pradesh students. This page names who writes and verifies them."
 msgstr ""
 
 #: inc/premium.php:146
@@ -653,12 +1042,40 @@ msgstr ""
 msgid "Telegram channel"
 msgstr ""
 
-#: author.php:61
+#: page-corrections.php:65
+msgid "Tell us what the official notification says instead - a screenshot or the official link helps most."
+msgstr ""
+
+#: inc/polls.php:464
+msgid "Thanks — your vote is counted."
+msgstr ""
+
+#: author.php:63
 msgid "The StudentUp editorial team — honest articles for Telangana & Andhra Pradesh students, based on official sources."
+msgstr ""
+
+#: page-internet-center.php:36
+msgid "This is optional."
+msgstr ""
+
+#: page-internet-center.php:103
+msgid "This service is a private offline service. It is not connected to any government department, and paying us gives you no advantage in any selection process."
+msgstr ""
+
+#: page-quiz.php:92
+msgid "Today's Telangana jobs →"
+msgstr ""
+
+#: inc/premium.php:400
+msgid "Try “salary”, “age” leda “resume”."
 msgstr ""
 
 #: inc/cta.php:28
 msgid "TS & AP"
+msgstr ""
+
+#: page-internet-center.php:84
+msgid "Turnaround: typically the same day, at most 24 hours on working days."
 msgstr ""
 
 #: inc/engage.php:220
@@ -674,6 +1091,10 @@ msgstr ""
 msgid "Updated on"
 msgstr ""
 
+#: page-corrections.php:48
+msgid "Updated:"
+msgstr ""
+
 #: inc/engage.php:279
 msgid "Uses your browser print dialog - choose "Save as PDF"."
 msgstr ""
@@ -682,8 +1103,52 @@ msgstr ""
 msgid "Vacancies"
 msgstr ""
 
+#: inc/hubs.php:153
+msgid "View details"
+msgstr ""
+
 #: inc/saved.php:220
 msgid "View saved here"
+msgstr ""
+
+#: inc/polls.php:461
+msgid "Vote"
+msgstr ""
+
+#: page-internet-center.php:83
+msgid "We fill the form, share a draft PDF with you, and submit only after you approve it."
+msgstr ""
+
+#: page-internet-center.php:75
+msgid "We never ask for Aadhaar, PAN, bank details, OTPs or passwords."
+msgstr ""
+
+#: page-internet-center.php:76
+msgid "We never fill a form with guessed details. If a document is missing, we tell you instead of inventing it."
+msgstr ""
+
+#: page-internet-center.php:74
+msgid "We never promise a job, a rank, a seat or a selection - no one can."
+msgstr ""
+
+#: inc/firstrun.php:301
+msgid "We run a small offline Students Internet Center that helps students fill government application forms. This page shows the exact price list, what is included, what we never do and how to cancel - so you can decide before you pay anything."
+msgstr ""
+
+#: inc/author-profile.php:117
+msgid "We start from the official notification or the department website only."
+msgstr ""
+
+#: page-internet-center.php:72
+msgid "What we never do"
+msgstr ""
+
+#: page-internet-center.php:45
+msgid "What you get"
+msgstr ""
+
+#: page-internet-center.php:93
+msgid "WhatsApp the center"
 msgstr ""
 
 #: inc/cta.php:74
@@ -692,6 +1157,10 @@ msgstr ""
 
 #: inc/cta.php:46
 msgid "WhatsApp లో documents పంపండి"
+msgstr ""
+
+#: inc/quiz.php:256
+msgid "Why:"
 msgstr ""
 
 #: comments.php:59
@@ -704,6 +1173,10 @@ msgstr ""
 
 #: comments.php:64
 msgid "Your email will not be published. Share personal details only for official information."
+msgstr ""
+
+#: page-quiz.php:79
+msgid "Your score and streak stay in your browser. We never see them and never ask for a phone number."
 msgstr ""
 
 #: inc/cta.php:39

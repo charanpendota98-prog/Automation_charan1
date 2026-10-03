@@ -2,9 +2,9 @@
 Contributors: studentup
 Requires at least: 6.0
 Tested up to: 6.7
-Stable tag: 1.9.36
+Stable tag: 1.9.41
 Requires PHP: 7.4
-Version: 1.9.26
+Version: 1.9.41
 License: GNU General Public License v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Tags: news, education, blog, custom-logo, custom-menu, featured-images, translation-ready, right-sidebar, block-styles, wide-blocks
@@ -47,6 +47,31 @@ The theme ships a REST bridge (`inc/seo-bridge.php`). Use an account with `manag
 user tho App Password ivvandi (Administrator role).
 
 == Changelog ==
+
+= 1.9.41 =
+* v199.1 SPACE FIX: "Most searched by students" now fills exactly — 2 columns on phone (5 clean rows) and 5 columns on laptop (2 clean rows), so there are never empty cells or wasted space. Cards are slightly tighter (70px, 38px icon) and the section heading sits closer to the grid.
+* v199.1: every preview page now carries a tiny honest build stamp (theme version + build date) so a cached/old page is instantly recognisable.
+
+= 1.9.40 =
+* v199 HOME PHONE-FIRST: the live "Latest Jobs" strip now fades at both edges instead of clipping text, pauses when you touch or focus it, and becomes a normal swipeable row when reduced-motion is on. Every link keeps a 44px tap height.
+* v199: "Most searched by students" now shows real per-category counts (from WordPress itself — no fake numbers, no stray dash) and lays out 2-up on phone → 3-up on tablet → 4-up on laptop, with press feedback, a clean trailing chevron and dark-mode/print coverage.
+
+= 1.9.39 =
+* v198 TOOLS ADVANCED: the Tools page is now a phone-first workbench — search box + category chips (Money · Eligibility · Exams · Career · Deadlines), a sticky tab strip with swipe, shareable ?tool= deep links, − / + stepper buttons on every number field (no keyboard needed), Copy / Share / Print / Reset row, and a "How this is calculated" panel with the source line for each tool. Works without JavaScript (all tools stay visible).
+* v198: eight tools in one neat card — in-hand salary, age checker, fee & concession, score with negative marking, last-date calendar, admit-card checklist, resume summary, syllabus tracker. Nothing is stored: no account, no upload, no cookie.
+
+= 1.9.38 =
+* v197 ENGAGE PACK: real daily quiz (server-rendered, works without JS, Quiz schema, streak + share) + reader polls (REST + no-JS vote, one vote per device, only counts stored).
+* v197 ADVANCED MENU: mega panel with columns + icons + recommended card (404-free — real terms/pages only) and a mobile accordion; keyboard, aria and touch support.
+* v197 EDITORIAL: quiz + poll page created by Setup (slug daily-quiz, template page-quiz.php); front page renders both blocks after the personal picks.
+* v197 TOOLING: icon sprite generated from the theme icons (build_sprite.py) so preview pages can never show blank icon boxes.
+
+= 1.9.37 =
+
+* WORLDCLASS v2 DESIGN LAYER (assets/css/worldclass.css, loaded after style.css + premium.css): mobile-first rebuild of the visual layer with zero template risk. On phones the post grid becomes horizontal "scan cards" (thumbnail + text side by side, title clamped to 3 lines) so twice as many updates fit on one screen; on laptops it becomes 3-column image tiles plus a sticky right rail (300x250 slot, top jobs, closing this week). Telugu-friendly 17px base type, 44px tap targets, safe-area aware sticky bottom nav, native-looking in-feed ad cards, dark-mode parity, reduced-motion and print rules.
+* HOME ORDER (front-page.php): content now comes first - hero, ticker, most-searched tiles, leaderboard, breaking news, qualification filters, the LATEST OPPORTUNITIES grid, jobs table, popular searches and pagination, and only then the engagement and utility blocks (hot 10, closing this week, job finder, mid ad, daily quiz, alerts, tools). Earlier eight calculator blocks plus eight widgets rendered before the grid, so a phone reader scrolled three or four screens before seeing the first job card.
+* TOOLS TABS (studentup_tools_tabs()): the eight calculator blocks (in-hand salary, age checker, fee and concession, score and negative marking, last-date calendar, admit card helper, resume maker, syllabus tracker) now live in one card as accessible tabs - one visible at a time. Full keyboard support (arrow keys, Home, End) with role=tab, aria-selected and hidden panel parity.
+* BUILD: worldclass.min.css (14 KB to 12 KB) added to the minify pipeline; theme parity pins moved to 1.9.37.
 
 = 1.9.31 =
 
