@@ -1369,6 +1369,42 @@ body.dark .su-qp.active{background:var(--blue,#2563eb);border-color:var(--blue,#
 body.dark .su-qp--urgent{background:rgba(220,38,38,.14);border-color:#7f1d1d;color:#fca5a5}
 body.dark .su-qp--urgent.active{background:#ef4444;border-color:#ef4444;color:#fff}
 
+/* Live Match Status & Interactive Bookmarks (Offline Storage) */
+.su-filter-status{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:var(--muted,#64748b);margin:0 0 14px;padding:0 2px}
+.su-status-dot{width:7px;height:7px;border-radius:50%;background:#10b981;display:inline-block;box-shadow:0 0 6px rgba(16,185,129,.6)}
+.su-saved-pill{appearance:none;border:1px solid var(--line-2,#e2e8f0);background:#fff;color:var(--ink,#1e293b);font-size:11.5px;font-weight:750;padding:4px 12px;border-radius:999px;cursor:pointer;display:inline-flex;align-items:center;gap:5px;transition:all .15s ease}
+.su-saved-pill:hover{border-color:var(--blue,#2563eb);color:var(--blue,#2563eb);background:var(--soft,#f8fafc)}
+body.dark .su-saved-pill{background:#14243c;border-color:#1e3355;color:#cbd5e1}
+
+.su-pulse-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#dc2626;margin-right:4px;vertical-align:middle;animation:su-pulse 1.8s infinite}
+@keyframes su-pulse{0%{transform:scale(.95);box-shadow:0 0 0 0 rgba(220,38,38,.7)}70%{transform:scale(1);box-shadow:0 0 0 6px rgba(220,38,38,0)}100%{transform:scale(.95);box-shadow:0 0 0 0 rgba(220,38,38,0)}}
+
+.su-card-bm{appearance:none;border:1px solid var(--line-2,#e2e8f0);background:#fff;color:var(--muted,#64748b);font-size:11px;font-weight:750;padding:3px 9px;border-radius:999px;cursor:pointer;display:inline-flex;align-items:center;gap:4px;transition:all .15s ease}
+.su-card-bm:hover{border-color:var(--blue,#2563eb);color:var(--blue,#2563eb)}
+.su-card-bm.saved{background:#eff6ff;border-color:#93c5fd;color:#2563eb;font-weight:800}
+body.dark .su-card-bm{background:#14243c;border-color:#1e3355;color:#94a3b8}
+body.dark .su-card-bm.saved{background:rgba(37,99,235,.2);border-color:#3b82f6;color:#93c5fd}
+
+.su-toast{position:fixed;bottom:84px;left:50%;transform:translateX(-50%) translateY(20px);background:#0f172a;color:#fff;font-size:13px;font-weight:700;padding:10px 18px;border-radius:999px;box-shadow:0 10px 25px rgba(0,0,0,.28);z-index:100;display:flex;align-items:center;gap:8px;opacity:0;transition:opacity .22s ease,transform .22s cubic-bezier(.2,.8,.4,1);pointer-events:none}
+.su-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+.su-sheet-backdrop{position:fixed;inset:0;background:rgba(15,23,42,.45);backdrop-filter:blur(3px);z-index:90;opacity:0;transition:opacity .25s ease}
+.su-sheet-backdrop.show{opacity:1}
+.su-saved-sheet{position:fixed;bottom:0;left:0;right:0;max-width:540px;margin:0 auto;max-height:82vh;background:#fff;border-radius:20px 20px 0 0;box-shadow:0 -10px 40px rgba(0,0,0,.20);z-index:95;display:flex;flex-direction:column;transform:translateY(100%);transition:transform .3s cubic-bezier(.2,.8,.4,1)}
+.su-saved-sheet.open{transform:translateY(0)}
+.su-sheet-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--line-2,#e2e8f0)}
+.su-sheet-body{padding:16px 20px;overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:10px}
+.su-saved-item{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 14px;background:var(--soft,#f8fafc);border:1px solid var(--line-2,#e2e8f0);border-radius:12px}
+.su-saved-item-title{font-size:13.5px;font-weight:750;color:var(--navy,#0b2447);display:block;text-decoration:none}
+.su-saved-item-sub{font-size:11.5px;color:var(--muted,#64748b);display:block;margin-top:2px}
+.su-saved-del{appearance:none;border:0;background:transparent;color:#94a3b8;cursor:pointer;padding:4px;border-radius:6px;font-size:16px;line-height:1}
+.su-saved-del:hover{color:#dc2626}
+body.dark .su-saved-sheet{background:#0f1c30;color:#e2e8f0}
+body.dark .su-sheet-head{border-color:#1e3355}
+body.dark .su-saved-item{background:#14243c;border-color:#1e3355}
+body.dark .su-saved-item-title{color:#cfe1ff}
+
+
 
 /* ==========================================================================
    StudentUp — WorldClass v2  (theme 1.9.41 · v199.1)
@@ -2694,6 +2730,44 @@ body.dark .su-qp.active{ background:var(--blue,#2563eb); border-color:var(--blue
 body.dark .su-qp--urgent{ background:rgba(220,38,38,.14); border-color:#7f1d1d; color:#fca5a5 }
 body.dark .su-qp--urgent.active{ background:#ef4444; border-color:#ef4444; color:#fff }
 
+/* ==========================================================================
+   19. LIVE MATCH STATUS & INTERACTIVE BOOKMARKS (Offline Storage)
+   ========================================================================== */
+.su-filter-status{ display:flex; align-items:center; gap:8px; font-size:12px; font-weight:700; color:var(--muted,#64748b); margin:0 0 14px; padding:0 2px }
+.su-status-dot{ width:7px; height:7px; border-radius:50%; background:#10b981; display:inline-block; box-shadow:0 0 6px rgba(16,185,129,.6) }
+.su-saved-pill{ appearance:none; border:1px solid var(--line-2,#e2e8f0); background:#fff; color:var(--ink,#1e293b); font-size:11.5px; font-weight:750; padding:4px 12px; border-radius:999px; cursor:pointer; display:inline-flex; align-items:center; gap:5px; transition:all .15s ease }
+.su-saved-pill:hover{ border-color:var(--blue,#2563eb); color:var(--blue,#2563eb); background:var(--soft,#f8fafc) }
+body.dark .su-saved-pill{ background:#14243c; border-color:#1e3355; color:#cbd5e1 }
+
+.su-pulse-dot{ display:inline-block; width:6px; height:6px; border-radius:50%; background:#dc2626; margin-right:4px; vertical-align:middle; animation:su-pulse 1.8s infinite }
+@keyframes su-pulse{ 0%{ transform:scale(.95); box-shadow:0 0 0 0 rgba(220,38,38,.7) } 70%{ transform:scale(1); box-shadow:0 0 0 6px rgba(220,38,38,0) } 100%{ transform:scale(.95); box-shadow:0 0 0 0 rgba(220,38,38,0) } }
+
+.su-card-bm{ appearance:none; border:1px solid var(--line-2,#e2e8f0); background:#fff; color:var(--muted,#64748b); font-size:11px; font-weight:750; padding:3px 9px; border-radius:999px; cursor:pointer; display:inline-flex; align-items:center; gap:4px; transition:all .15s ease }
+.su-card-bm:hover{ border-color:var(--blue,#2563eb); color:var(--blue,#2563eb) }
+.su-card-bm.saved{ background:#eff6ff; border-color:#93c5fd; color:#2563eb; font-weight:800 }
+body.dark .su-card-bm{ background:#14243c; border-color:#1e3355; color:#94a3b8 }
+body.dark .su-card-bm.saved{ background:rgba(37,99,235,.2); border-color:#3b82f6; color:#93c5fd }
+
+.su-toast{ position:fixed; bottom:84px; left:50%; transform:translateX(-50%) translateY(20px); background:#0f172a; color:#fff; font-size:13px; font-weight:700; padding:10px 18px; border-radius:999px; box-shadow:0 10px 25px rgba(0,0,0,.28); z-index:100; display:flex; align-items:center; gap:8px; opacity:0; transition:opacity .22s ease,transform .22s cubic-bezier(.2,.8,.4,1); pointer-events:none }
+.su-toast.show{ opacity:1; transform:translateX(-50%) translateY(0) }
+
+.su-sheet-backdrop{ position:fixed; inset:0; background:rgba(15,23,42,.45); backdrop-filter:blur(3px); z-index:90; opacity:0; transition:opacity .25s ease }
+.su-sheet-backdrop.show{ opacity:1 }
+.su-saved-sheet{ position:fixed; bottom:0; left:0; right:0; max-width:540px; margin:0 auto; max-height:82vh; background:#fff; border-radius:20px 20px 0 0; box-shadow:0 -10px 40px rgba(0,0,0,.20); z-index:95; display:flex; flex-direction:column; transform:translateY(100%); transition:transform .3s cubic-bezier(.2,.8,.4,1) }
+.su-saved-sheet.open{ transform:translateY(0) }
+.su-sheet-head{ display:flex; align-items:center; justify-content:space-between; padding:16px 20px; border-bottom:1px solid var(--line-2,#e2e8f0) }
+.su-sheet-body{ padding:16px 20px; overflow-y:auto; flex:1; display:flex; flex-direction:column; gap:10px }
+.su-saved-item{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding:10px 14px; background:var(--soft,#f8fafc); border:1px solid var(--line-2,#e2e8f0); border-radius:12px }
+.su-saved-item-title{ font-size:13.5px; font-weight:750; color:var(--navy,#0b2447); display:block; text-decoration:none }
+.su-saved-item-sub{ font-size:11.5px; color:var(--muted,#64748b); display:block; margin-top:2px }
+.su-saved-del{ appearance:none; border:0; background:transparent; color:#94a3b8; cursor:pointer; padding:4px; border-radius:6px; font-size:16px; line-height:1 }
+.su-saved-del:hover{ color:#dc2626 }
+body.dark .su-saved-sheet{ background:#0f1c30; color:#e2e8f0 }
+body.dark .su-sheet-head{ border-color:#1e3355 }
+body.dark .su-saved-item{ background:#14243c; border-color:#1e3355 }
+body.dark .su-saved-item-title{ color:#cfe1ff }
+
+
 
 
 
@@ -2715,7 +2789,7 @@ body.dark .su-qp--urgent.active{ background:#ef4444; border-color:#ef4444; color
   .su-lticker a{text-decoration:none}
 
   /* Quick Qualification & Urgency Filter Row */
-  .su-qual-bar{display:flex;align-items:center;gap:10px;margin:0 0 16px;padding:8px 12px;background:var(--soft,#f8fafc);border:1px solid var(--line-2,#e2e8f0);border-radius:12px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  .su-qual-bar{display:flex;align-items:center;gap:10px;margin:0 0 12px;padding:8px 12px;background:var(--soft,#f8fafc);border:1px solid var(--line-2,#e2e8f0);border-radius:12px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
   .su-qual-bar::-webkit-scrollbar{display:none}
   .su-qual-label{font-size:11.5px;font-weight:800;color:var(--muted,#64748b);white-space:nowrap;display:inline-flex;align-items:center;gap:4px;letter-spacing:.02em;flex-shrink:0}
   .su-qual-pills{display:flex;align-items:center;gap:6px;flex-shrink:0}
@@ -2731,6 +2805,45 @@ body.dark .su-qp--urgent.active{ background:#ef4444; border-color:#ef4444; color
   body.dark .su-qp.active{background:var(--blue,#2563eb);border-color:var(--blue,#2563eb);color:#fff}
   body.dark .su-qp--urgent{background:rgba(220,38,38,.14);border-color:#7f1d1d;color:#fca5a5}
   body.dark .su-qp--urgent.active{background:#ef4444;border-color:#ef4444;color:#fff}
+
+  /* Filter Live Status & Match Counter */
+  .su-filter-status{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:var(--muted,#64748b);margin:0 0 14px;padding:0 2px}
+  .su-status-dot{width:7px;height:7px;border-radius:50%;background:#10b981;display:inline-block;box-shadow:0 0 6px rgba(16,185,129,.6)}
+  .su-saved-pill{appearance:none;border:1px solid var(--line-2,#e2e8f0);background:#fff;color:var(--ink,#1e293b);font-size:11.5px;font-weight:750;padding:4px 12px;border-radius:999px;cursor:pointer;display:inline-flex;align-items:center;gap:5px;transition:all .15s ease}
+  .su-saved-pill:hover{border-color:var(--blue,#2563eb);color:var(--blue,#2563eb);background:var(--soft,#f8fafc)}
+  body.dark .su-saved-pill{background:#14243c;border-color:#1e3355;color:#cbd5e1}
+
+  /* Pulse Dot for Urgent Deadlines */
+  .su-pulse-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#dc2626;margin-right:4px;vertical-align:middle;animation:su-pulse 1.8s infinite}
+  @keyframes su-pulse{0%{transform:scale(.95);box-shadow:0 0 0 0 rgba(220,38,38,.7)}70%{transform:scale(1);box-shadow:0 0 0 6px rgba(220,38,38,0)}100%{transform:scale(.95);box-shadow:0 0 0 0 rgba(220,38,38,0)}}
+
+  /* 1-Tap Bookmark Action */
+  .su-card-bm{appearance:none;border:1px solid var(--line-2,#e2e8f0);background:#fff;color:var(--muted,#64748b);font-size:11px;font-weight:750;padding:3px 9px;border-radius:999px;cursor:pointer;display:inline-flex;align-items:center;gap:4px;transition:all .15s ease}
+  .su-card-bm:hover{border-color:var(--blue,#2563eb);color:var(--blue,#2563eb)}
+  .su-card-bm.saved{background:#eff6ff;border-color:#93c5fd;color:#2563eb;font-weight:800}
+  body.dark .su-card-bm{background:#14243c;border-color:#1e3355;color:#94a3b8}
+  body.dark .su-card-bm.saved{background:rgba(37,99,235,.2);border-color:#3b82f6;color:#93c5fd}
+
+  /* Floating Toast Notification */
+  .su-toast{position:fixed;bottom:84px;left:50%;transform:translateX(-50%) translateY(20px);background:#0f172a;color:#fff;font-size:13px;font-weight:700;padding:10px 18px;border-radius:999px;box-shadow:0 10px 25px rgba(0,0,0,.28);z-index:100;display:flex;align-items:center;gap:8px;opacity:0;transition:opacity .22s ease,transform .22s cubic-bezier(.2,.8,.4,1);pointer-events:none}
+  .su-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+  /* Saved Jobs Off-Canvas Drawer */
+  .su-sheet-backdrop{position:fixed;inset:0;background:rgba(15,23,42,.45);backdrop-filter:blur(3px);z-index:90;opacity:0;transition:opacity .25s ease}
+  .su-sheet-backdrop.show{opacity:1}
+  .su-saved-sheet{position:fixed;bottom:0;left:0;right:0;max-width:540px;margin:0 auto;max-height:82vh;background:#fff;border-radius:20px 20px 0 0;box-shadow:0 -10px 40px rgba(0,0,0,.20);z-index:95;display:flex;flex-direction:column;transform:translateY(100%);transition:transform .3s cubic-bezier(.2,.8,.4,1)}
+  .su-saved-sheet.open{transform:translateY(0)}
+  .su-sheet-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--line-2,#e2e8f0)}
+  .su-sheet-body{padding:16px 20px;overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:10px}
+  .su-saved-item{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 14px;background:var(--soft,#f8fafc);border:1px solid var(--line-2,#e2e8f0);border-radius:12px}
+  .su-saved-item-title{font-size:13.5px;font-weight:750;color:var(--navy,#0b2447);display:block;text-decoration:none}
+  .su-saved-item-sub{font-size:11.5px;color:var(--muted,#64748b);display:block;margin-top:2px}
+  .su-saved-del{appearance:none;border:0;background:transparent;color:#94a3b8;cursor:pointer;padding:4px;border-radius:6px;font-size:16px;line-height:1}
+  .su-saved-del:hover{color:#dc2626}
+  body.dark .su-saved-sheet{background:#0f1c30;color:#e2e8f0}
+  body.dark .su-sheet-head{border-color:#1e3355}
+  body.dark .su-saved-item{background:#14243c;border-color:#1e3355}
+  body.dark .su-saved-item-title{color:#cfe1ff}
 
 
   :root{--bg:#0d1220;--panel:#151d30;--line:#243450;--ink:#e9eefb;--muted:#93a3bd;--blue:#4d8dff;--orange:#f0a24a}
@@ -3769,6 +3882,16 @@ th{background:var(--soft);color:var(--navy);font-size:13px}
         </div>
       </div>
 
+      <!-- Live Matching Counter & Saved Jobs Quick Access -->
+      <div class="su-filter-status" id="su-filter-status" aria-live="polite">
+        <span class="su-status-dot"></span>
+        <span id="su-match-count">9</span> అవకాశాలు అందుబాటులో ఉన్నాయి
+        <button type="button" class="su-saved-pill" id="su-saved-pill" aria-label="Open saved jobs">
+          <svg class="su-uicon" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-bookmark"/></svg>
+          <span>సేవ్ చేసినవి</span> (<b id="su-saved-count">0</b>)
+        </button>
+      </div>
+
       <!-- Pre-approval AdSense slot: cleanly reserved, activates upon approval -->
       <div class="su-adleader" aria-label="Advertisement" hidden>
         Advertisement
@@ -3784,8 +3907,11 @@ th{background:var(--soft);color:var(--navy);font-size:13px}
             <p>10th / Inter pass candidates eligible. Tier-1 exam August 2026. Application window opened today.</p>
             <div class="newsfoot">
               <span>3 min read</span>
-              <span class="lastdate"><svg class="su-uicon su-uicon-clock" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-clock"/></svg> Last date 28 Oct · 5 days left</span>
+              <span class="lastdate"><span class="su-pulse-dot"></span><svg class="su-uicon su-uicon-clock" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-clock"/></svg> Last date 28 Oct · 5 days left</span>
               <a class="su-readmore" href="#of-post1">Read more →</a>
+              <button type="button" class="su-card-bm" aria-label="Save notification" title="Save for later" data-post-id="ssc-chsl-2026" data-post-title="SSC CHSL 2026 Notification — 3,712 Posts" data-post-url="../posts/upsc-junior-assistant-2026.html" data-post-cat="Central" data-post-date="28 Oct">
+                <svg class="su-uicon" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><use href="#su-i-bookmark"/></svg> <span>Save</span>
+              </button>
               <a class="su-card-wa" href="https://wa.me/?text=SSC%20CHSL%202026%20Notification%203712%20Posts%20Apply%20Online%20https://studentup.in/posts/upsc-junior-assistant-2026" target="_blank" rel="noopener" title="Share on WhatsApp">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.36 3.45 16.86L2.05 22L7.3 20.62C8.75 21.41 10.38 21.83 12.04 21.83C17.5 21.83 21.95 17.38 21.95 11.92C21.95 9.27 20.92 6.78 19.05 4.91C17.18 3.03 14.69 2 12.04 2Z"/></svg> Share
               </a>
@@ -3801,8 +3927,11 @@ th{background:var(--soft);color:var(--navy);font-size:13px}
             <p>Online application reopened for leftover posts. Fee ₹200, age 18–44 with relaxations.</p>
             <div class="newsfoot">
               <span>4 min read</span>
-              <span class="lastdate soon"><svg class="su-uicon su-uicon-clock" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-clock"/></svg> Last date 05 Nov</span>
+              <span class="lastdate soon"><span class="su-pulse-dot"></span><svg class="su-uicon su-uicon-clock" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-clock"/></svg> Last date 05 Nov</span>
               <a class="su-readmore" href="#of-post2">Read more →</a>
+              <button type="button" class="su-card-bm" aria-label="Save notification" title="Save for later" data-post-id="tspsc-group-2-2026" data-post-title="TSPSC Group 2 Recruitment 2026 — 783 Vacancies" data-post-url="../posts/engineering-internships-2026.html" data-post-cat="TS Jobs" data-post-date="05 Nov">
+                <svg class="su-uicon" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><use href="#su-i-bookmark"/></svg> <span>Save</span>
+              </button>
               <a class="su-card-wa" href="https://wa.me/?text=TSPSC%20Group%202%20Recruitment%202026%20783%20Vacancies%20https://studentup.in/posts/engineering-internships-2026" target="_blank" rel="noopener" title="Share on WhatsApp">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.36 3.45 16.86L2.05 22L7.3 20.62C8.75 21.41 10.38 21.83 12.04 21.83C17.5 21.83 21.95 17.38 21.95 11.92C21.95 9.27 20.92 6.78 19.05 4.91C17.18 3.03 14.69 2 12.04 2Z"/></svg> Share
               </a>
@@ -3823,8 +3952,11 @@ th{background:var(--soft);color:var(--navy);font-size:13px}
             <p>Prelims November. Salary ₹29,000–₹35,000 in-hand with DA. Apply before 5 Nov.</p>
             <div class="newsfoot">
               <span>3 min read</span>
-              <span class="lastdate soon"><svg class="su-uicon su-uicon-clock" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-clock"/></svg> Last date 05 Nov</span>
+              <span class="lastdate soon"><span class="su-pulse-dot"></span><svg class="su-uicon su-uicon-clock" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-clock"/></svg> Last date 05 Nov</span>
               <a class="su-readmore" href="#of-post1">Read more →</a>
+              <button type="button" class="su-card-bm" aria-label="Save notification" title="Save for later" data-post-id="ibps-clerk-2026" data-post-title="IBPS Clerk 2026 — 4,520 Posts" data-post-url="../posts/ibps-clerk-2026.html" data-post-cat="Central" data-post-date="05 Nov">
+                <svg class="su-uicon" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><use href="#su-i-bookmark"/></svg> <span>Save</span>
+              </button>
               <a class="su-card-wa" href="https://wa.me/?text=IBPS%20Clerk%202026%204520%20Posts%20Apply%20Online%20https://studentup.in/posts/ibps-clerk-2026" target="_blank" rel="noopener" title="Share on WhatsApp">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.36 3.45 16.86L2.05 22L7.3 20.62C8.75 21.41 10.38 21.83 12.04 21.83C17.5 21.83 21.95 17.38 21.95 11.92C21.95 9.27 20.92 6.78 19.05 4.91C17.18 3.03 14.69 2 12.04 2Z"/></svg> Share
               </a>
@@ -3842,6 +3974,9 @@ th{background:var(--soft);color:var(--navy);font-size:13px}
               <span>5 min read</span>
               <span class="lastdate"><svg class="su-uicon su-uicon-clock" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-clock"/></svg> Last date 18 Nov</span>
               <a class="su-readmore" href="#of-post1">Read more →</a>
+              <button type="button" class="su-card-bm" aria-label="Save notification" title="Save for later" data-post-id="rrb-ntpc-2026" data-post-title="RRB NTPC 2026 — 11,558 Posts" data-post-url="../posts/rrb-ntpc-2026.html" data-post-cat="Central" data-post-date="18 Nov">
+                <svg class="su-uicon" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><use href="#su-i-bookmark"/></svg> <span>Save</span>
+              </button>
               <a class="su-card-wa" href="https://wa.me/?text=RRB%20NTPC%202026%2011558%20Posts%20Apply%20Online%20https://studentup.in/posts/rrb-ntpc-2026" target="_blank" rel="noopener" title="Share on WhatsApp">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.36 3.45 16.86L2.05 22L7.3 20.62C8.75 21.41 10.38 21.83 12.04 21.83C17.5 21.83 21.95 17.38 21.95 11.92C21.95 9.27 20.92 6.78 19.05 4.91C17.18 3.03 14.69 2 12.04 2Z"/></svg> Share
               </a>
@@ -3859,6 +3994,9 @@ th{background:var(--soft);color:var(--navy);font-size:13px}
               <span>4 min read</span>
               <span class="lastdate"><svg class="su-uicon su-uicon-clock" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-clock"/></svg> Last date 22 Nov</span>
               <a class="su-readmore" href="#of-post1">Read more →</a>
+              <button type="button" class="su-card-bm" aria-label="Save notification" title="Save for later" data-post-id="ap-police-constable-2026" data-post-title="AP Police Constable 2026 — 6,100 Posts" data-post-url="../posts/ap-police-constable-2026.html" data-post-cat="AP Jobs" data-post-date="22 Nov">
+                <svg class="su-uicon" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><use href="#su-i-bookmark"/></svg> <span>Save</span>
+              </button>
               <a class="su-card-wa" href="https://wa.me/?text=AP%20Police%20Constable%202026%206100%20Vacancies%20Physical%20Dates%20https://studentup.in/posts/ap-police-constable-2026" target="_blank" rel="noopener" title="Share on WhatsApp">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.36 3.45 16.86L2.05 22L7.3 20.62C8.75 21.41 10.38 21.83 12.04 21.83C17.5 21.83 21.95 17.38 21.95 11.92C21.95 9.27 20.92 6.78 19.05 4.91C17.18 3.03 14.69 2 12.04 2Z"/></svg> Share
               </a>
@@ -3875,6 +4013,9 @@ th{background:var(--soft);color:var(--navy);font-size:13px}
             <div class="newsfoot">
               <span>2 min read</span>
               <a class="su-readmore" href="#of-post1">Read more →</a>
+              <button type="button" class="su-card-bm" aria-label="Save notification" title="Save for later" data-post-id="ts-eamcet-2026" data-post-title="TS EAMCET 2026 Counselling Schedule" data-post-url="../posts/upsc-junior-assistant-2026.html" data-post-cat="Results" data-post-date="12 Nov">
+                <svg class="su-uicon" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><use href="#su-i-bookmark"/></svg> <span>Save</span>
+              </button>
               <a class="su-card-wa" href="https://wa.me/?text=TS%20EAMCET%202026%20Counselling%20Schedule%20https://studentup.in/posts/upsc-junior-assistant-2026" target="_blank" rel="noopener" title="Share on WhatsApp">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.36 3.45 16.86L2.05 22L7.3 20.62C8.75 21.41 10.38 21.83 12.04 21.83C17.5 21.83 21.95 17.38 21.95 11.92C21.95 9.27 20.92 6.78 19.05 4.91C17.18 3.03 14.69 2 12.04 2Z"/></svg> Share
               </a>
@@ -3900,6 +4041,9 @@ th{background:var(--soft);color:var(--navy);font-size:13px}
               <span>3 min read</span>
               <span class="lastdate"><svg class="su-uicon su-uicon-clock" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-clock"/></svg> Last date 30 Nov</span>
               <a class="su-readmore" href="#of-post1">Read more →</a>
+              <button type="button" class="su-card-bm" aria-label="Save notification" title="Save for later" data-post-id="post-office-gds-2026" data-post-title="Post Office GDS 2026 — 21,413 Posts" data-post-url="../posts/post-office-gds-2026.html" data-post-cat="TS Jobs" data-post-date="30 Nov">
+                <svg class="su-uicon" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><use href="#su-i-bookmark"/></svg> <span>Save</span>
+              </button>
               <a class="su-card-wa" href="https://wa.me/?text=Post%20Office%20GDS%202026%2021413%20Posts%20Merit%20Based%20https://studentup.in/posts/post-office-gds-2026" target="_blank" rel="noopener" title="Share on WhatsApp">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.36 3.45 16.86L2.05 22L7.3 20.62C8.75 21.41 10.38 21.83 12.04 21.83C17.5 21.83 21.95 17.38 21.95 11.92C21.95 9.27 20.92 6.78 19.05 4.91C17.18 3.03 14.69 2 12.04 2Z"/></svg> Share
               </a>
@@ -3917,6 +4061,9 @@ th{background:var(--soft);color:var(--navy);font-size:13px}
               <span>4 min read</span>
               <span class="lastdate"><svg class="su-uicon su-uicon-clock" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-clock"/></svg> Last date 12 Dec</span>
               <a class="su-readmore" href="#of-post1">Read more →</a>
+              <button type="button" class="su-card-bm" aria-label="Save notification" title="Save for later" data-post-id="ssc-gd-constable-2026" data-post-title="SSC GD Constable 2026 — 39,481 Posts" data-post-url="../posts/upsc-junior-assistant-2026.html" data-post-cat="Central" data-post-date="12 Dec">
+                <svg class="su-uicon" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><use href="#su-i-bookmark"/></svg> <span>Save</span>
+              </button>
               <a class="su-card-wa" href="https://wa.me/?text=SSC%20GD%20Constable%202026%2039481%20Posts%20Apply%20Online%20https://studentup.in/posts/upsc-junior-assistant-2026" target="_blank" rel="noopener" title="Share on WhatsApp">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.36 3.45 16.86L2.05 22L7.3 20.62C8.75 21.41 10.38 21.83 12.04 21.83C17.5 21.83 21.95 17.38 21.95 11.92C21.95 9.27 20.92 6.78 19.05 4.91C17.18 3.03 14.69 2 12.04 2Z"/></svg> Share
               </a>
@@ -3934,6 +4081,9 @@ th{background:var(--soft);color:var(--navy);font-size:13px}
               <span>5 min read</span>
               <span class="lastdate soon"><svg class="su-uicon su-uicon-clock" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-clock"/></svg> Last date 20 Dec</span>
               <a class="su-readmore" href="#of-post2">Read more →</a>
+              <button type="button" class="su-card-bm" aria-label="Save notification" title="Save for later" data-post-id="appsc-group-1-2026" data-post-title="APPSC Group 1 2026 — 92 Posts" data-post-url="../posts/engineering-internships-2026.html" data-post-cat="AP Jobs" data-post-date="20 Dec">
+                <svg class="su-uicon" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><use href="#su-i-bookmark"/></svg> <span>Save</span>
+              </button>
               <a class="su-card-wa" href="https://wa.me/?text=APPSC%20Group%201%20Services%202026%2092%20Posts%20Apply%20Online%20https://studentup.in/posts/engineering-internships-2026" target="_blank" rel="noopener" title="Share on WhatsApp">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.36 3.45 16.86L2.05 22L7.3 20.62C8.75 21.41 10.38 21.83 12.04 21.83C17.5 21.83 21.95 17.38 21.95 11.92C21.95 9.27 20.92 6.78 19.05 4.91C17.18 3.03 14.69 2 12.04 2Z"/></svg> Share
               </a>
@@ -4225,6 +4375,26 @@ th{background:var(--soft);color:var(--navy);font-size:13px}
   <button type="button" aria-label="Close advertisement" onclick="document.getElementById('su-anchor').hidden=true"><svg class="su-uicon su-uicon-close" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-close"/></svg></button>
 </div>
 
+<!-- ================= Floating Toast ================= -->
+<div id="su-toast" class="su-toast" role="status" aria-live="polite" hidden></div>
+
+<!-- ================= Saved Jobs Off-Canvas Drawer (100% Offline) ================= -->
+<div class="su-sheet-backdrop" id="su-saved-backdrop" aria-hidden="true" hidden></div>
+<div class="su-saved-sheet" id="su-saved-sheet" role="dialog" aria-label="Saved notifications" aria-modal="true" hidden>
+  <div class="su-sheet-head">
+    <div style="display:flex;align-items:center;gap:8px">
+      <span style="display:grid;place-items:center;width:30px;height:30px;border-radius:8px;background:#dbeafe;color:#1e40af">
+        <svg class="su-uicon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><use href="#su-i-bookmark"/></svg>
+      </span>
+      <h3 style="margin:0;font-size:16px;color:var(--navy,#0b2447)">సేవ్ చేసుకున్న ఉద్యోగాలు (Saved Jobs)</h3>
+    </div>
+    <button type="button" class="iconbtn" id="su-saved-close" aria-label="Close saved sheet" style="width:34px;height:34px">
+      <svg class="su-uicon" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><use href="#su-i-close"/></svg>
+    </button>
+  </div>
+  <div class="su-sheet-body" id="su-saved-list"></div>
+</div>
+
 <script>
 (function(){
   try{ document.getElementById('today').textContent = new Date().toLocaleDateString('te-IN',{day:'numeric',month:'short',year:'numeric'}); }catch(e){}
@@ -4245,6 +4415,7 @@ th{background:var(--soft);color:var(--navy);font-size:13px}
   var cards = [].slice.call(document.querySelectorAll('[data-su-card]'));
   var grid  = document.getElementById('grid');
   var empty = document.getElementById('su-empty');
+  var matchCount = document.getElementById('su-match-count');
   var activeCat = '';
   var activeQual = '';
 
@@ -4264,6 +4435,7 @@ th{background:var(--soft);color:var(--navy);font-size:13px}
       if(ok){ shown++; }
     });
     if(empty){ empty.hidden = shown > 0; }
+    if(matchCount){ matchCount.textContent = shown; }
   }
 
   document.querySelectorAll('.chip').forEach(function(c){
@@ -4283,6 +4455,151 @@ th{background:var(--soft);color:var(--navy);font-size:13px}
       applyFilters();
     });
   });
+
+  /* Toast helper */
+  var toastTimer = null;
+  function showToast(msg){
+    var t = document.getElementById('su-toast');
+    if(!t) return;
+    t.textContent = msg;
+    t.hidden = false;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){
+      t.classList.remove('show');
+      setTimeout(function(){ t.hidden = true; }, 240);
+    }, 2500);
+  }
+
+  /* 1-Tap Offline Bookmarking & Saved Jobs Storage */
+  function getSavedJobs(){
+    try{ return JSON.parse(localStorage.getItem('su_saved_jobs') || '[]'); }catch(e){ return []; }
+  }
+  function setSavedJobs(list){
+    try{ localStorage.setItem('su_saved_jobs', JSON.stringify(list)); }catch(e){}
+  }
+  function updateSavedState(){
+    var list = getSavedJobs();
+    var countEl = document.getElementById('su-saved-count');
+    if(countEl) countEl.textContent = list.length;
+    document.querySelectorAll('.su-card-bm').forEach(function(btn){
+      var id = btn.getAttribute('data-post-id');
+      var isSaved = list.some(function(item){ return item.id === id; });
+      btn.classList.toggle('saved', isSaved);
+      var span = btn.querySelector('span');
+      if(span) span.textContent = isSaved ? 'Saved' : 'Save';
+    });
+    var sheetBody = document.getElementById('su-saved-list');
+    if(!sheetBody) return;
+    if(list.length === 0){
+      sheetBody.innerHTML = '<div style="text-align:center;padding:28px 12px;color:var(--muted)">మీరు ఇంకా ఏ ఉద్యోగాలను సేవ్ చేయలేదు.<br><small style="margin-top:6px;display:block">నోటిఫికేషన్ కార్డుపై <b>Save</b> నొక్కితే ఇక్కడ భద్రపరచబడుతుంది.</small></div>';
+      return;
+    }
+    var html = '';
+    list.forEach(function(it){
+      html += '<div class="su-saved-item">' +
+                '<div style="min-width:0;flex:1">' +
+                  '<a class="su-saved-item-title" href="'+it.url+'">'+it.title+'</a>' +
+                  '<span class="su-saved-item-sub">'+it.cat+' · Last Date: '+it.date+'</span>' +
+                '</div>' +
+                '<button type="button" class="su-saved-del" data-del="'+it.id+'" aria-label="Remove item">✕</button>' +
+              '</div>';
+    });
+    sheetBody.innerHTML = html;
+    sheetBody.querySelectorAll('.su-saved-del').forEach(function(del){
+      del.addEventListener('click', function(){
+        var delId = del.getAttribute('data-del');
+        var next = getSavedJobs().filter(function(x){ return x.id !== delId; });
+        setSavedJobs(next);
+        updateSavedState();
+        showToast('✓ తొలగించబడింది (Removed)');
+      });
+    });
+  }
+
+  document.querySelectorAll('.su-card-bm').forEach(function(bmBtn){
+    bmBtn.addEventListener('click', function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      var id = bmBtn.getAttribute('data-post-id');
+      var title = bmBtn.getAttribute('data-post-title');
+      var url = bmBtn.getAttribute('data-post-url');
+      var cat = bmBtn.getAttribute('data-post-cat');
+      var date = bmBtn.getAttribute('data-post-date');
+      var list = getSavedJobs();
+      var idx = list.findIndex(function(it){ return it.id === id; });
+      if(idx !== -1){
+        list.splice(idx, 1);
+        setSavedJobs(list);
+        updateSavedState();
+        showToast('సేవ్ లిస్ట్ నుండి తొలగించబడింది');
+      } else {
+        list.push({ id: id, title: title, url: url, cat: cat, date: date });
+        setSavedJobs(list);
+        updateSavedState();
+        showToast('✓ ఉద్యోగం సేవ్ అయింది! (Saved)');
+      }
+    });
+  });
+
+  /* Saved Jobs Drawer Toggle */
+  var sPill = document.getElementById('su-saved-pill');
+  var sSheet = document.getElementById('su-saved-sheet');
+  var sDrop = document.getElementById('su-saved-backdrop');
+  var sClose = document.getElementById('su-saved-close');
+
+  function openSavedDrawer(){
+    if(!sSheet) return;
+    updateSavedState();
+    sSheet.hidden = false;
+    if(sDrop) sDrop.hidden = false;
+    setTimeout(function(){
+      sSheet.classList.add('open');
+      if(sDrop) sDrop.classList.add('show');
+    }, 10);
+  }
+  function closeSavedDrawer(){
+    if(!sSheet) return;
+    sSheet.classList.remove('open');
+    if(sDrop) sDrop.classList.remove('show');
+    setTimeout(function(){
+      sSheet.hidden = true;
+      if(sDrop) sDrop.hidden = true;
+    }, 260);
+  }
+  if(sPill) sPill.addEventListener('click', openSavedDrawer);
+  if(sClose) sClose.addEventListener('click', closeSavedDrawer);
+  if(sDrop) sDrop.addEventListener('click', closeSavedDrawer);
+
+  /* Native Web Share API on mobile with WhatsApp fallback */
+  document.querySelectorAll('.su-card-wa').forEach(function(wa){
+    wa.addEventListener('click', function(e){
+      if(navigator.share && window.innerWidth < 800){
+        var card = wa.closest('[data-su-card]');
+        if(card){
+          var titleEl = card.querySelector('h3 a');
+          if(titleEl){
+            e.preventDefault();
+            navigator.share({
+              title: titleEl.textContent.trim(),
+              text: titleEl.textContent.trim() + ' — 100% అధికారిక నోటిఫికేషన్ & డైరెక్ట్ లింక్:',
+              url: titleEl.href
+            }).catch(function(){});
+          }
+        }
+      }
+    });
+  });
+
+  /* Network Connectivity Radar */
+  window.addEventListener('offline', function(){
+    showToast('📶 ఆఫ్‌లైన్ మోడ్ — సేవ్ చేసిన జాబ్స్ చదువుకోవచ్చు');
+  });
+  window.addEventListener('online', function(){
+    showToast('🟢 ఆన్‌లైన్‌కి తిరిగి వచ్చారు');
+  });
+
+  updateSavedState();
 
 
 

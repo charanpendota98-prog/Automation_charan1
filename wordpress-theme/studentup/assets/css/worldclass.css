@@ -1322,4 +1322,42 @@ body.dark .su-qp.active{ background:var(--blue,#2563eb); border-color:var(--blue
 body.dark .su-qp--urgent{ background:rgba(220,38,38,.14); border-color:#7f1d1d; color:#fca5a5 }
 body.dark .su-qp--urgent.active{ background:#ef4444; border-color:#ef4444; color:#fff }
 
+/* ==========================================================================
+   19. LIVE MATCH STATUS & INTERACTIVE BOOKMARKS (Offline Storage)
+   ========================================================================== */
+.su-filter-status{ display:flex; align-items:center; gap:8px; font-size:12px; font-weight:700; color:var(--muted,#64748b); margin:0 0 14px; padding:0 2px }
+.su-status-dot{ width:7px; height:7px; border-radius:50%; background:#10b981; display:inline-block; box-shadow:0 0 6px rgba(16,185,129,.6) }
+.su-saved-pill{ appearance:none; border:1px solid var(--line-2,#e2e8f0); background:#fff; color:var(--ink,#1e293b); font-size:11.5px; font-weight:750; padding:4px 12px; border-radius:999px; cursor:pointer; display:inline-flex; align-items:center; gap:5px; transition:all .15s ease }
+.su-saved-pill:hover{ border-color:var(--blue,#2563eb); color:var(--blue,#2563eb); background:var(--soft,#f8fafc) }
+body.dark .su-saved-pill{ background:#14243c; border-color:#1e3355; color:#cbd5e1 }
+
+.su-pulse-dot{ display:inline-block; width:6px; height:6px; border-radius:50%; background:#dc2626; margin-right:4px; vertical-align:middle; animation:su-pulse 1.8s infinite }
+@keyframes su-pulse{ 0%{ transform:scale(.95); box-shadow:0 0 0 0 rgba(220,38,38,.7) } 70%{ transform:scale(1); box-shadow:0 0 0 6px rgba(220,38,38,0) } 100%{ transform:scale(.95); box-shadow:0 0 0 0 rgba(220,38,38,0) } }
+
+.su-card-bm{ appearance:none; border:1px solid var(--line-2,#e2e8f0); background:#fff; color:var(--muted,#64748b); font-size:11px; font-weight:750; padding:3px 9px; border-radius:999px; cursor:pointer; display:inline-flex; align-items:center; gap:4px; transition:all .15s ease }
+.su-card-bm:hover{ border-color:var(--blue,#2563eb); color:var(--blue,#2563eb) }
+.su-card-bm.saved{ background:#eff6ff; border-color:#93c5fd; color:#2563eb; font-weight:800 }
+body.dark .su-card-bm{ background:#14243c; border-color:#1e3355; color:#94a3b8 }
+body.dark .su-card-bm.saved{ background:rgba(37,99,235,.2); border-color:#3b82f6; color:#93c5fd }
+
+.su-toast{ position:fixed; bottom:84px; left:50%; transform:translateX(-50%) translateY(20px); background:#0f172a; color:#fff; font-size:13px; font-weight:700; padding:10px 18px; border-radius:999px; box-shadow:0 10px 25px rgba(0,0,0,.28); z-index:100; display:flex; align-items:center; gap:8px; opacity:0; transition:opacity .22s ease,transform .22s cubic-bezier(.2,.8,.4,1); pointer-events:none }
+.su-toast.show{ opacity:1; transform:translateX(-50%) translateY(0) }
+
+.su-sheet-backdrop{ position:fixed; inset:0; background:rgba(15,23,42,.45); backdrop-filter:blur(3px); z-index:90; opacity:0; transition:opacity .25s ease }
+.su-sheet-backdrop.show{ opacity:1 }
+.su-saved-sheet{ position:fixed; bottom:0; left:0; right:0; max-width:540px; margin:0 auto; max-height:82vh; background:#fff; border-radius:20px 20px 0 0; box-shadow:0 -10px 40px rgba(0,0,0,.20); z-index:95; display:flex; flex-direction:column; transform:translateY(100%); transition:transform .3s cubic-bezier(.2,.8,.4,1) }
+.su-saved-sheet.open{ transform:translateY(0) }
+.su-sheet-head{ display:flex; align-items:center; justify-content:space-between; padding:16px 20px; border-bottom:1px solid var(--line-2,#e2e8f0) }
+.su-sheet-body{ padding:16px 20px; overflow-y:auto; flex:1; display:flex; flex-direction:column; gap:10px }
+.su-saved-item{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding:10px 14px; background:var(--soft,#f8fafc); border:1px solid var(--line-2,#e2e8f0); border-radius:12px }
+.su-saved-item-title{ font-size:13.5px; font-weight:750; color:var(--navy,#0b2447); display:block; text-decoration:none }
+.su-saved-item-sub{ font-size:11.5px; color:var(--muted,#64748b); display:block; margin-top:2px }
+.su-saved-del{ appearance:none; border:0; background:transparent; color:#94a3b8; cursor:pointer; padding:4px; border-radius:6px; font-size:16px; line-height:1 }
+.su-saved-del:hover{ color:#dc2626 }
+body.dark .su-saved-sheet{ background:#0f1c30; color:#e2e8f0 }
+body.dark .su-sheet-head{ border-color:#1e3355 }
+body.dark .su-saved-item{ background:#14243c; border-color:#1e3355 }
+body.dark .su-saved-item-title{ color:#cfe1ff }
+
+
 
