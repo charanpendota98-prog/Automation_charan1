@@ -68,8 +68,35 @@ CAT_SHORT = {
 }
 
 
-def _pill_label(category: str) -> str:
+def _pill_label(category: str, banner_text: str = "") -> str:
     cat = (category or "").strip()
+    bt_lower = str(banner_text or "").lower()
+
+    # Guard: Software / IT MNC jobs must NEVER display "GOVT JOBS"
+    sw_signals = (
+        "software", "developer", "programmer", "frontend", "backend",
+        "full stack", "fullstack", "data analyst", "data scientist",
+        "devops", "cloud engineer", "system engineer", "it job", "it jobs",
+        "infor", "oracle", "sap", "salesforce", "servicenow", "capgemini",
+        "tech mahindra", "genpact", "virtusa", "hexaware", "zoho",
+        "freshworks", "ibm", "సాఫ్ట్‌వేర్", "ఇంజనీర్", "డెవలపర్",
+    )
+    pvt_signals = (
+        "tcs", "infosys", "wipro", "hcl", "cognizant", "accenture",
+        "deloitte", "private job", "private jobs", "mnc", "off campus",
+        "campus hiring", "fresher hiring", "ప్రైవేట్",
+    )
+    govt_signals = (
+        "ssc", "upsc", "rrb", "railway", "ibps", "sbi", "drdo", "isro",
+        "police", "tspsc", "appsc", "dsc",
+    )
+    has_govt = any(g in bt_lower for g in govt_signals)
+    if any(s in bt_lower for s in sw_signals) and not has_govt:
+        cat = "Software Jobs"
+    elif any(p in bt_lower for p in pvt_signals) and not has_govt:
+        if cat in ("Central Govt Jobs", "Govt Jobs", "Online Education", ""):
+            cat = "Private Jobs"
+
     label = CAT_SHORT.get(cat, cat.upper())
     return label[:16].strip() if len(label) > 16 else label
 
@@ -237,7 +264,7 @@ def _draw_layout(img: Image.Image, draw: ImageDraw.ImageDraw, w: int, h: int,
     year = str(date.today().year)
     label_font = _load_font(int(h * 0.044))
     brand_font = _load_font(int(h * 0.036))
-    label = telugu_to_latin(_pill_label(category))
+    label = telugu_to_latin(_pill_label(category, banner_text))
     brand = config.SITE_BRAND
     text = telugu_to_latin(banner_text[:64])
     base_size = int(h * 0.098)

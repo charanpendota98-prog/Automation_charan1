@@ -124,8 +124,9 @@ def fix_title(article: dict) -> bool:
     # Do not append or preserve artificial publisher-style hooks. A title is
     # allowed to use a natural power word, but "Best Guide" made every post
     # look templated and did not add reader value.
-    title = _text(re.sub(r"\s*(?:[—–-]\s*)?Best Guide\b", "", title,
+    title = _text(re.sub(r"\s*(?:[—–-]\s*)?(?:Best|Complete|Ultimate|A to Z|Full)\s+(?:Guide|Details|Update)\b", "", title,
                          flags=re.I))
+    title = _text(re.sub(r"\s*[—–-]\s*$", "", title))
 
     # 1) keyword ledu → front lo pettali
     if kw.lower() not in title.lower():
