@@ -297,7 +297,13 @@ function studentup_latest_ticker() {
 			);
 		}
 	}
-	echo '</div></div></div></div>';
+	echo '</div></div>';
+	echo '<div class="su-ticker-ctrls">';
+	echo '<button type="button" class="su-tbtn" id="su-t-prev" aria-label="' . esc_attr__( 'Previous headline', 'studentup' ) . '">‹</button>';
+	echo '<button type="button" class="su-tbtn" id="su-t-toggle" aria-label="' . esc_attr__( 'Pause or resume ticker', 'studentup' ) . '">⏸</button>';
+	echo '<button type="button" class="su-tbtn" id="su-t-next" aria-label="' . esc_attr__( 'Next headline', 'studentup' ) . '">›</button>';
+	echo '</div>';
+	echo '</div></div>';
 }
 
 /**

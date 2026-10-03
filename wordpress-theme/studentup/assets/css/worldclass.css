@@ -31,47 +31,57 @@ img{ background:var(--soft) }
 :focus-visible{ outline:3px solid #7fb0ff; outline-offset:2px; border-radius:8px }
 ::selection{ background:#cfe0ff }
 
-/* ------------------------------------------------------ 3. header (sticky) */
-.header{ backdrop-filter:saturate(180%) blur(10px); background:rgba(255,255,255,.92) }
-.headrow{ height:64px; gap:12px }
-.logo .mark{ width:36px;height:36px;border-radius:12px;box-shadow:0 8px 18px rgba(31,95,191,.28) }
-.logo .brand{ font-size:19px }
-.iconbtn{ width:var(--tap); height:var(--tap); border-radius:12px; display:grid; place-items:center }
+/* ------------------------------------------------------ 3. header (sticky & modern) */
+.header{ backdrop-filter:saturate(180%) blur(16px); background:rgba(255,255,255,.92); border-bottom:1px solid rgba(226,232,240,.8); box-shadow:0 2px 12px rgba(15,23,42,.04) }
+.headrow{ height:60px; gap:14px }
+.logo .mark{ width:38px;height:38px;border-radius:12px;box-shadow:0 8px 18px rgba(31,95,191,.28) }
+.logo .brand{ font-size:19.5px; font-weight:800 }
+.iconbtn{ width:var(--tap); height:var(--tap); border-radius:12px; display:grid; place-items:center; transition:all .16s ease }
+.iconbtn:hover{ background:var(--soft); border-color:var(--line-2) }
 .iconbtn:active{ transform:scale(.96) }
-.callbtn{ min-height:38px; display:inline-flex; align-items:center; padding:0 14px; border-radius:12px;
-  box-shadow:0 8px 18px rgba(11,36,71,.22) }
+.callbtn{ min-height:40px; display:inline-flex; align-items:center; padding:0 14px; border-radius:12px;
+  box-shadow:0 6px 18px rgba(11,36,71,.18); font-weight:750; font-size:13px; text-decoration:none }
+.menubtn{ display:none; width:var(--tap); height:var(--tap); border-radius:12px; border:1px solid var(--line-2); background:var(--card); color:var(--navy); cursor:pointer }
+@media(max-width:899px){ .menubtn{ display:grid; place-items:center } }
 
-/* --------------------------------------------- 4. ticker (quiet, readable) */
-.su-lticker .trow{ min-height:40px }
-.su-lticker .tmove a{ font-size:13.5px; letter-spacing:.002em }
+/* --------------------------------------------- 4. ticker (vibrant & smooth) */
+.su-lticker .trow{ min-height:42px }
+.su-lticker .tmove{ animation:slide 24s linear infinite }
+.su-lticker .tmove a{ font-size:13.5px; letter-spacing:.002em; font-weight:650 }
+.su-ticker-ctrls{ display:flex; align-items:center; gap:4px; flex-shrink:0 }
+.su-tbtn{ width:26px; height:26px; border-radius:7px; border:1px solid rgba(255,255,255,.2); background:rgba(255,255,255,.1); color:#fff; font-size:12px; font-weight:800; cursor:pointer; display:grid; place-items:center; padding:0; line-height:1 }
+.su-tbtn:hover{ background:rgba(255,255,255,.25) }
 
-/* ------------------------------------------------------ 5. hero (compact) */
-.su-hero{ padding:18px 0 14px }
+/* ------------------------------------------------------ 5. hero (compact & advanced) */
+.su-hero{ padding:12px 0 8px }
 .su-hero-in{ padding:0 var(--gut) }
-.su-hero-kicker{ font-size:12.5px; margin:0 0 8px }
-.su-hero-title{ font-size:clamp(22px,6.4vw,34px); line-height:1.24; margin:0 0 8px }
-.su-hero-sub{ font-size:14.5px; max-width:60ch; margin:0 0 14px }
+.su-hero-kicker{ font-size:12px; margin:0 0 5px; font-weight:700; color:var(--blue-ink); display:inline-flex; align-items:center; gap:6px }
+.su-hero-title{ font-size:clamp(20px,5vw,27px); line-height:1.24; margin:0 0 5px }
+.su-hero-sub{ font-size:13.5px; max-width:62ch; margin:0 0 9px; color:var(--muted); line-height:1.45 }
 .su-hero-search{
   display:flex; gap:8px; align-items:center; background:#fff;
-  border:1px solid var(--line-2); border-radius:16px; padding:6px 6px 6px 12px;
-  box-shadow:var(--sh-1); min-height:56px;
+  border:1px solid var(--line-2); border-radius:14px; padding:4px 6px 4px 14px;
+  box-shadow:var(--sh-1); min-height:48px;
 }
-.su-hero-search input{ flex:1; min-width:0; min-height:44px; border:0; background:transparent; font-size:16px; color:var(--ink) }
+.su-hero-search:focus-within{ border-color:var(--blue); box-shadow:0 0 0 3px rgba(31,95,191,.15) }
+.su-hero-search input{ flex:1; min-width:0; min-height:44px; border:0; background:transparent; font-size:15px; color:var(--ink) }
 .su-hero-search input::placeholder{ color:#8b9ab3 }
 .su-hero-search button{
-  min-height:var(--tap); padding:0 20px; border:0; border-radius:12px; font-weight:800; font-size:15px;
+  min-height:var(--tap); padding:0 18px; border:0; border-radius:10px; font-weight:800; font-size:14px;
   background:linear-gradient(135deg,var(--blue),var(--navy-2)); color:#fff; cursor:pointer;
-  box-shadow:0 10px 22px rgba(31,95,191,.30);
+  box-shadow:0 6px 18px rgba(31,95,191,.28);
 }
 .su-hero-search button:active{ transform:translateY(1px) }
-.su-hero-acts{ display:flex; gap:8px; overflow-x:auto; padding:12px 0 4px; margin:0; scrollbar-width:none }
+.su-hero-acts{ display:flex; gap:6px; overflow-x:auto; padding:8px 0 2px; margin:0; scrollbar-width:none }
 .su-hero-acts::-webkit-scrollbar{ display:none }
 .su-hact{ flex:0 0 auto; min-height:44px; display:inline-flex; align-items:center; gap:6px;
-  padding:0 13px; border-radius:999px; font-size:13px; font-weight:750;
-  background:#fff; border:1px solid var(--line-2); color:var(--ink-2) }
-.su-hero-stats{ display:flex; gap:18px; flex-wrap:wrap; margin:14px 0 0; padding:0; list-style:none }
-.su-hero-stats b{ font-size:19px; color:var(--navy); display:block; line-height:1.2 }
-.su-hero-stats span{ font-size:12px; color:var(--muted) }
+  padding:0 13px; border-radius:999px; font-size:12.5px; font-weight:750;
+  background:#fff; border:1px solid var(--line-2); color:var(--ink-2); transition:all .16s ease }
+.su-hact:hover{ background:var(--soft); border-color:var(--blue); color:var(--blue-ink) }
+.su-hero-stats{ display:flex; gap:10px; flex-wrap:wrap; margin:8px 0 0; padding:0; list-style:none }
+.su-hero-stats li{ display:inline-flex; align-items:baseline; gap:5px; background:var(--soft); padding:3px 10px; border-radius:8px; border:1px solid var(--line) }
+.su-hero-stats b{ font-size:14.5px; color:var(--navy); font-weight:800; line-height:1 }
+.su-hero-stats span{ font-size:11.5px; color:var(--muted); font-weight:600 }
 
 /* ---------------------------------------------- 6. section rhythm + heads */
 .sectionhead{ margin:22px 0 12px; align-items:center }
@@ -540,13 +550,19 @@ body.dark .su-cal-item.su-cal-urgent{background:#241a10;border-color:#5a3a17}
    ========================================================================== */
 
 /* ------------------------------------------------- 23. mega panel (desktop) */
-.nav .menu-primary.su-has-mega>li>a{display:inline-flex;align-items:center;gap:7px}
+.nav .menu-primary.su-has-mega>li>a{display:inline-flex;align-items:center;gap:5px;padding:7px 12px;border-radius:10px;font-size:13.5px;font-weight:700;color:var(--ink-2);transition:all .16s ease}
+.nav .menu-primary.su-has-mega>li>a:hover{background:var(--soft);color:var(--navy)}
 .nav .su-mega-lb{white-space:nowrap}
+.nav .su-mega-li>a::after{content:"▾";font-size:10px;margin-left:3px;opacity:.65;transition:transform .2s ease;display:inline-block}
+.nav .menu-primary>li.su-open>a::after,.nav .menu-primary>li:hover>a::after{transform:rotate(180deg);opacity:1}
 .nav .menu-primary>li .su-uicon{width:16px;height:16px;flex:0 0 auto;opacity:.75}
 .nav .sub-menu[data-su-mega]{
   display:grid;grid-template-columns:repeat(2,minmax(210px,1fr)) 240px;gap:6px 14px;
   min-width:min(760px,92vw);padding:14px 16px 16px;border-radius:18px;box-shadow:var(--sh-2);
+  backdrop-filter:blur(20px);background:rgba(255,255,255,.98);border:1px solid var(--line-2);
+  animation:suMegaFade .18s cubic-bezier(.16,1,.3,1);
 }
+@keyframes suMegaFade{from{opacity:0;transform:translateY(-6px) scale(.99)}to{opacity:1;transform:translateY(0) scale(1)}}
 .nav .sub-menu[data-su-mega] .su-mega-col{display:block}
 .nav .su-mega-title{
   margin:2px 0 7px;padding:0 4px;font-size:11.5px;font-weight:800;letter-spacing:.06em;
@@ -580,7 +596,7 @@ body.dark .su-cal-item.su-cal-urgent{background:#241a10;border-color:#5a3a17}
   font-weight:800;font-size:12.5px;padding:9px 13px!important;border-radius:999px;
 }
 .nav .su-mega-cta .su-uicon{width:14px;height:14px}
-.nav .menu-primary>li.su-open>a{color:var(--blue-ink)}
+.nav .menu-primary>li.su-open>a{color:var(--blue-ink);background:var(--soft)}
 body.dark .nav .sub-menu[data-su-mega]{background:#101c2e;border-color:#243450}
 body.dark .nav .su-mega-t{color:#e6eefb}
 body.dark .nav .su-mega-ic{background:#16263f;color:#9dc0f0}
@@ -833,6 +849,85 @@ body.dark .su-tact-copy{ background:#16263f; border-color:#3d6fb5; color:#cfe0f7
   .su-tstep-btn,.su-tact{ transition:none }
 }
 
+/* ================================================== 14b. LATEST JOBS SLIDING TRACK
+   Owner: "scrolling asalu kanipichatledu latest jobs ilaga scroll avuthu slide avuthu vundlaigaa"
+   Continuous auto-sliding track + interactive controls + touch-swipe
+   ================================================== */
+.su-slider-sec{ margin: 12px 0 16px; position: relative }
+.su-slider-head{ display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; gap: 8px; flex-wrap: wrap }
+.su-slider-title-wrap{ display: flex; align-items: center; gap: 8px; flex-wrap: wrap }
+.su-slider-badge{ display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: linear-gradient(135deg, #ef4444, #dc2626); color: #fff; font-size: 11px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; box-shadow: 0 4px 12px rgba(239,68,68,.3) }
+.su-slider-badge i{ width: 6px; height: 6px; border-radius: 50%; background: #fff; animation: blip 1s infinite alternate }
+.su-slider-head h2{ margin: 0; font-size: 18px; font-weight: 800; color: var(--navy); display: flex; align-items: center; gap: 6px }
+.su-slider-sub{ font-size: 12px; color: var(--muted); font-weight: 600 }
+.su-slider-ctrls{ display: flex; align-items: center; gap: 6px }
+.su-sbtn{ width: 34px; height: 34px; border-radius: 10px; border: 1px solid var(--line-2); background: var(--card); color: var(--navy); font-size: 15px; font-weight: 800; cursor: pointer; display: grid; place-items: center; transition: all .16s ease; touch-action: manipulation }
+.su-sbtn:hover{ background: var(--soft); border-color: var(--blue); color: var(--blue); transform: scale(1.05) }
+.su-sbtn:active{ transform: scale(.95) }
+
+/* The Viewport & Track */
+.su-slider-viewport{ overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; scroll-snap-type: x mandatory; padding: 4px 2px 8px; margin: 0 -4px; position: relative }
+.su-slider-viewport::-webkit-scrollbar{ display: none }
+.su-slider-track{ display: flex; gap: 12px; width: max-content; will-change: transform }
+.su-scard{ flex: 0 0 280px; scroll-snap-align: start; background: var(--card); border: 1px solid var(--line); border-radius: var(--r-lg); padding: 12px 14px; display: flex; flex-direction: column; gap: 7px; box-shadow: var(--sh-1); text-decoration: none; position: relative; overflow: hidden; transition: transform .2s, box-shadow .2s, border-color .2s }
+.su-scard::before{ content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--blue), var(--orange)) }
+.su-scard[data-cat="ts"]::before{ background: linear-gradient(90deg, #f97316, #ea580c) }
+.su-scard[data-cat="ap"]::before{ background: linear-gradient(90deg, #10b981, #059669) }
+.su-scard[data-cat="central"]::before{ background: linear-gradient(90deg, #3b82f6, #1d4ed8) }
+.su-scard:hover{ transform: translateY(-3px); box-shadow: var(--sh-2); border-color: #bcd3f2 }
+.su-scard-head{ display: flex; justify-content: space-between; align-items: center; gap: 6px }
+.su-scard-tag{ font-size: 10.5px; font-weight: 800; padding: 2px 8px; border-radius: 999px; background: var(--soft); color: var(--navy) }
+.su-scard-urgent{ font-size: 10.5px; font-weight: 800; padding: 2px 8px; border-radius: 999px; background: #fef2f2; color: #dc2626; border: 1px solid #fecaca }
+.su-scard h3{ font-size: 14.5px; font-weight: 750; color: var(--navy); margin: 0; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden }
+.su-scard-meta{ display: flex; flex-wrap: wrap; gap: 6px; font-size: 11.5px; color: var(--muted); font-weight: 600; margin-top: auto }
+.su-scard-vac{ background: #eff6ff; color: #1e40af; padding: 2px 7px; border-radius: 6px; font-weight: 700 }
+.su-scard-date{ display: inline-flex; align-items: center; gap: 4px; color: #b45309 }
+.su-scard-act{ margin-top: 3px; display: inline-flex; align-items: center; justify-content: space-between; font-size: 12px; font-weight: 800; color: var(--blue-ink); border-top: 1px solid var(--line); padding-top: 7px; text-decoration: none }
+.su-scard-act:hover{ color: var(--navy) }
+
+@media(max-width: 600px){
+  .su-scard{ flex: 0 0 250px; padding: 10px 12px }
+  .su-scard h3{ font-size: 14px }
+  .su-sbtn{ width: 44px; height: 44px }
+}
+
+body.dark .su-slider-head h2{ color: var(--navy) }
+body.dark .su-sbtn{ background: var(--card); border-color: var(--line); color: var(--ink) }
+body.dark .su-scard{ background: var(--card); border-color: var(--line) }
+body.dark .su-scard h3{ color: var(--ink) }
+body.dark .su-scard-tag{ background: #16243d; color: #cfe0f7 }
+body.dark .su-scard-vac{ background: #172a4a; color: #93c5fd }
+body.dark .su-scard-act{ border-top-color: var(--line); color: #93c5fd }
+
+/* --- Mobile Drawer & Backdrop --- */
+.mbackdrop{ position:fixed; inset:0; background:rgba(11,36,71,.48); backdrop-filter:blur(4px); z-index:90; display:none; opacity:0; transition:opacity .25s ease }
+.mbackdrop.show{ display:block; opacity:1 }
+.mpanel{ position:fixed; top:0; left:0; bottom:0; width:min(340px,85vw); background:var(--card); z-index:95;
+  box-shadow:var(--sh-2); transform:translateX(-100%); transition:transform .25s cubic-bezier(.16,1,.3,1);
+  overflow-y:auto; padding:16px 18px 30px; display:flex; flex-direction:column; gap:6px }
+.mpanel.open{ transform:translateX(0) }
+.mpanel-head{ display:flex; align-items:center; justify-content:space-between; padding-bottom:12px; border-bottom:1px solid var(--line); margin-bottom:8px }
+.mpanel-head strong{ font-size:18px; color:var(--navy) }
+#mpanelclose{ width:36px; height:36px; border-radius:10px; border:1px solid var(--line); background:var(--soft); display:grid; place-items:center; cursor:pointer }
+.mlabel{ font-size:11px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin:14px 0 4px; padding:0 4px }
+.mpanel a{ display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:12px; font-size:14px; font-weight:700; color:var(--ink-2); text-decoration:none }
+.mpanel a:hover,.mpanel a:active{ background:var(--soft); color:var(--navy) }
+.mpanel a .su-uicon{ width:18px; height:18px; color:var(--blue) }
+.mgroup{ border:1px solid var(--line); border-radius:12px; margin-bottom:6px; overflow:hidden }
+.mgroup>summary{ padding:10px 12px; font-size:13.5px; font-weight:750; color:var(--navy); cursor:pointer; list-style:none; display:flex; align-items:center; justify-content:space-between; background:var(--soft) }
+.mgroup>summary::-webkit-details-marker{ display:none }
+.mgroup>summary::after{ content:"▾"; font-size:12px; transition:transform .2s }
+.mgroup[open]>summary::after{ transform:rotate(180deg) }
+.mgroup a{ padding:8px 12px 8px 24px; font-size:13px; border-top:1px solid var(--line) }
+body.mlock{ overflow:hidden }
+body.dark .mbackdrop{ background:rgba(0,0,0,.7) }
+body.dark .mpanel{ background:#0e192c; border-right:1px solid var(--line) }
+body.dark .mpanel-head strong{ color:var(--navy) }
+body.dark #mpanelclose{ background:#16243d; border-color:var(--line); color:var(--ink) }
+body.dark .mgroup{ border-color:var(--line) }
+body.dark .mgroup>summary{ background:#13213a; color:var(--ink) }
+body.dark .mgroup a{ border-top-color:var(--line); color:var(--ink-2) }
+
 /* ================================================== 15. v199 HOME PHONE-FIRST
    Owner: "anni phone lo advanced ga best ga chey" — home lo unna rendu modati
    blocks (live ticker + Most searched 10 cards) ni phone-first ga polish.
@@ -845,7 +940,7 @@ body.dark .su-tact-copy{ background:#16263f; border-color:#3d6fb5; color:#cfe0f7
 .tickerwrap .tclip{
   -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 26px,#000 calc(100% - 26px),transparent 100%);
   mask-image:linear-gradient(90deg,transparent 0,#000 26px,#000 calc(100% - 26px),transparent 100%) }
-.tickerwrap .tmove{ will-change:transform }
+.tickerwrap .tmove{ will-change:transform; animation-duration:24s }
 .tickerwrap .tmove a{ display:inline-flex; align-items:center; min-height:44px }
 /* touch/hover lo aapithe chadavadam easy — phone lo kuda pani chestundi */
 .tickerwrap .tmove:hover,.tickerwrap .tmove:focus-within,.tickerwrap .tmove:active{ animation-play-state:paused }

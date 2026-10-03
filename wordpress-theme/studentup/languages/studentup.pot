@@ -612,6 +612,10 @@ msgstr ""
 msgid "Newer comments"
 msgstr ""
 
+#: inc/breaking.php:304
+msgid "Next headline"
+msgstr ""
+
 #: inc/premium.php:425
 msgid "Next tool"
 msgstr ""
@@ -717,6 +721,10 @@ msgstr ""
 msgid "Partly eligible — check details"
 msgstr ""
 
+#: inc/breaking.php:303
+msgid "Pause or resume ticker"
+msgstr ""
+
 #: inc/workspace.php:129
 msgid "Pay"
 msgstr ""
@@ -743,6 +751,10 @@ msgstr ""
 
 #: inc/cta.php:40
 msgid "Preparation Group"
+msgstr ""
+
+#: inc/breaking.php:302
+msgid "Previous headline"
 msgstr ""
 
 #: page-internet-center.php:40
