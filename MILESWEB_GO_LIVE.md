@@ -1,5 +1,7 @@
 # 🚀 studentup.in — MilesWeb (cPanel) lo ZIP upload chesi LIVE (v186 · FINAL)
 
+> 🇮🇳 **Theme + bot okate file lo (click-level):** [`SETUP_ALL.md`](SETUP_ALL.md) — A) theme 5 clicks · B) bot `.env` + 5 cron lines · C) honest limits · D) rollback.
+>
 > 🏆 **Complete setup guide:** [`FULL_SETUP_GUIDE.md`](../FULL_SETUP_GUIDE.md) — em cheyyali, em pettali (`.env` keys), cron, SEO, money, honest limits.
 
 ## ⚡ TL;DR — 40 nimushalalo live (ee 7 steps chaalu)

@@ -904,7 +904,9 @@ vundali neat ga phone lo easy ga click vachelaga"*.
 | Perf | engine is ~17 KB deferred, loaded on the Tools page only; its selectors stay out of the inline critical CSS (45 KB cap respected). |
 | Nothing lost | the v120 reader utilities that shared the old file (compare rail, deadline reminder `.ics`, print/PDF, text-size buttons, in-article age/fee/syllabus calculators) now live in `assets/js/studentup-reader-utils.js` and are enqueued everywhere they render — v198 C7 + jsdom 8 checks prove each one still works. |
 
-**Proof:** `tests/v198_test.py` (7 gates) · `tests/runtime/jsdom_runtime_test.js` +29 behavioural checks (finder, chips, sticky, deep link, steppers, reset, real results + the v120 compare/reminder/print/text-size/age-calculator layer, restored in v198) · **143/143 suites** · jsdom **225/225** · php-lint **97/97**.
+**Set up (theme + bot, okka file):** [`SETUP_ALL.md`](SETUP_ALL.md) — zip download → theme upload → `Run setup now` → bot `.env` + 5 cron lines → `--verify-deploy`.
+
+**Proof:** `tests/v198_test.py` (8 gates) · `tests/runtime/jsdom_runtime_test.js` +29 behavioural checks (finder, chips, sticky, deep link, steppers, reset, real results + the v120 compare/reminder/print/text-size/age-calculator layer, restored in v198) · **143/143 suites** · jsdom **225/225** · php-lint **97/97**.
 
 ### v195 — A) PER-TEMPLATE CRITICAL CSS · B) HUB PAGES · C) AUTHOR E-E-A-T 🚀
 

@@ -219,6 +219,26 @@ def test_c7_reader_utils_restored() -> None:
     print("  C7. v120 reader utils: restored (compare · reminder · print · text size · calculators) ✔")
 
 
+# ------------------------------------------------------- C8 kit + setup single
+def test_c8_setup_all_and_kit() -> None:
+    """v198: okka setup file (theme + bot) + kit fresh (puratana zip footgun ledu)."""
+    setup = read(ROOT / "SETUP_ALL.md")
+    for needle in ("studentup-theme-1.9.39.zip", "studentup-bot-cron.zip",
+                   "Run setup now", "--verify-deploy", "WP_APP_PASSWORD",
+                   "GEMINI_API_KEYS", "AUTO_PUBLISH_DAILY", "0 7 * * *",
+                   "30 6 * * *", "sha256", "rollback", "1.9.39"):
+        assert needle in setup, f"SETUP_ALL.md lo ledu: {needle}"
+    assert "--check-wp" in setup and "--daily --daily-no-send" in setup, "verify steps ledu"
+    assert "wp-cli cron event run" in setup, "WP-cron warning ledu"
+    # kit builder: stale zip purge + v197/v198 module requirements
+    kit = read(ROOT / "tools" / "build_milesweb_kit.py")
+    for needle in ("autoblog/publish_lane.py", "autoblog/engage_push.py",
+                   "autoblog/deploy_verify.py", "studentup-reader-utils.js",
+                   'glob("studentup-*.zip")', "DEPLOY_v197.md"):
+        assert needle in kit, f"kit builder lo ledu: {needle}"
+    print("  C8. setup-all file + kit freshness (stale zip purge · v197/v198 modules) ✔")
+
+
 ALL = [v for k, v in sorted(globals().items())
        if k.startswith("test_") and callable(v)]
 

@@ -137,6 +137,7 @@ BOT_DOCS = [
     "AD_STRATEGY_ADVANCED.md", "AD_NETWORKS_PLAN.md", "AD_NETWORKS_APPLICATION_KIT.md",
     "ACTIVE_OPPORTUNITIES.md", "SALES_KIT_ADVERTISERS.md", "SUCCESS_STORY_FORM.md",
     "THUMBNAIL_PROMPT.md", "WP_ADVANCED_CUSTOMIZATION.md",
+    "DEPLOY_v197.md",   # v198: click-level deploy + --verify-deploy runbook
 ]
 BOT_TOP_FILES = ["run.py", "requirements.txt", "crontab.example", ".env.example",
                  "deploy.sh", "setup_oracle.sh", "hotfix_v24.sh"]
@@ -165,7 +166,12 @@ def build_bot_zip(out_dir: Path) -> tuple[Path, int, int]:
         names = set(zf.namelist())
     for need in ("run.py", "requirements.txt", "autoblog/main.py", "autoblog/pipeline.py",
                  "tools/build_wp_theme.py", "preview/index.html",
-                 "wordpress-theme/studentup/style.css", "crontab.example", ".env.example"):
+                 "wordpress-theme/studentup/style.css", "crontab.example", ".env.example",
+                 # v197/v198 modules — puratana kit ni upload cheyyakoodadu
+                 "autoblog/publish_lane.py", "autoblog/engage_push.py",
+                 "autoblog/deploy_verify.py",
+                 "wordpress-theme/studentup/assets/js/studentup-tools.js",
+                 "wordpress-theme/studentup/assets/js/studentup-reader-utils.js"):
         if need not in names:
             raise SystemExit(f"⛔ bot zip lo '{need}' ledu (cron/deploy-check fail avutundi)")
     return out, files, size
@@ -225,10 +231,22 @@ def main(argv: list[str] | None = None) -> int:
         rows.append((label, path.name, files, size, sha))
         print(f"  ✅ {label:26s} {path.name:36s} {files:4d} files · {size/1024:7.0f} KB")
 
+    # v198: puratana zips ni kit nunchi teeseyandi — user porapatuna puratana
+    # theme (1.9.36 lanti) upload cheyyakoodadu. Fresh build names mattrame undali.
+    keep = {r[1] for r in rows}
+    removed = []
+    for old_zip in sorted(out_dir.glob("studentup-*.zip")):
+        if old_zip.name not in keep:
+            old_zip.unlink()
+            removed.append(old_zip.name)
+    if removed:
+        print(f"  🧹 puratana zips teesesa: {', '.join(removed)}")
+
     # upload guide + checksums
-    guide = ROOT / "MILESWEB_GO_LIVE.md"
-    if guide.exists():
-        shutil.copyfile(guide, out_dir / "MILESWEB_GO_LIVE.md")
+    for doc_name in ("MILESWEB_GO_LIVE.md", "DEPLOY_v197.md"):
+        src = ROOT / doc_name
+        if src.exists():
+            shutil.copyfile(src, out_dir / doc_name)
     sums = out_dir / "SHA256SUMS.txt"
     with sums.open("w", encoding="utf-8") as fh:
         fh.write("# StudentUp — MilesWeb kit sha256 (upload verify cheyyadaniki)\n")
