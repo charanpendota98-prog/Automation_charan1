@@ -2575,8 +2575,6 @@ body.dark .usedcard .ucount{ background:#0f2038; color:#a9c1e6; border-color:var
 
 
 
-  /* demo-only helpers — WP theme lo ivi template nunchi vastayi */
-  .topbar .wrap{display:flex;justify-content:space-between;gap:12px;padding:7px 16px}
   .headrow{display:flex;align-items:center;gap:12px;max-width:var(--wrap);margin:0 auto;padding:0 16px;overflow:visible}
   @media(min-width:981px){.nav{flex:1;display:flex;gap:4px;overflow:visible}}
   @media(max-width:980px){.nav{display:none!important}}
@@ -3349,18 +3347,17 @@ th{background:var(--soft);color:var(--navy);font-size:13px}
 <!-- ============================ hero ============================ -->
 <section class="su-hero" aria-label="Search and quick links">
   <div class="wrap su-hero-in">
-    <p class="su-hero-kicker"><span class="su-live-dot" aria-hidden="true"></span> తాజా అధికారిక నోటిఫికేషన్‌లు · తెలంగాణ · ఆంధ్రప్రదేశ్ · కేంద్ర ప్రభుత్వం</p>
-    <h1 class="su-hero-title">ప్రభుత్వ ఉద్యోగాలు, పరీక్షలు, ఫలితాలు — <span>అన్నీ ఒక్క చోట</span></h1>
-    <p class="su-hero-sub">అధికారిక నోటిఫికేషన్‌లు, దరఖాస్తు తేదీలు, సిలబస్, హాల్ టికెట్లు &amp; ఫలితాల సమగ్ర సమాచారం.</p>
+    <h1 class="su-hero-title">Government Jobs, Results &amp; Notifications</h1>
 
     <form class="su-hero-search" role="search" method="get" action="index.html">
       <svg class="su-uicon su-uicon-search" width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-search"/></svg>
-      <label class="screen-reader-text" for="su-q">StudentUp లో వెతకండి</label>
-      <input id="su-q" type="search" name="s" placeholder="TSPSC, APPSC, SSC, హాల్ టికెట్, ఫలితాలు, స్కాలర్‌షిప్…">
-      <button type="submit">వెతకండి</button>
+      <label class="screen-reader-text" for="su-q">Search StudentUp</label>
+      <input id="su-q" type="search" name="s" placeholder="Search TSPSC, APPSC, SSC, Hall Tickets, Results, Scholarships…">
+      <button type="submit">Search</button>
     </form>
 
     <div class="su-hero-acts">
+      <a class="su-hact" href="#jobs" style="border-color:#fca5a5;background:#fef2f2;color:#b91c1c;font-weight:800"><svg class="su-uicon su-uicon-bolt" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-bolt"/></svg> Breaking News</a>
       <a class="su-hact" href="#jobs"><svg class="su-uicon su-uicon-bolt" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-bolt"/></svg> తాజా ఉద్యోగాలు</a>
       <a class="su-hact" href="#jobs"><svg class="su-uicon su-uicon-bank" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-bank"/></svg> TSPSC / తెలంగాణ</a>
       <a class="su-hact" href="#jobs"><svg class="su-uicon su-uicon-bank" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-bank"/></svg> APPSC / ఆంధ్రప్రదేశ్</a>
@@ -3379,8 +3376,7 @@ th{background:var(--soft);color:var(--navy);font-size:13px}
     <div class="su-slider-head">
       <div class="su-slider-title-wrap">
         <span class="su-slider-badge"><i aria-hidden="true"></i> LIVE</span>
-        <h2>తాజా ఉద్యోగ ప్రకటనలు · Latest Notifications</h2>
-        <span class="su-slider-sub">దరఖాస్తు గడువు ముగిసే ఉద్యోగాలు · రియల్-టైమ్ అప్‌డేట్‌లు</span>
+        <h2>Latest Notifications</h2>
       </div>
       <div class="su-slider-ctrls">
         <button type="button" class="su-sbtn" id="su-track-prev" aria-label="Slide Left">‹</button>
@@ -3397,7 +3393,7 @@ th{background:var(--soft);color:var(--navy);font-size:13px}
             <span class="su-scard-tag">Central Govt · SSC</span>
             <span class="su-scard-urgent">⏳ 5 Days Left</span>
           </div>
-          <h3>SSC CHSL 2026 Notification — 3,712 Posts</h3>
+          <h3><a href="#of-post1" style="color:inherit;text-decoration:none">SSC CHSL 2026 Notification — 3,712 Posts</a></h3>
           <div class="su-scard-meta">
             <span class="su-scard-vac">3,712 Posts</span>
             <span>10th / Inter</span>
@@ -3414,7 +3410,7 @@ th{background:var(--soft);color:var(--navy);font-size:13px}
             <span class="su-scard-tag">TS Govt · TSPSC</span>
             <span class="su-scard-tag" style="background:#fff7ed;color:#ea580c;border:1px solid #fed7aa">🔥 Popular</span>
           </div>
-          <h3>TSPSC Group 2 Services — 783 Vacancies</h3>
+          <h3><a href="#of-post2" style="color:inherit;text-decoration:none">TSPSC Group 2 Services — 783 Vacancies</a></h3>
           <div class="su-scard-meta">
             <span class="su-scard-vac">783 Posts</span>
             <span>Any Degree</span>
@@ -3431,13 +3427,13 @@ th{background:var(--soft);color:var(--navy);font-size:13px}
             <span class="su-scard-tag">AP Govt · Police</span>
             <span class="su-scard-tag" style="background:#ecfdf5;color:#047857;border:1px solid #a7f3d0">⚡ Physical Dates</span>
           </div>
-          <h3>AP Police Constable 2026 — 6,100 Vacancies</h3>
+          <h3><a href="#of-post1" style="color:inherit;text-decoration:none">AP Police Constable 2026 — 6,100 Vacancies</a></h3>
           <div class="su-scard-meta">
             <span class="su-scard-vac">6,100 Posts</span>
             <span>Inter Pass</span>
             <span class="su-scard-date"><svg class="su-uicon su-uicon-clock" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-clock"/></svg> 22 Nov</span>
           </div>
-          <a class="su-scard-act" href="#jobs">
+          <a class="su-scard-act" href="#of-post1">
             <span>పూర్తి వివరాలు &amp; Apply</span>
             <span>→</span>
           </a>
@@ -3448,13 +3444,13 @@ th{background:var(--soft);color:var(--navy);font-size:13px}
             <span class="su-scard-tag">Banking · IBPS</span>
             <span class="su-scard-urgent">Closing Soon</span>
           </div>
-          <h3>IBPS Clerk 2026 — 4,520 Posts Across India</h3>
+          <h3><a href="#of-post1" style="color:inherit;text-decoration:none">IBPS Clerk 2026 — 4,520 Posts Across India</a></h3>
           <div class="su-scard-meta">
             <span class="su-scard-vac">4,520 Posts</span>
             <span>Any Degree</span>
             <span class="su-scard-date"><svg class="su-uicon su-uicon-clock" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-clock"/></svg> 05 Nov</span>
           </div>
-          <a class="su-scard-act" href="#jobs">
+          <a class="su-scard-act" href="#of-post1">
             <span>పూర్తి వివరాలు &amp; Apply</span>
             <span>→</span>
           </a>
@@ -3465,13 +3461,13 @@ th{background:var(--soft);color:var(--navy);font-size:13px}
             <span class="su-scard-tag">Railways · RRB</span>
             <span class="su-scard-tag" style="background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe">Mega Drive</span>
           </div>
-          <h3>RRB NTPC 2026 — 11,558 Posts (All Zones)</h3>
+          <h3><a href="#of-post1" style="color:inherit;text-decoration:none">RRB NTPC 2026 — 11,558 Posts (All Zones)</a></h3>
           <div class="su-scard-meta">
             <span class="su-scard-vac">11,558 Posts</span>
             <span>10th / Inter / Degree</span>
             <span class="su-scard-date"><svg class="su-uicon su-uicon-clock" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-clock"/></svg> 18 Nov</span>
           </div>
-          <a class="su-scard-act" href="#jobs">
+          <a class="su-scard-act" href="#of-post1">
             <span>పూర్తి వివరాలు &amp; Apply</span>
             <span>→</span>
           </a>
@@ -3482,13 +3478,13 @@ th{background:var(--soft);color:var(--navy);font-size:13px}
             <span class="su-scard-tag">Postal · No Exam</span>
             <span class="su-scard-tag" style="background:#fefce8;color:#a16207;border:1px solid #fef08a">Merit Based</span>
           </div>
-          <h3>Post Office GDS 2026 — 21,413 Posts</h3>
+          <h3><a href="#of-post1" style="color:inherit;text-decoration:none">Post Office GDS 2026 — 21,413 Posts</a></h3>
           <div class="su-scard-meta">
             <span class="su-scard-vac">21,413 Posts</span>
             <span>10th Pass</span>
             <span class="su-scard-date"><svg class="su-uicon su-uicon-clock" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-clock"/></svg> 30 Nov</span>
           </div>
-          <a class="su-scard-act" href="#jobs">
+          <a class="su-scard-act" href="#of-post1">
             <span>పూర్తి వివరాలు &amp; Apply</span>
             <span>→</span>
           </a>
@@ -3505,7 +3501,7 @@ th{background:var(--soft);color:var(--navy);font-size:13px}
             <span>10th Pass</span>
             <span class="su-scard-date"><svg class="su-uicon su-uicon-clock" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-clock"/></svg> 12 Dec</span>
           </div>
-          <a class="su-scard-act" href="#jobs">
+          <a class="su-scard-act" href="#of-post1">
             <span>పూర్తి వివరాలు &amp; Apply</span>
             <span>→</span>
           </a>
@@ -3522,7 +3518,7 @@ th{background:var(--soft);color:var(--navy);font-size:13px}
             <span>Any Degree</span>
             <span class="su-scard-date"><svg class="su-uicon su-uicon-clock" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-clock"/></svg> 20 Dec</span>
           </div>
-          <a class="su-scard-act" href="#jobs">
+          <a class="su-scard-act" href="#of-post2">
             <span>పూర్తి వివరాలు &amp; Apply</span>
             <span>→</span>
           </a>
@@ -3535,8 +3531,16 @@ th{background:var(--soft);color:var(--navy);font-size:13px}
   <!-- ======================= most searched ======================= -->
   <section aria-label="Most searched by students">
     <div class="sectionhead" style="margin-top:20px">
-      <div><h2>Most searched by students</h2><p>One tap to the sections TS &amp; AP students open most</p></div>
-      <a class="su-viewall" href="#jobs">All sections →</a>
+      <div>
+        <h2>Most searched by students</h2>
+        <p>One tap to breaking news, notifications, hall tickets &amp; results</p>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <a class="callbtn" href="#jobs" style="background:#b91c1c;padding:6px 14px;font-size:12px;border-radius:999px;display:inline-flex;align-items:center;gap:6px;text-decoration:none">
+          <span style="width:6px;height:6px;border-radius:50%;background:#fff;display:inline-block"></span> Breaking News
+        </a>
+        <a class="su-viewall" href="#jobs">All sections →</a>
+      </div>
     </div>
     <div class="usedgrid">
       <a class="usedcard hot" href="#jobs"><span class="ui" aria-hidden="true"><svg class="su-uicon su-uicon-bank" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-bank"/></svg></span><div><b>TS Government Jobs</b><small>TSPSC · Police · Gurukul</small></div><em class="ucount" hidden>42 updates</em></a>
@@ -4235,6 +4239,11 @@ th{background:var(--soft);color:var(--navy);font-size:13px}
 (function(){
   var form=document.querySelector('[data-su-quiz-form]');
   if(form){
+    var qDateEl=document.getElementById('su-quiz-date');
+    if(qDateEl){
+      var d=new Date(), ms=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      qDateEl.textContent=d.getDate()+' '+ms[d.getMonth()]+' '+d.getFullYear();
+    }
     var scoreEl=document.querySelector('[data-su-quiz-score]'),
         barEl=document.querySelector('[data-su-quiz-bar]'),
         checkBtn=document.querySelector('[data-su-quiz-check]'),

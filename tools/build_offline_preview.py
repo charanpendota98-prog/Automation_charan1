@@ -105,6 +105,14 @@ LINK_TABS = {
     "standalone.html": "home", "../worldclass/standalone.html": "home",
     "../posts/upsc-junior-assistant-2026.html": "post1",
     "../posts/engineering-internships-2026.html": "post2",
+    "../posts/post-office-gds-2026.html": "post1",
+    "../posts/ibps-clerk-2026.html": "post1",
+    "../posts/rrb-ntpc-2026.html": "post1",
+    "../posts/ap-police-constable-2026.html": "post1",
+    "post-office-gds-2026.html": "post1",
+    "ibps-clerk-2026.html": "post1",
+    "rrb-ntpc-2026.html": "post1",
+    "ap-police-constable-2026.html": "post1",
 }
 
 
