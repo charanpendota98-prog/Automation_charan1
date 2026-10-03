@@ -285,6 +285,7 @@ body.dark .su-anchor{ background:#101a2c }
 .su-trust .su-ok{ color:var(--green) }
 body.dark .su-trust li{ background:#131f34; border-color:var(--line-2); color:var(--ink-2) }
 
+.su-adleader[hidden],.su-adbelow[hidden],.su-adcard[hidden],.su-railad[hidden],.su-anchor[hidden]{ display:none !important }
 /* ---- labelled ad slots (revenue map — native, policy-safe) ---- */
 .su-adleader,.su-adbelow{ display:grid; place-items:center; text-align:center; color:var(--muted);
   background:linear-gradient(180deg,#fbfdff,#f2f7fd); border:1px dashed var(--line-2);

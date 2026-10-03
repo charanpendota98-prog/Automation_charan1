@@ -1634,6 +1634,7 @@ body.dark .su-anchor{ background:#101a2c }
 .su-trust .su-ok{ color:var(--green) }
 body.dark .su-trust li{ background:#131f34; border-color:var(--line-2); color:var(--ink-2) }
 
+.su-adleader[hidden],.su-adbelow[hidden],.su-adcard[hidden],.su-railad[hidden],.su-anchor[hidden]{ display:none !important }
 /* ---- labelled ad slots (revenue map — native, policy-safe) ---- */
 .su-adleader,.su-adbelow{ display:grid; place-items:center; text-align:center; color:var(--muted);
   background:linear-gradient(180deg,#fbfdff,#f2f7fd); border:1px dashed var(--line-2);
@@ -3201,7 +3202,7 @@ th{background:var(--soft);color:var(--navy);font-size:13px}
   </div>
   <form role="search" method="get" action="index.html" style="margin-bottom:10px">
     <div style="position:relative;display:flex;align-items:center">
-      <input type="search" name="s" placeholder="Search jobs, hall tickets…" style="width:100%;min-height:42px;border:1px solid var(--line-2);border-radius:10px;padding:0 12px 0 34px;font-size:14px;background:var(--soft);color:var(--ink)">
+      <input type="search" name="s" aria-label="Search jobs, hall tickets" placeholder="Search jobs, hall tickets…" style="width:100%;min-height:42px;border:1px solid var(--line-2);border-radius:10px;padding:0 12px 0 34px;font-size:14px;background:var(--soft);color:var(--ink)">
       <span style="position:absolute;left:10px;color:var(--muted);display:grid;place-items:center"><svg class="su-uicon su-uicon-search" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-search"/></svg></span>
     </div>
   </form>
@@ -3499,9 +3500,9 @@ th{background:var(--soft);color:var(--navy);font-size:13px}
         <button class="chip" type="button" role="tab" aria-selected="false">Scholarships</button>
       </div>
 
-      <div class="su-adleader" aria-label="Advertisement">
-        Advertisement · leaderboard (728×90 / responsive)
-        <small>Highest-paying slot — first view, no CLS (height reserved)</small>
+      <!-- Pre-approval AdSense slot: cleanly reserved, activates upon approval -->
+      <div class="su-adleader" aria-label="Advertisement" hidden>
+        Advertisement
       </div>
 
       <div class="newsgrid" id="grid">
@@ -3526,11 +3527,9 @@ th{background:var(--soft);color:var(--navy);font-size:13px}
           </div>
         </article>
 
-        <article class="news su-adcard" aria-label="Advertisement">
-          <div style="text-align:center">
-            <div style="font-size:11px;letter-spacing:.08em">Advertisement</div>
-            <div style="text-transform:none;letter-spacing:0;font-weight:600;font-size:13px;margin-top:6px;color:#7b8aa3">AdSense / sponsor slot — in-feed, highest viewability</div>
-          </div>
+        <!-- Pre-approval AdSense in-feed slot: cleanly reserved, activates upon approval -->
+        <article class="news su-adcard" aria-label="Advertisement" hidden>
+          <div style="font-size:11px;letter-spacing:.08em">Advertisement</div>
         </article>
 
         <article class="news" data-accent="central" data-su-card data-cat="central">
@@ -3575,9 +3574,9 @@ th{background:var(--soft);color:var(--navy);font-size:13px}
       </div>
       <p id="su-empty" class="su-empty" hidden>ఈ category లో ఇప్పుడు కొత్త అప్‌డేట్‌లు లేవు — “All” నొక్కి మొత్తం చూడండి.</p>
 
-      <div class="su-adbelow" aria-label="Advertisement">
-        Advertisement · below-content (in-article quality)
-        <small>Readers who finished the list convert best here</small>
+      <!-- Pre-approval AdSense below-content slot: cleanly reserved, activates upon approval -->
+      <div class="su-adbelow" aria-label="Advertisement" hidden>
+        Advertisement
       </div>
 
       <div class="newsgrid" id="grid-more" style="margin-top:16px">
@@ -3715,12 +3714,12 @@ th{background:var(--soft);color:var(--navy);font-size:13px}
         <a class="su-cta" href="https://t.me/studentup_in" style="margin-left:8px">Telegram</a>
       </section>
 
-      <div class="su-railad" style="margin-top:22px;min-height:120px" aria-label="Advertisement">Advertisement · responsive slot</div>
+      <div class="su-railad" style="margin-top:22px" aria-label="Advertisement" hidden>Advertisement</div>
     </main>
 
     <!-- ============================ rail ============================ -->
     <aside class="su-rail" aria-label="Sidebar">
-      <div class="su-railad" aria-label="Advertisement">Advertisement · 300×250</div>
+      <div class="su-railad" aria-label="Advertisement" hidden>Advertisement</div>
       <div class="su-railed">
         <h3>Top jobs this week</h3>
         <ul class="su-mini">
@@ -3740,9 +3739,9 @@ th{background:var(--soft);color:var(--navy);font-size:13px}
         </ul>
       </div>
       <div class="su-railed" style="background:linear-gradient(135deg,#0b2447,#164b8f);border:0;color:#fff">
-        <h3 style="color:#fff"><svg class="su-uicon su-uicon-bank" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-bank"/></svg> Sponsor slot</h3>
-        <p style="margin:0 0 10px;font-size:13.5px;color:#d7e6ff">Coaching institutes / books — native card, ₹8,000–₹15,000 per month.</p>
-        <a class="su-cta" href="#of-advertise" style="width:100%">Advertise here</a>
+        <h3 style="color:#fff"><svg class="su-uicon su-uicon-shield" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-shield"/></svg> 100% Verified Updates</h3>
+        <p style="margin:0 0 10px;font-size:13.5px;color:#d7e6ff">All job notifications, admit cards &amp; results are verified directly from official state gazettes.</p>
+        <a class="su-cta" href="https://wa.me/919182739312" target="_blank" rel="noopener" style="width:100%">Join Free WhatsApp Alert</a>
       </div>
     </aside>
   </div>
@@ -4037,9 +4036,7 @@ th{background:var(--soft);color:var(--navy);font-size:13px}
     }
   }
 
-  if(!localStorage.getItem('su_anchor_closed') && window.innerWidth<900){
-    setTimeout(function(){ document.getElementById('su-anchor').hidden=false; },6000);
-  }
+  /* Pre-approval AdSense gate: Anchor ad remains hidden until live AdSense approval */
   var closeBtn=document.querySelector('#su-anchor button');
   if(closeBtn){ closeBtn.addEventListener('click',function(){ localStorage.setItem('su_anchor_closed','1'); }); }
 })();
