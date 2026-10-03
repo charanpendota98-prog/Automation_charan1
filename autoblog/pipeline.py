@@ -146,7 +146,6 @@ CATEGORY_RULES = [
                           "ప్రవేశ పరీక్ష", "కౌన్సిలింగ్", "అడ్మిషన్లు", "సీట్ల కేటాయింపు", "seat allotment",
                           "entrance exam", "online mba", "online degree", "course", "syllabus",
                           "preparation", "study plan", "exam date", "పరీక్ష"]),
-                          "preparation", "study plan", "exam date", "పరీక్ష"]),
 ]
 
 
