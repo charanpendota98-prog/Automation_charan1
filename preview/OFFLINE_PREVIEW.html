@@ -1502,14 +1502,106 @@ img{ background:var(--soft) }
 @media(min-width:1080px){
   .su-layout{ display:grid; grid-template-columns:minmax(0,1fr) 316px; gap:26px; align-items:start }
   .su-rail{ position:sticky; top:84px; display:grid; gap:16px }
-  .su-railed{ padding:14px 16px }
+  .su-railed{ padding:18px 20px }
 }
-.su-railed{ background:var(--card); border:1px solid var(--line); border-radius:var(--r-lg); box-shadow:var(--sh-1) }
-.su-railed h3{ margin:0 0 10px; font-size:15px; color:var(--navy); display:flex; align-items:center; gap:8px }
-.su-railed h3::before{ content:""; width:4px; height:16px; border-radius:99px; background:var(--orange) }
+.su-railed{ background:var(--card); border:1px solid var(--line); border-radius:18px; box-shadow:0 4px 20px rgba(15,46,98,.06); padding:16px 18px; transition:border-color .2s ease,box-shadow .2s ease }
+.su-railed h3{ margin:0; font-size:15px; font-weight:800; color:var(--navy); display:flex; align-items:center; gap:8px }
+.su-railed h3::before{ display:none !important }
+.su-card-head{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:14px }
+.su-head-ico{ width:26px; height:26px; border-radius:8px; display:grid; place-items:center; font-size:14px; flex-shrink:0 }
+.su-head-badge{ font-size:10.5px; font-weight:800; padding:3px 9px; border-radius:999px; background:#eff6ff; color:#1d4ed8; text-transform:uppercase; letter-spacing:.04em }
+body.dark .su-head-badge{ background:#1e293b; color:#93c5fd }
+
+/* Unified Community Alert Card */
+.su-alert-card{
+  background:linear-gradient(135deg,#0a2540 0%,#0f3b75 60%,#1a56a6 100%) !important;
+  color:#fff !important;
+  border:1px solid rgba(255,255,255,.12) !important;
+  padding:20px 22px !important;
+  box-shadow:0 12px 32px rgba(11,36,71,.25) !important;
+}
+.su-alert-top{ display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:10px }
+.su-alert-pill{ font-size:10.5px; font-weight:900; letter-spacing:.06em; text-transform:uppercase; background:rgba(255,255,255,.16); padding:4px 10px; border-radius:999px; color:#9ec3ff }
+.su-alert-users{ font-size:12px; font-weight:750; color:#cfe0f7; display:flex; align-items:center; gap:5px }
+.su-alert-title{ color:#ffffff !important; font-size:17.5px !important; font-weight:850 !important; margin:0 0 6px !important; line-height:1.3 }
+.su-alert-desc{ margin:0 0 16px !important; font-size:13px !important; color:#d2e3f8 !important; line-height:1.55 }
+.su-alert-btns{ display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:10px }
+.su-abtn{ display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:11px 16px; border-radius:12px; font-size:13px; font-weight:800; text-decoration:none; color:#fff; transition:transform .18s ease,box-shadow .18s ease; min-height:44px }
+.su-abtn:hover{ transform:translateY(-2px); box-shadow:0 6px 18px rgba(0,0,0,.25) }
+.su-abtn-wa{ background:linear-gradient(135deg,#25d366,#128c7e) }
+.su-abtn-tg{ background:linear-gradient(135deg,#2aabee,#1d88c2) }
+.su-abtn-arr{ font-size:14px; font-weight:900; margin-left:auto; opacity:.8 }
+
+/* High-CTR Interactive Rows */
 .su-mini{ list-style:none; margin:0; padding:0; display:grid; gap:9px }
-.su-mini a{ display:flex; gap:9px; align-items:flex-start; font-size:13.5px; font-weight:650; color:var(--ink-2); line-height:1.45 }
-.su-mini i{ font-style:normal; font-weight:900; color:var(--blue); font-size:12px; min-width:16px }
+.su-mini li{ margin:0; padding:0 }
+.su-mini-item{
+  display:flex;
+  align-items:center;
+  gap:11px;
+  padding:10px 12px;
+  border-radius:12px;
+  background:var(--soft);
+  border:1px solid rgba(15,46,98,.06);
+  color:var(--ink);
+  text-decoration:none;
+  transition:all .18s cubic-bezier(.2,.8,.3,1);
+  min-height:48px;
+}
+.su-mini-item:hover{
+  background:#fff;
+  border-color:#bfdbfe;
+  box-shadow:0 6px 18px rgba(37,99,235,.12);
+  transform:translateX(4px);
+  color:var(--blue);
+}
+body.dark .su-mini-item{ background:#131f34; border-color:var(--line-2) }
+body.dark .su-mini-item:hover{ background:#172540; border-color:#3b82f6; box-shadow:0 6px 18px rgba(0,0,0,.4); color:#60a5fa }
+.su-rank{ width:24px; height:24px; border-radius:50%; display:grid; place-items:center; font-size:11.5px; font-weight:900; flex-shrink:0 }
+.su-rank-1{ background:linear-gradient(135deg,#f59e0b,#d97706); color:#fff; box-shadow:0 2px 6px rgba(217,119,6,.3) }
+.su-rank-2{ background:linear-gradient(135deg,#94a3b8,#64748b); color:#fff }
+.su-rank-3{ background:linear-gradient(135deg,#d97706,#b45309); color:#fff }
+.su-rank-n{ background:#e2e8f0; color:#475569 }
+body.dark .su-rank-n{ background:#1e293b; color:#94a3b8 }
+.su-mini-body{ flex:1; min-width:0; display:flex; flex-direction:column; gap:2px }
+.su-mini-title{ font-size:13.5px; font-weight:750; line-height:1.35; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:var(--ink) }
+.su-mini-sub{ font-size:11px; color:var(--muted); display:flex; align-items:center; gap:6px }
+.su-mini-pill{ font-size:10px; font-weight:850; padding:2px 7px; border-radius:999px; white-space:nowrap; background:#dcfce7; color:#15803d }
+.su-mini-pill.alert{ background:#fee2e2; color:#b91c1c; font-weight:900 }
+.su-mini-pill.warning{ background:#fef3c7; color:#b45309; font-weight:850 }
+.su-mini-arr{ font-size:15px; font-weight:900; color:#94a3b8; margin-left:auto; transition:transform .18s ease,color .18s ease }
+.su-mini-item:hover .su-mini-arr{ color:var(--blue); transform:translateX(3px) }
+
+/* Student Toolkit Grid */
+.su-toolkit-grid{ display:grid; gap:8px }
+.su-tool-card{
+  display:flex;
+  align-items:center;
+  gap:11px;
+  padding:10px 12px;
+  border-radius:12px;
+  background:var(--soft);
+  border:1px solid rgba(15,46,98,.06);
+  text-decoration:none;
+  color:var(--ink);
+  transition:all .18s cubic-bezier(.2,.8,.3,1);
+  min-height:48px;
+}
+.su-tool-card:hover{
+  background:#fff;
+  border-color:#bfdbfe;
+  box-shadow:0 6px 18px rgba(37,99,235,.12);
+  transform:translateX(4px);
+}
+body.dark .su-tool-card{ background:#131f34; border-color:var(--line-2) }
+body.dark .su-tool-card:hover{ background:#172540; border-color:#3b82f6; box-shadow:0 6px 18px rgba(0,0,0,.4) }
+.su-tool-ico{ width:30px; height:30px; border-radius:9px; background:#fff; display:grid; place-items:center; font-size:15px; flex-shrink:0; box-shadow:0 2px 5px rgba(0,0,0,.06) }
+body.dark .su-tool-ico{ background:#1e293b }
+.su-tool-info{ flex:1; min-width:0; display:flex; flex-direction:column; gap:1px }
+.su-tool-info b{ font-size:13px; font-weight:800; color:var(--ink) }
+.su-tool-info small{ font-size:11px; color:var(--muted) }
+.su-tool-arrow{ font-size:13px; font-weight:900; color:var(--blue); margin-left:auto; transition:transform .18s ease }
+.su-tool-card:hover .su-tool-arrow{ transform:translateX(3px) }
 .su-railad{ min-height:250px; display:grid; place-items:center; text-align:center; font-size:12px;
   letter-spacing:.06em; text-transform:uppercase; font-weight:800; color:var(--muted);
   border:1px dashed var(--line-2); border-radius:var(--r-lg); background:linear-gradient(180deg,#fbfdff,#f4f8fe) }
@@ -3707,11 +3799,26 @@ th{background:var(--soft);color:var(--navy);font-size:13px}
     <p class="su-quiz-legend">Open poll, not a scientific survey. In this offline preview the vote is kept on your device; the live site stores only the count &mdash; never who voted.</p>
   </section></div></section>
 
-      <section class="su-railed" id="alerts" style="margin-top:22px" aria-label="Alerts">
-        <h3><svg class="su-uicon su-uicon-bell" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-bell"/></svg> Alerts — miss avvakandi</h3>
-        <p style="margin:0 0 12px;font-size:14px;color:var(--muted)">Last date, hall ticket, result — WhatsApp / Telegram lo instant.</p>
-        <a class="su-cta su-cta--ink" href="https://wa.me/919182739312">WhatsApp alerts ON</a>
-        <a class="su-cta" href="https://t.me/studentup_in" style="margin-left:8px">Telegram</a>
+      <!-- ============================ Community Alert Hub ============================ -->
+      <section class="su-railed su-alert-card" id="alerts" aria-label="Alerts" style="margin-top:24px">
+        <div class="su-alert-top">
+          <span class="su-alert-pill">⚡ Live Job Radar</span>
+          <span class="su-alert-users"><svg class="su-uicon" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-person"/></svg> 48,500+ Aspirants</span>
+        </div>
+        <h3 class="su-alert-title">Instant Job &amp; Result Alerts on Your Phone</h3>
+        <p class="su-alert-desc">Official TSPSC, APPSC, SSC, Railway &amp; Bank notifications — direct PDF links &amp; exam reminders. 100% Free &amp; Zero Spam.</p>
+        <div class="su-alert-btns">
+          <a class="su-abtn su-abtn-wa" href="https://wa.me/919182739312" target="_blank" rel="noopener">
+            <svg class="su-uicon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-s-whatsapp"/></svg>
+            <span>WhatsApp Channel</span>
+            <span class="su-abtn-arr">→</span>
+          </a>
+          <a class="su-abtn su-abtn-tg" href="https://t.me/studentup_in" target="_blank" rel="noopener">
+            <svg class="su-uicon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-s-telegram"/></svg>
+            <span>Telegram Community</span>
+            <span class="su-abtn-arr">→</span>
+          </a>
+        </div>
       </section>
 
       <div class="su-railad" style="margin-top:22px" aria-label="Advertisement" hidden>Advertisement</div>
@@ -3720,28 +3827,153 @@ th{background:var(--soft);color:var(--navy);font-size:13px}
     <!-- ============================ rail ============================ -->
     <aside class="su-rail" aria-label="Sidebar">
       <div class="su-railad" aria-label="Advertisement" hidden>Advertisement</div>
+
+      <!-- Card 1: Trending Jobs (High CTR) -->
       <div class="su-railed">
-        <h3>Top jobs this week</h3>
+        <div class="su-card-head">
+          <h3>
+            <span class="su-head-ico" style="background:#fef3c7;color:#d97706">🔥</span>
+            <span>Trending Jobs</span>
+          </h3>
+          <span class="su-head-badge">Most Applied</span>
+        </div>
         <ul class="su-mini">
-          <li><a href="#of-post1"><i>1</i> SSC CHSL 2026 — 3,712 posts</a></li>
-          <li><a href="#jobs"><i>2</i> RRB NTPC — 11,558 posts</a></li>
-          <li><a href="#jobs"><i>3</i> AP Police Constable — 6,100 posts</a></li>
-          <li><a href="#of-post2"><i>4</i> TSPSC Group 2 — 783 posts</a></li>
-          <li><a href="#jobs"><i>5</i> Post Office GDS — 21,413 posts</a></li>
+          <li>
+            <a class="su-mini-item" href="#of-post1">
+              <span class="su-rank su-rank-1">1</span>
+              <span class="su-mini-body">
+                <span class="su-mini-title">SSC CHSL 2026</span>
+                <span class="su-mini-sub"><span class="su-mini-pill">3,712 Posts</span> · Central Govt</span>
+              </span>
+              <span class="su-mini-arr">›</span>
+            </a>
+          </li>
+          <li>
+            <a class="su-mini-item" href="#jobs">
+              <span class="su-rank su-rank-2">2</span>
+              <span class="su-mini-body">
+                <span class="su-mini-title">RRB NTPC Graduate</span>
+                <span class="su-mini-sub"><span class="su-mini-pill">11,558 Posts</span> · Railways</span>
+              </span>
+              <span class="su-mini-arr">›</span>
+            </a>
+          </li>
+          <li>
+            <a class="su-mini-item" href="#jobs">
+              <span class="su-rank su-rank-3">3</span>
+              <span class="su-mini-body">
+                <span class="su-mini-title">AP Police Constable</span>
+                <span class="su-mini-sub"><span class="su-mini-pill">6,100 Posts</span> · AP State</span>
+              </span>
+              <span class="su-mini-arr">›</span>
+            </a>
+          </li>
+          <li>
+            <a class="su-mini-item" href="#of-post2">
+              <span class="su-rank su-rank-n">4</span>
+              <span class="su-mini-body">
+                <span class="su-mini-title">TSPSC Group 2 Services</span>
+                <span class="su-mini-sub"><span class="su-mini-pill">783 Posts</span> · Telangana</span>
+              </span>
+              <span class="su-mini-arr">›</span>
+            </a>
+          </li>
+          <li>
+            <a class="su-mini-item" href="#jobs">
+              <span class="su-rank su-rank-n">5</span>
+              <span class="su-mini-body">
+                <span class="su-mini-title">India Post GDS Gramin</span>
+                <span class="su-mini-sub"><span class="su-mini-pill">21,413 Posts</span> · 10th Pass</span>
+              </span>
+              <span class="su-mini-arr">›</span>
+            </a>
+          </li>
         </ul>
       </div>
+
+      <!-- Card 2: Closing Soon (Urgency radar) -->
       <div class="su-railed">
-        <h3>Closing this week</h3>
+        <div class="su-card-head">
+          <h3>
+            <span class="su-head-ico" style="background:#fee2e2;color:#dc2626">⏳</span>
+            <span>Closing Soon</span>
+          </h3>
+          <span class="su-head-badge" style="background:#fee2e2;color:#b91c1c">Urgent</span>
+        </div>
         <ul class="su-mini">
-          <li><a href="#of-post1"><i><svg class="su-uicon su-uicon-clock" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-clock"/></svg></i> SSC CHSL — 28 Oct</a></li>
-          <li><a href="#of-post2"><i><svg class="su-uicon su-uicon-clock" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-clock"/></svg></i> TSPSC Group 2 — 05 Nov</a></li>
-          <li><a href="#jobs"><i><svg class="su-uicon su-uicon-clock" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-clock"/></svg></i> IBPS Clerk — 05 Nov</a></li>
+          <li>
+            <a class="su-mini-item" href="#of-post1">
+              <span class="su-mini-body">
+                <span class="su-mini-title">SSC CHSL 10+2 Application</span>
+                <span class="su-mini-sub"><span class="su-mini-pill alert">🚨 28 Oct · 3 Days Left</span></span>
+              </span>
+              <span class="su-mini-arr">›</span>
+            </a>
+          </li>
+          <li>
+            <a class="su-mini-item" href="#of-post2">
+              <span class="su-mini-body">
+                <span class="su-mini-title">TSPSC Group 2 Recruitment</span>
+                <span class="su-mini-sub"><span class="su-mini-pill warning">⏳ 05 Nov · Last Date</span></span>
+              </span>
+              <span class="su-mini-arr">›</span>
+            </a>
+          </li>
+          <li>
+            <a class="su-mini-item" href="#jobs">
+              <span class="su-mini-body">
+                <span class="su-mini-title">IBPS Clerk 2026 Registration</span>
+                <span class="su-mini-sub"><span class="su-mini-pill warning">⏳ 05 Nov · Closes 5 PM</span></span>
+              </span>
+              <span class="su-mini-arr">›</span>
+            </a>
+          </li>
         </ul>
       </div>
-      <div class="su-railed" style="background:linear-gradient(135deg,#0b2447,#164b8f);border:0;color:#fff">
-        <h3 style="color:#fff"><svg class="su-uicon su-uicon-shield" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-shield"/></svg> 100% Verified Updates</h3>
-        <p style="margin:0 0 10px;font-size:13.5px;color:#d7e6ff">All job notifications, admit cards &amp; results are verified directly from official state gazettes.</p>
-        <a class="su-cta" href="https://wa.me/919182739312" target="_blank" rel="noopener" style="width:100%">Join Free WhatsApp Alert</a>
+
+      <!-- Card 3: Quick Career Toolkit (Replaces the duplicate WhatsApp box with high-value click magnets) -->
+      <div class="su-railed">
+        <div class="su-card-head">
+          <h3>
+            <span class="su-head-ico" style="background:#eff6ff;color:#2563eb">🎯</span>
+            <span>Student Toolkit</span>
+          </h3>
+          <span class="su-head-badge">100% Free</span>
+        </div>
+        <div class="su-toolkit-grid">
+          <a class="su-tool-card" href="#of-tools">
+            <span class="su-tool-ico">🧮</span>
+            <span class="su-tool-info">
+              <b>Age Eligibility</b>
+              <small>TSPSC &amp; Central limits</small>
+            </span>
+            <span class="su-tool-arrow">→</span>
+          </a>
+          <a class="su-tool-card" href="#of-tools">
+            <span class="su-tool-ico">💰</span>
+            <span class="su-tool-info">
+              <b>Salary Calculator</b>
+              <small>7th CPC in-hand pay</small>
+            </span>
+            <span class="su-tool-arrow">→</span>
+          </a>
+          <a class="su-tool-card" href="#of-results">
+            <span class="su-tool-ico">🏆</span>
+            <span class="su-tool-info">
+              <b>Results &amp; Keys</b>
+              <small>Direct merit list links</small>
+            </span>
+            <span class="su-tool-arrow">→</span>
+          </a>
+          <a class="su-tool-card" href="#of-calendar">
+            <span class="su-tool-ico">📅</span>
+            <span class="su-tool-info">
+              <b>2026 Exam Calendar</b>
+              <small>All scheduled dates</small>
+            </span>
+            <span class="su-tool-arrow">→</span>
+          </a>
+        </div>
       </div>
     </aside>
   </div>

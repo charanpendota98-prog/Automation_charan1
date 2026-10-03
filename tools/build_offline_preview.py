@@ -84,6 +84,7 @@ LINK_TABS = {
     "../worldclass/index.html": "home", "index.html": "home",
     "../worldclass/devices.html": "devices",
     "../tools/index.html": "tools", "tools/index.html": "tools",
+    "../tools/index.html?tool=age": "tools", "../tools/index.html?tool=salary": "tools",
     "../pages/ts-jobs-hub.html": "hub", "ts-jobs-hub.html": "hub",
     "../pages/daily-quiz.html": "quiz", "daily-quiz.html": "quiz",
     "../pages/exam-calendar.html": "calendar", "exam-calendar.html": "calendar",
@@ -114,13 +115,13 @@ def retarget_links(html: str) -> str:
     """
     def repl(m: "re.Match[str]") -> str:
         href = m.group(1)
-        base, _, _frag = href.partition("#")
+        base = href.split("?")[0].split("#")[0]
         tab = LINK_TABS.get(href) or LINK_TABS.get(base)
         if not tab:
             return m.group(0)
         return 'href="#of-%s"' % tab
 
-    return re.sub(r'href="([^"]+\.html(?:#[^"]*)?)"', repl, html)
+    return re.sub(r'href="([^"]+\.html(?:\?[^"#]*)?(?:#[^"]*)?)"', repl, html)
 
 
 def main() -> int:
