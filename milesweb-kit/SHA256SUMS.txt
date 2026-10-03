@@ -1,6 +1,6 @@
 # StudentUp — MilesWeb kit sha256 (upload verify cheyyadaniki)
-b47b0e11fed22a66e7a0281490c0ffd246be8419a3149d59b4e0228f05e73948  studentup-bot-cron.zip
+fd1c74f62ff87b55dbc229b8914d611251ecad2a1781d4229117deab6fd3ac40  studentup-bot-cron.zip
 2132fbe7d9653dfdd87fde0e2c7fc0b66b292d26d00e32b9b81fec5cf1073f39  studentup-seo-bridge-1.1.0.zip
-e1414c0ed58e1b96fb4b4eaa8502eeb15c7db4148f409277334da579ddf4207c  studentup-static-site.zip
-8aed8473a5e5faa543f0e6982981ad08843ae4921889d121819bf9b8a95cc5b4  studentup-theme-1.9.41.zip
+de49f382da447f8878db8c810de2809a92ecb9fbcffafcce5b2a33d35f50d9eb  studentup-static-site.zip
+24b3ab3277b6902426552472fe62f02c210307cde4a894231ece55919823170e  studentup-theme-1.9.41.zip
 # verify: sha256sum -c SHA256SUMS.txt   (leda: sha256sum <zip>)

@@ -24,7 +24,7 @@ msgstr ""
 msgid "%s readers voted — tap an option to see live results."
 msgstr ""
 
-#: front-page.php:68
+#: front-page.php:79
 msgid "%s updates"
 msgstr ""
 
@@ -395,6 +395,10 @@ msgstr ""
 msgid "Five fresh questions every morning, explained answers, and one reader poll that decides what we build next. Free, no login, nothing stored about you."
 msgstr ""
 
+#: front-page.php:60
+msgid "Flash Updates →"
+msgstr ""
+
 #: page-internet-center.php:56
 msgid "Form + photo &amp; signature formatting"
 msgstr ""
@@ -556,19 +560,23 @@ msgstr ""
 msgid "Latest Jobs"
 msgstr ""
 
-#: front-page.php:114
+#: front-page.php:58
+msgid "Latest notifications · hall tickets & exam alerts"
+msgstr ""
+
+#: front-page.php:125
 msgid "Latest opportunities"
 msgstr ""
 
-#: front-page.php:110
+#: front-page.php:121
 msgid "Latest opportunities — page %d"
 msgstr ""
 
-#: front-page.php:91
+#: front-page.php:102
 msgid "Latest student updates"
 msgstr ""
 
-#: front-page.php:87
+#: front-page.php:98
 msgid "Latest student updates — page %d"
 msgstr ""
 
