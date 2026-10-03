@@ -1,6 +1,6 @@
 # SET UP ALL — theme + bot (okka file, click-level)
 
-> Theme **1.9.40** · bot v198 · created 2026-10-03.
+> Theme **1.9.41** · bot v198 · created 2026-10-03.
 > Ee file rendu panulu cover chestundi: **(A) theme site ki**, **(B) bot hosting ki**.
 > Order: A mundu (site kanipinchali), tarvata B (bot site lo rasthadu).
 
@@ -12,13 +12,13 @@
 
 | Enti | File | Ekkada upload |
 | --- | --- | --- |
-| Theme | `milesweb-kit/studentup-theme-1.9.40.zip` | WP Admin → Appearance → Themes |
+| Theme | `milesweb-kit/studentup-theme-1.9.41.zip` | WP Admin → Appearance → Themes |
 | Bot | `milesweb-kit/studentup-bot-cron.zip` | cPanel → File Manager → `~/bot/` |
 
 Direct links (branch `arena/01a10001-automation-charan1`):
 
 ```
-https://raw.githubusercontent.com/charanpendota98-prog/Automation_charan1/arena/01a10001-automation-charan1/milesweb-kit/studentup-theme-1.9.40.zip
+https://raw.githubusercontent.com/charanpendota98-prog/Automation_charan1/arena/01a10001-automation-charan1/milesweb-kit/studentup-theme-1.9.41.zip
 https://raw.githubusercontent.com/charanpendota98-prog/Automation_charan1/arena/01a10001-automation-charan1/milesweb-kit/studentup-bot-cron.zip
 ```
 
@@ -26,20 +26,20 @@ https://raw.githubusercontent.com/charanpendota98-prog/Automation_charan1/arena/
 
 | Zip | size | sha256 (mundu 16) |
 | --- | --- | --- |
-| studentup-theme-1.9.40.zip | 135 files · 1173 KB | `13a41df3d935e924` |
-| studentup-bot-cron.zip | 355 files · 3945 KB | `4c22b0b5ccac9164` |
-| studentup-static-site.zip (optional) | 36 files · 553 KB | `c0e609676349cdb6` |
+| studentup-theme-1.9.41.zip | 135 files · 1174 KB | `b585f83174e589bb` |
+| studentup-bot-cron.zip | 355 files · 3949 KB | `198cea49aecbb311` |
+| studentup-static-site.zip (optional) | 36 files · 556 KB | `251db4308a75b51c` |
 | studentup-seo-bridge-1.1.0.zip (optional) | 2 files | `2132fbe7d9653dfd` |
 
-> Puratana **1.9.39 / 1.9.36 zip** ippudu kit lo ledu (v198 lo auto-purge) — porapatuna puratana
-> zip upload cheyyakandi; version check: WP → Appearance → Themes lo **1.9.40** kanipinchali.
+> Puratana **1.9.40 / 1.9.39 / 1.9.36 zip** ippudu kit lo ledu (v198 lo auto-purge) — porapatuna puratana
+> zip upload cheyyakandi; version check: WP → Appearance → Themes lo **1.9.41** kanipinchali.
 
 ---
 
 ## A) THEME — 5 clicks (10 nimushalu)
 
 1. **WP Admin** → Appearance → Themes → **Add New** → **Upload Theme** →
-   `studentup-theme-1.9.40.zip` → **Install Now**.
+   `studentup-theme-1.9.41.zip` → **Install Now**.
 2. Same screen lo → **Replace current with uploaded** (leda Activate). Me content,
    posts, images, settings **emi poyipokavu** — theme mattrame marutundi.
 3. **WP Admin → StudentUp → Run setup now** (okka click).
@@ -147,10 +147,10 @@ Reudu clean ga pass aithe → bot complete. Telegram lo **✅ Publish** button k
 
 | Enti | State |
 | --- | --- |
-| Theme code (1.9.40) | ✅ complete + 144/144 suites · jsdom 230/230 · php-lint 97/97 · parity PIN-TO-PIN · sprite gate (blank icons = build fail) |
+| Theme code (1.9.41) | ✅ complete + 144/144 suites · jsdom 230/230 · php-lint 97/97 · parity PIN-TO-PIN · sprite gate (blank icons = build fail) |
 | Bot code | ✅ complete — offline dry-run lo anni network steps graceful ga skip (no crash, no fake success) |
 | Zip kit | ✅ fresh (theme 1.9.39 + bot v197/v198 modules) |
-| **Live site** | ⏳ inka **1.9.36** — mee **zip upload** tarvate 1.9.40 avutundi (ee file A section) |
+| **Live site** | ⏳ inka **1.9.36** — mee **zip upload** tarvate 1.9.41 avutundi (ee file A section) |
 | **Bot live** | ⏳ mee `~/bot` upload + `.env` + cron tarvate run avutundi (B section) |
 | AdSense money | ⏳ mee AdSense account + approval (code side ready; income guarantee ledu) |
 | Ranking/traffic | ⏳ rojuvari posts + time (code side ready; rank/traffic guarantee ledu) |

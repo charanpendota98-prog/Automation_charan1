@@ -2,9 +2,9 @@
 Contributors: studentup
 Requires at least: 6.0
 Tested up to: 6.7
-Stable tag: 1.9.40
+Stable tag: 1.9.41
 Requires PHP: 7.4
-Version: 1.9.40
+Version: 1.9.41
 License: GNU General Public License v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Tags: news, education, blog, custom-logo, custom-menu, featured-images, translation-ready, right-sidebar, block-styles, wide-blocks
@@ -47,6 +47,10 @@ The theme ships a REST bridge (`inc/seo-bridge.php`). Use an account with `manag
 user tho App Password ivvandi (Administrator role).
 
 == Changelog ==
+
+= 1.9.41 =
+* v199.1 SPACE FIX: "Most searched by students" now fills exactly — 2 columns on phone (5 clean rows) and 5 columns on laptop (2 clean rows), so there are never empty cells or wasted space. Cards are slightly tighter (70px, 38px icon) and the section heading sits closer to the grid.
+* v199.1: every preview page now carries a tiny honest build stamp (theme version + build date) so a cached/old page is instantly recognisable.
 
 = 1.9.40 =
 * v199 HOME PHONE-FIRST: the live "Latest Jobs" strip now fades at both edges instead of clipping text, pauses when you touch or focus it, and becomes a normal swipeable row when reduced-motion is on. Every link keeps a 44px tap height.

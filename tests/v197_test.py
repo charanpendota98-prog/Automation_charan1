@@ -320,7 +320,7 @@ def test_c9_deploy_verify() -> None:
     from autoblog import deploy_verify as dv
 
     assert hasattr(dv, "verify") and hasattr(dv, "run_cli"), "verify API ledu"
-    assert dv.THEME_MIN == "1.9.40", "theme min pin ledu"
+    assert dv.THEME_MIN == "1.9.41", "theme min pin ledu"
 
     GOOD_HOME = """
       <html><body>
@@ -347,7 +347,7 @@ def test_c9_deploy_verify() -> None:
         QUIZ_PAGE = ('<html><body><section class="su-quiz" data-su-quiz-form>x</section>'
                      '<section class="su-poll" data-su-poll>x</section></body></html>')
 
-        def __init__(self, home=GOOD_HOME, version="1.9.40", css=CSS, js=JS_OK,
+        def __init__(self, home=GOOD_HOME, version="1.9.41", css=CSS, js=JS_OK,
                      quiz_missing=False, sitemap="<loc>https://x/daily-quiz/</loc>",
                      poll_rest='{"question":"q","options":["a"]}', raise_on=None):
             self.home, self.version, self.css, self.js = home, version, css, js
@@ -401,7 +401,7 @@ def test_c9_deploy_verify() -> None:
 
     # offline / SSL → clean report, no traceback, exit 2
     r5 = dv.verify("https://studentup.in", fetcher=Fake(raise_on="/"))
-    assert r5["verdict"] == "UNREACHABLE" and r5["theme_min"] == "1.9.40", r5
+    assert r5["verdict"] == "UNREACHABLE" and r5["theme_min"] == "1.9.41", r5
     assert dv.report_text(rep).count("✅") >= 10, "report text icons ledu"
     print("  C9. deploy verify: live proof · zip pending · setup pending · offline-safe ✔")
 

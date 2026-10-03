@@ -11,7 +11,7 @@ command tho motta proof vastundi:
 
 Checks (11) — anni read-only HTTP GET (emi marchadu, emi publish cheyyadu):
 
-  V1  theme version live (style.css) — 1.9.40+ leda "zip upload pending"
+  V1  theme version live (style.css) — 1.9.41+ leda "zip upload pending"
   V2  mega menu home lo (su-has-mega · data-su-mega · recommended card · aria)
   V3  menu JS + engage JS serve avutunnaya (content lo expected strings)
   V4  quiz home lo — server-rendered questions + nonce form + Quiz JSON-LD
@@ -37,7 +37,7 @@ from typing import Dict, List, Optional, Tuple
 UA = ("Mozilla/5.0 (compatible; StudentUpDeployVerify/1.0; +https://studentup.in) "
       "AppleWebKit/537.36 Chrome/120 Safari/537.36")
 
-THEME_MIN = "1.9.40"
+THEME_MIN = "1.9.41"
 TE = re.compile(r"[\u0C00-\u0C7F]")
 
 
@@ -137,7 +137,7 @@ def verify(url: str, fetcher: Optional[Fetcher] = None,
                and "su-mega-feat" in home and 'aria-haspopup="true"' in home)
     checks.append(_res("V2", "advanced mega menu (home)", "pass" if mega_ok else "fail",
                        "columns + recommended card + aria" if mega_ok else
-                       "mega markup ledu — theme 1.9.40+ activate ayyinda?"))
+                       "mega markup ledu — theme 1.9.41+ activate ayyinda?"))
     if not mega_ok:
         next_steps.append("Theme activate tarvata cache clear (LiteSpeed → Purge All) "
                           "chesi malli chudandi")

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""v89 tests — PREMIUM HOMEPAGE (theme 1.9.40).
+"""v89 tests — PREMIUM HOMEPAGE (theme 1.9.41).
 
 User-reported bugs (screenshots):
   * TS/AP Govt Jobs cards+menu+chips asalu kanipinchaledu (slug mismatch:
@@ -21,8 +21,8 @@ Checks (offline source audits + bot imports):
   * Read more real permalink link
   * Telugu Internet-center block + perks + WhatsApp icon
   * animated custom qual dropdown (quadd) + SSC wording/keywords
-  * 1.9.40 parity + readme 1.9.40/1.9.40/1.9.40 changelog + suites 71 pins
-    (v91 update: theme 1.9.40 → 1.9.40 bump · 69 → 71 suites)
+  * 1.9.41 parity + readme 1.9.41/1.9.41/1.9.41 changelog + suites 71 pins
+    (v91 update: theme 1.9.41 → 1.9.41 bump · 69 → 71 suites)
 
 Run: python tests/v89_test.py   (also via python run.py --test-all)
 """
@@ -208,11 +208,11 @@ def test_layout_premium_css() -> None:
 
 
 def test_version_and_pins() -> None:
-    # v91: theme 1.9.40 (notify 1.9.40 + telegram tools 1.9.40) · suites 71
+    # v91: theme 1.9.41 (notify 1.9.41 + telegram tools 1.9.41) · suites 71
     php = re.search(r"STUDENTUP_VERSION',\s*'([^']+)'", read(THEME / "functions.php")).group(1)
     css = re.search(r"Version:\s*([0-9.]+)", read(THEME / "style.css")).group(1)
     stable = re.search(r"Stable tag:\s*([0-9.]+)", read(THEME / "readme.txt")).group(1)
-    assert php == css == stable == "1.9.40", f"parity tappu: {php}·{css}·{stable}"
+    assert php == css == stable == "1.9.41", f"parity tappu: {php}·{css}·{stable}"
     readme = read(THEME / "readme.txt")
     for entry in ("= 1.9.0", "= 1.9.1", "= 1.9.2", "= 1.9.3", "= 1.9.4", "= 1.9.5", "= 1.9.6", "= 1.9.7", "= 1.9.8"):
         assert entry in readme, f"readme changelog {entry} ledu"
@@ -222,7 +222,7 @@ def test_version_and_pins() -> None:
         assert "suites == 144" in read(ROOT / "tests" / f), f + " (69→74 pin)"
     suites = len(list((ROOT / "tests").glob("*_test.py")))
     assert suites == 144, f"suites {suites} (v116 tho 144)"
-    print("  version parity 1.9.40 + suites pins 71 ✔")
+    print("  version parity 1.9.41 + suites pins 71 ✔")
 
 
 TESTS = [

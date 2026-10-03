@@ -272,6 +272,7 @@ PAGE = '''<!DOCTYPE html>
     </div>
   </div>
 </main>
+<div class="preview-stamp" style="max-width:1180px;margin:0 auto;padding:0 16px 14px;font-size:11.5px;color:#7b8aa3">Preview build <b>THEMEVER</b> · 8 tools · tools workbench</div>
 <!--FOOTERBAR-->
 <!--BOTTOMNAV-->
 <!--PAGEJS-->
@@ -416,6 +417,7 @@ def main() -> int:
             .replace("<!--FOOTERBAR-->", B.footer_html(pfx="../pages/"))
             .replace("<!--BOTTOMNAV-->", B.bottom_html())
             .replace("<!--PAGEJS-->", B.PAGE_JS)
+            .replace("THEMEVER", getattr(B, "PREVIEW_BUILD", "1.9.41"))
             .replace("<!--TABBUTTONS-->", "\n".join(buttons))
             .replace("<!--PANELS-->", "\n".join(panels))
             + "\n<!-- tools engine: theme file inline (single source of truth) -->\n<script>\n"

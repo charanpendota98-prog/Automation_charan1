@@ -1,5 +1,5 @@
 /* ==========================================================================
-   StudentUp — WorldClass v2  (theme 1.9.40 · v199)
+   StudentUp — WorldClass v2  (theme 1.9.41 · v199.1)
    Mobile-first design layer. style.css tarvata load avutundi — kotha markup
    avasaram ledu, unna classes ne premium ga upgrade chestundi.
    Rules: 17px Telugu-friendly base · 44px tap targets · safe-area ·
@@ -855,15 +855,24 @@ body.dark .su-tact-copy{ background:#16263f; border-color:#3d6fb5; color:#cfe0f7
   .tickerwrap .tclip::-webkit-scrollbar{ display:none }
   .tickerwrap .tmove{ animation:none; position:static; display:inline-flex; min-height:38px } }
 
-/* --- Most searched: 2-up phone → 3-up tablet → 4-up laptop, tap-easy --- */
-.usedgrid{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px }
-@media (min-width:768px){ .usedgrid{ grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px } }
-@media (min-width:1180px){ .usedgrid{ grid-template-columns:repeat(4,minmax(0,1fr)) } }
-.usedcard{ position:relative; min-height:72px; align-items:center; gap:11px; padding-right:38px;
+/* --- Most searched: 10 sections ni EXACT ga fill cheyyali (khali cell ledu) ---
+   Owner: "antha space waste cheyaku, best ga sections ga vundali". 10 cards ki
+   2-up (phone, 5 rows) · 5-up (laptop, 2 rows) — rendu perfect ga fill avutayi.
+   3-up/4-up lo last row lo 1-2 khali cells migilipoyevi (aa khali space ne
+   owner screenshot lo chusadu). */
+.usedgrid{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px;
+  grid-auto-rows:1fr }
+@media (min-width:640px){ .usedgrid{ gap:11px } }
+@media (min-width:1040px){ .usedgrid{ grid-template-columns:repeat(5,minmax(0,1fr)); gap:12px } }
+.usedcard{ position:relative; min-height:70px; align-items:center; gap:10px; padding:10px 34px 10px 11px;
   -webkit-tap-highlight-color:transparent; touch-action:manipulation; text-decoration:none }
-.usedcard .ui{ width:40px; height:40px; border-radius:12px; flex:0 0 auto; display:grid; place-items:center }
+.usedcard .ui{ width:38px; height:38px; border-radius:11px; flex:0 0 auto; display:grid; place-items:center }
 .usedcard b{ font-size:13.5px }
 .usedcard small{ font-size:11.5px }
+/* section head ni tight ga — khali vertical space vaddu */
+.usedwrap{ padding-top:14px }
+.usedhead{ margin-bottom:9px }
+.usedhead b{ font-size:15.5px }
 .usedcard>div{ min-width:0 }
 /* real count pill — number lekapote asalu kanipinchadu (:empty + JS hide) */
 .usedcard .ucount{ position:absolute; top:8px; right:9px; margin:0; padding:2px 8px; border-radius:999px;
@@ -882,7 +891,7 @@ body.dark .su-tact-copy{ background:#16263f; border-color:#3d6fb5; color:#cfe0f7
   .usedcard:active{ transform:scale(.985) }
   .usedcard:active .ui{ filter:brightness(.96) } }
 @media (max-width:600px){
-  .usedcard{ padding:11px 32px 11px 11px; min-height:66px } .usedcard .ucount{ display:none } }
+  .usedcard{ padding:10px 30px 10px 10px; min-height:64px } .usedcard .ucount{ display:none } }
 body.dark .usedcard .ucount{ background:#0f2038; color:#a9c1e6; border-color:var(--line) }
 @media print{
   .tickerwrap{ display:none }

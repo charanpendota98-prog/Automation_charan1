@@ -116,16 +116,24 @@ def test_c4_phone_first_css() -> None:
     assert ".tickerwrap .tmove a{ display:inline-flex; align-items:center; min-height:44px }" in css, "44px ticker tap ledu"
     assert "animation-play-state:paused" in css, "touch/hover pause ledu"
     assert "prefers-reduced-motion:reduce" in css and "animation:none; position:static" in css, "reduced-motion scroll ledu"
+    # v199.1 SPACE FIX: 10 cards = exact fill (2-up phone / 5-up laptop) → khali cell ledu
     assert "grid-template-columns:repeat(2,minmax(0,1fr))" in css, "phone 2-up ledu"
-    assert "@media (min-width:768px)" in css and "@media (min-width:1180px)" in css, "3-up/4-up breakpoints ledu"
-    assert "min-height:72px" in css and "-webkit-tap-highlight-color:transparent" in css, "card tap size ledu"
+    assert "@media (min-width:1040px){ .usedgrid{ grid-template-columns:repeat(5,minmax(0,1fr))" in css, \
+        "5-up breakpoint ledu (10 cards = 2 clean rows)"
+    assert "repeat(3,minmax(0,1fr))" not in css.split("15. v199 HOME PHONE-FIRST")[-1], \
+        "3-up tirigi vachindi — 10 cards ki last row lo khali cells migultayi"
+    assert "repeat(4,minmax(0,1fr))" not in css.split("15. v199 HOME PHONE-FIRST")[-1], \
+        "4-up tirigi vachindi — 10 cards ki last row lo khali cells migultayi"
+    assert "grid-auto-rows:1fr" in css, "rows equal height ledu (uneven grid)"
+    assert "min-height:70px" in css and "-webkit-tap-highlight-color:transparent" in css, "card tap size ledu"
+    assert ".usedhead{ margin-bottom:9px }" in css, "section head tight ledu (space waste)"
     assert "touch-action:manipulation" in css, "touch-action ledu"
     assert "translateY(-50%) rotate(45deg)" in css, "clean chevron ledu"
     assert "@media (hover:hover)" in css and "@media (hover:none)" in css, "hover-capable split ledu"
     assert ".usedcard:focus-visible" in css, "focus ring ledu"
     assert "body.dark .usedcard .ucount" in css, "dark count pill ledu"
     assert "@media print" in css and ".tickerwrap{ display:none }" in css, "print rules ledu"
-    print("  C4. css: fade · 44px · pause · reduced-motion · 2/3/4-up · press · dark · print ✔")
+    print("  C4. css: fade · 44px · pause · reduced-motion · 2/5-up (zero holes) · press · dark · print ✔")
 
 
 # -------------------------------------------------------------------- C5 parity
@@ -147,7 +155,15 @@ def test_c5_parity_and_sprite() -> None:
     #  asalu markup ni mattrame check cheyyali)
     assert '<section class="su-tools"' not in html and 'class="su-tooltabs"' not in html, \
         "home lo tools wall tirigi vachindi"
-    print("  C5. parity: theme classes match · sprite complete · Telugu-first · tools off home ✔")
+    # v199.1: honest build stamp — purathana cached page ventane telustundi
+    ver = re.search(r"Version:\s*(\S+)", read(THEME / "style.css")).group(1)
+    for rel in ("preview/worldclass/index.html", "preview/tools/index.html",
+                "preview/pages/about.html"):
+        page = read(ROOT / rel)
+        m = re.search(r"Preview build <b>([\d.]+)</b>", page)
+        assert m, f"build stamp ledu: {rel}"
+        assert m.group(1) == ver, f"stamp stale: {rel} ({m.group(1)} != {ver})"
+    print("  C5. parity: theme classes match · sprite complete · Telugu-first · tools off home · stamp fresh ✔")
 
 
 ALL = [v for k, v in sorted(globals().items())

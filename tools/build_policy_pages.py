@@ -16,6 +16,9 @@ import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+
+# v199.1: preview build stamp — purathana cached preview ni ventane gurtinchadaniki.
+PREVIEW_BUILD = "1.9.41"
 OUT = ROOT / "preview"
 PAGES = OUT / "pages"
 EMAIL = "studentupinformative@gmail.com"
@@ -290,6 +293,8 @@ def footer_html(home: str = "../worldclass/index.html", pfx: str = "") -> str:
             '  <div><h4>Site</h4><ul><li><a href="' + pfx + 'about.html">About us</a></li><li><a href="' + pfx + 'contact.html">Contact</a></li><li><a href="' + pfx + 'advertise.html">Advertise</a></li><li><a href="' + pfx + 'editorial-policy.html">Editorial policy</a></li></ul></div>\n'
             '  <div><h4>Legal</h4><ul><li><a href="' + pfx + 'privacy.html">Privacy</a></li><li><a href="' + pfx + 'disclaimer.html">Disclaimer</a></li><li><a href="' + pfx + 'terms.html">Terms</a></li><li><a href="https://t.me/studentup_in">Telegram</a></li></ul></div>\n'
             '</div>\n'
+            '<div class="preview-stamp" style="max-width:1180px;margin:0 auto;padding:0 16px 14px;'
+            'font-size:11.5px;color:#7b8aa3">Preview build <b>' + PREVIEW_BUILD + '</b> · theme + bot deploy-ready</div>\n'
             '<div class="su-foot-bottom">\u00a9 2026 studentup.in \u00b7 Sources: official notifications only. '
             'Ad revenue, rankings and job results are never guaranteed \u2014 always confirm the real information in the official notification. '
             'We are not a government website. '

@@ -796,14 +796,18 @@ body.dark .nav .sub-menu[data-su-mega]{background:#101c2e;border-color:#243450}
   .tickerwrap .tclip{ overflow-x:auto; scrollbar-width:none; -webkit-overflow-scrolling:touch }
   .tickerwrap .tclip::-webkit-scrollbar{ display:none }
   .tickerwrap .tmove{ animation:none; position:static; display:inline-flex; min-height:38px }}
-.usedgrid{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px }
-@media (min-width:768px){ .usedgrid{ grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px }}
-@media (min-width:1180px){ .usedgrid{ grid-template-columns:repeat(4,minmax(0,1fr)) }}
-.usedcard{ position:relative; min-height:72px; align-items:center; gap:11px; padding-right:38px;
+.usedgrid{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px;
+  grid-auto-rows:1fr }
+@media (min-width:640px){ .usedgrid{ gap:11px }}
+@media (min-width:1040px){ .usedgrid{ grid-template-columns:repeat(5,minmax(0,1fr)); gap:12px }}
+.usedcard{ position:relative; min-height:70px; align-items:center; gap:10px; padding:10px 34px 10px 11px;
   -webkit-tap-highlight-color:transparent; touch-action:manipulation; text-decoration:none }
-.usedcard .ui{ width:40px; height:40px; border-radius:12px; flex:0 0 auto; display:grid; place-items:center }
+.usedcard .ui{ width:38px; height:38px; border-radius:11px; flex:0 0 auto; display:grid; place-items:center }
 .usedcard b{ font-size:13.5px }
 .usedcard small{ font-size:11.5px }
+.usedwrap{ padding-top:14px }
+.usedhead{ margin-bottom:9px }
+.usedhead b{ font-size:15.5px }
 .usedcard>div{ min-width:0 }
 .usedcard .ucount{ position:absolute; top:8px; right:9px; margin:0; padding:2px 8px; border-radius:999px;
   background:var(--soft); color:var(--ink-2); border:1px solid var(--line);
@@ -813,7 +817,7 @@ body.dark .nav .sub-menu[data-su-mega]{background:#101c2e;border-color:#243450}
   border-right:2px solid #94a3b8; border-top:2px solid #94a3b8;
   transform:translateY(-50%) rotate(45deg); opacity:.5; transition:transform .18s ease, opacity .18s ease }
 @media (max-width:600px){
-  .usedcard{ padding:11px 32px 11px 11px; min-height:66px } .usedcard .ucount{ display:none }}
+  .usedcard{ padding:10px 30px 10px 10px; min-height:64px } .usedcard .ucount{ display:none }}
 body.dark .usedcard .ucount{ background:#0f2038; color:#a9c1e6; border-color:var(--line) }
 @media print{
   .tickerwrap{ display:none }
