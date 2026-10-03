@@ -1912,20 +1912,21 @@ body.dark .su-sidebar-ad{ background:#111c2f; border-color:var(--line-2) }
 /* ---------- (b) hero: Telugu-first, high contrast, clean & compact ---------- */
 .su-hero{
   background:
-    radial-gradient(1200px 420px at 12% -10%,rgba(36,99,183,.25),transparent 60%),
-    radial-gradient(900px 360px at 92% 0%,rgba(240,138,36,.20),transparent 62%),
+    radial-gradient(1200px 320px at 12% -10%,rgba(36,99,183,.22),transparent 60%),
+    radial-gradient(900px 280px at 92% 0%,rgba(240,138,36,.18),transparent 62%),
     linear-gradient(180deg,#071a36 0%,#0e2a56 60%,#0b2447 100%);
   color:#fff;
-  padding:16px 0 12px;
+  padding:12px 0 8px;
 }
 .su-hero-in{ padding:0 var(--gut); position:relative; z-index:2 }
 .su-hero-title{
   color:#ffffff !important;
-  font-size:clamp(22px,4.9vw,38px);
-  line-height:1.42;
-  letter-spacing:-.005em;
+  font-size:clamp(19px,3.2vw,26px);
+  line-height:1.28;
+  letter-spacing:-.01em;
   font-weight:800;
-  max-width:27ch;
+  max-width:58ch;
+  margin:0 0 5px;
 }
 .su-hero-title span{
   color:#ffb765 !important;
@@ -1935,10 +1936,11 @@ body.dark .su-sidebar-ad{ background:#111c2f; border-color:var(--line-2) }
   -webkit-text-fill-color:transparent;
 }
 .su-hero-sub{
-  font-size:clamp(13.5px,3.5vw,16px);
-  line-height:1.65;
+  font-size:clamp(12.5px,2.2vw,14px);
+  line-height:1.45;
   color:#cfe0f7 !important;
-  max-width:52ch;
+  max-width:70ch;
+  margin:0 0 8px;
 }
 .su-hero-kicker{
   background:rgba(255,255,255,.08);
@@ -1946,12 +1948,13 @@ body.dark .su-sidebar-ad{ background:#111c2f; border-color:var(--line-2) }
   color:#9ec3ff !important;
   letter-spacing:.02em;
   border-radius:999px;
-  padding:4px 12px;
-  font-size:12px;
+  padding:2px 10px;
+  font-size:11.5px;
   font-weight:700;
   display:inline-flex;
   align-items:center;
   gap:6px;
+  margin:0 0 5px;
 }
 .su-hero-stats li{
   background:rgba(255,255,255,.09) !important;
@@ -1965,7 +1968,7 @@ body.dark .su-sidebar-ad{ background:#111c2f; border-color:var(--line-2) }
 .su-hero-stats span{
   color:#9ec3ff !important;
 }
-@media(min-width:900px){ .su-hero-in{ padding:32px 0 24px } }
+@media(min-width:900px){ .su-hero-in{ padding:12px 0 8px } }
 
 /* ---------- (c) section accent bar + calm headings ---------- */
 .sectionhead h2{ position:relative; padding-left:13px }
@@ -2586,9 +2589,7 @@ body.dark .usedcard .ucount{ background:#0f2038; color:#a9c1e6; border-color:var
   @media(min-width:760px){.su-foot-grid{grid-template-columns:repeat(4,1fr)}}
   .su-foot h4{color:#fff;margin:0 0 8px;font-size:14px}
   .su-foot ul{list-style:none;margin:0;padding:0;display:grid;gap:6px}
-  .preview-stamp{max-width:var(--wrap);margin:0 auto;padding:0 16px 14px;font-size:11.5px;color:#93a9c9;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.preview-stamp b{color:#dbe7f8}
-.preview-stamp a{color:#9ec3ff}
+  .preview-stamp{display:none!important}
 .su-foot-bottom{border-top:1px solid rgba(255,255,255,.14);margin:18px auto 0;padding:12px 16px 0;
     max-width:var(--wrap);font-size:12px;color:#9fb6d6}
   .su-lticker a{text-decoration:none}
@@ -3931,7 +3932,7 @@ th{background:var(--soft);color:var(--navy);font-size:13px}
     <div><h4>Exams &amp; Results</h4><ul><li><a href="#of-results">Exam Results &amp; Cutoffs</a></li><li><a href="#of-results">Hall Tickets &amp; Admit Cards</a></li><li><a href="#of-calendar">Exam Calendar 2026</a></li><li><a href="#of-quiz">Daily Quiz &amp; Practice</a></li></ul></div>
     <div><h4>Policies &amp; Trust</h4><ul><li><a href="#of-privacy">Privacy Policy</a></li><li><a href="#of-disclaimer">Disclaimer</a></li><li><a href="#of-terms">Terms of Service</a></li><li><a href="#of-editorial-policy">Editorial Policy</a></li></ul></div>
   </div>
-  <div class="preview-stamp">Preview build <b>1.9.41</b> · live strip + 10 sections · <a href="#of-tools">/tools/</a></div>
+  <div class="preview-stamp" style="display:none!important" hidden aria-hidden="true">Preview build <b>1.9.41</b> · live strip + 10 sections · <a href="#of-tools">/tools/</a></div>
   <div class="su-foot-bottom">
     <p style="margin:0 0 6px"><b>Disclaimer:</b> StudentUp.in is an independent educational news portal. We are NOT associated with TSPSC, APPSC, UPSC, SSC, or any government recruitment board. All notifications are curated strictly from official gazettes and portals. Always verify details in official notifications before applying.</p>
     <div>© 2026 StudentUp.in · All rights reserved · Sources: Official notifications only · <a href="#of-privacy">Privacy</a> · <a href="#of-disclaimer">Disclaimer</a> · <a href="#of-contact">Contact</a></div>
