@@ -679,6 +679,117 @@ EDITORIAL_BODY = """
 <p>Found a mistake? Write to the email above with the page link. Verified corrections are published with the updated date, and the post keeps a correction note.</p>
 """
 
+
+# ---------------------------------------------------------------------------
+# v196: EXAM CALENDAR · INTERNET CENTER (transparent pricing) · CORRECTIONS
+# (theme: page-exam-calendar.php / page-internet-center.php / page-corrections.php)
+# ---------------------------------------------------------------------------
+CAL_ITEMS = [
+    ("2026-10-08", "TS Police Constable 2026 - online application last date",
+     "posts/upsc-junior-assistant-2026.html", "Telangana Jobs", 5),
+    ("2026-10-14", "NMMS Scholarship 2026 - school submission last date",
+     "posts/engineering-internships-2026.html", "Scholarships", 11),
+    ("2026-10-21", "UPSC Junior Assistant 2026 - application window closes",
+     "posts/upsc-junior-assistant-2026.html", "Central Govt Jobs", 18),
+    ("2026-10-30", "Post-matric scholarship 2026 - ePASS last date",
+     "posts/upsc-junior-assistant-2026.html", "Scholarships", 27),
+    ("2026-11-12", "Engineering internships 2026 - government portal deadline",
+     "posts/engineering-internships-2026.html", "Internships", 40),
+]
+
+
+def _cal_month(ymd: str) -> str:
+    months = ["January", "February", "March", "April", "May", "June", "July",
+              "August", "September", "October", "November", "December"]
+    y, m, _d = ymd.split("-")
+    return "%s %s" % (months[int(m) - 1], y)
+
+
+def _cal_body() -> str:
+    out = ['<div class="su-cal"><div class="su-cal-head">'
+           '<p class="su-cal-count" role="status">%d dated notifications are open right now.</p>'
+           '<a class="su-cta" href="?su_ics=1" rel="nofollow">Add all dates to my calendar (.ics)</a>'
+           '<p class="su-cal-hint">Opens in Google Calendar, Apple Calendar or any phone calendar. '
+           'One alarm one day before each last date.</p></div>' % len(CAL_ITEMS)]
+    months = {}
+    for ymd, title, href, cat, days in CAL_ITEMS:
+        months.setdefault(_cal_month(ymd), []).append((ymd, title, href, cat, days))
+    for month, rows in months.items():
+        out.append('<section class="su-cal-month"><h2 class="su-hub-h">%s</h2><ul class="su-cal-list">' % month)
+        for ymd, title, href, cat, days in rows:
+            urgent = " su-cal-urgent" if days <= 3 else ""
+            badge = "%d days left" % days
+            due = "%s %s %s" % (ymd[8:10], month[:3], ymd[:4])
+            out.append(
+                '<li class="su-cal-item%s"><span class="su-cal-date" aria-hidden="true">%s</span>'
+                '<span class="su-cal-body"><a class="su-cal-title" href="../%s">%s</a>'
+                '<span class="su-cal-meta">%s · Last date: %s</span></span>'
+                '<span class="su-cal-badge%s">%s</span></li>' % (urgent, due, href, title, cat, due, urgent, badge)
+            )
+        out.append("</ul></section>")
+    out.append("</div>")
+    return "".join(out)
+
+
+CALENDAR_BODY = _cal_body()
+
+IC_BODY = """
+<div class="su-ic-note"><strong>This is optional.</strong> Reading this website, getting job alerts and using every tool here is free. You never need this service to use StudentUp.</div>
+<h2>Price list (2026)</h2>
+<table class="su-ic-price">
+  <thead><tr><th scope="col">Service</th><th scope="col">What you get</th><th scope="col">Our service charge</th></tr></thead>
+  <tbody>
+    <tr><td>Single application form</td><td>One online form filled, checked and returned as a PDF</td><td><b>&#8377;50</b></td></tr>
+    <tr><td>Form + photo &amp; signature formatting</td><td>Form filling plus resizing/renaming of your photo and signature to the official size</td><td><b>&#8377;100</b></td></tr>
+    <tr><td>Application + document pack</td><td>Form, photo/signature work and a single PDF pack of the documents the notification asks for</td><td><b>&#8377;150</b></td></tr>
+  </tbody>
+</table>
+<p class="su-ic-price-note">Government application fee, exam fee or any official payment is separate and is never collected by us - you pay the department directly on the official portal. Prices are shown here permanently and do not change based on who calls.</p>
+<h2>What we never do</h2>
+<ul>
+  <li>We never promise a job, a rank, a seat or a selection - no one can.</li>
+  <li>We never ask for Aadhaar, PAN, bank details, OTPs or passwords.</li>
+  <li>We never fill a form with guessed details. If a document is missing, we tell you instead of inventing it.</li>
+</ul>
+<h2>How it works</h2>
+<ol class="su-ab-steps">
+  <li>Send the job or scholarship name on WhatsApp, and ask for the price before paying.</li>
+  <li>Send only the documents the notification asks for.</li>
+  <li>We fill the form, share a draft PDF with you, and submit only after you approve it.</li>
+  <li>Turnaround: typically the same day, at most 24 hours on working days.</li>
+</ol>
+<h2>Cancellation and refund</h2>
+<p>If we cannot submit your application, the service charge is returned in full. If you cancel before we start filling, nothing is charged. Government fees paid on the official portal are between you and the department.</p>
+<h2>Contact the center</h2>
+<p class="su-ic-page-actions">
+  <a class="su-cta" href="https://wa.me/919182739312" rel="nofollow noopener" target="_blank">WhatsApp the center</a>
+  <a class="su-ic-alt" href="tel:+919182739312">Call +91 91827 39312</a>
+</p>
+<p class="su-ic-page-legal">This service is a private offline service. It is not connected to any government department, and paying us gives you no advantage in any selection process.</p>
+"""
+
+CORRECTIONS_BODY = """
+<p>Every correction we make is listed here with what changed and when. If you find a mistake, write to us with the page link and we will publish the fix on this page as well.</p>
+<ul class="su-corr-list">
+  <li class="su-corr-item">
+    <a class="su-corr-title" href="../posts/upsc-junior-assistant-2026.html">UPSC Junior Assistant 2026 - complete notification guide</a>
+    <span class="su-corr-meta">Updated: <time datetime="2026-09-24">September 24, 2026</time></span>
+    <p class="su-corr-note">Fee for the general category corrected to the figure printed in the official notification (earlier draft said a different amount).</p>
+  </li>
+  <li class="su-corr-item">
+    <a class="su-corr-title" href="../posts/engineering-internships-2026.html">Engineering internships 2026 - government openings</a>
+    <span class="su-corr-meta">Updated: <time datetime="2026-09-12">September 12, 2026</time></span>
+    <p class="su-corr-note">Stipend range updated after the department released the revised internship circular.</p>
+  </li>
+</ul>
+<h2>How to report a mistake</h2>
+<ol class="su-ab-steps">
+  <li>Copy the page link (or the headline) that looks wrong.</li>
+  <li>Tell us what the official notification says instead - a screenshot or the official link helps most.</li>
+  <li>Send it to <a href="mailto:%(email)s">%(email)s</a>. Verified corrections are published within 48 hours.</li>
+</ol>
+""" % {"email": EMAIL}
+
 PAGE_DEFS = [
     ("advertise", "Partner with us",
      "Advertise on studentup.in — labelled SPONSORED placements read by Telangana & Andhra Pradesh students. Availability and pricing shared personally on WhatsApp.",
@@ -713,7 +824,19 @@ PAGE_DEFS = [
      "Scholarships 2026", "Amount, eligibility and last date — one page", SCHOLARSHIPS_BODY),
     ("editorial-team", "Editorial team &amp; fact-checking",
      "Who writes and verifies studentup.in — author profile, verification process and the public correction policy readers can hold us to.",
-     "Editorial team &amp; fact-checking", "Who writes, who verifies, how to report a mistake", EDITORIAL_BODY),
+     "Editorial team &amp; fact-checking", "Who writes, who verifies, how to report a mistake", EDITORIAL_BODY),    # v196: calendar (deadline intelligence) · IC price list · corrections log.
+    ("exam-calendar", "Exam &amp; application calendar 2026",
+     "Every confirmed government job, scholarship and exam last date in one calendar — sorted by month, closing-soon first, with a one-tap .ics export to your phone calendar.",
+     "Exam &amp; application calendar 2026",
+     "Every last date we have confirmed, in one list — sorted by month", CALENDAR_BODY),
+    ("internet-center", "Students Internet Center",
+     "The full price list and rules for our offline form-filling service — what is included, what is never included, government fee separation, turnaround and refund policy.",
+     "Students Internet Center",
+     "Separate offline service &middot; transparent price list &middot; optional", IC_BODY),
+    ("corrections", "Corrections &amp; updates",
+     "The public correction log — every fixed mistake stays visible with its date, and readers can report errors with the official notification.",
+     "Corrections &amp; updates",
+     "What changed, when, and how to report a mistake", CORRECTIONS_BODY),
 ]
 
 FAVICON = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
@@ -763,6 +886,9 @@ SITEMAP = """<?xml version="1.0" encoding="UTF-8"?>
   <url><loc>https://studentup.in/pages/disclaimer.html</loc><lastmod>{d}</lastmod><priority>0.5</priority></url>
   <url><loc>https://studentup.in/pages/terms.html</loc><lastmod>{d}</lastmod><priority>0.5</priority></url>
   <url><loc>https://studentup.in/pages/editorial-policy.html</loc><lastmod>{d}</lastmod><priority>0.6</priority></url>
+  <url><loc>https://studentup.in/pages/exam-calendar.html</loc><lastmod>{d}</lastmod><changefreq>daily</changefreq><priority>0.9</priority></url>
+  <url><loc>https://studentup.in/pages/internet-center.html</loc><lastmod>{d}</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://studentup.in/pages/corrections.html</loc><lastmod>{d}</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>https://studentup.in/pages/ts-jobs-hub.html</loc><lastmod>{d}</lastmod><changefreq>daily</changefreq><priority>0.9</priority></url>
   <url><loc>https://studentup.in/pages/results-hub.html</loc><lastmod>{d}</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
   <url><loc>https://studentup.in/pages/scholarships-hub.html</loc><lastmod>{d}</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>

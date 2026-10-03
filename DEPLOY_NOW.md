@@ -52,6 +52,15 @@ Idi ee kotha pages ni create chestundi (delete/overwrite cheyyadu):
 - `Reviewer name` (v195) = draft review chesina నిజమైన వ్యక్తి పేరు (ఖాళీగా ఉంచితే "Sources verified: <date>" అని మాత్రమే చూపిస్తుంది — తప్పుడు "reviewed by" claim ఉండదు)
 - `Author photo URL` — Media Library లో ఫోటో upload చేసి URL paste చేయండి
 
+## STEP 3c — v196 pages (calendar · pricing · corrections) (2 నిమిషాలు) 🆕 v196
+
+Step 3b (Run setup) ఇవి కూడా create చేస్తుంది — template auto-assign తోనే:
+- **`/exam-calendar/`** — confirmed last-dates month-wise + **"Add all dates to my calendar (.ics)"** button (student deadline intelligence)
+- **`/internet-center/`** — **transparent price list** (₹50 / ₹100 / ₹150 — Appearance → StudentUp లో మార్చవచ్చు), what's included, "what we never do", govt-fee separation, refund rule
+- **`/corrections/`** — public correction log (bot/admin `studentup_correction_note` meta నింపితే automatic ga list avutundi)
+
+Verify: మూడు pages open అవ్వాలి · calendar page లో dates kanipinchali (`studentup_last_date` unna posts ఉంటే) · `.ics` download పని చేయాలి.
+
 ## STEP 4 — Repair live pages (2 నిమిషాలు) ⭐ — ఒక్క click
 
 **Appearance → StudentUp Setup** → కింద **"Repair live pages (older sites)"** → **Repair live pages**
@@ -138,7 +147,8 @@ venv/bin/python run.py --daily --daily-no-send      # dry run
 | 5 | `/3452-2/` | 404 (delete అయ్యింది) |
 | 6 | `/ads.txt` | `google.com, pub-…` line |
 | 7 | `/privacy-policy/` | draft/redirect (canonical `/privacy/`) |
-| 8 | `/ts-jobs-hub/` + `/editorial-team/` | pages load · footer లో hub links · Person/ItemList schema (`view-source` లో `"@type":"Person"`) |
+| 8 | `/exam-calendar/` · `/internet-center/` · `/corrections/` | pages load · .ics download · price table · hub/editorial links |
+| 8b | `/ts-jobs-hub/` + `/editorial-team/` | pages load · footer లో hub links · Person/ItemList schema (`view-source` లో `"@type":"Person"`) |
 | 9 | Lighthouse (mobile) | Speed Index ≤ 4.0s · `PAGE_HUNG` లేదు (per-template critical CSS kotha inline layer) |
 | 10 | GSC | sitemap "Success" · indexed pages పెరుగుతున్నాయి |
 

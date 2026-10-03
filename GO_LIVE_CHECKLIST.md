@@ -1,7 +1,7 @@
 # GO-LIVE CHECKLIST (v60) — deploy cheyocha? Enti migilindi?
 
 
-> **Verified counts (theme v1.9.37 build):** test suites **140/140** files · jsdom runtime **177/177** checks · PHP lint **90/90** files · theme audit **0/0** · **deep audit pass 1-4 31/31** · code audit **0/0**.
+> **Verified counts (theme v1.9.37 build):** test suites **141/141** files · jsdom runtime **177/177** checks · PHP lint **94/94** files · theme audit **0/0** · **deep audit pass 1-4 31/31** · code audit **0/0**.
 **Short answer: CODE ready ✅ · DEPLOY ready ✅ · 5 panulu MEE accounts lo cheyyali ⏳.**
 Ee doc = okka page lo motham. Kramam ga cheyyandi.
 
@@ -125,8 +125,8 @@ Detail docs: `DEPLOY_MILESWEB.md` (cPanel steps) · `DEPLOY_ORACLE_CLOUD.md` (VM
 - [ ] **2. WordPress setup** — Rank Math; theme install (**v172**: theme **1.9.23** —
       `python tools/build_wp_theme.py` (CSS minify + `tools/build_critical_css.py` above-fold layer + reproducible zip)
       → zip → Appearance → Themes → Upload → Activate);
-      **zip:** 125 files · 1120 KB · theme **1.9.37** · sha256
-      `f0265f37c591e5fcb7e7a10fc83a7bd8f83cc1da7da14293fede3978f11c2862`
+      **zip:** 129 files · 1132 KB · theme **1.9.37** · sha256
+      `373048432ae32aca37cd0b9056e4f86f6cf24fedb220cd06d94613896e70ff47`
       (`sha256sum wordpress-theme/studentup-theme.zip` — upload chesina zip ide ani verify cheyandi;
       build ippudu **fully reproducible** — POT date kuda fixed (v175), same content ⇒ same sha
       **prathi machine/CI lo**, mtimes tho sambandham ledu)

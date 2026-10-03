@@ -87,6 +87,7 @@ require_once get_template_directory() . '/inc/shortlinks.php'; // v122: first-pa
 require_once get_template_directory() . '/inc/livefix.php';   // v194: demo page noindex, attachment/empty-search 301 (live audit fixes)
 require_once get_template_directory() . '/inc/hubs.php';      // v195: hub pages (topic clusters) + ItemList schema + autolink targets
 require_once get_template_directory() . '/inc/author-profile.php'; // v195: Person/ProfilePage schema + editorial profile shortcode
+require_once get_template_directory() . '/inc/calendar.php';   // v196: exam calendar + .ics export + Event schema
 
 /**
  * "Most searched by students" — order okkate source (bot lo autoblog/breaking.py

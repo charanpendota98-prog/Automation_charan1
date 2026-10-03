@@ -58,6 +58,10 @@ return array(
 	// v176: Compare Jobs page — page-compare.php template + shortcode ekkada
 	// attach avtundo ani deal chesi, /compare/ URL automatic ga ready avutundi.
 	'compare'          => 'Compare Jobs',
+	// v196: deadline calendar · transparent offline-service page · corrections log.
+	'exam-calendar'    => 'Exam & Application Calendar',
+	'internet-center'  => 'Students Internet Center',
+	'corrections'      => 'Corrections & Updates',
 );
 }
 
@@ -234,6 +238,73 @@ function studentup_repair_pages_run() {
 }
 
 /**
+ * v196: page content per slug (workspace · saved · compare · calendar · IC · corrections).
+ *
+ * @param string $slug  Page slug.
+ * @param string $title Page title.
+ * @return string
+ */
+function studentup_setup_page_content_for( $slug, $title ) {
+	if ( 'workspace' === $slug && function_exists( 'studentup_setup_workspace_body' ) ) {
+		return studentup_setup_workspace_body();
+	}
+	if ( 'saved' === $slug && function_exists( 'studentup_setup_saved_body' ) ) {
+		return studentup_setup_saved_body();
+	}
+	$shortcodes = array(
+		'compare'       => '[studentup_compare limit="12"]',
+		'exam-calendar' => '[studentup_calendar]',
+	);
+	if ( isset( $shortcodes[ $slug ] ) ) {
+		return $shortcodes[ $slug ];
+	}
+	if ( 'internet-center' === $slug ) {
+		return studentup_setup_internet_center_body();
+	}
+	if ( 'corrections' === $slug ) {
+		return studentup_setup_corrections_body();
+	}
+	return studentup_setup_page_body( $slug, $title );
+}
+
+/**
+ * v196: template assignment for pages that need a dedicated template file.
+ *
+ * @param int    $id   Page ID.
+ * @param string $slug Page slug.
+ * @return void
+ */
+function studentup_setup_assign_template( $id, $slug ) {
+	$map = array(
+		'exam-calendar'   => 'page-exam-calendar.php',
+		'internet-center' => 'page-internet-center.php',
+		'corrections'     => 'page-corrections.php',
+	);
+	if ( isset( $map[ $slug ] ) ) {
+		update_post_meta( (int) $id, '_wp_page_template', $map[ $slug ] );
+	}
+}
+
+/**
+ * v196: Students Internet Center page body (short intro; the template renders
+ * the price list, rules and contact block).
+ *
+ * @return string
+ */
+function studentup_setup_internet_center_body() {
+	return '<p>' . esc_html__( 'We run a small offline Students Internet Center that helps students fill government application forms. This page shows the exact price list, what is included, what we never do and how to cancel - so you can decide before you pay anything.', 'studentup' ) . '</p>';
+}
+
+/**
+ * v196: corrections page body (the template lists the corrected posts).
+ *
+ * @return string
+ */
+function studentup_setup_corrections_body() {
+	return '<p>' . esc_html__( 'StudentUp publishes a correction log. Every fixed mistake stays visible with its date instead of being silently edited.', 'studentup' ) . '</p>';
+}
+
+/**
  * v195: hub page body — [studentup_hub] shortcode + honest intro.
  *
  * @param string $slug Hub slug.
@@ -318,23 +389,21 @@ function studentup_run_first_setup() {
 		$existing = get_page_by_path( $slug );
 		if ( $existing instanceof WP_Post ) {
 			$pages[ $slug ] = (int) $existing->ID;
+			studentup_setup_assign_template( $existing->ID, $slug );   // v196: idempotent
 			continue;
 		}
 		$id = wp_insert_post(
 			array(
 				'post_title'   => $title,
 				'post_name'    => $slug,
-				'post_content' => ( 'workspace' === $slug && function_exists( 'studentup_setup_workspace_body' ) )
-					? studentup_setup_workspace_body()
-					: ( ( 'saved' === $slug && function_exists( 'studentup_setup_saved_body' ) )
-						? studentup_setup_saved_body()
-						: ( 'compare' === $slug ? "[studentup_compare limit=\"12\"]" : studentup_setup_page_body( $slug, $title ) ) ),
+				'post_content' => studentup_setup_page_content_for( $slug, $title ),
 				'post_status'  => 'publish',
 				'post_type'    => 'page',
 			)
 		);
 		if ( $id && ! is_wp_error( $id ) ) {
 			$pages[ $slug ] = (int) $id;
+			studentup_setup_assign_template( $id, $slug );
 			++$made;
 		}
 	}

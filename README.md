@@ -1,7 +1,7 @@
 # studentup.in Auto-Blogger 🤖
 
 
-> **Verified counts (theme v1.9.37 build):** test suites **140/140** files · jsdom runtime **177/177** checks · PHP lint **90/90** files · theme audit **0/0** · **deep audit pass 1-4 31/31** · code audit **0/0**.
+> **Verified counts (theme v1.9.37 build):** test suites **141/141** files · jsdom runtime **177/177** checks · PHP lint **94/94** files · theme audit **0/0** · **deep audit pass 1-4 31/31** · code audit **0/0**.
 24/7 automatic blog posting system for **studentup.in** (WordPress) — runs on your Oracle Cloud instance.
 
 - **AI content:** Google Gemini (free tier) generates Telugu + English mix articles
@@ -681,7 +681,7 @@ Theme ni "world best" standards tho **repeatable ga audit** cheyyadaniki
 
 ```bash
 python3 tools/theme_audit_deep.py     # pass 1-4 · ✅ 31 pass · 0 warn · 0 fail
-node tools/php_lint.js                # 90/90
+node tools/php_lint.js                # 94/94
 python3 tools/cwv_audit.py            # CLS/a11y static (10 pages)
 ```
 
@@ -851,6 +851,19 @@ python run.py --forward-morning --forward-no-whatsapp       # Telegram mattrame
 | Cron | `30 6 * * *` (6:30 AM) — `crontab.example` lo line ready |
 
 Proof: `python tests/v189_test.py` (5 groups).
+
+### v196 — ADVANCED PACK: exam calendar · transparent pricing · corrections log 🗓️
+
+Audit gaps that were still open (#9 deadlines useless · #12 hidden price · #41 no correction log):
+
+| Feature | File | Emi chestundi |
+|---|---|---|
+| **Exam calendar + .ics** | `inc/calendar.php` · `page-exam-calendar.php` | Confirmed last-dates month-wise, closing-soon order, **one-tap "Add all dates to my calendar"** (.ics with 1-day alarm, server-side), ItemList+Event schema, honest empty state ("we never estimate a deadline") |
+| **Transparent pricing** | `page-internet-center.php` | Price list (₹50/₹100/₹150 — admin options), what's included, "what we never do" (no job promise · no Aadhaar/PAN/OTP), govt-fee separation, 24h turnaround, refund rule, independence line |
+| **Corrections log** | `page-corrections.php` | Public correction list (meta `studentup_correction_note`), updated dates, "report a mistake" flow with 48h SLA, honest empty state |
+
+Setup (`Run setup now`) ee 3 pages ni create chesi **template auto-assign** chestundi (idempotent). Preview: `pages/exam-calendar.html` · `internet-center.html` · `corrections.html` · sitemap **18 locs**.
+**Proof:** `tests/v196_test.py` (6 gates) · **141/141 suites** · php-lint **94/94** · parity PIN-TO-PIN · cwv 0/0 · visual 100/100.
 
 ### v195 — A) PER-TEMPLATE CRITICAL CSS · B) HUB PAGES · C) AUTHOR E-E-A-T 🚀
 

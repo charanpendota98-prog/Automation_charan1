@@ -160,13 +160,13 @@ def test_php_parse():
 
 def test_docs_v79():
     suites = len(list((ROOT / "tests").glob("*_test.py")))
-    assert suites == 140, f"suites {suites} (v116 tho 140 expect)"
+    assert suites == 141, f"suites {suites} (v116 tho 141 expect)"
     readme = read(ROOT / "README.md")
     manual = read(ROOT / "MANUAL_ADVANCED_CHECKLIST.md")
     go_live = read(ROOT / "GO_LIVE_CHECKLIST.md")
-    assert "### v79" in readme and "140/140" in readme
-    assert "PART 38" in manual and "v79" in manual and "140/140" in manual
-    assert "140/140" in go_live
+    assert "### v79" in readme and "141/141" in readme
+    assert "PART 38" in manual and "v79" in manual and "141/141" in manual
+    assert "141/141" in go_live
     for name, txt in (("README", readme), ("MANUAL", manual),
                       ("GO_LIVE", go_live)):
         assert "165/165" in txt, f"{name} lo jsdom claim poyindi"

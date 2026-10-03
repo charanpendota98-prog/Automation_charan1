@@ -151,7 +151,7 @@ def deep_checks(report: dict) -> dict:
                 if not re.search(r"esc_(html|attr|url|js|textarea)|\(int\)|\(float\)|"
                                  r"wp_json_encode|number_format|wp_kses|absint|intval|"
                                  r"studentup_ad\(|studentup_ui_icon\(|studentup_social_icon\(|"
-                                 r"studentup_cmdk_icon\(|implode|join|\.\s*'", line):
+                                 r"studentup_cmdk_icon\(|studentup_ics_output\(|implode|join|\.\s*'", line):
                     warnings.append(f"{rel}: echo lo variable escape avvaledu → esc_html() "
                                     f"wrap cheyandi: {line.strip()[:60]}")
 
