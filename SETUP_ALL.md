@@ -147,7 +147,7 @@ Reudu clean ga pass aithe → bot complete. Telegram lo **✅ Publish** button k
 
 | Enti | State |
 | --- | --- |
-| Theme code (1.9.41) | ✅ complete + 144/144 suites · jsdom 230/230 · php-lint 97/97 · parity PIN-TO-PIN · sprite gate (blank icons = build fail) |
+| Theme code (1.9.41) | ✅ complete + 146/146 suites · jsdom 230/230 · php-lint 97/97 · parity PIN-TO-PIN · sprite gate (blank icons = build fail) |
 | Bot code | ✅ complete — offline dry-run lo anni network steps graceful ga skip (no crash, no fake success) |
 | Zip kit | ✅ fresh (theme 1.9.39 + bot v197/v198 modules) |
 | **Live site** | ⏳ inka **1.9.36** — mee **zip upload** tarvate 1.9.41 avutundi (ee file A section) |

@@ -27,7 +27,7 @@ Tags: news, blog, custom-menu, custom-logo, featured-images, right-sidebar, tran
 /* ================= StudentUp tokens (v61 — preview design same) ================= */
 :root{--navy:#0f2e62;--blue:#2463b7;--orange:#ed8a32;--ink:#162235;--muted:#64748b;
 --line:#e5ebf4;--soft:#f5f8fc;--card:#fff;--bg:#f7f9fd;--green:#168451;--red:#b91c1c;
---shadow:0 18px 45px rgba(15,46,98,.11)}
+--shadow:0 18px 45px rgba(15,46,98,.11);--orange-ink:#c2410c}  /* v200: orange-kku AA-safe ink variant */
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
 html{color-scheme:light}body.dark{color-scheme:dark}
@@ -140,7 +140,7 @@ background:linear-gradient(135deg,#0f2e62,#2463b7);padding:10px}
 .newsbody{padding:14px 16px 16px;display:flex;flex-direction:column;gap:8px;flex:1}
 .tagrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .tag{background:#eef4ff;color:var(--blue);font-size:11px;font-weight:800;border-radius:999px;padding:3px 10px}
-.statechip{font-size:10.5px;font-weight:800;border-radius:999px;padding:3px 9px;background:#f1f5fb;color:var(--muted)}
+.statechip{font-size:10.5px;font-weight:800;border-radius:999px;padding:3px 9px;background:#f1f5fb;color:#5b6b80}
 .news h2,.news h3{margin:0;font-size:16.5px;line-height:1.5;color:var(--navy)}
 .news p{margin:0;color:var(--muted);font-size:13px}
 .newsfoot{margin-top:auto;display:flex;justify-content:space-between;align-items:center;font-size:11.5px;color:var(--muted);font-weight:700}
@@ -865,7 +865,7 @@ body.dark .hero-slim h1{background:linear-gradient(120deg,#cfe1ff,#7fb0ff 55%,#f
  background:none;color:var(--navy);font:inherit;font-size:12px;font-weight:600;cursor:pointer;
  padding:5px 10px;border-radius:999px;transition:background .14s,border-color .14s,color .14s}
 .su-save-btn:hover{background:rgba(15,46,98,.06);border-color:rgba(15,46,98,.3)}
-.su-save-btn.on{background:var(--orange);border-color:var(--orange);color:#fff}
+.su-save-btn.on{background:var(--orange-ink);border-color:var(--orange-ink);color:#fff}
 .su-save-btn .su-save-ico{font-size:13px;line-height:1}
 .su-save-btn:focus-visible{outline:2px solid var(--blue,#1560d8);outline-offset:2px}
 .su-save-card{margin-left:auto;padding:3px 8px}
@@ -1139,8 +1139,8 @@ body.dark .su-ad-desc,body.dark .su-ad-disc{color:#b7c6dc}
   border-radius:16px;background:linear-gradient(135deg,var(--card),var(--soft));box-shadow:var(--shadow)}
 .su-success-intake h2{margin:4px 0 8px;color:var(--navy);line-height:1.3}
 .su-success-intake ul{margin:12px 0;padding-left:22px}.su-success-intake li{margin:4px 0}
-.su-success-intake .su-kicker{color:var(--orange);font-size:11px;font-weight:800;letter-spacing:.12em}
-.su-success-intake .su-button{display:inline-block;padding:10px 18px;border-radius:999px;background:var(--orange);color:#fff;font-weight:800}
+.su-success-intake .su-kicker{color:var(--orange-ink);font-size:11px;font-weight:800;letter-spacing:.12em}
+.su-success-intake .su-button{display:inline-block;padding:10px 18px;border-radius:999px;background:var(--orange-ink);color:#fff;font-weight:800}
 .su-success-intake .su-button:hover{filter:brightness(.95);transform:translateY(-1px)}
 .su-success-intake .su-muted{color:var(--muted);font-size:13px}
 body.dark .su-success-intake{background:linear-gradient(135deg,#17243a,#202b3c);border-color:#3b4b63}
@@ -1154,7 +1154,7 @@ body.dark .su-success-intake h2{color:#e8f0ff}
 .su-tool-btn.is-added{background:#e8f7ef;border-color:#36a36c;color:#12623c}.su-tool-btn[data-reminded="true"]{background:#fff3e8;border-color:var(--orange)}
 .su-compare-rail{position:fixed;z-index:999;right:16px;bottom:16px;width:min(390px,calc(100vw - 32px));padding:14px;border:1px solid var(--line);border-radius:18px;background:var(--card);box-shadow:0 18px 48px rgba(15,46,98,.22)}
 .su-compare-rail[hidden]{display:none}.su-compare-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}.su-compare-head strong{margin-right:auto;color:var(--navy)}.su-compare-head button{border:0;background:transparent;cursor:pointer;font-size:18px;color:var(--muted)}
-.su-compare-items{display:grid;gap:6px}.su-compare-item{display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:10px;background:var(--soft);font-size:12px}.su-compare-item a{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--navy);font-weight:700}.su-compare-item button{margin-left:auto;border:0;background:transparent;color:var(--muted);cursor:pointer}.su-compare-empty,.su-compare-note{font-size:12px;color:var(--muted);margin:8px 0}.su-compare-actions{display:flex;gap:8px;margin-top:10px}.su-tool-primary{background:var(--orange);border-color:var(--orange);color:#fff}.su-tool-primary:disabled{opacity:.5;cursor:not-allowed;transform:none}.su-tool-muted{background:transparent;color:var(--muted)}
+.su-compare-items{display:grid;gap:6px}.su-compare-item{display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:10px;background:var(--soft);font-size:12px}.su-compare-item a{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--navy);font-weight:700}.su-compare-item button{margin-left:auto;border:0;background:transparent;color:var(--muted);cursor:pointer}.su-compare-empty,.su-compare-note{font-size:12px;color:var(--muted);margin:8px 0}.su-compare-actions{display:flex;gap:8px;margin-top:10px}.su-tool-primary{background:var(--orange-ink);border-color:var(--orange-ink);color:#fff}.su-tool-primary:disabled{opacity:.5;cursor:not-allowed;transform:none}.su-tool-muted{background:transparent;color:var(--muted)}
 .su-compare-modal{position:fixed;inset:0;z-index:1000;display:grid;place-items:center;padding:18px;background:rgba(8,20,42,.68)}.su-compare-card{width:min(760px,100%);max-height:min(80vh,680px);overflow:auto;padding:20px;border-radius:20px;background:var(--card);box-shadow:0 24px 70px rgba(0,0,0,.3)}.su-compare-card .su-compare-head{border-bottom:1px solid var(--line);padding-bottom:10px}.su-compare-card h2{margin:0;font-size:21px;color:var(--navy)}.su-compare-table{width:100%;border-collapse:collapse;font-size:13px}.su-compare-table th,.su-compare-table td{padding:11px 8px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}.su-compare-table th{color:var(--navy)}.su-compare-table a{color:#0f5bd7;font-weight:800}.su-compare-card .su-compare-head button{font-size:20px}
 body.dark .su-tool-btn,body.dark .su-tool-primary,body.dark .su-tool-muted,body.dark .su-compare-rail,body.dark .su-compare-card{background:#18263c;color:#e8f0ff;border-color:rgba(255,255,255,.18)}body.dark .su-compare-item{background:#22334d}body.dark .su-compare-head strong,body.dark .su-compare-card h2,body.dark .su-compare-table th{color:#e8f0ff}body.dark .su-tool-btn.is-added{background:#173d32;color:#a8efc8}
 @media(max-width:600px){.su-tools-card{margin-left:0;justify-content:flex-start}.su-tools-single{gap:6px}.su-tool-btn{flex:1 1 auto;justify-content:center}.su-compare-rail{right:10px;bottom:10px;width:calc(100vw - 20px)}}
@@ -1575,14 +1575,15 @@ body.dark .logo .brand{ color:#fff }
 .su-lticker .tmove a{ font-size:13.5px; letter-spacing:.002em; font-weight:650; color:#f8fafc; text-decoration:none }
 .su-lticker .tmove a:hover{ color:#93c5fd; text-decoration:underline }
 .su-ticker-ctrls{ display:flex; align-items:center; gap:5px; flex-shrink:0 }
-.su-tbtn{ width:28px; height:28px; border-radius:8px; border:1px solid rgba(255,255,255,.25); background:rgba(255,255,255,.12); color:#fff; font-size:13px; font-weight:800; cursor:pointer; display:grid; place-items:center; padding:0; line-height:1; transition:all .15s ease }
+.su-tbtn{ position:relative; width:28px; height:28px; border-radius:8px; border:1px solid rgba(255,255,255,.25); background:rgba(255,255,255,.12); color:#fff; font-size:13px; font-weight:800; cursor:pointer; display:grid; place-items:center; padding:0; line-height:1; transition:all .15s ease }
 .su-tbtn:hover{ background:rgba(255,255,255,.28); border-color:rgba(255,255,255,.45) }
+.su-tbtn::after{ content:""; position:absolute; inset:-8px }  /* v200: 44px thumb hit-area (visual size same) */
 
 /* ------------------------------------------------------ 5. hero (compact & advanced) */
 .su-hero{ padding:8px 0 6px }
 .su-hero-in{ padding:0 var(--gut) }
 .su-hero-kicker{ font-size:12px; margin:0 0 4px; font-weight:700; color:var(--blue-ink); display:inline-flex; align-items:center; gap:6px }
-.su-hero-title{ font-size:clamp(17px,2.5vw,21px); line-height:1.22; margin:0 0 6px }
+.su-hero-title{ font-size:clamp(21px,3.6vw,29px); line-height:1.2; margin:0 0 6px }  /* v200: page title H2 section titles kanna peddaga undali */
 .su-hero-sub{ font-size:13px; max-width:62ch; margin:0 0 6px; color:var(--muted); line-height:1.4 }
 .su-hero-search{
   display:flex; gap:8px; align-items:center; background:#fff;
@@ -2008,7 +2009,8 @@ body.dark .su-hook{ background:#131f34; color:var(--ink) }
    kanipisthu untundi (viewability ↑ = RPM ↑), content neat ga
    760px reading width lo untundi. Phone lo single column (fast).
    ============================================================ */
-.su-layout{ display:grid; gap:22px; align-items:start }
+.su-layout{ display:grid; grid-template-columns:minmax(0,1fr); gap:22px; align-items:start }
+.su-layout>*{ min-width:0 }   /* mobile: grid track content ni exceed cheyyakoodadu (v200 overflow fix) */
 @media(min-width:1080px){
   .su-layout{ grid-template-columns:minmax(0,1fr) }              /* fallback: sidebar lekapote */
   .su-layout:has(> .su-sidebar){ grid-template-columns:minmax(0,1fr) 316px; gap:26px }
@@ -2093,8 +2095,8 @@ body.dark .su-sidebar-ad{ background:#111c2f; border-color:var(--line-2) }
 .su-hero-in{ padding:0 var(--gut); position:relative; z-index:20 }
 .su-hero-title{
   color:#ffffff !important;
-  font-size:clamp(17px,2.5vw,21px);
-  line-height:1.22;
+  font-size:clamp(22px,3.6vw,29px);   /* v200: page title H2 section titles kanna peddaga (AA hierarchy) */
+  line-height:1.2;
   letter-spacing:-.015em;
   font-weight:800;
   max-width:64ch;
@@ -2167,7 +2169,7 @@ body.dark .su-sidebar-ad{ background:#111c2f; border-color:var(--line-2) }
   font-size:10.5px; font-weight:800; padding:2px 7px; border-radius:6px;
   background:#f1f5f9; color:#334155; flex-shrink:0; white-space:nowrap;
 }
-.su-sug-badge.ts{ background:#fff7ed; color:#ea580c; border:1px solid #fed7aa }
+.su-sug-badge.ts{ background:#fff7ed; color:#b45309; border:1px solid #fed7aa }  /* v200: 4.5:1 AA (was 3.35) */
 .su-sug-badge.ap{ background:#ecfdf5; color:#047857; border:1px solid #a7f3d0 }
 .su-sug-badge.central{ background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe }
 .su-sug-badge.bank{ background:#faf5ff; color:#7e22ce; border:1px solid #e9d5ff }
@@ -2414,10 +2416,10 @@ body.dark .menubtn {
 .header.su-head-small .logo .brand{font-size:17.5px}
 
 /* --------------------------------------------- 24. mobile accordion groups */
-.mpanel .mgroup{border-top:1px solid rgba(255,255,255,.1)}
+.mpanel .mgroup{border-top:1px solid var(--line)}
 .mpanel .mgroup>summary{
   display:flex;align-items:center;gap:10px;padding:13px 2px;cursor:pointer;list-style:none;
-  font-weight:800;font-size:15.5px;color:#fff;
+  font-weight:800;font-size:15.5px;color:var(--navy);
 }
 .mpanel .mgroup>summary::-webkit-details-marker{display:none}
 .mpanel .mgroup>summary span{flex:1}
@@ -2425,11 +2427,17 @@ body.dark .menubtn {
 .mpanel .mgroup[open]>summary .su-uicon:last-child{transform:rotate(180deg)}
 .mpanel .mgroup-body{display:grid;gap:2px;padding:0 0 10px 4px}
 .mpanel .mgroup-body>a{
-  display:block;padding:9px 10px;border-radius:11px;background:rgba(255,255,255,.05);color:#e8f0fb;
+  display:block;padding:9px 10px;border-radius:11px;background:var(--soft);color:var(--ink-2);
   font-weight:700;font-size:14px;
 }
-.mpanel .mgroup-body>a>small{display:block;font-weight:500;font-size:11.5px;color:#a9c0dd;margin-top:2px}
-.mpanel .mgroup-body>a:hover{background:rgba(255,255,255,.12)}
+.mpanel .mgroup-body>a>small{display:block;font-weight:500;font-size:11.5px;color:var(--muted);margin-top:2px}
+.mpanel .mgroup-body>a:hover{background:var(--soft);color:var(--navy)}
+/* v200: panel card (light) — dark theme lo mattrame light-text variants (mundu white-on-white bug) */
+body.dark .mpanel .mgroup{border-top-color:rgba(255,255,255,.1)}
+body.dark .mpanel .mgroup>summary{color:#fff}
+body.dark .mpanel .mgroup-body>a{background:rgba(255,255,255,.05);color:#e8f0fb}
+body.dark .mpanel .mgroup-body>a>small{color:#a9c0dd}
+body.dark .mpanel .mgroup-body>a:hover{background:rgba(255,255,255,.12)}
 
 /* --------------------------------------------------------- 25. quiz v2 */
 .su-quiz{position:relative;margin:22px 0}
@@ -2681,7 +2689,7 @@ body.dark .su-tact-copy{ background:#16263f; border-color:#3d6fb5; color:#cfe0f7
 .su-scard:hover{ transform: translateY(-3px); box-shadow: var(--sh-2); border-color: #bcd3f2 }
 .su-scard-head{ display: flex; justify-content: space-between; align-items: center; gap: 6px }
 .su-scard-tag{ font-size: 10.5px; font-weight: 800; padding: 2px 8px; border-radius: 999px; background: var(--soft); color: var(--navy) }
-.su-scard-urgent{ font-size: 10.5px; font-weight: 800; padding: 2px 8px; border-radius: 999px; background: #fef2f2; color: #dc2626; border: 1px solid #fecaca }
+.su-scard-urgent{ font-size: 10.5px; font-weight: 800; padding: 2px 8px; border-radius: 999px; background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca }  /* v200: AA 4.5+ */
 .su-scard h3{ font-size: 14.5px; font-weight: 750; color: var(--navy); margin: 0; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden }
 .su-scard-meta{ display: flex; flex-wrap: wrap; gap: 6px; font-size: 11.5px; color: var(--muted); font-weight: 600; margin-top: auto }
 .su-scard-vac{ background: #eff6ff; color: #1e40af; padding: 2px 7px; border-radius: 6px; font-weight: 700 }
@@ -2819,11 +2827,18 @@ body.dark .usedcard .ucount{ background:#0f2038; color:#a9c1e6; border-color:var
    16. FLOATING SOCIAL RAIL (Right side on mobile · 5-min dismissal)
    ========================================================================== */
 @media(max-width:980px){
-  .su-social{ top:50% !important; bottom:auto !important; transform:translateY(-50%) !important; flex-direction:column !important; right:10px !important }
-  .su-social.su-out{ transform:translate(135%,-50%) !important }
+  /* v200: rail content column ni cover cheyyakoodadu — bottom-right dock (style.css base intent),
+     bottom nav + install banner ki space vadili. Mundu 50% mid-screen lo column text meeda padutundi. */
+  .su-social{ top:auto !important; bottom:86px !important; transform:none !important; flex-direction:row !important; right:10px !important }
+  .su-social.su-out{ transform:translateY(170%) !important; opacity:0 !important; visibility:hidden !important; pointer-events:none !important }
+  .su-tab{ top:auto !important; bottom:150px !important }
+}
+@media(max-width:1339px) and (min-width:981px){
+  /* tablet/small-laptop: rail ki right gutter space (content meeda overlap ledu) */
+  .wrap{ padding-right:74px }
 }
 @media(max-width:600px){
-  .su-social{ right:8px !important; top:48% !important; gap:6px !important; padding:7px 5px !important }
+  .su-social{ right:8px !important; top:auto !important; bottom:84px !important; gap:6px !important; padding:7px 5px !important }
   .su-social a{ width:33px !important; height:33px !important }
   .su-social a svg{ width:16px !important; height:16px !important }
   .su-tab{ top:48% !important; bottom:auto !important; width:20px !important; height:40px !important }
@@ -2849,7 +2864,7 @@ body.dark .usedcard .ucount{ background:#0f2038; color:#a9c1e6; border-color:var
 .su-qp{ appearance:none; border:1px solid var(--line,#cbd5e1); background:#fff; color:var(--ink,#1e293b); font-size:12px; font-weight:700; padding:5px 12px; border-radius:999px; cursor:pointer; white-space:nowrap; transition:all .16s ease; line-height:1.4; min-height:30px; display:inline-flex; align-items:center }
 .su-qp:hover{ border-color:var(--blue,#2563eb); color:var(--blue,#2563eb); transform:translateY(-1px) }
 .su-qp.active{ background:var(--navy,#0b2447); border-color:var(--navy,#0b2447); color:#fff; box-shadow:0 4px 12px rgba(11,36,71,.20) }
-.su-qp--urgent{ border-color:#fca5a5; color:#dc2626; background:#fef2f2 }
+.su-qp--urgent{ border-color:#fca5a5; color:#b91c1c; background:#fef2f2 }  /* v200: AA 4.5+ */
 .su-qp--urgent:hover{ border-color:#ef4444; color:#b91c1c; background:#fee2e2 }
 .su-qp--urgent.active{ background:#dc2626; border-color:#dc2626; color:#fff; box-shadow:0 4px 12px rgba(220,38,38,.28) }
 body.dark .su-qual-bar{ background:#14243c; border-color:#1e3355 }
@@ -3060,7 +3075,7 @@ body.dark .su-q-diff{ background:#1e293b; color:#cbd5e1 }
   .su-qp{appearance:none;border:1px solid var(--line,#cbd5e1);background:#fff;color:var(--ink,#1e293b);font-size:12px;font-weight:700;padding:5px 12px;border-radius:999px;cursor:pointer;white-space:nowrap;transition:all .16s ease;line-height:1.4;min-height:30px;display:inline-flex;align-items:center}
   .su-qp:hover{border-color:var(--blue,#2563eb);color:var(--blue,#2563eb);transform:translateY(-1px)}
   .su-qp.active{background:var(--navy,#0b2447);border-color:var(--navy,#0b2447);color:#fff;box-shadow:0 4px 12px rgba(11,36,71,.20)}
-  .su-qp--urgent{border-color:#fca5a5;color:#dc2626;background:#fef2f2}
+  .su-qp--urgent{border-color:#fca5a5;color:#b91c1c;background:#fef2f2}
   .su-qp--urgent:hover{border-color:#ef4444;color:#b91c1c;background:#fee2e2}
   .su-qp--urgent.active{background:#dc2626;border-color:#dc2626;color:#fff;box-shadow:0 4px 12px rgba(220,38,38,.28)}
   body.dark .su-qual-bar{background:#14243c;border-color:#1e3355}
@@ -3269,7 +3284,7 @@ body.dark .su-q-diff{ background:#1e293b; color:#cbd5e1 }
         <div class="su-scard">
           <div class="su-scard-head">
             <span class="su-scard-tag">TS Govt · TSPSC</span>
-            <span class="su-scard-tag" style="background:#fff7ed;color:#ea580c;border:1px solid #fed7aa">🔥 Popular</span>
+            <span class="su-scard-tag" style="background:#fff7ed;color:#b45309;border:1px solid #fed7aa">🔥 Popular</span>
           </div>
           <h3><a href="../posts/engineering-internships-2026.html" style="color:inherit;text-decoration:none">TSPSC Group 2 Services — 783 Vacancies</a></h3>
           <div class="su-scard-meta">

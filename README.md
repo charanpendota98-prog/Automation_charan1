@@ -1,7 +1,7 @@
 # studentup.in Auto-Blogger 🤖
 
 
-> **Verified counts (theme v1.9.41 build):** test suites **145/145** files · jsdom runtime **230/230** checks · PHP lint **97/97** files · theme audit **0/0** · **deep audit pass 1-4 31/31** · code audit **0/0**.
+> **Verified counts (theme v1.9.41 build):** test suites **146/146** files · jsdom runtime **230/230** checks · PHP lint **97/97** files · theme audit **0/0** · **deep audit pass 1-4 31/31** · code audit **0/0**.
 24/7 automatic blog posting system for **studentup.in** (WordPress) — runs on your Oracle Cloud instance.
 
 - **AI content:** Google Gemini (free tier) generates Telugu + English mix articles
@@ -921,9 +921,9 @@ build cheyu, anni phone lo advanced ga best ga"*.
 | Build stamp | every preview page ends with an honest `Preview build 1.9.41` line, so a cached/old page is instantly recognisable (v199.1). |
 | Nothing lost | quiz, polls, mega menu, bottom nav, sticky ad and the tools page are untouched; home still carries no calculators (v191 rule). |
 
-**Proof:** `tests/v199_test.py` (5 gates) · jsdom +5 checks (ticker set, 10 cards, real pills, demo note gone) · **145/145 suites** · jsdom **230/230**.
+**Proof:** `tests/v199_test.py` (5 gates) · jsdom +5 checks (ticker set, 10 cards, real pills, demo note gone) · **146/146 suites** · jsdom **230/230**.
 
-**Proof:** `tests/v198_test.py` (8 gates) · `tests/runtime/jsdom_runtime_test.js` +34 behavioural checks (finder, chips, sticky, deep link, steppers, reset, real results + the v120 compare/reminder/print/text-size/age-calculator layer, restored in v198) · **145/145 suites** · jsdom **230/230** · php-lint **97/97**.
+**Proof:** `tests/v198_test.py` (8 gates) · `tests/runtime/jsdom_runtime_test.js` +34 behavioural checks (finder, chips, sticky, deep link, steppers, reset, real results + the v120 compare/reminder/print/text-size/age-calculator layer, restored in v198) · **146/146 suites** · jsdom **230/230** · php-lint **97/97**.
 
 ### v195 — A) PER-TEMPLATE CRITICAL CSS · B) HUB PAGES · C) AUTHOR E-E-A-T 🚀
 
@@ -3587,3 +3587,22 @@ Marpali te: `.env` edit chesi scheduler ni restart cheyandi: `sudo systemctl res
 │   └── ad_network_plan.py  # v56 network eligibility + uplift (--views 50k --tier1 0.3)
 └── tests/                  # end-to-end tests (fake WP/Telegram/source servers)
 ```
+
+### v200 — OWNER REVIEW FIX ("anni verify cheyu — theme worst ga undi")
+
+Owner complaint (2026-10-03): the theme looked broken/worst. Independent
+verification was done with a **real headless browser** (Chromium, phone 390px +
+laptop 1200/1440px) instead of the static CSS gate, and the following defects
+were reproduced and fixed. All of the old gates passed *before* these bugs, so
+each fix below is a new, browser-verified gate.
+
+| # | Bug (reproduced in a real browser) | Root cause | Fix (files) |
+|---|------------------------------------|-----------|-------------|
+| B1 | **Phone: page was 639px wide on a 390px screen** (hidden horizontal overflow — every heading, card, filter bar and grid row overflowed the viewport) | `.su-layout` grid auto track took the content's min-content width; `.su-sidebar` + wide filter rows pushed the layout to 625px | `assets/css/worldclass.css`: `.su-layout{grid-template-columns:minmax(0,1fr)}` + `.su-layout>*{min-width:0}` (fallback for older browsers) |
+| B2 | **Mobile menu was unreadable in light theme** — white text on a white panel (contrast 1.08:1); only `body.dark` had light text | panel got `background:var(--card)` (white) but `color:#fff` was inherited from an old dark-panel rule | `assets/css/worldclass.css`: light `var(--navy)`/`var(--ink-2)` text + `var(--line)` borders, dark values moved under `body.dark .mpanel …` |
+| B3 | **H1 was smaller than section H2s** (17px H1 vs 21px H2) — no visual hierarchy on the page title | late `(b) hero` block in worldclass.css overrode the heading with `clamp(17px,2.5vw,21px)` | `assets/css/worldclass.css`: `clamp(22px,3.6vw,29px)` |
+| B4 | **AA contrast failures**: orange chip/labels 3.35:1, timestamps 4.35:1, "Popular/Closing" chips 4.41:1 | brand orange used as *text* colour on light backgrounds | new `--orange-ink:#c2410c` token; `.statechip`, `.su-sug-badge.ts`, `.su-sponsor-kicker`, `.su-scard-urgent`, `.su-qp--urgent`, `.su-save-btn.on`, `.su-tool-primary`, `.su-button` switched to AA-safe inks |
+| B5 | **Social rail covered the content column** on phones (fixed rail sat mid-screen over cards; 128 sub-44px tap targets) | two conflicting media queries (style.css docked it bottom-right, worldclass.css forced it to mid-screen) | `.su-social` → bottom-right dock (86px above bottom nav) on ≤980px; `body.su-has-stickyad` keeps clearing the sticky ad; `.su-tbtn` got a 44px `::after` hit-area; 981–1339px gets `padding-right:74px` so the rail never overlaps the content |
+| B6 | **Theme screenshot was Lorem ipsum** + docs claimed suites that did not exist (**46/146 test suites failed**: "144/144" pins vs 146 files, README "145/145", stale zip sha256) | version drift between tests/docs/build | `screenshot.png` regenerated from the real demo (1200×900); `SUITES_EXPECTED`/`144/144`/`145/145` → `146/146`; `GO_LIVE_CHECKLIST.md` zip sha256 refreshed |
+
+**Verified after the fixes (same wheel, this commit):** `--test-all` **146/146 suites** · php-lint **97/97** · theme audit **0 errors/0 warnings** · deep audit **31/31** · code audit **clean** · jsdom **230/230** · visual check **100/100** · parity **PIN-TO-PIN** · headless browser: **0 unclipped overflow at 390px**, contrast failures **44 → 1** (only the screen-reader label, false positive), H1 22/29px, phone H1+ticker+first live card all inside the first screen.
