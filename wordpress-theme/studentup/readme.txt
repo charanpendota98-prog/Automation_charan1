@@ -2,9 +2,9 @@
 Contributors: studentup
 Requires at least: 6.0
 Tested up to: 6.7
-Stable tag: 1.9.42
+Stable tag: 1.9.44
 Requires PHP: 7.4
-Version: 1.9.42
+Version: 1.9.44
 License: GNU General Public License v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Tags: news, education, blog, custom-logo, custom-menu, featured-images, translation-ready, right-sidebar, block-styles, wide-blocks
@@ -47,6 +47,19 @@ The theme ships a REST bridge (`inc/seo-bridge.php`). Use an account with `manag
 user tho App Password ivvandi (Administrator role).
 
 == Changelog ==
+
+= 1.9.44 =
+* Compact navigation: Home, Telangana, Andhra Pradesh and Central Govt stay visible on laptop; every other live category is grouped under More. Phone/tablet gets a clearly labelled Menu button and one working drawer; its More accordion starts closed and reveals all remaining categories when tapped.
+* Quiet brand treatment: removed the monogram tile and logo glow/shadows. Homepage headings and job cards use restrained borders, no glowing selection/card effects, and tighter spacing.
+* Homepage shows at most four compact TS/AP/Central recruitment cards and an at-a-glance table of up to eight. It rejects misfiled guides, scholarships, results, internships and private-company hiring; notice qualifications/dates remain data-only, with missing dates shown as “Not announced.”
+* Homepage footer is compact; duplicate fixed bottom navigation, app-install CTA and unrelated footer blocks are not rendered there. Students Internet Center and Compare controls remain absent.
+* Breaking News stays conditional on fresh, source-verified TS/AP state or district news and sits under More; no job fallback or empty placeholder.
+
+= 1.9.43 =
+* Focused homepage: active Telangana, Andhra Pradesh and Central government opportunities only, shown as compact cards with a matching at-a-glance table; qualifications and dates come from published notice metadata, and missing deadlines read “Not announced.”
+* Desktop navigation now prioritizes Home, Telangana, Andhra Pradesh and Central Govt, with Walk-in, Software and other categories grouped under More. The mobile drawer stays compact and is reachable from both the header and Home / Jobs / Menu / Search bottom navigation.
+* Breaking News is limited to fresh, source-verified TS/AP state and district news. Job and exam notices are rejected, and the section/menu entries are omitted when no qualifying item exists.
+* Removed obsolete homepage ticker/slider loading, Compare controls and the Students Internet Center homepage promotion; refreshed the static preview to match the compact layout.
 
 = 1.9.42 =
 * v202 BREAKING NEWS NAV: header lo **Home tarvata "🔴 Breaking News"** item — Central Jobs/mega items laage **hover leda click** cheste panel terustundi (theme nav JS: click, Enter, ArrowDown, Escape).

@@ -11,10 +11,36 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 
 ?>
-<?php studentup_cta_section(); ?>
+<?php if ( ! is_front_page() && ! is_home() ) { studentup_cta_section(); } ?>
 
 <footer class="footer">
 	<div class="wrap">
+		<?php if ( is_front_page() || is_home() ) : ?>
+			<div class="su-footer-home">
+				<a class="su-footer-home-brand" href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php bloginfo( 'name' ); ?></a>
+				<p>Jobs and recruitment updates for Telangana, Andhra Pradesh and Central Government posts. Confirm every requirement and date in the official notification.</p>
+				<nav class="su-footer-home-links" aria-label="Editorial and legal pages">
+					<?php
+					$su_home_policy = array(
+						'about'            => 'About',
+						'contact'          => 'Contact',
+						'privacy'          => 'Privacy',
+						'disclaimer'       => 'Disclaimer',
+						'terms'            => 'Terms',
+						'editorial-policy' => 'Editorial policy',
+					);
+					foreach ( $su_home_policy as $su_slug => $su_label ) :
+						$su_page = get_page_by_path( $su_slug );
+						if ( ! $su_page || 'publish' !== get_post_status( $su_page ) ) {
+							continue;
+						}
+						?>
+						<a href="<?php echo esc_url( get_permalink( $su_page ) ); ?>"><?php echo esc_html( $su_label ); ?></a>
+					<?php endforeach; ?>
+				</nav>
+				<span>© <?php echo esc_html( gmdate( 'Y' ) ); ?> <?php bloginfo( 'name' ); ?> · Independent educational information portal.</span>
+			</div>
+		<?php else : ?>
 		<div class="footer-grid">
 			<div>
 				<h3><?php bloginfo( 'name' ); ?></h3>
@@ -46,7 +72,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<li><a href="<?php echo esc_url( home_url( '/#syllabus-tracker' ) ); ?>"><?php echo studentup_ui_icon( 'book', 13 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Syllabus Tracker</a></li>
 					<li><a href="<?php echo esc_url( home_url( '/#salary-calculator' ) ); ?>"><?php echo studentup_ui_icon( 'wallet', 13 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Salary Calculator</a></li>
 					<li><a href="<?php echo esc_url( home_url( '/#daily-quiz' ) ); ?>"><?php echo studentup_ui_icon( 'bolt', 13 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Daily Quiz</a></li>
-					<li><a href="<?php echo esc_url( studentup_compare_page_url() ); ?>"><?php echo studentup_ui_icon( 'check', 13 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Compare Jobs</a></li>
 					<li><a href="<?php echo esc_url( studentup_opportunity_board_url() ); ?>"><?php echo studentup_ui_icon( 'board', 13 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Active Board</a></li>
 				</ul>
 			</div>
@@ -90,6 +115,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<span>Always confirm job/exam details once in the official notification. StudentUp is an educational information portal and is not affiliated with any government recruitment board.</span>
 			<?php studentup_tg_join_block( 'footer' ); // v91: Telegram join chip (private channel override supported) ?>
 		</div>
+		<?php endif; ?>
 	</div>
 </footer>
 
@@ -119,7 +145,7 @@ if ( studentup_opt( 'sticky_ad', '0' ) ) :
 <?php
 // v72.1: Web-app install — native APK claim cheyyakunda, browser-provided install flow.
 // Click: Android/Chrome lo install prompt, iPhone/desktop lo device-wise steps.
-if ( studentup_opt( 'pwa', '1' ) && studentup_opt( 'install_prompt', '1' ) ) :
+if ( ! is_front_page() && ! is_home() && studentup_opt( 'pwa', '1' ) && studentup_opt( 'install_prompt', '1' ) ) :
 	?>
 	<button type="button" class="installbtn" aria-controls="installhint" aria-expanded="false" id="installbtn"><?php echo studentup_ui_icon( 'download', 15 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?> Download App <span class="ibadge">WEB APP</span></button>
 	<div class="installsheet" id="installhint" hidden role="dialog" aria-modal="true" aria-labelledby="isheet-title">

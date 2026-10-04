@@ -33,7 +33,11 @@ function studentup_opportunity_sections() {
 
 function studentup_opportunity_last_date( $post_id ) {
 	$iso = trim( (string) get_post_meta( $post_id, 'studentup_last_date', true ) );
-	return preg_match( '/^20\d{2}-\d{2}-\d{2}$/', $iso ) ? $iso : '';
+	if ( ! preg_match( '/^20\d{2}-\d{2}-\d{2}$/', $iso ) ) {
+		return '';
+	}
+	$date = DateTime::createFromFormat( '!Y-m-d', $iso );
+	return $date && $date->format( 'Y-m-d' ) === $iso ? $iso : '';
 }
 
 function studentup_opportunity_is_expired( $last_date ) {
@@ -119,17 +123,29 @@ function studentup_opportunity_title_key( $title ) {
 	return strlen( $text ) >= 10 ? substr( $text, 0, 60 ) : '';
 }
 
+function studentup_opportunity_lower( $text ) {
+	$text = (string) $text;
+	return function_exists( 'mb_strtolower' ) ? mb_strtolower( $text, 'UTF-8' ) : strtolower( $text );
+}
+
+function studentup_opportunity_contains_ci( $haystack, $needle ) {
+	return false !== strpos(
+		studentup_opportunity_lower( $haystack ),
+		studentup_opportunity_lower( $needle )
+	);
+}
+
 function studentup_opportunity_category_slugs( $post_id ) {
 	return array_map( 'sanitize_key', wp_list_pluck( (array) get_the_category( $post_id ), 'slug' ) );
 }
 
 function studentup_opportunity_section_for_post( $post_id ) {
 	$cats  = studentup_opportunity_category_slugs( $post_id );
-	$title = mb_strtolower( wp_strip_all_tags( get_the_title( $post_id ) . ' ' . get_post_field( 'post_content', $post_id ) ) );
+	$title = studentup_opportunity_lower( wp_strip_all_tags( get_the_title( $post_id ) . ' ' . get_post_field( 'post_content', $post_id ) ) );
 	$blob  = $title . ' ' . implode( ' ', $cats );
 	$has   = static function ( $needles ) use ( $blob ) {
 		foreach ( $needles as $needle ) {
-			if ( false !== mb_strpos( $blob, mb_strtolower( $needle ) ) ) {
+			if ( studentup_opportunity_contains_ci( $blob, $needle ) ) {
 				return true;
 			}
 		}
@@ -291,6 +307,97 @@ function studentup_opportunity_board_posts( $limit = 180 ) {
 	return $out;
 }
 
+/**
+ * Fail-closed homepage relevance check: taxonomy alone is not enough when old
+ * editorial guides were filed under a government-jobs category. Keep actual
+ * recruitment/exam notices; reject scholarships, results, explainers, private
+ * company hiring and other categories even when their category tags are wrong.
+ *
+ * @param array<string,mixed> $row Opportunity row.
+ * @return bool
+ */
+function studentup_home_opportunity_is_notice( $row ) {
+	if ( ! is_array( $row ) || empty( $row['id'] ) || empty( $row['title'] )
+		|| ! in_array( (string) ( $row['section'] ?? '' ), array( 'ts', 'ap', 'central' ), true ) ) {
+		return false;
+	}
+
+	$categories = studentup_opportunity_category_slugs( (int) $row['id'] );
+	$non_job_categories = array(
+		'scholarship', 'scholarships', 'fellowship', 'fellowships',
+		'internship', 'internships', 'result', 'results', 'hall-ticket', 'hall-tickets',
+		'hallticket', 'current', 'current-affairs', 'education-news', 'success-stories',
+		'admission', 'admissions', 'private', 'private-jobs', 'software', 'software-jobs',
+		'walkin', 'walkin-jobs', 'walk-in-jobs', 'outsourcing', 'outsourcing-jobs',
+		'part-time', 'part-time-jobs', 'abroad', 'abroad-jobs', 'job-mela', 'job-melas',
+		'job-fairs',
+	);
+	if ( array_intersect( $categories, $non_job_categories ) ) {
+		return false;
+	}
+
+	$title = studentup_opportunity_lower( wp_strip_all_tags( (string) $row['title'] ) );
+	$editorial_or_other = '/\\b(?:internships?|scholarships?|fellowships?|admissions?|hall[ -]?tickets?|admit[ -]?cards?|results?|merit lists?|scorecards?|cut[ -]?offs?|answer[ -]?keys?|selection lists?|selected candidates?|previous[ -]?(?:papers?|questions?)|current affairs|success stories|syllab(?:us|i)|preparation|preparing|fitness|career advice|study plan|exam tips|guide|work from home|private[ -]?(?:compan(?:y|ies)|sector|jobs?|hiring)|mnc|bpo|top\\s+\\d+\\s+(?:government\\s+)?jobs?)\\b|(?:స్కాలర్.?షిప్|ఇంటర్న్.?షిప్|హాల్.?టికెట్|అడ్మిట్.?కార్డు|ఫలితాలు?|ప్రిపరేషన్|గైడ్|సిద్ధం.?కావాలి)/iu';
+	if ( preg_match( $editorial_or_other, $title ) ) {
+		return false;
+	}
+
+	// Company names commonly misfiled in Central Govt categories are private hiring.
+	if ( preg_match( '/\b(?:infor|infosys|tcs|wipro|hcl|accenture|amazon|google|microsoft|ibm|deloitte|cognizant|capgemini|tech mahindra|zoho|oracle|flipkart)\b/iu', $title ) ) {
+		return false;
+	}
+
+	$recruitment_signal = '/\b(?:recruit(?:ment|ing)?|notification|vacanc(?:y|ies)|apply(?: online)?|application|posts?|openings?|hiring|exam(?:ination)?|selection|interviews?|tspsc|tgpsc|appsc|upsc|ssc|rrb|ibps|sbi|nabard|railway|police|constable|sub[ -]?inspector|group[ -]?[1-4]|teacher|forest service|defen[cs]e|army|navy)\b|(?:నియామక|రిక్రూట్.?మెంట్|నోటిఫికేషన్|ఖాళీలు?|దరఖాస్తు|ఉద్యోగ ప్రకటన|పోస్టులు)/iu';
+	return (bool) preg_match( $recruitment_signal, $title );
+}
+
+/**
+ * Homepage rows: only active Telangana, Andhra Pradesh and Central-government
+ * notices (not generic guides or other categories), sorted newest-published
+ * first. The board helper has already removed expired/stale notices and duplicates.
+ *
+ * @return array<int,array<string,mixed>>
+ */
+function studentup_home_opportunity_rows() {
+	static $rows = null;
+	if ( null !== $rows ) {
+		return $rows;
+	}
+
+	$allowed = array( 'ts', 'ap', 'central' );
+	$rows    = array_values(
+		array_filter(
+			studentup_opportunity_board_posts( 400 ),
+			static function ( $row ) use ( $allowed ) {
+				return isset( $row['section'] )
+					&& in_array( $row['section'], $allowed, true )
+					&& studentup_home_opportunity_is_notice( $row );
+			}
+		)
+	);
+	usort(
+		$rows,
+		static function ( $a, $b ) {
+			$ad = isset( $a['date'] ) ? strtotime( (string) $a['date'] ) : 0;
+			$bd = isset( $b['date'] ) ? strtotime( (string) $b['date'] ) : 0;
+			if ( $ad === $bd ) {
+				return (int) $b['id'] <=> (int) $a['id'];
+			}
+			return $bd <=> $ad;
+		}
+	);
+	return $rows;
+}
+
+function studentup_opportunity_section_label( $section ) {
+	$labels = array(
+		'ts'      => 'Telangana',
+		'ap'      => 'Andhra Pradesh',
+		'central' => 'Central Govt',
+	);
+	return isset( $labels[ $section ] ) ? $labels[ $section ] : 'Government Jobs';
+}
+
 function studentup_opportunity_board_url() {
 	return home_url( '/latest-jobs/' );
 }
@@ -300,7 +407,7 @@ function studentup_opportunity_render_card( $row ) {
 	$days_value = null === $days ? 'unknown' : (string) $days;
 	$updated    = ! empty( $row['updated'] ) ? strtotime( $row['updated'] ) : false;
 	?>
-	<article class="su-op-card" data-su-op-card data-su-op-title="<?php echo esc_attr( mb_strtolower( wp_strip_all_tags( $row['title'] ) ) ); ?>" data-su-op-section="<?php echo esc_attr( $row['section'] ); ?>" data-su-op-qual="<?php echo esc_attr( mb_strtolower( (string) $row['qualification'] ) ); ?>" data-su-op-days="<?php echo esc_attr( $days_value ); ?>">
+	<article class="su-op-card" data-su-op-card data-su-op-title="<?php echo esc_attr( studentup_opportunity_lower( wp_strip_all_tags( $row['title'] ) ) ); ?>" data-su-op-section="<?php echo esc_attr( $row['section'] ); ?>" data-su-op-qual="<?php echo esc_attr( studentup_opportunity_lower( (string) $row['qualification'] ) ); ?>" data-su-op-days="<?php echo esc_attr( $days_value ); ?>">
 		<div class="su-op-card-copy">
 			<h3><a href="<?php echo esc_url( $row['link'] ); ?>"><?php echo esc_html( $row['title'] ); ?></a></h3>
 			<?php if ( ! empty( $row['qualification'] ) ) : ?>
@@ -345,6 +452,46 @@ function studentup_opportunity_render_card( $row ) {
 			<?php if ( function_exists( 'studentup_tool_buttons' ) ) : ?>
 				<?php echo wp_kses_post( studentup_tool_buttons( $row['id'], 'card' ) ); ?>
 			<?php endif; ?>
+		</div>
+	</article>
+	<?php
+}
+
+
+function studentup_home_opportunity_render_card( $row ) {
+	$section = isset( $row['section'] ) ? sanitize_key( (string) $row['section'] ) : '';
+	$slug    = array(
+		'ts'      => 'ts-jobs',
+		'ap'      => 'ap-jobs',
+		'central' => 'central-jobs',
+	);
+	$data_cat = isset( $slug[ $section ] ) ? $slug[ $section ] : '';
+	$icon     = 'central' === $section ? 'flag' : 'bank';
+	$qual     = isset( $row['qualification'] ) ? trim( (string) $row['qualification'] ) : '';
+	$last     = isset( $row['last_date'] ) ? (string) $row['last_date'] : '';
+	$image    = ! empty( $row['thumbnail'] ) ? (string) $row['thumbnail'] : '';
+	?>
+	<article class="news su-op-card" data-su-home-card data-cat="<?php echo esc_attr( $data_cat ); ?>" data-qual="<?php echo esc_attr( strtolower( $qual ) ); ?>" data-last="<?php echo esc_attr( $last ); ?>">
+		<div class="su-op-thumb" aria-hidden="true">
+			<?php if ( $image ) : ?>
+				<img src="<?php echo esc_url( $image ); ?>" alt="" width="144" height="112" loading="lazy" decoding="async">
+			<?php else : ?>
+				<span class="su-op-thumb-fallback"><?php echo studentup_ui_icon( $icon, 26 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?></span>
+			<?php endif; ?>
+		</div>
+		<div class="su-op-card-main">
+			<div class="su-op-topline"><span class="su-op-region"><?php echo esc_html( studentup_opportunity_section_label( $section ) ); ?></span></div>
+			<h3><a href="<?php echo esc_url( $row['link'] ); ?>"><?php echo esc_html( $row['title'] ); ?></a></h3>
+			<p class="su-op-meta"><span>Qualification</span><strong><?php echo esc_html( $qual ? studentup_qual_pretty( $qual ) : 'Not specified' ); ?></strong></p>
+			<p class="su-op-meta su-op-deadline"><span>Last date</span>
+				<strong><?php echo esc_html( $last ? wp_date( 'd M Y', strtotime( $last . ' 12:00:00' ) ) : 'Not announced' ); ?></strong>
+			</p>
+			<div class="su-op-actions">
+				<a class="su-op-open" href="<?php echo esc_url( $row['link'] ); ?>">Details</a>
+				<?php if ( ! empty( $row['apply_url'] ) ) : ?>
+					<a class="su-op-apply" href="<?php echo esc_url( $row['apply_url'] ); ?>" target="_blank" rel="noopener noreferrer">Official Apply</a>
+				<?php endif; ?>
+			</div>
 		</div>
 	</article>
 	<?php

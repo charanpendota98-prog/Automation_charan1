@@ -6,8 +6,8 @@ Enduku:
   ki teesukelle theme `wordpress-theme/studentup/` lo undi. Idi:
     1) required files + theme header validate chestundi (WP install fail avvakunda)
     2) wordpress-theme/studentup-theme.zip create chestundi (WP Admin → Upload Theme)
-    3) REAL PHP lint: node php-parser (PHP 8 grammar) — `php -l` unte adi kuda
-       (v64: syntax tappu/build break unte zip create avvadu — hard gate)
+    3) PHP syntax checks: `php-parser` / `php -l` when installed, otherwise the
+       repository's structural fallback catches balance/string errors (hard gate).
 
 Run: python tools/build_wp_theme.py   [--out wordpress-theme/studentup-theme.zip]
 """
@@ -88,9 +88,10 @@ def validate() -> list[str]:
 
 
 def php_lint() -> tuple[int, str]:
-    """v64: mundu REAL PHP parse lint (node php-parser), tarvata php -l (unte)."""
+    """Use a real parser when available; otherwise report structural fallback honestly."""
     node = shutil.which("node")
     linter = ROOT / "tools" / "php_lint.js"
+    fallback_msg = ""
     if node and linter.exists():
         out = subprocess.run([node, str(linter)], capture_output=True, text=True,
                              cwd=str(ROOT), timeout=300)
@@ -100,9 +101,14 @@ def php_lint() -> tuple[int, str]:
             fails = [l for l in tail if l.startswith("✘")][:3]
             return 1, "PHP PARSE FAIL: " + "; ".join(fails) + (f" ({msg})" if msg else "")
         if msg and not msg.startswith("SKIP"):
-            return 0, msg + "  (php-parser · real PHP 8 syntax)"
+            if "[php-parser]" in msg:
+                return 0, msg + "  (php-parser · real PHP 8 syntax)"
+            if "[fallback]" in msg:
+                fallback_msg = msg
     php = shutil.which("php")
     if not php:
+        if fallback_msg:
+            return 0, fallback_msg + "  (structural fallback; PHP runtime/parser unavailable)"
         return 0, "php ledu — lint skip (WP install ni adi aapadu)"
     checked, fails = 0, []
     for f in SRC.rglob("*.php"):

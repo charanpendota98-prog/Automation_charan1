@@ -249,182 +249,177 @@ function studentup_trust_note() {
  *
  * @return void
  */
-function studentup_menu_fallback() {
-	$home = home_url( '/' );
+function studentup_primary_job_items() {
+	$definitions = array(
+		array( 'slug' => 'ts-jobs', 'section' => 'ts', 'label' => 'Telangana' ),
+		array( 'slug' => 'ap-jobs', 'section' => 'ap', 'label' => 'Andhra Pradesh' ),
+		array( 'slug' => 'central-jobs', 'section' => 'central', 'label' => 'Central Govt' ),
+	);
+	$items = array();
+	foreach ( $definitions as $definition ) {
+		$term = studentup_used_term( $definition['slug'] );
+		$items[] = array(
+			'slug'  => $definition['slug'],
+			'label' => $definition['label'],
+			'url'   => $term ? get_category_link( $term ) : home_url( '/#cat-' . $definition['slug'] ),
+		);
+	}
+	return $items;
+}
 
-	/** Theme slug → term (alias-aware). Missing = null (skip). */
-	$term_of = static function ( $slug ) {
-		return studentup_used_term( $slug );
+/**
+ * Remaining categories for the controlled desktop More dropdown and mobile
+ * accordion. Missing terms are omitted instead of linking to empty archives.
+ *
+ * @return array<int,array<string,string>>
+ */
+function studentup_menu_more_items() {
+	$definitions = array(
+		array( 'slug' => 'walkin-jobs', 'label' => 'Walk-in Interviews' ),
+		array( 'slug' => 'software-jobs', 'label' => 'Software Jobs' ),
+		array( 'slug' => 'private-jobs', 'label' => 'Private Jobs' ),
+		array( 'slug' => 'outsourcing-jobs', 'label' => 'Outsourcing & Contract Jobs' ),
+		array( 'slug' => 'part-time-jobs', 'label' => 'Part-time Jobs' ),
+		array( 'slug' => 'internships', 'label' => 'Internships' ),
+		array( 'slug' => 'abroad-jobs', 'label' => 'Abroad Jobs' ),
+		array( 'slug' => 'results', 'label' => 'Results' ),
+		array( 'slug' => 'hall-tickets', 'label' => 'Hall Tickets' ),
+		array( 'slug' => 'scholarships', 'label' => 'Scholarships' ),
+		array( 'slug' => 'current-affairs', 'label' => 'Current Affairs' ),
+		array( 'slug' => 'success-stories', 'label' => 'Success Stories' ),
+		array( 'slug' => 'upcoming-exams', 'label' => 'Upcoming Exams' ),
+		array( 'slug' => 'admissions', 'label' => 'Admissions' ),
+		array( 'slug' => 'daily-quiz', 'label' => 'Daily Quiz' ),
+	);
+	$alias_map    = studentup_cat_aliases();
+	$canonical_for = static function ( $slug ) use ( $alias_map ) {
+		foreach ( $alias_map as $canonical => $aliases ) {
+			if ( $slug === $canonical || in_array( $slug, $aliases, true ) ) {
+				return $canonical;
+			}
+		}
+		return $slug;
 	};
+	$items        = array();
+	$seen_groups  = array();
+	$seen_terms   = array();
 
-	/*
-	 * v197 MEGA PANEL — terms/pages nijamga unte mattrame (404 ledu). Module
-	 * lekunda (purana install) kinda v93 dropdown body ne pani chestundi.
-	 */
-	if ( function_exists( 'studentup_mega_render' ) && '0' !== (string) studentup_opt( 'mega_menu', '1' ) ) {
-		$su_mega = studentup_mega_ready();
-		if ( $su_mega ) {
-			studentup_mega_render( $su_mega, $home );
-			return;
+	// Keep the three primary job sections out of More even if their live slugs
+	// differ from the theme's canonical slugs.
+	foreach ( studentup_primary_job_items() as $primary ) {
+		$seen_groups[ $canonical_for( $primary['slug'] ) ] = true;
+		$term = studentup_used_term( $primary['slug'] );
+		if ( $term ) {
+			$seen_terms[ (int) $term->term_id ] = true;
 		}
 	}
 
-	// Dropdown group definitions (preview design order).
-	$groups = array(
-		array(
-			'label' => 'Jobs',
-			'items' => array( 'ts-jobs', 'ap-jobs', 'central-jobs', 'private-jobs', 'walkin-jobs', 'software-jobs', 'success-stories' ),
-		),
-	);
-	// v123: Scholarships + Daily Quiz menu lo eppudu kanipinchali (user request).
-	$top = array( 'scholarships', 'hall-tickets', 'results', 'current-affairs', 'daily-quiz' );
-
-	$label_of = array();
-	foreach ( studentup_most_used() as $m ) {
-		$label_of[ $m['slug'] ] = $m;
-	}
-	// v123: most_used lo leni, kaani menu lo kavalsina sections.
-	$label_of['scholarships'] = array( 'slug' => 'scholarships', 'label' => 'Scholarships', 'icon' => 'school', 'hint' => 'Central · state · private' );
-	$label_of['daily-quiz']   = array( 'slug' => 'daily-quiz', 'label' => 'Daily Quiz', 'icon' => 'chart', 'hint' => 'Roju 5 questions' );
-	$label_of['internships']  = array( 'slug' => 'internships', 'label' => 'Internships', 'icon' => 'work', 'hint' => 'Stipend · remote · college' );
-
-	$menu = array();
-
-	/**
-	 * Jobs dropdown — terms unte mattrame (lekapote top-level ga chupinchadu).
-	 */
-	$jobs_children = array();
-	foreach ( $groups[0]['items'] as $slug ) {
-		$term = $term_of( $slug );
-		if ( ! $term || ! isset( $label_of[ $slug ] ) ) {
+	// Put the familiar categories first, in a predictable order.
+	foreach ( $definitions as $definition ) {
+		$group = $canonical_for( $definition['slug'] );
+		if ( isset( $seen_groups[ $group ] ) ) {
 			continue;
 		}
-		$jobs_children[] = array(
-			'label' => $label_of[ $slug ]['label'],
-			'url'   => get_category_link( $term ),
-			'desc'  => $label_of[ $slug ]['hint'],
-		);
-	}
-	if ( $jobs_children ) {
-		$menu[] = array( 'label' => 'Jobs', 'url' => $jobs_children[0]['url'], 'children' => $jobs_children );
-	}
-
-	/**
-	 * Top-level singles (only if the term really exists).
-	 */
-	foreach ( $top as $slug ) {
-		$term = $term_of( $slug );
-		if ( ! $term || ! isset( $label_of[ $slug ] ) ) {
+		$term = studentup_used_term( $definition['slug'] );
+		if ( ! $term ) {
 			continue;
 		}
-		$menu[] = array(
-			'label' => $label_of[ $slug ]['label'],
+		$seen_groups[ $group ]                 = true;
+		$seen_terms[ (int) $term->term_id ]    = true;
+		$items[] = array(
+			'label' => $definition['label'],
 			'url'   => get_category_link( $term ),
 		);
 	}
 
-	/**
-	 * "More" — page links unte mattrame (404 eppudu ledu).
-	 */
-	$more = array(
-		array( 'label' => 'Latest active jobs', 'url' => studentup_opportunity_board_url(), 'desc' => 'Dates unna active notices only' ),
-		array( 'label' => 'Daily Quiz', 'url' => $home . '#daily-quiz', 'desc' => 'Today\'s 5 questions' ),
-		array( 'label' => 'Age Calculator', 'url' => $home . '#age-calculator', 'desc' => 'Check age eligibility with reservation relaxation' ),
-		array( 'label' => 'Fee Calculator', 'url' => $home . '#fee-calculator', 'desc' => 'Calculate application & exam fee' ),
-		array( 'label' => 'Syllabus Tracker', 'url' => $home . '#syllabus-tracker', 'desc' => 'Track your exam study progress' ),
-		array( 'label' => 'Salary Calculator', 'url' => $home . '#salary-calculator', 'desc' => '7th Pay Commission in-hand pay' ),
-		array( 'label' => 'Compare Jobs', 'url' => studentup_compare_page_url(), 'desc' => 'Compare up to 3 posts' ),
-		array( 'label' => 'Instant alerts', 'url' => $home . '#alerts', 'desc' => 'Notification · WhatsApp · Telegram' ),
-	);
-	$intern_term = $term_of( 'internships' );
-	if ( $intern_term ) {
-		$more[] = array( 'label' => 'Internships', 'url' => get_category_link( $intern_term ), 'desc' => 'Stipend · remote · college' );
-	}
-	$success_term = $term_of( 'success-stories' );
-	if ( $success_term && isset( $label_of['success-stories'] ) ) {
-		$more[] = array(
-			'label' => $label_of['success-stories']['label'],
-			'url'   => get_category_link( $success_term ),
-			'desc'  => $label_of['success-stories']['hint'],
-		);
-	}
-	$pages = array(
-		array( 'slug' => 'saved',   'label' => 'Saved posts', 'desc' => 'Padhukoni tarvata chudandi' ),
-		array( 'slug' => 'contact', 'label' => 'Contact',     'desc' => 'Corrections · suggestions' ),
-		array( 'slug' => 'about',   'label' => 'About',       'desc' => 'Who writes this' ),
-		array( 'slug' => 'quiz',    'label' => 'Daily Quiz',  'desc' => 'Practice questions' ),
-	);
-	foreach ( $pages as $pg ) {
-		$page = get_page_by_path( $pg['slug'] );
-		if ( $page && 'publish' === get_post_status( $page ) ) {
-			$more[] = array(
-				'label' => $pg['label'],
-				'url'   => get_permalink( $page ),
-				'desc'  => $pg['desc'],
+	// Include other live non-empty categories too, so a newly added category is
+	// still reachable under More without expanding the desktop navigation row.
+	$all_terms = get_categories( array( 'hide_empty' => true, 'orderby' => 'name', 'order' => 'ASC' ) );
+	if ( is_array( $all_terms ) ) {
+		foreach ( $all_terms as $term ) {
+			if ( ! is_object( $term ) || empty( $term->term_id ) || empty( $term->slug ) || empty( $term->name ) ) {
+				continue;
+			}
+			$slug = sanitize_key( (string) $term->slug );
+			if ( '' === $slug || 'uncategorized' === $slug || isset( $seen_terms[ (int) $term->term_id ] ) ) {
+				continue;
+			}
+			$group = $canonical_for( $slug );
+			if ( isset( $seen_groups[ $group ] ) ) {
+				continue;
+			}
+			$seen_groups[ $group ]              = true;
+			$seen_terms[ (int) $term->term_id ] = true;
+			$items[] = array(
+				'label' => (string) $term->name,
+				'url'   => get_category_link( $term ),
 			);
 		}
 	}
-	$more[] = array(
-		'label' => 'Jobs by qualification',
-		'url'   => $home . '#qualsplit',
-		'desc'  => '10th · Inter · Degree · PG',
-	);
-	$tg = function_exists( 'studentup_tg_channel_url' ) ? studentup_tg_channel_url() : '';
-	if ( $tg ) {
-		$more[] = array( 'label' => 'Telegram channel', 'url' => $tg, 'desc' => 'Job alerts first' );
-	}
-	$more[] = array( 'label' => 'All categories', 'url' => $home . '#jobs', 'desc' => 'Every job section' );
 
-	if ( $more ) {
-		$menu[] = array(
-			'label'    => 'More',
-			'url'      => $more[0]['url'],
-			'children' => $more,
+	// A Breaking News entry appears only when real, fresh, verified TS/AP local
+	// news exists; it stays in More rather than taking a primary-nav slot.
+	if ( function_exists( 'studentup_breaking_items' )
+		&& function_exists( 'studentup_breaking_enabled' )
+		&& studentup_breaking_enabled()
+		&& studentup_opt( 'breaking_nav', '1' )
+		&& studentup_breaking_items( 1 )
+	) {
+		$items[] = array(
+			'label' => 'Breaking News · TS/AP local updates',
+			'url'   => home_url( '/#breaking' ),
 		);
 	}
 
-	/**
-	 * Render — `wp_nav_menu` markup ki same (CSS okkate pani chestundi).
-	 */
+	$items[] = array(
+		'label' => 'All active opportunities',
+		'url'   => studentup_opportunity_board_url(),
+	);
+	return $items;
+}
+
+/**
+ * Controlled primary navigation. Do not call wp_nav_menu() here: an assigned
+ * WordPress menu must not flatten or replace the required Home / TS / AP /
+ * Central / More hierarchy.
+ *
+ * @return void
+ */
+function studentup_menu_fallback() {
+	$home = home_url( '/' );
 	echo '<ul id="primary-menu" class="menu-primary">';
 	printf(
 		'<li class="menu-item%s"><a href="%s">%s</a></li>',
-		( is_front_page() ? ' current-menu-item' : '' ),
+		is_front_page() ? ' current-menu-item' : '',
 		esc_url( $home ),
 		esc_html__( 'Home', 'studentup' )
 	);
-	// v202: Breaking News item — mega renderer laage legacy fallback lo kuda (Home tarvata).
-	if ( function_exists( 'studentup_breaking_nav_li' ) ) {
-		echo studentup_breaking_nav_li(); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped inside.
-	}
-	foreach ( $menu as $it ) {
-		$has_kids = ! empty( $it['children'] );
+
+	foreach ( studentup_primary_job_items() as $item ) {
+		$term = studentup_used_term( $item['slug'] );
 		printf(
-			'<li class="menu-item%s">',
-			$has_kids ? ' menu-item-has-children' : ''
+			'<li class="menu-item%s"><a href="%s">%s</a></li>',
+			$term && is_category( $term ) ? ' current-menu-item' : '',
+			esc_url( $item['url'] ),
+			esc_html( $item['label'] )
 		);
-		if ( $has_kids ) {
-			printf(
-				'<a href="%s" aria-haspopup="true" aria-expanded="false">%s</a>',
-				esc_url( $it['url'] ),
-				esc_html( $it['label'] )
-			);
-			echo '<ul class="sub-menu">';
-			foreach ( $it['children'] as $ch ) {
-				printf(
-					'<li class="menu-item"><a href="%s">%s%s</a></li>',
-					esc_url( $ch['url'] ),
-					esc_html( $ch['label'] ),
-					( ! empty( $ch['desc'] ) ? '<small>' . esc_html( $ch['desc'] ) . '</small>' : '' )
-				);
-			}
-			echo '</ul>';
-		} else {
-			printf( '<a href="%s">%s</a>', esc_url( $it['url'] ), esc_html( $it['label'] ) );
-		}
-		echo '</li>';
 	}
-	echo '</ul>';
+
+	$more = studentup_menu_more_items();
+	printf(
+		'<li class="menu-item menu-item-has-children su-more-menu"><a href="%s" aria-haspopup="true" aria-expanded="false" aria-controls="su-more-menu">%s</a>',
+		esc_url( studentup_opportunity_board_url() ),
+		esc_html__( 'More', 'studentup' )
+	);
+	echo '<ul class="sub-menu" id="su-more-menu" aria-label="' . esc_attr__( 'More categories', 'studentup' ) . '">';
+	foreach ( $more as $item ) {
+		printf(
+			'<li class="menu-item"><a href="%s">%s</a></li>',
+			esc_url( $item['url'] ),
+			esc_html( $item['label'] )
+		);
+	}
+	echo '</ul></li></ul>';
 }
 
 /**

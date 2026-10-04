@@ -299,10 +299,10 @@ function studentup_state_switch() {
  * fake ratings/salary markup eppudu ledu.
  */
 function studentup_home_itemlist_schema() {
-	if ( ! is_front_page() || ! studentup_opt( 'schema', '1' ) ) {
+	if ( ! is_front_page() || ! studentup_opt( 'schema', '1' ) || ! function_exists( 'studentup_home_opportunity_rows' ) ) {
 		return;
 	}
-	$rows = array_slice( studentup_smart_dataset( 10 ), 0, 10 );
+	$rows = array_slice( studentup_home_opportunity_rows(), 0, 10 );
 	if ( ! $rows ) {
 		return;
 	}
@@ -318,8 +318,8 @@ function studentup_home_itemlist_schema() {
 	$data = array(
 		'@context'        => 'https://schema.org',
 		'@type'           => 'ItemList',
-		'@id'             => home_url( '/#latest-updates' ),
-		'name'            => 'Latest jobs, results and scholarship updates',
+		'@id'             => home_url( '/#latest-government-jobs' ),
+		'name'            => 'Latest Telangana, Andhra Pradesh and Central government jobs',
 		'itemListOrder'   => 'https://schema.org/ItemListOrderDescending',
 		'numberOfItems'   => count( $items ),
 		'itemListElement' => $items,
@@ -328,6 +328,7 @@ function studentup_home_itemlist_schema() {
 		. wp_json_encode( $data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES )
 		. '</script>' . "\n";
 }
+
 add_action( 'wp_head', 'studentup_home_itemlist_schema', 6 );
 
 /**

@@ -300,9 +300,9 @@ _S = [
     ("AP Current Affairs", "Andhra Pradesh current affairs today scheme GO", "Current Affairs", False),
     ("Budget & Student Schemes", "union budget state budget student scheme allocation 2026", "Current Affairs", False),
     ("Daily Govt Notifications", "government notification today India Telangana Andhra students", "Current Affairs", True),
-    ("Daily Education News", "education news today Telangana Andhra official", "Current Affairs", True),
+    ("TS State News", "Telangana state government public services policy civic news latest scheme welfare order -jobs -recruitment", "Current Affairs", True),
     ("Daily Employment News", "employment news today government jobs India official", "Current Affairs", True),
-    ("Daily Welfare Updates", "welfare scheme update today Telangana Andhra official", "Current Affairs", True),
+    ("AP State News", "Andhra Pradesh state government public services policy civic news latest scheme welfare order -jobs -recruitment", "Current Affairs", True),
     ("Women Current Affairs", "women safety welfare employment news Telangana Andhra", "Current Affairs", False),
     ("Farmer Current Affairs", "farmer agriculture scheme news Telangana Andhra official", "Current Affairs", False),
     # ---- Private / BPO local hiring ----
@@ -344,7 +344,8 @@ def radar_sources(per_run: int = None) -> list:
             log.debug("grid fetch fail (%s): %s", s["name"], exc)
             continue
         for it in items:
-            if not news_radar._edu_relevant(it["title"], s["cat"]):
+            relevance_hint = s["name"] if s["name"] in {"TS State News", "AP State News"} else s["cat"]
+            if not news_radar._edu_relevant(it["title"], relevance_hint):
                 continue
             if news_radar._queue_url(it["link"], title=it["title"]):
                 new_items.append({"title": it["title"], "link": it["link"],

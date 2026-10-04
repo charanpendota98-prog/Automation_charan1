@@ -18,6 +18,7 @@
   var nav = document.querySelector(".nav");
   var panel = document.getElementById("mpanel");
   var btn = document.getElementById("menubtn");
+  var btnLabel = btn ? btn.querySelector(".menubtn-label") : null;
 
   /* ------------------------------------------------------------- desktop */
   function items(root) {
@@ -161,14 +162,22 @@
     function setDrawer(open) {
       panel.classList.toggle("open", open);
       panel.setAttribute("aria-hidden", open ? "false" : "true");
+      if (open) panel.removeAttribute("inert");
+      else panel.setAttribute("inert", "");
       if (backdrop) {
         backdrop.classList.toggle("show", open);
         backdrop.classList.toggle("open", open);
+        backdrop.setAttribute("aria-hidden", open ? "false" : "true");
       }
       document.body.classList.toggle("mlock", open);
       if (btn) {
         btn.setAttribute("aria-expanded", open ? "true" : "false");
         btn.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+      }
+      if (btnLabel) btnLabel.textContent = open ? "Close" : "Menu";
+      if (bnavMenu) {
+        bnavMenu.setAttribute("aria-expanded", open ? "true" : "false");
+        bnavMenu.setAttribute("aria-label", open ? "Close menu" : "Open menu");
       }
       if (open && panelClose) {
         window.setTimeout(function () { panelClose.focus(); }, 60);
@@ -211,13 +220,28 @@
     });
 
     document.addEventListener("keydown", function (e) {
-      if (e.key === "Escape" && panel.classList.contains("open")) {
+      if (!panel.classList.contains("open")) return;
+      if (e.key === "Escape") {
         setDrawer(false);
         if (btn) btn.focus();
+        return;
+      }
+      if (e.key === "Tab") {
+        var focusable = [].slice.call(panel.querySelectorAll("a[href], button:not([disabled]), summary, [tabindex]:not([tabindex='-1'])"))
+          .filter(function (el) { return el.offsetParent !== null; });
+        if (!focusable.length) { e.preventDefault(); panel.focus(); return; }
+        var first = focusable[0];
+        var last = focusable[focusable.length - 1];
+        if (e.shiftKey && (document.activeElement === first || !panel.contains(document.activeElement))) {
+          e.preventDefault(); last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault(); first.focus();
+        }
       }
     });
 
-    /* active group (or first) auto-open — reader 2 taps save chestadu */
+    /* Keep More collapsed on open to reduce mobile-menu length. If a future
+       group contains the current page, reveal that one for orientation. */
     var groups = [].slice.call(panel.querySelectorAll("details.mgroup"));
     if (!groups.length) return;
     var current = null;
@@ -225,7 +249,7 @@
       var on = d.querySelector("a[aria-current], a.current, a[data-su-current]");
       if (on && !current) current = d;
     });
-    (current || groups[0]).open = true;
+    if (current) current.open = true;
 
     /* okate group open (accordion) — panel scroll chinnadi ga untundi */
     groups.forEach(function (d) {

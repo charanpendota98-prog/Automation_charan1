@@ -147,8 +147,8 @@ def build() -> str:
   <h1>Theme output snapshot — “live laa” render</h1>
   <p class="sub">Theme <b>{ver}</b> · generated {time.strftime('%Y-%m-%d')} by <code>tools/render_theme_snapshot.py</code> — hand-edit ledu.</p>
 
-  <p class="banner"><b>Idi enduku:</b> <code>preview/worldclass/</code> oka hand-written design demo. Live site = WordPress + mee posts + mee toggles.
-  Ee page theme PHP <b>nijamga em render chestundo</b> — front page section order, source file, prathi section ki kavalsinavi — chupistundi. Demo kaadu, idi live ki daahaalam.</p>
+  <p class="banner"><b>Idi enduku:</b> the compact static preview shows the layout, while the live site uses WordPress + its published notices + settings.
+  Ee page theme PHP <b>nijamga em render chestundo</b> — front page section order, source file, prathi section ki kavalsinavi — chupistundi. Real post data leni chota fake cards levu.</p>
 
   <table>
     <tr><th>Section (front-page.php call order)</th><th>Source</th><th>Kavalsinavi</th></tr>
@@ -161,9 +161,9 @@ def build() -> str:
     <ul>
       <li><span class="warn">1.</span> Zip upload + Activate → <b>Appearance → Themes</b> lo version check (ee build: <code>{ver}</code>).</li>
       <li><span class="warn">2.</span> <b>Settings → Permalinks</b> → Save (clean post links).</li>
-      <li><span class="warn">3.</span> Posts publish avvali — trending / carousel / cards **mee posts nunchi** build avutayi (khali DB ⇒ khali sections).</li>
-      <li><span class="warn">4.</span> Categories: <code>ts-govt-jobs · ap-govt-jobs · central-govt-jobs · results · hall-tickets</code> — lekapote aa item skip avutundi.</li>
-      <li><span class="warn">5.</span> StudentUp Settings → toggles (hero_premium · trending_today · state_first …) ON unnaya chudandi.</li>
+      <li><span class="warn">3.</span> Publish current notices under Telangana, Andhra Pradesh or Central categories — only active records populate the homepage cards and table.</li>
+      <li><span class="warn">4.</span> Qualification, deadline and official-apply details come from each notice’s metadata; missing dates display “Not announced.”</li>
+      <li><span class="warn">5.</span> Breaking News renders only with fresh, verified TS/AP state or district items; job and exam notices are excluded.</li>
       <li><span class="warn">6.</span> Cache: host cache + WP cache plugin okasari clear cheyandi — old CSS/JS migilakoodadu.</li>
       <li><span class="warn">7.</span> Plugins (cookie-consent, AdSense, page builder) mee own CSS ni override chestayi — aa differences live lo mattrame kanipistayi, preview lo levu.</li>
     </ul>

@@ -76,6 +76,10 @@ TAG_RULES = [
                  "కరీంనగర్", "నిజామాబాద్", "ఖమ్మం", "నల్గొండ", "మహబూబ్")),
     ("central-jobs", ("కేంద్ర", "ssc", "upsc", "rrb", "ibps", "రైల్వే", "రక్షణ",
                       "army", "navy", "airforce")),
+    ("ts-state-news", ("telangana state news", "ts state news")),
+    ("ap-state-news", ("andhra pradesh state news", "ap state news")),
+    ("ts-district-news", ("telangana district news", "ts district news")),
+    ("ap-district-news", ("andhra pradesh district news", "ap district news")),
     ("current", ("ప్రస్తుతాంశాలు", "కరెంట్ అఫైర్స్", "current affairs", "జీకే",
                  "gk", "scheme", "పథకం")),
 ]
@@ -135,13 +139,63 @@ def _norm(text: str) -> str:
     return re.sub(r"[^0-9a-zఅ-హ\u0c00-\u0c7f]+", " ", (text or "").lower()).strip()
 
 
-def classify_tag(text: str, hint: str = "") -> str:
-    """Headline (+ official source hint) nunchi tag. Telugu + English rendu."""
+LOCAL_NEWS_HINTS = {
+    "ts state news": "ts-state-news",
+    "telangana state news": "ts-state-news",
+    "ts-state-news": "ts-state-news",
+    "ap state news": "ap-state-news",
+    "andhra pradesh state news": "ap-state-news",
+    "ap-state-news": "ap-state-news",
+    "ts district news": "ts-district-news",
+    "telangana district news": "ts-district-news",
+    "ts-district-news": "ts-district-news",
+    "ap district news": "ap-district-news",
+    "andhra pradesh district news": "ap-district-news",
+    "ap-district-news": "ap-district-news",
+}
+
+JOB_OR_EXAM_CUES = re.compile(
+    r"\b(?:jobs?|recruit(?:ment|ing)?|vacanc(?:y|ies)|hir(?:e|ing)|career|employment|"
+    r"walk[ -]?in|job mela|apply online|admit card|hall[ -]?ticket|answer key|"
+    r"exam(?:ination)?|results?|merit list|syllabus|selection list|tspsc|appsc|dsc|"
+    r"ssc|upsc|rrb|group [1-4]|notification for posts)\b|"
+    r"ఉద్యోగ|నియామక|ఖాళీ|దరఖాస్తు|హాల్.?టికెట్|పరీక్ష|ఫలితాల|ఉద్యోగమేళా|డీఎస్సీ",
+    re.IGNORECASE,
+)
+
+
+def classify_tag(text: str, hint: str = "", district: str = "", state: str = "",
+                 source_name: str = "") -> str:
+    """Classify verified feed items without confusing local news and jobs.
+
+    District/state context from the radar is authoritative for geography; a
+    dedicated source hint identifies state-level updates. Job/exam cues always
+    win, so recruitment headlines cannot leak into Breaking News.
+    """
     hay = (text or "").lower()
+    hint_text = " ".join(str(v or "").strip().lower() for v in (hint, source_name))
+    hint_norm = re.sub(r"[^a-z0-9 -]+", " ", hint_text)
+    hint_norm = " ".join(hint_norm.split())
+    has_job_exam = bool(JOB_OR_EXAM_CUES.search(text or ""))
+
+    if not has_job_exam:
+        for label, local_tag in LOCAL_NEWS_HINTS.items():
+            if label in hint_norm:
+                return local_tag
+        state_code = (state or "").strip().upper()
+        if district and state_code in {"TS", "AP"}:
+            return "ts-district-news" if state_code == "TS" else "ap-district-news"
+
     known = {tag for tag, _ in TAG_RULES} | {"current"}
-    if hint in known:
+    # Explicit known category hints (for example results) remain authoritative.
+    if hint in known and hint not in LOCAL_NEWS_HINTS.values():
         return hint
+
     for tag, needles in TAG_RULES:
+        if tag in LOCAL_NEWS_HINTS.values():
+            continue
+        if tag in {"ts-jobs", "ap-jobs", "central-jobs"} and not has_job_exam:
+            continue
         if any(n.lower() in hay for n in needles):
             return tag
     return DEFAULT_TAG
@@ -164,8 +218,7 @@ def verify_candidates(raw: List[dict]) -> List[dict]:
     explicitly verified item can come from the owner-approved offline fixture;
     everything else is fail-closed when the source cannot be checked.
     """
-    from . import sources
-
+    sources = None
     verified: List[dict] = []
     for candidate in raw or []:
         if not isinstance(candidate, dict):
@@ -176,6 +229,9 @@ def verify_candidates(raw: List[dict]) -> List[dict]:
         if candidate.get("verified") is False or candidate.get("source_verified") is False:
             continue
         link = str(candidate.get("link") or "").strip()
+        if sources is None:
+            from . import sources as sources_module
+            sources = sources_module
         if not sources.is_valid_source_url(link):
             continue
         try:
@@ -216,7 +272,9 @@ def build_items(raw: List[dict], limit: int = None) -> List[dict]:
         host = _host(link)
         if host and per_host.get(host, 0) >= MAX_PER_SOURCE:
             continue
-        tag = classify_tag(title, it.get("category_hint") or "")
+        tag = classify_tag(title, it.get("category_hint") or "",
+                            district=it.get("district") or "", state=it.get("state") or "",
+                            source_name=it.get("source_name") or "")
         when = _parse_pub(it.get("pub") or it.get("time") or "") or _iso(_now())
         source = (it.get("source_name") or it.get("source") or "రాడార్"
                   ).strip()
@@ -224,6 +282,8 @@ def build_items(raw: List[dict], limit: int = None) -> List[dict]:
                 "time": when, "verified": True, "source_verified": True}
         if it.get("district"):
             item["district"] = it["district"]
+        if str(it.get("state") or "").upper() in {"TS", "AP"}:
+            item["state"] = str(it["state"]).upper()
         out.append(item)
         seen_title.add(key_t)
         seen_link.add(key_l)

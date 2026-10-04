@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>StudentUp — theme output snapshot (theme 1.9.42)</title>
+<title>StudentUp — theme output snapshot (theme 1.9.44)</title>
 <meta name="robots" content="noindex">
 <meta name="description" content="StudentUp theme output snapshot — which sections the installed WordPress theme really renders, and what each one needs (posts, categories, toggles).">
 <style>
@@ -31,44 +31,28 @@
 </head>
 <body><div class="wrap">
   <h1>Theme output snapshot — “live laa” render</h1>
-  <p class="sub">Theme <b>1.9.42</b> · generated 2026-10-04 by <code>tools/render_theme_snapshot.py</code> — hand-edit ledu.</p>
+  <p class="sub">Theme <b>1.9.44</b> · generated 2026-10-04 by <code>tools/render_theme_snapshot.py</code> — hand-edit ledu.</p>
 
-  <p class="banner"><b>Idi enduku:</b> <code>preview/worldclass/</code> oka hand-written design demo. Live site = WordPress + mee posts + mee toggles.
-  Ee page theme PHP <b>nijamga em render chestundo</b> — front page section order, source file, prathi section ki kavalsinavi — chupistundi. Demo kaadu, idi live ki daahaalam.</p>
+  <p class="banner"><b>Idi enduku:</b> the compact static preview shows the layout, while the live site uses WordPress + its published notices + settings.
+  Ee page theme PHP <b>nijamga em render chestundo</b> — front page section order, source file, prathi section ki kavalsinavi — chupistundi. Real post data leni chota fake cards levu.</p>
 
   <table>
     <tr><th>Section (front-page.php call order)</th><th>Source</th><th>Kavalsinavi</th></tr>
-      <tr><td><code>studentup_latest_ticker()</code></td><td><code>inc/breaking.php</code></td><td>toggle: breaking_enabled, latest_ticker · WordPress posts · front page only</td></tr>
-      <tr><td><code>studentup_hero_premium()</code></td><td><code>inc/premium.php</code></td><td>toggle: alerts_card, bottom_nav, hero_premium, hot_jobs · WordPress posts · category terms · post meta (last dates / vacancies) · front page only</td></tr>
-      <tr><td><code>studentup_latest_notifications()</code></td><td><code>inc/slider.php</code></td><td>WordPress posts · post meta (last dates / vacancies) · front page only</td></tr>
-      <tr><td><code>studentup_ui_icon()</code> <span class="n">×2</span></td><td><code>inc/icons.php</code></td><td>static markup</td></tr>
-      <tr><td><code>studentup_most_used()</code> <span class="n">×2</span></td><td><code>functions.php</code></td><td>toggle: pwa · category terms · front page only</td></tr>
-      <tr><td><code>studentup_ad()</code> <span class="n">×5</span></td><td><code>inc/ads.php</code></td><td>toggle: ads_enabled, ads_on_policy, adsense_approved, deep_ad · front page only</td></tr>
+      <tr><td><code>studentup_home_opportunity_rows()</code> <span class="n">×2</span></td><td><code>inc/opportunities.php</code></td><td>WordPress posts · post meta (last dates / vacancies)</td></tr>
       <tr><td><code>studentup_breaking_section()</code></td><td><code>inc/breaking.php</code></td><td>toggle: breaking_enabled, latest_ticker · WordPress posts · front page only</td></tr>
-      <tr><td><code>studentup_opportunity_board_url()</code></td><td><code>inc/opportunities.php</code></td><td>WordPress posts · post meta (last dates / vacancies)</td></tr>
-      <tr><td><code>studentup_qual_bar()</code></td><td><code>inc/qual-filter.php</code></td><td>toggle: qual_filter · WordPress posts · front page only</td></tr>
-      <tr><td><code>studentup_qual_active_note()</code></td><td><code>inc/qual-filter.php</code></td><td>toggle: qual_filter · WordPress posts · front page only</td></tr>
-      <tr><td><code>studentup_hidden_note()</code></td><td><code>inc/qual-filter.php</code></td><td>toggle: qual_filter · WordPress posts · front page only</td></tr>
-      <tr><td><code>studentup_qual_query_args()</code></td><td><code>inc/qual-filter.php</code></td><td>toggle: qual_filter · WordPress posts · front page only</td></tr>
-      <tr><td><code>studentup_card()</code></td><td><code>inc/template.php</code></td><td>toggle: comments_on, mega_menu · category terms · front page only</td></tr>
-      <tr><td><code>studentup_jobs_table()</code></td><td><code>inc/jobtable.php</code></td><td>toggle: jobs_table · WordPress posts</td></tr>
-      <tr><td><code>studentup_popular_searches()</code></td><td><code>inc/smart.php</code></td><td>toggle: job_calendar, job_finder, popular_searches, salary_calc · WordPress posts · category terms · post meta (last dates / vacancies) · front page only</td></tr>
-      <tr><td><code>studentup_hot_jobs()</code></td><td><code>inc/premium.php</code></td><td>toggle: alerts_card, bottom_nav, hero_premium, hot_jobs · WordPress posts · category terms · post meta (last dates / vacancies) · front page only</td></tr>
-      <tr><td><code>studentup_closing_week()</code></td><td><code>inc/engage.php</code></td><td>toggle: closing_week, contact_email, helpful_box, pdf_button · WordPress posts</td></tr>
-      <tr><td><code>studentup_personal_picks()</code></td><td><code>inc/personal.php</code></td><td>toggle: calendar_button, personal_picks</td></tr>
-      <tr><td><code>studentup_daily_quiz()</code></td><td><code>inc/quiz.php</code></td><td>toggle: daily_quiz · category terms</td></tr>
-      <tr><td><code>studentup_daily_poll()</code></td><td><code>inc/polls.php</code></td><td>toggle: poll_id, poll_note, poll_opts, poll_question</td></tr>
+      <tr><td><code>studentup_home_opportunity_render_card()</code></td><td><code>inc/opportunities.php</code></td><td>WordPress posts · post meta (last dates / vacancies)</td></tr>
+      <tr><td><code>studentup_jobs_table()</code></td><td><code>inc/jobtable.php</code></td><td>toggle: jobs_table · post meta (last dates / vacancies)</td></tr>
   </table>
   <p class="foot">“Kavalsinavi” = aa section render avvadaniki WordPress lo em undali (posts · categories · toggles). Khaali ga unte aa section <b>hide</b> avutundi — fake cards theme eppudu render cheyyadu.</p>
 
   <div class="checklist">
     <h2>Live lo neat ga kanipinchadaniki (order lo)</h2>
     <ul>
-      <li><span class="warn">1.</span> Zip upload + Activate → <b>Appearance → Themes</b> lo version check (ee build: <code>1.9.42</code>).</li>
+      <li><span class="warn">1.</span> Zip upload + Activate → <b>Appearance → Themes</b> lo version check (ee build: <code>1.9.44</code>).</li>
       <li><span class="warn">2.</span> <b>Settings → Permalinks</b> → Save (clean post links).</li>
-      <li><span class="warn">3.</span> Posts publish avvali — trending / carousel / cards **mee posts nunchi** build avutayi (khali DB ⇒ khali sections).</li>
-      <li><span class="warn">4.</span> Categories: <code>ts-govt-jobs · ap-govt-jobs · central-govt-jobs · results · hall-tickets</code> — lekapote aa item skip avutundi.</li>
-      <li><span class="warn">5.</span> StudentUp Settings → toggles (hero_premium · trending_today · state_first …) ON unnaya chudandi.</li>
+      <li><span class="warn">3.</span> Publish current notices under Telangana, Andhra Pradesh or Central categories — only active records populate the homepage cards and table.</li>
+      <li><span class="warn">4.</span> Qualification, deadline and official-apply details come from each notice’s metadata; missing dates display “Not announced.”</li>
+      <li><span class="warn">5.</span> Breaking News renders only with fresh, verified TS/AP state or district items; job and exam notices are excluded.</li>
       <li><span class="warn">6.</span> Cache: host cache + WP cache plugin okasari clear cheyandi — old CSS/JS migilakoodadu.</li>
       <li><span class="warn">7.</span> Plugins (cookie-consent, AdSense, page builder) mee own CSS ni override chestayi — aa differences live lo mattrame kanipistayi, preview lo levu.</li>
     </ul>

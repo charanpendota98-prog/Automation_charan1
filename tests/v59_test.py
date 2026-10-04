@@ -1,22 +1,12 @@
 # -*- coding: utf-8 -*-
-"""v59 tests — site first-look: బ్రేకింగ్ న్యూస్ + "విద్యార్థులు ఎక్కువగా వెతికేవి" + పర్ఫెక్ట్ మెనూ.
+"""Compatibility gates for the breaking-feed pipeline and v204 homepage.
 
-Enduku idi:
-  student site open cheyagane (a) ippude em jarigindo (బ్రేకింగ్) + (b) tanaki
-  panikocche avakashalu (TS/AP jobs · హాల్ టికెట్లు · ఫలితాలు · వాక్-ఇన్ ·
-  సాఫ్ట్‌వేర్) modati screen lo chudali. Menu lo order student-vadana
-  prakaram undali.
+The old v59 test filename remains in the all-tests manifest, but the current
+contract is compact Government Jobs, grouped More navigation, no fabricated
+job cards, and conditional verified local news. Backend feed-building checks
+remain useful and are kept here.
 
-Checks (offline only):
-  * config flags + breaking.most_used() order (bot/site okate)
-  * build_items: dedupe · per-source cap · short/bad link drop · tag classify
-  * write/read feed: atomic JSON + honest empty note + 18h rolling window
-  * committed feed: valid JSON + example.com/demo links ledu
-  * site: ticker + used strip (8 tiles, MOST_USED order) + breaking section
-  * menu order: హోమ్ · ఉద్యోగాలు · హాల్ టికెట్లు · ఫలితాలు · బ్రేకింగ్ · స్కాలర్
-  * grid: TS/AP cards mundu · radar hook + CLI wiring · docs
-
-Run: python tests/v59_test.py   (also via python run.py --test-all)
+Run: python3 tests/v59_test.py
 """
 from __future__ import annotations
 
@@ -108,7 +98,20 @@ def test_classify_tags():
     bad = [(t, breaking.classify_tag(t), want) for t, want in cases
            if breaking.classify_tag(t) != want]
     assert not bad, bad
-    # official source hint unte adi win avvali
+    # The regional news lanes are distinct; job/exam cues always win.
+    assert breaking.classify_tag(
+        "Telangana cabinet approves a new public transport policy",
+        source_name="TS State News",
+    ) == "ts-state-news"
+    assert breaking.classify_tag(
+        "Hyderabad civic services receive a new public portal",
+        district="Hyderabad", state="TS",
+    ) == "ts-district-news"
+    assert breaking.classify_tag(
+        "Telangana Police recruitment notification",
+        source_name="TS State News",
+    ) == "ts-jobs"
+    # An explicit known category hint remains authoritative when safe.
     assert breaking.classify_tag("కొత్త నోటిఫికేషన్ వివరాలు", "results") == "results"
 
 
@@ -162,84 +165,60 @@ def test_committed_feed_is_honest():
 
 
 def test_site_first_look_wiring():
-    """v72: ticker/బ్రేకింగ్ teesesaam — badulu search + అర్హత ఫిల్టర్ + install block lu."""
+    """The preview is compact/data-free and omits Breaking News when empty."""
     html = INDEX.read_text(encoding="utf-8")
-    assert 'id="tickerwrap"' not in html and "బ్రేకింగ్" not in html, "v72: ticker/బ్రేకింగ్ teeseyali"
-    assert 'href="#breaking"' not in html and "brklist" not in html
-    used = re.findall(r'<a class="usedcard[^"]*" href="#jobs" data-goto-cat="([a-z-]+)" '
-                      r'data-count-cat="[a-z-]+">', html)
-    assert used == breaking.most_used_cats(), used
-    # v134: the per-tile update-count badge was removed — it covered the tile text.
-    assert 'data-ucount=' not in html and 'class="ucount"' not in html
-    # v72 first-look blocks
-    assert 'id="searchbtn"' in html and 'id="searchpanel"' in html and 'id="qtop"' in html
-    assert 'id="qualsel"' in html and 'value="10th"' in html and 'id="qcount"' in html
-    assert 'id="installbtn"' in html and 'rel="manifest"' in html
-    assert html.index('class="usedwrap"') < html.index('data-slot="top-leaderboard"') < html.index('class="hero')
-    assert "quickbar" not in html
+    assert 'id="tickerwrap"' not in html and 'class="su-bnav"' not in html
+    for retired in ("Trending today", "Your state", "Popular searches",
+                    "Your 5 today", "Students Internet Center", "Compare Jobs"):
+        assert retired not in html, f"retired homepage widget remains: {retired}"
+    assert '<h1 id="su-home-title">Government Jobs</h1>' in html
+    assert "Telangana · Andhra Pradesh · Central Government" in html
+    assert 'id="menubtn"' in html and 'menubtn-label">Menu</span>' in html
+    assert html.count('id="mpanel"') == 1 and 'id="su-mobile-more"' in html
+    assert "No job sample data is shown in this preview." in html
+    assert '<article class="news su-op-card"' not in html, "preview must not fabricate vacancies"
+    # Preview and theme both short-circuit an empty, stale, or unverified feed.
+    data = json.loads(FEED.read_text(encoding="utf-8"))
+    assert data["verified_only"] is True and data["items"] == []
+    assert 'if (!rows.length) return;' in html and "brklist" in html
+    assert "data/breaking.json" in html
 
 
 def test_menu_order_perfect():
     html = INDEX.read_text(encoding="utf-8")
     nav = re.search(r'<nav class="nav"[^>]*>(.*?)</nav>', html, re.S).group(1)
+    labels = ["Home", "Telangana", "Andhra Pradesh", "Central Govt", "More"]
+    positions = [nav.index(">" + label + "</a>") for label in labels]
+    assert positions == sorted(positions), positions
+    assert 'class="menu-item menu-item-has-children su-more-menu"' in nav
+    dropdown = re.search(r'<ul class="sub-menu"[^>]*>(.*?)</ul>', nav, re.S).group(1)
+    categories = [re.sub(r"<[^>]+>", "", value).strip()
+                  for value in re.findall(r"<a[^>]*>(.*?)</a>", dropdown, re.S)]
+    categories = [value.replace("&amp;", "&") for value in categories]
+    assert len(categories) >= 12 and "Results" in categories and "Scholarships" in categories
+    assert "All active opportunities" in categories
+    assert "Breaking News" not in categories, "empty local-news feed must not add a More item"
 
-    def strip_drop(block: str) -> str:
-        """<span class="drop">…</span> blocks ni remove (nested spans tho saha)."""
-        out, i = [], 0
-        while True:
-            j = block.find('<span class="drop"', i)
-            if j < 0:
-                out.append(block[i:])
-                break
-            out.append(block[i:j])
-            depth, k = 1, block.find(">", j) + 1
-            while depth and k > 0:
-                nxt_open = block.find("<span", k)
-                nxt_close = block.find("</span>", k)
-                if nxt_close < 0:
-                    break
-                if 0 <= nxt_open < nxt_close:
-                    depth += 1
-                    k = nxt_open + 5
-                else:
-                    depth -= 1
-                    k = nxt_close + 7
-            i = k
-        return "".join(out)
-
-    heads = [re.sub(r"<[^>]+>", "", x).strip()
-             for x in re.findall(r'<a[^>]*>(.*?)</a>', strip_drop(nav), re.S)]
-    norm = lambda x: x.replace("\u200c", "").replace("▾", "").strip()  # noqa: E731
-    order = [norm(h) for h in heads if norm(h)]
-    # v73: English UI
-    want = ["Home", "Jobs", "Hall Tickets", "Results",
-            "Scholarships", "Current Affairs", "Exams", "More"]
-    assert [norm(x) for x in order[:8]] == [norm(x) for x in want], order[:12]
-
-    drop = re.search(r'<span class="drop" role="menu" aria-label="Job categories">(.*?)</span>\s*</span>',
-                     nav, re.S).group(1)
-    cats = re.findall(r'data-goto-cat="([a-z-]+)"', drop)
-    assert cats == ["ts-jobs", "ap-jobs", "central-jobs", "private", "walkin",
-                    "software", "success-stories", "outsourcing", "parttime", "abroad"], cats
-
-    mp_start = html.index('<div class="mpanel"')
-    mp = html[mp_start:html.index('<div id="top">', mp_start)]
-    # v72+v73: mobile panel — search link mundu, breaking ledu (English UI)
-    assert mp.index(">Search<") < mp.index("Hall Tickets") < mp.index("Most searched by students")
-    assert "బ్రేకింగ్" not in mp and "Breaking" not in mp
-    mp_used = re.findall(r'data-goto-cat="([a-z-]+)"', mp)
-    assert mp_used[2:12] == breaking.most_used_cats(), mp_used[:14]
+    start = html.index('<aside class="mpanel"')
+    panel = html[start:html.index('</aside>', start)]
+    mobile_labels = ["Home", "Telangana", "Andhra Pradesh", "Central Govt", "More categories"]
+    mobile_positions = [panel.index(label) for label in mobile_labels]
+    assert mobile_positions == sorted(mobile_positions), mobile_positions
+    details = re.search(r'<details class="mgroup su-mobile-more"[^>]*>', panel).group(0)
+    assert " open" not in details, "More should start collapsed"
+    assert panel.count('id="su-mobile-more"') == 1
 
 
 def test_grid_student_first_order():
-    html = INDEX.read_text(encoding="utf-8")
-    zone = html.split('id="grid"')[1].split('id="nores"')[0]
-    cats = re.findall(r'<article class="news" data-state="[^"]*" data-cat="([^"]+)"', zone)
-    assert len(cats) == 15, len(cats)
-    assert "ts-jobs" in cats[0] and ("ts-jobs" in cats[1] or "ap-jobs" in cats[1])
-    assert "ap-jobs" in cats[2]
-    assert cats.index([c for c in cats if "results" in c][0]) < cats.index(
-        [c for c in cats if "current" in c][0])
+    """The real homepage is data-driven and applies the TS/AP/Central notice gate."""
+    page = (ROOT / "wordpress-theme" / "studentup" / "front-page.php").read_text(encoding="utf-8")
+    opportunities = (ROOT / "wordpress-theme" / "studentup" / "inc" / "opportunities.php").read_text(encoding="utf-8")
+    assert "studentup_home_opportunity_rows()" in page
+    assert "studentup_home_opportunity_render_card( $su_row )" in page
+    assert "studentup_home_opportunity_is_notice( $row )" in opportunities
+    assert "studentup_jobs_table( 8, $su_page_rows )" in page
+    assert "array( 'ts', 'ap', 'central' )" in opportunities
+    assert 'id="grid"></div>' in INDEX.read_text(encoding="utf-8"), "static preview should contain no job fixtures"
 
 
 def test_bot_wiring_radar_and_cli():
@@ -265,7 +244,7 @@ def test_docs_v59():
 
 def main():
     print("=" * 66)
-    print("  v59 — FIRST LOOK: బ్రేకింగ్ న్యూస్ + విద్యార్థులు ఎక్కువగా వెతికేవి + మెనూ")
+    print("  v204 compatibility — compact jobs home + verified local news")
     print("=" * 66)
     tests = [
         ("config flags (BREAKING_MAX/feed path)", test_config_flags),
@@ -275,9 +254,9 @@ def main():
         ("write/read feed: atomic + honest empty note", test_write_read_feed_roundtrip),
         ("feed rolling window: kotha + puratana (18h) + expiry", test_feed_rolling_window),
         ("committed feed: valid + demo links ledu", test_committed_feed_is_honest),
-        ("site: ticker + used strip + breaking section wiring", test_site_first_look_wiring),
-        ("menu order perfect (top-level + jobs dropdown + mobile)", test_menu_order_perfect),
-        ("grid: TS/AP cards mundu", test_grid_student_first_order),
+        ("site: compact data-free preview + conditional Breaking News", test_site_first_look_wiring),
+        ("desktop Home/TS/AP/Central/More + one mobile drawer", test_menu_order_perfect),
+        ("homepage: active TS/AP/Central rows + notice gate", test_grid_student_first_order),
         ("bot: radar hook + --breaking-feed CLI", test_bot_wiring_radar_and_cli),
         ("docs: MANUAL PART 18 + README + .env.example", test_docs_v59),
     ]
@@ -296,7 +275,7 @@ def main():
     if failed:
         print(f"  {failed} TEST(S) FAILED ✘")
         return 1
-    print("ALL v59 FIRST-LOOK TESTS PASSED ✔")
+    print("ALL v204 compatibility checks passed ✔")
     return 0
 
 

@@ -1,13 +1,8 @@
 <?php
 /**
- * Breaking news — verified radar feed inside WordPress. The section is visible
- * by default, but it renders only sanitized, fresh feed items (or an honest
- * empty state); the admin can still turn the surface off.
- *
- * Data path (okka chota, honest):
- *   1) WP option 'studentup_breaking_json' (bot REST/CLI tho push cheyyochu) — fastest
- *   2) site root lo /data/breaking.json (bot radar rasi file) — 10 min transient cache
- *   3) khali → section shows "no new verified updates" (no fake news)
+ * Verified TS/AP state and district news only. Job notices are deliberately
+ * excluded; the homepage omits this section and its menu entries when the
+ * feed has no fresh qualifying item.
  *
  * @package studentup
  */
@@ -23,11 +18,69 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @return array
  */
 function studentup_breaking_enabled() {
-	// Default ON: the public surface must be visible even when the verified
-	// feed is empty, so readers get an honest status rather than a fake alert.
 	return (bool) studentup_opt( 'breaking_enabled', '1' );
 }
 
+/**
+ * A breaking-feed item qualifies only when it is explicitly scoped to TS/AP
+ * local/state news, carries the corresponding local tag, and is not a job or
+ * exam notice. The feed's verified flags are checked separately below.
+ *
+ * @param array $item Unsanitized feed row.
+ * @return array|false Canonical row classification, or false.
+ */
+function studentup_breaking_local_kind( $item ) {
+	if ( ! is_array( $item ) ) {
+		return false;
+	}
+	$tag      = sanitize_key( isset( $item['tag'] ) ? (string) $item['tag'] : '' );
+	$state_raw = sanitize_key( isset( $item['state'] ) ? (string) $item['state'] : '' );
+	$state_map = array( 'ts' => 'TS', 'telangana' => 'TS', 'ap' => 'AP', 'andhra' => 'AP', 'andhra-pradesh' => 'AP' );
+	$state     = isset( $state_map[ $state_raw ] ) ? $state_map[ $state_raw ] : strtoupper( $state_raw );
+	$district = isset( $item['district'] ) ? trim( wp_strip_all_tags( (string) $item['district'] ) ) : '';
+	$aliases  = array(
+		'ts-state-news'       => array( 'state' => 'TS', 'type' => 'state' ),
+		'telangana-state-news' => array( 'state' => 'TS', 'type' => 'state' ),
+		'ap-state-news'       => array( 'state' => 'AP', 'type' => 'state' ),
+		'andhra-state-news'    => array( 'state' => 'AP', 'type' => 'state' ),
+		'ts-district-news'    => array( 'state' => 'TS', 'type' => 'district' ),
+		'telangana-district-news' => array( 'state' => 'TS', 'type' => 'district' ),
+		'ap-district-news'    => array( 'state' => 'AP', 'type' => 'district' ),
+		'andhra-district-news' => array( 'state' => 'AP', 'type' => 'district' ),
+		'state-news'          => array( 'state' => $state, 'type' => 'state' ),
+		'district-news'       => array( 'state' => $state, 'type' => 'district' ),
+		'local-news'          => array( 'state' => $state, 'type' => $district ? 'district' : 'state' ),
+	);
+	if ( ! isset( $aliases[ $tag ] ) ) {
+		return false;
+	}
+	$scope = $aliases[ $tag ];
+	if ( ! in_array( $scope['state'], array( 'TS', 'AP' ), true ) || ( $state && $state !== $scope['state'] ) ) {
+		return false;
+	}
+	if ( 'district' === $scope['type'] && '' === $district ) {
+		return false;
+	}
+
+	$title = isset( $item['title'] ) ? wp_strip_all_tags( (string) $item['title'] ) : '';
+	$job_or_exam = '/(?:\bjobs?\b|\brecruit(?:ment|ing)?\b|\bvacanc(?:y|ies)\b|\bhir(?:e|ing)\b|\bcareer\b|\bemployment\b|\bwalk[ -]?in\b|\bjob mela\b|\bapply online\b|\badmit card\b|\bhall[ -]?ticket\b|\banswer key\b|\bexam(?:ination)?\b|\bresults?\b|\bmerit list\b|\bsyllabus\b|\bselection list\b|\btspsc\b|\bappsc\b|\bdsc\b|\bssc\b|\bupsc\b|\brrb\b|\bgroup [1-4]\b|\bnotification for posts\b|ఉద్యోగ|నియామక|ఖాళీ|దరఖాస్తు|హాల్.?టికెట్|పరీక్ష|ఫలితాల|ఉద్యోగమేళా|డీఎస్సీ)/iu';
+	if ( preg_match( $job_or_exam, $title ) ) {
+		return false;
+	}
+
+	return array(
+		'state'    => $scope['state'],
+		'type'     => $scope['type'],
+		'district' => $district,
+	);
+}
+
+/**
+ * Items array (max $max) — fresh, verified TS/AP state or district news only.
+ *
+ * @param int $max max items.
+ * @return array<int,array<string,string>>
+ */
 function studentup_breaking_items( $max = 6 ) {
 	$max = max( 1, (int) $max );
 
@@ -53,9 +106,6 @@ function studentup_breaking_items( $max = 6 ) {
 	if ( isset( $data['verified_only'] ) && true !== $data['verified_only'] ) {
 		return array();
 	}
-	// A stale feed must become an empty state, not an apparently live alert.
-	// The bot normally rotates items within 18 hours; this wider boundary also
-	// tolerates a temporary fetch failure without keeping yesterday's headline.
 	$updated = isset( $data['updated'] ) ? strtotime( (string) $data['updated'] ) : false;
 	if ( ! $updated || $updated > ( time() + 300 ) || ( time() - $updated ) > ( 36 * HOUR_IN_SECONDS ) ) {
 		return array();
@@ -63,20 +113,29 @@ function studentup_breaking_items( $max = 6 ) {
 
 	$out = array();
 	foreach ( $data['items'] as $it ) {
-		if ( ! is_array( $it ) || ( isset( $it['verified'] ) && true !== $it['verified'] ) || ( isset( $it['source_verified'] ) && true !== $it['source_verified'] ) ) {
+		if ( ! is_array( $it ) || true !== ( $it['verified'] ?? false ) || true !== ( $it['source_verified'] ?? false ) ) {
+			continue;
+		}
+		$local = studentup_breaking_local_kind( $it );
+		if ( ! $local ) {
 			continue;
 		}
 		$title = isset( $it['title'] ) ? wp_strip_all_tags( (string) $it['title'] ) : '';
 		$link  = isset( $it['link'] ) ? esc_url_raw( (string) $it['link'] ) : '';
-		if ( '' === $title || '' === $link || ! preg_match( '#^https?://#i', $link ) ) {
+		$time  = isset( $it['time'] ) ? sanitize_text_field( (string) $it['time'] ) : '';
+		$stamp = $time ? strtotime( $time ) : false;
+		if ( '' === $title || '' === $link || ! preg_match( '#^https?://#i', $link ) || ! $stamp || $stamp > ( time() + 300 ) || ( time() - $stamp ) > ( 36 * HOUR_IN_SECONDS ) ) {
 			continue;
 		}
 		$out[] = array(
-			'title'  => $title,
-			'link'   => $link,
-			'tag'    => isset( $it['tag'] ) ? sanitize_key( (string) $it['tag'] ) : 'current',
-			'source' => isset( $it['source'] ) ? wp_strip_all_tags( (string) $it['source'] ) : 'Radar',
-			'time'   => isset( $it['time'] ) ? sanitize_text_field( (string) $it['time'] ) : '',
+			'title'    => $title,
+			'link'     => $link,
+			'tag'      => sanitize_key( (string) $it['tag'] ),
+			'source'   => isset( $it['source'] ) ? wp_strip_all_tags( (string) $it['source'] ) : 'Verified source',
+			'time'     => $time,
+			'state'    => $local['state'],
+			'type'     => $local['type'],
+			'district' => $local['district'],
 		);
 		if ( count( $out ) >= $max ) {
 			break;
@@ -93,6 +152,14 @@ function studentup_breaking_items( $max = 6 ) {
  */
 function studentup_tag_label( $tag ) {
 	$map = array(
+		'ts-state-news' => 'Telangana state',
+		'telangana-state-news' => 'Telangana state',
+		'ap-state-news' => 'Andhra Pradesh state',
+		'andhra-state-news' => 'Andhra Pradesh state',
+		'ts-district-news' => 'Telangana district',
+		'telangana-district-news' => 'Telangana district',
+		'ap-district-news' => 'Andhra Pradesh district',
+		'andhra-district-news' => 'Andhra Pradesh district',
 		'ts-jobs'      => 'Telangana',
 		'ap-jobs'      => 'Andhra Pradesh',
 		'central-jobs' => 'Central',
@@ -136,36 +203,9 @@ function studentup_ago( $iso ) {
  * Ticker (renders only when there is a feed — hidden when empty).
  */
 function studentup_breaking_ticker() {
-	// The compact section below is the public Breaking News surface. Keep this
-	// legacy hook inert so a verified headline is never duplicated in a moving
-	// banner; the section itself has a restrained live-dot treatment.
+	// Legacy ticker intentionally retired; the homepage uses a static, local-news
+	// list only when fresh verified TS/AP state or district items exist.
 	return;
-	if ( ! studentup_breaking_enabled() ) {
-		return;   // Admin may disable the public surface in StudentUp → Content.
-	}
-	$items = studentup_breaking_items( 5 );
-	if ( ! $items ) {
-		return;
-	}
-	echo '<div class="tickerwrap"><div class="wrap trow">';
-	echo '<span class="tlabel"><i aria-hidden="true"></i>Breaking</span><div class="tclip"><div class="tmove">';
-	foreach ( $items as $it ) {
-		printf(
-			'<a href="%s" target="_blank" rel="noopener">%s <span class="tsrc">%s</span></a>',
-			esc_url( $it['link'] ),
-			esc_html( $it['title'] ),
-			esc_html( studentup_ago( $it['time'] ) )
-		);
-	}
-	foreach ( $items as $it ) { // duplicate — CSS animation seamless loop ki.
-		printf(
-			'<a href="%s" target="_blank" rel="noopener" aria-hidden="true" tabindex="-1">%s <span class="tsrc">%s</span></a>',
-			esc_url( $it['link'] ),
-			esc_html( $it['title'] ),
-			esc_html( studentup_ago( $it['time'] ) )
-		);
-	}
-	echo '</div></div><a class="tall" href="#breaking">All →</a></div></div>';
 }
 
 /**
@@ -173,29 +213,31 @@ function studentup_breaking_ticker() {
  */
 function studentup_breaking_section() {
 	if ( ! studentup_breaking_enabled() ) {
-		return;   // Admin may disable the public surface in StudentUp → Content.
+		return;
 	}
 	$items = studentup_breaking_items( 6 );
+	if ( ! $items ) {
+		return;
+	}
 	echo '<section class="breaking" id="breaking" aria-labelledby="breaking-title">';
 	echo '<div class="brkhead"><span class="brkicon" aria-hidden="true">' . studentup_ui_icon( 'bolt', 15 ) . '</span><span class="brkdot" aria-hidden="true"></span><h2 id="breaking-title">Breaking News</h2>';
-	echo '<span class="brklive">Verified source feed · fresh items only</span></div>';
-	if ( ! $items ) {
-		echo '<p class="brkempty">No new verified breaking updates right now. Official announcements appear here only after the source and date are checked.</p>';
-	} else {
-		echo '<ol class="brklist">';
-		foreach ( $items as $it ) {
-			printf(
-				'<li class="brkitem"><span class="bt">Verified · %s</span><a href="%s" target="_blank" rel="noopener">%s<span class="bwhen">%s · %s</span></a></li>',
-				esc_html( studentup_tag_label( $it['tag'] ) ),
-				esc_url( $it['link'] ),
-				esc_html( $it['title'] ),
-				esc_html( $it['source'] ),
-				esc_html( studentup_ago( $it['time'] ) )
-			);
+	echo '<span class="brklive">Verified TS/AP state and district news</span></div>';
+	echo '<ol class="brklist">';
+	foreach ( $items as $it ) {
+		$place = 'TS' === $it['state'] ? 'Telangana' : 'Andhra Pradesh';
+		if ( 'district' === $it['type'] && $it['district'] ) {
+			$place .= ' · ' . $it['district'] . ' district';
 		}
-		echo '</ol>';
+		printf(
+			'<li class="brkitem"><span class="bt">%s</span><a href="%s" target="_blank" rel="noopener noreferrer">%s<span class="bwhen">%s · %s</span></a></li>',
+			esc_html( $place ),
+			esc_url( $it['link'] ),
+			esc_html( $it['title'] ),
+			esc_html( $it['source'] ),
+			esc_html( studentup_ago( $it['time'] ) )
+		);
 	}
-	echo '</section>';
+	echo '</ol></section>';
 }
 
 /**

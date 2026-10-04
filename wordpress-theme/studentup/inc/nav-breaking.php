@@ -1,22 +1,7 @@
 <?php
 /**
- * v202 BREAKING NEWS NAV — header lo "Breaking News" item (desktop panel +
- * mobile block), exactly like the other mega items.
- *
- * Owner (2026-10-04): *"Breaking News kuda same like Central Jobs alaga undali —
- * akkada click chethe open avvali."*
- *
- * Rules (same honesty contract as the rest of the theme):
- *   · Data = **real** verified radar items (studentup_breaking_items()) unte avi;
- *     lekapote **mee latest published posts** ("Latest update" ani label) —
- *     0 posts unte ee nav item inject avvadu (khali panel chupinchamu).
- *   · Prathi link real: verified item link leda post permalink leda category,
- *     fallback `/#breaking` (404 eppudu ledu).
- *   · Desktop = `li.menu-item-has-children` + `ul.sub-menu` — theme JS (click /
- *     Enter / ArrowDown / Escape) mariyu v93 hover CSS rendu automatic ga
- *     apply avutayi (Central Jobs laage).
- *   · Mobile = `.mpanel` lopala top block (icon + title + time).
- *   · Telugu ledu (v73 invariant) — labels English.
+ * Breaking News navigation. It uses only fresh, verified TS/AP state or
+ * district items from the radar feed; there is no latest-post fallback.
  *
  * @package studentup
  */
@@ -26,69 +11,39 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Breaking nav items — verified feed first, else latest published posts.
+ * Breaking nav items — verified local-news feed only.
  *
  * @param int $limit max items.
- * @return array<int,array<string,string>> [ title, url, meta, kind ]
+ * @return array<int,array<string,string>>
  */
 function studentup_breaking_nav_items( $limit = 5 ) {
 	$limit = max( 1, min( 8, (int) $limit ) );
-	$out   = array();
-
-	// 1) Verified radar feed (bot push) — best source.
-	if ( function_exists( 'studentup_breaking_items' ) ) {
-		foreach ( studentup_breaking_items( $limit ) as $it ) {
-			$ago  = function_exists( 'studentup_ago' ) ? studentup_ago( (string) $it['time'] ) : '';
-			$tag  = function_exists( 'studentup_tag_label' ) ? studentup_tag_label( (string) $it['tag'] ) : '';
-			$meta = trim( implode( ' · ', array_filter( array( $ago, $tag ) ) ) );
-			$out[] = array(
-				'title' => (string) $it['title'],
-				'url'   => (string) $it['link'],
-				'meta'  => $meta ? $meta : 'Verified',
-				'kind'  => 'verified',
-			);
+	if ( ! function_exists( 'studentup_breaking_items' ) ) {
+		return array();
+	}
+	$out = array();
+	foreach ( studentup_breaking_items( $limit ) as $it ) {
+		$place = 'TS' === $it['state'] ? 'Telangana' : 'Andhra Pradesh';
+		if ( 'district' === $it['type'] && $it['district'] ) {
+			$place .= ' · ' . $it['district'];
 		}
-	}
-	if ( $out ) {
-		return $out;
-	}
-
-	// 2) Latest published posts — real content, honest label.
-	$posts = get_posts(
-		array(
-			'post_type'           => 'post',
-			'post_status'         => 'publish',
-			'posts_per_page'      => $limit,
-			'no_found_rows'       => true,
-			'ignore_sticky_posts' => true,
-		)
-	);
-	foreach ( $posts as $p ) {
-		$when = human_time_diff( (int) get_post_time( 'U', true, $p ), time() );
-		$cats = get_the_category( $p->ID );
-		$cat  = ! empty( $cats ) ? $cats[0]->name : '';
+		$ago = function_exists( 'studentup_ago' ) ? studentup_ago( (string) $it['time'] ) : '';
 		$out[] = array(
-			'title' => wp_trim_words( get_the_title( $p ), 12, '…' ),
-			'url'   => (string) get_permalink( $p ),
-			'meta'  => trim( implode( ' · ', array_filter( array( $when . ' ago', $cat ) ) ) ),
-			'kind'  => 'latest',
+			'title' => (string) $it['title'],
+			'url'   => (string) $it['link'],
+			'meta'  => trim( implode( ' · ', array_filter( array( $place, $ago ) ) ) ),
+			'kind'  => 'verified-local-news',
 		);
 	}
 	return $out;
 }
 
 /**
- * "Breaking News" nav panel URL — real category, else the front-page surface.
+ * "Breaking News" nav panel URL — verified homepage section only.
  *
  * @return string
  */
 function studentup_breaking_nav_url() {
-	foreach ( array( 'breaking-news', 'breaking', 'current-affairs' ) as $slug ) {
-		$term = function_exists( 'studentup_used_term' ) ? studentup_used_term( $slug ) : null;
-		if ( $term ) {
-			return (string) get_category_link( $term );
-		}
-	}
 	return home_url( '/#breaking' );
 }
 
@@ -106,7 +61,6 @@ function studentup_breaking_nav_li() {
 		return '';
 	}
 	$url   = studentup_breaking_nav_url();
-	$has_f = ( 'verified' === $items[0]['kind'] );
 
 	$h  = '<li class="menu-item menu-item-has-children su-navbrk">';
 	$h .= '<a href="' . esc_url( $url ) . '" aria-haspopup="true" aria-expanded="false" aria-controls="su-brkdd">'
@@ -114,8 +68,8 @@ function studentup_breaking_nav_li() {
 		. esc_html__( 'Breaking News', 'studentup' ) . '</span></a>';
 	$h .= '<ul class="sub-menu su-brkdd" id="su-brkdd" aria-label="' . esc_attr__( 'Breaking News', 'studentup' ) . '">';
 	$h .= '<li class="menu-item su-brkdd-head" role="none"><span>'
-		. esc_html__( 'Latest verified updates', 'studentup' )
-		. '</span><em>' . esc_html__( 'Live', 'studentup' ) . '</em></li>';
+		. esc_html__( 'Verified TS/AP local news', 'studentup' )
+		. '</span><em>' . esc_html__( 'Fresh', 'studentup' ) . '</em></li>';
 
 	foreach ( $items as $it ) {
 		$h .= '<li class="menu-item" role="none"><a role="menuitem" href="' . esc_url( $it['url'] ) . '">'
@@ -124,7 +78,7 @@ function studentup_breaking_nav_li() {
 			. '<small>' . esc_html( $it['meta'] ) . '</small></span></a></li>';
 	}
 	$h .= '<li class="menu-item su-brkdd-foot" role="none"><a class="su-brkdd-cta" href="' . esc_url( $url ) . '">'
-		. esc_html( $has_f ? __( 'All updates', 'studentup' ) : __( 'All latest', 'studentup' ) )
+		. esc_html__( 'All local updates', 'studentup' )
 		. ' ' . studentup_ui_icon( 'arrow', 13 ) . '</a></li>';
 	$h .= '</ul></li>';
 	return $h;
@@ -145,7 +99,7 @@ function studentup_breaking_mobile_block() {
 	}
 	$url = studentup_breaking_nav_url();
 	$h   = '<div class="mlabel mlabel-brk"><span class="su-brkdot" aria-hidden="true"></span>'
-		. esc_html__( 'Breaking News', 'studentup' ) . '</div>';
+		. esc_html__( 'Breaking News · TS/AP state and district updates', 'studentup' ) . '</div>';
 	foreach ( $items as $it ) {
 		$h .= '<a class="su-mbrk" href="' . esc_url( $it['url'] ) . '">'
 			. studentup_ui_icon( 'bolt', 16 )
@@ -153,7 +107,7 @@ function studentup_breaking_mobile_block() {
 			. '<small>' . esc_html( $it['meta'] ) . '</small></span></a>';
 	}
 	$h .= '<a class="su-mbrk-all" href="' . esc_url( $url ) . '">'
-		. esc_html__( 'All updates', 'studentup' ) . ' ' . studentup_ui_icon( 'arrow', 13 ) . '</a>';
+		. esc_html__( 'All local updates', 'studentup' ) . ' ' . studentup_ui_icon( 'arrow', 13 ) . '</a>';
 	return $h;
 }
 
@@ -220,4 +174,4 @@ function studentup_breaking_menu_filter( $items, $args ) {
 	}
 	return substr( $items, 0, $pos ) . $li . substr( $items, $pos );
 }
-add_filter( 'wp_nav_menu_items', 'studentup_breaking_menu_filter', 10, 2 );
+// Intentionally not registered: the current header owns one Home/TS/AP/Central/More menu.

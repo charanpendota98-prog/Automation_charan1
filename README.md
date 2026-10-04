@@ -1,7 +1,7 @@
 # studentup.in Auto-Blogger 🤖
 
 
-> **Verified counts (theme v1.9.42 build):** test suites **148/148** files · jsdom runtime **239/239** checks · PHP lint **99/99** files · theme audit **0/0** · **deep audit pass 1-4 31/31** · code audit **0/0**.
+> **Current theme source:** v1.9.44. Historical test counts below belong to their listed build; run the current gates before deployment.
 24/7 automatic blog posting system for **studentup.in** (WordPress) — runs on your Oracle Cloud instance.
 
 - **AI content:** Google Gemini (free tier) generates Telugu + English mix articles
@@ -3609,7 +3609,25 @@ each fix below is a new, browser-verified gate.
 
 ---
 
-## v202 — "Breaking News" header nav item (owner: "Breaking News kuda same like Central Jobs alaga undali — akkada click chethe open avvali")
+## v204 — compact, responsive TS/AP/Central homepage (theme 1.9.44)
+
+The current header keeps **Home · Telangana · Andhra Pradesh · Central Govt · More** on laptop. Every other existing non-empty category is grouped under More, with duplicate category aliases collapsed. On phones and tablets, a visible **Menu** button opens one accessible drawer; the More accordion starts closed and expands on tap. The homepage does not render a duplicate fixed bottom nav.
+
+The logo is now a quiet text wordmark—no monogram tile, glow, text shadow or card glow. Homepage spacing is tighter: one compact page title, at most four opportunity cards and a table of up to eight rows. Both use only current TS/AP/Central government recruitment notices. A fail-closed relevance gate excludes known misfiled guides, scholarships, results, internships, walk-ins and private-company hiring. Qualification and last dates are taken from notice data; unknown dates read **Not announced**.
+
+Breaking News is still strictly fresh, source-verified Telangana/Andhra Pradesh state or district news—not jobs. The section and its More-menu link are omitted when no qualifying items exist. The old ticker/slider, empty Breaking News copy, “Trending today,” “Your state,” “Popular searches,” comparison UI, Student Internet Center CTA, app-install prompt and extra home footer/bottom-navigation blocks are not part of the current homepage.
+
+`preview/index.html` is the data-free layout preview; it deliberately contains no fabricated vacancies. `python3 tools/build_critical_css.py` updates critical styles; `python3 tools/build_wp_theme.py` rebuilds the installable ZIP and runs theme/PHP checks.
+
+**Current validation:** `tests/v204_test.py` (6 focused checks), `tests/v202_test.py` (9 navigation/news compatibility checks), `tests/v201_test.py` (5 compatibility checks), `tests/v59_test.py` (12 feed/home compatibility checks) and `tests/opportunity_board_test.py` pass after the final build. Actual Chromium screenshots are not available in this sandbox; `tools/verify_breaking_ui.js` is updated to measure the current menu/layout when Puppeteer + Chromium are installed.
+
+## v203 — compact TS/AP/Central homepage (historical; superseded by v204)
+
+v203 first replaced the large hero/dashboard with a compact, data-driven government-jobs page and removed the old job ticker/carousel. v204 tightens its spacing, menu visibility, content gate and footer behavior; see the current section above.
+
+## v202 — "Breaking News" header nav item (historical; local-news-only rules retained)
+
+The details below describe the retired v1.9.42 standalone menu item and drawer block. In v1.9.44 there is no top-level Breaking News item or header injection; a conditional local-news link appears inside More, and the page section itself stays omitted when the feed is empty.
 
 Measured first, on the **live** site (2026-10-04): the header menu there is
 **admin-built** (`Home · Telangana Jobs · AP Jobs · Central Jobs · Results · Hall
@@ -3630,13 +3648,7 @@ Behaviour is the **same contract as Central Jobs**: the `<li>` is
 `Escape`; the panel is positioned like the mega panels and hides itself on
 phones (`≤900px`) and in print.
 
-Content is real, never invented: verified radar items first
-(`studentup_breaking_items()` → `/data/breaking.json`, ≤36 h, verified only),
-else the **latest published posts** (`human_time_diff` + first category) with an
-honest `All latest` CTA. No data ⇒ **no item at all** (no empty panel). Every
-link resolves: `breaking-news` / `breaking` / `current-affairs` term when it
-exists, otherwise `/#breaking` — never a 404. Option:
-*StudentUp → Options → "Breaking News item in the header"* (default on).
+Current v204 rule: only fresh, source-verified TS/AP state or district feed items may appear (`studentup_breaking_items()` → `/data/breaking.json`, ≤36 h). Job and exam notices are filtered out; the former latest-post fallback has been retired. No qualifying data ⇒ **no section and no menu entry**. Each displayed story links to its verified external source; there is no placeholder panel.
 
 **Phone + laptop proof (measured, not eyeballed):**
 `node tools/verify_breaking_ui.js` drives real Chromium at 8 widths (360 · 390 ·
@@ -3665,13 +3677,18 @@ single source of truth. `tests/v202_test.py` + the jsdom runtime block lock it
 (`239/239` checks incl. click-opens / click-closes / hover / one-at-a-time /
 mobile rows).
 
-New gate: `tests/v202_test.py` (7 checks) locks the module + wiring, the
-verified-first/no-empty-panel honesty rules, the injection rules (primary-only,
-duplicate-safe, after Home, option-gated), the CSS/JS open contract incl. dark
-mode + ≤900px/print, and demo/standalone/OFFLINE parity with **on-disk** link
-targets.
+Historical compatibility gate: `tests/v202_test.py` (now 9 checks) locks the
+verified-news and navigation invariants, primary-only/duplicate-safe injection,
+nested-list handling, the CSS/JS open contract incl. dark mode + phone/print
+behavior, and compact-preview assets/pages with **on-disk** link targets. The
+current compact-home suite is `tests/v204_test.py`.
 
-## v201 — Preview ↔ live parity (owner: "ikkada preview lo chupinchindi theme upload chesthe live lo alaga ledu")
+## v201 — Preview ↔ live parity (historical; its hero/carousel are superseded by v203)
+
+The details below record an earlier homepage version. v203 removed the hero,
+ticker, carousel and unrelated dashboard modules from the current front page;
+some legacy renderers/assets remain in the theme for compatibility but are not
+part of the compact homepage.
 
 `preview/worldclass/index.html` is a **hand-written design demo**. It links the
 theme's real CSS/JS, so styling edits show up in the preview — but its *markup*
