@@ -9,7 +9,7 @@
 <style>
   :root{--navy:#0f2e62;--blue:#2463b7;--orange:#ed8a32;--ink:#162235;--muted:#64748b;--line:#e5ebf4;--soft:#f5f8fc}
   body{margin:0;background:var(--soft);color:var(--ink);font:15px/1.7 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-  .wrap{max-width:980px;margin:0 auto;padding:24px 16px 60px}
+  .wrap{max-width:1000px;margin:0 auto;padding:24px 16px 60px}
   h1{font-size:22px;color:var(--navy);margin:0 0 6px}
   .sub{color:var(--muted);font-size:13px;margin:0 0 18px}
   .banner{background:#fffbeb;border:1px solid #fde68a;color:#92400e;border-radius:12px;padding:12px 14px;margin:0 0 18px;font-size:13.5px}
@@ -18,51 +18,59 @@
   th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);font-size:13px;vertical-align:top}
   th{background:#f8fafc;font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
   tr:last-child td{border-bottom:0}
+  td:nth-child(3){color:#475569}
   code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12.5px;color:#0f2e62}
+  .n{color:var(--muted);font-size:11.5px}
   .checklist{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin-top:20px;font-size:13.5px}
   .checklist h2{font-size:15px;margin:0 0 8px;color:var(--navy)}
   .checklist ul{margin:0;padding-left:20px}
-  .checklist li{margin:4px 0}
-  .ok{color:#15803d;font-weight:700}
-  .warn{color:#b45309;font-weight:700}
+  .checklist li{margin:5px 0}
+  .warn{color:#b45309;font-weight:800}
+  .foot{color:var(--muted);font-size:12px;margin-top:18px}
 </style>
 </head>
 <body><div class="wrap">
   <h1>Theme output snapshot — “live laa” render</h1>
   <p class="sub">Theme <b>1.9.42</b> · generated 2026-10-04 by <code>tools/render_theme_snapshot.py</code> — hand-edit ledu.</p>
 
-  <p class="banner"><b>Idi enduku:</b> <code>preview/worldclass/</code> oka hand-written design demo. Live site = WordPress, mee posts, mee toggles.
-  Ee page theme PHP <b>nijamga em render chestundo</b> (section order + kavalsinavi) chupistundi — anduke ee page live ki daahaalam.</p>
+  <p class="banner"><b>Idi enduku:</b> <code>preview/worldclass/</code> oka hand-written design demo. Live site = WordPress + mee posts + mee toggles.
+  Ee page theme PHP <b>nijamga em render chestundo</b> — front page section order, source file, prathi section ki kavalsinavi — chupistundi. Demo kaadu, idi live ki daahaalam.</p>
 
   <table>
-    <tr><th>Section (front-page.php order)</th><th>Source</th><th>Kavalsinavi</th></tr>
-        <tr><td><code>studentup_ui_icon()</code></td><td><code>inc/quicksummary.php</code></td><td>toggle: quick_summary</td></tr>
-        <tr><td><code>studentup_ui_icon()</code></td><td><code>inc/quicksummary.php</code></td><td>toggle: quick_summary</td></tr>
-        <tr><td><code>studentup_ad()</code></td><td><code>inc/adfill.php</code></td><td>toggle: collapse_unfilled</td></tr>
-        <tr><td><code>studentup_breaking_section()</code></td><td><code>inc/breaking.php</code></td><td>toggle: breaking_enabled, latest_ticker · WordPress posts</td></tr>
-        <tr><td><code>studentup_qual_bar()</code></td><td><code>inc/qual-filter.php</code></td><td>toggle: qual_filter · WordPress posts</td></tr>
-        <tr><td><code>studentup_qual_active_note()</code></td><td><code>inc/qual-filter.php</code></td><td>toggle: qual_filter · WordPress posts</td></tr>
-        <tr><td><code>studentup_qual_query_args()</code></td><td><code>inc/qual-filter.php</code></td><td>toggle: qual_filter · WordPress posts</td></tr>
-        <tr><td><code>studentup_ad()</code></td><td><code>inc/adfill.php</code></td><td>toggle: collapse_unfilled</td></tr>
-        <tr><td><code>studentup_ad()</code></td><td><code>inc/adfill.php</code></td><td>toggle: collapse_unfilled</td></tr>
-        <tr><td><code>studentup_card()</code></td><td><code>inc/admitcard.php</code></td><td>toggle: admit_card_helper</td></tr>
-        <tr><td><code>studentup_ad()</code></td><td><code>inc/adfill.php</code></td><td>toggle: collapse_unfilled</td></tr>
-        <tr><td><code>studentup_personal_picks()</code></td><td><code>inc/personal.php</code></td><td>toggle: calendar_button, personal_picks</td></tr>
-        <tr><td><code>studentup_ad()</code></td><td><code>inc/adfill.php</code></td><td>toggle: collapse_unfilled</td></tr>
-        <tr><td><code>studentup_most_used() + grid</code></td><td><code>front-page.php</code></td><td>category terms · WordPress posts</td></tr>
-        <tr><td><code>studentup_hero_premium()</code></td><td><code>inc/premium.php</code></td><td>toggle: hero_premium · category terms</td></tr>
+    <tr><th>Section (front-page.php call order)</th><th>Source</th><th>Kavalsinavi</th></tr>
+      <tr><td><code>studentup_latest_ticker()</code></td><td><code>inc/breaking.php</code></td><td>toggle: breaking_enabled, latest_ticker · WordPress posts · front page only</td></tr>
+      <tr><td><code>studentup_hero_premium()</code></td><td><code>inc/premium.php</code></td><td>toggle: alerts_card, bottom_nav, hero_premium, hot_jobs · WordPress posts · category terms · post meta (last dates / vacancies) · front page only</td></tr>
+      <tr><td><code>studentup_latest_notifications()</code></td><td><code>inc/slider.php</code></td><td>WordPress posts · post meta (last dates / vacancies) · front page only</td></tr>
+      <tr><td><code>studentup_ui_icon()</code> <span class="n">×2</span></td><td><code>inc/icons.php</code></td><td>static markup</td></tr>
+      <tr><td><code>studentup_most_used()</code> <span class="n">×2</span></td><td><code>functions.php</code></td><td>toggle: pwa · category terms · front page only</td></tr>
+      <tr><td><code>studentup_ad()</code> <span class="n">×5</span></td><td><code>inc/ads.php</code></td><td>toggle: ads_enabled, ads_on_policy, adsense_approved, deep_ad · front page only</td></tr>
+      <tr><td><code>studentup_breaking_section()</code></td><td><code>inc/breaking.php</code></td><td>toggle: breaking_enabled, latest_ticker · WordPress posts · front page only</td></tr>
+      <tr><td><code>studentup_opportunity_board_url()</code></td><td><code>inc/opportunities.php</code></td><td>WordPress posts · post meta (last dates / vacancies)</td></tr>
+      <tr><td><code>studentup_qual_bar()</code></td><td><code>inc/qual-filter.php</code></td><td>toggle: qual_filter · WordPress posts · front page only</td></tr>
+      <tr><td><code>studentup_qual_active_note()</code></td><td><code>inc/qual-filter.php</code></td><td>toggle: qual_filter · WordPress posts · front page only</td></tr>
+      <tr><td><code>studentup_hidden_note()</code></td><td><code>inc/qual-filter.php</code></td><td>toggle: qual_filter · WordPress posts · front page only</td></tr>
+      <tr><td><code>studentup_qual_query_args()</code></td><td><code>inc/qual-filter.php</code></td><td>toggle: qual_filter · WordPress posts · front page only</td></tr>
+      <tr><td><code>studentup_card()</code></td><td><code>inc/template.php</code></td><td>toggle: comments_on, mega_menu · category terms · front page only</td></tr>
+      <tr><td><code>studentup_jobs_table()</code></td><td><code>inc/jobtable.php</code></td><td>toggle: jobs_table · WordPress posts</td></tr>
+      <tr><td><code>studentup_popular_searches()</code></td><td><code>inc/smart.php</code></td><td>toggle: job_calendar, job_finder, popular_searches, salary_calc · WordPress posts · category terms · post meta (last dates / vacancies) · front page only</td></tr>
+      <tr><td><code>studentup_hot_jobs()</code></td><td><code>inc/premium.php</code></td><td>toggle: alerts_card, bottom_nav, hero_premium, hot_jobs · WordPress posts · category terms · post meta (last dates / vacancies) · front page only</td></tr>
+      <tr><td><code>studentup_closing_week()</code></td><td><code>inc/engage.php</code></td><td>toggle: closing_week, contact_email, helpful_box, pdf_button · WordPress posts</td></tr>
+      <tr><td><code>studentup_personal_picks()</code></td><td><code>inc/personal.php</code></td><td>toggle: calendar_button, personal_picks</td></tr>
+      <tr><td><code>studentup_daily_quiz()</code></td><td><code>inc/quiz.php</code></td><td>toggle: daily_quiz · category terms</td></tr>
+      <tr><td><code>studentup_daily_poll()</code></td><td><code>inc/polls.php</code></td><td>toggle: poll_id, poll_note, poll_opts, poll_question</td></tr>
   </table>
+  <p class="foot">“Kavalsinavi” = aa section render avvadaniki WordPress lo em undali (posts · categories · toggles). Khaali ga unte aa section <b>hide</b> avutundi — fake cards theme eppudu render cheyyadu.</p>
 
   <div class="checklist">
     <h2>Live lo neat ga kanipinchadaniki (order lo)</h2>
     <ul>
-      <li><span class="warn">1.</span> Theme zip upload + Activate → <b>Appearance → Themes</b> lo version check (ee build: <code>1.9.42</code>).</li>
-      <li><span class="warn">2.</span> <b>Settings → Permalinks</b> → Save (post links clean avutayi).</li>
-      <li><span class="warn">3.</span> Posts publish avvali — carousel / trending / cards **mee posts nunchi** build avutayi (khali DB ⇒ khali sections).</li>
-      <li><span class="warn">4.</span> Categories: <code>ts-govt-jobs · ap-govt-jobs · central-govt-jobs · results · hall-tickets</code> — lekapote chips/grid lo aa item skip avutundi (fake data ledu).</li>
+      <li><span class="warn">1.</span> Zip upload + Activate → <b>Appearance → Themes</b> lo version check (ee build: <code>1.9.42</code>).</li>
+      <li><span class="warn">2.</span> <b>Settings → Permalinks</b> → Save (clean post links).</li>
+      <li><span class="warn">3.</span> Posts publish avvali — trending / carousel / cards **mee posts nunchi** build avutayi (khali DB ⇒ khali sections).</li>
+      <li><span class="warn">4.</span> Categories: <code>ts-govt-jobs · ap-govt-jobs · central-govt-jobs · results · hall-tickets</code> — lekapote aa item skip avutundi.</li>
       <li><span class="warn">5.</span> StudentUp Settings → toggles (hero_premium · trending_today · state_first …) ON unnaya chudandi.</li>
-      <li><span class="warn">6.</span> Cache: host (MilesWeb) cache + WP cache plugin okasari clear cheyandi — old CSS/JS inka undakoodadu.</li>
-      <li><span class="warn">7.</span> Third-party plugins (cookie-consent, AdSense, page builders) mee own CSS ni override chestayi — <code>!important</code> rules valla spacing/colour maripovachu. Avi live lo mattrame kanipistayi, preview lo levu.</li>
+      <li><span class="warn">6.</span> Cache: host cache + WP cache plugin okasari clear cheyandi — old CSS/JS migilakoodadu.</li>
+      <li><span class="warn">7.</span> Plugins (cookie-consent, AdSense, page builder) mee own CSS ni override chestayi — aa differences live lo mattrame kanipistayi, preview lo levu.</li>
     </ul>
   </div>
 </div></body></html>
