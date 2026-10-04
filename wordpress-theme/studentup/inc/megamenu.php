@@ -192,7 +192,6 @@ function studentup_mega_groups() {
 			'title' => 'Career tools',
 			'items' => array(
 				studentup_mega_item( 'Resume Maker', $page( array( 'tools' ) ), 'Govt-format resume, free', 'doc' ),
-				studentup_mega_item( 'Compare Jobs', studentup_compare_page_url(), 'Side-by-side up to 3 posts', 'swap' ),
 				studentup_mega_item( 'Saved Posts', studentup_saved_page_url(), 'Read later, on this device', 'bookmark' ),
 			),
 		),
@@ -350,10 +349,6 @@ function studentup_mega_render( $groups, $home ) {
 		esc_url( $home ),
 		esc_html__( 'Home', 'studentup' )
 	);
-	// v202: Breaking News item — Central Jobs laage click/hover tho open avutundi.
-	if ( function_exists( 'studentup_breaking_nav_li' ) ) {
-		echo studentup_breaking_nav_li(); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped inside.
-	}
 	foreach ( $groups as $g ) {
 		$key = sanitize_title( (string) $g['label'] );
 		$ic  = isset( $g['icon'] ) ? (string) $g['icon'] : 'arrow';

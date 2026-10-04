@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Local demo server for the WorldClass v2 preview (v191).
+"""Local demo server for the current compact StudentUp homepage preview.
 
 Enduku: Arena live-preview (e2b proxy) ni phone / laptop lo open chesinappudu
 nerugaa kotha design kanipinchali. Ee server repo root ni serve chestundi kaani
-"/" ni preview/worldclass/index.html ki redirect chestundi — so CSS paths
-(../../wordpress-theme/...) break avvavu.
+"/" and legacy worldclass home links ni preview/index.html ki redirect chestundi.
 
 v191.1 fix: HTTP/1.1 + Content-Length + no-store — reverse proxy/Cloudflare
 vaddu "502 bad gateway" raakunda (HTTP/1.0 responses tho keep-alive break ayyi
@@ -21,11 +20,11 @@ from functools import partial
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DEMO = "/preview/worldclass/index.html"
+DEMO = "/preview/index.html"
 
 
 class DemoHandler(SimpleHTTPRequestHandler):
-    """Repo root serve + "/" → demo page redirect. HTTP/1.1 (proxy-safe)."""
+    """Repo root and legacy home links → current preview. HTTP/1.1 proxy-safe."""
 
     protocol_version = "HTTP/1.1"          # keep-alive + Content-Length aware
     server_version = "StudentUpPreview/1.1"
@@ -33,11 +32,11 @@ class DemoHandler(SimpleHTTPRequestHandler):
     def end_headers(self):
         # proxy/browser cache valla purathana page kanipinchakunda
         self.send_header("Cache-Control", "no-store, max-age=0")
-        self.send_header("X-Preview", "worldclass-v2")
+        self.send_header("X-Preview", "compact-studentup-home")
         super().end_headers()
 
     def do_GET(self):  # noqa: N802 - stdlib naming
-        if self.path in ("/", "/index.html"):
+        if self.path in ("/", "/index.html", "/preview/worldclass/index.html"):
             self.send_response(302)
             self.send_header("Location", DEMO)
             self.send_header("Content-Length", "0")

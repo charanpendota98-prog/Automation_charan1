@@ -132,9 +132,14 @@ def _edu_relevant(text: str, category_hint: str = "") -> bool:
     before a draft is created.
     """
     hay = (text or "").lower()
+    hint = (category_hint or "").strip().lower()
+    if hint in {"ts state news", "ap state news", "ts district news", "ap district news"}:
+        # Dedicated regional queries are intentionally broader than job feeds;
+        # the verified Breaking filter later rejects recruitment/exam items.
+        return True
     if any(p in hay for p in TREND_EDU_PATTERNS):
         return True
-    if (category_hint or "").strip().lower() == "current affairs":
+    if hint == "current affairs":
         return any(p in hay for p in CURRENT_AFFAIRS_PATTERNS)
     return False
 
@@ -342,11 +347,13 @@ def radar_districts(per_run: int = None) -> List[Dict]:
             log.debug("radar fetch fail (%s): %s", district, exc)
             items = []
         for it in items:
-            if not _edu_relevant(it["title"]):
+            if not _edu_relevant(it["title"], f"{st_code} District News"):
                 continue
             if _queue_url(it["link"], title=it["title"]):
                 new_items.append({"title": it["title"], "link": it["link"],
-                                  "district": district, "state": st_code})
+                                  "district": district, "state": st_code,
+                                  "source_name": f"{st_code} District Radar",
+                                  "category_hint": f"{st_code} District News"})
     state.meta_set(config.STATE_PATH, "radar:last_idx",
                    str((start + per_run - 1) % total))
     return new_items

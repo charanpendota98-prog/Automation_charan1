@@ -112,56 +112,39 @@ def test_p2_slider_from_real_posts() -> None:
 
 
 # -------------------------------------------------------------------- P3 JS
-def test_p3_shipped_slider_js() -> None:
-    """Theme JS lo autoslide behaviour + demo adi ne vaadutundo."""
+def test_p3_legacy_slider_is_not_loaded_on_the_compact_home() -> None:
+    """The old real-post slider stays isolated; the v203 homepage has no slider UI."""
     js = read(THEME / "assets" / "js" / "studentup-slider.js")
     for needle in ("su-jobs-track-wrap", "su-track-next", "su-track-prev", "su-track-pause",
                    "3200", "mouseenter", "mouseleave", "focusin", "touchstart",
-                   "visibilitychange", "ArrowRight", "ArrowLeft", "prefers-reduced-motion",
-                   "scrollBy", "scrollTo"):
-        assert needle in js, f"slider JS lo ledu: {needle}"
-    assert "310" in js, "demo step (310px) ledu"
+                   "visibilitychange", "ArrowRight", "ArrowLeft", "prefers-reduced-motion"):
+        assert needle in js, f"legacy slider module damaged: {needle}"
     proc = subprocess.run(["node", "--check", str(THEME / "assets" / "js" / "studentup-slider.js")],
                           capture_output=True, text=True)
     assert proc.returncode == 0, f"slider JS syntax tappu: {proc.stderr[-200:]}"
 
     fns = read(THEME / "functions.php")
-    assert "inc/slider.php" in fns, "functions.php slider.php require cheyyaledu"
-    assert "studentup-slider" in fns and "studentup-slider.js" in fns, "enqueue ledu"
-    assert re.search(r"is_front_page\(\)[^{]*\{[^}]*studentup-slider", fns, re.S), \
-        "enqueue front-page gate ledu"
+    assert "inc/slider.php" in fns  # module can remain for other integrations
+    assert "studentup-slider.js" not in fns, "obsolete homepage slider is still enqueued"
+    assert "studentup-smart.js" not in fns, "obsolete homepage smart bundle is still enqueued"
 
-    demo = read(DEMO)
-    assert "assets/js/studentup-slider.js" in demo, "demo shipped JS ni load cheyyatledu"
-    assert "setInterval(slideNext" not in demo, "demo lo inline slider copy inka undi"
-    assert 'class="su-hact su-hact--breaking"' in demo, "demo breaking chip class kaadu"
-    assert "style=\"border-color:#fca5a5" not in demo, "demo chip lo inline style inka undi"
-    demop = plain(demo)
-    for label in CHIPS:
-        assert plain(label) in demop, f"demo lo chip ledu: {label}"
-    # demo kuda live hero ne chupinchali: trending strip + state bar + workspace
-    for needle in ('class="su-trend"', 'class="su-trend-list"', 'class="su-statebar"',
-                   'data-su-state-bar', "My Workspace"):
-        assert needle in demo, f"demo hero lo ledu: {needle}"
+    demo = read(DEMO)  # retained historical parity fixture; not the canonical preview route
+    assert "assets/js/studentup-slider.js" in demo
+    assert "setInterval(slideNext" not in demo, "historical fixture has duplicate inline slider copy"
+    print("  v203 compact home: legacy slider script is not enqueued ✔")
 
 
 # ----------------------------------------------------------------- P4 order
-def test_p4_front_page_order_and_single_h1() -> None:
-    """Ticker → hero → slider order + page 1 ki okkate visible h1."""
+def test_p4_front_page_is_compact_and_keeps_one_h1() -> None:
+    """The focused homepage is data-driven and has exactly one page H1."""
     fp = read(THEME / "front-page.php")
-    i_tick = fp.index("studentup_latest_ticker()")
-    i_hero = fp.index("studentup_hero_premium()")
-    assert i_tick < i_hero, "ticker hero kanna mundu undali (demo order)"
-    assert "studentup_latest_notifications()" in fp, "slider call ledu"
-    assert i_hero < fp.index("studentup_latest_notifications()"), \
-        "slider hero tarvate undali"
-    i_p2 = fp.index("$su_is_p2")
-    assert fp.index("studentup_latest_notifications()") > i_p2, \
-        "slider page-1 branch lo ledu (page 2 ki vaddu)"
-    i_h1 = fp.index("<h1")
-    gate = fp.rfind("$su_is_p2", 0, i_h1)
-    assert gate != -1 and i_h1 - gate < 260, \
-        "sr-only <h1> page-2 gate lopala ledu (page 1 double h1 avutundi)"
+    for required in ("studentup_home_opportunity_rows()", "studentup_breaking_section()",
+                     "studentup_jobs_table( 8, $su_page_rows )"):
+        assert required in fp, f"current homepage contract missing: {required}"
+    for retired in ("studentup_latest_ticker()", "studentup_hero_premium()",
+                    "studentup_latest_notifications()", "studentup_hot_jobs()",
+                    "studentup_popular_searches()", "studentup_daily_quiz()"):
+        assert retired not in fp, f"obsolete homepage block remains: {retired}"
     assert fp.count("<h1") == 1, f"front-page.php lo {fp.count('<h1')} <h1> (okkate kavali)"
 
 
@@ -216,7 +199,7 @@ ALL = [v for k, v in sorted(globals().items())
 
 if __name__ == "__main__":
     print("=" * 74)
-    print("  v201 — PREVIEW ↔ LIVE PARITY (hero · slider · shipped JS · order)")
+    print("  v201 compatibility gates — compact v203 homepage contract")
     print("=" * 74)
     for fn in ALL:
         fn()

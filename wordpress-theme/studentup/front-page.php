@@ -2,223 +2,112 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
-?>
-<?php
+
 /**
- * Front page — v191.2 MONEY EDITION (student-first, ad-optimised, Google-safe).
+ * Compact government-jobs homepage.
  *
- * Design law (v201 — demo (preview/worldclass) order ne ikkada):
- *   ticker → hero → Latest Notifications slider → most-searched →
- *   LEADERBOARD AD → breaking →
- *   filters → LATEST OPPORTUNITIES GRID (lead card + native in-feed ads) →
- *   jobs table → popular searches → MID AD → hot-10 + closing-week →
- *   personal picks → BELOW-CONTENT AD.
- *
- * Enduku itla:
- *  1) Content first — phone reader ki first job card 2 screens lopala kanipistundi
- *     (bounce ↓, session ↑).
- *  2) Ad slots content madhya lo unnayi (in-feed native) — viewability + CTR ↑,
- *     kaani ads content ni dominate cheyavu (AdSense policy safe).
- *  3) Calculator/widget wall TEESESAAM (user brief: "ee tools em avasaram ledu") —
- *     avi ippudu /tools/ page lo mattrame (page-tools.php).
+ * The homepage is deliberately limited to current Telangana, Andhra Pradesh
+ * and Central government opportunities. `studentup_home_opportunity_rows()`
+ * uses the active-board expiry/staleness/deduplication rules, then orders by
+ * publication date so the newest eligible notices appear first.
  *
  * @package studentup
  */
 
 get_header();
 
-/*
- * v176 REAL FIX (live-install proof): /page/2/ kuda front-page.php ne vaadutundi.
- * Grid query paged-aware + numbered pagination + page 2+ lo widgets ledu.
- */
-$su_paged = max( 1, (int) get_query_var( 'paged' ) );
-$su_is_p2 = $su_paged > 1;
+$su_paged       = max( 1, (int) get_query_var( 'paged' ), (int) get_query_var( 'page' ) );
+$su_per_page    = 8;
+$su_home_rows   = studentup_home_opportunity_rows();
+$su_row_count   = count( $su_home_rows );
+$su_total_pages = max( 1, (int) ceil( $su_row_count / $su_per_page ) );
+$su_paged       = min( $su_paged, $su_total_pages );
+$su_page_rows   = array_slice( $su_home_rows, ( $su_paged - 1 ) * $su_per_page, $su_per_page );
+$su_card_rows   = array_slice( $su_page_rows, 0, 4 );
 ?>
 
-<?php studentup_latest_ticker(); // v201 demo order: ticker → hero → slider ?>
-
-<?php if ( ! $su_is_p2 ) : ?>
-	<?php studentup_hero_premium(); // search + quick links (hero H1) ?>
-	<?php studentup_latest_notifications(); // v201: “Latest Notifications” sliding track (preview ↔ live parity) ?>
-<?php endif; ?>
-
-<?php if ( ! $su_is_p2 ) : ?>
-<section class="usedwrap" aria-label="Most searched by students">
-	<div class="wrap">
-		<div class="usedhead">
-			<b>Most searched by students</b>
-			<span>One tap to the sections TS & AP students open most</span>
-		</div>
-		<div class="usedgrid">
-			<a class="su-used-breaking" href="<?php echo esc_url( home_url( '/#jobs' ) ); ?>" aria-label="Breaking News - Live Flash Updates">
-				<span class="ui ui--breaking" aria-hidden="true"><?php echo studentup_ui_icon( 'bolt', 20 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?></span>
-				<div class="su-ub-body">
-					<div class="su-ub-top">
-						<span class="su-ub-tag"><span class="su-pulse-dot"></span> LIVE FLASH</span>
-						<b>Breaking News</b>
-					</div>
-					<small><?php esc_html_e( 'Latest notifications · hall tickets & exam alerts', 'studentup' ); ?></small>
-				</div>
-				<em class="ucount ucount--brk"><?php esc_html_e( 'Flash Updates →', 'studentup' ); ?></em>
-			</a>
-			<?php
-			foreach ( studentup_most_used() as $i => $m ) :
-				$term = studentup_used_term( $m['slug'] );
-				if ( ! $term ) {
-					continue;
-				}
-				$hot = ( $i < 3 ) ? ' hot' : '';
-				?>
-				<a class="usedcard<?php echo esc_attr( $hot ); ?>" href="<?php echo esc_url( get_category_link( $term ) ); ?>">
-					<span class="ui" aria-hidden="true"><?php echo studentup_ui_icon( $m['icon'], 22 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?></span>
-					<div><b><?php echo esc_html( $m['label'] ); ?></b><small><?php echo esc_html( $m['hint'] ); ?></small></div>
+<section class="su-home-intro" aria-labelledby="su-home-title">
+	<div class="wrap su-home-intro-inner">
+		<div class="su-home-copy">
+			<h1 id="su-home-title">
 				<?php
-				// v199: nijamaina category count (WP term count — extra query ledu).
-				// Count 0 aithe emi chupinchamu — fake number ledu, stray dash ledu.
-				$su_n = (int) $term->count;
-				if ( $su_n > 0 ) :
-					?>
-					<em class="ucount"><?php echo esc_html( sprintf( /* translators: %s: number of updates. */ __( '%s updates', 'studentup' ), number_format_i18n( $su_n ) ) ); ?></em>
-				<?php endif; ?>
-				</a>
-				<?php endforeach; ?>
+				if ( 1 < $su_paged ) {
+					esc_html_e( 'Latest Government Jobs', 'studentup' );
+				} else {
+					esc_html_e( 'Government Jobs', 'studentup' );
+				}
+				?>
+			</h1>
+			<p>Telangana <span aria-hidden="true">·</span> Andhra Pradesh <span aria-hidden="true">·</span> Central Government</p>
 		</div>
 	</div>
 </section>
-<?php endif; ?>
 
-<?php if ( ! $su_is_p2 ) : ?>
-	<div class="wrap"><?php studentup_ad( 'leaderboard' ); // slot 1 — highest paying, content ki mundu okkate ?></div>
-<?php endif; ?>
-
-<?php if ( $su_is_p2 ) : ?>
-	<?php /* Page 1 lo H1 = hero title (premium.php). Pagination pages ki mattrame ikkada H1. */ ?>
-	<section class="hero hero-slim" aria-label="Page title">
-		<h1 class="screen-reader-text">
-			<?php
-			printf(
-				/* translators: %d: page number. */
-				esc_html__( 'Latest student updates — page %d', 'studentup' ),
-				(int) $su_paged
-			);
-			?>
-		</h1>
-	</section>
-<?php endif; ?>
-
-<main id="main">
+<main id="main" class="su-home-main">
 	<div class="wrap">
-		<?php if ( ! $su_is_p2 ) : ?>
-			<?php studentup_breaking_section(); ?>
-		<?php endif; ?>
+		<?php studentup_breaking_section(); // Renders only fresh, verified TS/AP state or district news. ?>
 
-		<div class="sectionhead" id="jobs">
-			<div>
-				<h2>
-					<?php
-					if ( $su_is_p2 ) {
-						printf(
-							/* translators: %d: page number. */
-							esc_html__( 'Latest opportunities — page %d', 'studentup' ),
-							(int) $su_paged
-						);
-					} else {
-						esc_html_e( 'Latest opportunities', 'studentup' );
-					}
-					?>
-				</h2>
-				<p>Filter by qualification — Telangana · Andhra Pradesh · Central</p>
+		<section class="su-home-jobs" id="jobs" aria-labelledby="su-home-jobs-title">
+			<div class="su-home-section-head">
+				<div>
+					<h2 id="su-home-jobs-title">
+						<?php
+						if ( 1 < $su_paged ) {
+							printf(
+								/* translators: %d: page number. */
+								esc_html__( 'Latest active government jobs — page %d', 'studentup' ),
+								(int) $su_paged
+							);
+						} else {
+							esc_html_e( 'Latest job notices', 'studentup' );
+						}
+						?>
+					</h2>
+					<p>Telangana · Andhra Pradesh · Central Government</p>
+				</div>
+				<?php if ( 1 < $su_paged ) : ?>
+					<a class="su-home-newest" href="<?php echo esc_url( get_pagenum_link( 1 ) ); ?>">Newest jobs</a>
+				<?php endif; ?>
 			</div>
-			<?php if ( $su_is_p2 ) : ?>
-				<a class="su-viewall" href="<?php echo esc_url( home_url( '/' ) ); ?>">← Newest updates</a>
+
+			<div class="chips su-home-chips" id="home-job-filters" role="tablist" aria-label="Filter government jobs by region">
+				<button type="button" class="chip active" data-cat="all" role="tab" aria-selected="true">All</button>
+				<button type="button" class="chip" data-cat="ts-jobs" role="tab" aria-selected="false">Telangana</button>
+				<button type="button" class="chip" data-cat="ap-jobs" role="tab" aria-selected="false">Andhra Pradesh</button>
+				<button type="button" class="chip" data-cat="central-jobs" role="tab" aria-selected="false">Central Govt</button>
+			</div>
+
+			<?php if ( $su_page_rows ) : ?>
+				<div class="newsgrid su-home-job-grid" id="grid">
+					<?php foreach ( $su_card_rows as $su_row ) : ?>
+						<?php studentup_home_opportunity_render_card( $su_row ); ?>
+					<?php endforeach; ?>
+				</div>
+				<p class="nores" id="nores">No active listings in this region. Choose another filter to browse the other government-job sections.</p>
 			<?php else : ?>
-				<a class="su-viewall" href="<?php echo esc_url( studentup_opportunity_board_url() ); ?>">All active sections →</a>
+				<div class="su-home-empty" role="status">
+					<strong>No current government-job listings are available.</strong>
+					<span>When active Telangana, Andhra Pradesh or Central notices are published, their available qualification and deadline details will appear here.</span>
+				</div>
 			<?php endif; ?>
-		</div>
 
-		<?php
-		studentup_qual_bar();
-		studentup_qual_active_note();
-		studentup_hidden_note();
-		?>
-
-		<div class="chips" id="chips" role="tablist" aria-label="Category filters">
-			<button type="button" class="chip active" data-cat="all" role="tab" aria-selected="true">All</button>
-			<?php foreach ( studentup_most_used() as $m ) : ?>
-				<button type="button" class="chip" data-cat="<?php echo esc_attr( sanitize_html_class( $m['slug'] ) ); ?>" role="tab" aria-selected="false"><?php echo esc_html( $m['label'] ); ?></button>
-			<?php endforeach; ?>
-		</div>
-
-		<div class="newsgrid" id="grid">
-			<?php
-			$su_q = new WP_Query(
-				studentup_qual_query_args(
-					array(
-						'post_type'           => 'post',
-						'posts_per_page'      => 12,
-						'paged'               => $su_paged,
-						'ignore_sticky_posts' => false,
-						'no_found_rows'       => false,
-					)
-				)
-			);
-			$su_i = 0;
-			if ( $su_q->have_posts() ) :
-				while ( $su_q->have_posts() ) :
-					$su_q->the_post();
-					// v191.2: native in-feed slots 3rd + 8th card tarvata (viewability max,
-					// density cap + policy checks studentup_ad() lo ne untayi).
-					if ( 3 === $su_i || 8 === $su_i ) {
-						studentup_ad( 'in-feed' );
-					}
-					studentup_card( $su_i );
-					$su_i++;
-				endwhile;
-			else :
-				?>
-			<p class="nores" style="display:block">No posts yet — the bot will publish the first update soon.</p>
+			<?php if ( 1 < $su_total_pages ) : ?>
+				<nav class="su-home-pagination" aria-label="Government job pages">
+					<?php if ( 1 < $su_paged ) : ?>
+						<a href="<?php echo esc_url( get_pagenum_link( $su_paged - 1 ) ); ?>">← Newer</a>
+					<?php endif; ?>
+					<span>Page <?php echo esc_html( (string) $su_paged ); ?> of <?php echo esc_html( (string) $su_total_pages ); ?></span>
+					<?php if ( $su_paged < $su_total_pages ) : ?>
+						<a href="<?php echo esc_url( get_pagenum_link( $su_paged + 1 ) ); ?>">Older →</a>
+					<?php endif; ?>
+				</nav>
 			<?php endif; ?>
-		</div>
-		<p class="nores" id="nores">Nothing for this filter — open the "All" tab and try again.</p>
+		</section>
 
-		<nav class="sectionhead" aria-label="Post pages">
-			<div>
-				<?php
-				$su_total = (int) $su_q->max_num_pages;
-				if ( $su_total > 1 ) {
-					echo wp_kses_post(
-						paginate_links(
-							array(
-								'total'     => $su_total,
-								'current'   => $su_paged,
-								'prev_text' => '← Newer',
-								'next_text' => 'Older →',
-							)
-						) ?? ''
-					);
-				}
-				?>
-			</div>
-		</nav>
-
-		<?php if ( ! $su_is_p2 ) : ?>
-			<?php
-			studentup_jobs_table( 12 );      // scannable table — Google ki rich, reader ki fast
-			studentup_popular_searches();    // internal links (SEO + session depth)
-			studentup_ad( 'mid' );           // slot 2 — content madhya lo
-			studentup_hot_jobs( 10 );        // TOP 10 HOT JOBS TODAY (return visits)
-			studentup_closing_week( 7 );     // urgency (last dates) — real meta mattrame
-			studentup_personal_picks();      // local-only personalised top 5
-			// v197: engagement block — real daily quiz + reader poll (v123 quiz
-			// eppudu render avvaledu; ippudu server-rendered, JS-enhanced).
-			studentup_daily_quiz( array( 'id' => 'daily-quiz', 'heading' => 'Daily quiz — 5 questions, 2 minutes' ) );
-			studentup_daily_poll();
-			studentup_ad( 'below-content' ); // slot 3 — finish chesina reader ki
-			?>
+		<?php if ( $su_page_rows ) : ?>
+			<?php studentup_jobs_table( 8, $su_page_rows ); ?>
 		<?php endif; ?>
 	</div>
 </main>
 
-<?php
-wp_reset_postdata();
-get_footer();
+<?php get_footer(); ?>

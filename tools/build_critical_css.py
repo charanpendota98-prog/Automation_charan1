@@ -54,6 +54,13 @@ EXACT = {
     ".su-cta", ".su-ttab", ".su-tools", ".su-tooltabs", ".su-toolpanel",
     ".su-fields", ".su-tout", ".su-mini", ".su-rail", ".su-railed",
     ".su-railad", ".su-callout", ".su-layout", ".su-quizcard",
+    # v203: compact home-shell basics for the union-file fallback. The full
+    # card/table/local-news layer is selected only for critical-home.css.
+    ".su-home-intro", ".su-home-copy", ".su-home-jobs", ".su-home-section-head",
+    ".su-home-chips", ".su-home-job-grid", ".su-home-empty",
+    ".su-op-card", ".su-op-thumb", ".su-op-card-main", ".su-op-region",
+    ".su-op-meta", ".su-op-actions", ".breaking", ".brkhead", ".brklist", ".brkitem",
+    "#surail", "#sutab",
 }
 PREFIX = (
     ".su-hero", ".su-hs", ".su-live-dot", ".su-trend", ".su-statebar",
@@ -84,12 +91,14 @@ CORE = {
 }
 
 HOME_EXTRA = {
-    ".newsgrid", ".news", ".news--lead", ".su-hero", ".su-hero-in",
-    ".su-hero-title", ".su-hero-sub", ".su-hero-kicker", ".su-hero-stats",
-    ".chips", ".chip", ".sectionhead", ".su-trust", ".su-adleader",
-    ".su-adbelow", ".su-viewall", ".su-cta", ".su-bottomnav", ".su-bi",
-    ".su-anchor", ".su-anchor-ad", ".su-quizcard", ".usedwrap", ".usedhead",
-    ".usedgrid", ".usedcard", ".su-rail", ".su-railed", ".su-railad",
+    # v203 compact homepage: its real first-paint components replace the old
+    # hero / popular-search / rail bundle. Prefix tokens keep this page-only.
+    ".newsgrid", ".news", ".chips", ".chip", ".sectionhead",
+    ".su-home", ".su-jt", ".su-jobtable",
+    ".su-op-card", ".su-op-thumb", ".su-op-thumb-fallback", ".su-op-card-main",
+    ".su-op-topline", ".su-op-region", ".su-op-meta", ".su-op-deadline",
+    ".breaking", ".brklist",
+    "#surail", "#sutab",
 }
 SINGLE_EXTRA = {
     ".article-head", ".article-meta", ".article-content", ".crumbs",
@@ -123,19 +132,63 @@ UNION_DROPPABLE = (".su-tools", ".su-tooltabs", ".su-toolpanel", ".su-fields",
                    # result actions) — tools page mattrame, inline cap lo vaddhu.
                    ".su-toolfind", ".su-toolcats", ".su-tcat", ".su-tstep",
                    ".su-tact", ".su-tnext", ".su-tools-top", ".su-tool-how",
-                   ".mpanel", ".mbackdrop", ".su-slider", ".su-scard",
-                   # v202: breaking-news dropdown panel + drawer block — hover/tap ki mattrame
-                   # (nav item `.su-navbrk` CORE lo ne untundi: adi above-the-fold).
-                   ".su-brkdd", ".su-mbrk", ".mlabel-brk",
+                   ".mpanel", ".mbackdrop", ".su-more-menu", ".su-slider", ".su-scard",
+                   # v204: retired standalone Breaking News dropdown/drawer rules.
+                   ".su-navbrk", ".su-brkdd", ".su-mbrk", ".mlabel-brk",
+                   # v203: obsolete homepage rails and hero are absent from the
+                   # compact home and safe to leave to async full CSS.
+                   ".su-hero", ".su-hact", ".su-trend", ".su-statebar",
+                   ".su-hot", ".used", ".su-popsearch", ".su-alerts", ".footer", ".su-footer-home", ".su-home-jump", ".callbtn",
                    # v202 headroom: scroll tarvata/tools page mattrame kanipishevi
                    ".su-anchor", ".su-ttab", ".su-cov", ".thumb--auto")
 
-# v199: home-only blocks — 10 most-searched cards + count pill front-page lo
-# mattrame render avutayi. Single/archive inline CSS nunchi ee tokens teeyali
-# (cap guard). Ticker (.tlabel/.tclip/.tmove) CORE lo ne untundi — breaking
-# bar ki kuda kavali.
-HOME_ONLY = (".usedcard", ".usedgrid", ".usedwrap", ".usedhead", ".ucount", ".su-slider", ".su-scard", ".su-sbtn", ".su-hero")
+# v204: keep the desktop More dropdown rules in home first paint. The mobile
+# drawer uses the compact HOME_MENU_CRITICAL_CSS block below; the union fallback
+# continues to omit these selectors to stay under its 60 KB cap.
+HOME_CRITICAL_KEEP = {".su-more-menu"}
 
+# v204: compact-home-only intro and table. They do not belong in
+# article/archive first paint. The same opportunity cards may appear on a board.
+HOME_ONLY = (".su-home", ".su-jt", ".su-jobtable", ".usedcard", ".usedgrid", ".usedwrap",
+             ".usedhead", ".ucount", ".su-slider", ".su-scard", ".su-sbtn", ".su-hero")
+HOME_DROP = (".su-social", ".su-tab", ".su-close", ".su-cta", ".su-bottomnav",
+             ".su-home-pagination", ".su-op-actions", ".brkhead", ".brklive", ".brkitem")
+
+# Intentionally small first-paint contract for the sole homepage drawer. Pulling
+# every historical `.mpanel` rule into the home union costs >6 KB and adds old
+# duplicate breakpoints. The full stylesheet hydrates the details; this set is
+# enough to keep the mobile menu usable even before that async stylesheet loads.
+HOME_MENU_CRITICAL_CSS = r"""
+.mbackdrop{position:fixed;inset:0;z-index:1999;display:none;background:rgba(11,36,71,.48)}
+.mbackdrop.show,.mbackdrop.open{display:block!important}
+.mpanel{position:fixed;top:0;bottom:0;left:0;z-index:2000;width:min(360px,88vw);max-width:360px;overflow-x:hidden;overflow-y:auto;transform:translateX(-102%);visibility:hidden;background:var(--card);padding:16px 14px 24px;box-shadow:0 10px 35px rgba(11,36,71,.16);transition:transform .18s ease,visibility .18s ease}
+.mpanel.open{transform:translateX(0);visibility:visible}
+body.mlock{overflow:hidden}
+.mpanel-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:2px 2px 9px;border-bottom:1px solid var(--line)}
+.mpanel-head strong{color:var(--ink);font-size:16px}
+#mpanelclose{width:36px;height:36px;border:1px solid var(--line);border-radius:9px;background:var(--soft);color:var(--ink)}
+.mpanel .su-mobile-nav{display:grid;gap:2px;padding:7px 0;border-bottom:1px solid var(--line)}
+.mpanel .su-mobile-nav>a{display:flex;align-items:center;gap:8px;min-height:40px;padding:7px 9px;border-radius:8px;color:var(--ink);font-size:13px;font-weight:700;text-decoration:none}
+.mpanel .su-mobile-more{margin-top:5px;border:1px solid var(--line);border-radius:9px;overflow:hidden;background:var(--card)}
+.mpanel .su-mobile-more>summary{display:flex;align-items:center;justify-content:space-between;min-height:42px;padding:0 11px;background:var(--soft);color:var(--ink);font-size:13px;font-weight:800;list-style:none;cursor:pointer}
+.mpanel .su-mobile-more>summary::-webkit-details-marker{display:none}
+.mpanel .su-mobile-more>summary:after{content:"+";font-size:16px;font-weight:500}
+.mpanel .su-mobile-more[open]>summary:after{content:"−"}
+.mpanel .su-mobile-more .mgroup-body{grid-template-columns:1fr 1fr;gap:2px;padding:5px}
+.mpanel .su-mobile-more .mgroup-body>a{display:flex;align-items:center;min-height:36px;padding:6px 7px;border-radius:7px;color:var(--ink-2);font-size:11.5px;line-height:1.25;text-decoration:none}
+.mpanel .su-mobile-more:not([open])>.mgroup-body{display:none!important}
+.mpanel .su-mobile-more[open]>.mgroup-body{display:grid}
+.su-op-actions{display:flex;gap:5px;padding-top:5px}
+.su-op-actions a{display:inline-flex;align-items:center;min-height:27px;padding:0 8px;border:1px solid var(--line);border-radius:7px;background:transparent;color:var(--ink);font-size:10px;text-decoration:none}
+.su-op-actions .su-op-apply{background:var(--soft)}
+.brkhead{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.brkhead h2{margin:0;font-size:14px}
+.brklive{display:block;margin-left:28px;color:var(--muted);font-size:10px;line-height:1.25}
+.brkitem{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:5px;padding:7px 0;border-top:1px solid var(--line)}
+.brkitem .bt{font-size:10px;color:var(--muted)}
+.brkitem a{min-width:0;color:var(--ink);font-size:12px;font-weight:650;overflow-wrap:anywhere}
+.brkitem .bwhen{display:block;margin-top:2px;color:var(--muted);font-size:10px}
+"""
 
 def _split_rules(css: str):
     """Yield top-level blocks: ('rule', selector, body) | ('at', head, body)."""
@@ -309,8 +362,16 @@ def main() -> int:
     # 2) Per-template files (v195) — phone lo chinnadi + exact first paint.
     for name, extra in TEMPLATES.items():
         base_out = OUT.with_name(f"critical-{name}.css")
-        drop = UNION_DROPPABLE if name == "home" else UNION_DROPPABLE + HOME_ONLY
+        if name == "home":
+            home_union_drop = tuple(token for token in UNION_DROPPABLE
+                                    if token not in HOME_CRITICAL_KEEP)
+            drop = home_union_drop + HOME_DROP
+        else:
+            drop = UNION_DROPPABLE + HOME_ONLY
         t_css, t_kept = extract(extra=CORE | extra, drop=drop, use_exact=False)
+        if name == "home":
+            t_css += HOME_MENU_CRITICAL_CSS
+            t_kept += HOME_MENU_CRITICAL_CSS.count("{")
         t_kb = _write(base_out, t_css)
         assert t_kb * 1024 < CAP_FAIL, f"critical-{name}.min.css {t_kb:.1f} KB — cap fail"
         print(f"     · {name:<7} {t_kb:.1f} KB inline ({t_kept} rules) → "

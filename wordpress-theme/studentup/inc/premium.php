@@ -292,19 +292,16 @@ function studentup_alerts_card() {
  * Mobile floating bottom navigation (80%+ readers phone lo).
  */
 function studentup_bottom_nav() {
-	if ( ! studentup_opt( 'bottom_nav', '1' ) ) {
+	// Homepage keeps its single visible header menu; a second fixed bar wastes phone viewport.
+	if ( is_front_page() || is_home() || ! studentup_opt( 'bottom_nav', '1' ) ) {
 		return;
 	}
-	$jobs   = studentup_used_term( 'ts-jobs' );
-	$schol  = studentup_used_term( 'scholarships' );
-	$jobs_u = $jobs ? get_category_link( $jobs ) : home_url( '/#jobs' );
-	$sch_u  = $schol ? get_category_link( $schol ) : home_url( '/#jobs' );
+	$jobs_u = home_url( '/#jobs' );
 	?>
 	<nav class="su-bnav" aria-label="Quick navigation">
 		<a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="<?php echo is_front_page() ? 'on' : ''; ?>"><?php echo studentup_ui_icon( 'home', 21 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?>Home</a>
 		<a href="<?php echo esc_url( $jobs_u ); ?>"><?php echo studentup_ui_icon( 'work', 21 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?>Jobs</a>
-		<a href="<?php echo esc_url( $sch_u ); ?>"><?php echo studentup_ui_icon( 'school', 21 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?>Scholar</a>
-		<a href="<?php echo esc_url( home_url( '/#alerts' ) ); ?>"><?php echo studentup_ui_icon( 'bell', 21 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?>Alerts</a>
+		<button type="button" id="su-bnav-menu" aria-label="Open menu" aria-expanded="false" aria-controls="mpanel"><?php echo studentup_ui_icon( 'menu', 21 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?>Menu</button>
 		<button type="button" class="su-bnav-search" id="su-bnav-search"><?php echo studentup_ui_icon( 'search', 21 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?>Search</button>
 	</nav>
 	<?php
