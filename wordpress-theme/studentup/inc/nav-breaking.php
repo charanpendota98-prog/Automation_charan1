@@ -158,6 +158,41 @@ function studentup_breaking_mobile_block() {
 }
 
 /**
+ * First **top-level** item ayyipoyina taruvata byte offset.
+ *
+ * Enduku depth lekka: WP menu HTML lo modati `</li>` nested sub-item di kuda
+ * avvachu (modati item ki children unte, udaharanaki `Jobs ▾` modatlo unte).
+ * Appudu naiva `strpos( $items, '</li>' )` item ni **sub-menu lopala** pettestundi.
+ * Ee helper `<li` / `</li>` depth ni lekka chesi, depth 0 ki tirigi vachina
+ * modati position ni istundi.
+ *
+ * @param string $items Menu items HTML.
+ * @return int|false Byte offset (first item tarvata) leda false.
+ */
+function studentup_breaking_first_item_end( $items ) {
+	$len   = strlen( $items );
+	$depth = 0;
+	$off   = 0;
+	while ( $off < $len ) {
+		if ( ! preg_match( '/<(li|\/li)\b[^>]*>/i', $items, $m, PREG_OFFSET_CAPTURE, $off ) ) {
+			return false;
+		}
+		$tag = strtolower( $m[1][0] );
+		$end = $m[0][1] + strlen( $m[0][0] );
+		if ( 'li' === $tag ) {
+			$depth++;
+		} else {
+			$depth--;
+			if ( $depth <= 0 ) {
+				return $end; // first top-level item complete.
+			}
+		}
+		$off = $end;
+	}
+	return false;
+}
+
+/**
  * Inject into a user-built WP menu (primary location) — right after Home.
  *
  * @param string   $items Menu items HTML.
@@ -179,10 +214,10 @@ function studentup_breaking_menu_filter( $items, $args ) {
 	if ( '' === $li ) {
 		return $items;
 	}
-	$pos = strpos( (string) $items, '</li>' );
+	$pos = studentup_breaking_first_item_end( (string) $items );
 	if ( false === $pos ) {
-		return $li . $items;
+		return $li . $items; // odd markup — item ni mundu pettadam safe.
 	}
-	return substr( $items, 0, $pos + 5 ) . $li . substr( $items, $pos + 5 );
+	return substr( $items, 0, $pos ) . $li . substr( $items, $pos );
 }
 add_filter( 'wp_nav_menu_items', 'studentup_breaking_menu_filter', 10, 2 );

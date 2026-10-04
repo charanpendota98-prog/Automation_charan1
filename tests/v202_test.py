@@ -126,12 +126,65 @@ def test_p3_injection_rules() -> None:
     assert "strpos( (string) $items, 'su-navbrk' )" in f, "su-navbrk duplicate guard ledu"
     assert "stripos( (string) $items, 'breaking news' )" in f, \
         "admin Breaking item duplicate guard ledu (rendu items vastayi)"
-    assert "strpos( (string) $items, '</li>' )" in f, "first </li> daggara insert ledu"
-    assert "substr( $items, 0, $pos + 5 ) . $li ." in f, "insert order wrong"
+    # depth-aware: modati `</li>` nested item di kuda avvachu → top-level mattrame
+    assert "studentup_breaking_first_item_end(" in f, \
+        "naiva strpos('</li>') — first item ki submenu unte item sub-menu lopala padutundi"
+    assert "strpos( (string) $items, '</li>' )" not in f, "naiva strpos tirigi vachindi"
+    assert "substr( $items, 0, $pos ) . $li ." in f, "insert order wrong"
     assert "studentup_opt( 'breaking_nav', '1' )" in php, "option gate ledu"
     # two call sites for the option gate (li + mobile) — off aithe rendu poovali
     assert php.count("studentup_opt( 'breaking_nav', '1' )") == 2, "gate call count 2 kaadu"
     ok("primary-only · duplicate-safe · after Home · option gate ✔")
+
+
+def _first_item_end(items: str):
+    """PHP `studentup_breaking_first_item_end()` algorithm ki Python mirror.
+
+    Miru ikkada algorithm ni test chestunnam (PHP binary ee env lo ledu) — PHP
+    source lo same regex/depth logic unda leda ni P3 verify chestundi.
+    """
+    import re as _re
+    depth, off = 0, 0
+    while off < len(items):
+        m = _re.compile(r"<(li|/li)\b[^>]*>", _re.I).search(items, off)
+        if not m:
+            return None
+        tag, end = m.group(1).lower(), m.end()
+        if tag == "li":
+            depth += 1
+        else:
+            depth -= 1
+            if depth <= 0:
+                return end
+        off = end
+    return None
+
+
+def test_p3b_injection_survives_nested_first_item() -> None:
+    """First item ki submenu unte kuda item top-level ga (Central Jobs pakkana) padali."""
+    flat = '<li class="menu-item"><a href="/">Home</a></li><li class="menu-item"><a href="/jobs/">Jobs</a></li>'
+    end = _first_item_end(flat)
+    assert flat[:end].count("</li>") == 1 and flat[end:].startswith('<li'), "flat menu case"
+
+    nested = ('<li class="menu-item menu-item-has-children"><a href="/">Home</a>'
+              '<ul class="sub-menu"><li class="menu-item"><a href="/a/">A</a></li>'
+              '<li class="menu-item"><a href="/b/">B</a></li></ul></li>'
+              '<li class="menu-item"><a href="/jobs/">Jobs</a></li>')
+    end = _first_item_end(nested)
+    assert end is not None, "nested case lo position dorakaledu"
+    pre = nested[:end]
+    # insert point lo depth == 0 (ante top-level — sub-menu lopala kaadu)
+    depth = len(re.findall(r"<li\b", pre)) - pre.count("</li>")
+    assert depth == 0, f"insert point depth {depth} — item sub-menu lopala padutundi (live bug!)"
+    injected = pre + '<li class="menu-item su-navbrk">BRK</li>' + nested[end:]
+    assert injected.index("BRK") > injected.index("Home")
+    assert injected.count("<ul") == injected.count("</ul>"), "markup balance poyindi"
+    assert injected.count("<ul") == injected.count("</ul>"), "markup balance poyindi"
+    # WP menu lo `<link` laantivi unna kuda depth scan confuse avvakoodadu
+    weird = '<li><a href="/x?q=1">x</a></li>'
+    assert _first_item_end(weird) == len(weird)
+    assert _first_item_end("no items here") is None, "li lekunda position ichindi"
+    ok("injection: nested first item unna top-level ga (depth-aware) ✔")
 
 
 # -------------------------------------------------------------------- P4 CSS
@@ -225,6 +278,19 @@ def test_p5_demo_has_no_duplicate_nav_js() -> None:
     ok("demo: single nav JS (duplicate toggles gone) ✔")
 
 
+def test_p5_layout_proof_tool_exists() -> None:
+    """Phone+laptop neatness ki real-browser measurement tool (owner ask)."""
+    tool = ROOT / "tools" / "verify_breaking_ui.js"
+    assert tool.exists(), "tools/verify_breaking_ui.js ledu (phone/laptop proof tool)"
+    t = read(tool)
+    for needle in ("phone-360", "phone-390", "phone-414", "tablet-768",
+                   "laptop-1440", "desktop-1920", "--json", "SKIP"):
+        assert needle in t, f"tool lo {needle} ledu"
+    assert "scrollWidth" in t and "getBoundingClientRect" in t, "nijamaina measurements ledu"
+    assert "mega" in t and "megaTopDiff" in t, "Central Jobs panel tho comparison ledu"
+    ok("layout proof tool (8 widths × light/dark) ✔")
+
+
 def test_p5_zip_has_module() -> None:
     assert ZIP.exists(), "theme zip ledu"
     with zipfile.ZipFile(ZIP) as z:
@@ -241,9 +307,11 @@ def main() -> int:
         test_p1_module_and_wiring,
         test_p2_honesty_no_empty_panel,
         test_p3_injection_rules,
+        test_p3b_injection_survives_nested_first_item,
         test_p4_css_and_critical_layer,
         test_p5_demo_parity_and_real_links,
         test_p5_demo_has_no_duplicate_nav_js,
+        test_p5_layout_proof_tool_exists,
         test_p5_zip_has_module,
     ]
     print("v202 — Breaking News nav item (header) — %d checks" % len(tests))

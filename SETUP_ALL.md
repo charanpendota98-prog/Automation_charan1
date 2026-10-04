@@ -26,7 +26,7 @@ https://raw.githubusercontent.com/charanpendota98-prog/Automation_charan1/arena/
 
 | Zip | size | sha256 (mundu 16) |
 | --- | --- | --- |
-| studentup-theme-1.9.42.zip | 138 files · 931 KB | `fb7d959d44c3` |
+| studentup-theme-1.9.42.zip | 138 files · 932 KB | `f8c9d12b2a32` |
 | studentup-bot-cron.zip | 355 files · 3949 KB | `198cea49aecbb311` |
 | studentup-static-site.zip (optional) | 36 files · 556 KB | `251db4308a75b51c` |
 | studentup-seo-bridge-1.1.0.zip (optional) | 2 files | `2132fbe7d9653dfd` |

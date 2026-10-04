@@ -3638,6 +3638,23 @@ link resolves: `breaking-news` / `breaking` / `current-affairs` term when it
 exists, otherwise `/#breaking` — never a 404. Option:
 *StudentUp → Options → "Breaking News item in the header"* (default on).
 
+**Phone + laptop proof (measured, not eyeballed):**
+`node tools/verify_breaking_ui.js` drives real Chromium at 8 widths (360 · 390 ·
+414 · 768 · 1024 · 1280 · 1440 · 1920) in **light and dark** (16 runs), clicks
+the item/hamburger like a user and measures the result: horizontal overflow
+(`scrollWidth − innerWidth`), panel rect vs viewport, panel radius/z-index vs
+the *Central Jobs* mega panel (`megaTopΔ`), CTA height, drawer width and whether
+the mobile rows overflow. Current run: **16/16 viewports clean, overflow 0 px,
+panel 420×361 inside viewport, radius 16 px, z-index 1000, megaTopΔ 3 px,
+drawer 306–340 px with 4 rows**.
+
+**Injection hardened (live edge case):** the item used to be inserted after the
+*first `</li>`*, which inside a user-built menu can be a **sub-item** — if the
+first menu entry (`Jobs ▾`) has children, the Breaking item would have landed
+*inside* that dropdown. `studentup_breaking_first_item_end()` now counts `<li>` /
+`</li>` depth and inserts only after the first **top-level** item; the algorithm
+has a Python mirror tested against nested/odd markup.
+
 **Click bug found and fixed in the same pass** (screenshot + jsdom proof): the
 demo page carried an *old inline copy* of the mega/drawer JS next to the theme's
 `studentup-menu.js`. Both toggled `.su-open`, so a click added the class and the

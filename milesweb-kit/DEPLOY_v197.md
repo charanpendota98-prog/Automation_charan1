@@ -1,6 +1,6 @@
 # DEPLOY v197 — 10 nimushalu (click-by-click)
 
-> Theme **1.9.42** · zip: `wordpress-theme/studentup-theme.zip` (138 files · 931 KB · `fb7d959d44c3…`) — v202 Breaking News header item + v201 preview-parity (hero + slider) + v199 final home + v198 tools workbench
+> Theme **1.9.42** · zip: `wordpress-theme/studentup-theme.zip` (138 files · 932 KB · `f8c9d12b2a32…`) — v202 Breaking News header item + v201 preview-parity (hero + slider) + v199 final home + v198 tools workbench
 > Direct download (GitHub raw):
 > `https://raw.githubusercontent.com/charanpendota98-prog/Automation_charan1/arena/01a1035e-automation-charan1/wordpress-theme/studentup-theme.zip`
 > (PR #25 merge ayyaka `.../main/wordpress-theme/studentup-theme.zip` kuda same file istundi.)
