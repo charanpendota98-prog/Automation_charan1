@@ -29,7 +29,7 @@ sys.path.insert(0, str(ROOT))
 
 from autoblog import config, link_graph as lg, seo  # noqa: E402
 
-SUITES_EXPECTED = 147
+SUITES_EXPECTED = 148
 SITE = "https://studentup.in"
 
 
@@ -292,7 +292,7 @@ def test_cli_and_docs() -> None:
         assert flag in main, flag
     assert "link_graph" in main
     suites = len(list((ROOT / "tests").glob("*_test.py")))
-    assert suites == SUITES_EXPECTED, f"suites {suites} (v99 tho 147)"
+    assert suites == SUITES_EXPECTED, f"suites {suites} (v99 tho 148)"
     readme = read(ROOT / "README.md")
     manual = read(ROOT / "MANUAL_ADVANCED_CHECKLIST.md")
     cur = f"{SUITES_EXPECTED}/{SUITES_EXPECTED}"

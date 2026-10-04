@@ -26,7 +26,7 @@ https://raw.githubusercontent.com/charanpendota98-prog/Automation_charan1/arena/
 
 | Zip | size | sha256 (mundu 16) |
 | --- | --- | --- |
-| studentup-theme-1.9.42.zip | 137 files · 928 KB | `933751ca13d4` |
+| studentup-theme-1.9.42.zip | 138 files · 931 KB | `fb7d959d44c3` |
 | studentup-bot-cron.zip | 355 files · 3949 KB | `198cea49aecbb311` |
 | studentup-static-site.zip (optional) | 36 files · 556 KB | `251db4308a75b51c` |
 | studentup-seo-bridge-1.1.0.zip (optional) | 2 files | `2132fbe7d9653dfd` |
@@ -147,7 +147,7 @@ Reudu clean ga pass aithe → bot complete. Telegram lo **✅ Publish** button k
 
 | Enti | State |
 | --- | --- |
-| Theme code (1.9.42) | ✅ complete + 147/147 suites · jsdom 230/230 · php-lint 98/98 · parity PIN-TO-PIN · sprite gate (blank icons = build fail) |
+| Theme code (1.9.42) | ✅ complete + 148/148 suites · jsdom 239/239 · php-lint 99/99 · parity PIN-TO-PIN · sprite gate (blank icons = build fail) |
 | Bot code | ✅ complete — offline dry-run lo anni network steps graceful ga skip (no crash, no fake success) |
 | Zip kit | ✅ fresh (theme 1.9.39 + bot v197/v198 modules) |
 | **Live site** | ⏳ zip upload pending — mee **zip upload** tarvate 1.9.42 avutundi (ee file A section) |

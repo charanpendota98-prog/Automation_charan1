@@ -19,7 +19,8 @@ require_once get_template_directory() . '/inc/icons.php';        // v171: pro SV
 require_once get_template_directory() . '/inc/critical-css.php'; // v171: above-fold inline CSS + async full CSS.
 require_once get_template_directory() . '/inc/qual-filter.php';  // v72: 10th/Inter/Degree/PG filter (auto tags)
 require_once get_template_directory() . '/inc/breaking.php';
-require_once get_template_directory() . '/inc/slider.php'; // v201: “Latest Notifications” slider (preview↔live parity)
+require_once get_template_directory() . '/inc/slider.php';
+require_once get_template_directory() . '/inc/nav-breaking.php'; // v201: “Latest Notifications” slider (preview↔live parity)
 require_once get_template_directory() . '/inc/ads.php';
 require_once get_template_directory() . '/inc/megamenu.php';
 require_once get_template_directory() . '/inc/template.php';

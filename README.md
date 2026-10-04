@@ -1,7 +1,7 @@
 # studentup.in Auto-Blogger 🤖
 
 
-> **Verified counts (theme v1.9.42 build):** test suites **147/147** files · jsdom runtime **230/230** checks · PHP lint **98/98** files · theme audit **0/0** · **deep audit pass 1-4 31/31** · code audit **0/0**.
+> **Verified counts (theme v1.9.42 build):** test suites **148/148** files · jsdom runtime **239/239** checks · PHP lint **99/99** files · theme audit **0/0** · **deep audit pass 1-4 31/31** · code audit **0/0**.
 24/7 automatic blog posting system for **studentup.in** (WordPress) — runs on your Oracle Cloud instance.
 
 - **AI content:** Google Gemini (free tier) generates Telugu + English mix articles
@@ -681,7 +681,7 @@ Theme ni "world best" standards tho **repeatable ga audit** cheyyadaniki
 
 ```bash
 python3 tools/theme_audit_deep.py     # pass 1-4 · ✅ 31 pass · 0 warn · 0 fail
-node tools/php_lint.js                # 98/98
+node tools/php_lint.js                # 99/99
 python3 tools/build_offline_preview.py # 20-tab single-file preview (server-free)
 python run.py --verify-deploy          # v197: zip upload tarvata LIVE proof (theme · menu · quiz · poll · /daily-quiz/)
 python run.py --verify-deploy --verify-url https://studentup.in --verify-notify
@@ -998,7 +998,7 @@ calendar · admit card · resume · syllabus) ippudu OKATE card lo accessible ta
 role=tab/aria-selected/hidden parity.
 
 Proof: --test-all **138/138** · theme audit 0 errors 0 warnings · deep audit **31/31** · parity **PIN-TO-PIN** ·
-code audit 0/0 · php-lint 86/86 · CWV/a11y static 0/0 · zip 115 files · 1029 KB · sha `0715c79cbf1a…`.
+code audit 0/0 · php-lint 99/99 · CWV/a11y static 0/0 · zip 115 files · 1029 KB · sha `0715c79cbf1a…`.
 **v191.2 (MONEY EDITION, user brief: "tools em avasaram ledu · neat ga · highest revenue"):** home nunchi
 widget wall (8 calculators + quiz/alerts/stories/scholarship/for-you) **teesesamu** — avi ippudu `/tools/`
 page template (`page-tools.php`) lo mattrame. New home flow: hero → ticker → most-searched → **leaderboard ad** →
@@ -2714,7 +2714,7 @@ chala miss chesthunnam" + "theme lo kuda chala mistakes unnayi"** → moodintiki
 | 7 | **Writing-time SEMANTIC + DEEPER checks** | **SEMANTIC group**: entity coverage 3+ · **ముఖ్యాంశాలు** box · **question-form headings** 2+ (PAA) · **సంబంధిత అంశాలు** cluster block · avg sentence ≤24 · current year · quick answer. **DEEPER batch**: heading hierarchy (H1 ledu/skip ledu) · markdown leftovers ledu · list ≤12 words · **table ≤5 cols (mobile)** · **job-guarantee/clickbait claims ledu** (trust+policy) · **keyword cannibalization ledu** · slug ≤60 · **meta lo CTA+number** · secondary keywords body lo · img width/height (CLS) · descriptive anchors · FAQ answers 12+ words → gate **67 checks** · fails → **LLM refine hints** (writing loop lo ne fix, publish block kaadu) |
 | 8 | **rm100 fixers + FAQ bug** | `fix_takeaways` + `fix_entities` (content nunchi mattrame — invent ledu) · **nijamaina bug**: puratana FAQ guard (`<h3` 3+ unte skip) valla **FAQ section asalu rakapovadam** → ippudu questions nijam ga content lo unnaya ani check (regression test) |
 | 9 | **+12 website options** | `ads_enabled` · `adsense_slot_mid` · `adsense_slot_in_feed` · `ads_txt` · `max_ads` · `lazy_ads` · `ads_on_policy` · `consent_mode` · `consent_regions` · `consent_cmp_id` · `news_sitemap` (anni WP Admin → StudentUp nunchi) · **v73:** `deadline_json` poyindi |
-| 10 | **Proof** | `python run.py --test-all` → **55/55 suites** · jsdom **138/138** · `--readiness` **100/100 (27/27)** · pin gate **67/67** · code audit **0/0** · theme audit **0/0** · PHP lint **28/28** · zip **35 files (625 KB)** |
+| 10 | **Proof** | `python run.py --test-all` → **55/55 suites** · jsdom **138/138** · `--readiness` **100/100 (27/27)** · pin gate **67/67** · code audit **0/0** · theme audit **0/0** · PHP lint **99/99** · zip **35 files (625 KB)** |
 
 **v66 honest note:** Consent Mode v2 + ads.txt + gating + CLS + lazy = AdSense **policy-safe**
 revenue foundations. Kaani **revenue numbers Google + traffic + country RPM batti** — idi
@@ -2868,7 +2868,7 @@ Menu (desktop + mobile same order): హోమ్ · ఉద్యోగాలు�
 
 Bot side: `autoblog/breaking.py` (feed build + tag classifier + honest empty note),
 radar run lo auto hook, `MOST_USED` order okate source (bot + site + tests sync).
-Evidence: tests/v59_test.py 12 checks · `run.py --test-all` 55/55 · jsdom 138/138.
+Evidence: tests/v59_test.py 12 checks · `run.py --test-all` 55/55 · jsdom 239/239.
 
 > ℹ️ Ee system exam conduct cheyyadaniki matrame — student data (roll, answers,
 > scores) mee server lo untundi, bayata pampabadadu. Public internet lo pettali
@@ -3608,6 +3608,51 @@ each fix below is a new, browser-verified gate.
 **Verified after the fixes (same wheel, this commit):** `--test-all` **147/147 suites** · php-lint **98/98** · theme audit **0 errors/0 warnings** · deep audit **31/31** · code audit **clean** · jsdom **230/230** · visual check **100/100** · parity **PIN-TO-PIN** · headless browser: **0 unclipped overflow at 390px**, contrast failures **44 → 1** (only the screen-reader label, false positive), H1 22/29px, phone H1+ticker+first live card all inside the first screen.
 
 ---
+
+## v202 — "Breaking News" header nav item (owner: "Breaking News kuda same like Central Jobs alaga undali — akkada click chethe open avvali")
+
+Measured first, on the **live** site (2026-10-04): the header menu there is
+**admin-built** (`Home · Telangana Jobs · AP Jobs · Central Jobs · Results · Hall
+Tickets · …`) — WordPress prints that menu instead of the theme's own mega
+renderer, so an item hard-coded inside `studentup_mega_render()` would never
+appear on live. v202 therefore ships the item in **both** worlds:
+
+| Where | How | File |
+|-------|-----|------|
+| User-built menu (live case) | `wp_nav_menu_items` filter → injected as the **2nd `<li>`** (right after Home), duplicate-safe, `primary` location only | `inc/nav-breaking.php` → `studentup_breaking_menu_filter()` |
+| Theme fallback mega | echoed right after the `Home` `<li>` | `inc/megamenu.php` |
+| Mobile drawer | `.mlabel-brk` + 4 `.su-mbrk` rows + `.su-mbrk-all` CTA, above *Explore* | `header.php` + `studentup_breaking_mobile_block()` |
+
+Behaviour is the **same contract as Central Jobs**: the `<li>` is
+`menu-item-has-children` with a real `ul.sub-menu`, so the existing nav JS
+(`assets/js/studentup-menu.js`) already gives click-to-toggle (`aria-expanded`,
+`.su-open`), hover open/close, `Enter`, `ArrowDown`, arrow navigation and
+`Escape`; the panel is positioned like the mega panels and hides itself on
+phones (`≤900px`) and in print.
+
+Content is real, never invented: verified radar items first
+(`studentup_breaking_items()` → `/data/breaking.json`, ≤36 h, verified only),
+else the **latest published posts** (`human_time_diff` + first category) with an
+honest `All latest` CTA. No data ⇒ **no item at all** (no empty panel). Every
+link resolves: `breaking-news` / `breaking` / `current-affairs` term when it
+exists, otherwise `/#breaking` — never a 404. Option:
+*StudentUp → Options → "Breaking News item in the header"* (default on).
+
+**Click bug found and fixed in the same pass** (screenshot + jsdom proof): the
+demo page carried an *old inline copy* of the mega/drawer JS next to the theme's
+`studentup-menu.js`. Both toggled `.su-open`, so a click added the class and the
+stale handler removed it again — the panel never stayed open in the preview, and
+the preview behaved differently from live (where that inline copy never existed).
+The 118-line duplicate was deleted; the preview now runs the theme JS as its
+single source of truth. `tests/v202_test.py` + the jsdom runtime block lock it
+(`239/239` checks incl. click-opens / click-closes / hover / one-at-a-time /
+mobile rows).
+
+New gate: `tests/v202_test.py` (7 checks) locks the module + wiring, the
+verified-first/no-empty-panel honesty rules, the injection rules (primary-only,
+duplicate-safe, after Home, option-gated), the CSS/JS open contract incl. dark
+mode + ≤900px/print, and demo/standalone/OFFLINE parity with **on-disk** link
+targets.
 
 ## v201 — Preview ↔ live parity (owner: "ikkada preview lo chupinchindi theme upload chesthe live lo alaga ledu")
 

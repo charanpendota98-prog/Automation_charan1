@@ -161,6 +161,7 @@ function studentup_option_fields() {
 				'salary_calc'   => array( 'In-hand salary calculator', 'check', '1', 'v124: basic + DA + HRA + TA − deductions, open formula' ),
 				'job_calendar'  => array( 'Job calendar (last dates)', 'check', '1', 'v124: next 12 deadlines with days-left chips' ),
 				'trending_today'=> array( 'Trending today strip (hero)', 'check', '1', 'v124: latest 6 headlines, hero kinda scrolling strip' ),
+				'breaking_nav'  => array( 'Breaking News item in the header', 'check', '1', 'v202: verified radar items unte avi, lekapote latest posts — panel click/hover tho open avutundi. Real data lekunda item inject avvadu.' ),
 				'state_first'   => array( 'State-first dynamic homepage', 'check', '1', 'v124: reader TS/AP/All-India select cheste aa state sections mundu vastayi (localStorage, cache-safe)' ),
 				'auto_og'       => array( 'Auto branded social card (featured image lenappudu)', 'check', '1', 'v129: 1200×630 gradient card automatic — WhatsApp/Telegram/Discover share lo khali card raakoodadu. Server lo GD + font unte matrame; lekapote silently OFF.' ),
 				'apply_bar'     => array( 'Sticky apply bar on job posts', 'check', '1', 'v131: single job posts lo bottom apply CTA + deadline countdown + JobPosting schema' ),

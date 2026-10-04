@@ -109,6 +109,10 @@ msgstr ""
 msgid "Age limit"
 msgstr ""
 
+#: inc/nav-breaking.php:127
+msgid "All latest"
+msgstr ""
+
 #: inc/saved.php:302
 msgid "All saved posts removed."
 msgstr ""
@@ -120,6 +124,11 @@ msgstr ""
 
 #: inc/premium.php:358
 msgid "All tools"
+msgstr ""
+
+#: inc/nav-breaking.php:127
+#: inc/nav-breaking.php:156
+msgid "All updates"
 msgstr ""
 
 #: inc/workspace.php:115
@@ -171,6 +180,12 @@ msgstr ""
 
 #: inc/polls.php:434
 msgid "Be the first to vote — results show as soon as people answer."
+msgstr ""
+
+#: inc/nav-breaking.php:114
+#: inc/nav-breaking.php:115
+#: inc/nav-breaking.php:148
+msgid "Breaking News"
 msgstr ""
 
 #: inc/personal.php:53
@@ -613,6 +628,14 @@ msgstr ""
 msgid "latest updates on the home page"
 msgstr ""
 
+#: inc/nav-breaking.php:117
+msgid "Latest verified updates"
+msgstr ""
+
+#: inc/nav-breaking.php:118
+msgid "Live"
+msgstr ""
+
 #: inc/slider.php:159
 msgid "LIVE"
 msgstr ""
@@ -878,7 +901,7 @@ msgstr ""
 msgid "Recently read"
 msgstr ""
 
-#: inc/megamenu.php:392
+#: inc/megamenu.php:396
 msgid "Recommended"
 msgstr ""
 
@@ -942,7 +965,7 @@ msgstr ""
 msgid "Save this post for later"
 msgstr ""
 
-#: header.php:115
+#: header.php:116
 #: inc/saved.php:209
 #: inc/saved.php:294
 #: inc/saved.php:304

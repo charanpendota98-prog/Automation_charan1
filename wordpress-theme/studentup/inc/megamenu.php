@@ -350,6 +350,10 @@ function studentup_mega_render( $groups, $home ) {
 		esc_url( $home ),
 		esc_html__( 'Home', 'studentup' )
 	);
+	// v202: Breaking News item — Central Jobs laage click/hover tho open avutundi.
+	if ( function_exists( 'studentup_breaking_nav_li' ) ) {
+		echo studentup_breaking_nav_li(); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped inside.
+	}
 	foreach ( $groups as $g ) {
 		$key = sanitize_title( (string) $g['label'] );
 		$ic  = isset( $g['icon'] ) ? (string) $g['icon'] : 'arrow';

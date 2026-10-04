@@ -526,14 +526,6 @@ body.dark .logo .brand{ color:#fff }
 .su-bottomnav a[aria-current="page"] span.su-bi{ background:linear-gradient(135deg,var(--blue),var(--navy-2)); color:#fff }
 .su-bi{ width:34px; height:26px; border-radius:9px; display:grid; place-items:center; background:var(--soft) }
 .su-bi svg{ width:18px; height:18px }
-.su-anchor{ position:fixed; left:8px; right:8px; bottom:calc(66px + env(safe-area-inset-bottom)); z-index:69;
-  background:#fff; border:1px solid var(--line); border-radius:16px; box-shadow:var(--sh-2);
-  padding:10px; display:flex; align-items:center; gap:10px }
-.su-anchor .su-anchor-ad{ flex:1; min-height:62px; display:grid; place-items:center; border-radius:12px;
-  background:linear-gradient(180deg,#fbfdff,#eef4fc); border:1px dashed var(--line-2);
-  font-size:11px; letter-spacing:.06em; text-transform:uppercase; font-weight:800; color:var(--muted) }
-.su-anchor button{ width:34px; height:34px; border-radius:10px; border:1px solid var(--line);
-  background:#fff; cursor:pointer; font-size:15px; color:var(--muted) }
 @media(max-width:899px){ body{ padding-bottom:78px }}
 body.dark{
   --bg:#0b1220; --card:#101a2c; --soft:#16233a; --line:#1e2b45; --line-2:#26364f;
@@ -545,7 +537,6 @@ body.dark .header{ background:rgba(13,21,36,.94) }
 body.dark .chip,body.dark .su-tab,body.dark .su-hact,body.dark .iconbtn{ background:#152137; color:var(--ink-2) }
 body.dark .news{ background:var(--card) }
 body.dark .su-bottomnav{ background:rgba(13,21,36,.96) }
-body.dark .su-anchor{ background:#101a2c }
 @media(prefers-reduced-motion:reduce){
   *{ animation-duration:.001ms!important; animation-iteration-count:1!important;
      transition-duration:.001ms!important; scroll-behavior:auto!important }}
@@ -596,19 +587,6 @@ a,button,.chip,.su-hact{ touch-action:manipulation }
 input,select,textarea{ touch-action:auto }
 .news .thumb{ position:relative; overflow:hidden;
   background:linear-gradient(135deg,#24344d,#3d5578) }
-.news .thumb--auto{border-radius:0}
-.news .thumb--auto .su-cov{ position:absolute; inset:0; display:block }
-.news .thumb--auto .su-cov::before{
-  content:""; position:absolute; inset:0; opacity:.5;
-  background-image:radial-gradient(rgba(255,255,255,.20) 1px,transparent 1.2px);
-  background-size:9px 9px }
-.news .thumb--auto .su-cov::after{
-  content:""; position:absolute; top:-60%; right:-30%; width:78%; height:230%;
-  transform:rotate(18deg);
-  background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.15)) }
-.news--lead .thumb--auto .su-cov-mono{ font-size:56px; left:14px; top:10px }
-.news--lead .thumb--auto .su-cov-cat{ left:14px; bottom:12px; font-size:11.5px; padding:4px 11px }
-@media(min-width:900px){ .news--lead .thumb--auto .su-cov-mono{ font-size:78px }}
 .news .thumb img{ transition:transform .45s cubic-bezier(.2,.7,.3,1) }
 .news .thumb::after{ content:""; position:absolute; inset:0; pointer-events:none;
   background:linear-gradient(180deg,rgba(11,36,71,0) 62%,rgba(11,36,71,.10)) }
@@ -618,7 +596,6 @@ input,select,textarea{ touch-action:auto }
 .sectionhead p{ max-width:60ch }
 .su-uicon{ display:inline-block; vertical-align:-.16em; flex:0 0 auto }
 .su-hact .su-uicon,.chip .su-uicon,.su-cta .su-uicon,.su-trust .su-uicon{ opacity:.95 }
-.su-ttab .su-uicon{ margin-right:5px }
 .su-hact .su-uicon,.su-cta .su-uicon{ margin-right:6px }
 .su-trust .su-uicon{ margin-right:5px }
 .lastdate .su-uicon,.su-readmore .su-uicon,.su-am .su-uicon{ margin-right:4px }
@@ -727,3 +704,9 @@ body.dark .su-trust-banner{ background:rgba(22,101,52,.15); border-color:#166534
 .su-hact--breaking{ border-color:#fca5a5; background:#fef2f2; color:#b91c1c; font-weight:800 }
 .su-hact.su-t-ink{ background:linear-gradient(135deg,#0f2e62,#4338ca); color:#fff; border-color:transparent }
 body.dark .su-hact--breaking{ background:rgba(220,38,38,.16); border-color:#7f1d1d; color:#fca5a5 }
+.nav .su-navbrk>a{ color:#b91c1c; font-weight:800; display:inline-flex; align-items:center; gap:6px }
+ .nav .menu-primary>li.su-navbrk.su-open>a{ background:#fef2f2; color:#991b1b }
+.nav .su-brkdot{ width:7px; height:7px; border-radius:50%; background:#dc2626; flex:0 0 auto;
+  box-shadow:0 0 0 3px rgba(220,38,38,.16); animation:blip 1.1s infinite }
+body.dark .nav .su-navbrk>a{ color:#fca5a5 }
+ body.dark .nav .menu-primary>li.su-navbrk.su-open>a{ background:rgba(220,38,38,.14); color:#fca5a5 }

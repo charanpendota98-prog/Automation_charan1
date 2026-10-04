@@ -1,6 +1,6 @@
 # 📋 MANUAL ADVANCED CHECKLIST — "Nenu manual ga em em cheyali"
 ### Website advanced ga run avvali · Posts ANI-PERFECT · Mistakes leku · Deep analyse + NotebookLM
-> **Verified counts (theme v1.9.42 build):** test suites **147/147** files · jsdom runtime **230/230** checks · PHP lint **98/98** files · theme audit **0/0** · **deep audit pass 1-4 31/31** · code audit **0/0**.
+> **Verified counts (theme v1.9.42 build):** test suites **148/148** files · jsdom runtime **239/239** checks · PHP lint **99/99** files · theme audit **0/0** · **deep audit pass 1-4 31/31** · code audit **0/0**.
 
 
 **Ee file = mee haath tho cheyyalsina ANNI — exact order, exact commands.**
@@ -210,8 +210,8 @@ REVENUE (6/6 slots · privacy-safe):
   anchor/sticky-bottom (mobile) — anni density cap + lazy + reserved height + consent tho.
 
 TESTS            : tests/v67_test.py = 11 checks · run.py --test-all 53/53 ·
-                   jsdom 138/138 · readiness 100/100 (27/27) · theme audit 0/0 ·
-                   code audit 0/0 · parity 0/0 · php-lint 29/29 · zip 37 files ·
+                   jsdom 239/239 · readiness 100/100 (27/27) · theme audit 0/0 ·
+                   code audit 0/0 · parity 0/0 · php-lint 99/99 · zip 37 files ·
                    BA matrix docs/BA_REQUIREMENTS_MATRIX.md
 ```
 
@@ -431,7 +431,7 @@ FILES   : front-page (home order) · header (menu+టికర్) · footer (so
           inc/template (cards · proof tiles · countdown · breadcrumbs)
 SPEED   : external JS library ledu (1 CSS + 1 JS) · lazy images · CLS-safe ad slots
 NIJAM   : theme = mee design; WP plugins (Rank Math · AdSense) vaalla pani vaalle chestayi.
-TESTS   : tests/v61_test.py = 14 checks · run.py --test-all 56/56 · jsdom 165/165
+TESTS   : tests/v61_test.py = 14 checks · run.py --test-all 56/56 · jsdom 239/239
 ```
 
 ---
@@ -484,7 +484,7 @@ BOT      : python run.py --breaking-feed              (radar → feed + Telegram
 HONESTY  : feed lo radar (Google News తెలుగు + 258 curated source queries) verified items
            matrame · item lekapote site "కొత్త verified బ్రేకింగ్ అప్డేట్‌లు లేవు" +
            "రాడార్ ప్రతి 6 గంటలకు చెక్ చేస్తుంది" ani cheptundi — fake/clickbait ledu
-TESTS    : tests/v59_test.py = 12 checks · run.py --test-all 45/45 · jsdom 138/138
+TESTS    : tests/v59_test.py = 12 checks · run.py --test-all 45/45 · jsdom 239/239
 ```
 
 ---
@@ -512,7 +512,7 @@ AUDIT    : review lo pattina rendu issues fix —
                builder (build_policy_pages.py) nunchi auto-generate avutundi
            (2) keyword-universe-top200.csv ippudu engine nunchi generate (stale kaadu:
                10 Abroad rows top-200 lo) — test fail ayithe CSV stale ani artham
-TESTS    : tests/v58_test.py = 12 checks · run.py --test-all 44/44 · jsdom 109/109
+TESTS    : tests/v58_test.py = 12 checks · run.py --test-all 44/44 · jsdom 239/239
 ```
 
 ---
@@ -756,7 +756,7 @@ KOTHA (trending ki): instant indexing
 
 PROOF: tests/v68_test.py 19 checks (audit clean · bug locks · detection ability fixtures ·
   CLI smoke battery 10 commands · real RSA-2048 sign→verify) · run.py --test-all 55/55 ·
-  readiness 100/100 (28/28) · theme audit 0/0 · code audit 0/0 · parity 0/0 · php-lint 29/29 · zip 37 files
+  readiness 100/100 (28/28) · theme audit 0/0 · code audit 0/0 · parity 0/0 · php-lint 99/99 · zip 37 files
 HONEST: instant indexing = notification, **ranking guarantee kaadu** (Google decide chestundi).
 ```
 
@@ -792,7 +792,7 @@ AUTOMATIC (v60 rule): guardian lo code_audit + parity_audit checks (13/15 = 2 wa
   readiness lo +1 check → 100/100 (28/28)
 
 PROOF: tests/v69_test.py 18 checks (parity detection fixture to) · --test-all 55/55 ·
-  jsdom 138/138 · code audit 0/0 · parity 0/0 · theme audit 0/0 · php-lint 29/29 ·
+  jsdom 239/239 · code audit 0/0 · parity 0/0 · theme audit 0/0 · php-lint 99/99 ·
   zip 37 files 629 KB · theme v1.5.0
 
 ## PART 29 — v70: PUBLIC SURFACE CLEANUP (proof/developer text ledu) + 100% verification
@@ -825,8 +825,8 @@ NIJAMAINA BUG (ee cleanup lo pattukunnadi + fix):
   poyayi (proof block tho pattu) → daily hook khali payload pampedi (options/deadline/indexnow
   sync aagipoyedi). Ippudu restore + 'proof_json' mapping remove.
 
-PROOF (v70): tests/v70 lock — --test-all 55/55 · jsdom 138/138 · readiness 100/100 (28/28) ·
-  guardian 14/15 (1 warn-only env) · code audit 0/0 · parity 0/0 · theme audit 0/0 · php-lint 29/29 ·
+PROOF (v70): tests/v70 lock — --test-all 55/55 · jsdom 239/239 · readiness 100/100 (28/28) ·
+  guardian 14/15 (1 warn-only env) · code audit 0/0 · parity 0/0 · theme audit 0/0 · php-lint 99/99 ·
   zip 37 files 628 KB · theme v1.5.0 · proof doc: output/v70-proof-2026-09-18.md
 
 ## PART 30 — v71: STUDENTS INTERNET CENTER + CLEAN MONETISATION (English-first)
@@ -858,8 +858,8 @@ WHAT CHANGED
 AUTOMATIC (v60 rule): guardian `counts_sync` · readiness `c_counts_sync` · parity **P8** (suites +
 jsdom count from the jsdom `EXPECTED_CHECKS` constant) · jsdom drift guard · theme audit pass 3.
 
-PROOF (v71): --test-all 55/55 · jsdom 138/138 · readiness 100/100 (28/28) · guardian 14/15
-  (1 warn-only owner env) · code audit 0/0 · parity 0/0 · theme audit 0/0 · php-lint 31/31 ·
+PROOF (v71): --test-all 55/55 · jsdom 239/239 · readiness 100/100 (28/28) · guardian 14/15
+  (1 warn-only owner env) · code audit 0/0 · parity 0/0 · theme audit 0/0 · php-lint 99/99 ·
   zip 39 files 633 KB · theme v1.6.0 · proof doc: output/v71-proof-2026-09-18.md
 
 ```
@@ -905,7 +905,7 @@ python run.py --test-all                     # 56/56 suites
 node tests/runtime/jsdom_runtime_test.js     # 165/165 browser checks
 python run.py --readiness                    # 100/100 · python run.py --guardian
 python tools/parity_audit.py                 # PIN-TO-PIN · python tools/code_audit.py
-node tools/php_lint.js                       # 32/32 PHP files · python tools/build_wp_theme.py
+node tools/php_lint.js                       # 99/99 PHP files · python tools/build_wp_theme.py
 ```
 **Note:** themeలో ఏ మార్పు చేసినా `--test-all` కి **ముందు** `python tools/build_wp_theme.py`
 (zip fresh kaavali) — theme audit/zip checks adi enforce chestayi.
@@ -917,8 +917,8 @@ OWNER STEPS (v72)
 3. బ్రేకింగ్ న్యూస్ kavali ante — *StudentUp → కంటెంట్ → బ్రేకింగ్ న్యూస్ సెక్షన్ ON* (default OFF).
 4. Phones lo "యాప్గా ఇన్స్టాల్" button test cheyandi (Android Chrome + iPhone Safari).
 
-PROOF (v72.1): --test-all 56/56 · jsdom 162/162 · readiness 100/100 (28/28) · guardian 14/15
-  (1 warn-only owner env) · code audit 0/0 · parity 0/0 · theme audit 0/0 · php-lint 32/32 ·
+PROOF (v72.1): --test-all 56/56 · jsdom 239/239 · readiness 100/100 (28/28) · guardian 14/15
+  (1 warn-only owner env) · code audit 0/0 · parity 0/0 · theme audit 0/0 · php-lint 99/99 ·
   zip 41 files 642 KB · theme v1.7.1 · proof doc: output/v73-proof-2026-09-18.md
 
 No guarantee: rankings, traffic, AdSense approval and revenue depend on Google + your accounts +
@@ -970,7 +970,7 @@ node tests/runtime/jsdom_runtime_test.js     # 165/165 browser checks
 python tests/v72_test.py                     # 27 checks (v72 + v72.1)
 python run.py --readiness                    # 100/100 · python run.py --guardian
 python tools/parity_audit.py                 # PIN-TO-PIN · python tools/code_audit.py # 0/0
-node tools/php_lint.js                       # 32/32 · python tools/build_wp_theme.py
+node tools/php_lint.js                       # 99/99 · python tools/build_wp_theme.py
 ```
 
 No guarantee: rankings/traffic/AdSense/revenue Google + mee accounts + time batti — ee pass lo unna vi
@@ -1023,7 +1023,7 @@ python run.py --test-all                     # 56/56 suites (v73_test.py kotha: 
 node tests/runtime/jsdom_runtime_test.js     # 165/165 browser checks (English UI + countdown removal)
 python run.py --readiness                    # 100/100 · python run.py --guardian
 python tools/parity_audit.py                 # PIN-TO-PIN · python tools/code_audit.py # 0/0
-node tools/php_lint.js                       # 32/32 · python tools/build_wp_theme.py (zip rebuild LAST)
+node tools/php_lint.js                       # 99/99 · python tools/build_wp_theme.py (zip rebuild LAST)
 ```
 
 TESTS REBASE (v73 lo maree pins update chesam — UI ni tirigi pettaledu):
@@ -1082,7 +1082,7 @@ VERIFY (v75)
 python run.py --test-all                     # 56/56 suites (v75_test.py kotha: 10 checks)
 node tests/runtime/jsdom_runtime_test.js     # 165/165 browser checks
 python run.py --readiness                    # 100/100 · python run.py --guardian # 14/15 (creds pending)
-node tools/php_lint.js                       # 32/32 · python tools/build_wp_theme.py (zip rebuild LAST)
+node tools/php_lint.js                       # 99/99 · python tools/build_wp_theme.py (zip rebuild LAST)
 python run.py --mock --force                 # auto dry-run ON + DRY-RUN saved (publish ledu)
 ```
 
@@ -1137,7 +1137,7 @@ VERIFY (v76)
 ```
 python run.py --test-all                     # 58/58 suites (v76_test.py kotha: 10 checks)
 node tests/runtime/jsdom_runtime_test.js     # 165/165 browser checks (dropdown mechanics)
-node tools/php_lint.js                       # 32/32 · python tools/build_wp_theme.py (zip rebuild LAST)
+node tools/php_lint.js                       # 99/99 · python tools/build_wp_theme.py (zip rebuild LAST)
 python run.py --readiness                    # 100/100 · python run.py --guardian
 ```
 
@@ -1192,7 +1192,7 @@ PINS: v61 rotation formula rebase (hour) · v75/v76 counts 59 · jsdom untouched
 VERIFY (v77)
 ```
 python run.py --test-all                     # 59/59 suites (v77_test.py kotha: 10 checks)
-node tools/php_lint.js                       # 32/32 · python tools/build_wp_theme.py (zip LAST)
+node tools/php_lint.js                       # 99/99 · python tools/build_wp_theme.py (zip LAST)
 python run.py --readiness                    # 100/100 · python run.py --guardian
 ```
 
@@ -1238,7 +1238,7 @@ rm100 rich-content → 81 + honest remainder (length/density = content job).
 VERIFY (v78)
 ```
 python run.py --test-all                     # 60/60 suites (v78_test.py kotha: 10 checks)
-node tools/php_lint.js                       # 32/32 · python tools/build_wp_theme.py (zip LAST)
+node tools/php_lint.js                       # 99/99 · python tools/build_wp_theme.py (zip LAST)
 python run.py --readiness                    # 100/100 · python run.py --guardian
 ```
 
@@ -1279,7 +1279,7 @@ CSS: .su-join-inline(+dark) · .su-author-avatar img · .su-tags · .post-nav(+d
 VERIFY (v79)
 ```
 python run.py --test-all                     # 61/61 suites (v79_test.py kotha: 10 checks)
-node tools/php_lint.js                       # 32/32 · python tools/build_wp_theme.py (zip LAST)
+node tools/php_lint.js                       # 99/99 · python tools/build_wp_theme.py (zip LAST)
 python run.py --readiness                    # 100/100 · python run.py --guardian
 ```
 
@@ -1330,7 +1330,7 @@ VERIFY (v80)
 ```
 python run.py --test-all                     # 62/62 suites (v80_test.py kotha: 12 checks)
 python run.py --check-links <post-URL>       # dead outbound report
-node tools/php_lint.js                       # 33/33 · python tools/build_wp_theme.py (zip LAST)
+node tools/php_lint.js                       # 99/99 · python tools/build_wp_theme.py (zip LAST)
 python run.py --readiness                    # 100/100 · python run.py --guardian
 ```
 
@@ -1370,7 +1370,7 @@ VERIFY (v81)
 ```
 python run.py --test-all                     # 63/63 suites (v81_test.py kotha: 10 checks)
 python run.py --orphans <sitemap.xml>        # orphan pages report
-node tools/php_lint.js                       # 34/34 · python tools/build_wp_theme.py (zip LAST)
+node tools/php_lint.js                       # 99/99 · python tools/build_wp_theme.py (zip LAST)
 python run.py --readiness                    # 100/100 · python run.py --guardian
 ```
 
@@ -1632,7 +1632,7 @@ VERIFY (v90)
 python tests/v90_test.py                     # 8/8 checks
 python run.py --test-all                     # 71/71 suites
 node tests/runtime/jsdom_runtime_test.js     # 165/165 browser checks
-node tools/php_lint.js                       # 36/36 files OK
+node tools/php_lint.js                       # 99/99 files OK
 python run.py --readiness                    # 100/100
 ```
 
@@ -1681,7 +1681,7 @@ python tests/v91_test.py                     # 10/10 checks
 python tests/v90_test.py                     # 8/8 checks (bridge intact)
 python run.py --test-all                     # 71/71 suites
 node tests/runtime/jsdom_runtime_test.js     # 165/165 browser checks
-node tools/php_lint.js                       # 36/36 files OK
+node tools/php_lint.js                       # 99/99 files OK
 python run.py --readiness                    # 100/100
 python -m pyflakes autoblog tools tests run.py  # 0 findings
 python tools/parity_audit.py                 # 0 errors
@@ -1723,7 +1723,7 @@ python tests/v92_test.py                     # 11/11 checks
 node tests/runtime/saved_runtime_test.js     # 53/53 real behaviour checks
 python run.py --test-all                     # 72/72 suites
 node tests/runtime/jsdom_runtime_test.js     # 165/165 browser checks
-node tools/php_lint.js                       # 37/37 files OK
+node tools/php_lint.js                       # 99/99 files OK
 python run.py --readiness                    # 100/100
 python tools/theme_audit.py                  # 0 errors
 python tools/theme_audit_deep.py             # 0 errors · 0 warnings
@@ -1771,7 +1771,7 @@ python tests/v93_test.py                     # 12/12 checks (menu · icons · co
 python run.py --test-all                     # 73/73 suites
 node tests/runtime/jsdom_runtime_test.js     # 165/165 browser checks
 node tests/runtime/saved_runtime_test.js     # 53/53 saved engine
-node tools/php_lint.js                       # 37/37 files OK
+node tools/php_lint.js                       # 99/99 files OK
 python run.py --readiness                    # 100/100
 python tools/theme_audit.py                  # 0 errors
 python tools/theme_audit_deep.py             # 0 errors · 0 warnings
@@ -1828,7 +1828,7 @@ python tests/v94_test.py                     # 13/13 checks
 python run.py --adsense-ready                # 97% · blockers chudu
 python run.py --test-all                     # 74/74 suites
 node tests/runtime/jsdom_runtime_test.js     # 165/165
-node tools/php_lint.js                       # 38/38 files OK
+node tools/php_lint.js                       # 99/99 files OK
 python run.py --readiness                    # 100/100
 ```
 
@@ -1940,7 +1940,7 @@ python tests/v96_test.py                 # 17 checks
 python run.py --district-hubs            # dry-run plan (eligible vs thin-guard)
 python run.py --district-hubs --district-hubs-apply   # WordPress lo publish
 python tools/build_wp_theme.py           # 49 files · theme 1.9.7
-node tools/php_lint.js                   # 39/39
+node tools/php_lint.js                   # 99/99
 ```
 
 OWNER SETUP (ee features pani cheyyadaniki)
@@ -2068,7 +2068,7 @@ VERIFY (ippudu)
 ```
 python tests/v98_test.py           # 10 checks
 python run.py --test-all           # 80/80
-node tools/php_lint.js             # 40/40
+node tools/php_lint.js             # 99/99
 python tools/build_wp_theme.py     # 50 files · theme 1.9.8
 ```
 

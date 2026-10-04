@@ -123,7 +123,12 @@ UNION_DROPPABLE = (".su-tools", ".su-tooltabs", ".su-toolpanel", ".su-fields",
                    # result actions) — tools page mattrame, inline cap lo vaddhu.
                    ".su-toolfind", ".su-toolcats", ".su-tcat", ".su-tstep",
                    ".su-tact", ".su-tnext", ".su-tools-top", ".su-tool-how",
-                   ".mpanel", ".mbackdrop", ".su-slider", ".su-scard")
+                   ".mpanel", ".mbackdrop", ".su-slider", ".su-scard",
+                   # v202: breaking-news dropdown panel + drawer block — hover/tap ki mattrame
+                   # (nav item `.su-navbrk` CORE lo ne untundi: adi above-the-fold).
+                   ".su-brkdd", ".su-mbrk", ".mlabel-brk",
+                   # v202 headroom: scroll tarvata/tools page mattrame kanipishevi
+                   ".su-anchor", ".su-ttab", ".su-cov", ".thumb--auto")
 
 # v199: home-only blocks — 10 most-searched cards + count pill front-page lo
 # mattrame render avutayi. Single/archive inline CSS nunchi ee tokens teeyali
