@@ -313,9 +313,9 @@ run.py --test-all                    # 138 suites (code health)
 
 | Check | Command | Ippati result |
 |---|---|---|
-| Test suites | `run.py --test-all` | **146/146** ✔ |
-| JS runtime | `node tests/runtime/jsdom_runtime_test.js` | **177/177** ✔ |
-| PHP lint | `node tools/php_lint.js` | **97/97** ✔ |
+| Test suites | `run.py --test-all` | **147/147** ✔ |
+| JS runtime | `node tests/runtime/jsdom_runtime_test.js` | **230/230** ✔ |
+| PHP lint | `node tools/php_lint.js` | **98/98** ✔ |
 | Theme deep audit | `python3 tools/theme_audit_deep.py` | **31 pass · 0 warn · 0 fail** |
 | Parity (docs↔code) | `python3 tools/parity_audit.py` | **PIN-TO-PIN OK** |
 | Code audit | `python3 tools/code_audit.py` | **0 errors · 0 warnings** |

@@ -26,7 +26,7 @@ sys.path.insert(0, str(ROOT))
 
 from autoblog import keyword_verify as kv  # noqa: E402
 
-SUITES_EXPECTED = 146
+SUITES_EXPECTED = 147
 
 
 def read(p: Path) -> str:
@@ -244,11 +244,11 @@ def test_cli_and_env() -> None:
 
 def test_docs_and_suites() -> None:
     suites = len(list((ROOT / "tests").glob("*_test.py")))
-    assert suites == SUITES_EXPECTED, f"suites {suites} (v97 tho 144)"
+    assert suites == SUITES_EXPECTED, f"suites {suites} (v97 tho 147)"
     readme = read(ROOT / "README.md")
     manual = read(ROOT / "MANUAL_ADVANCED_CHECKLIST.md")
-    assert "### v97" in readme and "146/146" in readme
-    assert "PART 54" in manual and "146/146" in manual
+    assert "### v97" in readme and "147/147" in readme
+    assert "PART 54" in manual and "147/147" in manual
     for name, txt in (("README", readme), ("MANUAL", manual)):
         assert "--verify-keyword" in txt, f"{name} lo CLI ledu"
     # honest limit documented (volume ivvadu ani cheppali)

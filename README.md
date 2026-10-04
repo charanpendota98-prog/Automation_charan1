@@ -1,7 +1,7 @@
 # studentup.in Auto-Blogger 🤖
 
 
-> **Verified counts (theme v1.9.41 build):** test suites **146/146** files · jsdom runtime **230/230** checks · PHP lint **97/97** files · theme audit **0/0** · **deep audit pass 1-4 31/31** · code audit **0/0**.
+> **Verified counts (theme v1.9.42 build):** test suites **147/147** files · jsdom runtime **230/230** checks · PHP lint **98/98** files · theme audit **0/0** · **deep audit pass 1-4 31/31** · code audit **0/0**.
 24/7 automatic blog posting system for **studentup.in** (WordPress) — runs on your Oracle Cloud instance.
 
 - **AI content:** Google Gemini (free tier) generates Telugu + English mix articles
@@ -681,7 +681,7 @@ Theme ni "world best" standards tho **repeatable ga audit** cheyyadaniki
 
 ```bash
 python3 tools/theme_audit_deep.py     # pass 1-4 · ✅ 31 pass · 0 warn · 0 fail
-node tools/php_lint.js                # 97/97
+node tools/php_lint.js                # 98/98
 python3 tools/build_offline_preview.py # 20-tab single-file preview (server-free)
 python run.py --verify-deploy          # v197: zip upload tarvata LIVE proof (theme · menu · quiz · poll · /daily-quiz/)
 python run.py --verify-deploy --verify-url https://studentup.in --verify-notify
@@ -882,7 +882,7 @@ bot tho draft chesi post chesthu vundali anni perfectga advanced menu build chey
 | Daily quiz | `inc/quiz.php` rebuilt: 25-question sourced bank, server-rendered questions (works with JavaScript off — form POST + nonce), Quiz JSON-LD, explained answers with source, streak + best + native share via `assets/js/studentup-engage.js`, dedicated `/daily-quiz/` page (`page-quiz.php`, created by *Run setup now*). The v123 bug (function never called → quiz missing on the live theme) is closed and gated by a test. |
 | Reader polls | `inc/polls.php` — daily poll (7-question bank + bot/owner override), one vote per device (one-way hashed voter, raw IP never stored), 20-second rate limit, counts in `wp_options` with autoload OFF, REST route `studentup/v1/poll`, and a plain form POST fallback so voting works without JavaScript. |
 | Daily bot | `autoblog/publish_lane.py` — evening auto-publish that only touches drafts clearing **every** gate (official source URL meta · 700+ words · live Rank Math score ≥ 80 · fresh · no placeholder text) and verifies the publish readback. `autoblog/engage_push.py` pushes the daily quiz post and the poll question to the theme (idempotent by poll id). CLI: `--auto-publish`, `--auto-publish-dry`, `--daily-engage`, `--import-quiz`, `--export-quiz-channel`; `AUTO_PUBLISH_DAILY=1` adds the publish step to `--daily`. |
-| Deploy proof | `python run.py --verify-deploy` checks the **live** site after the zip upload: theme version 1.9.41+, mega menu markup, menu/engage JS, quiz + poll on the home, `/daily-quiz/`, served CSS classes, icon sprite, sitemap entry and the poll REST route. Every failure prints the exact next step (upload zip / Run setup now / purge cache). |
+| Deploy proof | `python run.py --verify-deploy` checks the **live** site after the zip upload: theme version 1.9.42+, mega menu markup, menu/engage JS, quiz + poll on the home, `/daily-quiz/`, served CSS classes, icon sprite, sitemap entry and the poll REST route. Every failure prints the exact next step (upload zip / Run setup now / purge cache). |
 | Preview | Mega nav rendered by the same builder for every preview page, real quiz + poll widgets on the home and on a new English `/pages/daily-quiz.html`, and `tools/build_sprite.py` generates the inline icon sprite from the theme's own icon set (no more blank icon boxes). The offline single-file bundle now has 20 tabs and no dead links. |
 
 **Proof:** `tests/v197_test.py` (10 gates) · **142/142 suites** · php-lint **97/97** · parity PIN-TO-PIN · theme audit 0/0 · deep audit 31/31 · cwv 0/0 · visual 100/100.
@@ -902,7 +902,7 @@ vundali neat ga phone lo easy ga click vachelaga"*.
 | Deep links | `/tools/?tool=age` is shareable, bookmarkable and Back/Forward-safe. |
 | No-JS + privacy | `<noscript>` fallback lists every tool when JavaScript is off; the engine stores nothing (no cookie, no localStorage, no network call). |
 | Perf | engine is ~17 KB deferred, loaded on the Tools page only; its selectors stay out of the inline critical CSS (45 KB cap respected). |
-| Build stamp | every preview page ends with an honest `Preview build 1.9.41` line, so a cached/old page is instantly recognisable (v199.1). |
+| Build stamp | every preview page ends with an honest `Preview build 1.9.42` line, so a cached/old page is instantly recognisable (v199.1). |
 | Nothing lost | the v120 reader utilities that shared the old file (compare rail, deadline reminder `.ics`, print/PDF, text-size buttons, in-article age/fee/syllabus calculators) now live in `assets/js/studentup-reader-utils.js` and are enqueued everywhere they render — v198 C7 + jsdom 8 checks prove each one still works. |
 
 **Set up (theme + bot, okka file):** [`SETUP_ALL.md`](SETUP_ALL.md) — zip download → theme upload → `Run setup now` → bot `.env` + 5 cron lines → `--verify-deploy`.
@@ -918,7 +918,7 @@ build cheyu, anni phone lo advanced ga best ga"*.
 | v192 demo note removed | "v192 premium preview…" banner is gone from the demo, the standalone file and the 20-tab offline bundle. |
 | Live "Latest Jobs" strip | fades at both edges instead of clipping text, pauses when you press/hover/focus it, 44 px tap height on every headline, and becomes a normal swipeable row under `prefers-reduced-motion`. |
 | Most searched | the 10 sections fill **exactly**: 2-up on phone (5 clean rows) and 5-up on laptop (2 clean rows) — no empty cells, no wasted space (v199.1). Cards are tighter (70 px, 38 px icon) with press feedback, a clean trailing chevron, focus ring, dark-mode count pills and print rules. |
-| Build stamp | every preview page ends with an honest `Preview build 1.9.41` line, so a cached/old page is instantly recognisable (v199.1). |
+| Build stamp | every preview page ends with an honest `Preview build 1.9.42` line, so a cached/old page is instantly recognisable (v199.1). |
 | Nothing lost | quiz, polls, mega menu, bottom nav, sticky ad and the tools page are untouched; home still carries no calculators (v191 rule). |
 
 **Proof:** `tests/v199_test.py` (5 gates) · jsdom +5 checks (ticker set, 10 cards, real pills, demo note gone) · **146/146 suites** · jsdom **230/230**.
@@ -929,7 +929,7 @@ build cheyu, anni phone lo advanced ga best ga"*.
 
 User ask: "A) per-template critical CSS → Speed Index fix · B) hub pages + internal links ON · C) author/editorial pages + Person schema — anni cheyu".
 
-**A. Per-template critical CSS (theme 1.9.41-dev)**
+**A. Per-template critical CSS (theme 1.9.42-dev)**
 
 | File | Inline size | Ekkada |
 |---|---|---|
@@ -3605,4 +3605,36 @@ each fix below is a new, browser-verified gate.
 | B5 | **Social rail covered the content column** on phones (fixed rail sat mid-screen over cards; 128 sub-44px tap targets) | two conflicting media queries (style.css docked it bottom-right, worldclass.css forced it to mid-screen) | `.su-social` → bottom-right dock (86px above bottom nav) on ≤980px; `body.su-has-stickyad` keeps clearing the sticky ad; `.su-tbtn` got a 44px `::after` hit-area; 981–1339px gets `padding-right:74px` so the rail never overlaps the content |
 | B6 | **Theme screenshot was Lorem ipsum** + docs claimed suites that did not exist (**46/146 test suites failed**: "144/144" pins vs 146 files, README "145/145", stale zip sha256) | version drift between tests/docs/build | `screenshot.png` regenerated from the real demo (1200×900); `SUITES_EXPECTED`/`144/144`/`145/145` → `146/146`; `GO_LIVE_CHECKLIST.md` zip sha256 refreshed |
 
-**Verified after the fixes (same wheel, this commit):** `--test-all` **146/146 suites** · php-lint **97/97** · theme audit **0 errors/0 warnings** · deep audit **31/31** · code audit **clean** · jsdom **230/230** · visual check **100/100** · parity **PIN-TO-PIN** · headless browser: **0 unclipped overflow at 390px**, contrast failures **44 → 1** (only the screen-reader label, false positive), H1 22/29px, phone H1+ticker+first live card all inside the first screen.
+**Verified after the fixes (same wheel, this commit):** `--test-all` **147/147 suites** · php-lint **98/98** · theme audit **0 errors/0 warnings** · deep audit **31/31** · code audit **clean** · jsdom **230/230** · visual check **100/100** · parity **PIN-TO-PIN** · headless browser: **0 unclipped overflow at 390px**, contrast failures **44 → 1** (only the screen-reader label, false positive), H1 22/29px, phone H1+ticker+first live card all inside the first screen.
+
+---
+
+## v201 — Preview ↔ live parity (owner: "ikkada preview lo chupinchindi theme upload chesthe live lo alaga ledu")
+
+`preview/worldclass/index.html` is a **hand-written design demo**. It links the
+theme's real CSS/JS, so styling edits show up in the preview — but its *markup*
+was never rendered by WordPress. That is why an uploaded theme could pass every
+gate and still look different on the live site. v201 ports the blocks the theme
+was missing, in the theme's own PHP:
+
+| # | Was only in the demo | Now in the theme |
+|---|----------------------|------------------|
+| P1 | Hero: `<h1 class="su-hero-title">Government Jobs, Results &amp; Notifications</h1>` + `.su-search-wrap` (search + `/` hint) + 8 quick chips (Breaking News · Latest Jobs · TSPSC / Telangana · APPSC / Andhra Pradesh · Central Govt · Police / Defence · 10th / Inter · Results &amp; Keys) | `inc/premium.php` → `studentup_hero_premium()` renders exactly that markup; chips link to the real category archive when the term exists, otherwise to the jobs board (never a 404); "Breaking News" uses the new `.su-hact--breaking` class instead of an inline style |
+| P2 | "LIVE · Latest Notifications" auto-sliding track (`.su-slider-sec` → `#su-jobs-track`, rich `.su-scard` cards) | new `inc/slider.php` → `studentup_latest_notifications()` builds the same markup from **real published posts** — category · exam tag, deadline pill ≤14 days, 🔥 New <48 h, vacancies/qualification/last date only when the post really has them, "Full details &amp; Apply" CTA, WhatsApp share. Empty site ⇒ the section renders nothing (no fake cards) |
+| P3 | the track's auto-slide JS lived inline in the demo only (so the live theme had no slider at all) | new `assets/js/studentup-slider.js`, enqueued on the front page: 3.2 s autoslide, prev/pause/next, hover/focus/touch/`visibilitychange` pauses, ←/→ keys, `prefers-reduced-motion` disables autoslide, `/` focuses the hero search. The demo now loads this same file (its inline copy was deleted) |
+
+Home order is now the demo's order: ticker → hero → latest notifications → most
+searched → qualification bar → cards → jobs table → hot jobs → closing week →
+quiz → poll → ads. Page 1 has exactly one `<h1>` (the hero); page 2 keeps the
+screen-reader one.
+
+New gates: `tests/v201_test.py` locks the hero markup/copy, the 8 chips, the
+slider renderer, the front-page order, the enqueue, the JS behaviours and the
+CSS classes, so this parity cannot silently rot again.
+
+**Honest remaining differences:** sections the demo draws with its own sample
+markup (alerts card, rail cards, footer wrapper classes, bottom-nav button
+class) and everything that depends on your WordPress data and the
+`studentup_opt()` toggles — an empty database or a switched-off toggle still
+renders less than the demo. `preview/index.html` (the older static mirror) keeps
+its own inline styles and is not regenerated from PHP.

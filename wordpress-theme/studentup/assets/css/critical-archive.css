@@ -724,3 +724,6 @@ body.dark .menubtn{
   .news .thumb-img img{ transition:none }}
 .su-trust-banner{ display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; margin:10px 0 16px; padding:10px 14px; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:10px; font-size:12.5px; color:#166534 }
 body.dark .su-trust-banner{ background:rgba(22,101,52,.15); border-color:#166534; color:#86efac }
+.su-hact--breaking{ border-color:#fca5a5; background:#fef2f2; color:#b91c1c; font-weight:800 }
+.su-hact.su-t-ink{ background:linear-gradient(135deg,#0f2e62,#4338ca); color:#fff; border-color:transparent }
+body.dark .su-hact--breaking{ background:rgba(220,38,38,.16); border-color:#7f1d1d; color:#fca5a5 }

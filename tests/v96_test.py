@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""v96 tests — COVERAGE + SESSION DEPTH + REAL BUG FIXES (theme 1.9.41).
+"""v96 tests — COVERAGE + SESSION DEPTH + REAL BUG FIXES (theme 1.9.42).
 
 Mee brief (2026-09-22): "ts and ap studentski em em posts vasthunnai … anni
 … job melas … every district pages jobs … university results … daily current
@@ -59,7 +59,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 THEME = ROOT / "wordpress-theme" / "studentup"
-SUITES_EXPECTED = 146  # v96 tho
+SUITES_EXPECTED = 147  # v96 tho
 
 
 def read(rel: "Path | str") -> str:
@@ -409,16 +409,16 @@ def test_theme_version_and_zip() -> None:
                     read(THEME / "functions.php")).group(1)
     stable = re.search(r"Stable tag:\s*([0-9.]+)",
                        read(THEME / "readme.txt")).group(1)
-    assert css == php == stable == "1.9.41", f"parity tappu: {css}·{php}·{stable}"
+    assert css == php == stable == "1.9.42", f"parity tappu: {css}·{php}·{stable}"
     assert "= 1.9.7" in read(THEME / "readme.txt"), "changelog entry ledu"
     zpath = ROOT / "wordpress-theme" / "studentup-theme.zip"
     with zipfile.ZipFile(zpath) as z:
         names = z.namelist()
         assert "studentup/inc/upnext.php" in names, "zip lo upnext.php ledu"
         style = z.read("studentup/style.css").decode("utf-8")
-    assert "Version: 1.9.41" in style, "zip stale (build_wp_theme.py run cheyandi)"
+    assert "Version: 1.9.42" in style, "zip stale (build_wp_theme.py run cheyandi)"
     assert ".su-upnext" in style and ".su-join-strip" in style
-    print(f"      theme 1.9.41 · zip {len(names)} files · upnext + CSS inside ✔")
+    print(f"      theme 1.9.42 · zip {len(names)} files · upnext + CSS inside ✔")
 
 
 def test_suite_pins_and_docs() -> None:
@@ -453,7 +453,7 @@ TESTS = [
     ("district hub coverage data-driven", test_district_hub_coverage_is_data_driven),
     ("district hub thin-page guard", test_district_hubs_thin_page_guard),
     ("district hubs CLI + docs", test_district_hubs_cli_wired),
-    ("theme 1.9.41 + zip", test_theme_version_and_zip),
+    ("theme 1.9.42 + zip", test_theme_version_and_zip),
     ("suite pins + docs", test_suite_pins_and_docs),
 ]
 
@@ -461,7 +461,7 @@ TESTS = [
 def main() -> None:
     os.chdir(ROOT)
     print("=" * 70)
-    print("v96 COVERAGE + SESSION DEPTH + REAL BUG FIXES (theme 1.9.41)")
+    print("v96 COVERAGE + SESSION DEPTH + REAL BUG FIXES (theme 1.9.42)")
     print("=" * 70)
     failed = 0
     for name, fn in TESTS:

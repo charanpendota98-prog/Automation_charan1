@@ -11,7 +11,7 @@ Theme URI: https://studentup.in/
 Author: StudentUp
 Author URI: https://studentup.in/
 Description: StudentUp design for Telangana & Andhra Pradesh students — TS/AP/Central govt jobs, qualification filter (SSC/10th · Inter · Degree · PG), live search, latest-jobs scrolling ticker, brand social icons, install as an app (PWA), job/exam cards, AdSense-ready ad slots, dark mode. Mobile-first, Rank Math + AdSense friendly.
-Version: 1.9.41
+Version: 1.9.42
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 7.4
@@ -1521,7 +1521,7 @@ body.dark .su-q-diff{background:#1e293b;color:#cbd5e1}
 
 
 /* ==========================================================================
-   StudentUp — WorldClass v2  (theme 1.9.41 · v199.1)
+   StudentUp — WorldClass v2  (theme 1.9.42 · v201)
    Mobile-first design layer. style.css tarvata load avutundi — kotha markup
    avasaram ledu, unna classes ne premium ga upgrade chestundi.
    Rules: 17px Telugu-friendly base · 44px tap targets · safe-area ·
@@ -3008,11 +3008,20 @@ body.dark .su-q-diff{ background:#1e293b; color:#cbd5e1 }
   .su-why{ display:block !important }
 }
 
-
-
-
-
-
+/* ============================================================
+   v201 — PREVIEW ↔ LIVE PARITY layer
+   Demo (preview/worldclass) markup ni theme PHP ippudu output chestundi;
+   aa markup ki kavalsina konni chinna styles ikkada (inline styles badulu).
+   ============================================================ */
+.su-hact--breaking{ border-color:#fca5a5; background:#fef2f2; color:#b91c1c; font-weight:800 }
+.su-hact.su-t-ink{ background:linear-gradient(135deg,#0f2e62,#4338ca); color:#fff; border-color:transparent }
+.su-hact--breaking:hover{ background:#fee2e2; border-color:#ef4444; color:#b91c1c }
+.su-scard h3 a{ color:inherit; text-decoration:none }
+.su-scard-hot{ font-size:10.5px; font-weight:800; padding:2px 8px; border-radius:999px;
+  background:#fff7ed; color:#b45309; border:1px solid #fed7aa }   /* AA 5.02 (v200 rule) */
+body.dark .su-hact--breaking{ background:rgba(220,38,38,.16); border-color:#7f1d1d; color:#fca5a5 }
+body.dark .su-scard-hot{ background:rgba(180,83,9,.20); border-color:#7c2d12; color:#fdba74 }
+.su-slider-sec .su-slider-head h2{ font-size:18px }
 
 
   .headrow{display:flex;align-items:center;gap:12px;max-width:var(--wrap);margin:0 auto;padding:0 16px;overflow:visible}
@@ -3858,15 +3867,35 @@ th{background:var(--soft);color:var(--navy);font-size:13px}
     </div>
 
     <div class="su-hero-acts">
-      <a class="su-hact" href="#jobs" style="border-color:#fca5a5;background:#fef2f2;color:#b91c1c;font-weight:800"><svg class="su-uicon su-uicon-bolt" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-bolt"/></svg> Breaking News</a>
-      <a class="su-hact" href="#jobs"><svg class="su-uicon su-uicon-bolt" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-bolt"/></svg> తాజా ఉద్యోగాలు</a>
-      <a class="su-hact" href="#jobs"><svg class="su-uicon su-uicon-bank" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-bank"/></svg> TSPSC / తెలంగాణ</a>
-      <a class="su-hact" href="#jobs"><svg class="su-uicon su-uicon-bank" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-bank"/></svg> APPSC / ఆంధ్రప్రదేశ్</a>
-      <a class="su-hact" href="#jobs"><svg class="su-uicon su-uicon-flag" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-flag"/></svg> కేంద్ర ప్రభుత్వం</a>
-      <a class="su-hact" href="#jobs"><svg class="su-uicon su-uicon-shield" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-shield"/></svg> పోలీస్ / డిఫెన్స్</a>
-      <a class="su-hact" href="#jobs"><svg class="su-uicon su-uicon-school" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-school"/></svg> 10వ / ఇంటర్</a>
-      <a class="su-hact" href="#of-results"><svg class="su-uicon su-uicon-doc" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-doc"/></svg> ఫలితాలు &amp; కీలు</a>
+      <a class="su-hact su-hact--breaking" href="#jobs"><svg class="su-uicon su-uicon-bolt" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-bolt"/></svg> Breaking News</a>
+      <a class="su-hact" href="#jobs"><svg class="su-uicon su-uicon-bolt" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-bolt"/></svg> Latest Jobs</a>
+      <a class="su-hact" href="#jobs"><svg class="su-uicon su-uicon-bank" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-bank"/></svg> TSPSC / Telangana</a>
+      <a class="su-hact" href="#jobs"><svg class="su-uicon su-uicon-bank" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-bank"/></svg> APPSC / Andhra Pradesh</a>
+      <a class="su-hact" href="#jobs"><svg class="su-uicon su-uicon-flag" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-flag"/></svg> Central Govt</a>
+      <a class="su-hact" href="#jobs"><svg class="su-uicon su-uicon-shield" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-shield"/></svg> Police / Defence</a>
+      <a class="su-hact" href="#jobs"><svg class="su-uicon su-uicon-school" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-school"/></svg> 10th / Inter</a>
+      <a class="su-hact" href="#of-results"><svg class="su-uicon su-uicon-doc" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-doc"/></svg> Results &amp; Keys</a>
+      <a class="su-hact su-t-ink" href="https://studentup.in/workspace/" title="Live page (WordPress)"><svg class="su-uicon su-uicon-person" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><use href="#su-i-person"/></svg> My Workspace</a>
     </div>
+
+      <div class="su-trend" aria-label="Trending today">
+        <span class="su-trend-tag">⚡ Trending today</span>
+        <div class="su-trend-list">
+          <a href="#of-post1">UPSC Junior Assistant 2026 — full details…</a>
+          <a href="#of-calendar">TSPSC Group 2 last date 28 October…</a>
+          <a href="#of-post1">IBPS Clerk online apply — 4,520 posts…</a>
+          <a href="#of-results">SSC CHSL 2026 notification — 3,712 posts…</a>
+          <a href="#of-scholarships">Post-matric scholarship ePASS open…</a>
+          <a href="#of-post1">RRB NTPC 2026 — 11,558 vacancies…</a>
+        </div>
+      </div>
+
+      <div class="su-statebar" data-su-state-bar>
+        <span>Your state:</span>
+        <button type="button" data-su-state="ts" class="on">Telangana</button>
+        <button type="button" data-su-state="ap">Andhra Pradesh</button>
+        <button type="button" data-su-state="central">All India</button>
+      </div>
   </div>
 </section>
 
@@ -3902,7 +3931,7 @@ th{background:var(--soft);color:var(--navy);font-size:13px}
           </div>
           <div class="su-scard-acts-row">
             <a class="su-scard-act" href="#of-post1">
-              <span>పూర్తి వివరాలు &amp; Apply</span>
+              <span>Full details &amp; Apply</span>
               <span>→</span>
             </a>
             <a class="su-card-wa" href="https://wa.me/?text=SSC%20CHSL%202026%20Notification%203712%20Posts%20Apply%20Online%20https://studentup.in/posts/upsc-junior-assistant-2026" target="_blank" rel="noopener" title="Share on WhatsApp">
@@ -3924,7 +3953,7 @@ th{background:var(--soft);color:var(--navy);font-size:13px}
           </div>
           <div class="su-scard-acts-row">
             <a class="su-scard-act" href="#of-post2">
-              <span>పూర్తి వివరాలు &amp; Apply</span>
+              <span>Full details &amp; Apply</span>
               <span>→</span>
             </a>
             <a class="su-card-wa" href="https://wa.me/?text=TSPSC%20Group%202%20Services%20783%20Vacancies%20Apply%20Online%20https://studentup.in/posts/engineering-internships-2026" target="_blank" rel="noopener" title="Share on WhatsApp">
@@ -3946,7 +3975,7 @@ th{background:var(--soft);color:var(--navy);font-size:13px}
           </div>
           <div class="su-scard-acts-row">
             <a class="su-scard-act" href="#of-post1">
-              <span>పూర్తి వివరాలు &amp; Apply</span>
+              <span>Full details &amp; Apply</span>
               <span>→</span>
             </a>
             <a class="su-card-wa" href="https://wa.me/?text=AP%20Police%20Constable%202026%206100%20Vacancies%20Physical%20Dates%20https://studentup.in/posts/ap-police-constable-2026" target="_blank" rel="noopener" title="Share on WhatsApp">
@@ -3968,7 +3997,7 @@ th{background:var(--soft);color:var(--navy);font-size:13px}
           </div>
           <div class="su-scard-acts-row">
             <a class="su-scard-act" href="#of-post1">
-              <span>పూర్తి వివరాలు &amp; Apply</span>
+              <span>Full details &amp; Apply</span>
               <span>→</span>
             </a>
             <a class="su-card-wa" href="https://wa.me/?text=IBPS%20Clerk%202026%204520%20Posts%20Apply%20Online%20https://studentup.in/posts/ibps-clerk-2026" target="_blank" rel="noopener" title="Share on WhatsApp">
@@ -3990,7 +4019,7 @@ th{background:var(--soft);color:var(--navy);font-size:13px}
           </div>
           <div class="su-scard-acts-row">
             <a class="su-scard-act" href="#of-post1">
-              <span>పూర్తి వివరాలు &amp; Apply</span>
+              <span>Full details &amp; Apply</span>
               <span>→</span>
             </a>
             <a class="su-card-wa" href="https://wa.me/?text=RRB%20NTPC%202026%2011558%20Posts%20Apply%20Online%20https://studentup.in/posts/rrb-ntpc-2026" target="_blank" rel="noopener" title="Share on WhatsApp">
@@ -4012,7 +4041,7 @@ th{background:var(--soft);color:var(--navy);font-size:13px}
           </div>
           <div class="su-scard-acts-row">
             <a class="su-scard-act" href="#of-post1">
-              <span>పూర్తి వివరాలు &amp; Apply</span>
+              <span>Full details &amp; Apply</span>
               <span>→</span>
             </a>
             <a class="su-card-wa" href="https://wa.me/?text=Post%20Office%20GDS%202026%2021413%20Posts%20Merit%20Based%20https://studentup.in/posts/post-office-gds-2026" target="_blank" rel="noopener" title="Share on WhatsApp">
@@ -4034,7 +4063,7 @@ th{background:var(--soft);color:var(--navy);font-size:13px}
           </div>
           <div class="su-scard-acts-row">
             <a class="su-scard-act" href="#of-post1">
-              <span>పూర్తి వివరాలు &amp; Apply</span>
+              <span>Full details &amp; Apply</span>
               <span>→</span>
             </a>
             <a class="su-card-wa" href="https://wa.me/?text=SSC%20GD%20Constable%202026%2039481%20Posts%20Apply%20Online%20https://studentup.in/posts/upsc-junior-assistant-2026" target="_blank" rel="noopener" title="Share on WhatsApp">
@@ -4056,7 +4085,7 @@ th{background:var(--soft);color:var(--navy);font-size:13px}
           </div>
           <div class="su-scard-acts-row">
             <a class="su-scard-act" href="#of-post2">
-              <span>పూర్తి వివరాలు &amp; Apply</span>
+              <span>Full details &amp; Apply</span>
               <span>→</span>
             </a>
             <a class="su-card-wa" href="https://wa.me/?text=APPSC%20Group%201%20Services%202026%2092%20Posts%20Apply%20Online%20https://studentup.in/posts/engineering-internships-2026" target="_blank" rel="noopener" title="Share on WhatsApp">
@@ -4591,7 +4620,7 @@ th{background:var(--soft);color:var(--navy);font-size:13px}
     <div><h4>Exams &amp; Results</h4><ul><li><a href="#of-results">Exam Results &amp; Cutoffs</a></li><li><a href="#of-results">Hall Tickets &amp; Admit Cards</a></li><li><a href="#of-calendar">Exam Calendar 2026</a></li><li><a href="#of-quiz">Daily Quiz &amp; Practice</a></li></ul></div>
     <div><h4>Policies &amp; Trust</h4><ul><li><a href="#of-privacy">Privacy Policy</a></li><li><a href="#of-disclaimer">Disclaimer</a></li><li><a href="#of-terms">Terms of Service</a></li><li><a href="#of-editorial-policy">Editorial Policy</a></li></ul></div>
   </div>
-  <div class="preview-stamp" style="display:none!important" hidden aria-hidden="true">Preview build <b>1.9.41</b> · live strip + 10 sections · <a href="#of-tools">/tools/</a></div>
+  <div class="preview-stamp" style="display:none!important" hidden aria-hidden="true">Preview build <b>1.9.42</b> · live strip + 10 sections · <a href="#of-tools">/tools/</a></div>
   <div class="su-foot-bottom">
     <p style="margin:0 0 6px"><b>Disclaimer:</b> StudentUp.in is an independent educational news portal. We are NOT associated with TSPSC, APPSC, UPSC, SSC, or any government recruitment board. All notifications are curated strictly from official gazettes and portals. Always verify details in official notifications before applying.</p>
     <div>© 2026 StudentUp.in · All rights reserved · Sources: Official notifications only · <a href="#of-privacy">Privacy</a> · <a href="#of-disclaimer">Disclaimer</a> · <a href="#of-contact">Contact</a></div>
@@ -5050,48 +5079,6 @@ th{background:var(--soft);color:var(--navy);font-size:13px}
       e.preventDefault();
       nudgeTicker(-1);
     });
-  }
-
-  /* Live Latest Jobs Auto-sliding track */
-  var track = document.getElementById('su-jobs-track-wrap');
-  var sPrev = document.getElementById('su-track-prev');
-  var sNext = document.getElementById('su-track-next');
-  var sPause = document.getElementById('su-track-pause');
-  if(track){
-    var isSlidingPaused = false;
-    var step = 310;
-    function slideNext(){
-      if(isSlidingPaused) return;
-      if(track.scrollLeft + track.clientWidth >= track.scrollWidth - 10){
-        track.scrollTo({left: 0, behavior: 'smooth'});
-      } else {
-        track.scrollBy({left: step, behavior: 'smooth'});
-      }
-    }
-    var slideTimer = setInterval(slideNext, 3200);
-
-    track.addEventListener('mouseenter', function(){ isSlidingPaused = true; });
-    track.addEventListener('mouseleave', function(){ isSlidingPaused = false; });
-    track.addEventListener('touchstart', function(){ isSlidingPaused = true; }, {passive:true});
-    track.addEventListener('touchend', function(){ isSlidingPaused = false; }, {passive:true});
-
-    if(sNext){
-      sNext.addEventListener('click', function(){
-        track.scrollBy({left: step, behavior: 'smooth'});
-      });
-    }
-    if(sPrev){
-      sPrev.addEventListener('click', function(){
-        track.scrollBy({left: -step, behavior: 'smooth'});
-      });
-    }
-    if(sPause){
-      sPause.addEventListener('click', function(){
-        isSlidingPaused = !isSlidingPaused;
-        sPause.textContent = isSlidingPaused ? '▶' : '⏸';
-        sPause.setAttribute('aria-label', isSlidingPaused ? 'Resume sliding' : 'Pause sliding');
-      });
-    }
   }
 
   /* Pre-approval AdSense gate: Anchor ad remains hidden until live AdSense approval */
@@ -5693,14 +5680,14 @@ th{background:var(--soft);color:var(--navy);font-size:13px}
     </div>
   </div>
 </main>
-<div class="preview-stamp" style="max-width:1180px;margin:0 auto;padding:0 16px 14px;font-size:11.5px;color:#7b8aa3">Preview build <b>1.9.41</b> · 8 tools · tools workbench</div>
+<div class="preview-stamp" style="max-width:1180px;margin:0 auto;padding:0 16px 14px;font-size:11.5px;color:#7b8aa3">Preview build <b>1.9.42</b> · 8 tools · tools workbench</div>
 <footer class="su-foot"><div class="su-foot-grid">
   <div><h4>StudentUp</h4><p style="margin:0;color:#a9bfdd">Verified government job, exam and scholarship updates for Telangana &amp; AP students.</p></div>
   <div><h4>Jobs</h4><ul><li><a href="#of-home">TS Jobs</a></li><li><a href="#of-home">AP Jobs</a></li><li><a href="#of-home">Central Govt</a></li><li><a href="#of-home">Bank Jobs</a></li></ul></div>
   <div><h4>Site</h4><ul><li><a href="#of-about">About us</a></li><li><a href="#of-contact">Contact</a></li><li><a href="#of-advertise">Advertise</a></li><li><a href="#of-editorial-policy">Editorial policy</a></li></ul></div>
   <div><h4>Legal</h4><ul><li><a href="#of-privacy">Privacy</a></li><li><a href="#of-disclaimer">Disclaimer</a></li><li><a href="#of-terms">Terms</a></li><li><a href="https://t.me/studentup_in">Telegram</a></li></ul></div>
 </div>
-<div class="preview-stamp" style="max-width:1180px;margin:0 auto;padding:0 16px 14px;font-size:11.5px;color:#7b8aa3">Preview build <b>1.9.41</b> · theme + bot deploy-ready</div>
+<div class="preview-stamp" style="max-width:1180px;margin:0 auto;padding:0 16px 14px;font-size:11.5px;color:#7b8aa3">Preview build <b>1.9.42</b> · theme + bot deploy-ready</div>
 <div class="su-foot-bottom">© 2026 studentup.in · Sources: official notifications only. Ad revenue, rankings and job results are never guaranteed — always confirm the real information in the official notification. We are not a government website. · <a href="#of-home">Static HTML version</a></div></footer>
 <nav class="su-bottomnav" aria-label="Quick nav">
   <a href="#of-home"><span class="su-bi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><use href="#su-i-home"/></svg></span>Home</a>
@@ -6343,7 +6330,7 @@ th{background:var(--soft);color:var(--navy);font-size:13px}
   <div><h4>Site</h4><ul><li><a href="#of-about">About us</a></li><li><a href="#of-contact">Contact</a></li><li><a href="#of-advertise">Advertise</a></li><li><a href="#of-editorial-policy">Editorial policy</a></li></ul></div>
   <div><h4>Legal</h4><ul><li><a href="#of-privacy">Privacy</a></li><li><a href="#of-disclaimer">Disclaimer</a></li><li><a href="#of-terms">Terms</a></li><li><a href="https://t.me/studentup_in">Telegram</a></li></ul></div>
 </div>
-<div class="preview-stamp" style="max-width:1180px;margin:0 auto;padding:0 16px 14px;font-size:11.5px;color:#7b8aa3">Preview build <b>1.9.41</b> · theme + bot deploy-ready</div>
+<div class="preview-stamp" style="max-width:1180px;margin:0 auto;padding:0 16px 14px;font-size:11.5px;color:#7b8aa3">Preview build <b>1.9.42</b> · theme + bot deploy-ready</div>
 <div class="su-foot-bottom">© 2026 studentup.in · Sources: official notifications only. Ad revenue, rankings and job results are never guaranteed — always confirm the real information in the official notification. We are not a government website. · <a href="#of-home">Static HTML version</a></div></footer>
 <nav class="su-bottomnav" aria-label="Quick nav">
   <a href="#of-home"><span class="su-bi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><use href="#su-i-home"/></svg></span>Home</a>
@@ -7275,7 +7262,7 @@ th{background:var(--soft);color:var(--navy);font-size:13px}
   <div><h4>Site</h4><ul><li><a href="#of-about">About us</a></li><li><a href="#of-contact">Contact</a></li><li><a href="#of-advertise">Advertise</a></li><li><a href="#of-editorial-policy">Editorial policy</a></li></ul></div>
   <div><h4>Legal</h4><ul><li><a href="#of-privacy">Privacy</a></li><li><a href="#of-disclaimer">Disclaimer</a></li><li><a href="#of-terms">Terms</a></li><li><a href="https://t.me/studentup_in">Telegram</a></li></ul></div>
 </div>
-<div class="preview-stamp" style="max-width:1180px;margin:0 auto;padding:0 16px 14px;font-size:11.5px;color:#7b8aa3">Preview build <b>1.9.41</b> · theme + bot deploy-ready</div>
+<div class="preview-stamp" style="max-width:1180px;margin:0 auto;padding:0 16px 14px;font-size:11.5px;color:#7b8aa3">Preview build <b>1.9.42</b> · theme + bot deploy-ready</div>
 <div class="su-foot-bottom">© 2026 studentup.in · Sources: official notifications only. Ad revenue, rankings and job results are never guaranteed — always confirm the real information in the official notification. We are not a government website. · <a href="#of-home">Static HTML version</a></div></footer>
 <nav class="su-bottomnav" aria-label="Quick nav">
   <a href="#of-home"><span class="su-bi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><use href="#su-i-home"/></svg></span>Home</a>
@@ -7369,7 +7356,7 @@ th{background:var(--soft);color:var(--navy);font-size:13px}
   <div><h4>Site</h4><ul><li><a href="#of-about">About us</a></li><li><a href="#of-contact">Contact</a></li><li><a href="#of-advertise">Advertise</a></li><li><a href="#of-editorial-policy">Editorial policy</a></li></ul></div>
   <div><h4>Legal</h4><ul><li><a href="#of-privacy">Privacy</a></li><li><a href="#of-disclaimer">Disclaimer</a></li><li><a href="#of-terms">Terms</a></li><li><a href="https://t.me/studentup_in">Telegram</a></li></ul></div>
 </div>
-<div class="preview-stamp" style="max-width:1180px;margin:0 auto;padding:0 16px 14px;font-size:11.5px;color:#7b8aa3">Preview build <b>1.9.41</b> · theme + bot deploy-ready</div>
+<div class="preview-stamp" style="max-width:1180px;margin:0 auto;padding:0 16px 14px;font-size:11.5px;color:#7b8aa3">Preview build <b>1.9.42</b> · theme + bot deploy-ready</div>
 <div class="su-foot-bottom">© 2026 studentup.in · Sources: official notifications only. Ad revenue, rankings and job results are never guaranteed — always confirm the real information in the official notification. We are not a government website. · <a href="#of-home">Static HTML version</a></div></footer>
 <nav class="su-bottomnav" aria-label="Quick nav">
   <a href="#of-home"><span class="su-bi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><use href="#su-i-home"/></svg></span>Home</a>
@@ -7496,7 +7483,7 @@ th{background:var(--soft);color:var(--navy);font-size:13px}
   <div><h4>Site</h4><ul><li><a href="#of-about">About us</a></li><li><a href="#of-contact">Contact</a></li><li><a href="#of-advertise">Advertise</a></li><li><a href="#of-editorial-policy">Editorial policy</a></li></ul></div>
   <div><h4>Legal</h4><ul><li><a href="#of-privacy">Privacy</a></li><li><a href="#of-disclaimer">Disclaimer</a></li><li><a href="#of-terms">Terms</a></li><li><a href="https://t.me/studentup_in">Telegram</a></li></ul></div>
 </div>
-<div class="preview-stamp" style="max-width:1180px;margin:0 auto;padding:0 16px 14px;font-size:11.5px;color:#7b8aa3">Preview build <b>1.9.41</b> · theme + bot deploy-ready</div>
+<div class="preview-stamp" style="max-width:1180px;margin:0 auto;padding:0 16px 14px;font-size:11.5px;color:#7b8aa3">Preview build <b>1.9.42</b> · theme + bot deploy-ready</div>
 <div class="su-foot-bottom">© 2026 studentup.in · Sources: official notifications only. Ad revenue, rankings and job results are never guaranteed — always confirm the real information in the official notification. We are not a government website. · <a href="#of-home">Static HTML version</a></div></footer>
 <nav class="su-bottomnav" aria-label="Quick nav">
   <a href="#of-home"><span class="su-bi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><use href="#su-i-home"/></svg></span>Home</a>
@@ -7610,7 +7597,7 @@ th{background:var(--soft);color:var(--navy);font-size:13px}
   <div><h4>Site</h4><ul><li><a href="#of-about">About us</a></li><li><a href="#of-contact">Contact</a></li><li><a href="#of-advertise">Advertise</a></li><li><a href="#of-editorial-policy">Editorial policy</a></li></ul></div>
   <div><h4>Legal</h4><ul><li><a href="#of-privacy">Privacy</a></li><li><a href="#of-disclaimer">Disclaimer</a></li><li><a href="#of-terms">Terms</a></li><li><a href="https://t.me/studentup_in">Telegram</a></li></ul></div>
 </div>
-<div class="preview-stamp" style="max-width:1180px;margin:0 auto;padding:0 16px 14px;font-size:11.5px;color:#7b8aa3">Preview build <b>1.9.41</b> · theme + bot deploy-ready</div>
+<div class="preview-stamp" style="max-width:1180px;margin:0 auto;padding:0 16px 14px;font-size:11.5px;color:#7b8aa3">Preview build <b>1.9.42</b> · theme + bot deploy-ready</div>
 <div class="su-foot-bottom">© 2026 studentup.in · Sources: official notifications only. Ad revenue, rankings and job results are never guaranteed — always confirm the real information in the official notification. We are not a government website. · <a href="#of-home">Static HTML version</a></div></footer>
 <nav class="su-bottomnav" aria-label="Quick nav">
   <a href="#of-home"><span class="su-bi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><use href="#su-i-home"/></svg></span>Home</a>
@@ -7727,7 +7714,7 @@ th{background:var(--soft);color:var(--navy);font-size:13px}
   <div><h4>Site</h4><ul><li><a href="#of-about">About us</a></li><li><a href="#of-contact">Contact</a></li><li><a href="#of-advertise">Advertise</a></li><li><a href="#of-editorial-policy">Editorial policy</a></li></ul></div>
   <div><h4>Legal</h4><ul><li><a href="#of-privacy">Privacy</a></li><li><a href="#of-disclaimer">Disclaimer</a></li><li><a href="#of-terms">Terms</a></li><li><a href="https://t.me/studentup_in">Telegram</a></li></ul></div>
 </div>
-<div class="preview-stamp" style="max-width:1180px;margin:0 auto;padding:0 16px 14px;font-size:11.5px;color:#7b8aa3">Preview build <b>1.9.41</b> · theme + bot deploy-ready</div>
+<div class="preview-stamp" style="max-width:1180px;margin:0 auto;padding:0 16px 14px;font-size:11.5px;color:#7b8aa3">Preview build <b>1.9.42</b> · theme + bot deploy-ready</div>
 <div class="su-foot-bottom">© 2026 studentup.in · Sources: official notifications only. Ad revenue, rankings and job results are never guaranteed — always confirm the real information in the official notification. We are not a government website. · <a href="#of-home">Static HTML version</a></div></footer>
 <nav class="su-bottomnav" aria-label="Quick nav">
   <a href="#of-home"><span class="su-bi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><use href="#su-i-home"/></svg></span>Home</a>
@@ -7931,7 +7918,7 @@ th{background:var(--soft);color:var(--navy);font-size:13px}
   <div><h4>Site</h4><ul><li><a href="#of-about">About us</a></li><li><a href="#of-contact">Contact</a></li><li><a href="#of-advertise">Advertise</a></li><li><a href="#of-editorial-policy">Editorial policy</a></li></ul></div>
   <div><h4>Legal</h4><ul><li><a href="#of-privacy">Privacy</a></li><li><a href="#of-disclaimer">Disclaimer</a></li><li><a href="#of-terms">Terms</a></li><li><a href="https://t.me/studentup_in">Telegram</a></li></ul></div>
 </div>
-<div class="preview-stamp" style="max-width:1180px;margin:0 auto;padding:0 16px 14px;font-size:11.5px;color:#7b8aa3">Preview build <b>1.9.41</b> · theme + bot deploy-ready</div>
+<div class="preview-stamp" style="max-width:1180px;margin:0 auto;padding:0 16px 14px;font-size:11.5px;color:#7b8aa3">Preview build <b>1.9.42</b> · theme + bot deploy-ready</div>
 <div class="su-foot-bottom">© 2026 studentup.in · Sources: official notifications only. Ad revenue, rankings and job results are never guaranteed — always confirm the real information in the official notification. We are not a government website. · <a href="#of-home">Static HTML version</a></div></footer>
 <nav class="su-bottomnav" aria-label="Quick nav">
   <a href="#of-home"><span class="su-bi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><use href="#su-i-home"/></svg></span>Home</a>
@@ -8143,7 +8130,7 @@ th{background:var(--soft);color:var(--navy);font-size:13px}
   <div><h4>Site</h4><ul><li><a href="#of-about">About us</a></li><li><a href="#of-contact">Contact</a></li><li><a href="#of-advertise">Advertise</a></li><li><a href="#of-editorial-policy">Editorial policy</a></li></ul></div>
   <div><h4>Legal</h4><ul><li><a href="#of-privacy">Privacy</a></li><li><a href="#of-disclaimer">Disclaimer</a></li><li><a href="#of-terms">Terms</a></li><li><a href="https://t.me/studentup_in">Telegram</a></li></ul></div>
 </div>
-<div class="preview-stamp" style="max-width:1180px;margin:0 auto;padding:0 16px 14px;font-size:11.5px;color:#7b8aa3">Preview build <b>1.9.41</b> · theme + bot deploy-ready</div>
+<div class="preview-stamp" style="max-width:1180px;margin:0 auto;padding:0 16px 14px;font-size:11.5px;color:#7b8aa3">Preview build <b>1.9.42</b> · theme + bot deploy-ready</div>
 <div class="su-foot-bottom">© 2026 studentup.in · Sources: official notifications only. Ad revenue, rankings and job results are never guaranteed — always confirm the real information in the official notification. We are not a government website. · <a href="#of-home">Static HTML version</a></div></footer>
 <nav class="su-bottomnav" aria-label="Quick nav">
   <a href="#of-home"><span class="su-bi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><use href="#su-i-home"/></svg></span>Home</a>
@@ -8299,7 +8286,7 @@ th{background:var(--soft);color:var(--navy);font-size:13px}
   <div><h4>Site</h4><ul><li><a href="#of-about">About us</a></li><li><a href="#of-contact">Contact</a></li><li><a href="#of-advertise">Advertise</a></li><li><a href="#of-editorial-policy">Editorial policy</a></li></ul></div>
   <div><h4>Legal</h4><ul><li><a href="#of-privacy">Privacy</a></li><li><a href="#of-disclaimer">Disclaimer</a></li><li><a href="#of-terms">Terms</a></li><li><a href="https://t.me/studentup_in">Telegram</a></li></ul></div>
 </div>
-<div class="preview-stamp" style="max-width:1180px;margin:0 auto;padding:0 16px 14px;font-size:11.5px;color:#7b8aa3">Preview build <b>1.9.41</b> · theme + bot deploy-ready</div>
+<div class="preview-stamp" style="max-width:1180px;margin:0 auto;padding:0 16px 14px;font-size:11.5px;color:#7b8aa3">Preview build <b>1.9.42</b> · theme + bot deploy-ready</div>
 <div class="su-foot-bottom">© 2026 studentup.in · Sources: official notifications only. Ad revenue, rankings and job results are never guaranteed — always confirm the real information in the official notification. We are not a government website. · <a href="#of-home">Static HTML version</a></div></footer>
 <nav class="su-bottomnav" aria-label="Quick nav">
   <a href="#of-home"><span class="su-bi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><use href="#su-i-home"/></svg></span>Home</a>
@@ -8443,7 +8430,7 @@ th{background:var(--soft);color:var(--navy);font-size:13px}
   <div><h4>Site</h4><ul><li><a href="#of-about">About us</a></li><li><a href="#of-contact">Contact</a></li><li><a href="#of-advertise">Advertise</a></li><li><a href="#of-editorial-policy">Editorial policy</a></li></ul></div>
   <div><h4>Legal</h4><ul><li><a href="#of-privacy">Privacy</a></li><li><a href="#of-disclaimer">Disclaimer</a></li><li><a href="#of-terms">Terms</a></li><li><a href="https://t.me/studentup_in">Telegram</a></li></ul></div>
 </div>
-<div class="preview-stamp" style="max-width:1180px;margin:0 auto;padding:0 16px 14px;font-size:11.5px;color:#7b8aa3">Preview build <b>1.9.41</b> · theme + bot deploy-ready</div>
+<div class="preview-stamp" style="max-width:1180px;margin:0 auto;padding:0 16px 14px;font-size:11.5px;color:#7b8aa3">Preview build <b>1.9.42</b> · theme + bot deploy-ready</div>
 <div class="su-foot-bottom">© 2026 studentup.in · Sources: official notifications only. Ad revenue, rankings and job results are never guaranteed — always confirm the real information in the official notification. We are not a government website. · <a href="#of-home">Static HTML version</a></div></footer>
 <nav class="su-bottomnav" aria-label="Quick nav">
   <a href="#of-home"><span class="su-bi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><use href="#su-i-home"/></svg></span>Home</a>
@@ -8537,7 +8524,7 @@ th{background:var(--soft);color:var(--navy);font-size:13px}
   <div><h4>Site</h4><ul><li><a href="#of-about">About us</a></li><li><a href="#of-contact">Contact</a></li><li><a href="#of-advertise">Advertise</a></li><li><a href="#of-editorial-policy">Editorial policy</a></li></ul></div>
   <div><h4>Legal</h4><ul><li><a href="#of-privacy">Privacy</a></li><li><a href="#of-disclaimer">Disclaimer</a></li><li><a href="#of-terms">Terms</a></li><li><a href="https://t.me/studentup_in">Telegram</a></li></ul></div>
 </div>
-<div class="preview-stamp" style="max-width:1180px;margin:0 auto;padding:0 16px 14px;font-size:11.5px;color:#7b8aa3">Preview build <b>1.9.41</b> · theme + bot deploy-ready</div>
+<div class="preview-stamp" style="max-width:1180px;margin:0 auto;padding:0 16px 14px;font-size:11.5px;color:#7b8aa3">Preview build <b>1.9.42</b> · theme + bot deploy-ready</div>
 <div class="su-foot-bottom">© 2026 studentup.in · Sources: official notifications only. Ad revenue, rankings and job results are never guaranteed — always confirm the real information in the official notification. We are not a government website. · <a href="#of-home">Static HTML version</a></div></footer>
 <nav class="su-bottomnav" aria-label="Quick nav">
   <a href="#of-home"><span class="su-bi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><use href="#su-i-home"/></svg></span>Home</a>
@@ -8631,7 +8618,7 @@ th{background:var(--soft);color:var(--navy);font-size:13px}
   <div><h4>Site</h4><ul><li><a href="#of-about">About us</a></li><li><a href="#of-contact">Contact</a></li><li><a href="#of-advertise">Advertise</a></li><li><a href="#of-editorial-policy">Editorial policy</a></li></ul></div>
   <div><h4>Legal</h4><ul><li><a href="#of-privacy">Privacy</a></li><li><a href="#of-disclaimer">Disclaimer</a></li><li><a href="#of-terms">Terms</a></li><li><a href="https://t.me/studentup_in">Telegram</a></li></ul></div>
 </div>
-<div class="preview-stamp" style="max-width:1180px;margin:0 auto;padding:0 16px 14px;font-size:11.5px;color:#7b8aa3">Preview build <b>1.9.41</b> · theme + bot deploy-ready</div>
+<div class="preview-stamp" style="max-width:1180px;margin:0 auto;padding:0 16px 14px;font-size:11.5px;color:#7b8aa3">Preview build <b>1.9.42</b> · theme + bot deploy-ready</div>
 <div class="su-foot-bottom">© 2026 studentup.in · Sources: official notifications only. Ad revenue, rankings and job results are never guaranteed — always confirm the real information in the official notification. We are not a government website. · <a href="#of-home">Static HTML version</a></div></footer>
 <nav class="su-bottomnav" aria-label="Quick nav">
   <a href="#of-home"><span class="su-bi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><use href="#su-i-home"/></svg></span>Home</a>
@@ -8790,7 +8777,7 @@ th{background:var(--soft);color:var(--navy);font-size:13px}
   <div><h4>Site</h4><ul><li><a href="#of-about">About us</a></li><li><a href="#of-contact">Contact</a></li><li><a href="#of-advertise">Advertise</a></li><li><a href="#of-editorial-policy">Editorial policy</a></li></ul></div>
   <div><h4>Legal</h4><ul><li><a href="#of-privacy">Privacy</a></li><li><a href="#of-disclaimer">Disclaimer</a></li><li><a href="#of-terms">Terms</a></li><li><a href="https://t.me/studentup_in">Telegram</a></li></ul></div>
 </div>
-<div class="preview-stamp" style="max-width:1180px;margin:0 auto;padding:0 16px 14px;font-size:11.5px;color:#7b8aa3">Preview build <b>1.9.41</b> · theme + bot deploy-ready</div>
+<div class="preview-stamp" style="max-width:1180px;margin:0 auto;padding:0 16px 14px;font-size:11.5px;color:#7b8aa3">Preview build <b>1.9.42</b> · theme + bot deploy-ready</div>
 <div class="su-foot-bottom">© 2026 studentup.in · Sources: official notifications only. Ad revenue, rankings and job results are never guaranteed — always confirm the real information in the official notification. We are not a government website. · <a href="#of-home">Static HTML version</a></div></footer>
 <nav class="su-bottomnav" aria-label="Quick nav">
   <a href="#of-home"><span class="su-bi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><use href="#su-i-home"/></svg></span>Home</a>
@@ -8931,7 +8918,7 @@ th{background:var(--soft);color:var(--navy);font-size:13px}
   <div><h4>Site</h4><ul><li><a href="#of-about">About us</a></li><li><a href="#of-contact">Contact</a></li><li><a href="#of-advertise">Advertise</a></li><li><a href="#of-editorial-policy">Editorial policy</a></li></ul></div>
   <div><h4>Legal</h4><ul><li><a href="#of-privacy">Privacy</a></li><li><a href="#of-disclaimer">Disclaimer</a></li><li><a href="#of-terms">Terms</a></li><li><a href="https://t.me/studentup_in">Telegram</a></li></ul></div>
 </div>
-<div class="preview-stamp" style="max-width:1180px;margin:0 auto;padding:0 16px 14px;font-size:11.5px;color:#7b8aa3">Preview build <b>1.9.41</b> · theme + bot deploy-ready</div>
+<div class="preview-stamp" style="max-width:1180px;margin:0 auto;padding:0 16px 14px;font-size:11.5px;color:#7b8aa3">Preview build <b>1.9.42</b> · theme + bot deploy-ready</div>
 <div class="su-foot-bottom">© 2026 studentup.in · Sources: official notifications only. Ad revenue, rankings and job results are never guaranteed — always confirm the real information in the official notification. We are not a government website. · <a href="#of-home">Static HTML version</a></div></footer>
 <nav class="su-bottomnav" aria-label="Quick nav">
   <a href="#of-home"><span class="su-bi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><use href="#su-i-home"/></svg></span>Home</a>
@@ -9063,7 +9050,7 @@ th{background:var(--soft);color:var(--navy);font-size:13px}
   <div><h4>Site</h4><ul><li><a href="#of-about">About us</a></li><li><a href="#of-contact">Contact</a></li><li><a href="#of-advertise">Advertise</a></li><li><a href="#of-editorial-policy">Editorial policy</a></li></ul></div>
   <div><h4>Legal</h4><ul><li><a href="#of-privacy">Privacy</a></li><li><a href="#of-disclaimer">Disclaimer</a></li><li><a href="#of-terms">Terms</a></li><li><a href="https://t.me/studentup_in">Telegram</a></li></ul></div>
 </div>
-<div class="preview-stamp" style="max-width:1180px;margin:0 auto;padding:0 16px 14px;font-size:11.5px;color:#7b8aa3">Preview build <b>1.9.41</b> · theme + bot deploy-ready</div>
+<div class="preview-stamp" style="max-width:1180px;margin:0 auto;padding:0 16px 14px;font-size:11.5px;color:#7b8aa3">Preview build <b>1.9.42</b> · theme + bot deploy-ready</div>
 <div class="su-foot-bottom">© 2026 studentup.in · Sources: official notifications only. Ad revenue, rankings and job results are never guaranteed — always confirm the real information in the official notification. We are not a government website. · <a href="#of-home">Static HTML version</a></div></footer>
 <nav class="su-bottomnav" aria-label="Quick nav">
   <a href="#of-home"><span class="su-bi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><use href="#su-i-home"/></svg></span>Home</a>
@@ -9228,7 +9215,7 @@ th{background:var(--soft);color:var(--navy);font-size:13px}
   <div><h4>Site</h4><ul><li><a href="#of-about">About us</a></li><li><a href="#of-contact">Contact</a></li><li><a href="#of-advertise">Advertise</a></li><li><a href="#of-editorial-policy">Editorial policy</a></li></ul></div>
   <div><h4>Legal</h4><ul><li><a href="#of-privacy">Privacy</a></li><li><a href="#of-disclaimer">Disclaimer</a></li><li><a href="#of-terms">Terms</a></li><li><a href="https://t.me/studentup_in">Telegram</a></li></ul></div>
 </div>
-<div class="preview-stamp" style="max-width:1180px;margin:0 auto;padding:0 16px 14px;font-size:11.5px;color:#7b8aa3">Preview build <b>1.9.41</b> · theme + bot deploy-ready</div>
+<div class="preview-stamp" style="max-width:1180px;margin:0 auto;padding:0 16px 14px;font-size:11.5px;color:#7b8aa3">Preview build <b>1.9.42</b> · theme + bot deploy-ready</div>
 <div class="su-foot-bottom">© 2026 studentup.in · Sources: official notifications only. Ad revenue, rankings and job results are never guaranteed — always confirm the real information in the official notification. We are not a government website. · <a href="#of-home">Static HTML version</a></div></footer>
 <nav class="su-bottomnav" aria-label="Quick nav">
   <a href="#of-home"><span class="su-bi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><use href="#su-i-home"/></svg></span>Home</a>
@@ -9354,7 +9341,7 @@ th{background:var(--soft);color:var(--navy);font-size:13px}
   <div><h4>Site</h4><ul><li><a href="#of-about">About us</a></li><li><a href="#of-contact">Contact</a></li><li><a href="#of-advertise">Advertise</a></li><li><a href="#of-editorial-policy">Editorial policy</a></li></ul></div>
   <div><h4>Legal</h4><ul><li><a href="#of-privacy">Privacy</a></li><li><a href="#of-disclaimer">Disclaimer</a></li><li><a href="#of-terms">Terms</a></li><li><a href="https://t.me/studentup_in">Telegram</a></li></ul></div>
 </div>
-<div class="preview-stamp" style="max-width:1180px;margin:0 auto;padding:0 16px 14px;font-size:11.5px;color:#7b8aa3">Preview build <b>1.9.41</b> · theme + bot deploy-ready</div>
+<div class="preview-stamp" style="max-width:1180px;margin:0 auto;padding:0 16px 14px;font-size:11.5px;color:#7b8aa3">Preview build <b>1.9.42</b> · theme + bot deploy-ready</div>
 <div class="su-foot-bottom">© 2026 studentup.in · Sources: official notifications only. Ad revenue, rankings and job results are never guaranteed — always confirm the real information in the official notification. We are not a government website. · <a href="#of-home">Static HTML version</a></div></footer>
 <nav class="su-bottomnav" aria-label="Quick nav">
   <a href="#of-home"><span class="su-bi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><use href="#su-i-home"/></svg></span>Home</a>

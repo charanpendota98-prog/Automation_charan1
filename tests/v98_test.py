@@ -28,7 +28,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-SUITES_EXPECTED = 146
+SUITES_EXPECTED = 147
 THEME = ROOT / "wordpress-theme" / "studentup"
 
 
@@ -199,7 +199,7 @@ def test_option_registered() -> None:
 
 def test_docs_and_suites() -> None:
     suites = len(list((ROOT / "tests").glob("*_test.py")))
-    assert suites == SUITES_EXPECTED, f"suites {suites} (v98 tho 144)"
+    assert suites == SUITES_EXPECTED, f"suites {suites} (v98 tho 147)"
     readme = read(ROOT / "README.md")
     manual = read(ROOT / "MANUAL_ADVANCED_CHECKLIST.md")
     cur = f"{SUITES_EXPECTED}/{SUITES_EXPECTED}"

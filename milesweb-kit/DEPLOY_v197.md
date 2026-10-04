@@ -1,6 +1,6 @@
 # DEPLOY v197 — 10 nimushalu (click-by-click)
 
-> Theme **1.9.41** · zip: `wordpress-theme/studentup-theme.zip` (135 files · 1174 KB) — v199 final home (10 sections, phone-first) + v198 tools workbench
+> Theme **1.9.42** · zip: `wordpress-theme/studentup-theme.zip` (137 files · 928 KB · `933751ca13d4…`) — v201 preview-parity (hero H1 + search + 8 chips + real "Latest Notifications" carousel) on top of v199 final home + v198 tools workbench
 > Direct download (GitHub raw):
 > `https://raw.githubusercontent.com/charanpendota98-prog/Automation_charan1/arena/01a10001-automation-charan1/wordpress-theme/studentup-theme.zip`
 
@@ -26,7 +26,7 @@ Rollback (eppudaina): purathana zip ni upload chesi malli activate — 2 nimusha
 2. **Choose File** → `studentup-theme.zip` → **Install Now**
 3. **Replace current with uploaded** (leda **Activate**)
 
-✅ Check: WP Admin → **Appearance → Themes** lo `StudentUp 1.9.41` kanipinchali
+✅ Check: WP Admin → **Appearance → Themes** lo `StudentUp 1.9.42` kanipinchali
 (puthana 1.9.36 undakoodadu).
 
 ---

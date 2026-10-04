@@ -18,7 +18,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 
 # v199.1: preview build stamp — purathana cached preview ni ventane gurtinchadaniki.
-PREVIEW_BUILD = "1.9.41"
+PREVIEW_BUILD = "1.9.42"
 OUT = ROOT / "preview"
 PAGES = OUT / "pages"
 EMAIL = "studentupinformative@gmail.com"

@@ -2,7 +2,7 @@
 # This file is distributed under the GNU GPL v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: StudentUp 1.9.41\n"
+"Project-Id-Version: StudentUp 1.9.42\n"
 "Report-Msgid-Bugs-To: https://studentup.in/\n"
 "POT-Creation-Date: 2026-01-01 00:00+0000\n"
 "MIME-Version: 1.0\n"
@@ -20,11 +20,19 @@ msgstr ""
 msgid "%s articles"
 msgstr ""
 
+#: inc/slider.php:77
+msgid "%s Days Left"
+msgstr ""
+
+#: inc/slider.php:102
+msgid "%s Posts"
+msgstr ""
+
 #: inc/polls.php:430
 msgid "%s readers voted — tap an option to see live results."
 msgstr ""
 
-#: front-page.php:79
+#: front-page.php:81
 msgid "%s updates"
 msgstr ""
 
@@ -110,7 +118,7 @@ msgstr ""
 msgid "All states"
 msgstr ""
 
-#: inc/premium.php:352
+#: inc/premium.php:358
 msgid "All tools"
 msgstr ""
 
@@ -157,7 +165,7 @@ msgstr ""
 msgid "Author website / profile"
 msgstr ""
 
-#: inc/premium.php:425
+#: inc/premium.php:431
 msgid "Back to tools"
 msgstr ""
 
@@ -181,7 +189,7 @@ msgstr ""
 msgid "Cancellation and refund"
 msgstr ""
 
-#: inc/premium.php:356
+#: inc/premium.php:362
 msgid "Career"
 msgstr ""
 
@@ -198,7 +206,7 @@ msgstr ""
 msgid "Clear all"
 msgstr ""
 
-#: inc/premium.php:382
+#: inc/premium.php:388
 msgid "Clear search"
 msgstr ""
 
@@ -298,7 +306,7 @@ msgstr ""
 msgid "Deadline"
 msgstr ""
 
-#: inc/premium.php:357
+#: inc/premium.php:363
 msgid "Deadlines"
 msgstr ""
 
@@ -318,11 +326,11 @@ msgstr ""
 msgid "Ee page ki content add cheyyandi (WP Admin → Pages → Tools). Tools anni kinda unnayi."
 msgstr ""
 
-#: inc/premium.php:393
+#: inc/premium.php:399
 msgid "Ee peru tho tool ledu:"
 msgstr ""
 
-#: inc/premium.php:354
+#: inc/premium.php:360
 msgid "Eligibility"
 msgstr ""
 
@@ -371,7 +379,7 @@ msgstr ""
 msgid "Exam score calculator"
 msgstr ""
 
-#: inc/premium.php:355
+#: inc/premium.php:361
 msgid "Exams"
 msgstr ""
 
@@ -383,7 +391,7 @@ msgstr ""
 msgid "Fees, documents and eligibility for any government application are always as per the official notification."
 msgstr ""
 
-#: inc/premium.php:385
+#: inc/premium.php:391
 msgid "Filter tools by category"
 msgstr ""
 
@@ -395,7 +403,7 @@ msgstr ""
 msgid "Five fresh questions every morning, explained answers, and one reader poll that decides what we build next. Free, no login, nothing stored about you."
 msgstr ""
 
-#: front-page.php:60
+#: front-page.php:62
 msgid "Flash Updates →"
 msgstr ""
 
@@ -427,14 +435,18 @@ msgstr ""
 msgid "Free job alerts on your phone"
 msgstr ""
 
-#: inc/premium.php:365
 #: inc/premium.php:371
+#: inc/premium.php:377
 #: page-tools.php:36
 msgid "Free tools for students"
 msgstr ""
 
 #: inc/apply.php:238
 msgid "Full details"
+msgstr ""
+
+#: inc/slider.php:188
+msgid "Full details & Apply"
 msgstr ""
 
 #: inc/calendar.php:187
@@ -451,6 +463,10 @@ msgstr ""
 
 #: inc/calendar.php:173
 msgid "Government job & exam last dates"
+msgstr ""
+
+#: inc/premium.php:67
+msgid "Government Jobs, Results & Notifications"
 msgstr ""
 
 #: footer.php:100
@@ -553,6 +569,7 @@ msgid "Last day"
 msgstr ""
 
 #: inc/engage.php:156
+#: inc/slider.php:75
 msgid "Last day today"
 msgstr ""
 
@@ -560,24 +577,32 @@ msgstr ""
 msgid "Latest Jobs"
 msgstr ""
 
-#: front-page.php:58
+#: inc/slider.php:156
+msgid "Latest Jobs Sliding Track"
+msgstr ""
+
+#: inc/slider.php:139
+msgid "Latest Notifications"
+msgstr ""
+
+#: front-page.php:60
 msgid "Latest notifications · hall tickets & exam alerts"
 msgstr ""
 
-#: front-page.php:125
+#: front-page.php:126
 msgid "Latest opportunities"
 msgstr ""
 
-#: front-page.php:121
+#: front-page.php:122
 msgid "Latest opportunities — page %d"
 msgstr ""
 
-#: front-page.php:102
-msgid "Latest student updates"
+#: front-page.php:101
+msgid "Latest student updates — page %d"
 msgstr ""
 
-#: front-page.php:98
-msgid "Latest student updates — page %d"
+#: inc/slider.php:55
+msgid "Latest update"
 msgstr ""
 
 #: index.php:26
@@ -588,7 +613,11 @@ msgstr ""
 msgid "latest updates on the home page"
 msgstr ""
 
-#: inc/premium.php:353
+#: inc/slider.php:159
+msgid "LIVE"
+msgstr ""
+
+#: inc/premium.php:359
 msgid "Money"
 msgstr ""
 
@@ -602,6 +631,10 @@ msgstr ""
 
 #: inc/workspace.php:179
 msgid "My Workspace"
+msgstr ""
+
+#: inc/slider.php:84
+msgid "New"
 msgstr ""
 
 #: inc/template.php:173
@@ -624,7 +657,7 @@ msgstr ""
 msgid "Next headline"
 msgstr ""
 
-#: inc/premium.php:419
+#: inc/premium.php:425
 msgid "Next tool"
 msgstr ""
 
@@ -729,6 +762,10 @@ msgstr ""
 msgid "Partly eligible — check details"
 msgstr ""
 
+#: inc/slider.php:164
+msgid "Pause or play sliding track"
+msgstr ""
+
 #: inc/breaking.php:303
 msgid "Pause or resume ticker"
 msgstr ""
@@ -759,6 +796,10 @@ msgstr ""
 
 #: inc/cta.php:40
 msgid "Preparation Group"
+msgstr ""
+
+#: inc/premium.php:75
+msgid "Press / to search"
 msgstr ""
 
 #: inc/breaking.php:302
@@ -923,16 +964,32 @@ msgstr ""
 msgid "Saved posts"
 msgstr ""
 
-#: inc/premium.php:380
+#: inc/slider.php:170
+msgid "Scrolling latest jobs carousel"
+msgstr ""
+
+#: inc/premium.php:76
+msgid "Search"
+msgstr ""
+
+#: inc/premium.php:386
 msgid "Search a tool — salary, age, fee, resume…"
 msgstr ""
 
-#: inc/premium.php:372
+#: inc/premium.php:378
 msgid "Search cheyandi leda tab tap cheyandi — okka sari lo okka tool, screen clean ga untundi."
 msgstr ""
 
-#: inc/premium.php:377
+#: inc/premium.php:72
+msgid "Search StudentUp"
+msgstr ""
+
+#: inc/premium.php:383
 msgid "Search tools"
+msgstr ""
+
+#: inc/premium.php:74
+msgid "Search TSPSC, APPSC, SSC, Hall Tickets, Results, Scholarships…"
 msgstr ""
 
 #: inc/student-tools.php:116
@@ -975,6 +1032,14 @@ msgstr ""
 msgid "Set your qualification and state once. The list is built on this device - no login, nothing sent to a server."
 msgstr ""
 
+#: inc/slider.php:194
+msgid "Share"
+msgstr ""
+
+#: inc/slider.php:192
+msgid "Share on WhatsApp"
+msgstr ""
+
 #: inc/share.php:115
 msgid "Share this with your friends"
 msgstr ""
@@ -989,6 +1054,14 @@ msgstr ""
 
 #: page-internet-center.php:51
 msgid "Single application form"
+msgstr ""
+
+#: inc/slider.php:163
+msgid "Slide Left"
+msgstr ""
+
+#: inc/slider.php:165
+msgid "Slide Right"
 msgstr ""
 
 #: footer.php:99
@@ -1013,7 +1086,7 @@ msgstr ""
 msgid "Strong — keep this streak alive tomorrow."
 msgstr ""
 
-#: inc/premium.php:398
+#: inc/premium.php:404
 msgid "Student tools"
 msgstr ""
 
@@ -1041,7 +1114,7 @@ msgstr ""
 msgid "StudentUp publishes government job, result, hall ticket and scholarship updates for Telangana and Andhra Pradesh students. This page names who writes and verifies them."
 msgstr ""
 
-#: inc/premium.php:140
+#: inc/premium.php:146
 msgid "Swipe sideways for more"
 msgstr ""
 
@@ -1086,7 +1159,7 @@ msgstr ""
 msgid "Today's Telangana jobs →"
 msgstr ""
 
-#: inc/premium.php:394
+#: inc/premium.php:400
 msgid "Try “salary”, “age” leda “resume”."
 msgstr ""
 

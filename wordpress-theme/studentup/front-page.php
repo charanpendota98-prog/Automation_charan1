@@ -7,8 +7,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Front page — v191.2 MONEY EDITION (student-first, ad-optimised, Google-safe).
  *
- * Design law (ee order ne marchakoodadu):
- *   hero → ticker → most-searched → LEADERBOARD AD → H1 + breaking →
+ * Design law (v201 — demo (preview/worldclass) order ne ikkada):
+ *   ticker → hero → Latest Notifications slider → most-searched →
+ *   LEADERBOARD AD → breaking →
  *   filters → LATEST OPPORTUNITIES GRID (lead card + native in-feed ads) →
  *   jobs table → popular searches → MID AD → hot-10 + closing-week →
  *   personal picks → BELOW-CONTENT AD.
@@ -34,11 +35,12 @@ $su_paged = max( 1, (int) get_query_var( 'paged' ) );
 $su_is_p2 = $su_paged > 1;
 ?>
 
-<?php if ( ! $su_is_p2 ) : ?>
-	<?php studentup_hero_premium(); // search + quick links (compact hero) ?>
-<?php endif; ?>
+<?php studentup_latest_ticker(); // v201 demo order: ticker → hero → slider ?>
 
-<?php studentup_latest_ticker(); // live jobs strip — click cheste post open avutundi ?>
+<?php if ( ! $su_is_p2 ) : ?>
+	<?php studentup_hero_premium(); // search + quick links (hero H1) ?>
+	<?php studentup_latest_notifications(); // v201: “Latest Notifications” sliding track (preview ↔ live parity) ?>
+<?php endif; ?>
 
 <?php if ( ! $su_is_p2 ) : ?>
 <section class="usedwrap" aria-label="Most searched by students">
@@ -89,21 +91,20 @@ $su_is_p2 = $su_paged > 1;
 	<div class="wrap"><?php studentup_ad( 'leaderboard' ); // slot 1 — highest paying, content ki mundu okkate ?></div>
 <?php endif; ?>
 
-<section class="hero hero-slim" aria-label="Page title">
-	<h1 class="screen-reader-text">
-		<?php
-		if ( $su_is_p2 ) {
+<?php if ( $su_is_p2 ) : ?>
+	<?php /* Page 1 lo H1 = hero title (premium.php). Pagination pages ki mattrame ikkada H1. */ ?>
+	<section class="hero hero-slim" aria-label="Page title">
+		<h1 class="screen-reader-text">
+			<?php
 			printf(
 				/* translators: %d: page number. */
 				esc_html__( 'Latest student updates — page %d', 'studentup' ),
 				(int) $su_paged
 			);
-		} else {
-			esc_html_e( 'Latest student updates', 'studentup' );
-		}
-		?>
-	</h1>
-</section>
+			?>
+		</h1>
+	</section>
+<?php endif; ?>
 
 <main id="main">
 	<div class="wrap">

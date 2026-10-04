@@ -2,9 +2,9 @@
 Contributors: studentup
 Requires at least: 6.0
 Tested up to: 6.7
-Stable tag: 1.9.41
+Stable tag: 1.9.42
 Requires PHP: 7.4
-Version: 1.9.41
+Version: 1.9.42
 License: GNU General Public License v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Tags: news, education, blog, custom-logo, custom-menu, featured-images, translation-ready, right-sidebar, block-styles, wide-blocks
@@ -47,6 +47,11 @@ The theme ships a REST bridge (`inc/seo-bridge.php`). Use an account with `manag
 user tho App Password ivvandi (Administrator role).
 
 == Changelog ==
+
+= 1.9.42 =
+* v201 PREVIEW PARITY: front page ippudu design preview laage render avutundi — breaking ticker → hero (headline "Government Jobs, Results & Notifications" + search + 8 quick chips) → real "Latest Notifications" carousel.
+* v201: carousel mee published posts nunde build avutundi (category · exam tag, deadline pill ≤14 rojulu, 🔥 New <48h, vacancies/qualification/last-date meta unte matrame) — auto-slide 3.2s, pause/prev/next, ←/→ keys, hover/focus/touch pause, reduced-motion lo auto-slide off.
+* v201: hero chips real category archives ki velthayi (TSPSC · APPSC · Central · Police · Inter…), term lekapote jobs board ki — 404 ledu.
 
 = 1.9.41 =
 * v199.1 SPACE FIX: "Most searched by students" now fills exactly — 2 columns on phone (5 clean rows) and 5 columns on laptop (2 clean rows), so there are never empty cells or wasted space. Cards are slightly tighter (70px, 38px icon) and the section heading sits closer to the grid.
