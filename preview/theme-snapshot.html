@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>StudentUp — theme output snapshot (theme 1.9.42)</title>
+<meta name="robots" content="noindex">
+<meta name="description" content="StudentUp theme output snapshot — which sections the installed WordPress theme really renders, and what each one needs (posts, categories, toggles).">
+<style>
+  :root{--navy:#0f2e62;--blue:#2463b7;--orange:#ed8a32;--ink:#162235;--muted:#64748b;--line:#e5ebf4;--soft:#f5f8fc}
+  body{margin:0;background:var(--soft);color:var(--ink);font:15px/1.7 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+  .wrap{max-width:980px;margin:0 auto;padding:24px 16px 60px}
+  h1{font-size:22px;color:var(--navy);margin:0 0 6px}
+  .sub{color:var(--muted);font-size:13px;margin:0 0 18px}
+  .banner{background:#fffbeb;border:1px solid #fde68a;color:#92400e;border-radius:12px;padding:12px 14px;margin:0 0 18px;font-size:13.5px}
+  .banner b{color:#78350f}
+  table{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);font-size:13px;vertical-align:top}
+  th{background:#f8fafc;font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+  tr:last-child td{border-bottom:0}
+  code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12.5px;color:#0f2e62}
+  .checklist{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin-top:20px;font-size:13.5px}
+  .checklist h2{font-size:15px;margin:0 0 8px;color:var(--navy)}
+  .checklist ul{margin:0;padding-left:20px}
+  .checklist li{margin:4px 0}
+  .ok{color:#15803d;font-weight:700}
+  .warn{color:#b45309;font-weight:700}
+</style>
+</head>
+<body><div class="wrap">
+  <h1>Theme output snapshot — “live laa” render</h1>
+  <p class="sub">Theme <b>1.9.42</b> · generated 2026-10-04 by <code>tools/render_theme_snapshot.py</code> — hand-edit ledu.</p>
+
+  <p class="banner"><b>Idi enduku:</b> <code>preview/worldclass/</code> oka hand-written design demo. Live site = WordPress, mee posts, mee toggles.
+  Ee page theme PHP <b>nijamga em render chestundo</b> (section order + kavalsinavi) chupistundi — anduke ee page live ki daahaalam.</p>
+
+  <table>
+    <tr><th>Section (front-page.php order)</th><th>Source</th><th>Kavalsinavi</th></tr>
+        <tr><td><code>studentup_ui_icon()</code></td><td><code>inc/quicksummary.php</code></td><td>toggle: quick_summary</td></tr>
+        <tr><td><code>studentup_ui_icon()</code></td><td><code>inc/quicksummary.php</code></td><td>toggle: quick_summary</td></tr>
+        <tr><td><code>studentup_ad()</code></td><td><code>inc/adfill.php</code></td><td>toggle: collapse_unfilled</td></tr>
+        <tr><td><code>studentup_breaking_section()</code></td><td><code>inc/breaking.php</code></td><td>toggle: breaking_enabled, latest_ticker · WordPress posts</td></tr>
+        <tr><td><code>studentup_qual_bar()</code></td><td><code>inc/qual-filter.php</code></td><td>toggle: qual_filter · WordPress posts</td></tr>
+        <tr><td><code>studentup_qual_active_note()</code></td><td><code>inc/qual-filter.php</code></td><td>toggle: qual_filter · WordPress posts</td></tr>
+        <tr><td><code>studentup_qual_query_args()</code></td><td><code>inc/qual-filter.php</code></td><td>toggle: qual_filter · WordPress posts</td></tr>
+        <tr><td><code>studentup_ad()</code></td><td><code>inc/adfill.php</code></td><td>toggle: collapse_unfilled</td></tr>
+        <tr><td><code>studentup_ad()</code></td><td><code>inc/adfill.php</code></td><td>toggle: collapse_unfilled</td></tr>
+        <tr><td><code>studentup_card()</code></td><td><code>inc/admitcard.php</code></td><td>toggle: admit_card_helper</td></tr>
+        <tr><td><code>studentup_ad()</code></td><td><code>inc/adfill.php</code></td><td>toggle: collapse_unfilled</td></tr>
+        <tr><td><code>studentup_personal_picks()</code></td><td><code>inc/personal.php</code></td><td>toggle: calendar_button, personal_picks</td></tr>
+        <tr><td><code>studentup_ad()</code></td><td><code>inc/adfill.php</code></td><td>toggle: collapse_unfilled</td></tr>
+        <tr><td><code>studentup_most_used() + grid</code></td><td><code>front-page.php</code></td><td>category terms · WordPress posts</td></tr>
+        <tr><td><code>studentup_hero_premium()</code></td><td><code>inc/premium.php</code></td><td>toggle: hero_premium · category terms</td></tr>
+  </table>
+
+  <div class="checklist">
+    <h2>Live lo neat ga kanipinchadaniki (order lo)</h2>
+    <ul>
+      <li><span class="warn">1.</span> Theme zip upload + Activate → <b>Appearance → Themes</b> lo version check (ee build: <code>1.9.42</code>).</li>
+      <li><span class="warn">2.</span> <b>Settings → Permalinks</b> → Save (post links clean avutayi).</li>
+      <li><span class="warn">3.</span> Posts publish avvali — carousel / trending / cards **mee posts nunchi** build avutayi (khali DB ⇒ khali sections).</li>
+      <li><span class="warn">4.</span> Categories: <code>ts-govt-jobs · ap-govt-jobs · central-govt-jobs · results · hall-tickets</code> — lekapote chips/grid lo aa item skip avutundi (fake data ledu).</li>
+      <li><span class="warn">5.</span> StudentUp Settings → toggles (hero_premium · trending_today · state_first …) ON unnaya chudandi.</li>
+      <li><span class="warn">6.</span> Cache: host (MilesWeb) cache + WP cache plugin okasari clear cheyandi — old CSS/JS inka undakoodadu.</li>
+      <li><span class="warn">7.</span> Third-party plugins (cookie-consent, AdSense, page builders) mee own CSS ni override chestayi — <code>!important</code> rules valla spacing/colour maripovachu. Avi live lo mattrame kanipistayi, preview lo levu.</li>
+    </ul>
+  </div>
+</div></body></html>

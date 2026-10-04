@@ -179,9 +179,23 @@ def test_p5_css_docs_zip() -> None:
     demo_html = read(DEMO)
     assert "assets/css/premium.css" in demo_html, \
         "demo premium.css load cheyyatledu (live CSS stack parity ledu)"
+    # demo cards must not carry inline styles the theme handles by class
+    assert 'style="color:inherit;text-decoration:none"' not in demo_html, \
+        "demo card title lo inline style inka undi (CSS .su-scard h3 a chaaladu)"
+    assert 'style="background:#fff7ed' not in demo_html, \
+        'demo "Popular" chip inline style — .su-scard-hot class vaadali'
+    # live-la render snapshot tool + page
+    ver_now = re.search(r"Version:\s*(\S+)", read(THEME / "style.css")).group(1)
+    snap = ROOT / "preview" / "theme-snapshot.html"
+    assert snap.exists(), "preview/theme-snapshot.html ledu (tools/render_theme_snapshot.py)"
+    snap_ver = re.search(r"Theme <b>(\S+)</b>", read(snap)).group(1)
+    assert snap_ver == ver_now, f"snapshot stale ({snap_ver} != {ver_now}) — regenerate cheyandi"
     # breaking chip colour + dark mode
     assert re.search(r"\.su-hact--breaking\{[^}]*#b91c1c", css), "chip AA colour ledu"
     assert "body.dark .su-hact--breaking" in css, "chip dark-mode rule ledu"
+
+    # tool must stay runnable (regeneration gate)
+    assert (ROOT / "tools" / "render_theme_snapshot.py").exists(), "snapshot tool ledu"
 
     readme = read(ROOT / "README.md")
     assert "v201 — Preview ↔ live parity" in readme, "README lo v201 section ledu"
