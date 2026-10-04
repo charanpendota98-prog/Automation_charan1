@@ -18,7 +18,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 
 # v199.1: preview build stamp — purathana cached preview ni ventane gurtinchadaniki.
-PREVIEW_BUILD = "1.9.41"
+PREVIEW_BUILD = "1.9.42"
 OUT = ROOT / "preview"
 PAGES = OUT / "pages"
 EMAIL = "studentupinformative@gmail.com"
@@ -263,6 +263,36 @@ def mega_nav_html(home: str = "../worldclass/index.html", pfx: str = "../") -> s
 
     out = ['<ul id="primary-menu" class="menu-primary su-has-mega">',
            '<li class="menu-item"><a href="%s">Home</a></li>' % home]
+    # v202: Breaking News item — theme `studentup_breaking_nav_li()` (inc/nav-breaking.php)
+    # laage same markup: li.menu-item-has-children.su-navbrk + ul#su-brkdd panel.
+    # Live lo theme ee item ni `wp_nav_menu_items` filter / mega render tho istundi.
+    brk_rows = [
+        ("UPSC Junior Assistant 2026 — notification out", pfx + "posts/upsc-junior-assistant-2026.html", "yesterday · Central"),
+        ("Govt internships for engineering students 2026", pfx + "posts/engineering-internships-2026.html", "yesterday · Internships"),
+        ("TSPSC Group 2 last date 28 October", cat + "exam-calendar.html", "2 days ago · Telangana"),
+        ("IBPS Clerk online apply — 4,520 posts", pfx + "posts/ibps-clerk-2026.html", "3 days ago · Banking"),
+        ("SSC CHSL 2026 notification — 3,712 posts", cat + "results-hub.html", "4 days ago · Central"),
+    ]
+    brk_url = home + "#jobs"
+    out.append('<li class="menu-item menu-item-has-children su-navbrk">'
+               '<a href="%s" aria-haspopup="true" aria-expanded="false" aria-controls="su-brkdd">'
+               '<span class="su-brkdot" aria-hidden="true"></span>'
+               '<span class="su-mega-lb">Breaking News</span></a>' % brk_url)
+    out.append('<ul class="sub-menu su-brkdd" id="su-brkdd" aria-label="Breaking News">')
+    out.append('<li class="menu-item su-brkdd-head" role="none">'
+               '<span>Latest verified updates</span><em>Live</em></li>')
+    for btitle, burl, bmeta in brk_rows:
+        out.append('<li class="menu-item" role="none"><a role="menuitem" href="%s">'
+                   '<span class="su-mega-ic"><svg class="su-uicon su-uicon-bolt" width="16" height="16" '
+                   'viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">'
+                   '<use href="#su-i-bolt"/></svg></span><span class="su-mega-t">%s<small>%s</small>'
+                   '</span></a></li>' % (burl, btitle, bmeta))
+    out.append('<li class="menu-item su-brkdd-foot" role="none">'
+               '<a class="su-brkdd-cta" href="%s">All updates '
+               '<svg class="su-uicon su-uicon-arrow" width="13" height="13" viewBox="0 0 24 24" '
+               'fill="currentColor" aria-hidden="true" focusable="false">'
+               '<use href="#su-i-arrow"/></svg></a></li>' % brk_url)
+    out.append('</ul></li>')
     for label, url, icon, cols, feat in groups:
         key = label.lower()
         out.append('<li class="menu-item menu-item-has-children su-mega-li">')
@@ -353,17 +383,20 @@ def build(slug: str, title: str, desc: str, h1: str, sub: str, body: str,
     except Exception:  # pragma: no cover — never break a page build for an icon
         _paths = {}
     _nav = nav_html()
-    _keys = set(build_sprite.used_icon_keys(_nav + body + script if _paths else ""))
+    _hdr = header_html()          # v202: mega + Breaking News nav (bolt icon) kuda scan avvali
+    _foot = footer_html(pfx="")
+    _keys = set(build_sprite.used_icon_keys((_nav + _hdr + _foot + body + script) if _paths else ""))
     _keys |= {"moon", "sun", "home", "work", "chart", "bell", "close", "search",
               "bank", "flag", "school", "ticket", "doc", "calendar", "news", "key",
               "trophy", "person", "card", "wallet", "swap", "bookmark", "shield",
               "refresh", "phone", "tag", "alert", "check", "arrow", "building",
-              "laptop", "walk", "work", "help", "board", "book", "arrow", "external"}
+              "laptop", "walk", "work", "help", "board", "book", "arrow", "external",
+              "bolt", "star", "print", "clock", "home"}
     _sprite = build_sprite.sprite_svg(_paths, sorted(_keys)) if _paths else ""
     return SHELL.format(sprite=_sprite, title=title, desc=desc, slug=slug, h1=h1, sub=sub,
                         body=body, css=CSS, nav=_nav, email=EMAIL, updated=UPDATED,
                         wa=WA_LINK, phone=PHONE, script=script, pagejs=PAGE_JS,
-                        header=header_html(), footerbar=footer_html(pfx=""),
+                        header=_hdr, footerbar=_foot,
                         bottomnav=bottom_html())
 
 

@@ -32,13 +32,17 @@ def main() -> int:
     style_css = (THEME / "style.css").read_text(encoding="utf-8").rstrip("\n")
     wc_css = (THEME / "assets" / "css" / "worldclass.css").read_text(encoding="utf-8").rstrip("\n")
 
+    # v201: demo live CSS stack ne load chestundi — style.css → premium.css → worldclass.css
+    prem_css = (THEME / "assets" / "css" / "premium.css").read_text(encoding="utf-8").rstrip("\n")
+
     links = re.findall(r'<link rel="stylesheet" href="[^"]*">\n?', demo)
-    if len(links) != 2:
-        print(f"  ❌ demo lo {len(links)} stylesheet link(s) — 2 expect chesam")
+    if len(links) != 3:
+        print(f"  ❌ demo lo {len(links)} stylesheet link(s) — 3 expect chesam (style·premium·worldclass)")
         return 1
 
-    out = demo.replace(links[0], f"<style>\n{style_css}\n</style>\n", 1)
-    out = out.replace(links[1], f"<style>\n{wc_css}\n</style>\n", 1)
+    for i, css in enumerate((style_css, prem_css, wc_css)):
+        out = demo.replace(links[i], f"<style>\n{css}\n</style>\n", 1)
+        demo = out
     out = re.sub(r"<title>[^<]*</title>", f"<title>{title}</title>", out, count=1)
 
     # v197: theme JS bhi inline — single-file page must not fetch anything.

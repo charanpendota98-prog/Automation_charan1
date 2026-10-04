@@ -417,7 +417,7 @@ def main() -> int:
             .replace("<!--FOOTERBAR-->", B.footer_html(pfx="../pages/"))
             .replace("<!--BOTTOMNAV-->", B.bottom_html())
             .replace("<!--PAGEJS-->", B.PAGE_JS)
-            .replace("THEMEVER", getattr(B, "PREVIEW_BUILD", "1.9.41"))
+            .replace("THEMEVER", getattr(B, "PREVIEW_BUILD", "1.9.42"))
             .replace("<!--TABBUTTONS-->", "\n".join(buttons))
             .replace("<!--PANELS-->", "\n".join(panels))
             + "\n<!-- tools engine: theme file inline (single source of truth) -->\n<script>\n"

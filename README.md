@@ -1,7 +1,7 @@
 # studentup.in Auto-Blogger 🤖
 
 
-> **Verified counts (theme v1.9.41 build):** test suites **145/145** files · jsdom runtime **230/230** checks · PHP lint **97/97** files · theme audit **0/0** · **deep audit pass 1-4 31/31** · code audit **0/0**.
+> **Verified counts (theme v1.9.42 build):** test suites **148/148** files · jsdom runtime **239/239** checks · PHP lint **99/99** files · theme audit **0/0** · **deep audit pass 1-4 31/31** · code audit **0/0**.
 24/7 automatic blog posting system for **studentup.in** (WordPress) — runs on your Oracle Cloud instance.
 
 - **AI content:** Google Gemini (free tier) generates Telugu + English mix articles
@@ -681,7 +681,7 @@ Theme ni "world best" standards tho **repeatable ga audit** cheyyadaniki
 
 ```bash
 python3 tools/theme_audit_deep.py     # pass 1-4 · ✅ 31 pass · 0 warn · 0 fail
-node tools/php_lint.js                # 97/97
+node tools/php_lint.js                # 99/99
 python3 tools/build_offline_preview.py # 20-tab single-file preview (server-free)
 python run.py --verify-deploy          # v197: zip upload tarvata LIVE proof (theme · menu · quiz · poll · /daily-quiz/)
 python run.py --verify-deploy --verify-url https://studentup.in --verify-notify
@@ -882,7 +882,7 @@ bot tho draft chesi post chesthu vundali anni perfectga advanced menu build chey
 | Daily quiz | `inc/quiz.php` rebuilt: 25-question sourced bank, server-rendered questions (works with JavaScript off — form POST + nonce), Quiz JSON-LD, explained answers with source, streak + best + native share via `assets/js/studentup-engage.js`, dedicated `/daily-quiz/` page (`page-quiz.php`, created by *Run setup now*). The v123 bug (function never called → quiz missing on the live theme) is closed and gated by a test. |
 | Reader polls | `inc/polls.php` — daily poll (7-question bank + bot/owner override), one vote per device (one-way hashed voter, raw IP never stored), 20-second rate limit, counts in `wp_options` with autoload OFF, REST route `studentup/v1/poll`, and a plain form POST fallback so voting works without JavaScript. |
 | Daily bot | `autoblog/publish_lane.py` — evening auto-publish that only touches drafts clearing **every** gate (official source URL meta · 700+ words · live Rank Math score ≥ 80 · fresh · no placeholder text) and verifies the publish readback. `autoblog/engage_push.py` pushes the daily quiz post and the poll question to the theme (idempotent by poll id). CLI: `--auto-publish`, `--auto-publish-dry`, `--daily-engage`, `--import-quiz`, `--export-quiz-channel`; `AUTO_PUBLISH_DAILY=1` adds the publish step to `--daily`. |
-| Deploy proof | `python run.py --verify-deploy` checks the **live** site after the zip upload: theme version 1.9.41+, mega menu markup, menu/engage JS, quiz + poll on the home, `/daily-quiz/`, served CSS classes, icon sprite, sitemap entry and the poll REST route. Every failure prints the exact next step (upload zip / Run setup now / purge cache). |
+| Deploy proof | `python run.py --verify-deploy` checks the **live** site after the zip upload: theme version 1.9.42+, mega menu markup, menu/engage JS, quiz + poll on the home, `/daily-quiz/`, served CSS classes, icon sprite, sitemap entry and the poll REST route. Every failure prints the exact next step (upload zip / Run setup now / purge cache). |
 | Preview | Mega nav rendered by the same builder for every preview page, real quiz + poll widgets on the home and on a new English `/pages/daily-quiz.html`, and `tools/build_sprite.py` generates the inline icon sprite from the theme's own icon set (no more blank icon boxes). The offline single-file bundle now has 20 tabs and no dead links. |
 
 **Proof:** `tests/v197_test.py` (10 gates) · **142/142 suites** · php-lint **97/97** · parity PIN-TO-PIN · theme audit 0/0 · deep audit 31/31 · cwv 0/0 · visual 100/100.
@@ -902,7 +902,7 @@ vundali neat ga phone lo easy ga click vachelaga"*.
 | Deep links | `/tools/?tool=age` is shareable, bookmarkable and Back/Forward-safe. |
 | No-JS + privacy | `<noscript>` fallback lists every tool when JavaScript is off; the engine stores nothing (no cookie, no localStorage, no network call). |
 | Perf | engine is ~17 KB deferred, loaded on the Tools page only; its selectors stay out of the inline critical CSS (45 KB cap respected). |
-| Build stamp | every preview page ends with an honest `Preview build 1.9.41` line, so a cached/old page is instantly recognisable (v199.1). |
+| Build stamp | every preview page ends with an honest `Preview build 1.9.42` line, so a cached/old page is instantly recognisable (v199.1). |
 | Nothing lost | the v120 reader utilities that shared the old file (compare rail, deadline reminder `.ics`, print/PDF, text-size buttons, in-article age/fee/syllabus calculators) now live in `assets/js/studentup-reader-utils.js` and are enqueued everywhere they render — v198 C7 + jsdom 8 checks prove each one still works. |
 
 **Set up (theme + bot, okka file):** [`SETUP_ALL.md`](SETUP_ALL.md) — zip download → theme upload → `Run setup now` → bot `.env` + 5 cron lines → `--verify-deploy`.
@@ -918,18 +918,18 @@ build cheyu, anni phone lo advanced ga best ga"*.
 | v192 demo note removed | "v192 premium preview…" banner is gone from the demo, the standalone file and the 20-tab offline bundle. |
 | Live "Latest Jobs" strip | fades at both edges instead of clipping text, pauses when you press/hover/focus it, 44 px tap height on every headline, and becomes a normal swipeable row under `prefers-reduced-motion`. |
 | Most searched | the 10 sections fill **exactly**: 2-up on phone (5 clean rows) and 5-up on laptop (2 clean rows) — no empty cells, no wasted space (v199.1). Cards are tighter (70 px, 38 px icon) with press feedback, a clean trailing chevron, focus ring, dark-mode count pills and print rules. |
-| Build stamp | every preview page ends with an honest `Preview build 1.9.41` line, so a cached/old page is instantly recognisable (v199.1). |
+| Build stamp | every preview page ends with an honest `Preview build 1.9.42` line, so a cached/old page is instantly recognisable (v199.1). |
 | Nothing lost | quiz, polls, mega menu, bottom nav, sticky ad and the tools page are untouched; home still carries no calculators (v191 rule). |
 
-**Proof:** `tests/v199_test.py` (5 gates) · jsdom +5 checks (ticker set, 10 cards, real pills, demo note gone) · **145/145 suites** · jsdom **230/230**.
+**Proof:** `tests/v199_test.py` (5 gates) · jsdom +5 checks (ticker set, 10 cards, real pills, demo note gone) · **146/146 suites** · jsdom **230/230**.
 
-**Proof:** `tests/v198_test.py` (8 gates) · `tests/runtime/jsdom_runtime_test.js` +34 behavioural checks (finder, chips, sticky, deep link, steppers, reset, real results + the v120 compare/reminder/print/text-size/age-calculator layer, restored in v198) · **145/145 suites** · jsdom **230/230** · php-lint **97/97**.
+**Proof:** `tests/v198_test.py` (8 gates) · `tests/runtime/jsdom_runtime_test.js` +34 behavioural checks (finder, chips, sticky, deep link, steppers, reset, real results + the v120 compare/reminder/print/text-size/age-calculator layer, restored in v198) · **146/146 suites** · jsdom **230/230** · php-lint **97/97**.
 
 ### v195 — A) PER-TEMPLATE CRITICAL CSS · B) HUB PAGES · C) AUTHOR E-E-A-T 🚀
 
 User ask: "A) per-template critical CSS → Speed Index fix · B) hub pages + internal links ON · C) author/editorial pages + Person schema — anni cheyu".
 
-**A. Per-template critical CSS (theme 1.9.41-dev)**
+**A. Per-template critical CSS (theme 1.9.42-dev)**
 
 | File | Inline size | Ekkada |
 |---|---|---|
@@ -998,7 +998,7 @@ calendar · admit card · resume · syllabus) ippudu OKATE card lo accessible ta
 role=tab/aria-selected/hidden parity.
 
 Proof: --test-all **138/138** · theme audit 0 errors 0 warnings · deep audit **31/31** · parity **PIN-TO-PIN** ·
-code audit 0/0 · php-lint 86/86 · CWV/a11y static 0/0 · zip 115 files · 1029 KB · sha `0715c79cbf1a…`.
+code audit 0/0 · php-lint 99/99 · CWV/a11y static 0/0 · zip 115 files · 1029 KB · sha `0715c79cbf1a…`.
 **v191.2 (MONEY EDITION, user brief: "tools em avasaram ledu · neat ga · highest revenue"):** home nunchi
 widget wall (8 calculators + quiz/alerts/stories/scholarship/for-you) **teesesamu** — avi ippudu `/tools/`
 page template (`page-tools.php`) lo mattrame. New home flow: hero → ticker → most-searched → **leaderboard ad** →
@@ -2714,7 +2714,7 @@ chala miss chesthunnam" + "theme lo kuda chala mistakes unnayi"** → moodintiki
 | 7 | **Writing-time SEMANTIC + DEEPER checks** | **SEMANTIC group**: entity coverage 3+ · **ముఖ్యాంశాలు** box · **question-form headings** 2+ (PAA) · **సంబంధిత అంశాలు** cluster block · avg sentence ≤24 · current year · quick answer. **DEEPER batch**: heading hierarchy (H1 ledu/skip ledu) · markdown leftovers ledu · list ≤12 words · **table ≤5 cols (mobile)** · **job-guarantee/clickbait claims ledu** (trust+policy) · **keyword cannibalization ledu** · slug ≤60 · **meta lo CTA+number** · secondary keywords body lo · img width/height (CLS) · descriptive anchors · FAQ answers 12+ words → gate **67 checks** · fails → **LLM refine hints** (writing loop lo ne fix, publish block kaadu) |
 | 8 | **rm100 fixers + FAQ bug** | `fix_takeaways` + `fix_entities` (content nunchi mattrame — invent ledu) · **nijamaina bug**: puratana FAQ guard (`<h3` 3+ unte skip) valla **FAQ section asalu rakapovadam** → ippudu questions nijam ga content lo unnaya ani check (regression test) |
 | 9 | **+12 website options** | `ads_enabled` · `adsense_slot_mid` · `adsense_slot_in_feed` · `ads_txt` · `max_ads` · `lazy_ads` · `ads_on_policy` · `consent_mode` · `consent_regions` · `consent_cmp_id` · `news_sitemap` (anni WP Admin → StudentUp nunchi) · **v73:** `deadline_json` poyindi |
-| 10 | **Proof** | `python run.py --test-all` → **55/55 suites** · jsdom **138/138** · `--readiness` **100/100 (27/27)** · pin gate **67/67** · code audit **0/0** · theme audit **0/0** · PHP lint **28/28** · zip **35 files (625 KB)** |
+| 10 | **Proof** | `python run.py --test-all` → **55/55 suites** · jsdom **138/138** · `--readiness` **100/100 (27/27)** · pin gate **67/67** · code audit **0/0** · theme audit **0/0** · PHP lint **99/99** · zip **35 files (625 KB)** |
 
 **v66 honest note:** Consent Mode v2 + ads.txt + gating + CLS + lazy = AdSense **policy-safe**
 revenue foundations. Kaani **revenue numbers Google + traffic + country RPM batti** — idi
@@ -2868,7 +2868,7 @@ Menu (desktop + mobile same order): హోమ్ · ఉద్యోగాలు�
 
 Bot side: `autoblog/breaking.py` (feed build + tag classifier + honest empty note),
 radar run lo auto hook, `MOST_USED` order okate source (bot + site + tests sync).
-Evidence: tests/v59_test.py 12 checks · `run.py --test-all` 55/55 · jsdom 138/138.
+Evidence: tests/v59_test.py 12 checks · `run.py --test-all` 55/55 · jsdom 239/239.
 
 > ℹ️ Ee system exam conduct cheyyadaniki matrame — student data (roll, answers,
 > scores) mee server lo untundi, bayata pampabadadu. Public internet lo pettali
@@ -3587,3 +3587,125 @@ Marpali te: `.env` edit chesi scheduler ni restart cheyandi: `sudo systemctl res
 │   └── ad_network_plan.py  # v56 network eligibility + uplift (--views 50k --tier1 0.3)
 └── tests/                  # end-to-end tests (fake WP/Telegram/source servers)
 ```
+
+### v200 — OWNER REVIEW FIX ("anni verify cheyu — theme worst ga undi")
+
+Owner complaint (2026-10-03): the theme looked broken/worst. Independent
+verification was done with a **real headless browser** (Chromium, phone 390px +
+laptop 1200/1440px) instead of the static CSS gate, and the following defects
+were reproduced and fixed. All of the old gates passed *before* these bugs, so
+each fix below is a new, browser-verified gate.
+
+| # | Bug (reproduced in a real browser) | Root cause | Fix (files) |
+|---|------------------------------------|-----------|-------------|
+| B1 | **Phone: page was 639px wide on a 390px screen** (hidden horizontal overflow — every heading, card, filter bar and grid row overflowed the viewport) | `.su-layout` grid auto track took the content's min-content width; `.su-sidebar` + wide filter rows pushed the layout to 625px | `assets/css/worldclass.css`: `.su-layout{grid-template-columns:minmax(0,1fr)}` + `.su-layout>*{min-width:0}` (fallback for older browsers) |
+| B2 | **Mobile menu was unreadable in light theme** — white text on a white panel (contrast 1.08:1); only `body.dark` had light text | panel got `background:var(--card)` (white) but `color:#fff` was inherited from an old dark-panel rule | `assets/css/worldclass.css`: light `var(--navy)`/`var(--ink-2)` text + `var(--line)` borders, dark values moved under `body.dark .mpanel …` |
+| B3 | **H1 was smaller than section H2s** (17px H1 vs 21px H2) — no visual hierarchy on the page title | late `(b) hero` block in worldclass.css overrode the heading with `clamp(17px,2.5vw,21px)` | `assets/css/worldclass.css`: `clamp(22px,3.6vw,29px)` |
+| B4 | **AA contrast failures**: orange chip/labels 3.35:1, timestamps 4.35:1, "Popular/Closing" chips 4.41:1 | brand orange used as *text* colour on light backgrounds | new `--orange-ink:#c2410c` token; `.statechip`, `.su-sug-badge.ts`, `.su-sponsor-kicker`, `.su-scard-urgent`, `.su-qp--urgent`, `.su-save-btn.on`, `.su-tool-primary`, `.su-button` switched to AA-safe inks |
+| B5 | **Social rail covered the content column** on phones (fixed rail sat mid-screen over cards; 128 sub-44px tap targets) | two conflicting media queries (style.css docked it bottom-right, worldclass.css forced it to mid-screen) | `.su-social` → bottom-right dock (86px above bottom nav) on ≤980px; `body.su-has-stickyad` keeps clearing the sticky ad; `.su-tbtn` got a 44px `::after` hit-area; 981–1339px gets `padding-right:74px` so the rail never overlaps the content |
+| B6 | **Theme screenshot was Lorem ipsum** + docs claimed suites that did not exist (**46/146 test suites failed**: "144/144" pins vs 146 files, README "145/145", stale zip sha256) | version drift between tests/docs/build | `screenshot.png` regenerated from the real demo (1200×900); `SUITES_EXPECTED`/`144/144`/`145/145` → `146/146`; `GO_LIVE_CHECKLIST.md` zip sha256 refreshed |
+
+**Verified after the fixes (same wheel, this commit):** `--test-all` **147/147 suites** · php-lint **98/98** · theme audit **0 errors/0 warnings** · deep audit **31/31** · code audit **clean** · jsdom **230/230** · visual check **100/100** · parity **PIN-TO-PIN** · headless browser: **0 unclipped overflow at 390px**, contrast failures **44 → 1** (only the screen-reader label, false positive), H1 22/29px, phone H1+ticker+first live card all inside the first screen.
+
+---
+
+## v202 — "Breaking News" header nav item (owner: "Breaking News kuda same like Central Jobs alaga undali — akkada click chethe open avvali")
+
+Measured first, on the **live** site (2026-10-04): the header menu there is
+**admin-built** (`Home · Telangana Jobs · AP Jobs · Central Jobs · Results · Hall
+Tickets · …`) — WordPress prints that menu instead of the theme's own mega
+renderer, so an item hard-coded inside `studentup_mega_render()` would never
+appear on live. v202 therefore ships the item in **both** worlds:
+
+| Where | How | File |
+|-------|-----|------|
+| User-built menu (live case) | `wp_nav_menu_items` filter → injected as the **2nd `<li>`** (right after Home), duplicate-safe, `primary` location only | `inc/nav-breaking.php` → `studentup_breaking_menu_filter()` |
+| Theme fallback mega | echoed right after the `Home` `<li>` | `inc/megamenu.php` |
+| Mobile drawer | `.mlabel-brk` + 4 `.su-mbrk` rows + `.su-mbrk-all` CTA, above *Explore* | `header.php` + `studentup_breaking_mobile_block()` |
+
+Behaviour is the **same contract as Central Jobs**: the `<li>` is
+`menu-item-has-children` with a real `ul.sub-menu`, so the existing nav JS
+(`assets/js/studentup-menu.js`) already gives click-to-toggle (`aria-expanded`,
+`.su-open`), hover open/close, `Enter`, `ArrowDown`, arrow navigation and
+`Escape`; the panel is positioned like the mega panels and hides itself on
+phones (`≤900px`) and in print.
+
+Content is real, never invented: verified radar items first
+(`studentup_breaking_items()` → `/data/breaking.json`, ≤36 h, verified only),
+else the **latest published posts** (`human_time_diff` + first category) with an
+honest `All latest` CTA. No data ⇒ **no item at all** (no empty panel). Every
+link resolves: `breaking-news` / `breaking` / `current-affairs` term when it
+exists, otherwise `/#breaking` — never a 404. Option:
+*StudentUp → Options → "Breaking News item in the header"* (default on).
+
+**Phone + laptop proof (measured, not eyeballed):**
+`node tools/verify_breaking_ui.js` drives real Chromium at 8 widths (360 · 390 ·
+414 · 768 · 1024 · 1280 · 1440 · 1920) in **light and dark** (16 runs), clicks
+the item/hamburger like a user and measures the result: horizontal overflow
+(`scrollWidth − innerWidth`), panel rect vs viewport, panel radius/z-index vs
+the *Central Jobs* mega panel (`megaTopΔ`), CTA height, drawer width and whether
+the mobile rows overflow. Current run: **16/16 viewports clean, overflow 0 px,
+panel 420×361 inside viewport, radius 16 px, z-index 1000, megaTopΔ 3 px,
+drawer 306–340 px with 4 rows**.
+
+**Injection hardened (live edge case):** the item used to be inserted after the
+*first `</li>`*, which inside a user-built menu can be a **sub-item** — if the
+first menu entry (`Jobs ▾`) has children, the Breaking item would have landed
+*inside* that dropdown. `studentup_breaking_first_item_end()` now counts `<li>` /
+`</li>` depth and inserts only after the first **top-level** item; the algorithm
+has a Python mirror tested against nested/odd markup.
+
+**Click bug found and fixed in the same pass** (screenshot + jsdom proof): the
+demo page carried an *old inline copy* of the mega/drawer JS next to the theme's
+`studentup-menu.js`. Both toggled `.su-open`, so a click added the class and the
+stale handler removed it again — the panel never stayed open in the preview, and
+the preview behaved differently from live (where that inline copy never existed).
+The 118-line duplicate was deleted; the preview now runs the theme JS as its
+single source of truth. `tests/v202_test.py` + the jsdom runtime block lock it
+(`239/239` checks incl. click-opens / click-closes / hover / one-at-a-time /
+mobile rows).
+
+New gate: `tests/v202_test.py` (7 checks) locks the module + wiring, the
+verified-first/no-empty-panel honesty rules, the injection rules (primary-only,
+duplicate-safe, after Home, option-gated), the CSS/JS open contract incl. dark
+mode + ≤900px/print, and demo/standalone/OFFLINE parity with **on-disk** link
+targets.
+
+## v201 — Preview ↔ live parity (owner: "ikkada preview lo chupinchindi theme upload chesthe live lo alaga ledu")
+
+`preview/worldclass/index.html` is a **hand-written design demo**. It links the
+theme's real CSS/JS, so styling edits show up in the preview — but its *markup*
+was never rendered by WordPress. That is why an uploaded theme could pass every
+gate and still look different on the live site. v201 ports the blocks the theme
+was missing, in the theme's own PHP:
+
+| # | Was only in the demo | Now in the theme |
+|---|----------------------|------------------|
+| P1 | Hero: `<h1 class="su-hero-title">Government Jobs, Results &amp; Notifications</h1>` + `.su-search-wrap` (search + `/` hint) + 8 quick chips (Breaking News · Latest Jobs · TSPSC / Telangana · APPSC / Andhra Pradesh · Central Govt · Police / Defence · 10th / Inter · Results &amp; Keys) | `inc/premium.php` → `studentup_hero_premium()` renders exactly that markup; chips link to the real category archive when the term exists, otherwise to the jobs board (never a 404); "Breaking News" uses the new `.su-hact--breaking` class instead of an inline style |
+| P2 | "LIVE · Latest Notifications" auto-sliding track (`.su-slider-sec` → `#su-jobs-track`, rich `.su-scard` cards) | new `inc/slider.php` → `studentup_latest_notifications()` builds the same markup from **real published posts** — category · exam tag, deadline pill ≤14 days, 🔥 New <48 h, vacancies/qualification/last date only when the post really has them, "Full details &amp; Apply" CTA, WhatsApp share. Empty site ⇒ the section renders nothing (no fake cards) |
+| P3 | the track's auto-slide JS lived inline in the demo only (so the live theme had no slider at all) | new `assets/js/studentup-slider.js`, enqueued on the front page: 3.2 s autoslide, prev/pause/next, hover/focus/touch/`visibilitychange` pauses, ←/→ keys, `prefers-reduced-motion` disables autoslide, `/` focuses the hero search. The demo now loads this same file (its inline copy was deleted) |
+
+Home order is now the demo's order: ticker → hero → latest notifications → most
+searched → qualification bar → cards → jobs table → hot jobs → closing week →
+quiz → poll → ads. Page 1 has exactly one `<h1>` (the hero); page 2 keeps the
+screen-reader one.
+
+New gates: `tests/v201_test.py` locks the hero markup/copy, the 8 chips, the
+slider renderer, the front-page order, the enqueue, the JS behaviours and the
+CSS classes, so this parity cannot silently rot again.
+
+**Why live can still differ (measured against the live site, 2026-10-04):** the live
+home is served by theme **1.9.41** (pre-v201) and WordPress adds things the repo
+cannot: a Google-Fonts `<link>` (preview has none), a cookie-consent widget and its
+own CSS, Rank Math JSON-LD, and the real post set. So even after the v201 upload the
+live page will follow *your* content and *your* plugins.
+`preview/theme-snapshot.html` (generated by `tools/render_theme_snapshot.py`) lists
+what the installed theme really renders and what it needs, so "demo" and "live" are
+never confused again.
+
+**Honest remaining differences:** sections the demo draws with its own sample
+markup (alerts card, rail cards, footer wrapper classes, bottom-nav button
+class) and everything that depends on your WordPress data and the
+`studentup_opt()` toggles — an empty database or a switched-off toggle still
+renders less than the demo. `preview/index.html` (the older static mirror) keeps
+its own inline styles and is not regenerated from PHP.

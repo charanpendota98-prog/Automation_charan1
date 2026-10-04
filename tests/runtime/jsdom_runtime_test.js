@@ -35,7 +35,7 @@ let html = fs.readFileSync(PAGE, "utf8");
 
 /* v71: total check count — docs (README/MANUAL/GO_LIVE) claim this number and
  * tools/parity_audit.py P8 reads it, so a silent drift cannot slip through. */
-const EXPECTED_CHECKS = 230;
+const EXPECTED_CHECKS = 239;
 
 const passed = [];
 const failed = [];
@@ -908,6 +908,47 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
     if (firstA) firstA.dispatchEvent(new w.KeyboardEvent("keydown", { key: "ArrowDown", bubbles: true }));
     wd.body.dispatchEvent(new w.MouseEvent("click", { bubbles: true }));
     ok("v197 menu: outside click closes every panel", !firstLi.classList.contains("su-open"));
+
+    /* --- v202: Breaking News nav item — Central Jobs laage click/hover tho open --- */
+    const brkLi = wd.querySelector("li.su-navbrk");
+    const brkA = brkLi ? brkLi.querySelector("a[aria-haspopup]") : null;
+    const brkPanel = wd.getElementById("su-brkdd");
+    ok("v202 breaking nav: item right after Home with a real panel (aria-controls → #su-brkdd)",
+       !!brkLi && !!brkA && !!brkPanel &&
+       brkA.getAttribute("aria-controls") === "su-brkdd" && brkPanel.classList.contains("sub-menu") &&
+       topLis.indexOf(brkLi) === 1, "index=" + (brkLi ? topLis.indexOf(brkLi) : -1));
+    ok("v202 breaking nav: panel rows are real links (5 rows + All-updates CTA)",
+       !!brkPanel && brkPanel.querySelectorAll("li.menu-item a[role=menuitem]").length >= 5 &&
+       !!brkPanel.querySelector("a.su-brkdd-cta"));
+    ok("v202 breaking nav: closed by default (aria-expanded=false, no su-open)",
+       !!brkLi && !brkLi.classList.contains("su-open") &&
+       brkA.getAttribute("aria-expanded") === "false");
+    if (brkA) brkA.dispatchEvent(new w.MouseEvent("click", { bubbles: true, cancelable: true }));
+    ok("v202 breaking nav: CLICK opens it (su-open + aria-expanded=true) — Central Jobs laage",
+       !!brkLi && brkLi.classList.contains("su-open") &&
+       brkA.getAttribute("aria-expanded") === "true");
+    if (brkA) brkA.dispatchEvent(new w.MouseEvent("click", { bubbles: true, cancelable: true }));
+    ok("v202 breaking nav: second click closes it again",
+       !!brkLi && !brkLi.classList.contains("su-open") &&
+       brkA.getAttribute("aria-expanded") === "false");
+    ok("v202 breaking nav: opening it closes an already-open mega panel (one at a time)",
+       (function () {
+         if (!firstA || !brkA) return false;
+         firstA.dispatchEvent(new w.KeyboardEvent("keydown", { key: "ArrowDown", bubbles: true }));
+         const othersClosed = firstLi.classList.contains("su-open");
+         brkA.dispatchEvent(new w.MouseEvent("click", { bubbles: true, cancelable: true }));
+         return othersClosed && brkLi.classList.contains("su-open") && !firstLi.classList.contains("su-open");
+       })());
+    if (brkLi) brkLi.dispatchEvent(new w.MouseEvent("mouseenter", { bubbles: false }));
+    ok("v202 breaking nav: hover opens it too (mouseenter → su-open)",
+       !!brkLi && brkLi.classList.contains("su-open"));
+    if (brkLi) brkLi.dispatchEvent(new w.MouseEvent("mouseleave", { bubbles: false }));
+    ok("v202 breaking nav: mouseleave closes it (no stuck panel)",
+       !!brkLi && !brkLi.classList.contains("su-open"));
+    const mbrk = wd.querySelectorAll(".mpanel a.su-mbrk");
+    ok("v202 breaking mobile: drawer block has 4 real rows + All-updates CTA",
+       mbrk.length >= 4 && !!wd.querySelector(".mpanel .mlabel-brk") &&
+       !!wd.querySelector(".mpanel a.su-mbrk-all"));
 
     /* --- regression: theme toggle must render real SVG, never raw markup --- */
     const themeBtn = wd.getElementById("su-theme");

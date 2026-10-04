@@ -393,6 +393,10 @@ function studentup_menu_fallback() {
 		esc_url( $home ),
 		esc_html__( 'Home', 'studentup' )
 	);
+	// v202: Breaking News item — mega renderer laage legacy fallback lo kuda (Home tarvata).
+	if ( function_exists( 'studentup_breaking_nav_li' ) ) {
+		echo studentup_breaking_nav_li(); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped inside.
+	}
 	foreach ( $menu as $it ) {
 		$has_kids = ! empty( $it['children'] );
 		printf(

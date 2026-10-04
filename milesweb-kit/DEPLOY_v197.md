@@ -1,8 +1,9 @@
 # DEPLOY v197 — 10 nimushalu (click-by-click)
 
-> Theme **1.9.41** · zip: `wordpress-theme/studentup-theme.zip` (135 files · 1174 KB) — v199 final home (10 sections, phone-first) + v198 tools workbench
+> Theme **1.9.42** · zip: `wordpress-theme/studentup-theme.zip` (138 files · 932 KB · `f8c9d12b2a32…`) — v202 Breaking News header item + v201 preview-parity (hero + slider) + v199 final home + v198 tools workbench
 > Direct download (GitHub raw):
-> `https://raw.githubusercontent.com/charanpendota98-prog/Automation_charan1/arena/01a10001-automation-charan1/wordpress-theme/studentup-theme.zip`
+> `https://raw.githubusercontent.com/charanpendota98-prog/Automation_charan1/arena/01a1035e-automation-charan1/wordpress-theme/studentup-theme.zip`
+> (PR #25 merge ayyaka `.../main/wordpress-theme/studentup-theme.zip` kuda same file istundi.)
 
 Ee page lo unna steps **order lo** cheyyandi. Prathi step tarvata OK sign
 chudandi — tappu aithe aa step ne malli cheyyandi, munduku vellakandi.
@@ -26,8 +27,8 @@ Rollback (eppudaina): purathana zip ni upload chesi malli activate — 2 nimusha
 2. **Choose File** → `studentup-theme.zip` → **Install Now**
 3. **Replace current with uploaded** (leda **Activate**)
 
-✅ Check: WP Admin → **Appearance → Themes** lo `StudentUp 1.9.41` kanipinchali
-(puthana 1.9.36 undakoodadu).
+✅ Check: WP Admin → **Appearance → Themes** lo `StudentUp 1.9.42` kanipinchali
+(purathana 1.9.41 / 1.9.36 undakoodadu).
 
 ---
 
@@ -45,10 +46,18 @@ Rollback (eppudaina): purathana zip ni upload chesi malli activate — 2 nimusha
 1. WP Admin → **LiteSpeed Cache → Toolbox → Purge All**
 2. Browser lo: `https://studentup.in/` ni **hard refresh** (Ctrl+Shift+R · phone lo
    private tab)
+   - phone lo hamburger (☰) → drawer lo top lo **Breaking News** block (4 rows + All updates).
 
 ✅ Check home page lo:
-- Header lo **Jobs ▾ · Exams ▾ · Scholarships ▾ · Tools ▾ · More ▾** — hover/tap
+- Header lo **Home · 🔴 Breaking News · Jobs ▾ · Exams ▾ · Scholarships ▾ · Tools ▾ ·
+  More ▾** — *Breaking News* meeda **hover leda click** cheste panel terustundi
+  (Central Jobs laage); panel lo prathi row nijamaina post/term page ki velthundi,
+  kindha **All updates** CTA. (Admin menu lo "Breaking News" item already unte
+  theme inkokati add cheyyadu.)
+- Header **Jobs ▾ · Exams ▾ · Scholarships ▾ · Tools ▾ · More ▾** — hover/tap
   cheste **columns tho mega panel** terustundi (icons tho).
+- Hero lo **"Government Jobs, Results & Notifications"** + search + 8 chips, aa
+  kinda **LIVE · Latest Notifications** carousel (mee posts nunde, 3.2s auto-slide).
 - Konchem kinda **DAILY QUIZ** card — 5 questions + "Check answers".
 - Aa kinda **READER POLL** — okka option select chesi **Vote**.
 

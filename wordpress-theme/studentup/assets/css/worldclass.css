@@ -1,5 +1,5 @@
 /* ==========================================================================
-   StudentUp — WorldClass v2  (theme 1.9.41 · v199.1)
+   StudentUp — WorldClass v2  (theme 1.9.42 · v201)
    Mobile-first design layer. style.css tarvata load avutundi — kotha markup
    avasaram ledu, unna classes ne premium ga upgrade chestundi.
    Rules: 17px Telugu-friendly base · 44px tap targets · safe-area ·
@@ -54,14 +54,15 @@ body.dark .logo .brand{ color:#fff }
 .su-lticker .tmove a{ font-size:13.5px; letter-spacing:.002em; font-weight:650; color:#f8fafc; text-decoration:none }
 .su-lticker .tmove a:hover{ color:#93c5fd; text-decoration:underline }
 .su-ticker-ctrls{ display:flex; align-items:center; gap:5px; flex-shrink:0 }
-.su-tbtn{ width:28px; height:28px; border-radius:8px; border:1px solid rgba(255,255,255,.25); background:rgba(255,255,255,.12); color:#fff; font-size:13px; font-weight:800; cursor:pointer; display:grid; place-items:center; padding:0; line-height:1; transition:all .15s ease }
+.su-tbtn{ position:relative; width:28px; height:28px; border-radius:8px; border:1px solid rgba(255,255,255,.25); background:rgba(255,255,255,.12); color:#fff; font-size:13px; font-weight:800; cursor:pointer; display:grid; place-items:center; padding:0; line-height:1; transition:all .15s ease }
 .su-tbtn:hover{ background:rgba(255,255,255,.28); border-color:rgba(255,255,255,.45) }
+.su-tbtn::after{ content:""; position:absolute; inset:-8px }  /* v200: 44px thumb hit-area (visual size same) */
 
 /* ------------------------------------------------------ 5. hero (compact & advanced) */
 .su-hero{ padding:8px 0 6px }
 .su-hero-in{ padding:0 var(--gut) }
 .su-hero-kicker{ font-size:12px; margin:0 0 4px; font-weight:700; color:var(--blue-ink); display:inline-flex; align-items:center; gap:6px }
-.su-hero-title{ font-size:clamp(17px,2.5vw,21px); line-height:1.22; margin:0 0 6px }
+.su-hero-title{ font-size:clamp(21px,3.6vw,29px); line-height:1.2; margin:0 0 6px }  /* v200: page title H2 section titles kanna peddaga undali */
 .su-hero-sub{ font-size:13px; max-width:62ch; margin:0 0 6px; color:var(--muted); line-height:1.4 }
 .su-hero-search{
   display:flex; gap:8px; align-items:center; background:#fff;
@@ -487,7 +488,8 @@ body.dark .su-hook{ background:#131f34; color:var(--ink) }
    kanipisthu untundi (viewability ↑ = RPM ↑), content neat ga
    760px reading width lo untundi. Phone lo single column (fast).
    ============================================================ */
-.su-layout{ display:grid; gap:22px; align-items:start }
+.su-layout{ display:grid; grid-template-columns:minmax(0,1fr); gap:22px; align-items:start }
+.su-layout>*{ min-width:0 }   /* mobile: grid track content ni exceed cheyyakoodadu (v200 overflow fix) */
 @media(min-width:1080px){
   .su-layout{ grid-template-columns:minmax(0,1fr) }              /* fallback: sidebar lekapote */
   .su-layout:has(> .su-sidebar){ grid-template-columns:minmax(0,1fr) 316px; gap:26px }
@@ -572,8 +574,8 @@ body.dark .su-sidebar-ad{ background:#111c2f; border-color:var(--line-2) }
 .su-hero-in{ padding:0 var(--gut); position:relative; z-index:20 }
 .su-hero-title{
   color:#ffffff !important;
-  font-size:clamp(17px,2.5vw,21px);
-  line-height:1.22;
+  font-size:clamp(22px,3.6vw,29px);   /* v200: page title H2 section titles kanna peddaga (AA hierarchy) */
+  line-height:1.2;
   letter-spacing:-.015em;
   font-weight:800;
   max-width:64ch;
@@ -646,7 +648,7 @@ body.dark .su-sidebar-ad{ background:#111c2f; border-color:var(--line-2) }
   font-size:10.5px; font-weight:800; padding:2px 7px; border-radius:6px;
   background:#f1f5f9; color:#334155; flex-shrink:0; white-space:nowrap;
 }
-.su-sug-badge.ts{ background:#fff7ed; color:#ea580c; border:1px solid #fed7aa }
+.su-sug-badge.ts{ background:#fff7ed; color:#b45309; border:1px solid #fed7aa }  /* v200: 4.5:1 AA (was 3.35) */
 .su-sug-badge.ap{ background:#ecfdf5; color:#047857; border:1px solid #a7f3d0 }
 .su-sug-badge.central{ background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe }
 .su-sug-badge.bank{ background:#faf5ff; color:#7e22ce; border:1px solid #e9d5ff }
@@ -893,10 +895,10 @@ body.dark .menubtn {
 .header.su-head-small .logo .brand{font-size:17.5px}
 
 /* --------------------------------------------- 24. mobile accordion groups */
-.mpanel .mgroup{border-top:1px solid rgba(255,255,255,.1)}
+.mpanel .mgroup{border-top:1px solid var(--line)}
 .mpanel .mgroup>summary{
   display:flex;align-items:center;gap:10px;padding:13px 2px;cursor:pointer;list-style:none;
-  font-weight:800;font-size:15.5px;color:#fff;
+  font-weight:800;font-size:15.5px;color:var(--navy);
 }
 .mpanel .mgroup>summary::-webkit-details-marker{display:none}
 .mpanel .mgroup>summary span{flex:1}
@@ -904,11 +906,17 @@ body.dark .menubtn {
 .mpanel .mgroup[open]>summary .su-uicon:last-child{transform:rotate(180deg)}
 .mpanel .mgroup-body{display:grid;gap:2px;padding:0 0 10px 4px}
 .mpanel .mgroup-body>a{
-  display:block;padding:9px 10px;border-radius:11px;background:rgba(255,255,255,.05);color:#e8f0fb;
+  display:block;padding:9px 10px;border-radius:11px;background:var(--soft);color:var(--ink-2);
   font-weight:700;font-size:14px;
 }
-.mpanel .mgroup-body>a>small{display:block;font-weight:500;font-size:11.5px;color:#a9c0dd;margin-top:2px}
-.mpanel .mgroup-body>a:hover{background:rgba(255,255,255,.12)}
+.mpanel .mgroup-body>a>small{display:block;font-weight:500;font-size:11.5px;color:var(--muted);margin-top:2px}
+.mpanel .mgroup-body>a:hover{background:var(--soft);color:var(--navy)}
+/* v200: panel card (light) — dark theme lo mattrame light-text variants (mundu white-on-white bug) */
+body.dark .mpanel .mgroup{border-top-color:rgba(255,255,255,.1)}
+body.dark .mpanel .mgroup>summary{color:#fff}
+body.dark .mpanel .mgroup-body>a{background:rgba(255,255,255,.05);color:#e8f0fb}
+body.dark .mpanel .mgroup-body>a>small{color:#a9c0dd}
+body.dark .mpanel .mgroup-body>a:hover{background:rgba(255,255,255,.12)}
 
 /* --------------------------------------------------------- 25. quiz v2 */
 .su-quiz{position:relative;margin:22px 0}
@@ -1160,7 +1168,7 @@ body.dark .su-tact-copy{ background:#16263f; border-color:#3d6fb5; color:#cfe0f7
 .su-scard:hover{ transform: translateY(-3px); box-shadow: var(--sh-2); border-color: #bcd3f2 }
 .su-scard-head{ display: flex; justify-content: space-between; align-items: center; gap: 6px }
 .su-scard-tag{ font-size: 10.5px; font-weight: 800; padding: 2px 8px; border-radius: 999px; background: var(--soft); color: var(--navy) }
-.su-scard-urgent{ font-size: 10.5px; font-weight: 800; padding: 2px 8px; border-radius: 999px; background: #fef2f2; color: #dc2626; border: 1px solid #fecaca }
+.su-scard-urgent{ font-size: 10.5px; font-weight: 800; padding: 2px 8px; border-radius: 999px; background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca }  /* v200: AA 4.5+ */
 .su-scard h3{ font-size: 14.5px; font-weight: 750; color: var(--navy); margin: 0; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden }
 .su-scard-meta{ display: flex; flex-wrap: wrap; gap: 6px; font-size: 11.5px; color: var(--muted); font-weight: 600; margin-top: auto }
 .su-scard-vac{ background: #eff6ff; color: #1e40af; padding: 2px 7px; border-radius: 6px; font-weight: 700 }
@@ -1298,11 +1306,18 @@ body.dark .usedcard .ucount{ background:#0f2038; color:#a9c1e6; border-color:var
    16. FLOATING SOCIAL RAIL (Right side on mobile · 5-min dismissal)
    ========================================================================== */
 @media(max-width:980px){
-  .su-social{ top:50% !important; bottom:auto !important; transform:translateY(-50%) !important; flex-direction:column !important; right:10px !important }
-  .su-social.su-out{ transform:translate(135%,-50%) !important }
+  /* v200: rail content column ni cover cheyyakoodadu — bottom-right dock (style.css base intent),
+     bottom nav + install banner ki space vadili. Mundu 50% mid-screen lo column text meeda padutundi. */
+  .su-social{ top:auto !important; bottom:86px !important; transform:none !important; flex-direction:row !important; right:10px !important }
+  .su-social.su-out{ transform:translateY(170%) !important; opacity:0 !important; visibility:hidden !important; pointer-events:none !important }
+  .su-tab{ top:auto !important; bottom:150px !important }
+}
+@media(max-width:1339px) and (min-width:981px){
+  /* tablet/small-laptop: rail ki right gutter space (content meeda overlap ledu) */
+  .wrap{ padding-right:74px }
 }
 @media(max-width:600px){
-  .su-social{ right:8px !important; top:48% !important; gap:6px !important; padding:7px 5px !important }
+  .su-social{ right:8px !important; top:auto !important; bottom:84px !important; gap:6px !important; padding:7px 5px !important }
   .su-social a{ width:33px !important; height:33px !important }
   .su-social a svg{ width:16px !important; height:16px !important }
   .su-tab{ top:48% !important; bottom:auto !important; width:20px !important; height:40px !important }
@@ -1328,7 +1343,7 @@ body.dark .usedcard .ucount{ background:#0f2038; color:#a9c1e6; border-color:var
 .su-qp{ appearance:none; border:1px solid var(--line,#cbd5e1); background:#fff; color:var(--ink,#1e293b); font-size:12px; font-weight:700; padding:5px 12px; border-radius:999px; cursor:pointer; white-space:nowrap; transition:all .16s ease; line-height:1.4; min-height:30px; display:inline-flex; align-items:center }
 .su-qp:hover{ border-color:var(--blue,#2563eb); color:var(--blue,#2563eb); transform:translateY(-1px) }
 .su-qp.active{ background:var(--navy,#0b2447); border-color:var(--navy,#0b2447); color:#fff; box-shadow:0 4px 12px rgba(11,36,71,.20) }
-.su-qp--urgent{ border-color:#fca5a5; color:#dc2626; background:#fef2f2 }
+.su-qp--urgent{ border-color:#fca5a5; color:#b91c1c; background:#fef2f2 }  /* v200: AA 4.5+ */
 .su-qp--urgent:hover{ border-color:#ef4444; color:#b91c1c; background:#fee2e2 }
 .su-qp--urgent.active{ background:#dc2626; border-color:#dc2626; color:#fff; box-shadow:0 4px 12px rgba(220,38,38,.28) }
 body.dark .su-qual-bar{ background:#14243c; border-color:#1e3355 }
@@ -1471,8 +1486,72 @@ body.dark .su-q-diff{ background:#1e293b; color:#cbd5e1 }
   .su-why{ display:block !important }
 }
 
+/* ============================================================
+   v201 — PREVIEW ↔ LIVE PARITY layer
+   Demo (preview/worldclass) markup ni theme PHP ippudu output chestundi;
+   aa markup ki kavalsina konni chinna styles ikkada (inline styles badulu).
+   ============================================================ */
+.su-hact--breaking{ border-color:#fca5a5; background:#fef2f2; color:#b91c1c; font-weight:800 }
+.su-hact.su-t-ink{ background:linear-gradient(135deg,#0f2e62,#4338ca); color:#fff; border-color:transparent }
+.su-hact--breaking:hover{ background:#fee2e2; border-color:#ef4444; color:#b91c1c }
+.su-scard h3 a{ color:inherit; text-decoration:none }
+.su-scard-hot{ font-size:10.5px; font-weight:800; padding:2px 8px; border-radius:999px;
+  background:#fff7ed; color:#b45309; border:1px solid #fed7aa }   /* AA 5.02 (v200 rule) */
+body.dark .su-hact--breaking{ background:rgba(220,38,38,.16); border-color:#7f1d1d; color:#fca5a5 }
+body.dark .su-scard-hot{ background:rgba(180,83,9,.20); border-color:#7c2d12; color:#fdba74 }
+.su-slider-sec .su-slider-head h2{ font-size:18px }
 
+/* ============================================================
+   v202 — BREAKING NEWS nav item (header) + mobile block
+   Click/hover tho open avutundi — Central Jobs mega item laage.
+   ============================================================ */
+.nav .su-navbrk>a{ color:#b91c1c; font-weight:800; display:inline-flex; align-items:center; gap:6px }
+.nav .su-navbrk>a:hover, .nav .menu-primary>li.su-navbrk.su-open>a{ background:#fef2f2; color:#991b1b }
+.nav .su-brkdot{ width:7px; height:7px; border-radius:50%; background:#dc2626; flex:0 0 auto;
+  box-shadow:0 0 0 3px rgba(220,38,38,.16); animation:blip 1.1s infinite }
+.nav .su-brkdd{
+  position:absolute !important; top:calc(100% + 6px) !important; left:0 !important; right:auto !important;
+  display:block; min-width:min(380px,92vw); max-width:min(420px,94vw); padding:8px;
+  background:#fff; border:1px solid var(--line); border-radius:16px; box-shadow:var(--shadow); z-index:1000 !important }
+.nav .menu-primary>li:nth-last-child(-n+2) .su-brkdd, .nav .menu-primary>li:last-child .su-brkdd{ left:auto !important; right:0 !important }
+.nav .su-brkdd>.menu-item{ display:block; position:static }
+.nav .su-brkdd-head{ display:flex; align-items:center; justify-content:space-between; gap:8px;
+  padding:6px 8px 8px; border-bottom:1px solid var(--line); margin-bottom:6px }
+.nav .su-brkdd-head>span{ font-size:11px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:var(--muted) }
+.nav .su-brkdd-head>em{ font-style:normal; font-size:10.5px; font-weight:800; color:#b91c1c; background:#fef2f2;
+  border:1px solid #fecaca; border-radius:999px; padding:1px 8px; display:inline-flex; align-items:center; gap:5px }
+.nav .su-brkdd .su-mega-ic{ background:linear-gradient(180deg,#fff1f2,#fee2e2); color:#b91c1c }
+.nav .su-brkdd .su-mega-t{ color:var(--navy) }
+.nav .su-brkdd .su-mega-t>small{ color:var(--muted) }
+.nav .su-brkdd>.menu-item>a{ display:flex !important; gap:10px; align-items:flex-start; padding:8px 10px !important; border-radius:12px }
+.nav .su-brkdd>.menu-item>a:hover{ background:#fef2f2 }
+.nav .su-brkdd-foot{ margin-top:6px; border-top:1px solid var(--line); padding-top:6px }
+.nav .su-brkdd-cta{ display:flex !important; align-items:center; justify-content:center; gap:6px;
+  background:#b91c1c !important; color:#fff !important; border-radius:12px; font-weight:800; font-size:13px;
+  padding:9px 12px !important }
+.nav .su-brkdd-cta:hover{ background:#991b1b !important; color:#fff !important }
+body.dark .nav .su-brkdd{ background:#101c2e; border-color:#243450 }
+body.dark .nav .su-brkdd-head{ border-color:#243450 }
+body.dark .nav .su-brkdd-head>em{ background:rgba(220,38,38,.16); border-color:#7f1d1d; color:#fca5a5 }
+body.dark .nav .su-brkdd .su-mega-ic{ background:#2a1620; color:#fca5a5 }
+body.dark .nav .su-brkdd>.menu-item>a:hover{ background:#16263f }
+body.dark .nav .su-brkdd-foot{ border-color:#243450 }
+body.dark .nav .su-navbrk>a{ color:#fca5a5 }  /* dark header lo contrast (#b91c1c ~2.6:1 kakunda) */
+body.dark .nav .su-navbrk>a:hover, body.dark .nav .menu-primary>li.su-navbrk.su-open>a{ background:rgba(220,38,38,.14); color:#fca5a5 }
+@media(max-width:900px){ .nav .su-brkdd{ display:none !important } }
 
-
-
-
+/* mobile drawer — Breaking News block (top) */
+.mlabel-brk{ display:flex; align-items:center; gap:7px; color:#b91c1c }
+.mlabel-brk .su-brkdot{ width:7px; height:7px; border-radius:50%; background:#dc2626; display:inline-block; animation:blip 1.1s infinite }
+.mpanel a.su-mbrk{ align-items:flex-start; gap:9px }
+.mpanel a.su-mbrk .su-uicon{ color:#dc2626 !important; margin-top:2px }
+.mpanel .su-mbrk-t{ display:block; line-height:1.35 }
+.mpanel .su-mbrk-t small{ display:block; font-weight:600; font-size:11.5px; color:var(--muted); margin-top:2px }
+.mpanel a.su-mbrk-all{ justify-content:center; background:#b91c1c; color:#fff !important; font-weight:800; margin:2px 0 4px }
+.mpanel a.su-mbrk-all .su-uicon{ color:#fff !important }
+.mpanel a.su-mbrk-all:hover{ background:#991b1b; color:#fff !important }
+body.dark .mpanel a.su-mbrk-all{ background:#b91c1c }
+body.dark .mlabel-brk{ color:#fca5a5 }
+body.dark .mpanel .su-mbrk-t{ color:#e6eefb }
+body.dark .mpanel .su-mbrk-t small{ color:#a9c0dd }
+@media print{ .nav .su-brkdd{ display:none !important } }

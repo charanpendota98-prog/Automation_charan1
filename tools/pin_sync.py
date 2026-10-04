@@ -29,6 +29,10 @@ RE_PIN_RE = re.compile(r'1\\\.9\\\.\d+')          # regex-literal form: 1\.9\.8
 SUITE_RE = re.compile(r'(SUITES_EXPECTED\s*=\s*)(\d+)')
 SUITE_ASSERT_RE = re.compile(r'(suites\s*[=!]=\s*)(\d+)')
 SUITE_MSG_RE = re.compile(r'(v\d+ tho )(\d+)')
+# jsdom behavioural count — tests la jsdom claims kuda sync avvali (v202: 230 → 239).
+JSDOM_TESTS_RE = re.compile(r"(jsdom\s+)(\d+)/(\d+)")
+JSDOM_LIT_RE = re.compile(r"\"(\d+)/(\d+) checks passed\"")
+JSDOM_LABEL_RE = re.compile(r"('jsdom )(\d+)/(\d+)( behavioral')")
 # never touch changelog-history pins like "= 1.9.7" — those must stay historical.
 PLAIN_PIN_RE = re.compile(r'(?<!= )(?<![\d.])1\.9\.\d+(?![\d.])')
 CLAIM_RE = re.compile(r'"(\d+)/(\d+)"')
@@ -49,8 +53,37 @@ def suite_count() -> int:
     return len(list(TESTS.glob("*_test.py")))
 
 
+def php_file_count() -> int:
+    """php_lint.js laage: theme folder lo anni .php files."""
+    root = THEME
+    skip = {"node_modules", ".git"}
+    n = 0
+    stack = [root]
+    while stack:
+        d = stack.pop()
+        for e in d.iterdir():
+            if e.is_dir():
+                if e.name not in skip:
+                    stack.append(e)
+            elif e.name.endswith(".php"):
+                n += 1
+    return n
+
+
+def jsdom_checks() -> int:
+    """README/MANUAL/GO_LIVE lo jsdom claim ↔ jsdom file EXPECTED_CHECKS (v71 gate)."""
+    txt = (TESTS / "runtime" / "jsdom_runtime_test.js").read_text(encoding="utf-8")
+    m = re.search(r"EXPECTED_CHECKS\s*=\s*(\d+)", txt)
+    return int(m.group(1)) if m else 0
+
+
 def sync_docs(ver: str, write: bool) -> int:
-    """Refresh the zip fingerprint block in GO_LIVE_CHECKLIST.md."""
+    """Refresh every *release pin* in the docs.
+
+    v202: modati sari GO_LIVE fingerprint matrame kaadu — suites / php-lint /
+    jsdom counts mariyu SETUP_ALL + DEPLOY_v197 zip pins kuda ikkade sync avutayi,
+    so "docs stale" ane tappu malli raadu.
+    """
     import hashlib
     import zipfile
 
@@ -72,18 +105,71 @@ def sync_docs(ver: str, write: bool) -> int:
         src,
         count=1,
     )
-    if new == src:
-        return 0
-    print(f"  GO_LIVE_CHECKLIST.md: zip fingerprint -> {files} files · {size_kb} KB · {sha[:12]}…")
-    if write:
-        doc.write_text(new, encoding="utf-8")
-    return 1
+    changed = 0
+    if new != src:
+        print(f"  GO_LIVE_CHECKLIST.md: zip fingerprint -> {files} files · {size_kb} KB · {sha[:12]}…")
+        if write:
+            doc.write_text(new, encoding="utf-8")
+        changed += 1
+
+    suites = suite_count()
+    lint = php_file_count()
+    jsdom = jsdom_checks()
+    zip_re = re.compile(r"(\| studentup-theme-[0-9.]+\.zip \| )\d+ files · \d+ KB( \| `)[0-9a-f]{12}(`)")
+    dep_re = re.compile(r"\(\d+ files · \d+ KB(?: · `[0-9a-f]{12}…`)?\)")
+    dep_ver_re = re.compile(r"(> Theme \*\*)1\.9\.\d+(\*\* · zip:)")
+    dep_admin_re = re.compile(r"(lo `StudentUp )1\.9\.\d+(`)")
+    suites_md_re = re.compile(r"(test suites \*\*)\d+/\d+(\*\*)")
+    jsdom_md_re = re.compile(r"(jsdom runtime \*\*)\d+/\d+(\*\*)")
+    lint_md_re = re.compile(r"(PHP lint \*\*)\d+/\d+(\*\*)")
+    lint_cmd_re = re.compile(r"(node tools/php_lint\.js\s+# )\d+/\d+")
+    guides = [
+        (ROOT / "README.md", suites_md_re, jsdom_md_re, lint_md_re),
+        (ROOT / "MANUAL_ADVANCED_CHECKLIST.md", suites_md_re, jsdom_md_re, lint_md_re),
+        (ROOT / "GO_LIVE_CHECKLIST.md", suites_md_re, jsdom_md_re, lint_md_re),
+        (ROOT / "SETUP_ALL.md", None, None, None),
+        (ROOT / "FULL_SETUP_GUIDE.md", None, None, None),
+        (ROOT / "DEPLOY_v197.md", None, None, None),
+        (ROOT / "milesweb-kit" / "DEPLOY_v197.md", None, None, None),
+    ]
+    for doc, sre, jre, lre in guides:
+        if not doc.exists():
+            continue
+        src = doc.read_text(encoding="utf-8")
+        out = src
+        if sre:
+            out = sre.sub(lambda m: m.group(1) + f"{suites}/{suites}" + m.group(2), out)
+        if jre:
+            out = jre.sub(lambda m: m.group(1) + f"{jsdom}/{jsdom}" + m.group(2), out)
+        if lre:
+            out = lre.sub(lambda m: m.group(1) + f"{lint}/{lint}" + m.group(2), out)
+        out = lint_cmd_re.sub(lambda m: m.group(1) + f"{lint}/{lint}", out)
+        out = zip_re.sub(lambda m: m.group(1) + f"{files} files · {size_kb} KB" + m.group(2) + sha[:12] + m.group(3), out)
+        out = dep_re.sub(f"({files} files · {size_kb} KB · `{sha[:12]}…`)", out)
+        out = dep_ver_re.sub(lambda m: m.group(1) + ver + m.group(2), out)
+        out = dep_admin_re.sub(lambda m: m.group(1) + ver + m.group(2), out)
+        # SETUP_ALL + FULL_SETUP_GUIDE lo suites/jsdom/php-lint prose
+        out = out.replace(f"suites · jsdom {jsdom}/{jsdom}", f"suites · jsdom {jsdom}/{jsdom}")
+        out = re.sub(r"(\+ )\d+/\d+( suites)", lambda m: m.group(1) + f"{suites}/{suites}" + m.group(2), out)
+        out = re.sub(r"(jsdom )\d+/\d+", lambda m: m.group(1) + f"{jsdom}/{jsdom}", out)
+        out = re.sub(r"(php-lint )\d+/\d+", lambda m: m.group(1) + f"{lint}/{lint}", out)
+        out = re.sub(r"(\| PHP lint \|[^|]*\| \*\*)\d+/\d+(\*\* ✔ \|)",
+                     lambda m: m.group(1) + f"{lint}/{lint}" + m.group(2), out)
+        out = re.sub(r"(\| Test suites \|[^|]*\| \*\*)\d+/\d+(\*\* ✔ \|)",
+                     lambda m: m.group(1) + f"{suites}/{suites}" + m.group(2), out)
+        if out != src:
+            print(f"  {doc.relative_to(ROOT)}: release pins -> v{ver} · {suites} suites · {lint} php · {jsdom} jsdom · zip {sha[:12]}…")
+            if write:
+                doc.write_text(out, encoding="utf-8")
+            changed += 1
+    return changed
 
 
 def main() -> int:
     write = "--write" in sys.argv
     ver = live_version()
     suites = suite_count()
+    jsdom = jsdom_checks()
     changed = 0
     for path in sorted(TESTS.glob("*.py")):
         src = path.read_text(encoding="utf-8")
@@ -93,6 +179,9 @@ def main() -> int:
         new = SUITE_RE.sub(lambda m: m.group(1) + str(suites), new)
         new = SUITE_ASSERT_RE.sub(lambda m: m.group(1) + str(suites), new)
         new = SUITE_MSG_RE.sub(lambda m: m.group(1) + str(suites), new)
+        new = JSDOM_TESTS_RE.sub(lambda m: m.group(1) + f"{jsdom}/{jsdom}", new)
+        new = JSDOM_LIT_RE.sub(f'"{jsdom}/{jsdom} checks passed"', new)
+        new = JSDOM_LABEL_RE.sub(lambda m: m.group(1) + f"{jsdom}/{jsdom}" + m.group(4), new)
 
         def _claim(m):
             a, b = int(m.group(1)), int(m.group(2))

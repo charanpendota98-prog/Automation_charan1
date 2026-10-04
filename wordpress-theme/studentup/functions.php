@@ -12,13 +12,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'STUDENTUP_VERSION', '1.9.41' );  // v188 HOOK LEAD: 'main enti' first line (su-hook, dark/print safe) + Telugu daily list hooks; v185 WORLD-CLASS PASS: no-flash dark mode (pre-paint) + color-scheme (native controls) + single H1 per view + card containment + fresh min.css; v184 ACTIVE BOARD HYGIENE: expired out + stale sweep (120d) + same-recruitment dedupe (site ↔ bot parity); v183 FORWARD LIST: outsourcing/contract board section (site + bot daily list align); v181 SEARCH-DEMAND LOG (readers' queries → content gaps); v180 SVG SPRITE (home -30KB) + live-JS-clean; v179 ATTACHMENT-REDIRECT + RICH FEEDS; v178 ALIAS-MERGE ARCHIVES + PWA icons; v177 SHARE-CARD + ICONS: og/twitter for home+archives, archive canonicals, favicon fallback, llms tools; v176 REAL-INSTALL AUDIT: home pagination + og:image guarantee + baseSalary; v175 CONTEXT-AWARE CTAs + schema gates; v174 BOARD RICHNESS + pretty labels; v173 REAL-INSTALL FIXES (hot rail meta keys + days-left, paginate null fatal, saved page auto-create); v172 COMMAND CENTER: My Workspace (profile → eligible jobs → application pipeline → deadline radar); v171 SVG icons + critical CSS + apply tracker; v170 phone mode
+define( 'STUDENTUP_VERSION', '1.9.42' );  // v201 PREVIEW-PARITY: hero H1 + search + 8 chips, ticker→hero→"Latest Notifications" carousel from real posts (inc/slider.php + assets/js/studentup-slider.js); v188 HOOK LEAD: 'main enti' first line (su-hook, dark/print safe) + Telugu daily list hooks; v185 WORLD-CLASS PASS: no-flash dark mode (pre-paint) + color-scheme (native controls) + single H1 per view + card containment + fresh min.css; v184 ACTIVE BOARD HYGIENE: expired out + stale sweep (120d) + same-recruitment dedupe (site ↔ bot parity); v183 FORWARD LIST: outsourcing/contract board section (site + bot daily list align); v181 SEARCH-DEMAND LOG (readers' queries → content gaps); v180 SVG SPRITE (home -30KB) + live-JS-clean; v179 ATTACHMENT-REDIRECT + RICH FEEDS; v178 ALIAS-MERGE ARCHIVES + PWA icons; v177 SHARE-CARD + ICONS: og/twitter for home+archives, archive canonicals, favicon fallback, llms tools; v176 REAL-INSTALL AUDIT: home pagination + og:image guarantee + baseSalary; v175 CONTEXT-AWARE CTAs + schema gates; v174 BOARD RICHNESS + pretty labels; v173 REAL-INSTALL FIXES (hot rail meta keys + days-left, paginate null fatal, saved page auto-create); v172 COMMAND CENTER: My Workspace (profile → eligible jobs → application pipeline → deadline radar); v171 SVG icons + critical CSS + apply tracker; v170 phone mode
 
 require_once get_template_directory() . '/inc/options.php';
 require_once get_template_directory() . '/inc/icons.php';        // v171: pro SVG UI icons (emoji UI badulu).
 require_once get_template_directory() . '/inc/critical-css.php'; // v171: above-fold inline CSS + async full CSS.
 require_once get_template_directory() . '/inc/qual-filter.php';  // v72: 10th/Inter/Degree/PG filter (auto tags)
 require_once get_template_directory() . '/inc/breaking.php';
+require_once get_template_directory() . '/inc/slider.php';
+require_once get_template_directory() . '/inc/nav-breaking.php'; // v201: “Latest Notifications” slider (preview↔live parity)
 require_once get_template_directory() . '/inc/ads.php';
 require_once get_template_directory() . '/inc/megamenu.php';
 require_once get_template_directory() . '/inc/template.php';
@@ -442,6 +444,11 @@ function studentup_assets() {
 	if ( is_front_page() || is_home() ) {
 		// v124: smart tools homepage lo mattrame — article pages fast ga untayi.
 		wp_enqueue_script( 'studentup-smart', get_template_directory_uri() . '/assets/js/studentup-smart.js', array( 'studentup-premium' ), STUDENTUP_VERSION, true );
+	}
+	// v201: Latest Notifications sliding track (auto-slide + controls + "/" search).
+	// Home lo mattrame — article pages ki extra KB ledu.
+	if ( is_front_page() ) {
+		wp_enqueue_script( 'studentup-slider', get_template_directory_uri() . '/assets/js/studentup-slider.js', array(), STUDENTUP_VERSION, true );
 	}
 	// v72: PWA install prompt (app-laga install) — pwa option ON unte mattrame
 	if ( studentup_opt( 'pwa', '1' ) ) {

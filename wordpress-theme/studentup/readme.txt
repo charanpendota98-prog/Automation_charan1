@@ -2,9 +2,9 @@
 Contributors: studentup
 Requires at least: 6.0
 Tested up to: 6.7
-Stable tag: 1.9.41
+Stable tag: 1.9.42
 Requires PHP: 7.4
-Version: 1.9.41
+Version: 1.9.42
 License: GNU General Public License v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Tags: news, education, blog, custom-logo, custom-menu, featured-images, translation-ready, right-sidebar, block-styles, wide-blocks
@@ -47,6 +47,18 @@ The theme ships a REST bridge (`inc/seo-bridge.php`). Use an account with `manag
 user tho App Password ivvandi (Administrator role).
 
 == Changelog ==
+
+= 1.9.42 =
+* v202 BREAKING NEWS NAV: header lo **Home tarvata "🔴 Breaking News"** item — Central Jobs/mega items laage **hover leda click** cheste panel terustundi (theme nav JS: click, Enter, ArrowDown, Escape).
+* v202: panel rows = nijamaina content — verified radar feed (`/data/breaking.json`, ≤36h) unte avi, lekapote **mee latest published posts** (title + "2 days ago · Category"); prathi row nijamaina post/term page ki velthundi, kindha **All updates** CTA. Real data lekunda item inject avvadu (khali panel ledu).
+* v202: phone lo drawer top lo **Breaking News block** (icon + title + time, 4 rows + All updates CTA) — laptop lo dropdown panel (dark mode + print rules included).
+* v202: header menu injection depth-aware — mee menu lo modati item ki dropdown children unna kuda Breaking item **top-level** ga (Home tarvata) vasthundi, sub-menu lopala kaadu.
+* v202: phone/laptop proof — `node tools/verify_breaking_ui.js` 8 widths × light/dark lo nijamaina Chromium tho measure chestundi (overflow 0 · panel viewport lopala · drawer rows fit).
+* v202: preview demo lo purathana duplicate nav JS (inline) teesesa — ippudu theme `assets/js/studentup-menu.js` okkate click/hover ni handle chestundi; idela mundu preview lo click cheste panel open avvakunda poyedi (rendu handlers okate class ni toggle chesayi).
+* v202: item `wp_nav_menu_items` filter tho vasthundi, so **WP Admin lo build chesina menu lo kuda** kanipistundi (auto theme mega tho paatu); Admin menu lo already "Breaking News" item unte theme duplicate add cheyyadu. StudentUp → Options → "Breaking News item in the header" tho off cheyyachu.
+* v201 PREVIEW PARITY: front page ippudu design preview laage render avutundi — breaking ticker → hero (headline "Government Jobs, Results & Notifications" + search + 8 quick chips) → real "Latest Notifications" carousel.
+* v201: carousel mee published posts nunde build avutundi (category · exam tag, deadline pill ≤14 rojulu, 🔥 New <48h, vacancies/qualification/last-date meta unte matrame) — auto-slide 3.2s, pause/prev/next, ←/→ keys, hover/focus/touch pause, reduced-motion lo auto-slide off.
+* v201: hero chips real category archives ki velthayi (TSPSC · APPSC · Central · Police · Inter…), term lekapote jobs board ki — 404 ledu.
 
 = 1.9.41 =
 * v199.1 SPACE FIX: "Most searched by students" now fills exactly — 2 columns on phone (5 clean rows) and 5 columns on laptop (2 clean rows), so there are never empty cells or wasted space. Cards are slightly tighter (70px, 38px icon) and the section heading sits closer to the grid.

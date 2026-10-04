@@ -21,18 +21,33 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 function studentup_hero_actions() {
 	$out  = array();
+	// v201: demo (preview/worldclass) chip set ne — Telugu labels + same order.
+	// Slug lekapote filter board (#jobs) ki velthundi — chip eppudu dead kaadu.
 	$defs = array(
-		array( 'slug' => 'ts-jobs', 'label' => 'Latest Govt Jobs', 'icn' => 'bolt', 'tone' => 'fire' ),
-		array( 'slug' => 'scholarships', 'label' => 'Scholarships', 'icn' => 'school', 'tone' => 'grape' ),
-		array( 'slug' => 'results', 'label' => 'Results', 'icn' => 'board', 'tone' => 'sky' ),
-		array( 'slug' => 'hall-tickets', 'label' => 'Hall Tickets', 'icn' => 'tag', 'tone' => 'mint' ),
+		array( 'label' => 'Breaking News', 'icn' => 'bolt', 'tone' => 'breaking', 'url' => '/#jobs' ),
+		array( 'label' => 'Latest Jobs', 'icn' => 'bolt', 'tone' => '', 'slug' => 'ts-jobs' ),
+		array( 'label' => 'TSPSC / Telangana', 'icn' => 'bank', 'tone' => '', 'slug' => 'ts-jobs' ),
+		array( 'label' => 'APPSC / Andhra Pradesh', 'icn' => 'bank', 'tone' => '', 'slug' => 'ap-jobs' ),
+		array( 'label' => 'Central Govt', 'icn' => 'flag', 'tone' => '', 'slug' => 'central-jobs' ),
+		array( 'label' => 'Police / Defence', 'icn' => 'shield', 'tone' => '', 'slug' => 'police-jobs' ),
+		array( 'label' => '10th / Inter', 'icn' => 'school', 'tone' => '', 'slug' => '10th-inter' ),
+		array( 'label' => 'Results & Keys', 'icn' => 'doc', 'tone' => '', 'slug' => 'results' ),
 	);
 	foreach ( $defs as $d ) {
-		$term = studentup_used_term( $d['slug'] );
-		if ( ! $term ) {
-			continue;
+		$url = '';
+		if ( ! empty( $d['url'] ) ) {
+			$url = home_url( $d['url'] );
+		} elseif ( ! empty( $d['slug'] ) ) {
+			$term = studentup_used_term( $d['slug'] );
+			if ( $term ) {
+				$url = get_category_link( $term );
+			}
 		}
-		$d['url'] = get_category_link( $term );
+		if ( '' === $url ) {
+			$url = home_url( '/#jobs' );
+		}
+		unset( $d['slug'] );
+		$d['url'] = $url;
 		$out[]    = $d;
 	}
 	return $out;
@@ -45,36 +60,27 @@ function studentup_hero_premium() {
 	if ( ! studentup_opt( 'hero_premium', '1' ) ) {
 		return;
 	}
-	$posts_count = (int) wp_count_posts()->publish;
-	$today       = (int) count(
-		get_posts(
-			array(
-				'posts_per_page' => 20,
-				'fields'         => 'ids',
-				'no_found_rows'  => true,
-				'date_query'     => array( array( 'after' => '24 hours ago' ) ),
-			)
-		)
-	);
 	?>
 	<section class="su-hero" aria-label="StudentUp search and quick links">
-		<span class="su-hero-orb su-orb1" aria-hidden="true"></span>
-		<span class="su-hero-orb su-orb2" aria-hidden="true"></span>
 		<div class="wrap su-hero-in">
-			<p class="su-hero-kicker"><span class="su-live-dot" aria-hidden="true"></span> Live updates · Telangana · Andhra Pradesh · Central</p>
-			<h2 class="su-hero-title">One place for every <span>job, scholarship &amp; result</span></h2>
-			<p class="su-hero-sub">Verified notifications, last dates and direct apply links — checked by hand before posting.</p>
+			<?php /* v201: demo (preview/worldclass) hero ne — visible H1 (page lo okkate H1). */ ?>
+			<h1 class="su-hero-title"><?php esc_html_e( 'Government Jobs, Results & Notifications', 'studentup' ); ?></h1>
 
-			<form class="su-hero-search" role="search" method="get" action="<?php echo esc_url( home_url( '/' ) ); ?>">
-				<span class="su-hs-ico" aria-hidden="true"><?php echo studentup_ui_icon( 'search', 19 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?></span>
-				<input type="search" name="s" value="<?php echo esc_attr( get_search_query() ); ?>"
-					placeholder="Search SSC, TSPSC, scholarships, hall tickets…" aria-label="Search StudentUp">
-				<button type="submit">Search</button>
-			</form>
+			<div class="su-search-wrap">
+				<form class="su-hero-search" role="search" method="get" action="<?php echo esc_url( home_url( '/' ) ); ?>">
+					<span class="su-hs-ico" aria-hidden="true"><?php echo studentup_ui_icon( 'search', 17 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?></span>
+					<label class="screen-reader-text" for="su-q"><?php esc_html_e( 'Search StudentUp', 'studentup' ); ?></label>
+					<input id="su-q" type="search" name="s" value="<?php echo esc_attr( get_search_query() ); ?>" autocomplete="off"
+						placeholder="<?php esc_attr_e( 'Search TSPSC, APPSC, SSC, Hall Tickets, Results, Scholarships…', 'studentup' ); ?>">
+					<kbd class="su-kbd" title="<?php esc_attr_e( 'Press / to search', 'studentup' ); ?>">/</kbd>
+					<button type="submit"><?php esc_html_e( 'Search', 'studentup' ); ?></button>
+				</form>
+			</div>
 
 			<div class="su-hero-acts">
 				<?php foreach ( studentup_hero_actions() as $a ) : ?>
-					<a class="su-hact su-t-<?php echo esc_attr( $a['tone'] ); ?>" href="<?php echo esc_url( $a['url'] ); ?>">
+					<?php $su_cls = 'su-hact' . ( $a['tone'] ? ( 'breaking' === $a['tone'] ? ' su-hact--breaking' : ' su-t-' . $a['tone'] ) : '' ); ?>
+					<a class="<?php echo esc_attr( $su_cls ); ?>" href="<?php echo esc_url( $a['url'] ); ?>">
 						<span aria-hidden="true"><?php echo studentup_ui_icon( esc_html( $a['icn'] ), 15 ); // phpcs:ignore WordPress.Security.EscapeOutput -- trusted SVG ?></span><?php echo esc_html( $a['label'] ); ?>
 					</a>
 				<?php endforeach; ?>
